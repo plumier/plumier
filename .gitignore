@@ -1,0 +1,7 @@
+node_modules
+coverage
+yarn-error.log
+*.js
+*.js.map
+.DS_Store
+!jest.config.js

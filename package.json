@@ -1,0 +1,24 @@
+{
+	"name": "plumier",
+	"description": "",
+	"scripts": {
+		"test": "jest",
+		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish"
+	},
+	"keywords": [],
+	"author": "Ketut Sandiarsa",
+	"private": true,
+	"devDependencies": {
+		"@types/jest": "^23.1.0",
+		"coveralls": "^3.0.1",
+		"jest": "^23.1.0",
+		"lerna": "^2.11.0",
+		"reflect-metadata": "^0.1.12",
+		"tslint": "^5.10.0",
+		"typescript": "^2.9.2",
+		"typestrict": "^0.0.9"
+	},
+	"workspaces": [
+		"packages/*"
+	]
+}

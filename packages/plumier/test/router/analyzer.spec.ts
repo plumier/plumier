@@ -1,0 +1,99 @@
+import { route } from "../../src";
+import { analyzeRoutes, transformController } from "../../src/router";
+
+describe("Analyzer", () => {
+    it("Should analyze missing backing parameter", () => {
+        class AnimalController {
+            @route.get("/animal/get/:id/:name")
+            getAnimal(a:string, b:string){}
+        }
+        const routeInfo = transformController(AnimalController)
+        const analysis = analyzeRoutes(routeInfo)
+        expect(analysis[0].issues.length).toBe(1)
+        expect(analysis[0].issues[0].message).toContain("PLUM1000")
+        expect(analysis[0].issues[0].message).toContain("id, name")
+        expect(analysis[0].issues[0].type).toBe("error")
+    })
+
+    it("Should analyze missing backing parameter in root route", () => {
+        
+        @route.root("/root/:type/animal")
+        class AnimalController {
+            @route.get(":id/:name")
+            getAnimal(id:string, name:string){}
+        }
+
+        const routeInfo = transformController(AnimalController)
+        const analysis = analyzeRoutes(routeInfo)
+        expect(analysis[0].issues.length).toBe(1)
+        expect(analysis[0].issues[0].message).toContain("PLUM1000")
+        expect(analysis[0].issues[0].message).toContain("type")
+        expect(analysis[0].issues[0].type).toBe("error")
+    })
+
+
+    it("Should identify missing design type information", () => {
+        class AnimalController {
+            getAnimal(a:string, b:string){}
+        }
+        const routeInfo = transformController(AnimalController)
+        const analysis = analyzeRoutes(routeInfo)
+        expect(analysis[0].issues.length).toBe(1)
+        expect(analysis[0].issues[0].message).toContain("PLUM1001")
+        expect(analysis[0].issues[0].type).toBe("warning")
+    })
+
+    it("Should identify multiple decorators", () => {
+        class AnimalController {
+            @route.get("/animal")
+            @route.get("/animal/get")
+            getAnimal(a:string, b:string){}
+        }
+        const routeInfo = transformController(AnimalController)
+        const analysis = analyzeRoutes(routeInfo)
+        expect(analysis[0].issues.length).toBe(1)
+        expect(analysis[0].issues[0].message).toContain("PLUM1002")
+        expect(analysis[0].issues[0].type).toBe("error")
+    })
+
+    it("Should identify duplicate route", () => {
+
+        class AnimalController {
+            @route.get("get")
+            getAnimal(a:string, b:string){}
+        }
+        @route.root("/animal")
+        class BeastController {
+            @route.get("get")
+            getBeast(a:string, b:string){}
+        }
+
+        const routeInfo = transformController(AnimalController)
+            .concat(transformController(BeastController))
+        const analysis = analyzeRoutes(routeInfo)
+        expect(analysis[0].issues.length).toBe(1)
+        expect(analysis[0].issues[0].message).toContain("PLUM1003")
+        expect(analysis[0].issues[0].type).toBe("error")
+        expect(analysis[1].issues.length).toBe(1)
+        expect(analysis[1].issues[0].message).toContain("PLUM1003")
+        expect(analysis[1].issues[0].type).toBe("error")
+    })
+
+    it("Should not identify duplicate route if has different http method", () => {
+
+        class AnimalController {
+            @route.post("get")
+            getAnimal(a:string, b:string){}
+        }
+        @route.root("/animal")
+        class BeastController {
+            @route.get("get")
+            getBeast(a:string, b:string){}
+        }
+
+        const routeInfo = transformController(AnimalController)
+            .concat(transformController(BeastController))
+        const analysis = analyzeRoutes(routeInfo)
+        expect(analysis[0].issues.length).toBe(0)
+    })
+})
