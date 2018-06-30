@@ -1,7 +1,7 @@
 {
   "name": "plumier",
-  "version": "0.5.0",
-  "description": "A testing friendly Web API",
+  "version": "0.1.0",
+  "description": "A testing friendly Web API framework",
   "main": "index.js",
   "keywords": [
     "MVC",
@@ -9,7 +9,8 @@
     "IoC",
     "Dependency Injection",
     "Web API",
-    "JSON Service"
+    "JSON Service",
+    "TDD"
   ],
   "author": "Ketut Sandiarsa",
   "license": "ISC",

@@ -1,11 +1,10 @@
 {
 	"name": "plumier",
-	"description": "",
+	"description": "A testing friendly Web API framework",
 	"scripts": {
 		"test": "jest",
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish"
 	},
-	"keywords": [],
 	"author": "Ketut Sandiarsa",
 	"private": true,
 	"devDependencies": {
