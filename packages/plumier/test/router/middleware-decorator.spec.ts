@@ -2,8 +2,8 @@ import { Middleware, Invocation, ActionResult, middleware } from '../../src';
 import { transformController, extractDecorators } from '../../src/router';
 
 
-class DummyMiddleware extends Middleware {
-    constructor(public id: number) { super() }
+class DummyMiddleware implements Middleware {
+    constructor(public id: number) {  }
     execute(i: Invocation): Promise<ActionResult> {
         return i.proceed()
     }

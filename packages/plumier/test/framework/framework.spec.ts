@@ -1,6 +1,7 @@
 import Koa from "koa"
 import Supertest, { CallbackHandler, Response } from "supertest"
-import { ActionResult, HttpStatusError, Middleware } from '../../src';
+import { ActionResult, HttpStatusError, Middleware, Invocation } from '../../src';
+import { pipe } from '../../src/application';
 
 describe("ActionResult", () => {
     it("Should execute context properly with default 200", async () => {
@@ -83,7 +84,7 @@ describe("Middleware", () => {
                 .expect({ body: "Body From Other Middleware" })
         })
 
-        it("Should able to change body after proceed()", async  () => {
+        it("Should able to change body after proceed()", async () => {
             const app = new Koa()
             const mdw = Middleware.toKoa({
                 execute: async x => {
@@ -105,4 +106,42 @@ describe("Middleware", () => {
 
     })
 
+    describe("Middleware.fromKoa", () => {
+
+        function fixture(mdw: Middleware) {
+            const ctx = <any>{}
+            return pipe([mdw], ctx, {
+                context: ctx, proceed: async () => {
+                    const result = new ActionResult({ body: "The Main Body" })
+                    result.execute(ctx)
+                    return result
+                }
+            })
+        }
+
+        it("Should able end request by not calling next", async () => {
+            const mdw = Middleware.fromKoa(async (ctx, next) => {
+                ctx.body = { body: "The Body" }
+            })
+            const result = await fixture(mdw).proceed()
+            expect(result.body).toEqual({ body: "The Body" })
+        })
+
+        it("Should able to chain request to next middleware", async () => {
+            const mdw = Middleware.fromKoa(async (ctx, next) => {
+                await next()
+            })
+            const result = await fixture(mdw).proceed()
+            expect(result.body).toEqual({ body: "The Main Body" })
+        })
+
+        it("Should able to change body after next", async () => {
+            const mdw = Middleware.fromKoa(async (ctx, next) => {
+                await next()
+                ctx.body = { body: "The Body" }
+            })
+            const result = await fixture(mdw).proceed()
+            expect(result.body).toEqual({ body: "The Body" })
+        })
+    })
 })

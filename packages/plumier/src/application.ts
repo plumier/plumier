@@ -18,6 +18,7 @@ import {
     PlumierConfiguration,
     RouteInfo,
     StringUtil,
+    hasKeyOf,
 } from "./framework";
 import { analyzeRoutes, printAnalysis, router, transformModule, extractDecorators } from "./router";
 
@@ -36,28 +37,18 @@ export class MiddlewareInvocation implements Invocation {
 export class ActionInvocation implements Invocation {
     constructor(public context: Context, private resolver: DependencyResolver) { }
     async proceed(): Promise<ActionResult> {
-        try {
-            const { request, route } = this.context
-            const controller: any = this.resolver.resolve(route!.controller.object)
-            const result = (<Function>controller[route!.action.name]).apply(controller, bindParameter(request, route!.action, this.context.config.converters))
-            if (result instanceof ActionResult) return Promise.resolve(result);
-            else {
-                const awaitedResult = await Promise.resolve(result)
-                return new ActionResult(awaitedResult)
-            }
-        }
-        catch (e) {
-            return new ActionResult(e, 500)
+        const { request, route } = this.context
+        const controller: any = this.resolver.resolve(route.controller.object)
+        const parameters = bindParameter(request, route.action, this.context.config.converters)
+        const result = (<Function>controller[route.action.name]).apply(controller, parameters)
+        if (result instanceof ActionResult) return Promise.resolve(result);
+        else {
+            const awaitedResult = await Promise.resolve(result)
+            return new ActionResult(awaitedResult)
         }
     }
 }
 
-export class ErrorInvocation implements Invocation {
-    constructor(public context: Context, private error: Error) { }
-    proceed(): Promise<ActionResult> {
-        throw this.error
-    }
-}
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------- MIDDLEWARE PIPELINE --------------------------------- */
@@ -85,6 +76,7 @@ function routeHandler(route: RouteInfo, config: Configuration) {
 /* --------------------------- MAIN APPLICATION ---------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
+
 export class Plumier implements PlumierApplication {
     readonly config: Readonly<PlumierConfiguration>;
     readonly koa: Koa
@@ -102,7 +94,21 @@ export class Plumier implements PlumierApplication {
         }
     }
 
+    /**
+     * Use Koa middleware
+     * 
+     *    use(KoaBodyParser())
+     *    use(async (ctx, next) => { })
+     */
     use(option: KoaMiddleware): Application
+
+    /**
+     * Use plumier middleware
+     * 
+     *    use(new MyMiddleware())
+     *    use({ execute: x => x.proceed()})
+     *    use({ execute: async x => new ActionResult({ json: "body" }, 200)})
+     */
     use(option: Middleware): Application
     use(option: KoaMiddleware | Middleware): Application {
         if (typeof option === "function") {
@@ -114,10 +120,19 @@ export class Plumier implements PlumierApplication {
         return this
     }
 
+    /**
+     * Set facility (advanced configuration)
+     * 
+     *    set(new WebApiFacility())
+     */
     set(facility: Facility): Application
+
+    /**
+     * Set configuration
+     */
     set(config: Partial<Configuration>): Application
     set(config: Partial<Configuration> | Facility): Application {
-        if (config instanceof Facility)
+        if (hasKeyOf<Facility>(config, "setup"))
             this.config.facilities.push(config)
         else
             Object.assign(this.config, config)
@@ -127,17 +142,12 @@ export class Plumier implements PlumierApplication {
     async initialize(): Promise<Koa> {
         try {
             const controllerPath = join(this.config.rootPath, this.config.controllerPath)
-            const modelPath = join(this.config.rootPath, this.config.modelPath)
             if (!existsSync(controllerPath))
                 throw new Error(StringUtil.format(errorMessage.ControllerPathNotFound, controllerPath))
             const routes = await transformModule(controllerPath)
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
-            //wait all pre initialization facilities
-            await Promise.all(this.config.facilities.map(x => x.onPreInitialize(this)))
-            //setup all generated routes
+            await Promise.all(this.config.facilities.map(x => x.setup(this)))
             routes.forEach(route => this.koa.use(router(route, routeHandler(route, this.config))))
-            //wait all after initialization facilities
-            await Promise.all(this.config.facilities.map(x => x.onPostInitialize(this)))
             return this.koa
         }
         catch (e) {

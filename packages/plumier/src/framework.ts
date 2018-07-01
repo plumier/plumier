@@ -37,6 +37,13 @@ export interface Invocation {
     proceed(): Promise<ActionResult>
 }
 
+export interface Middleware {
+    execute(invocation: Readonly<Invocation>): Promise<ActionResult>
+}
+
+export interface Facility {
+    setup(app: Readonly<PlumierApplication>):Promise<void>
+}
 
 export interface DependencyResolver {
     resolve(type: (new (...args: any[]) => any)): any
@@ -71,7 +78,7 @@ export interface PlumierApplication extends Application {
 
 declare module "koa" {
     export interface Context {
-        route?: RouteInfo,
+        route: RouteInfo,
         config: Configuration
     }
 }
@@ -93,6 +100,33 @@ export namespace StringUtil {
     }
 }
 
+
+export function hasKeyOf<T>(opt: any, key: string): opt is T {
+    return key in opt;
+}
+
+
+export namespace Middleware {
+    export function fromKoa(middleware: KoaMiddleware): Middleware {
+        return {
+            execute: async x => {
+                await middleware(x.context, async () => { x.proceed() })
+                return new ActionResult(x.context.body, x.context.status)
+            }
+        }
+    }
+    export function toKoa(middleware: Middleware): KoaMiddleware {
+        return async (context: Context, next: () => Promise<any>) => {
+            const result = await middleware.execute({
+                context, proceed: async () => {
+                    await next()
+                    return new ActionResult(context.body, context.status)
+                }
+            })
+            result.execute(context)
+        }
+    }
+}
 
 /* ------------------------------------------------------------------------------- */
 /* -------------------------------- CLASSES -------------------------------------- */
@@ -119,35 +153,9 @@ export class ActionResult {
     }
 }
 
-export abstract class Middleware {
-    static fromKoa(middleware: KoaMiddleware): Middleware {
-        return {
-            execute: x => new Promise(resolve =>
-                middleware(x.context, async () => resolve(x.proceed())))
-        }
-    }
-    static toKoa(middleware: Middleware): KoaMiddleware {
-        return async (context: Context, next: () => Promise<any>) => {
-            const result = await middleware.execute({
-                context, proceed: async () => {
-                    await next()
-                    return new ActionResult(context.body, context.status)
-                }
-            })
-            result.execute(context)
-        }
-    }
-    abstract execute(invocation: Readonly<Invocation>): Promise<ActionResult>
-}
 
-export abstract class Facility {
-    async onPreInitialize(app: Readonly<PlumierApplication>) { }
-    async onPostInitialize(app: Readonly<PlumierApplication>) { }
-}
-
-
-export class WebApiFacility extends Facility {
-    async onPreInitialize({ koa }: Readonly<PlumierApplication>) {
+export class WebApiFacility implements Facility {
+    async setup({ koa }: Readonly<PlumierApplication>) {
         koa.use(BodyParser())
     }
 }
@@ -158,7 +166,6 @@ export class HttpStatusError extends Error {
         Object.setPrototypeOf(this, HttpStatusError.prototype);
     }
 }
-
 
 export class DefaultDependencyResolver implements DependencyResolver {
     resolve(type: new (...args: any[]) => any) {
@@ -213,12 +220,17 @@ export namespace middleware {
     }
 }
 
+
+export function model() {
+    return decorateClass({ type: "Model" })
+}
+
 /* ------------------------------------------------------------------------------- */
 /* -------------------------------- CONSTANTS ------------------------------------ */
 /* ------------------------------------------------------------------------------- */
 
 export namespace errorMessage {
-    //PLUM1XX User configuration error
+    //PLUM1XXX User configuration error
     export const RouteDoesNotHaveBackingParam = "PLUM1000: Route parameters ({0}) doesn't have appropriate backing parameter"
     export const ActionDoesNotHaveTypeInfo = "PLUM1001: Action doesn't contains design type information, automatic type conversion will be skipped"
     export const MultipleDecoratorNotSupported = "PLUM1002: Multiple decorators doesn't supported"
@@ -226,6 +238,6 @@ export namespace errorMessage {
     export const ControllerPathNotFound = "PLUM1004: Controller directory {0} not found"
     export const ModelPathNotFound = "PLUM1005: Model directory {0} not found"
 
-    //PLUM1XX internal app error
+    //PLUM1XXX internal app error
     export const RequestedUrlNotFound = "PLUM2001: Requested url not found"
 }

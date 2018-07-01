@@ -1,6 +1,6 @@
 import Debug from "debug";
 import * as Fs from "fs";
-import Koa, { Context } from "koa";
+import { Context } from "koa";
 import * as Path from "path";
 import Ptr from "path-to-regexp";
 

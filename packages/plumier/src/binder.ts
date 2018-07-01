@@ -1,7 +1,7 @@
-import Koa, { Request } from "koa";
+import { Request } from "koa";
 
 import { BindingDecorator, RouteDecorator, TypeConverter } from "./framework";
-import { decorateClass, FunctionReflection, getDecorators, ParameterReflection } from "./libs/reflect";
+import { FunctionReflection, getDecorators, ParameterReflection } from "./libs/reflect";
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- CONVERTER ------------------------------------- */
@@ -26,16 +26,15 @@ function convert(value: any, converters?: TypeConverter, type?: Function) {
 /* ----------------------------- MODEL BINDER ------------------------------------ */
 /* ------------------------------------------------------------------------------- */
 
-export function model() {
-    return decorateClass({ type: "Model" })
-}
-
 function bindModel(action: FunctionReflection, request: Request, par: ParameterReflection): object | undefined {
+    if (!par.typeAnnotation) return
     const decorator = getDecorators(par.typeAnnotation || {})
-    const isModel = decorator.length > 0 && decorator[0].value.type == "Model"
+    if (!decorator) return
+    const isModel = decorator.some(x => x.value && x.value.type == "Model")
+    if (!isModel) return
     const routeDecorator: RouteDecorator | undefined = action.decorators.find((x: RouteDecorator) => x.name == "Route")
     const isPostOrPut = routeDecorator && (routeDecorator.method == "post" || routeDecorator.method == "put")
-    if (par.typeAnnotation && isModel && isPostOrPut) {
+    if (isPostOrPut) {
         const instance = new par.typeAnnotation()
         Object.assign(instance, request.body)
         return instance
@@ -49,17 +48,16 @@ function bindModel(action: FunctionReflection, request: Request, par: ParameterR
 
 function bindDecorator(action: FunctionReflection, request: Request, par: ParameterReflection): object | string | undefined {
     const decorator: BindingDecorator = par.decorators.find((x: BindingDecorator) => x.type == "ParameterBinding")
-    if (decorator) {
-        switch (decorator.name) {
-            case "Body":
-                return decorator.part ? request.body && (<any>request.body)[decorator.part] : request.body
-            case "Query":
-                return decorator.part ? request.query && request.query[decorator.part] : request.query
-            case "Header":
-                return decorator.part ? request.headers && request.headers[decorator.part] : request.headers
-            case "Request":
-                return decorator.part ? request[decorator.part] : request
-        }
+    if (!decorator) return
+    switch (decorator.name) {
+        case "Body":
+            return decorator.part ? request.body && (<any>request.body)[decorator.part] : request.body
+        case "Query":
+            return decorator.part ? request.query && request.query[decorator.part] : request.query
+        case "Header":
+            return decorator.part ? request.headers && request.headers[decorator.part] : request.headers
+        case "Request":
+            return decorator.part ? request[decorator.part] : request
     }
 }
 

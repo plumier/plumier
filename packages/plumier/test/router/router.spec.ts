@@ -45,4 +45,15 @@ describe("Router", () => {
             .get("/beast/bat/animal/rabbit")
             .expect(200, "OK")
     })
+
+    it("Should pass to next middleware if no match", async () => {
+        class AnimalController {
+            @route.get(":id")
+            get(id:number){}
+        }
+        const app = fixture(AnimalController)
+        await Supertest(app)
+            .get("/beast/rabbit")
+            .expect(404)
+    })
 })
