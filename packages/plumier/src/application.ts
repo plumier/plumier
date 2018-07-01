@@ -94,21 +94,8 @@ export class Plumier implements PlumierApplication {
         }
     }
 
-    /**
-     * Use Koa middleware
-     * 
-     *    use(KoaBodyParser())
-     *    use(async (ctx, next) => { })
-     */
     use(option: KoaMiddleware): Application
 
-    /**
-     * Use plumier middleware
-     * 
-     *    use(new MyMiddleware())
-     *    use({ execute: x => x.proceed()})
-     *    use({ execute: async x => new ActionResult({ json: "body" }, 200)})
-     */
     use(option: Middleware): Application
     use(option: KoaMiddleware | Middleware): Application {
         if (typeof option === "function") {
@@ -120,16 +107,8 @@ export class Plumier implements PlumierApplication {
         return this
     }
 
-    /**
-     * Set facility (advanced configuration)
-     * 
-     *    set(new WebApiFacility())
-     */
     set(facility: Facility): Application
 
-    /**
-     * Set configuration
-     */
     set(config: Partial<Configuration>): Application
     set(config: Partial<Configuration> | Facility): Application {
         if (hasKeyOf<Facility>(config, "setup"))

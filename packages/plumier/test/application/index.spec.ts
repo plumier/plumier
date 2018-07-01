@@ -8,11 +8,11 @@ describe("Plumier", () => {
     test("Basic Controller", async () => {
         const app = new Plumier()
         const koa = await app
+            .use(async (x, y) => {})
             .set({})
             .set({ rootPath: __dirname })
             .set(new WebApiFacility())
             .initialize()
-        //express.listen(8000)
     })
 
 })
