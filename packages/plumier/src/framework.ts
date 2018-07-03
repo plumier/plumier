@@ -191,16 +191,19 @@ export function hasKeyOf<T>(opt: any, key: string): opt is T {
     return key in opt;
 }
 
-export function b(msg:any){
+export function b(msg: any) {
     return Chalk.blue(msg)
 }
 
-export namespace Middleware {
+export namespace MiddlewareUtil {
     export function fromKoa(middleware: KoaMiddleware): Middleware {
         return {
             execute: async x => {
-                await middleware(x.context, async () => { x.proceed() })
-                return new ActionResult(x.context.body, x.context.status)
+                await middleware(x.context, async () => { 
+                    const nextResult = await x.proceed()
+                    nextResult.execute(x.context)
+                })
+                return ActionResult.fromContext(x.context)
             }
         }
     }
@@ -209,7 +212,7 @@ export namespace Middleware {
             const result = await middleware.execute({
                 context, proceed: async () => {
                     await next()
-                    return new ActionResult(context.body, context.status)
+                    return ActionResult.fromContext(context)
                 }
             })
             result.execute(context)
@@ -223,6 +226,9 @@ export namespace Middleware {
 
 
 export class ActionResult {
+    static fromContext(ctx:Context){
+        return new ActionResult(ctx.body, ctx.status)
+    }
     private readonly headers: { [key: string]: string } = {}
     constructor(public body?: any, public status?: number) { }
 
@@ -260,9 +266,9 @@ export class WebApiFacility implements Facility {
             }
             catch (e) {
                 if (e instanceof HttpStatusError)
-                    ctx.throw(e.message, e.status)
-                else ctx.throw(e, 500)
-                console.log(e)
+                    ctx.throw(e.status, e.message)
+                else
+                    ctx.throw(500, e)
             }
         })
         app.koa.use(Cors())
@@ -288,7 +294,7 @@ export class RestfulApiFacility extends WebApiFacility {
 }
 
 export class HttpStatusError extends Error {
-    constructor(public message: string, public status: number) {
+    constructor(public status: number, message?: string) {
         super(message)
         Object.setPrototypeOf(this, HttpStatusError.prototype);
     }
@@ -526,7 +532,7 @@ export const route = new RouteDecoratorImpl()
 
 export namespace middleware {
     export function use(...middleware: (Middleware | KoaMiddleware)[]) {
-        const mdw = middleware.map(x => typeof x == "function" ? Middleware.fromKoa(x) : x).reverse()
+        const mdw = middleware.map(x => typeof x == "function" ? MiddlewareUtil.fromKoa(x) : x).reverse()
         const value: MiddlewareDecorator = { name: "Middleware", value: mdw }
         return (...args: any[]) => {
             if (args.length == 1) {

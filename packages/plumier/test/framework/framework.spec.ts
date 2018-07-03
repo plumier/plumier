@@ -2,6 +2,7 @@ import Koa from "koa"
 import Supertest, { CallbackHandler, Response } from "supertest"
 import { ActionResult, HttpStatusError, Middleware, Invocation } from '../../src';
 import { pipe } from '../../src/application';
+import { MiddlewareUtil } from '../../src/framework';
 
 describe("ActionResult", () => {
     it("Should execute context properly", async () => {
@@ -56,13 +57,13 @@ describe("ActionResult", () => {
 
 describe("HttpStatusError", () => {
     it("Should instantiate properly", () => {
-        const error = new HttpStatusError("MESSAGE", 200)
+        const error = new HttpStatusError(200, "MESSAGE")
         expect(error.message).toBe("MESSAGE")
         expect(error.status).toBe(200)
     })
 
     it("Should be instance of Error", () => {
-        const error = new HttpStatusError("MESSAGE", 200)
+        const error = new HttpStatusError(200, "MESSAGE")
         expect(error).toBeInstanceOf(Error)
     })
 })
@@ -71,7 +72,7 @@ describe("Middleware", () => {
     describe("Middleware.toKoa", () => {
         it("Should able end request by returning ActionResult", async () => {
             const app = new Koa()
-            const mdw = Middleware.toKoa({ execute: async x => new ActionResult({ body: "The Body" }) })
+            const mdw = MiddlewareUtil.toKoa({ execute: async x => new ActionResult({ body: "The Body" }) })
             app.use(mdw)
                 .use((ctx, next) => {
                     ctx.body = { body: "Body From Other Middleware" }
@@ -84,7 +85,7 @@ describe("Middleware", () => {
 
         it("Should able to chain request to next middleware", async () => {
             const app = new Koa()
-            const mdw = Middleware.toKoa({ execute: x => x.proceed() })
+            const mdw = MiddlewareUtil.toKoa({ execute: x => x.proceed() })
             app.use(mdw)
                 .use((ctx, next) => {
                     ctx.status = 201
@@ -98,7 +99,7 @@ describe("Middleware", () => {
 
         it("Should able to change body after proceed()", async () => {
             const app = new Koa()
-            const mdw = Middleware.toKoa({
+            const mdw = MiddlewareUtil.toKoa({
                 execute: async x => {
                     const result = await x.proceed()
                     result.body = { body: "The Body" }
@@ -132,7 +133,7 @@ describe("Middleware", () => {
         }
 
         it("Should able end request by not calling next", async () => {
-            const mdw = Middleware.fromKoa(async (ctx, next) => {
+            const mdw = MiddlewareUtil.fromKoa(async (ctx, next) => {
                 ctx.body = { body: "The Body" }
             })
             const result = await fixture(mdw).proceed()
@@ -140,7 +141,7 @@ describe("Middleware", () => {
         })
 
         it("Should able to chain request to next middleware", async () => {
-            const mdw = Middleware.fromKoa(async (ctx, next) => {
+            const mdw = MiddlewareUtil.fromKoa(async (ctx, next) => {
                 await next()
             })
             const result = await fixture(mdw).proceed()
@@ -148,7 +149,7 @@ describe("Middleware", () => {
         })
 
         it("Should able to change body after next", async () => {
-            const mdw = Middleware.fromKoa(async (ctx, next) => {
+            const mdw = MiddlewareUtil.fromKoa(async (ctx, next) => {
                 await next()
                 ctx.body = { body: "The Body" }
             })

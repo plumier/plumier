@@ -15,11 +15,12 @@ import {
     hasKeyOf,
     Invocation,
     KoaMiddleware,
-    Middleware,
+    MiddlewareUtil,
     PlumierApplication,
     PlumierConfiguration,
     StringUtil,
     b,
+    Middleware,
 } from "./framework";
 import { analyzeRoutes, extractDecorators, printAnalysis, router, transformModule } from "./router";
 
@@ -110,7 +111,7 @@ export class Plumier implements PlumierApplication {
             this.koa.use(option)
         }
         else {
-            this.koa.use(Middleware.toKoa(option))
+            this.koa.use(MiddlewareUtil.toKoa(option))
         }
         return this
     }

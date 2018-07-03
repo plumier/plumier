@@ -1,15 +1,8 @@
+import { basename } from "path";
 import Supertest from "supertest";
 
-import { HttpStatusError, Plumier, route, WebApiFacility } from "../../src";
-import { RestfulApiFacility, Facility } from '../../src/framework';
-
-export class AnimalModel {
-    constructor(
-        public id: number,
-        public name: string,
-        public age: number
-    ) { }
-}
+import { Plumier, route } from "../../src";
+import { RestfulApiFacility } from "../../src/framework";
 
 export class ClientModel {
     constructor(
@@ -28,35 +21,6 @@ export class PetModel {
     ) { }
 }
 
-//basic controller
-export class AnimalController {
-    @route.get()
-    get(id: number) {
-        if (typeof id !== "number") throw new HttpStatusError("Not type of id", 400)
-        return new AnimalModel(id, "Mimi", 5)
-    }
-
-    @route.post()
-    save(model: AnimalModel) {
-        if (!(model instanceof AnimalModel)) {
-            throw new HttpStatusError("Not a type of animal", 400)
-        }
-        return new AnimalModel(474747, "Mimi", 5)
-    }
-
-    @route.put()
-    modify(id: number, model: AnimalModel) {
-        if (typeof id !== "number") throw new HttpStatusError("Not type of id", 400)
-        if (!(model instanceof AnimalModel)) throw new HttpStatusError("Not a type of animal", 400)
-        return { ...model, id }
-    }
-
-    @route.delete()
-    delete(id: number) {
-        if (typeof id !== "number") throw new HttpStatusError("Not type of id", 400)
-        return new AnimalModel(id, "Mimi", 5)
-    }
-}
 
 //restful style controller
 export class ClientController {
@@ -118,57 +82,24 @@ export class PetController {
     }
 }
 
-function fixture(facility:Facility) {
-    const app = new Plumier()
-    app.set(facility)
-    app.set({ rootPath: __dirname, controllerPath: "." })
-    app.set({ mode: "production" })
-    return app
+function fixture() {
+    return new Plumier()
+        .set(new RestfulApiFacility())
+        .set({ rootPath: __dirname, controllerPath: basename(__filename) })
+        .set({ mode: "production" })
 }
-
-describe("Basic Controller", () => {
-    it("Should able to perform GET request with parameter binding", async () => {
-        const koa = await fixture(new WebApiFacility()).initialize()
-        await Supertest(koa.callback())
-            .get("/animal/get?id=474747")
-            .expect(200, { id: 474747, name: 'Mimi', age: 5 })
-    })
-
-    it("Should able to perform POST request with parameter binding", async () => {
-        const koa = await fixture(new WebApiFacility()).initialize()
-        await Supertest(koa.callback())
-            .post("/animal/save")
-            .send({ name: 'Mimi', age: 5 })
-            .expect(200, { id: 474747, name: 'Mimi', age: 5 })
-    })
-
-    it("Should able to perform PUT request with parameter binding", async () => {
-        const koa = await fixture(new WebApiFacility()).initialize()
-        await Supertest(koa.callback())
-            .put("/animal/modify?id=474747")
-            .send({ name: 'Mimi', age: 5 })
-            .expect(200, { id: 474747, name: 'Mimi', age: 5 })
-    })
-
-    it("Should able to perform DELETE request with parameter binding", async () => {
-        const koa = await fixture(new WebApiFacility()).initialize()
-        await Supertest(koa.callback())
-            .delete("/animal/delete?id=474747")
-            .expect(200, { id: 474747, name: 'Mimi', age: 5 })
-    })
-})
 
 describe("Restful API", () => {
     describe("Basic Restful API", () => {
         it("Should able to get resource", async () => {
-            const koa = await fixture(new RestfulApiFacility()).initialize()
+            const koa = await fixture().initialize()
             await Supertest(koa.callback())
                 .get("/client/474747")
                 .expect(200, { id: 474747, name: 'John Doe', email: "mimi@gmail.com" })
         })
 
         it("Should able to post resource", async () => {
-            const koa = await fixture(new RestfulApiFacility()).initialize()
+            const koa = await fixture().initialize()
             await Supertest(koa.callback())
                 .post("/client")
                 .send({ name: 'John Doe', email: "mimi@gmail.com" })
@@ -176,7 +107,7 @@ describe("Restful API", () => {
         })
 
         it("Should able to put resource", async () => {
-            const koa = await fixture(new RestfulApiFacility()).initialize()
+            const koa = await fixture().initialize()
             await Supertest(koa.callback())
                 .put("/client/474747")
                 .send({ name: 'John Doe', email: "mimi@gmail.com" })
@@ -184,7 +115,7 @@ describe("Restful API", () => {
         })
 
         it("Should able to delete resource", async () => {
-            const koa = await fixture(new RestfulApiFacility()).initialize()
+            const koa = await fixture().initialize()
             await Supertest(koa.callback())
                 .delete("/client/474747")
                 .expect(204)
@@ -193,14 +124,14 @@ describe("Restful API", () => {
 
     describe("Nested Restful API", () => {
         it("Should able to get resource", async () => {
-            const koa = await fixture(new RestfulApiFacility()).initialize()
+            const koa = await fixture().initialize()
             await Supertest(koa.callback())
                 .get("/client/474747/pet/252525")
                 .expect(200, { id: 252525, clientId: 474747, name: 'Mimi', age: 5 })
         })
 
         it("Should able to post resource", async () => {
-            const koa = await fixture(new RestfulApiFacility()).initialize()
+            const koa = await fixture().initialize()
             await Supertest(koa.callback())
                 .post("/client/474747/pet")
                 .send({ name: 'Mimi', age: 5 })
@@ -208,7 +139,7 @@ describe("Restful API", () => {
         })
 
         it("Should able to put resource", async () => {
-            const koa = await fixture(new RestfulApiFacility()).initialize()
+            const koa = await fixture().initialize()
             await Supertest(koa.callback())
                 .put("/client/474747/pet/252525")
                 .send({ name: 'Mimi', age: 5 })
@@ -216,7 +147,7 @@ describe("Restful API", () => {
         })
 
         it("Should able to delete resource", async () => {
-            const koa = await fixture(new RestfulApiFacility()).initialize()
+            const koa = await fixture().initialize()
             await Supertest(koa.callback())
                 .delete("/client/474747/pet/252525")
                 .expect(204)

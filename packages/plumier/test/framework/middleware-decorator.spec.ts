@@ -27,7 +27,7 @@ describe("Middleware Decorator", () => {
     })
 
     it("Should decorate class middleware with Koa middleware", async () => {
-        @middleware.use((ctx, next) => next())
+        @middleware.use(async (ctx, next) => {})
         class AnimalController {
             method() { }
         }
@@ -39,7 +39,7 @@ describe("Middleware Decorator", () => {
 
     it("Should decorate method middleware with Koa middleware", async () => {
         class AnimalController {
-            @middleware.use((ctx, next) => next())
+            @middleware.use(async (ctx, next) => {})
             method() { }
         }
         const metadata = getDecorators(AnimalController)

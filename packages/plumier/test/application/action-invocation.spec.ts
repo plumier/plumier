@@ -131,7 +131,7 @@ describe("Action Invocation", () => {
         class AnimalController {
             @route.get()
             getAnimal(id: number) {
-                throw new HttpStatusError("Error occur", 400)
+                throw new HttpStatusError(400)
             }
         }
 
