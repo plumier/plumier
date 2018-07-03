@@ -39,11 +39,10 @@ export class AnimalController {
     }
 }
 
-
 function fixture() {
     return new Plumier()
         .set(new WebApiFacility())
-        .set({ rootPath: __dirname, controllerPath: basename(__filename) })
+        .set({ controller: __filename })
         .set({ mode: "production" })
 }
 

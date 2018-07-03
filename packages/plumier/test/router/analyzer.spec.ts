@@ -113,4 +113,18 @@ describe("Analyzer", () => {
         expect(console.log).toBeCalled()
         consoleLog.clearMock()
     })
+
+    it("Should print info properly", () => {
+        class AnimalController {
+            @route.get(":id/:name")
+            getAnimal(id: string, name: string) { }
+        }
+
+        const routeInfo = transformController(AnimalController)
+        const analysis = analyzeRoutes(routeInfo)
+        consoleLog.startMock()
+        printAnalysis(analysis)
+        expect(console.log).toBeCalled()
+        consoleLog.clearMock()
+    })
 })

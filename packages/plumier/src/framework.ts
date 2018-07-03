@@ -54,15 +54,11 @@ export interface DependencyResolver {
 export interface Configuration {
     mode: "debug" | "production"
 
-    /**
-     * Specify the rootPath of the application, default is process.cwd()
-     */
-    rootPath: string
 
     /**
-     * Specify controller path, default to "./controller" relative to {@link rootPath}
+     * Specify controller path or the controller classes array, default to "process.cwd() ./controller" 
      */
-    controllerPath: string
+    controller: string | Class []
 
     /**
      * Set custom dependency resolver for dependency injection
@@ -209,13 +205,21 @@ export namespace MiddlewareUtil {
     }
     export function toKoa(middleware: Middleware): KoaMiddleware {
         return async (context: Context, next: () => Promise<any>) => {
-            const result = await middleware.execute({
-                context, proceed: async () => {
-                    await next()
-                    return ActionResult.fromContext(context)
-                }
-            })
-            result.execute(context)
+            try{
+                const result = await middleware.execute({
+                    context, proceed: async () => {
+                        await next()
+                        return ActionResult.fromContext(context)
+                    }
+                })
+                result.execute(context)
+            }
+            catch(e){
+                if(e instanceof HttpStatusError)
+                    context.throw(e.status, e)
+                else 
+                    context.throw(500, e)
+            }
         }
     }
 }
@@ -266,7 +270,7 @@ export class WebApiFacility implements Facility {
             }
             catch (e) {
                 if (e instanceof HttpStatusError)
-                    ctx.throw(e.status, e.message)
+                    ctx.throw(e.status, e)
                 else
                     ctx.throw(500, e)
             }
@@ -556,8 +560,7 @@ export namespace errorMessage {
     export const ActionDoesNotHaveTypeInfo = "PLUM1001: Action doesn't contains parameter type information, model validation will be skipped"
     export const MultipleDecoratorNotSupported = "PLUM1002: Multiple decorators doesn't supported"
     export const DuplicateRouteFound = "PLUM1003: Duplicate route found in {0}"
-    export const ControllerPathNotFound = "PLUM1004: Controller directory {0} not found"
-    export const ModelPathNotFound = "PLUM1005: Model directory {0} not found"
+    export const ControllerPathNotFound = "PLUM1004: Controller file or directory {0} not found"
 
     //PLUM1XXX internal app error
     export const RequestedUrlNotFound = "PLUM2001: Requested url not found"

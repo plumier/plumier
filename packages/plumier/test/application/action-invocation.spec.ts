@@ -50,6 +50,21 @@ describe("Action Invocation", () => {
             .expect(201, { body: "Custom Body" })
     })
 
+    it("Should able to return action result without status", async () => {
+        class AnimalController {
+            @route.get()
+            getAnimal() {
+                return new ActionResult({ body: "Custom Body" })
+            }
+        }
+
+        const app = new Koa()
+        app.use(fixture(AnimalController))
+        await Supertest(app.callback())
+            .get("/")
+            .expect(200, { body: "Custom Body" })
+    })
+
     it("Should able to use async method", async () => {
         class AnimalController {
             @route.get()
