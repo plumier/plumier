@@ -1,10 +1,6 @@
 //version   1.2.0
 //github    https://github.com/ktutnik/my-own-reflect
-
-
-import * as Path from "path"
-import "reflect-metadata"
-import { ENGINE_METHOD_NONE } from 'constants';
+import "reflect-metadata";
 
 /* ---------------------------------------------------------------- */
 /* --------------------------- TYPES ------------------------------ */
@@ -25,7 +21,7 @@ export const DESIGN_PARAMETER_TYPE = "design:paramtypes"
 /* ---------------------------------------------------------------- */
 /* --------------------------- HELPERS ---------------------------- */
 /* ---------------------------------------------------------------- */
-
+ 
 //logic from https://github.com/goatslacker/get-parameter-names
 function cleanUp(fn: string) {
     return fn

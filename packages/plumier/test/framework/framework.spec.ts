@@ -4,7 +4,7 @@ import { ActionResult, HttpStatusError, Middleware, Invocation } from '../../src
 import { pipe } from '../../src/application';
 
 describe("ActionResult", () => {
-    it("Should execute context properly with default 200", async () => {
+    it("Should execute context properly", async () => {
         const app = new Koa()
         app.use((ctx, next) => {
             const result = new ActionResult({ body: "The Body" })
@@ -14,6 +14,18 @@ describe("ActionResult", () => {
             .get("/")
             .expect(200)
             .expect({ body: "The Body" })
+    })
+
+    it("Should not set body if not provided", async () => {
+        const app = new Koa()
+        app.use((ctx, next) => {
+            const result = new ActionResult(undefined, 200)
+            result.execute(ctx)
+        })
+        const result = await Supertest(app.callback())
+            .get("/")
+            .expect(200)
+        expect(result.body).toEqual({})
     })
 
     it("Should execute context with status", async () => {

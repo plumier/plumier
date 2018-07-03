@@ -3,6 +3,7 @@ import * as Fs from "fs";
 import { Context } from "koa";
 import * as Path from "path";
 import Ptr from "path-to-regexp";
+import Chalk from "chalk"
 
 import {
     errorMessage,
@@ -12,9 +13,15 @@ import {
     RouteDecorator,
     RouteInfo,
     StringUtil,
+    Class,
+    Configuration,
+    b,
 } from "./framework";
-import { Class } from "./libs/ioc-container";
 import { ClassReflection, FunctionReflection, reflect, Reflection } from "./libs/reflect";
+import { inspect } from 'util';
+import chalk from 'chalk';
+
+const log = Debug("plum:router")
 
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- TYPES -------------------------------------- */
@@ -95,10 +102,10 @@ function transformRegular(controller: ClassReflection, method: FunctionReflectio
     }
 }
 
-export function transformController(object: ClassReflection | Class<any>) {
+export function transformController(object: ClassReflection | Class) {
     const controller = typeof object === "function" ? reflect(object) : object
     if (!controller.name.toLowerCase().endsWith("controller")) return []
-    return <RouteInfo[]>(controller.methods || []).map(method => {
+    return controller.methods.map(method => {
         //first priority is decorator
         if (method.decorators.some((x: IgnoreDecorator | RouteDecorator) => x.name == "Ignore" || x.name == "Route"))
             return transformRouteDecorator(controller, method)
@@ -106,7 +113,7 @@ export function transformController(object: ClassReflection | Class<any>) {
             return transformRegular(controller, method)
     })
         //ignore undefined
-        .filter(x => Boolean(x))
+        .filter(x => Boolean(x)) as RouteInfo[]
 }
 
 export async function transformModule(path: string): Promise<RouteInfo[]> {
@@ -126,16 +133,37 @@ export async function transformModule(path: string): Promise<RouteInfo[]> {
 }
 
 /* ------------------------------------------------------------------------------- */
-/* --------------------------------------- ROUTER -------------------------------- */
+/* ------------------------------- ROUTER ---------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-export function router(info: RouteInfo, handler: (context: Context, next: () => Promise<any>) => Promise<void>) {
-    return async (context: Context, next: () => Promise<any>) => {
-        const regexp = Ptr(info.url)
-        if(regexp.test(context.path) && context.method.toLowerCase() == info.method){
-            await handler(context, next)
+function checkUrlMatch(route: RouteInfo, ctx: Context) {
+    const keys: Ptr.Key[] = []
+    const regexp = Ptr(route.url, keys)
+    const match = regexp.exec(ctx.path)
+    return { keys, match, method: route.method.toUpperCase(), route }
+}
+
+export function router(infos: RouteInfo[], config: Configuration, handler: (ctx: Context) => Promise<void>) {
+    return async (ctx: Context, next: () => Promise<void>) => {
+        const match = infos.map(x => checkUrlMatch(x, ctx))
+            .find(x => Boolean(x.match) && x.method == ctx.method)
+        if (match) {
+            log(`[Router] Match route ${b(match.route.method)} ${b(match.route.url)} with ${b(ctx.method)} ${b(ctx.path)}`)
+            //assign config and route to context
+            Object.assign(ctx, { config, route: match.route })
+            //add query
+            const query = match.keys.reduce((a, b, i) => {
+                a[b.name.toString().toLowerCase()] = match.match![i + 1]
+                return a;
+            }, <any>{})
+            log(`[Router] Extracted parameter from url ${b(inspect(query, false, null))}`)
+            Object.assign(ctx.query, query)
+            await handler(ctx)
         }
-        else next()
+        else {
+            log(`[Router] Not route match ${b(ctx.method)} ${b(ctx.url)}`)
+            await next()
+        }
     }
 }
 
@@ -143,7 +171,6 @@ export function router(info: RouteInfo, handler: (context: Context, next: () => 
 /* --------------------------- ANALYZER FUNCTION --------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-const log = Debug("plum:analyzer")
 
 function backingParameterTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     const ids = route.url.split("/")
@@ -212,15 +239,21 @@ export function analyzeRoutes(routes: RouteInfo[]) {
     return routes.map(x => analyzeRoute(x, tests, routes))
 }
 
-
-function printTestResult({ route, issues }: TestResult) {
-    const method = StringUtil.padRight(route.method.toUpperCase(), 5)
-    const action = getActionName(route)
-    log(`${action}`)
-    log(`${method} ${route.url}`)
-    issues.forEach(x => log(` - ${x.type} ${x!.message}`))
-}
-
 export function printAnalysis(results: TestResult[]) {
-    results.forEach(x => printTestResult(x))
+    const data = results.map(x => {
+        const method = StringUtil.padRight(x.route.method.toUpperCase(), 5)
+        const action = getActionName(x.route)
+        const issues = x.issues.map(issue => ` - ${issue.type} ${issue!.message}`)
+        return { method, url: x.route.url, action, issues }
+    })
+    data.forEach((x, i) => {
+        const action = StringUtil.padRight(x.action, Math.max(...data.map(x => x.action.length)))
+        const method = StringUtil.padRight(x.method, Math.max(...data.map(x => x.method.length)))
+        const url = StringUtil.padRight(x.url, Math.max(...data.map(x => x.url.length)))
+        const issueColor = (issue: string) => issue.startsWith(" - warning") ? chalk.yellow(issue) : chalk.red(issue)
+        const color = x.issues.length == 0 ? (x: string) => x :
+            x.issues.some(x => x.startsWith(" - warning")) ? chalk.yellow : chalk.red
+        console.log(color(`${i + 1}. ${action} -> ${method} ${url}`))
+        x.issues.forEach(issue => console.log(issueColor(issue)))
+    })
 }

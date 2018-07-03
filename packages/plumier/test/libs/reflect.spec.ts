@@ -1,13 +1,8 @@
-import { reflect, ObjectReflection, getConstructorParameters, getParameterNames, DESIGN_PARAMETER_TYPE } from "../../src/libs/reflect";
-import * as Path from "path"
-import { inspect } from 'util';
-import { AnimalController } from '../application/controller/basic-controller';
-import { AnimalClass } from './reflect.mocks';
+import * as Path from "path";
+
+import { getConstructorParameters, getParameterNames, ObjectReflection, reflect } from "../../src/libs/reflect";
 
 describe("getParameterNames", () => {
-    it("Test", () => {
-        const meta = Reflect.getMetadata(DESIGN_PARAMETER_TYPE, AnimalClass.prototype, "myMethod")
-    })
     it("Should parse constructor parameter", () => {
         function MyFunction(one: number, two: number, three: number) { }
         expect(getParameterNames(MyFunction)).toEqual(["one", "two", "three"])

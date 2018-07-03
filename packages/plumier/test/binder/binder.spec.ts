@@ -3,7 +3,6 @@ import { Request } from "koa";
 import { bindParameter } from "../../src/binder";
 import { reflect } from "../../src/libs/reflect";
 import { bind, route } from '../../src';
-import { model } from '../../src/framework';
 
 function request(opt?: Partial<Request>): Request {
     return <Request>{ body: { name: "The Body" }, ...opt }
@@ -129,7 +128,6 @@ describe("Parameter Binder", () => {
 
     describe("Model Binder", () => {
         it("Should bind model on post method", () => {
-            @model()
             class AnimalModel {
                 constructor(
                     public id: string,
@@ -149,7 +147,6 @@ describe("Parameter Binder", () => {
         })
 
         it("Should bind model on put method", () => {
-            @model()
             class AnimalModel {
                 constructor(
                     public id: string,
@@ -170,7 +167,6 @@ describe("Parameter Binder", () => {
         })
 
         it("Should not bind model if parameter decorated with other binding", () => {
-            @model()
             class AnimalModel {
                 constructor(
                     public id: string,

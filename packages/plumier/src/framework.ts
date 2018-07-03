@@ -1,15 +1,17 @@
+import Cors from "@koa/cors";
+import Chalk from "chalk";
 import { IncomingHttpHeaders } from "http";
 import Koa, { Context, Request } from "koa";
 import BodyParser from "koa-bodyparser";
 
 import { ClassReflection, decorateClass, decorateMethod, decorateParameter, FunctionReflection } from "./libs/reflect";
 
-
 export type HttpMethod = "post" | "get" | "put" | "delete"
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>
-export type TypeConverter = { [typeName: string]: (value: any) => any }
+export type TypeConverter = { [typeName: string]: (value: any, type: Class) => any }
 export type RequestPart = keyof Request
 export type HeaderPart = keyof IncomingHttpHeaders
+export type Class = new (...args: any[]) => any
 
 export interface BindingDecorator {
     type: "ParameterBinding",
@@ -51,12 +53,41 @@ export interface DependencyResolver {
 
 export interface Configuration {
     mode: "debug" | "production"
+
+    /**
+     * Specify the rootPath of the application, default is process.cwd()
+     */
     rootPath: string
+
+    /**
+     * Specify controller path, default to "./controller" relative to {@link rootPath}
+     */
     controllerPath: string
-    modelPath: string
+
+    /**
+     * Set custom dependency resolver for dependency injection
+     */
     dependencyResolver: DependencyResolver,
-    converters?: TypeConverter
+
+    /**
+     * Define default response status for method type get/post/put/delete, default 200
+    ```
+    responseStatus: { post: 201, put: 204, delete: 204 }
+    ```
+    */
+    responseStatus?: Partial<{ [key in HttpMethod]: number }>
+
+    /**
+     * Set custom converters for parameter binding
+    ```
+    converters: {
+        AnimalModel: (value:any, type:Function) => new AnimalModel(value)
+    }
+    ```
+     */
+    converters?: TypeConverter,
 }
+
 
 export interface PlumierConfiguration extends Configuration {
     middleware: Middleware[]
@@ -160,6 +191,9 @@ export function hasKeyOf<T>(opt: any, key: string): opt is T {
     return key in opt;
 }
 
+export function b(msg:any){
+    return Chalk.blue(msg)
+}
 
 export namespace Middleware {
     export function fromKoa(middleware: KoaMiddleware): Middleware {
@@ -208,10 +242,48 @@ export class ActionResult {
     }
 }
 
-
+/**
+ * Preset configuration for building web api. This facility contains:
+ * 
+ * body parser: koa-bodyparser
+ * 
+ * generic error handler
+ * 
+ * cors: @koa/cors
+ */
 export class WebApiFacility implements Facility {
-    async setup({ koa }: Readonly<PlumierApplication>) {
-        koa.use(BodyParser())
+    async setup(app: Readonly<PlumierApplication>) {
+        app.koa.use(BodyParser())
+        app.koa.use(async (ctx, next) => {
+            try {
+                await next()
+            }
+            catch (e) {
+                if (e instanceof HttpStatusError)
+                    ctx.throw(e.message, e.status)
+                else ctx.throw(e, 500)
+                console.log(e)
+            }
+        })
+        app.koa.use(Cors())
+    }
+}
+
+/**
+ * Preset configuration for building restful style api. This facility contains:
+ * 
+ * body parser: koa-bodyparser
+ * 
+ * generic error handler
+ * 
+ * cors: @koa/cors
+ * 
+ * default response status: { get: 200, post: 201, put: 204, delete: 204 }
+ */
+export class RestfulApiFacility extends WebApiFacility {
+    async setup(app: Readonly<PlumierApplication>) {
+        super.setup(app)
+        app.set({ responseStatus: { post: 201, put: 204, delete: 204 } })
     }
 }
 
@@ -351,7 +423,7 @@ export class RouteDecoratorImpl {
      * @param url url override
      */
     get(url?: string) { return this.decorateRoute("get", url) }
-    
+
     /**
      * Mark method as PUT method http handler
      ```
@@ -380,7 +452,7 @@ export class RouteDecoratorImpl {
      * @param url url override
      */
     put(url?: string) { return this.decorateRoute("put", url) }
-    
+
     /**
      * Mark method as DELETE method http handler
      ```
@@ -409,7 +481,7 @@ export class RouteDecoratorImpl {
      * @param url url override
      */
     delete(url?: string) { return this.decorateRoute("delete", url) }
-    
+
     /**
      * Override controller name on route generation
      ```
@@ -460,30 +532,13 @@ export namespace middleware {
             if (args.length == 1) {
                 decorateClass(value)(args[0])
             }
-            else if (args.length == 3) {
+            else {
                 decorateMethod(value)(args[0], args[1])
             }
         }
     }
 }
 
-/**
- * Mark model for parameter binding and validation. 
- * Binding system uses constructor property to retrieve model properties
- * 
- ```
-    @model()
-    class AnimalModel {
-        constructor(
-            public id:number,
-            public name:string,
-        ){}
-    }
- ```
- */
-export function model() {
-    return decorateClass({ type: "Model" })
-}
 
 /* ------------------------------------------------------------------------------- */
 /* -------------------------------- CONSTANTS ------------------------------------ */
@@ -492,7 +547,7 @@ export function model() {
 export namespace errorMessage {
     //PLUM1XXX User configuration error
     export const RouteDoesNotHaveBackingParam = "PLUM1000: Route parameters ({0}) doesn't have appropriate backing parameter"
-    export const ActionDoesNotHaveTypeInfo = "PLUM1001: Action doesn't contains design type information, automatic type conversion will be skipped"
+    export const ActionDoesNotHaveTypeInfo = "PLUM1001: Action doesn't contains parameter type information, model validation will be skipped"
     export const MultipleDecoratorNotSupported = "PLUM1002: Multiple decorators doesn't supported"
     export const DuplicateRouteFound = "PLUM1003: Duplicate route found in {0}"
     export const ControllerPathNotFound = "PLUM1004: Controller directory {0} not found"

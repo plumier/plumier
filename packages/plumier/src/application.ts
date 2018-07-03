@@ -1,6 +1,8 @@
+import Debug from "debug";
 import { existsSync } from "fs";
 import Koa, { Context } from "koa";
 import { join } from "path";
+import { inspect } from "util";
 
 import { bindParameter } from "./binder";
 import {
@@ -8,20 +10,21 @@ import {
     Application,
     Configuration,
     DefaultDependencyResolver,
-    DependencyResolver,
     errorMessage,
     Facility,
+    hasKeyOf,
     Invocation,
     KoaMiddleware,
     Middleware,
     PlumierApplication,
     PlumierConfiguration,
-    RouteInfo,
     StringUtil,
-    hasKeyOf,
+    b,
 } from "./framework";
-import { analyzeRoutes, printAnalysis, router, transformModule, extractDecorators } from "./router";
+import { analyzeRoutes, extractDecorators, printAnalysis, router, transformModule } from "./router";
 
+
+const log = Debug("plum:app")
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- INVOCATIONS ----------------------------------- */
@@ -35,16 +38,22 @@ export class MiddlewareInvocation implements Invocation {
 }
 
 export class ActionInvocation implements Invocation {
-    constructor(public context: Context, private resolver: DependencyResolver) { }
+    constructor(public context: Context) { }
     async proceed(): Promise<ActionResult> {
-        const { request, route } = this.context
-        const controller: any = this.resolver.resolve(route.controller.object)
-        const parameters = bindParameter(request, route.action, this.context.config.converters)
+        const { request, route, config } = this.context
+        const controller: any = config.dependencyResolver.resolve(route.controller.object)
+        const parameters = bindParameter(request, route.action, config.converters)
         const result = (<Function>controller[route.action.name]).apply(controller, parameters)
-        if (result instanceof ActionResult) return Promise.resolve(result);
+        const status = config.responseStatus && config.responseStatus[route.method] || 200
+        if (result instanceof ActionResult) {
+            result.status = result.status || status
+            log(`[Action Invocation] Method: ${b(route.method)} Status config: ${b(inspect(config.responseStatus, false, null))} Status: ${b(result.status)} `)        
+            return Promise.resolve(result);
+        }
         else {
             const awaitedResult = await Promise.resolve(result)
-            return new ActionResult(awaitedResult)
+            log(`[Action Invocation] Method: ${route.method} Status config: ${b(inspect(config.responseStatus, false, null))} Status: ${b(status)} `)        
+            return new ActionResult(awaitedResult, status)
         }
     }
 }
@@ -62,14 +71,15 @@ export function pipe(middleware: Middleware[], context: Context, invocation: Inv
 /* --------------------------- REQUEST HANDLER ----------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function routeHandler(route: RouteInfo, config: Configuration) {
-    return async (ctx: Context) => {
-        const controllerMiddleware = extractDecorators(route)
-        Object.assign(ctx, { config, route })
-        const pipeline = pipe(controllerMiddleware, ctx, new ActionInvocation(ctx, config.dependencyResolver))
-        const result = await pipeline.proceed()
-        result.execute(ctx)
-    }
+async function requestHandler(ctx:Context){
+    const controllerMiddleware = extractDecorators(ctx.route)
+    const pipeline = pipe(controllerMiddleware, ctx, new ActionInvocation(ctx))
+    const result = await pipeline.proceed()
+    result.execute(ctx)
+    log(`[Request Handler] ${b(ctx.path)} -> ${b(ctx.route.controller.name)}.${b(ctx.route.action.name)}`)
+    log(`[Request Handler] Request Query: ${b(inspect(ctx.query, false, null))}`)
+    log(`[Request Handler] Request Header: ${b(inspect(ctx.headers, false, null))}`)
+    log(`[Request Handler] Request Body: ${b(inspect(result.body, false, null))}`)
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -89,13 +99,11 @@ export class Plumier implements PlumierApplication {
             facilities: [],
             rootPath: process.cwd(),
             controllerPath: "./controller",
-            modelPath: "./model",
             dependencyResolver: new DefaultDependencyResolver()
         }
     }
 
     use(option: KoaMiddleware): Application
-
     use(option: Middleware): Application
     use(option: KoaMiddleware | Middleware): Application {
         if (typeof option === "function") {
@@ -108,7 +116,6 @@ export class Plumier implements PlumierApplication {
     }
 
     set(facility: Facility): Application
-
     set(config: Partial<Configuration>): Application
     set(config: Partial<Configuration> | Facility): Application {
         if (hasKeyOf<Facility>(config, "setup"))
@@ -126,7 +133,7 @@ export class Plumier implements PlumierApplication {
             const routes = await transformModule(controllerPath)
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
             await Promise.all(this.config.facilities.map(x => x.setup(this)))
-            routes.forEach(route => this.koa.use(router(route, routeHandler(route, this.config))))
+            this.koa.use(router(routes, this.config, requestHandler))
             return this.koa
         }
         catch (e) {

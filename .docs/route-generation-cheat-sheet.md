@@ -78,7 +78,7 @@ PUT    /animal/:id
 DELETE /animal/:id
 ```
 
-### Controller With Controller Name Override
+### Controller Name Override
 ```typescript
 @route.root("/beast")
 export class AnimalController {
@@ -91,7 +91,7 @@ GET /beast/get?id=<number>
 GET /beast/list?last=<number>&limit=<number>
 ```
 
-### Controller With Controller Name Override and Relative Override
+### Controller Name Override and Relative Override
 ```typescript
 @route.root("/beast")
 export class AnimalController {
@@ -131,66 +131,4 @@ GET    category/:type/animal
 POST   category/:type/animal
 PUT    category/:type/animal/:id
 DELETE category/:type/animal/:id
-```
-
-### Model Binding
-
-```typescript
-//./model
-@model()
-export class AnimalModel{
-    constructor(
-        public id:string,
-        public name:string
-    ){}
-}
-
-//./controller
-export class AnimalController {
-    @route.post()
-    save(animal:AnimalModel){}
-}
-```
-```
-POST /animal/save
-payload body automatically assigned to animal parameter
-```
-
-### Bind Request
-
-```typescript
-export class AnimalController {
-    @route.post()
-    save(@bind.request() req:Request){}
-}
-```
-```
-POST /animal/save
-req parameter automatically populated with request
-```
-
-### Bind Part of Request
-
-```typescript
-export class AnimalController {
-    @route.post()
-    save(@bind.request("params") params:any){}
-}
-```
-```
-POST /animal/save
-params parameter automatically populated with params
-```
-
-### Bind Part of Request
-
-```typescript
-export class AnimalController {
-    @route.post()
-    save(@bind.request("params") params:any){}
-}
-```
-```
-POST /animal/save
-params parameter automatically populated with params
 ```
