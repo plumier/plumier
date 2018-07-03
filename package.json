@@ -2,6 +2,7 @@
 	"name": "plumier",
 	"description": "A testing friendly Web API framework",
 	"scripts": {
+		"postinstall": "tsc",
 		"test": "jest",
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish"
 	},
