@@ -16,6 +16,7 @@ import {
     Class,
     Configuration,
     b,
+    Middleware,
 } from "./framework";
 import { ClassReflection, FunctionReflection, reflect, Reflection } from "./libs/reflect";
 import { inspect } from 'util';
@@ -44,7 +45,7 @@ export function getControllerRoute(controller: ClassReflection) {
     return (root && root.url) || `/${striveController(controller.name)}`
 }
 
-export function extractDecorators(route: RouteInfo) {
+export function extractDecorators(route: RouteInfo):Middleware[] {
     const classDecorator: MiddlewareDecorator[] = route.controller.decorators.filter(x => x.name == "Middleware")
     const methodDecorator: MiddlewareDecorator[] = route.action.decorators.filter(x => x.name == "Middleware")
     const extract = (d: MiddlewareDecorator[]) => d.map(x => x.value).reduce((a, b) => a.concat(b), [])

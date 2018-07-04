@@ -5,3 +5,4 @@ yarn-error.log
 *.js.map
 .DS_Store
 !jest.config.js
+lerna-debug.log
