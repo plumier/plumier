@@ -186,6 +186,45 @@ describe("Parameter Binder", () => {
         })
     })
 
+    describe("Array Binder", () => {
+        it("Should bind array of number", () => {
+            class AnimalController {
+                @route.post()
+                saveAnimal(@bind.array(Number) model: number[]) { }
+            }
+            const metadata = reflect(AnimalController)
+            const result = bindParameter(request({ query: {}, body: ["1", "2", "3"] }), metadata.methods[0])
+            expect(result[0]).toEqual([1, 2, 3])
+        })
+        it("Should bind array of model", () => {
+            @model()
+            class AnimalModel {
+                constructor(
+                    public id: number,
+                    public name: string
+                ) { }
+            }
+
+            class AnimalController {
+                @route.post()
+                saveAnimal(@bind.array(AnimalModel) model: AnimalModel[]) { }
+            }
+
+            const metadata = reflect(AnimalController)
+            const result = bindParameter(request({ query: {}, body: [
+                {id: "123", name: "Mimi"},
+                {id: "123", name: "Mimi"},
+                {id: "123", name: "Mimi"}
+            ] }), metadata.methods[0])
+            expect(result[0]).toEqual([
+                {id: 123, name: "Mimi"},
+                {id: 123, name: "Mimi"},
+                {id: 123, name: "Mimi"}
+            ])
+
+        })
+    })
+
     describe("Converter", () => {
         it("If parameters metadata not provided should keep '123' using string", () => {
             class AnimalController {

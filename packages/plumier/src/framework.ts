@@ -16,8 +16,14 @@ export type TypeConverter = ([Function, ValueConverter])[]
 
 export interface BindingDecorator {
     type: "ParameterBinding",
-    name: "Request" | "Body" | "Header" | "Query",
+    name: "Request" | "Body" | "Header" | "Query" | "Array",
     part?: RequestPart
+}
+
+export interface ArrayBindingDecorator {
+    type: "ParameterBinding",
+    name: "Array",
+    typeAnnotation:Class
 }
 
 export interface RouteDecorator { name: "Route", method: HttpMethod, url?: string }
@@ -372,6 +378,16 @@ export namespace bind {
      */
     export function query(name?: string) {
         return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", name: "Query", part: name })
+    }
+
+    /**
+     * Bind array of type
+     * 
+     *     method(@bind.array(AnimalModel) query:AnimalModel[]){}
+     * @param type Type of item
+     */
+    export function array(type:Class){
+        return decorateParameter(<ArrayBindingDecorator>{type: "ParameterBinding", name: "Array", typeAnnotation: type})
     }
 }
 

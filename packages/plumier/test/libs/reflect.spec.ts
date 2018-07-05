@@ -1,6 +1,7 @@
 import * as Path from "path";
 
-import { getConstructorParameters, getParameterNames, ObjectReflection, reflect, decorateClass } from "../../src/libs/reflect";
+import { getConstructorParameters, getParameterNames, ObjectReflection, reflect, decorateClass, decorateParameter } from "../../src/libs/reflect";
+import { inspect } from 'util';
 
 describe("getParameterNames", () => {
     it("Should parse constructor parameter", () => {
@@ -277,15 +278,15 @@ describe("Type Introspection", () => {
         expect(result).toEqual({
             type: 'Class',
             ctorParameters: [
-                { type: 'Parameter', name: 'id', decorators: [], typeAnnotation:undefined },
-                { type: 'Parameter', name: 'name', decorators: [], typeAnnotation:undefined }
+                { type: 'Parameter', name: 'id', decorators: [], typeAnnotation: undefined },
+                { type: 'Parameter', name: 'name', decorators: [], typeAnnotation: undefined }
             ],
             name: 'AnimalClass',
             methods:
                 [{
                     type: 'Function',
                     name: 'setClient',
-                    parameters: [{ type: 'Parameter', name: 'client', decorators: [], typeAnnotation:undefined }],
+                    parameters: [{ type: 'Parameter', name: 'client', decorators: [], typeAnnotation: undefined }],
                     decorators: []
                 },
                 {
@@ -301,14 +302,16 @@ describe("Type Introspection", () => {
 })
 
 
-describe("Property Reflection", () => {
-    it("Should reflect property", () => {
-        @decorateClass({})
+describe("Constructor Property Reflection", () => {
+    it("Should able to decorate constructor parameter", () => {
         class AnimalClass {
             constructor(
-                public id:number,
-                public name:string,
-            ){}
+                @decorateParameter({ value: "ID" })
+                public id: number,
+                public name: string,
+            ) { }
         }
+        const result = reflect(AnimalClass)
+        expect(result.ctorParameters[0].decorators[0]).toEqual({ value: "ID" })
     })
 })

@@ -72,9 +72,10 @@ function getType(object: any) {
 
 export function decorateParameter(data: any) {
     return (target: any, name: string, index: number) => {
+        const isCtorParam = isConstructor(target)
         const decorators: Decorator[] = Reflect.getMetadata(DECORATOR_KEY, target.constructor) || []
-        decorators.push(<ParameterDecorator>{ targetType: "Parameter", target: name, targetIndex: index, value: data })
-        Reflect.defineMetadata(DECORATOR_KEY, decorators, target.constructor)
+        decorators.push(<ParameterDecorator>{ targetType: "Parameter", target: isCtorParam ? "constructor" : name, targetIndex: index, value: data })
+        Reflect.defineMetadata(DECORATOR_KEY, decorators, isCtorParam ? target : target.constructor)
     }
 }
 
@@ -117,7 +118,8 @@ function decorateReflection(decorators: Decorator[], reflection: ClassReflection
     return <ClassReflection>{
         ...reflection,
         decorators: decorators.filter(x => x.targetType == "Class" && x.target == reflection.name).map(x => ({ ...x.value })),
-        methods: reflection.methods.map(x => toFunction(x))
+        methods: reflection.methods.map(x => toFunction(x)),
+        ctorParameters: reflection.ctorParameters.map((x, i) => toParameter("constructor", i, x))
     }
 }
 
@@ -148,7 +150,7 @@ function reflectClass(fn: Class): ClassReflection {
         .map(x => reflectMethod(fn, fn.prototype[x]))
     const ctorParameters = reflectConstructorParameters(fn)
     const decorators = getDecorators(fn)
-    const reflct:ClassReflection = {
+    const reflct: ClassReflection = {
         type: "Class",
         ctorParameters,
         name: fn.name, methods,

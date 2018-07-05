@@ -1,6 +1,7 @@
-import { decorateClass } from "../../src/libs/reflect";
+import { decorateClass, reflect } from "../../src/libs/reflect";
 import { convert, flattenConverters, DefaultConverterList } from '../../src/binder';
-import { TypeConverter } from '../../src';
+import { TypeConverter, model, bind } from '../../src';
+import { inspect } from 'util';
 
 
 describe("Converter", () => {
@@ -73,7 +74,7 @@ describe("Converter", () => {
         })
     })
 
-    describe("Object Converter", () => {
+    describe("Model Converter", () => {
         it("Should convert properties based on constructor properties", () => {
             @decorateClass({})
             class AnimalClass {
@@ -140,7 +141,7 @@ describe("Converter", () => {
                 ) { }
             }
 
-            const result:AnimalClass = convert({
+            const result: AnimalClass = convert({
                 id: "200",
                 name: "Mimi",
                 deceased: "ON",
@@ -153,23 +154,84 @@ describe("Converter", () => {
             }, AnimalClass, flattenConverters(DefaultConverterList))
             expect(result).toBeInstanceOf(AnimalClass)
             expect(result.owner).toBeInstanceOf(ClientClass)
-            expect(result).toEqual({ 
-                birthday: new Date("2018-1-1"), 
-                deceased: true, 
-                id: 200, 
+            expect(result).toEqual({
+                birthday: new Date("2018-1-1"),
+                deceased: true,
+                id: 200,
                 name: "Mimi",
                 owner: {
                     id: 400,
                     name: "John Doe",
                     join: new Date("2015-1-1")
                 }
-             })
+            })
+        })
+    })
+
+    describe("Array Converter", () => {
+        it("Should convert array", () => {
+            const result = convert(["123", "123", "123"], Number, flattenConverters(DefaultConverterList))
+            expect(result).toEqual([123, 123, 123])
+        })
+        it("Should convert array of model", () => {
+            @model()
+            class AnimalClass {
+                constructor(
+                    public id: number,
+                    public name: string,
+                    public deceased: boolean,
+                    public birthday: Date
+                ) { }
+            }
+            const result = convert([
+                { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" },
+                { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" },
+                { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }
+            ], AnimalClass, flattenConverters(DefaultConverterList))
+            expect(result).toEqual([
+                { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi" },
+                { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi" },
+                { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi" }
+            ])
+        })
+
+        it.only("Should convert nested array inside model", () => {
+            @model()
+            class TagModel {
+                constructor(
+                    public id: number,
+                    public name: string,
+                ) { }
+            }
+            @model()
+            class AnimalClass {
+                constructor(
+                    public id: number,
+                    public name: string,
+                    public deceased: boolean,
+                    public birthday: Date,
+                    @bind.array(TagModel)
+                    public tags: TagModel[]
+                ) { }
+            }
+            const result = convert([
+                { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] },
+                { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] },
+                { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] }
+            ], AnimalClass, flattenConverters(DefaultConverterList))
+            expect(result).toEqual([
+                { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi", tags: [{ id: 300, name: "Tug" }] },
+                { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi", tags: [{ id: 300, name: "Tug" }] },
+                { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi", tags: [{ id: 300, name: "Tug" }] }
+            ])
         })
     })
 
     describe("Custom Converter", () => {
-        const converters:TypeConverter = [[Boolean, x => "Custom Boolean" ]]
-        const result = convert("TRUE", Boolean, flattenConverters(converters))
-        expect(result).toBe("Custom Boolean")
+        it("Should able to use custom converter", () => {
+            const converters: TypeConverter = [[Boolean, x => "Custom Boolean"]]
+            const result = convert("TRUE", Boolean, flattenConverters(converters))
+            expect(result).toBe("Custom Boolean")
+        })
     })
 })
