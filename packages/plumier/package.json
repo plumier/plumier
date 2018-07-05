@@ -12,6 +12,9 @@
     "JSON Service",
     "TDD"
   ],
+  "scripts": {
+    "compile": "tsc -p tsconfig.build.json"
+  },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
