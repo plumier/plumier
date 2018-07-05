@@ -72,11 +72,11 @@ function isCustomClass(type: Function) {
     }
 }
 
-function bindModel(action: FunctionReflection, request: Request, par: ParameterReflection): object | undefined {
+function bindModel(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): object | undefined {
     if (!par.typeAnnotation) return
     if (!isCustomClass(par.typeAnnotation)) return
     log(`[Model Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Parameter Type: ${b(par.typeAnnotation.name)}`)
-    return request.body as object
+    return converter(request.body as object)
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -84,7 +84,7 @@ function bindModel(action: FunctionReflection, request: Request, par: ParameterR
 /* ------------------------------------------------------------------------------- */
 
 
-function bindDecorator(action: FunctionReflection, request: Request, par: ParameterReflection): object | string | undefined {
+function bindDecorator(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): object | string | undefined {
     const decorator: BindingDecorator = par.decorators.find((x: BindingDecorator) => x.type == "ParameterBinding")
     if (!decorator) return
     log(`[Decorator Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Decorator: ${b(decorator.name)} Part: ${b(decorator.part)}`)
@@ -104,9 +104,9 @@ function bindDecorator(action: FunctionReflection, request: Request, par: Parame
 /* -------------------------- REGULAR PARAMETER BINDER --------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function bindRegular(action: FunctionReflection, request: Request, par: ParameterReflection): object | undefined {
+function bindRegular(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): object | undefined {
     log(`[Regular Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Value: ${b(request.query[par.name])}`)
-    return request.query[par.name.toLowerCase()]
+    return converter(request.query[par.name.toLowerCase()])
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -116,12 +116,9 @@ function bindRegular(action: FunctionReflection, request: Request, par: Paramete
 export function bindParameter(request: Request, action: FunctionReflection, converter?: TypeConverter) {
     const mergedConverters = flattenConverters(DefaultConverterList.concat(converter || []))
     return action.parameters.map(x => {
-        //decorator binding should not converted
-        const decoratorBinding = bindDecorator(action, request, x)
-        if (decoratorBinding) return decoratorBinding
-        else {
-            const result = bindModel(action, request, x) || bindRegular(action, request, x)
-            return convert(result, x.typeAnnotation, mergedConverters)
-        }
+        const converter = (result: any) => convert(result, x.typeAnnotation, mergedConverters)
+        return bindDecorator(action, request, x, converter) ||
+            bindModel(action, request, x, converter) ||
+            bindRegular(action, request, x, converter)
     })
 }
