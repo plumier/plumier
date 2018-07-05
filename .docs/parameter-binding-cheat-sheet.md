@@ -1,5 +1,7 @@
 # Parameter Binding Cheat Sheet
 
+Parameter binding will automatically bind provided query string / form body into action parameter. 
+
 > To be able to make parameter binding work properly Plumier need TypeScript design type information, by providing any decorator on the appropriate action. Use `@route` decorator is best practice to make data binding work properly
 
 ### Number
@@ -140,5 +142,37 @@ AnimalModel {
 ```
 
 ### Array Binding
-Array binding will use regular binding, no further conversion will be done on the array item due to TypeScript [design type emit limitation](https://github.com/Microsoft/TypeScript/issues/12463)
+Array binding a little bit different due to TypeScript [design type emit limitation](https://github.com/Microsoft/TypeScript/issues/12463).
+
+Plumier provided `@bind.array(TypeName)` to give prover type conversion for parameter binding.
+
+```typescript
+@model() 
+class AnimalModel {
+    constructor(
+        public id:number
+        public name:string
+        public deceased:boolean
+        public birthday:Date
+    ){}
+}
+
+export class AnimalController {
+    @route.post()
+    save(@bind.array(AnimalModel) model:AnimalModel[]){}
+}
+```
+```
+POST /animal/save
+JSON Payload: [{ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }]
+Result: 
+[{
+    id: 200,
+    name: "Mimi",
+    deceased: true,
+    birthday: Date //equals to new Date(2018,1,1)
+}]
+```
+
+
 
