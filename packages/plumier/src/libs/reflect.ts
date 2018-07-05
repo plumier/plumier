@@ -1,19 +1,29 @@
-//version   1.2.0
+//version   1.2.1
 //github    https://github.com/ktutnik/my-own-reflect
 import "reflect-metadata";
+
+/*
+version history:
+1.3.0: added property reflection
+1.2.0: added decorator reflection
+1.1.0: 
+1.0.0: initial 
+
+*/
 
 /* ---------------------------------------------------------------- */
 /* --------------------------- TYPES ------------------------------ */
 /* ---------------------------------------------------------------- */
 type Class = new (...arg: any[]) => any
-export type ReflectionType = "Object" | "Function" | "Parameter" | "Class" | "Method"
+//export type ReflectionType = "Object" | "Function" | "Parameter" | "Class" | "Method" | "Property"
 export interface Decorator { targetType: "Method" | "Class" | "Parameter", target: string, value: any }
 export interface ParameterDecorator extends Decorator { targetType: "Parameter", targetIndex: number }
-export interface Reflection { type: ReflectionType, name: string }
-export interface ParameterReflection extends Reflection { type: "Parameter", decorators: any[], typeAnnotation?: any }
-export interface FunctionReflection extends Reflection { type: "Function", parameters: ParameterReflection[], decorators: any[] }
-export interface ClassReflection extends Reflection { type: "Class", ctorParameters: ParameterReflection[], methods: FunctionReflection[], decorators: any[], object: Class }
-export interface ObjectReflection extends Reflection { type: "Object", members: Reflection[] }
+export type Reflection = ParameterReflection | FunctionReflection | ClassReflection | ObjectReflection
+export interface ReflectionBase { type: string, name: string }
+export interface ParameterReflection extends ReflectionBase { type: "Parameter", decorators: any[], typeAnnotation?: any }
+export interface FunctionReflection extends ReflectionBase { type: "Function", parameters: ParameterReflection[], decorators: any[] }
+export interface ClassReflection extends ReflectionBase { type: "Class", ctorParameters: ParameterReflection[], methods: FunctionReflection[], decorators: any[], object: Class }
+export interface ObjectReflection extends ReflectionBase { type: "Object", members: Reflection[] }
 
 export const DECORATOR_KEY = "plumier.key:DECORATOR"
 export const DESIGN_PARAMETER_TYPE = "design:paramtypes"
@@ -21,7 +31,8 @@ export const DESIGN_PARAMETER_TYPE = "design:paramtypes"
 /* ---------------------------------------------------------------- */
 /* --------------------------- HELPERS ---------------------------- */
 /* ---------------------------------------------------------------- */
- 
+
+
 //logic from https://github.com/goatslacker/get-parameter-names
 function cleanUp(fn: string) {
     return fn
@@ -51,7 +62,7 @@ function isConstructor(value: Function) {
     return value.toString().indexOf("class") == 0
 }
 
-function getType(object: any): ReflectionType {
+function getType(object: any) {
     if (typeof object === "function") {
         if (isConstructor(object)) return "Class"
         else return "Function"
@@ -111,7 +122,7 @@ function decorateReflection(decorators: Decorator[], reflection: ClassReflection
 }
 
 function reflectParameter(name: string, typeAnnotation?: any): ParameterReflection {
-    return { type: "Parameter", name: name, decorators: [], typeAnnotation }
+    return { type: "Parameter", name, decorators: [], typeAnnotation }
 }
 
 function reflectFunction(fn: Function): FunctionReflection {
@@ -137,7 +148,14 @@ function reflectClass(fn: Class): ClassReflection {
         .map(x => reflectMethod(fn, fn.prototype[x]))
     const ctorParameters = reflectConstructorParameters(fn)
     const decorators = getDecorators(fn)
-    return decorateReflection(decorators, { type: "Class", ctorParameters, name: fn.name, methods, decorators: [], object: fn })
+    const reflct:ClassReflection = {
+        type: "Class",
+        ctorParameters,
+        name: fn.name, methods,
+        decorators: [],
+        object: fn
+    }
+    return decorateReflection(decorators, reflct)
 }
 
 function reflectObject(object: any, name: string = "module"): ObjectReflection {

@@ -1,6 +1,6 @@
 import * as Path from "path";
 
-import { getConstructorParameters, getParameterNames, ObjectReflection, reflect } from "../../src/libs/reflect";
+import { getConstructorParameters, getParameterNames, ObjectReflection, reflect, decorateClass } from "../../src/libs/reflect";
 
 describe("getParameterNames", () => {
     it("Should parse constructor parameter", () => {
@@ -263,6 +263,7 @@ describe("Static Reflection", () => {
         expect(result.type).toEqual("Object")
         expect(result.members!.length).toBeGreaterThan(0)
     })
+
 })
 
 describe("Type Introspection", () => {
@@ -296,5 +297,18 @@ describe("Type Introspection", () => {
             decorators: [],
             object: AnimalClass
         })
+    })
+})
+
+
+describe("Property Reflection", () => {
+    it("Should reflect property", () => {
+        @decorateClass({})
+        class AnimalClass {
+            constructor(
+                public id:number,
+                public name:string,
+            ){}
+        }
     })
 })

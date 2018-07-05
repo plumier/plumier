@@ -1,8 +1,9 @@
 import { Request } from "koa";
 import Debug from "debug"
 
-import { BindingDecorator, RouteDecorator, TypeConverter, Class, b } from "./framework";
-import { FunctionReflection, getDecorators, ParameterReflection } from "./libs/reflect";
+import { BindingDecorator, RouteDecorator, TypeConverter, Class, b, ValueConverter } from "./framework";
+import { FunctionReflection, getDecorators, ParameterReflection, reflect } from "./libs/reflect";
+import { inspect } from 'util';
 
 
 const log = Debug("plum:binder")
@@ -11,29 +12,43 @@ const log = Debug("plum:binder")
 /* ------------------------------- CONVERTER ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function booleanConverter(value: any, type: Class) {
+export function booleanConverter(value: any) {
     return ["on", "true", "1", "yes"].some(x => value.toLocaleLowerCase() == x)
 }
 
-function defaultObjectConverter(value: any, type: Class) {
-    return Object.assign(new type(), value)
+export function dateConverter(value: any) {
+    return new Date(value)
 }
 
-const defaultConverter: TypeConverter = {
-    Number: Number,
-    Boolean: booleanConverter,
-    __CustomClass: defaultObjectConverter
+export function defaultModelConverter(value: any, type: Class, converters: Map<Function, ValueConverter>): any {
+    log(`[Model Converter] converting ${b(inspect(value, false, null))} to ${b(type.name)} `)
+    const reflection = reflect(type)
+    log(`[Model Converter] model info ${b(inspect(reflection.ctorParameters))} `)
+    const sanitized = reflection.ctorParameters.map(x => ({
+        name: x.name,
+        value: convert(value[x.name], x.typeAnnotation, converters)
+    })).reduce((a, b) => { a[b.name] = b.value; return a }, {} as any)
+    log(`[Model Converter] Sanitized value ${b(inspect(sanitized, false, null))}`)
+    return Object.assign(new type(), sanitized)
 }
 
-function convert(value: any, converters?: TypeConverter, type?: Class) {
+export function flattenConverters(converters: [Function, ValueConverter][]) {
+    return converters.reduce((a, b) => { a.set(b[0], b[1]); return a }, new Map<Function, ValueConverter>())
+}
+
+export const DefaultConverterList: [Function, ValueConverter][] = [
+    [Number, Number],
+    [Date, dateConverter],
+    [Boolean, booleanConverter]
+]
+
+export function convert(value: any, type: Class | undefined, converters: Map<Function, ValueConverter>) {
     if (!type) return value
-    const registry: TypeConverter = { ...defaultConverter, ...converters }
-    const converter = registry[type.name]
-    if (converter)
-        return converter(value, type)
+    if (converters && converters.has(type))
+        return converters.get(type)!(value, type, converters)
     //if type of model and has no  converter, use DefaultObject converter
     else if (isCustomClass(type))
-        return registry["__CustomClass"](value, type)
+        return defaultModelConverter(value, type, converters)
     //no converter, return the value
     else
         return value
@@ -50,6 +65,7 @@ function isCustomClass(type: Function) {
         case Array:
         case Number:
         case Object:
+        case Date:
             return false
         default:
             return true
@@ -98,10 +114,14 @@ function bindRegular(action: FunctionReflection, request: Request, par: Paramete
 /* ------------------------------------------------------------------------------- */
 
 export function bindParameter(request: Request, action: FunctionReflection, converter?: TypeConverter) {
+    const mergedConverters = flattenConverters(DefaultConverterList.concat(converter || []))
     return action.parameters.map(x => {
-        const value = bindDecorator(action, request, x)
-            || bindModel(action, request, x)
-            || bindRegular(action, request, x)
-        return convert(value, converter, x.typeAnnotation)
+        //decorator binding should not converted
+        const decoratorBinding = bindDecorator(action, request, x)
+        if (decoratorBinding) return decoratorBinding
+        else {
+            const result = bindModel(action, request, x) || bindRegular(action, request, x)
+            return convert(result, x.typeAnnotation, mergedConverters)
+        }
     })
 }

@@ -8,10 +8,11 @@ import { ClassReflection, decorateClass, decorateMethod, decorateParameter, Func
 
 export type HttpMethod = "post" | "get" | "put" | "delete"
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>
-export type TypeConverter = { [typeName: string]: (value: any, type: Class) => any }
 export type RequestPart = keyof Request
 export type HeaderPart = keyof IncomingHttpHeaders
 export type Class = new (...args: any[]) => any
+export type ValueConverter = (value: any, type: Class, converters: Map<Function, ValueConverter>) => any
+export type TypeConverter = ([Function, ValueConverter])[]
 
 export interface BindingDecorator {
     type: "ParameterBinding",
@@ -58,7 +59,7 @@ export interface Configuration {
     /**
      * Specify controller path or the controller classes array, default to "process.cwd() ./controller" 
      */
-    controller: string | Class []
+    controller: string | Class[]
 
     /**
      * Set custom dependency resolver for dependency injection
@@ -195,7 +196,7 @@ export namespace MiddlewareUtil {
     export function fromKoa(middleware: KoaMiddleware): Middleware {
         return {
             execute: async x => {
-                await middleware(x.context, async () => { 
+                await middleware(x.context, async () => {
                     const nextResult = await x.proceed()
                     nextResult.execute(x.context)
                 })
@@ -205,7 +206,7 @@ export namespace MiddlewareUtil {
     }
     export function toKoa(middleware: Middleware): KoaMiddleware {
         return async (context: Context, next: () => Promise<any>) => {
-            try{
+            try {
                 const result = await middleware.execute({
                     context, proceed: async () => {
                         await next()
@@ -214,10 +215,10 @@ export namespace MiddlewareUtil {
                 })
                 result.execute(context)
             }
-            catch(e){
-                if(e instanceof HttpStatusError)
+            catch (e) {
+                if (e instanceof HttpStatusError)
                     context.throw(e.status, e)
-                else 
+                else
                     context.throw(500, e)
             }
         }
@@ -230,7 +231,7 @@ export namespace MiddlewareUtil {
 
 
 export class ActionResult {
-    static fromContext(ctx:Context){
+    static fromContext(ctx: Context) {
         return new ActionResult(ctx.body, ctx.status)
     }
     private readonly headers: { [key: string]: string } = {}
@@ -549,6 +550,7 @@ export namespace middleware {
     }
 }
 
+export function model() { return decorateClass({}) }
 
 /* ------------------------------------------------------------------------------- */
 /* -------------------------------- CONSTANTS ------------------------------------ */

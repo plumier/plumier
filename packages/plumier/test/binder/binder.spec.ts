@@ -2,7 +2,7 @@ import { Request } from "koa";
 
 import { bindParameter } from "../../src/binder";
 import { reflect } from "../../src/libs/reflect";
-import { bind, route } from '../../src';
+import { bind, route, model } from '../../src';
 
 function request(opt?: Partial<Request>): Request {
     return <Request>{ body: { name: "The Body" }, ...opt }
@@ -128,9 +128,10 @@ describe("Parameter Binder", () => {
 
     describe("Model Binder", () => {
         it("Should bind model on post method", () => {
+            @model()
             class AnimalModel {
                 constructor(
-                    public id: string,
+                    public id: number,
                     public name: string
                 ) { }
             }
@@ -141,9 +142,9 @@ describe("Parameter Binder", () => {
             }
 
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request({ body: { id: 123, name: "Mimi" } }), metadata.methods[0])
+            const result = bindParameter(request({ body: { id: "123", name: "Mimi", other: "MALICIOUS CODE" } }), metadata.methods[0])
             expect(result[0]).toBeInstanceOf(AnimalModel)
-            expect(result[0]).toMatchObject({ id: 123, name: "Mimi" })
+            expect(result[0]).toEqual({ id: 123, name: "Mimi" })
         })
 
         it("Should bind model on put method", () => {
@@ -213,7 +214,7 @@ describe("Parameter Binder", () => {
             const metadata = reflect(AnimalController)
             const normalResult = bindParameter(request({ query: { id: "123" } }), metadata.methods[0])
             expect(normalResult).toEqual([123])
-            const result = bindParameter(request({ query: { id: "123" } }), metadata.methods[0], { Number: convertNumber })
+            const result = bindParameter(request({ query: { id: "123" } }), metadata.methods[0], [[Number, convertNumber]])
             expect(result).toEqual([474747])
         })
 

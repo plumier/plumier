@@ -6,7 +6,8 @@
 		"test": "jest",
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish",
 		"clean": "rimraf packages/**/lib",
-		"canary": "yarn run clean && jest && lerna run compile && lerna publish -c --exact --yes && yarn run clean"
+		"compile": "npm run clean && jest && lerna run compile",
+		"canary": "npm run compile && lerna publish -c --exact --yes && yarn run clean"
 	},
 	"author": "Ketut Sandiarsa",
 	"private": true,
