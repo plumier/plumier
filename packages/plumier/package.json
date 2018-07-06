@@ -1,6 +1,6 @@
 {
   "name": "plumier",
-  "version": "0.1.0-alpha.7335c00b",
+  "version": "0.1.0-alpha.4a612e29",
   "description": "A testing friendly Web API framework",
   "main": "index.js",
   "keywords": [

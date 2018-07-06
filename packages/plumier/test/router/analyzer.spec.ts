@@ -1,4 +1,4 @@
-import { route, model } from "../../src";
+import { route, model, bind } from "../../src";
 import { analyzeRoutes, transformController, printAnalysis } from "../../src/router";
 import { consoleLog } from '../helper';
 import { inspect } from 'util';
@@ -141,7 +141,7 @@ describe("Analyzer", () => {
         }
         class AnimalController {
             @route.post()
-            getAnimal(id:number, model:AnimalModel) { }
+            getAnimal(id:number, model:AnimalModel, @bind.array(AnimalModel) models:AnimalModel[]) { }
         }
         const routeInfo = transformController(AnimalController)
         const analysis = analyzeRoutes(routeInfo)
@@ -206,12 +206,11 @@ describe("Analyzer", () => {
         }
         const routeInfo = transformController(AnimalController)
         const analysis = analyzeRoutes(routeInfo)
-        console.log(inspect(analysis, false, null))
         expect(analysis[0].issues.length).toBe(1)
         expect(analysis[0].issues[0].message).toContain("PLUM1005: TagModel class used in action parameter doesn't contains type information, parameter binding will be skipped")
     })
 
-    it.only("Should identify if array doesn't contains type information", () => {
+    it("Should identify if array doesn't contains type information", () => {
         @model()
         class AnimalModel {
             constructor(public id: number){}
@@ -222,7 +221,6 @@ describe("Analyzer", () => {
         }
         const routeInfo = transformController(AnimalController)
         const analysis = analyzeRoutes(routeInfo)
-        console.log(analysis[0].issues[0].message)
         expect(analysis[0].issues.length).toBe(1)
     })
 

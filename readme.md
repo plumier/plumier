@@ -11,7 +11,7 @@ Pleasant TypeScript Web Api Framework
 * [Parameter binding](.docs/parameter-binding-cheat-sheet.md)
 * [Decorator based route](.docs/route-generation-cheat-sheet.md)
 * Built-in validation
-* Static analysis
+* [Static analysis](.docs/static-analysis-troubleshoot.md)
 
 ## Requirements
 * TypeScript

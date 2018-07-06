@@ -16,6 +16,7 @@
 		"coveralls": "^3.0.1",
 		"jest": "^23.1.0",
 		"lerna": "^2.11.0",
+		"pre-commit": "^1.2.2",
 		"reflect-metadata": "^0.1.12",
 		"rimraf": "^2.6.2",
 		"ts-jest": "^23.0.0",
@@ -25,5 +26,8 @@
 	},
 	"workspaces": [
 		"packages/*"
+	],
+	"pre-commit": [
+		"test"
 	]
 }
