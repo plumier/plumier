@@ -190,7 +190,7 @@ function backingParameterTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
 function metadataTypeTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     const hasTypeInfo = route.action
         .parameters.some(x => Boolean(x.typeAnnotation))
-    if (!hasTypeInfo) {
+    if (!hasTypeInfo && route.action.parameters.length > 0) {
         return {
             type: "warning",
             message: errorMessage.ActionDoesNotHaveTypeInfo

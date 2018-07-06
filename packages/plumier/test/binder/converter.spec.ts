@@ -195,7 +195,7 @@ describe("Converter", () => {
             ])
         })
 
-        it.only("Should convert nested array inside model", () => {
+        it("Should convert nested array inside model", () => {
             @model()
             class TagModel {
                 constructor(

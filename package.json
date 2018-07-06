@@ -18,6 +18,7 @@
 		"lerna": "^2.11.0",
 		"reflect-metadata": "^0.1.12",
 		"rimraf": "^2.6.2",
+		"ts-jest": "^23.0.0",
 		"tslint": "^5.10.0",
 		"typescript": "^2.9.2",
 		"typestrict": "^0.0.9"

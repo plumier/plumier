@@ -1,4 +1,11 @@
 {
     "git.ignoreLimitWarning": true,
-    
+    "files.exclude": {
+        "**/node_modules": false,
+        "packages/**/*.js": false,
+        "**/yarn.lock": false,
+        "**/package-lock.json": false,
+        "**/yarn-error.log": false,
+        "packages/**/*.js.map": false
+    }
 }

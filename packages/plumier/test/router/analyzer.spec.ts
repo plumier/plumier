@@ -24,7 +24,6 @@ describe("Analyzer", () => {
             @route.get(":id/:name")
             getAnimal(id: string, name: string) { }
         }
-
         const routeInfo = transformController(AnimalController)
         const analysis = analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
@@ -32,7 +31,6 @@ describe("Analyzer", () => {
         expect(analysis[0].issues[0].message).toContain("type")
         expect(analysis[0].issues[0].type).toBe("error")
     })
-
 
     it("Should identify missing design type information", () => {
         class AnimalController {
@@ -43,6 +41,15 @@ describe("Analyzer", () => {
         expect(analysis[0].issues.length).toBe(1)
         expect(analysis[0].issues[0].message).toContain("PLUM1001")
         expect(analysis[0].issues[0].type).toBe("warning")
+    })
+
+    it("Should not identify missing design type information if not contains parameter", () => {
+        class AnimalController {
+            getAnimal() { }
+        }
+        const routeInfo = transformController(AnimalController)
+        const analysis = analyzeRoutes(routeInfo)
+        expect(analysis[0].issues.length).toBe(0)
     })
 
     it("Should identify multiple decorators", () => {

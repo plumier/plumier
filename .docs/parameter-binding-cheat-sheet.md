@@ -4,7 +4,7 @@ Parameter binding will automatically bind provided query string / form body into
 
 > To be able to make parameter binding work properly Plumier need TypeScript design type information, by providing any decorator on the appropriate action. Use `@route` decorator is best practice to make data binding work properly
 
-### Number
+### Number Binding
 
 ```typescript
 export class AnimalController {
@@ -19,7 +19,7 @@ GET /animal/get?id=123.33 -> 123.33
 GET /animal/get?id=hello  -> NaN 
 ```
 
-### Boolean
+### Boolean Binding
 ```typescript
 export class AnimalController {
     @route.get()
@@ -38,7 +38,7 @@ GET /animal/get?id=1     -> true
 // anything else is false
 ```
 
-### Date
+### Date Binding
 ```typescript
 export class AnimalController {
     @route.get()
@@ -52,7 +52,7 @@ GET /animal/get?id=hello       -> Invalid Date
 ```
 
 
-### Model
+### Model Binding
 Model binding only works for POST and PUT method
 
 > To be able to make Model binding work properly, the model must use [Parameter Properties](https://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) and any of decorator (on the constructor, or on any of constructor parameter decorator)
@@ -86,7 +86,7 @@ AnimalController {
 }
 ```
 
-### Nested Model
+### Nested Model Binding
 ```typescript
 @model()
 class ClientModel {
@@ -173,6 +173,10 @@ Result:
     birthday: Date //equals to new Date(2018,1,1)
 }]
 ```
+
+## Custom Converter
+If type conversion doesn't satisfy your need you can provided your own custom conversion 
+
 
 
 
