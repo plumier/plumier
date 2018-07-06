@@ -231,6 +231,19 @@ export namespace MiddlewareUtil {
     }
 }
 
+export function isCustomClass(type: Function) {
+    switch (type) {
+        case Boolean:
+        case String:
+        case Array:
+        case Number:
+        case Object:
+        case Date:
+            return false
+        default:
+            return true
+    }
+}
 /* ------------------------------------------------------------------------------- */
 /* -------------------------------- CLASSES -------------------------------------- */
 /* ------------------------------------------------------------------------------- */
@@ -575,10 +588,12 @@ export function model() { return decorateClass({}) }
 export namespace errorMessage {
     //PLUM1XXX User configuration error
     export const RouteDoesNotHaveBackingParam = "PLUM1000: Route parameters ({0}) doesn't have appropriate backing parameter"
-    export const ActionDoesNotHaveTypeInfo = "PLUM1001: Action doesn't contains parameter type information, model validation will be skipped"
+    export const ActionDoesNotHaveTypeInfo = "PLUM1001: Action doesn't contains parameter type information, parameter binding will be skipped"
     export const MultipleDecoratorNotSupported = "PLUM1002: Multiple decorators doesn't supported"
     export const DuplicateRouteFound = "PLUM1003: Duplicate route found in {0}"
     export const ControllerPathNotFound = "PLUM1004: Controller file or directory {0} not found"
+    export const ModelWithoutTypeInformation = "PLUM1005: {0} class used in action parameter doesn't contains type information, parameter binding will be skipped"
+    export const ArrayWithoutTypeInformation = "PLUM1006: Array without type information found in parameter {0}, parameter binding will be skipped"
 
     //PLUM1XXX internal app error
     export const RequestedUrlNotFound = "PLUM2001: Requested url not found"

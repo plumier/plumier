@@ -2,7 +2,7 @@ import Debug from "debug";
 import { Request } from "koa";
 import { inspect } from "util";
 
-import { ArrayBindingDecorator, b, BindingDecorator, Class, TypeConverter, ValueConverter } from "./framework";
+import { ArrayBindingDecorator, b, BindingDecorator, Class, TypeConverter, ValueConverter, isCustomClass } from "./framework";
 import { FunctionReflection, ParameterReflection, reflect } from "./libs/reflect";
 
 
@@ -76,19 +76,6 @@ export function convert(value: any, type: Class | undefined, converters: Map<Fun
 /* ----------------------------- MODEL BINDER ------------------------------------ */
 /* ------------------------------------------------------------------------------- */
 
-function isCustomClass(type: Function) {
-    switch (type) {
-        case Boolean:
-        case String:
-        case Array:
-        case Number:
-        case Object:
-        case Date:
-            return false
-        default:
-            return true
-    }
-}
 
 function bindModel(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): object | undefined {
     if (!par.typeAnnotation) return

@@ -17,8 +17,11 @@ import {
     Configuration,
     b,
     Middleware,
+    isCustomClass,
+    model,
+    ArrayBindingDecorator,
 } from "./framework";
-import { ClassReflection, FunctionReflection, reflect, Reflection } from "./libs/reflect";
+import { ClassReflection, FunctionReflection, reflect, Reflection, ParameterReflection } from "./libs/reflect";
 import { inspect } from 'util';
 import chalk from 'chalk';
 
@@ -45,7 +48,7 @@ export function getControllerRoute(controller: ClassReflection) {
     return (root && root.url) || `/${striveController(controller.name)}`
 }
 
-export function extractDecorators(route: RouteInfo):Middleware[] {
+export function extractDecorators(route: RouteInfo): Middleware[] {
     const classDecorator: MiddlewareDecorator[] = route.controller.decorators.filter(x => x.name == "Middleware")
     const methodDecorator: MiddlewareDecorator[] = route.action.decorators.filter(x => x.name == "Middleware")
     const extract = (d: MiddlewareDecorator[]) => d.map(x => x.value).reduce((a, b) => a.concat(b), [])
@@ -172,6 +175,34 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
 /* --------------------------- ANALYZER FUNCTION --------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
+//------ Analyzer Helpers
+function getModelsInParameters(par: ParameterReflection[]) {
+    return par.filter(x => x.typeAnnotation && isCustomClass(x.typeAnnotation))
+        .map(x => reflect(x.typeAnnotation as Class))
+}
+
+function traverseModel(par: ParameterReflection[]): ClassReflection[] {
+    const models = getModelsInParameters(par)
+    const child = models.map(x => traverseModel(x.ctorParameters))
+        .filter((x): x is ClassReflection[] => Boolean(x))
+        .reduce((a, b) => a!.concat(b!), [] as ClassReflection[])
+    return models.concat(child)
+}
+
+function getArrayInParameters(par:ParameterReflection[]){
+    return par.filter((x) => x.typeAnnotation == Array)
+}
+
+function traverseArray(par: ParameterReflection) {
+    const array = par.decorators.find((x): x is ArrayBindingDecorator => x.type == "ParameterBinding" && x.name == "Array")
+    if(array){
+        const reflection = reflect(array.typeAnnotation)
+        return traverseModel(reflection.ctorParameters)
+    }
+}
+
+
+//----- 
 
 function backingParameterTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     const ids = route.url.split("/")
@@ -221,6 +252,35 @@ function duplicateRouteTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     else return { type: "success" }
 }
 
+function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
+
+    const classes = traverseModel(route.action.parameters)
+        .filter(x => x.ctorParameters.every(par => typeof par.typeAnnotation == "undefined"))
+        .map(x => x.object)
+    //get only unique type
+    const noTypeInfo = Array.from(new Set(classes))
+    if (noTypeInfo.length > 0) {
+        log(`[Analyzer] Model without type information ${b(noTypeInfo.map(x => x.name).join(", "))}`)
+        return {
+            type: "warning",
+            message: StringUtil.format(errorMessage.ModelWithoutTypeInformation, noTypeInfo.map(x => x.name).join(", "))
+        }
+    }
+    else return { type: "success" }
+}
+
+function arrayTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
+    const array = route.action.parameters.filter(x => x.typeAnnotation == Array)
+        .filter(x => !x.decorators.some((x): x is ArrayBindingDecorator => x.type == "ParameterBinding" && x.name == "Array"))
+    if(array.length > 0){
+        log(`[Analyzer] Array without item type information in ${array.map(x => x.name).join(", ")}`)
+        return {
+            type: "warning",
+            message: StringUtil.format(errorMessage.ArrayWithoutTypeInformation, array.map(x => x.name).join(", "))
+        }
+    }
+    else return {type:'success'}
+}
 
 /* ------------------------------------------------------------------------------- */
 /* -------------------------------- ANALYZER ------------------------------------- */
@@ -235,7 +295,7 @@ function analyzeRoute(route: RouteInfo, tests: AnalyzerFunction[], allRoutes: Ro
 export function analyzeRoutes(routes: RouteInfo[]) {
     const tests: AnalyzerFunction[] = [
         backingParameterTest, metadataTypeTest, multipleDecoratorTest,
-        duplicateRouteTest
+        duplicateRouteTest, modelTypeInfoTest, arrayTypeInfoTest
     ]
     return routes.map(x => analyzeRoute(x, tests, routes))
 }

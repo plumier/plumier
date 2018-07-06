@@ -1,10 +1,13 @@
 # Route Generation Cheat Sheet
 
-### Basic Controller
+### Basic Controller Without Parameter Binding
+
+If no `@route` decorator provided all data passed to the action parameter by default will be of type of string.
+
 ```typescript
 export class AnimalController {
-    get(id:number){}
-    list(last:number, limit:number)
+    get(id:string){}
+    list(last:string, limit:string)
 }
 ```
 ```
@@ -12,13 +15,23 @@ GET /animal/get?id=<number>
 GET /animal/list?last=<number>&limit=<number>
 ```
 
-### Controller With Decorator
+### Basic Controller With Decorator and Data Binding
+
+With `@route` decorator parameter binding will automatically convert query to appropriate type. Parameter binding will automatically assigned Model to the request body.
+
 ```typescript
+@model()
+export class AnimalModel {
+    constructor(
+        public id:number,
+        public name:string
+    ){}
+}
 export class AnimalController {
-    @route.post()
-    save(model:any){}
     @route.put()
-    modify(id:number, model:any)
+    modify(id:number, model:AnimalModel)
+    @route.post()
+    save(model:AnimalModel){}
 }
 ```
 ```
