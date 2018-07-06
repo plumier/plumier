@@ -149,6 +149,10 @@
   dependencies:
     "@types/superagent" "*"
 
+"@types/validator@^9.4.1":
+  version "9.4.1"
+  resolved "https://registry.yarnpkg.com/@types/validator/-/validator-9.4.1.tgz#bea5a290e61f1cbf12af3fd878706aeec2ba0087"
+
 JSONStream@^1.0.4:
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.3.tgz#27b4b8fbbfeab4e71bcf551e7f27be8d952239bf"
@@ -883,7 +887,7 @@ concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
 
-concat-stream@^1.4.10, concat-stream@^1.4.7:
+concat-stream@^1.4.10:
   version "1.6.2"
   resolved "https://registry.yarnpkg.com/concat-stream/-/concat-stream-1.6.2.tgz#904bdf194cd3122fc675c77fc4ac3d4ff0fd1a34"
   dependencies:
@@ -3537,10 +3541,6 @@ os-locale@^2.0.0:
     lcid "^1.0.0"
     mem "^1.1.0"
 
-os-shim@^0.1.2:
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/os-shim/-/os-shim-0.1.3.tgz#6b62c3791cf7909ea35ed46e17658bb417cb3917"
-
 os-tmpdir@^1.0.0, os-tmpdir@^1.0.1, os-tmpdir@~1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
@@ -3727,13 +3727,11 @@ posix-character-classes@^0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/posix-character-classes/-/posix-character-classes-0.1.1.tgz#01eac0fe3b5af71a2a6c02feabb8c1fef7e00eab"
 
-pre-commit@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/pre-commit/-/pre-commit-1.2.2.tgz#dbcee0ee9de7235e57f79c56d7ce94641a69eec6"
+pre-push@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/pre-push/-/pre-push-0.1.1.tgz#2a2a79827d243a76c91089897ac707f45e716aac"
   dependencies:
-    cross-spawn "^5.0.1"
-    spawn-sync "^1.0.15"
-    which "1.2.x"
+    shelljs "0.3.x"
 
 prelude-ls@~1.1.2:
   version "1.1.2"
@@ -4167,6 +4165,10 @@ shell-quote@^1.6.1:
     array-reduce "~0.0.0"
     jsonify "~0.0.0"
 
+shelljs@0.3.x:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.3.0.tgz#3596e6307a781544f591f37da618360f31db57b1"
+
 shellwords@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/shellwords/-/shellwords-0.1.1.tgz#d6b9181c1a48d397324c84871efbcfc73fc0654b"
@@ -4252,13 +4254,6 @@ source-map@^0.5.3, source-map@^0.5.6, source-map@^0.5.7, source-map@~0.5.1:
 source-map@^0.6.0, source-map@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
-
-spawn-sync@^1.0.15:
-  version "1.0.15"
-  resolved "https://registry.yarnpkg.com/spawn-sync/-/spawn-sync-1.0.15.tgz#b00799557eb7fb0c8376c29d44e8a1ea67e57476"
-  dependencies:
-    concat-stream "^1.4.7"
-    os-shim "^0.1.2"
 
 spdx-correct@^3.0.0:
   version "3.0.0"
@@ -4779,6 +4774,10 @@ validate-npm-package-license@^3.0.1:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
 
+validator@^10.4.0:
+  version "10.4.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-10.4.0.tgz#ee99a44afb3bb5ed350a159f056ca72a204cfc3c"
+
 vary@^1.0.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
@@ -4841,12 +4840,6 @@ whatwg-url@^6.4.0, whatwg-url@^6.4.1:
 which-module@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/which-module/-/which-module-2.0.0.tgz#d9ef07dce77b9902b8a3a8fa4b31c3e3f7e6e87a"
-
-which@1.2.x:
-  version "1.2.14"
-  resolved "https://registry.yarnpkg.com/which/-/which-1.2.14.tgz#9a87c4378f03e827cecaf1acdf56c736c01c14e5"
-  dependencies:
-    isexe "^2.0.0"
 
 which@^1.2.12, which@^1.2.9, which@^1.3.0:
   version "1.3.1"

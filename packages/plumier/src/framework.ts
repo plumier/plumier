@@ -4,7 +4,7 @@ import { IncomingHttpHeaders } from "http";
 import Koa, { Context, Request } from "koa";
 import BodyParser from "koa-bodyparser";
 
-import { ClassReflection, decorateClass, decorateMethod, decorateParameter, FunctionReflection } from "./libs/reflect";
+import { ClassReflection, decorateClass, decorateMethod, decorateParameter, FunctionReflection, ParameterReflection } from "./libs/reflect";
 
 export type HttpMethod = "post" | "get" | "put" | "delete"
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>
@@ -89,6 +89,11 @@ export interface Configuration {
     ```
      */
     converters?: TypeConverter,
+
+    /**
+     * Set custom validator
+     */
+    validator?: (value:any, metadata:ParameterReflection) => string[] | undefined
 }
 
 

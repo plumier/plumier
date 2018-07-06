@@ -2,12 +2,13 @@
 	"name": "plumier",
 	"description": "Pleasant TypeScript Web Api Framework",
 	"scripts": {
-		"postinstall": "tsc",
 		"test": "jest",
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish",
 		"clean": "rimraf packages/**/lib",
 		"compile": "npm run clean && jest && lerna run compile",
-		"canary": "npm run compile && lerna publish -c --exact --yes && yarn run clean"
+		"compile-module": "tsc -p tsconfig.test-module.json",
+		"postinstall": "npm run compile-module",
+		"canary": "npm run compile && lerna publish -c --exact --yes && npm run clean"
 	},
 	"author": "Ketut Sandiarsa",
 	"private": true,
@@ -16,7 +17,7 @@
 		"coveralls": "^3.0.1",
 		"jest": "^23.1.0",
 		"lerna": "^2.11.0",
-		"pre-commit": "^1.2.2",
+		"pre-push": "^0.1.1",
 		"reflect-metadata": "^0.1.12",
 		"rimraf": "^2.6.2",
 		"ts-jest": "^23.0.0",
@@ -27,7 +28,7 @@
 	"workspaces": [
 		"packages/*"
 	],
-	"pre-commit": [
+	"pre-push": [
 		"test"
 	]
 }

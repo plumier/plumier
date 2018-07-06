@@ -5,14 +5,15 @@ import { transformController } from '../../src/router';
 import Koa, { Context } from 'koa';
 import Supertest from "supertest"
 import BodyParser from "koa-bodyparser"
+import { decorateParameter } from '../../src/libs/reflect';
 
-function fixture(controller: Class) {
+function fixture(controller: Class, config?: Partial<Configuration>) {
     return async (ctx: Context) => {
         const ctlRoute = transformController(controller)
         ctx.route = ctlRoute[0]
-        ctx.config = Object.assign({
+        ctx.config = Object.assign(<Configuration>{
             dependencyResolver: new DefaultDependencyResolver(),
-        })
+        }, config)
         const invocation = new ActionInvocation(ctx)
         const result = await invocation.proceed()
         result.execute(ctx)
@@ -163,5 +164,31 @@ describe("Action Invocation", () => {
         await Supertest(app.callback())
             .get("/?id=474747")
             .expect(400)
+    })
+
+    it("Should check for validation", async () => {
+        function required() { return decorateParameter({ type: "Validation", name: "Required" }) }
+        class AnimalController {
+            @route.get()
+            getAnimal(@required() id: number, name: string) {
+                return "The Body"
+            }
+        }
+
+        const app = new Koa()
+        app.use(fixture(AnimalController, {
+            validator: (v, r) => {
+                if (r.decorators.some(x => x.type == "Validation" && x.name == "Required") && !Boolean(v))
+                    return [`${r.name} is required`]
+            }
+        }))
+
+        await Supertest(app.callback())
+            .get("/")
+            .expect(400, [{ parameter: 'id', issues: ['id is required'] }])
+        await Supertest(app.callback())
+            .get("/?id=200")
+            .expect(200, "The Body")
+
     })
 })

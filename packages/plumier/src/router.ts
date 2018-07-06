@@ -189,16 +189,15 @@ function traverseModel(par: ParameterReflection[]): ClassReflection[] {
     return models.concat(child)
 }
 
-// function getArrayInParameters(par:ParameterReflection[]){
-//     return par.filter((x) => x.typeAnnotation == Array)
+// function getArrayInParameter(par:ParameterReflection){
+//     return Boolean(par.typeAnnotation == Array && par.decorators
+//         .find((x):x is ArrayBindingDecorator => x.type == "ParameterBinding" && x.name == "Array" ))
 // }
 
-// function traverseArray(par: ParameterReflection) {
-//     const array = par.decorators.find((x): x is ArrayBindingDecorator => x.type == "ParameterBinding" && x.name == "Array")
-//     if(array){
-//         const reflection = reflect(array.typeAnnotation)
-//         return traverseModel(reflection.ctorParameters)
-//     }
+// function traverseArray(par: ParameterReflection[]) {
+//     const parameterArray = par.filter(x => getArrayInParameter(x))
+//     const models = getModelsInParameters(parameterArray)
+//     const modelContained = 
 // }
 
 
