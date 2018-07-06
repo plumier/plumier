@@ -1,8 +1,9 @@
 {
   "name": "plumier",
   "version": "0.1.0-alpha.4a612e29",
-  "description": "A testing friendly Web API framework",
-  "main": "index.js",
+  "description": "Pleasant TypeScript Web Api Framework",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "keywords": [
     "MVC",
     "Express",

@@ -1,6 +1,6 @@
 {
 	"name": "plumier",
-	"description": "A testing friendly Web API framework",
+	"description": "Pleasant TypeScript Web Api Framework",
 	"scripts": {
 		"postinstall": "tsc",
 		"test": "jest",
