@@ -1,8 +1,9 @@
 node_modules
 coverage
 yarn-error.log
+lerna-debug.log
 *.js
 *.js.map
 .DS_Store
 !jest.config.js
-lerna-debug.log
+!.script/*.js

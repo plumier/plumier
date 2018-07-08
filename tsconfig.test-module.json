@@ -1,8 +1,0 @@
-{
-    "extends": "./tsconfig.base.json",
-    "files": [
-        "packages/plumier/test/router/controller/basic-controller.ts",
-        "packages/plumier/test/router/controller/decorated-controller.ts",
-        "packages/plumier/test/router/controller/ignore-controller.ts"
-    ]
-}
