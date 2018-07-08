@@ -1,0 +1,11 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "package.json",
+        "packages/plumier/package.json",
+        "packages/tinspector/package.json"
+      ]
+    }
+  }
+}
