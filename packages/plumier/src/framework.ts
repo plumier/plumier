@@ -4,7 +4,7 @@ import { IncomingHttpHeaders } from "http";
 import Koa, { Context, Request } from "koa";
 import BodyParser from "koa-bodyparser";
 
-import { ClassReflection, decorateClass, decorateMethod, decorateParameter, FunctionReflection, ParameterReflection } from "./libs/reflect";
+import { ClassReflection, decorateClass, decorateMethod, decorateParameter, FunctionReflection, ParameterReflection } from "tinspector";
 
 export type HttpMethod = "post" | "get" | "put" | "delete"
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>

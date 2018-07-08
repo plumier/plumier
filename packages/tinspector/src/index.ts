@@ -1,6 +1,7 @@
-//version   1.2.1
+//version   1.3.0
 //github    https://github.com/ktutnik/my-own-reflect
 import "reflect-metadata";
+import { inspect } from 'util';
 
 /*
 version history:
@@ -73,9 +74,10 @@ function getType(object: any) {
 export function decorateParameter(data: any) {
     return (target: any, name: string, index: number) => {
         const isCtorParam = isConstructor(target)
-        const decorators: Decorator[] = Reflect.getMetadata(DECORATOR_KEY, target.constructor) || []
+        const newTarget = isCtorParam ? target : target.constructor
+        const decorators: Decorator[] = Reflect.getMetadata(DECORATOR_KEY, newTarget) || []
         decorators.push(<ParameterDecorator>{ targetType: "Parameter", target: isCtorParam ? "constructor" : name, targetIndex: index, value: data })
-        Reflect.defineMetadata(DECORATOR_KEY, decorators, isCtorParam ? target : target.constructor)
+        Reflect.defineMetadata(DECORATOR_KEY, decorators, newTarget)
     }
 }
 

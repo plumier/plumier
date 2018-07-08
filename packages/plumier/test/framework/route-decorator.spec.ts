@@ -1,4 +1,4 @@
-import { getDecorators } from "../../src/libs/reflect";
+import { getDecorators } from "tinspector";
 import { route } from '../../src';
 
 

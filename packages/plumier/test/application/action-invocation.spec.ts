@@ -5,7 +5,7 @@ import { transformController } from '../../src/router';
 import Koa, { Context } from 'koa';
 import Supertest from "supertest"
 import BodyParser from "koa-bodyparser"
-import { decorateParameter } from '../../src/libs/reflect';
+import { decorateParameter } from 'tinspector';
 
 function fixture(controller: Class, config?: Partial<Configuration>) {
     return async (ctx: Context) => {

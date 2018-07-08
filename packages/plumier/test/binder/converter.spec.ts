@@ -1,4 +1,4 @@
-import { decorateClass, reflect } from "../../src/libs/reflect";
+import { decorateClass, reflect } from "tinspector";
 import { convert, flattenConverters, DefaultConverterList } from '../../src/binder';
 import { TypeConverter, model, bind } from '../../src';
 import { inspect } from 'util';

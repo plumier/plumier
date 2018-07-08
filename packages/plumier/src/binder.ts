@@ -3,7 +3,7 @@ import { Request } from "koa";
 import { inspect } from "util";
 
 import { ArrayBindingDecorator, b, BindingDecorator, Class, TypeConverter, ValueConverter, isCustomClass } from "./framework";
-import { FunctionReflection, ParameterReflection, reflect } from "./libs/reflect";
+import { FunctionReflection, ParameterReflection, reflect } from "tinspector"
 
 
 const log = Debug("plum:binder")
@@ -77,7 +77,7 @@ export function convert(value: any, type: Class | undefined, converters: Map<Fun
 /* ------------------------------------------------------------------------------- */
 
 
-function bindModel(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): object | undefined {
+function bindModel(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): any {
     if (!par.typeAnnotation) return
     if (!isCustomClass(par.typeAnnotation)) return
     log(`[Model Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Parameter Type: ${b(par.typeAnnotation.name)}`)
@@ -89,7 +89,7 @@ function bindModel(action: FunctionReflection, request: Request, par: ParameterR
 /* ------------------------------------------------------------------------------- */
 
 
-function bindDecorator(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): object | string | undefined {
+function bindDecorator(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): any {
     const decorator: BindingDecorator = par.decorators.find((x: BindingDecorator) => x.type == "ParameterBinding")
     if (!decorator) return
     log(`[Decorator Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Decorator: ${b(decorator.name)} Part: ${b(decorator.part)}`)
@@ -110,7 +110,7 @@ function bindDecorator(action: FunctionReflection, request: Request, par: Parame
 /* ------------------------------------------------------------------------------- */
 
 
-function arrayDecorator(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any, type: Class) => any): object | string | undefined {
+function bindArrayDecorator(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any, type: Class) => any): any {
     const decorator: ArrayBindingDecorator = par.decorators.find((x: ArrayBindingDecorator) => x.type == "ParameterBinding" && x.name == "Array")
     if (!decorator) return
     log(`[Array Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Type: ${b(decorator.typeAnnotation.name)}`)
@@ -121,7 +121,7 @@ function arrayDecorator(action: FunctionReflection, request: Request, par: Param
 /* -------------------------- REGULAR PARAMETER BINDER --------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function bindRegular(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): object | undefined {
+function bindRegular(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): any {
     log(`[Regular Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Value: ${b(request.query[par.name])}`)
     return converter(request.query[par.name.toLowerCase()])
 }
@@ -134,7 +134,7 @@ export function bindParameter(request: Request, action: FunctionReflection, conv
     const mergedConverters = flattenConverters(DefaultConverterList.concat(converter || []))
     return action.parameters.map(x => {
         const converter = (result: any, type?: Class) => convert(result, type || x.typeAnnotation, mergedConverters)
-        return arrayDecorator(action, request, x, converter) ||
+        return bindArrayDecorator(action, request, x, converter) ||
             bindDecorator(action, request, x, converter) ||
             bindModel(action, request, x, converter) ||
             bindRegular(action, request, x, converter)

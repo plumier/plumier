@@ -2,7 +2,7 @@
   "name": "plumier",
   "version": "0.1.0-alpha.4a612e29",
   "description": "Pleasant TypeScript Web Api Framework",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "keywords": [
     "MVC",
     "Express",
@@ -32,7 +32,7 @@
     "koa": "^2.5.1",
     "koa-bodyparser": "^4.2.1",
     "path-to-regexp": "^2.2.1",
-    "reflect-metadata": "^0.1.12",
+    "tinspector": "^1.3.0",
     "tslib": "^1.9.2",
     "validator": "^10.4.0"
   },

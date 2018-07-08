@@ -21,7 +21,7 @@ import {
     model,
     ArrayBindingDecorator,
 } from "./framework";
-import { ClassReflection, FunctionReflection, reflect, Reflection, ParameterReflection } from "./libs/reflect";
+import { ClassReflection, FunctionReflection, reflect, Reflection, ParameterReflection } from "tinspector";
 import { inspect } from 'util';
 import chalk from 'chalk';
 
@@ -62,14 +62,20 @@ function getActionName(route: RouteInfo) {
 }
 
 
-function resolvePath(path: string): string[] {
+function resolvePath(path: string, extensions?: string[]): string[] {
+    const ext = extensions || [".js"]
     //resolve provided path directory or file
-    if (Fs.lstatSync(path).isDirectory())
-        return Fs.readdirSync(path)
-            //take only *.js 
-            .filter(x => Path.extname(x) === ".js")
+    if (Fs.lstatSync(path).isDirectory()) {
+        const files = Fs.readdirSync(path)
+            //take only file in extension list
+            .filter(x => ext.some(ex => Path.extname(x) === ex))
             //add root path + file name
             .map(x => Path.join(path, x))
+        log(`[Router] Resolve files with ${ext.join("|")}`)
+        log(`${files.join("\n")}`)
+        return files
+    }
+
     else
         return [path]
 }
@@ -120,10 +126,10 @@ export function transformController(object: ClassReflection | Class) {
         .filter(x => Boolean(x)) as RouteInfo[]
 }
 
-export async function transformModule(path: string): Promise<RouteInfo[]> {
+export async function transformModule(path: string, extensions?: string[]): Promise<RouteInfo[]> {
     //read all files and get module reflection
     const modules = await Promise.all(
-        resolvePath(path)
+        resolvePath(path, extensions)
             //reflect the file
             .map(x => reflect(x)))
     //get all module.members and combine into one array
@@ -271,14 +277,14 @@ function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
 function arrayTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     const array = route.action.parameters.filter(x => x.typeAnnotation == Array)
         .filter(x => !x.decorators.some((x): x is ArrayBindingDecorator => x.type == "ParameterBinding" && x.name == "Array"))
-    if(array.length > 0){
+    if (array.length > 0) {
         log(`[Analyzer] Array without item type information in ${array.map(x => x.name).join(", ")}`)
         return {
             type: "warning",
             message: StringUtil.format(errorMessage.ArrayWithoutTypeInformation, array.map(x => x.name).join(", "))
         }
     }
-    else return {type:'success'}
+    else return { type: 'success' }
 }
 
 /* ------------------------------------------------------------------------------- */

@@ -7,7 +7,7 @@ if (process.argv[2] == "production") {
     file.set("types", "lib/index.d.ts")
 }
 else {
-    file.set("main", "index.ts")
+    file.set("main", "src/index.ts")
     file.set("types", undefined)
 }
 file.save()

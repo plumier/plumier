@@ -174,9 +174,5 @@ Result:
 }]
 ```
 
-## Custom Converter
-If type conversion doesn't satisfy your need you can provided your own custom conversion 
-
-
 
 

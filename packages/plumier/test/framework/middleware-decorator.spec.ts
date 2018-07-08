@@ -1,5 +1,5 @@
 import { middleware, ActionResult } from "../../src";
-import { getDecorators } from '../../src/libs/reflect';
+import { getDecorators } from 'tinspector';
 
 
 
