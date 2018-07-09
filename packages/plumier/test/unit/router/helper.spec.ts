@@ -1,4 +1,4 @@
-import { striveController } from "../../src/router";
+import { striveController } from "../../../src/router";
 
 describe("striveController", () => {
     it("Should strive at the end", () => {

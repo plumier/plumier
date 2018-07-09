@@ -1,29 +1,27 @@
+import chalk from "chalk";
 import Debug from "debug";
 import * as Fs from "fs";
 import { Context } from "koa";
 import * as Path from "path";
 import Ptr from "path-to-regexp";
-import Chalk from "chalk"
+import { ClassReflection, FunctionReflection, ParameterReflection, reflect, Reflection } from "tinspector";
+import { inspect } from "util";
 
 import {
+    ArrayBindingDecorator,
+    b,
+    Class,
+    Configuration,
     errorMessage,
     IgnoreDecorator,
+    isCustomClass,
+    Middleware,
     MiddlewareDecorator,
     RootDecorator,
     RouteDecorator,
     RouteInfo,
     StringUtil,
-    Class,
-    Configuration,
-    b,
-    Middleware,
-    isCustomClass,
-    model,
-    ArrayBindingDecorator,
 } from "./framework";
-import { ClassReflection, FunctionReflection, reflect, Reflection, ParameterReflection } from "tinspector";
-import { inspect } from 'util';
-import chalk from 'chalk';
 
 const log = Debug("plum:router")
 

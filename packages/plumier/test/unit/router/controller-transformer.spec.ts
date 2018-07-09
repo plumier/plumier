@@ -1,5 +1,5 @@
-import { transformController } from "../../src/router";
-import { route } from '../../src';
+import { transformController } from "../../../src/router";
+import { route } from '../../../src';
 
 describe("Controller Transformer", () => {
     describe("Basic Transformation", () => {

@@ -1,7 +1,7 @@
 import { Context } from "koa";
 
-import { ActionResult, Invocation } from "../../src";
-import { pipe } from '../../src/application';
+import { ActionResult, Invocation } from "../../../src";
+import { pipe } from '../../../src/application';
 
 
 describe("Middleware Pipeline", () => {

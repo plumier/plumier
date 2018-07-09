@@ -1,5 +1,5 @@
-import { Plumier } from "../../src";
-import { consoleLog } from '../helper';
+import { Plumier } from "../../../src";
+import { consoleLog } from '../../helper';
 
 
 describe("Plumier", () => {

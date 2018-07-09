@@ -1,7 +1,6 @@
-import { route, model, bind } from "../../src";
-import { analyzeRoutes, transformController, printAnalysis } from "../../src/router";
-import { consoleLog } from '../helper';
-import { inspect } from 'util';
+import { bind, model, route } from "../../../src";
+import { analyzeRoutes, printAnalysis, transformController } from "../../../src/router";
+import { consoleLog } from "../../helper";
 
 describe("Analyzer", () => {
     it("Should analyze missing backing parameter", () => {

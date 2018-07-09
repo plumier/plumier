@@ -8,22 +8,24 @@ import { bindParameter } from "./binder";
 import {
     ActionResult,
     Application,
+    b,
     Configuration,
     DefaultDependencyResolver,
+    DefaultConfiguration,
     errorMessage,
     Facility,
     hasKeyOf,
     Invocation,
     KoaMiddleware,
+    Middleware,
     MiddlewareUtil,
     PlumierApplication,
     PlumierConfiguration,
-    StringUtil,
-    b,
-    Middleware,
     RouteInfo,
+    StringUtil,
+    HttpStatusError,
 } from "./framework";
-import { analyzeRoutes, extractDecorators, printAnalysis, router, transformModule, transformController } from "./router";
+import { analyzeRoutes, extractDecorators, printAnalysis, router, transformController, transformModule } from "./router";
 
 
 const log = Debug("plum:app")
@@ -104,13 +106,7 @@ export class Plumier implements PlumierApplication {
 
     constructor() {
         this.koa = new Koa()
-        this.config = {
-            mode: "debug",
-            middleware: [],
-            facilities: [],
-            controller: join(process.cwd(), "./controller"),
-            dependencyResolver: new DefaultDependencyResolver()
-        }
+        this.config = { ...DefaultConfiguration, middleware: [], facilities: [] }
     }
 
     use(option: KoaMiddleware): Application
@@ -149,6 +145,17 @@ export class Plumier implements PlumierApplication {
             }
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
             await Promise.all(this.config.facilities.map(x => x.setup(this)))
+            this.koa.use(async (ctx, next) => {
+                try {
+                    await next()
+                }
+                catch (e) {
+                    if (e instanceof HttpStatusError)
+                        ctx.throw(e.status, e)
+                    else
+                        ctx.throw(500, e)
+                }
+            })
             this.koa.use(router(routes, this.config, requestHandler))
             return this.koa
         }

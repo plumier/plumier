@@ -3,16 +3,30 @@ import Chalk from "chalk";
 import { IncomingHttpHeaders } from "http";
 import Koa, { Context, Request } from "koa";
 import BodyParser from "koa-bodyparser";
-
-import { ClassReflection, decorateClass, decorateMethod, decorateParameter, FunctionReflection, ParameterReflection } from "tinspector";
+import {
+    ClassReflection,
+    decorateClass,
+    decorateMethod,
+    decorateParameter,
+    FunctionReflection,
+    ParameterReflection,
+} from "tinspector";
+import { join } from 'path';
 
 export type HttpMethod = "post" | "get" | "put" | "delete"
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>
 export type RequestPart = keyof Request
 export type HeaderPart = keyof IncomingHttpHeaders
 export type Class = new (...args: any[]) => any
-export type ValueConverter = (value: any, type: Class, converters: Map<Function, ValueConverter>) => any
+export type ValueConverter = (value: any, prop: ParameterProperties) => any
 export type TypeConverter = ([Function, ValueConverter])[]
+
+export interface ParameterProperties {
+    type: Class | undefined,
+    converters: Map<Function, ValueConverter>,
+    action: FunctionReflection,
+    parameterIndex: number
+}
 
 export interface BindingDecorator {
     type: "ParameterBinding",
@@ -23,7 +37,7 @@ export interface BindingDecorator {
 export interface ArrayBindingDecorator {
     type: "ParameterBinding",
     name: "Array",
-    typeAnnotation:Class
+    typeAnnotation: Class
 }
 
 export interface RouteDecorator { name: "Route", method: HttpMethod, url?: string }
@@ -56,6 +70,21 @@ export interface Facility {
 
 export interface DependencyResolver {
     resolve(type: (new (...args: any[]) => any)): any
+}
+
+export interface BodyParserOption {
+    enableTypes?: string[];
+    encode?: string;
+    formLimit?: string;
+    jsonLimit?: string;
+    strict?: boolean;
+    detectJSON?: (ctx: Koa.Context) => boolean;
+    extendTypes?: {
+        json?: string[];
+        form?: string[];
+        text?: string[];
+    }
+    onerror?: (err: Error, ctx: Koa.Context) => void;
 }
 
 export interface Configuration {
@@ -93,7 +122,7 @@ export interface Configuration {
     /**
      * Set custom validator
      */
-    validator?: (value:any, metadata:ParameterReflection) => string[] | undefined
+    validator?: (value: any, metadata: ParameterReflection) => string[] | undefined
 }
 
 
@@ -176,7 +205,6 @@ declare module "koa" {
         config: Configuration
     }
 }
-
 
 /* ------------------------------------------------------------------------------- */
 /* -------------------------------- HELPERS -------------------------------------- */
@@ -277,30 +305,20 @@ export class ActionResult {
     }
 }
 
+
+
 /**
  * Preset configuration for building web api. This facility contains:
  * 
  * body parser: koa-bodyparser
  * 
- * generic error handler
- * 
  * cors: @koa/cors
  */
 export class WebApiFacility implements Facility {
+    constructor(private opt?: { bodyParser?: BodyParserOption, cors?: Cors.Options }) { }
     async setup(app: Readonly<PlumierApplication>) {
-        app.koa.use(BodyParser())
-        app.koa.use(async (ctx, next) => {
-            try {
-                await next()
-            }
-            catch (e) {
-                if (e instanceof HttpStatusError)
-                    ctx.throw(e.status, e)
-                else
-                    ctx.throw(500, e)
-            }
-        })
-        app.koa.use(Cors())
+        app.koa.use(BodyParser(this.opt && this.opt.bodyParser))
+        app.koa.use(Cors(this.opt && this.opt.cors))
     }
 }
 
@@ -308,8 +326,6 @@ export class WebApiFacility implements Facility {
  * Preset configuration for building restful style api. This facility contains:
  * 
  * body parser: koa-bodyparser
- * 
- * generic error handler
  * 
  * cors: @koa/cors
  * 
@@ -404,8 +420,8 @@ export namespace bind {
      *     method(@bind.array(AnimalModel) query:AnimalModel[]){}
      * @param type Type of item
      */
-    export function array(type:Class){
-        return decorateParameter(<ArrayBindingDecorator>{type: "ParameterBinding", name: "Array", typeAnnotation: type})
+    export function array(type: Class) {
+        return decorateParameter(<ArrayBindingDecorator>{ type: "ParameterBinding", name: "Array", typeAnnotation: type })
     }
 }
 
@@ -590,6 +606,14 @@ export function model() { return decorateClass({}) }
 /* -------------------------------- CONSTANTS ------------------------------------ */
 /* ------------------------------------------------------------------------------- */
 
+
+export const DefaultConfiguration: Configuration = {
+    mode: "debug",
+    controller: join(process.cwd(), "./controller"),
+    dependencyResolver: new DefaultDependencyResolver()
+}
+
+
 export namespace errorMessage {
     //PLUM1XXX User configuration error
     export const RouteDoesNotHaveBackingParam = "PLUM1000: Route parameters ({0}) doesn't have appropriate backing parameter"
@@ -600,6 +624,7 @@ export namespace errorMessage {
     export const ModelWithoutTypeInformation = "PLUM1005: {0} class used in action parameter doesn't contains type information, parameter binding will be skipped"
     export const ArrayWithoutTypeInformation = "PLUM1006: Array without type information found in parameter {0}, parameter binding will be skipped"
 
-    //PLUM1XXX internal app error
+    //PLUM2XXX internal app error
     export const RequestedUrlNotFound = "PLUM2001: Requested url not found"
+    export const UnableToConvertStringToNumber = `PLUM2000: Unable to convert value "{0}" into Number in parameter {1}`
 }

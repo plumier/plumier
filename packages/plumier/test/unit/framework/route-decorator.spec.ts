@@ -1,5 +1,5 @@
 import { getDecorators } from "tinspector";
-import { route } from '../../src';
+import { route } from '../../../src';
 
 
 describe("Route Decorator", () => {

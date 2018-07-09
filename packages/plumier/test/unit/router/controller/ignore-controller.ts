@@ -1,4 +1,4 @@
-import { route } from '../../../src';
+import { route } from '../../../../src';
 
 export class IgnoreController {
     @route.ignore()

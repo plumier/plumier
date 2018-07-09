@@ -47,14 +47,14 @@ function fixture() {
 }
 
 describe("Basic Controller", () => {
-    it("Should able to perform GET request with parameter binding", async () => {
+    it("Should able to perform GET request", async () => {
         const koa = await fixture().initialize()
         await Supertest(koa.callback())
             .get("/animal/get?id=474747")
             .expect(200, { id: 474747, name: 'Mimi', age: 5 })
     })
 
-    it("Should able to perform POST request with parameter binding", async () => {
+    it("Should able to perform POST request", async () => {
         const koa = await fixture().initialize()
         await Supertest(koa.callback())
             .post("/animal/save")
@@ -62,7 +62,7 @@ describe("Basic Controller", () => {
             .expect(200, { id: 474747, name: 'Mimi', age: 5 })
     })
 
-    it("Should able to perform PUT request with parameter binding", async () => {
+    it("Should able to perform PUT request", async () => {
         const koa = await fixture().initialize()
         await Supertest(koa.callback())
             .put("/animal/modify?id=474747")
@@ -70,10 +70,16 @@ describe("Basic Controller", () => {
             .expect(200, { id: 474747, name: 'Mimi', age: 5 })
     })
 
-    it("Should able to perform DELETE request with parameter binding", async () => {
+    it("Should able to perform DELETE request", async () => {
         const koa = await fixture().initialize()
         await Supertest(koa.callback())
             .delete("/animal/delete?id=474747")
             .expect(200, { id: 474747, name: 'Mimi', age: 5 })
     })
+})
+
+describe("Return value", () => {
+    it("Should be able to return primitive", () => {})
+    it("Should be able to return object", () => {})
+    it("Should be able to return action result", () => {})
 })

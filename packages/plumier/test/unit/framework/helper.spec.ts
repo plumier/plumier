@@ -1,4 +1,4 @@
-import { StringUtil } from "../../src/framework";
+import { StringUtil } from "../../../src/framework";
 
 
 describe("StringUtil.format", () => {

@@ -1,6 +1,6 @@
 import { join } from "path";
 
-import { transformModule } from "../../src/router";
+import { transformModule } from "../../../src/router";
 
 describe("Module Transformer Tests", () => {
     it("Should parse basic controller", async () => {

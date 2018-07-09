@@ -1,10 +1,9 @@
 import Koa from "koa";
 import Supertest from "supertest";
-import Ptr from "path-to-regexp"
 
-import { Configuration, route } from "../../src";
-import { Class, DefaultDependencyResolver } from "../../src/framework";
-import { router, transformController } from "../../src/router";
+import { Configuration, route } from "../../../src";
+import { Class, DefaultDependencyResolver } from "../../../src/framework";
+import { router, transformController } from "../../../src/router";
 
 function fixture(controller: Class) {
     const route = transformController(controller)

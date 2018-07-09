@@ -1,8 +1,8 @@
 import { Request } from "koa";
 
-import { bindParameter } from "../../src/binder";
+import { bindParameter } from "../../../src/binder";
 import { reflect } from "tinspector";
-import { bind, route, model } from '../../src';
+import { bind, route, model } from '../../../src';
 
 function request(opt?: Partial<Request>): Request {
     return <Request>{ body: { name: "The Body" }, ...opt }

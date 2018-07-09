@@ -1,15 +1,15 @@
 import Debug from "debug";
 import { Request } from "koa";
-import { inspect } from "util";
+import { inspect, isNullOrUndefined } from "util";
 
-import { ArrayBindingDecorator, b, BindingDecorator, Class, TypeConverter, ValueConverter, isCustomClass } from "./framework";
+import { ArrayBindingDecorator, b, BindingDecorator, Class, TypeConverter, ValueConverter, isCustomClass, ParameterProperties, errorMessage, StringUtil } from "./framework";
 import { FunctionReflection, ParameterReflection, reflect } from "tinspector"
 
 
 const log = Debug("plum:binder")
 
 /* ------------------------------------------------------------------------------- */
-/* -------------------------------- HELPER --------------------------------------- */
+/* -------------------------------- TYPES ---------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
 
@@ -18,34 +18,45 @@ const log = Debug("plum:binder")
 /* ------------------------------------------------------------------------------- */
 
 export function booleanConverter(value: any) {
+    if (value === null || value === undefined) return undefined
     return ["on", "true", "1", "yes"].some(x => value.toLocaleLowerCase() == x)
+}
+
+export function numberConverter(value: any, prop:ParameterProperties) {
+    if (value === null || value === undefined) return undefined
+    if (value === "") return undefined
+    const result = Number(value)
+    if (isNaN(result)) throw new Error(StringUtil.format(errorMessage.UnableToConvertStringToNumber, value, `${prop.action.parameters[prop.parameterIndex].name}`))
+    return result
 }
 
 export function dateConverter(value: any) {
     return new Date(value)
 }
 
-export function defaultModelConverter(value: any, type: Class, converters: Map<Function, ValueConverter>): any {
+export function defaultModelConverter(value: any, prop: ParameterProperties): any {
+    if (!prop.type) return value;
     const getType = (par: ParameterReflection) => {
         const decorator: ArrayBindingDecorator = par.decorators.find((x: ArrayBindingDecorator) => x.type == "ParameterBinding" && x.name == "Array")
         log(`[Model Converter] Constructor parameter ${par.name} decorator ${inspect(par.decorators, false, null)}`)
         if (decorator) return decorator.typeAnnotation as Class
         else return par.typeAnnotation as Class
     }
-    log(`[Model Converter] converting ${b(inspect(value, false, null))} to ${b(type.name)} `)
-    const reflection = reflect(type)
+    log(`[Model Converter] converting ${b(inspect(value, false, null))} to ${b(prop.type.name)} `)
+    const reflection = reflect(prop.type)
     log(`[Model Converter] model info ${b(inspect(reflection.ctorParameters))} `)
     const sanitized = reflection.ctorParameters.map(x => ({
         name: x.name,
-        value: convert(value[x.name], getType(x), converters)
+        value: convert(value[x.name], { ...prop, type: getType(x) })
     })).reduce((a, b) => { a[b.name] = b.value; return a }, {} as any)
     log(`[Model Converter] Sanitized value ${b(inspect(sanitized, false, null))}`)
-    return Object.assign(new type(), sanitized)
+    return Object.assign(new prop.type(), sanitized)
 }
 
-export function defaultArrayConverter(value: any[], type: Class, converters: Map<Function, ValueConverter>): any {
-    log(`[Array Converter] converting ${b(inspect(value, false, null))} to Array<${type.name}>`)
-    return value.map(x => convert(x, type, converters))
+export function defaultArrayConverter(value: any[], prop: ParameterProperties): any {
+    if (!prop.type) return value
+    log(`[Array Converter] converting ${b(inspect(value, false, null))} to Array<${prop.type.name}>`)
+    return value.map(x => convert(x, prop))
 }
 
 export function flattenConverters(converters: [Function, ValueConverter][]) {
@@ -53,20 +64,20 @@ export function flattenConverters(converters: [Function, ValueConverter][]) {
 }
 
 export const DefaultConverterList: [Function, ValueConverter][] = [
-    [Number, Number],
+    [Number, numberConverter],
     [Date, dateConverter],
     [Boolean, booleanConverter]
 ]
 
-export function convert(value: any, type: Class | undefined, converters: Map<Function, ValueConverter>) {
-    if (!type) return value
+export function convert(value: any, prop: ParameterProperties) {
+    if (!prop.type) return value
     if (Array.isArray(value))
-        return defaultArrayConverter(value, type, converters)
-    else if (converters.has(type))
-        return converters.get(type)!(value, type, converters)
+        return defaultArrayConverter(value, prop)
+    else if (prop.converters.has(prop.type))
+        return prop.converters.get(prop.type)!(value, prop)
     //if type of model and has no  converter, use DefaultObject converter
-    else if (isCustomClass(type))
-        return defaultModelConverter(value, type, converters)
+    else if (isCustomClass(prop.type))
+        return defaultModelConverter(value, prop)
     //no converter, return the value
     else
         return value
@@ -132,11 +143,11 @@ function bindRegular(action: FunctionReflection, request: Request, par: Paramete
 
 export function bindParameter(request: Request, action: FunctionReflection, converter?: TypeConverter) {
     const mergedConverters = flattenConverters(DefaultConverterList.concat(converter || []))
-    return action.parameters.map(x => {
-        const converter = (result: any, type?: Class) => convert(result, type || x.typeAnnotation, mergedConverters)
+    return action.parameters.map(((x, i) => {
+        const converter = (result: any, type?: Class) => convert(result, { parameterIndex: i, action, type: type || x.typeAnnotation, converters: mergedConverters });
         return bindArrayDecorator(action, request, x, converter) ||
             bindDecorator(action, request, x, converter) ||
             bindModel(action, request, x, converter) ||
             bindRegular(action, request, x, converter)
-    })
+    }))
 }

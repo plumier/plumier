@@ -1,19 +1,18 @@
+import Koa, { Context } from "koa";
+import BodyParser from "koa-bodyparser";
+import Supertest from "supertest";
+import { decorateParameter } from "tinspector";
 
-import { ActionInvocation } from "../../src/application";
-import { DefaultDependencyResolver, route, Configuration, ActionResult, Class, HttpStatusError } from '../../src/framework';
-import { transformController } from '../../src/router';
-import Koa, { Context } from 'koa';
-import Supertest from "supertest"
-import BodyParser from "koa-bodyparser"
-import { decorateParameter } from 'tinspector';
+import { ActionInvocation } from "../../../src/application";
+import { ActionResult, Class, Configuration, DefaultConfiguration, HttpStatusError, route } from "../../../src/framework";
+import { transformController } from "../../../src/router";
+
 
 function fixture(controller: Class, config?: Partial<Configuration>) {
     return async (ctx: Context) => {
         const ctlRoute = transformController(controller)
         ctx.route = ctlRoute[0]
-        ctx.config = Object.assign(<Configuration>{
-            dependencyResolver: new DefaultDependencyResolver(),
-        }, config)
+        ctx.config = Object.assign(DefaultConfiguration, config)
         const invocation = new ActionInvocation(ctx)
         const result = await invocation.proceed()
         result.execute(ctx)

@@ -1,8 +1,9 @@
-import Koa from "koa"
-import Supertest, { CallbackHandler, Response } from "supertest"
-import { ActionResult, HttpStatusError, Middleware, Invocation } from '../../src';
-import { pipe } from '../../src/application';
-import { MiddlewareUtil } from '../../src/framework';
+import Koa from "koa";
+import Supertest from "supertest";
+
+import { ActionResult, HttpStatusError, Middleware } from "../../../src";
+import { pipe } from "../../../src/application";
+import { MiddlewareUtil } from "../../../src/framework";
 
 describe("ActionResult", () => {
     it("Should execute context properly", async () => {
