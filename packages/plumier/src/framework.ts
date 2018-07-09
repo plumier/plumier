@@ -210,18 +210,15 @@ declare module "koa" {
 /* -------------------------------- HELPERS -------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-
-export namespace StringUtil {
-    export function format(s: string, ...args: any[]) {
-        return s.replace(/{(\d+)}/g, (m, i) => typeof args[i] != 'undefined' ? args[i] : m)
-    }
-
-    export function padRight(s: string, length: number) {
-        const space = " ".repeat(length)
-        return (s + space).substring(0, space.length);
+declare global {
+    interface String {
+        format(...args: any[]): string
     }
 }
 
+String.prototype.format = function (this: string, ...args: any[]) {
+    return this.replace(/{(\d+)}/g, (m, i) => typeof args[i] != 'undefined' ? args[i] : m)
+}
 
 export function hasKeyOf<T>(opt: any, key: string): opt is T {
     return key in opt;
@@ -342,6 +339,13 @@ export class HttpStatusError extends Error {
     constructor(public status: number, message?: string) {
         super(message)
         Object.setPrototypeOf(this, HttpStatusError.prototype);
+    }
+}
+
+export class ValidationError extends HttpStatusError {
+    constructor(public path: string[], message?: string) {
+        super(400, message)
+        Object.setPrototypeOf(this, HttpStatusError.prototype)
     }
 }
 
@@ -613,7 +617,6 @@ export const DefaultConfiguration: Configuration = {
     dependencyResolver: new DefaultDependencyResolver()
 }
 
-
 export namespace errorMessage {
     //PLUM1XXX User configuration error
     export const RouteDoesNotHaveBackingParam = "PLUM1000: Route parameters ({0}) doesn't have appropriate backing parameter"
@@ -625,6 +628,9 @@ export namespace errorMessage {
     export const ArrayWithoutTypeInformation = "PLUM1006: Array without type information found in parameter {0}, parameter binding will be skipped"
 
     //PLUM2XXX internal app error
-    export const RequestedUrlNotFound = "PLUM2001: Requested url not found"
-    export const UnableToConvertStringToNumber = `PLUM2000: Unable to convert value "{0}" into Number in parameter {1}`
+
+
+    //End user error (no error code)
+    export const UnableToConvertValue = `Unable to convert "{0}" into {1} in parameter {2}`
+
 }

@@ -19,79 +19,80 @@ const DefaultNumberProp: ParameterProperties = {
 describe("Converter", () => {
     describe("Number Converter", () => {
         it("Should convert number", () => {
-            const result = convert("123", { ...DefaultNumberProp })
+            const result = convert("123", DefaultNumberProp)
             expect(result).toBe(123)
         })
         it("Should convert float", () => {
-            const result = convert("123.123", { ...DefaultNumberProp })
+            const result = convert("123.123", DefaultNumberProp)
             expect(result).toBe(123.123)
         })
         it("Should convert negative", () => {
-            const result = convert("-123", { ...DefaultNumberProp })
+            const result = convert("-123", DefaultNumberProp)
             expect(result).toBe(-123)
         })
         it("Should convert negative float", () => {
-            const result = convert("-123.123", { ...DefaultNumberProp })
+            const result = convert("-123.123", DefaultNumberProp)
             expect(result).toBe(-123.123)
         })
+        it("Should return undefined if provided null", () => {
+            const result = convert(null, DefaultNumberProp)
+            expect(result).toBeUndefined()
+        })
+        it("Should return undefined if provided undefined", () => {
+            const result = convert(undefined, DefaultNumberProp)
+            expect(result).toBeUndefined()
+        })
         it("Should not convert string", () => {
-            expect(() => convert("hello", { ...DefaultNumberProp })).toThrow("PLUM2000")
+            expect(() => convert("hello", DefaultNumberProp)).toThrow(`Unable to convert "hello" into Number in parameter id`)
         })
     })
 
     describe("Boolean Converter", () => {
-        it("Should convert ON as true", () => {
-            const result = convert("ON", { ...DefaultNumberProp, type: Boolean })
-            expect(result).toEqual(true)
+        const Prop = { ...DefaultNumberProp, type: Boolean }
+        it("Should convert Trusty string to true", () => {
+            const result = ["ON", "TRUE", "1", "YES", 1].map(x => convert(x, Prop))
+            expect(result.every(x => x == true)).toEqual(true)
         })
-        it("Should convert On as true", () => {
-            const result = convert("On", { ...DefaultNumberProp, type: Boolean })
-            expect(result).toEqual(true)
+        it("Should convert Falsy into false", () => {
+            const result = ["OFF", "FALSE", "0", "NO", 0].map(x => convert(x, Prop))
+            expect(result.every(x => x == false)).toEqual(true)
         })
-        it("Should convert on as true", () => {
-            const result = convert("on", { ...DefaultNumberProp, type: Boolean })
-            expect(result).toEqual(true)
-        })
-        it("Should convert TRUE as true", () => {
-            const result = convert("TRUE", { ...DefaultNumberProp, type: Boolean })
-            expect(result).toEqual(true)
-        })
-        it("Should convert True as true", () => {
-            const result = convert("True", { ...DefaultNumberProp, type: Boolean })
-            expect(result).toEqual(true)
-        })
-        it("Should convert true as true", () => {
-            const result = convert("true", { ...DefaultNumberProp, type: Boolean })
-            expect(result).toEqual(true)
-        })
-        it("Should convert 1 as true", () => {
-            const result = convert("1", { ...DefaultNumberProp, type: Boolean })
-            expect(result).toEqual(true)
-        })
-        it("Should return undefined if provided undefined", () => {
-            const result = convert(undefined, { ...DefaultNumberProp, type: Boolean })
+        it("Should return undefined if provided null", () => {
+            const result = convert(null, Prop)
             expect(result).toBeUndefined()
         })
-        it("Should return false if provided empty string", () => {
-            const result = convert("", { ...DefaultNumberProp, type: Boolean })
-            expect(result).toBe(false)
+        it("Should return undefined if provided undefined", () => {
+            const result = convert(undefined, Prop)
+            expect(result).toBeUndefined()
         })
-        it("Should anything else as false", () => {
-            let result = convert("0", { ...DefaultNumberProp, type: Boolean })
-            expect(result).toEqual(false)
-            result = convert("FALSE", { ...DefaultNumberProp, type: Boolean })
-            expect(result).toEqual(false)
-            result = convert("200", { ...DefaultNumberProp, type: Boolean })
-            expect(result).toEqual(false)
-            result = convert("OFF", { ...DefaultNumberProp, type: Boolean })
-            expect(result).toEqual(false)
+        it("Should throw error when provided non convertible string", () => {
+            expect(() => convert("Hello", Prop)).toThrow(`Unable to convert "Hello" into Boolean in parameter id`)
+        })
+        it("Should throw error when provided non convertible number", () => {
+            expect(() => convert(200, Prop)).toThrow(`Unable to convert "200" into Boolean in parameter id`)
         })
     })
 
     describe("Date Converter", () => {
+        const Prop = { ...DefaultNumberProp, type: Date }
         it("Should convert date", () => {
-            const result = convert("2018-12-22", { ...DefaultNumberProp, type: Date })
+            const result = convert("2018-12-22", Prop)
             expect(result.getTime()).toEqual(new Date("2018-12-22").getTime())
+        })
+        it("Should convert date", () => {
+            const result = convert("12/22/2018", Prop)
+            expect(result.getTime()).toEqual(new Date("12/22/2018").getTime())
+        })
+        it("Should return undefined if provided null", () => {
+            const result = convert(null, Prop)
+            expect(result).toBeUndefined()
+        })
+        it("Should return undefined if provided undefined", () => {
+            const result = convert(undefined, Prop)
+            expect(result).toBeUndefined()
+        })
+        it("Should throw error when provided non convertible string", () => {
+            expect(() => convert("Hello", Prop)).toThrow(`Unable to convert "Hello" into Date in parameter id`)
         })
     })
 
@@ -251,7 +252,7 @@ describe("Converter", () => {
     describe("Custom Converter", () => {
         it("Should able to use custom converter", () => {
             const converters: TypeConverter = [[Boolean, x => "Custom Boolean"]]
-            const result = convert("TRUE", {...DefaultNumberProp, type: Boolean, converters: flattenConverters(converters)})
+            const result = convert("TRUE", { ...DefaultNumberProp, type: Boolean, converters: flattenConverters(converters) })
             expect(result).toBe("Custom Boolean")
         })
     })

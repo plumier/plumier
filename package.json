@@ -4,15 +4,14 @@
 	"scripts": {
 		"test": "jest",
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish",
-		"clean": "rimraf packages/**/lib && lerna run package-dev",
-		"compile": "npm run clean && jest && lerna run compile && lerna run package-prod",
+		"clean": "rimraf packages/**/lib",
+		"compile": "npm run clean && jest && lerna run compile",
 		"canary": "npm run compile && lerna publish -c --exact && npm run clean"
 	},
 	"author": "Ketut Sandiarsa",
 	"devDependencies": {
 		"@types/jest": "^23.1.0",
 		"coveralls": "^3.0.1",
-		"edit-json-file": "^1.0.8",
 		"jest": "^23.1.0",
 		"lerna": "^2.11.0",
 		"pre-push": "^0.1.1",

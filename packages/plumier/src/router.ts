@@ -20,7 +20,6 @@ import {
     RootDecorator,
     RouteDecorator,
     RouteInfo,
-    StringUtil,
 } from "./framework";
 
 const log = Debug("plum:router")
@@ -215,7 +214,7 @@ function backingParameterTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     if (missing.length > 0) {
         return {
             type: "error",
-            message: StringUtil.format(errorMessage.RouteDoesNotHaveBackingParam, missing.join(", "))
+            message: errorMessage.RouteDoesNotHaveBackingParam.format(missing.join(", "))
         }
     }
     else return { type: "success" }
@@ -249,7 +248,7 @@ function duplicateRouteTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     if (dup.length > 1) {
         return {
             type: "error",
-            message: StringUtil.format(errorMessage.DuplicateRouteFound, dup.map(x => getActionName(x)).join(" "))
+            message: errorMessage.DuplicateRouteFound.format(dup.map(x => getActionName(x)).join(" "))
         }
     }
     else return { type: "success" }
@@ -266,7 +265,7 @@ function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
         log(`[Analyzer] Model without type information ${b(noTypeInfo.map(x => x.name).join(", "))}`)
         return {
             type: "warning",
-            message: StringUtil.format(errorMessage.ModelWithoutTypeInformation, noTypeInfo.map(x => x.name).join(", "))
+            message: errorMessage.ModelWithoutTypeInformation.format(noTypeInfo.map(x => x.name).join(", "))
         }
     }
     else return { type: "success" }
@@ -279,7 +278,7 @@ function arrayTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
         log(`[Analyzer] Array without item type information in ${array.map(x => x.name).join(", ")}`)
         return {
             type: "warning",
-            message: StringUtil.format(errorMessage.ArrayWithoutTypeInformation, array.map(x => x.name).join(", "))
+            message: errorMessage.ArrayWithoutTypeInformation.format(array.map(x => x.name).join(", "))
         }
     }
     else return { type: 'success' }
@@ -305,15 +304,15 @@ export function analyzeRoutes(routes: RouteInfo[]) {
 
 export function printAnalysis(results: TestResult[]) {
     const data = results.map(x => {
-        const method = StringUtil.padRight(x.route.method.toUpperCase(), 5)
+        const method = x.route.method.toUpperCase().padEnd(5)
         const action = getActionName(x.route)
         const issues = x.issues.map(issue => ` - ${issue.type} ${issue!.message}`)
         return { method, url: x.route.url, action, issues }
     })
     data.forEach((x, i) => {
-        const action = StringUtil.padRight(x.action, Math.max(...data.map(x => x.action.length)))
-        const method = StringUtil.padRight(x.method, Math.max(...data.map(x => x.method.length)))
-        const url = StringUtil.padRight(x.url, Math.max(...data.map(x => x.url.length)))
+        const action = x.action.padEnd(Math.max(...data.map(x => x.action.length)))
+        const method = x.method.padEnd(Math.max(...data.map(x => x.method.length)))
+        const url = x.url.padEnd(Math.max(...data.map(x => x.url.length)))
         const issueColor = (issue: string) => issue.startsWith(" - warning") ? chalk.yellow(issue) : chalk.red(issue)
         const color = x.issues.length == 0 ? (x: string) => x :
             x.issues.some(x => x.startsWith(" - warning")) ? chalk.yellow : chalk.red

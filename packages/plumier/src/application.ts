@@ -22,7 +22,6 @@ import {
     PlumierApplication,
     PlumierConfiguration,
     RouteInfo,
-    StringUtil,
     HttpStatusError,
 } from "./framework";
 import { analyzeRoutes, extractDecorators, printAnalysis, router, transformController, transformModule } from "./router";
@@ -136,7 +135,7 @@ export class Plumier implements PlumierApplication {
             let routes: RouteInfo[] = []
             if (typeof this.config.controller === "string") {
                 if (!existsSync(this.config.controller))
-                    throw new Error(StringUtil.format(errorMessage.ControllerPathNotFound, this.config.controller))
+                    throw new Error(errorMessage.ControllerPathNotFound.format(this.config.controller))
                 routes = await transformModule(this.config.controller)
             }
             else {

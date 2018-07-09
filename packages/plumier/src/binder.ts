@@ -1,9 +1,20 @@
 import Debug from "debug";
 import { Request } from "koa";
-import { inspect, isNullOrUndefined } from "util";
+import { FunctionReflection, ParameterReflection, reflect, decorateClass } from "tinspector";
+import { inspect } from "util";
 
-import { ArrayBindingDecorator, b, BindingDecorator, Class, TypeConverter, ValueConverter, isCustomClass, ParameterProperties, errorMessage, StringUtil } from "./framework";
-import { FunctionReflection, ParameterReflection, reflect } from "tinspector"
+import {
+    ArrayBindingDecorator,
+    b,
+    BindingDecorator,
+    Class,
+    errorMessage,
+    isCustomClass,
+    ParameterProperties,
+    TypeConverter,
+    ValidationError,
+    ValueConverter,
+} from "./framework";
 
 
 const log = Debug("plum:binder")
@@ -17,21 +28,39 @@ const log = Debug("plum:binder")
 /* ------------------------------- CONVERTER ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-export function booleanConverter(value: any) {
-    if (value === null || value === undefined) return undefined
-    return ["on", "true", "1", "yes"].some(x => value.toLocaleLowerCase() == x)
-}
-
-export function numberConverter(value: any, prop:ParameterProperties) {
-    if (value === null || value === undefined) return undefined
-    if (value === "") return undefined
-    const result = Number(value)
-    if (isNaN(result)) throw new Error(StringUtil.format(errorMessage.UnableToConvertStringToNumber, value, `${prop.action.parameters[prop.parameterIndex].name}`))
+export function booleanConverter(rawValue: any, prop: ParameterProperties) {
+    if (rawValue === null || rawValue === undefined) return undefined
+    const value: string = rawValue.toString().toLowerCase()
+    const list: { [key: string]: boolean | undefined } = {
+        on: true, true: true, "1": true, yes: true,
+        off: false, false: false, "0": false, no: false
+    }
+    const result = list[value]
+    if (result === undefined){
+        const path = prop.action.parameters[prop.parameterIndex].name
+        throw new ValidationError([path], errorMessage.UnableToConvertValue.format(rawValue, "Boolean", path))
+    }
     return result
 }
 
-export function dateConverter(value: any) {
-    return new Date(value)
+export function numberConverter(value: any, prop: ParameterProperties) {
+    if (value === null || value === undefined) return undefined
+    const result = Number(value)
+    if (isNaN(result) || value === "") {
+        const path = prop.action.parameters[prop.parameterIndex].name
+        throw new ValidationError([path], errorMessage.UnableToConvertValue.format(value, "Number", path))
+    }
+    return result
+}
+
+export function dateConverter(value: any, prop: ParameterProperties) {
+    if (value === null || value === undefined) return undefined
+    const result = new Date(value)
+    if (isNaN(result.getTime()) || value === "") {
+        const path = prop.action.parameters[prop.parameterIndex].name
+        throw new ValidationError([path], errorMessage.UnableToConvertValue.format(value, "Date", path))
+    }
+    return result
 }
 
 export function defaultModelConverter(value: any, prop: ParameterProperties): any {
