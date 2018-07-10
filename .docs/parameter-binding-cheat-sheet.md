@@ -16,7 +16,7 @@ id parameter will automatically convert to `number` inside `get` action
 ```
 GET /animal/get?id=123    -> 123
 GET /animal/get?id=123.33 -> 123.33
-GET /animal/get?id=hello  -> NaN 
+GET /animal/get?id=hello  -> Error status 400 
 ```
 
 ### Boolean Binding
@@ -34,8 +34,9 @@ GET /animal/get?id=On    -> true
 GET /animal/get?id=TRUE  -> true
 GET /animal/get?id=True  -> true
 GET /animal/get?id=true  -> true
-GET /animal/get?id=1     -> true
-// anything else is false
+GET /animal/get?id=Hello -> Error status 400 
+// working values (case insensitive): 
+// ON, OFF, YES, NO, TRUE, FALSE, 1, 0
 ```
 
 ### Date Binding
@@ -48,7 +49,7 @@ export class AnimalController {
 id parameter will automatically convert to `Date` inside `get` action
 ```
 GET /animal/get?id=2018-2-1    -> equals to new Date(2018, 2, 1)
-GET /animal/get?id=hello       -> Invalid Date
+GET /animal/get?id=hello       -> Error status 400
 ```
 
 
@@ -174,5 +175,31 @@ Result:
 }]
 ```
 
+## Custom Error Message
+By default if value conversion failed Plumier will throw `ConversionError` with status 400 with message `Unable to convert "<value>" into <Type> in parameter <parameter path>`
+
+If you want to provide another error message you can catch the error on the global middleware and re-throw error with your custom message. 
+
+```typescript
+const app = new Plumier()
+app.set(new WebApiFacility())
+app.use({execute: async x => {
+    try{
+        return await x.proceed()
+    }
+    catch(e){
+        if(e instanceof ConversionError){
+            //e.info contains information of current error such as:
+            //- parameter path
+            //- parameter type
+            //- parameter value
+            throw new HttpStatusError(400, "<Your custom message>")
+        }
+        else 
+            throw e
+    }
+}})
+
+```
 
 

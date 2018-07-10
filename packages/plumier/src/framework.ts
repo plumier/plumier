@@ -344,7 +344,7 @@ export class HttpStatusError extends Error {
 }
 
 export class ConversionError extends HttpStatusError {
-    constructor(public opt: { path: string[], type: string, value:any }, message?: string) {
+    constructor(public info: { path: string[], type: string, value:any }, message?: string) {
         super(400, message)
         Object.setPrototypeOf(this, HttpStatusError.prototype)
     }
