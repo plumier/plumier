@@ -13,7 +13,7 @@ const DefaultNumberProp: ParameterProperties = {
     action: metaData.methods[0],
     converters: flattenConverters(DefaultConverterList),
     type: Number,
-    parameterIndex: 0
+    path: ["id"]
 }
 
 describe("Converter", () => {
@@ -97,7 +97,7 @@ describe("Converter", () => {
     })
 
     describe("Model Converter", () => {
-        it("Should convert properties based on constructor properties", () => {
+        it("Should convert model and appropriate properties", () => {
             @decorateClass({})
             class AnimalClass {
                 constructor(
@@ -142,38 +142,72 @@ describe("Converter", () => {
             expect(result).toEqual({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
         })
 
-        it("Should convert nested model", () => {
-            @decorateClass({})
-            class ClientClass {
-                constructor(
-                    public id: number,
-                    public name: string,
-                    public join: Date
-                ) { }
-            }
-
+        it("Should allow undefined value", () => {
             @decorateClass({})
             class AnimalClass {
                 constructor(
                     public id: number,
                     public name: string,
                     public deceased: boolean,
-                    public birthday: Date,
-                    public owner: ClientClass
+                    public birthday: Date
                 ) { }
             }
 
+            const result = convert({}, { ...DefaultNumberProp, type: AnimalClass })
+            expect(result).toBeInstanceOf(AnimalClass)
+            expect(result).toEqual({})
+        })
+
+        it("Should throw if provided non convertible value", () => {
+            @decorateClass({})
+            class AnimalClass {
+                constructor(
+                    public id: number,
+                    public name: string,
+                    public deceased: boolean,
+                    public birthday: Date
+                ) { }
+            }
+
+            expect(() => {
+                convert({ id: "200", name: "Mimi", deceased: "Hello", birthday: "2018-1-1" },
+                    { ...DefaultNumberProp, type: AnimalClass })
+            }).toThrow(`Unable to convert "Hello" into Boolean in parameter id->deceased`)
+        })
+
+    })
+
+    describe("Nested Model", () => {
+        @decorateClass({})
+        class ClientClass {
+            constructor(
+                public id: number,
+                public name: string,
+                public join: Date
+            ) { }
+        }
+
+        @decorateClass({})
+        class AnimalClass {
+            constructor(
+                public id: number,
+                public name: string,
+                public deceased: boolean,
+                public birthday: Date,
+                public owner: ClientClass
+            ) { }
+        }
+
+        const prop = { ...DefaultNumberProp, type: AnimalClass }
+
+        it("Should convert nested model", () => {
             const result: AnimalClass = convert({
                 id: "200",
                 name: "Mimi",
                 deceased: "ON",
                 birthday: "2018-1-1",
-                owner: {
-                    id: "400",
-                    name: "John Doe",
-                    join: "2015-1-1"
-                }
-            }, { ...DefaultNumberProp, type: AnimalClass })
+                owner: { id: "400", name: "John Doe", join: "2015-1-1" }
+            }, prop)
             expect(result).toBeInstanceOf(AnimalClass)
             expect(result.owner).toBeInstanceOf(ClientClass)
             expect(result).toEqual({
@@ -181,12 +215,53 @@ describe("Converter", () => {
                 deceased: true,
                 id: 200,
                 name: "Mimi",
-                owner: {
-                    id: 400,
-                    name: "John Doe",
-                    join: new Date("2015-1-1")
-                }
+                owner: { id: 400, name: "John Doe", join: new Date("2015-1-1") }
             })
+        })
+
+        it("Should sanitize excess data", () => {
+            const result: AnimalClass = convert({
+                id: "200",
+                name: "Mimi",
+                deceased: "ON",
+                birthday: "2018-1-1",
+                excess: "Malicious Code",
+                owner: { id: "400", name: "John Doe", join: "2015-1-1", excess: "Malicious Code" }
+            }, prop)
+            expect(result).toBeInstanceOf(AnimalClass)
+            expect(result.owner).toBeInstanceOf(ClientClass)
+            expect(result).toEqual({
+                birthday: new Date("2018-1-1"),
+                deceased: true,
+                id: 200,
+                name: "Mimi",
+                owner: { id: 400, name: "John Doe", join: new Date("2015-1-1") }
+            })
+        })
+
+        it("Should allow undefined values", () => {
+            const result: AnimalClass = convert({
+                id: "200",
+                name: "Mimi",
+                owner: { id: "400", name: "John Doe" }
+            }, prop)
+            expect(result).toBeInstanceOf(AnimalClass)
+            expect(result.owner).toBeInstanceOf(ClientClass)
+            expect(result).toEqual({
+                id: 200,
+                name: "Mimi",
+                owner: { id: 400, name: "John Doe" }
+            })
+        })
+
+        it("Should throw if non convertible value provided", () => {
+            expect(() => convert({
+                id: "200",
+                name: "Mimi",
+                deceased: "ON",
+                birthday: "2018-1-1",
+                owner: { id: "400", name: "John Doe", join: "Hello" }
+            }, prop)).toThrow(`Unable to convert "Hello" into Date in parameter id->owner->join`)
         })
     })
 

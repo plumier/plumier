@@ -2,7 +2,7 @@ import { basename } from "path";
 import Supertest from "supertest";
 
 import { Plumier, route, WebApiFacility } from "../../src";
-import { Class } from '../../src/framework';
+import { Class, bind, model } from '../../src/framework';
 import { decorateClass } from 'tinspector';
 
 export class AnimalModel {
@@ -66,6 +66,7 @@ describe("Parameter Binding", () => {
                 .expect(200, { b: "TRUE" })
         })
     })
+
     describe("Number parameter binding", () => {
         class AnimalController {
             @route.get()
@@ -116,6 +117,7 @@ describe("Parameter Binding", () => {
                 .expect(200, { b: "12345" })
         })
     })
+
     describe("String parameter binding", () => {
         class AnimalController {
             @route.get()
@@ -138,10 +140,10 @@ describe("Parameter Binding", () => {
             @route.get()
             get(b: Date) { return { b } }
         }
-        it("Should return integer from string", async () => {
+        it("Should return date from string", async () => {
             await Supertest((await fixture(AnimalController)).callback())
                 .get("/animal/get?b=2018-12-22")
-                .expect(200, { b: new Date("2018-12-22") })
+                .expect(200, { b: new Date("2018-12-22").toISOString() })
         })
         it("Should return 400 if invalid number", async () => {
             await Supertest((await fixture(AnimalController)).callback())
@@ -169,20 +171,144 @@ describe("Parameter Binding", () => {
         })
     })
 
-    describe("Model Binding", () => {
-        @decorateClass({})
-            class AnimalClass {
-                constructor(
-                    public id: number,
-                    public name: string,
-                    public deceased: boolean,
-                    public birthday: Date
-                ) { }
-            }
-        class AnimalController {
-            @route.get()
-            get(b: Date) { return { b } }
+    describe("Model parameter binding", () => {
+        @model()
+        class AnimalModel {
+            constructor(
+                public id: number,
+                public name: string,
+                public deceased: boolean,
+                public birthday: Date
+            ) { }
         }
+        class AnimalController {
+            @route.post()
+            save(b: AnimalModel) {
+                expect(b).toBeInstanceOf(AnimalModel)
+                return b
+            }
+        }
+
+        it("Should bind model and its properties", async () => {
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(200, { id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+
+        it("Should sanitize non member data", async () => {
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", excess: "Malicious Script" })
+                .expect(200, { id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+
+        it("Should skip undefined values", async () => {
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({ id: "200" })
+                .expect(200, { id: 200 })
+        })
+
+        it("Should return 400 if provided non convertible value", async () => {
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "Hello" })
+                .expect(400, `Unable to convert "Hello" into Date in parameter b->birthday`)
+        })
+    })
+
+    describe("Nested model parameter binding", () => {
+        @model()
+        class TagModel {
+            constructor(
+                public id: number,
+                public name: string,
+                public expired: Date
+            ) { }
+        }
+        @model()
+        class AnimalModel {
+            constructor(
+                public id: number,
+                public name: string,
+                public deceased: boolean,
+                public birthday: Date,
+                public tag: TagModel
+            ) { }
+        }
+        class AnimalController {
+            @route.post()
+            save(b: AnimalModel) {
+                expect(b).toBeInstanceOf(AnimalModel)
+                expect(b.tag).toBeInstanceOf(TagModel)
+                return b
+            }
+        }
+        it("Should bind nested model and its properties", async () => {
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({
+                    id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
+                    tag: { id: "500", name: "Rabies", expired: "2019-1-1" }
+                })
+                .expect(200, {
+                    id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString(),
+                    tag: { id: 500, name: "Rabies", expired: new Date("2019-1-1").toISOString() }
+                })
+        })
+
+        it("Should sanitize non member data", async () => {
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({
+                    id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", excess: "Malicious Script",
+                    tag: { id: "500", name: "Rabies", expired: "2019-1-1", excess: "Malicious Script" }
+                })
+                .expect(200, {
+                    id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString(),
+                    tag: { id: 500, name: "Rabies", expired: new Date("2019-1-1").toISOString() }
+                })
+        })
+
+        it("Should skip undefined values", async () => {
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({ id: "200", tag: {id: "500"} })
+                .expect(200, { id: 200, tag: {id: 500} })
+        })
+
+        it("Should return 400 if provided non convertible value", async () => {
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({
+                    id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
+                    tag: { id: "500", name: "Rabies", expired: "Hello" }
+                })
+                .expect(400, `Unable to convert "Hello" into Date in parameter b->tag->expired`)
+        })
+    })
+
+    describe("Array parameter binding", () => {
+
+    })
+
+    describe("Nested array parameter binding", () => {
+
+    })
+
+    describe("Request parameter binding", () => {
+
+    })
+
+    describe("Request body parameter binding", () => {
+
+    })
+
+    describe("Request header parameter binding", () => {
+    })
+
+    describe("Request query parameter binding", () => {
     })
 })
 
@@ -194,6 +320,10 @@ describe("Custom Converter", () => {
     it("Should use user defined converter vs default converter", () => {
 
     })
+})
+
+describe("Custom Error Message", () => {
+
 })
 
 describe("Static Analysis", () => {

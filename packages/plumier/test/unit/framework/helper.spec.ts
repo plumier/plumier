@@ -1,3 +1,4 @@
+import "../../../src/framework"
 
 describe("StringUtil.format", () => {
     it("Should assigned value properly", () => {

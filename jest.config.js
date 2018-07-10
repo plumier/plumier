@@ -13,16 +13,18 @@ module.exports = {
             statements: 100
         }
     },
-    roots: [
-        'packages/',
-    ],
+    //rootDir: "packages/",
+    // roots: [
+    //     'packages/',
+    // ],
     transform: {
         "^.+\\.tsx?$": "ts-jest",
     },
     testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.(tsx?)$",
     testPathIgnorePatterns: ["/lib/", "/node_modules/"],
     moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
-    moduleNameMapper: {
-        "tinspector": "<rootDir>/packages/tinspector/src"
-    }
+    // moduleNameMapper: {
+    //     "tinspector": "<rootDir>/packages/tinspector/src",
+    //     "tinspector/test/*": "<rootDir>/packages/tinspector/test",
+    // }
 };

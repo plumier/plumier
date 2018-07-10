@@ -71,16 +71,14 @@ export class ActionInvocation implements Invocation {
     }
 }
 
-/* ------------------------------------------------------------------------------- */
-/* ------------------------- MIDDLEWARE PIPELINE --------------------------------- */
-/* ------------------------------------------------------------------------------- */
 
 export function pipe(middleware: Middleware[], context: Context, invocation: Invocation) {
     return middleware.reverse().reduce((prev: Invocation, cur) => new MiddlewareInvocation(cur, context, prev), invocation)
 }
 
+
 /* ------------------------------------------------------------------------------- */
-/* --------------------------- REQUEST HANDLER ----------------------------------- */
+/* --------------------------- MAIN APPLICATION ---------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
 async function requestHandler(ctx: Context) {
@@ -93,11 +91,6 @@ async function requestHandler(ctx: Context) {
     log(`[Request Handler] Request Header: ${b(inspect(ctx.headers, false, null))}`)
     log(`[Request Handler] Request Body: ${b(inspect(result.body, false, null))}`)
 }
-
-/* ------------------------------------------------------------------------------- */
-/* --------------------------- MAIN APPLICATION ---------------------------------- */
-/* ------------------------------------------------------------------------------- */
-
 
 export class Plumier implements PlumierApplication {
     readonly config: Readonly<PlumierConfiguration>;

@@ -22,10 +22,10 @@ export type ValueConverter = (value: any, prop: ParameterProperties) => any
 export type TypeConverter = ([Function, ValueConverter])[]
 
 export interface ParameterProperties {
+    path: string[],
     type: Class | undefined,
     converters: Map<Function, ValueConverter>,
     action: FunctionReflection,
-    parameterIndex: number
 }
 
 export interface BindingDecorator {
@@ -342,8 +342,8 @@ export class HttpStatusError extends Error {
     }
 }
 
-export class ValidationError extends HttpStatusError {
-    constructor(public path: string[], message?: string) {
+export class ConversionError extends HttpStatusError {
+    constructor(public opt: { path: string[], type: string, value:any }, message?: string) {
         super(400, message)
         Object.setPrototypeOf(this, HttpStatusError.prototype)
     }

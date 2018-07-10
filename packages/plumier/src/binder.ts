@@ -12,7 +12,7 @@ import {
     isCustomClass,
     ParameterProperties,
     TypeConverter,
-    ValidationError,
+    ConversionError,
     ValueConverter,
 } from "./framework";
 
@@ -20,46 +20,34 @@ import {
 const log = Debug("plum:binder")
 
 /* ------------------------------------------------------------------------------- */
-/* -------------------------------- TYPES ---------------------------------------- */
-/* ------------------------------------------------------------------------------- */
-
-
-/* ------------------------------------------------------------------------------- */
 /* ------------------------------- CONVERTER ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
+export function throwValidationError(value: any, type: string, prop: ParameterProperties) {
+    throw new ConversionError({ path: prop.path, type, value },
+        errorMessage.UnableToConvertValue.format(value, type, prop.path.join("->")))
+}
+
 export function booleanConverter(rawValue: any, prop: ParameterProperties) {
-    if (rawValue === null || rawValue === undefined) return undefined
     const value: string = rawValue.toString().toLowerCase()
     const list: { [key: string]: boolean | undefined } = {
         on: true, true: true, "1": true, yes: true,
         off: false, false: false, "0": false, no: false
     }
     const result = list[value]
-    if (result === undefined){
-        const path = prop.action.parameters[prop.parameterIndex].name
-        throw new ValidationError([path], errorMessage.UnableToConvertValue.format(rawValue, "Boolean", path))
-    }
+    if (result === undefined) throwValidationError(rawValue, "Boolean", prop)
     return result
 }
 
 export function numberConverter(value: any, prop: ParameterProperties) {
-    if (value === null || value === undefined) return undefined
     const result = Number(value)
-    if (isNaN(result) || value === "") {
-        const path = prop.action.parameters[prop.parameterIndex].name
-        throw new ValidationError([path], errorMessage.UnableToConvertValue.format(value, "Number", path))
-    }
+    if (isNaN(result) || value === "") throwValidationError(value, "Number", prop)
     return result
 }
 
 export function dateConverter(value: any, prop: ParameterProperties) {
-    if (value === null || value === undefined) return undefined
     const result = new Date(value)
-    if (isNaN(result.getTime()) || value === "") {
-        const path = prop.action.parameters[prop.parameterIndex].name
-        throw new ValidationError([path], errorMessage.UnableToConvertValue.format(value, "Date", path))
-    }
+    if (isNaN(result.getTime()) || value === "") throwValidationError(value, "Date", prop)
     return result
 }
 
@@ -76,7 +64,7 @@ export function defaultModelConverter(value: any, prop: ParameterProperties): an
     log(`[Model Converter] model info ${b(inspect(reflection.ctorParameters))} `)
     const sanitized = reflection.ctorParameters.map(x => ({
         name: x.name,
-        value: convert(value[x.name], { ...prop, type: getType(x) })
+        value: convert(value[x.name], { ...prop, type: getType(x), path: prop.path.concat(x.name) })
     })).reduce((a, b) => { a[b.name] = b.value; return a }, {} as any)
     log(`[Model Converter] Sanitized value ${b(inspect(sanitized, false, null))}`)
     return Object.assign(new prop.type(), sanitized)
@@ -99,6 +87,7 @@ export const DefaultConverterList: [Function, ValueConverter][] = [
 ]
 
 export function convert(value: any, prop: ParameterProperties) {
+    if (value === null || value === undefined) return undefined
     if (!prop.type) return value
     if (Array.isArray(value))
         return defaultArrayConverter(value, prop)
@@ -113,7 +102,7 @@ export function convert(value: any, prop: ParameterProperties) {
 }
 
 /* ------------------------------------------------------------------------------- */
-/* ----------------------------- MODEL BINDER ------------------------------------ */
+/* ----------------------------- BINDER FUNCTIONS -------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
 
@@ -123,11 +112,6 @@ function bindModel(action: FunctionReflection, request: Request, par: ParameterR
     log(`[Model Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Parameter Type: ${b(par.typeAnnotation.name)}`)
     return converter(request.body)
 }
-
-/* ------------------------------------------------------------------------------- */
-/* ------------------------ DECORATOR PARAMETER BINDER --------------------------- */
-/* ------------------------------------------------------------------------------- */
-
 
 function bindDecorator(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): any {
     const decorator: BindingDecorator = par.decorators.find((x: BindingDecorator) => x.type == "ParameterBinding")
@@ -145,21 +129,12 @@ function bindDecorator(action: FunctionReflection, request: Request, par: Parame
     }
 }
 
-/* ------------------------------------------------------------------------------- */
-/* --------------------------- ARRAY PARAMETER BINDER ---------------------------- */
-/* ------------------------------------------------------------------------------- */
-
-
 function bindArrayDecorator(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any, type: Class) => any): any {
     const decorator: ArrayBindingDecorator = par.decorators.find((x: ArrayBindingDecorator) => x.type == "ParameterBinding" && x.name == "Array")
     if (!decorator) return
     log(`[Array Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Type: ${b(decorator.typeAnnotation.name)}`)
     return converter(request.body, decorator.typeAnnotation)
 }
-
-/* ------------------------------------------------------------------------------- */
-/* -------------------------- REGULAR PARAMETER BINDER --------------------------- */
-/* ------------------------------------------------------------------------------- */
 
 function bindRegular(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): any {
     log(`[Regular Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Value: ${b(request.query[par.name])}`)
@@ -173,7 +148,11 @@ function bindRegular(action: FunctionReflection, request: Request, par: Paramete
 export function bindParameter(request: Request, action: FunctionReflection, converter?: TypeConverter) {
     const mergedConverters = flattenConverters(DefaultConverterList.concat(converter || []))
     return action.parameters.map(((x, i) => {
-        const converter = (result: any, type?: Class) => convert(result, { parameterIndex: i, action, type: type || x.typeAnnotation, converters: mergedConverters });
+        const converter = (result: any, type?: Class) => convert(result, {
+            path: [x.name],
+            action, type: type || x.typeAnnotation,
+            converters: mergedConverters
+        });
         return bindArrayDecorator(action, request, x, converter) ||
             bindDecorator(action, request, x, converter) ||
             bindModel(action, request, x, converter) ||
