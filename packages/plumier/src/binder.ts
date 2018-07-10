@@ -51,17 +51,24 @@ export function dateConverter(value: any, prop: ParameterProperties) {
     return result
 }
 
-export function defaultModelConverter(value: any, prop: ParameterProperties): any {
-    if (!prop.type) return value;
+function isObject(value: any) {
+    if (typeof value == "boolean" ||
+        typeof value == "number" ||
+        typeof value == "string") return false
+    else return true
+}
+
+export function defaultModelConverter(value: any, prop: ParameterProperties & { type: Class }): any {
     const getType = (par: ParameterReflection) => {
         const decorator: ArrayBindingDecorator = par.decorators.find((x: ArrayBindingDecorator) => x.type == "ParameterBinding" && x.name == "Array")
         log(`[Model Converter] Constructor parameter ${par.name} decorator ${inspect(par.decorators, false, null)}`)
         if (decorator) return decorator.typeAnnotation as Class
         else return par.typeAnnotation as Class
     }
-    log(`[Model Converter] converting ${b(inspect(value, false, null))} to ${b(prop.type.name)} `)
     const reflection = reflect(prop.type)
-    log(`[Model Converter] model info ${b(inspect(reflection.ctorParameters))} `)
+    if (!isObject(value))
+        throwValidationError(value, prop.type.name, prop)
+    log(`[Model Converter] converting ${b(inspect(value, false, null))} to ${b(prop.type.name)}{${b(reflection.ctorParameters.map(x => x.name).join(", "))}}`)
     const sanitized = reflection.ctorParameters.map(x => ({
         name: x.name,
         value: convert(value[x.name], { ...prop, type: getType(x), path: prop.path.concat(x.name) })
@@ -70,8 +77,7 @@ export function defaultModelConverter(value: any, prop: ParameterProperties): an
     return Object.assign(new prop.type(), sanitized)
 }
 
-export function defaultArrayConverter(value: any[], prop: ParameterProperties): any {
-    if (!prop.type) return value
+export function defaultArrayConverter(value: any[], prop: ParameterProperties & { type: Class }): any {
     log(`[Array Converter] converting ${b(inspect(value, false, null))} to Array<${prop.type.name}>`)
     return value.map(x => convert(x, prop))
 }
@@ -90,12 +96,12 @@ export function convert(value: any, prop: ParameterProperties) {
     if (value === null || value === undefined) return undefined
     if (!prop.type) return value
     if (Array.isArray(value))
-        return defaultArrayConverter(value, prop)
+        return defaultArrayConverter(value, { ...prop, type: prop.type })
     else if (prop.converters.has(prop.type))
         return prop.converters.get(prop.type)!(value, prop)
     //if type of model and has no  converter, use DefaultObject converter
     else if (isCustomClass(prop.type))
-        return defaultModelConverter(value, prop)
+        return defaultModelConverter(value, { ...prop, type: prop.type })
     //no converter, return the value
     else
         return value
@@ -110,6 +116,7 @@ function bindModel(action: FunctionReflection, request: Request, par: ParameterR
     if (!par.typeAnnotation) return
     if (!isCustomClass(par.typeAnnotation)) return
     log(`[Model Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Parameter Type: ${b(par.typeAnnotation.name)}`)
+    log(`[Model Binder] Request Body: ${b(inspect(request.body, false, null))}`)
     return converter(request.body)
 }
 

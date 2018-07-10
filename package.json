@@ -4,8 +4,8 @@
 	"scripts": {
 		"test": "jest",
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish",
-		"clean": "rimraf packages/**/lib",
-		"compile": "npm run clean && jest && lerna run compile",
+		"clean": "rimraf packages/**/lib && lerna run package-dev",
+		"compile": "npm run clean && jest && lerna run compile && lerna run package-prod",
 		"canary": "npm run compile && lerna publish -c --exact && npm run clean"
 	},
 	"author": "Ketut Sandiarsa",

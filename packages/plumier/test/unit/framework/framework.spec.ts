@@ -2,8 +2,8 @@ import Koa from "koa";
 import Supertest from "supertest";
 
 import { ActionResult, HttpStatusError, Middleware } from "../../../src";
-import { pipe } from "../../../src/application";
-import { MiddlewareUtil } from "../../../src/framework";
+import { pipe, Plumier } from "../../../src/application";
+import { MiddlewareUtil, WebApiFacility } from "../../../src/framework";
 
 describe("ActionResult", () => {
     it("Should execute context properly", async () => {
@@ -53,6 +53,25 @@ describe("ActionResult", () => {
             .get("/")
         expect(result.body).toEqual({ body: "The Body" })
         expect(result.header).toMatchObject({ accept: "gzip" })
+    })
+})
+
+describe("WebApiFacility", () => {
+    class AnimalController { get() { } }
+    it("Should able to configure body parser", async () => {
+        const app = new Plumier()
+        app.set({controller: [AnimalController], mode: "production"})
+        app.set(new WebApiFacility({ bodyParser: { strict: false } }))
+        await app.initialize()
+        expect(app).not.toBeNull()
+    })
+
+    it("Should able to configure cors", async () => {
+        const app = new Plumier()
+        app.set({controller: [AnimalController], mode: "production"})
+        app.set(new WebApiFacility({ cors: { maxAge: 50 } }))
+        await app.initialize()
+        expect(app).not.toBeNull()
     })
 })
 

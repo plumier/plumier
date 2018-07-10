@@ -163,7 +163,6 @@ function reflectClass(fn: Class): ClassReflection {
 }
 
 function reflectObject(object: any, name: string = "module"): ObjectReflection {
-    console.log(name)
     return {
         type: "Object", name,
         members: Object.keys(object).map(x => traverse(object[x], x))
@@ -185,10 +184,8 @@ export function reflect(path: string): Promise<ObjectReflection>
 export function reflect(classType: Class): ClassReflection
 export function reflect(option: string | Class) {
     if (typeof option === "string") {
-        console.log(option)
         return Promise.resolve(import(option))
             .then(object => {
-                console.log(inspect(object, false, null))
                 return reflectObject(object)
             })
     }

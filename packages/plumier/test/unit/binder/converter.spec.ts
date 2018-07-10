@@ -175,6 +175,22 @@ describe("Converter", () => {
             }).toThrow(`Unable to convert "Hello" into Boolean in parameter id->deceased`)
         })
 
+        it("Should throw if provided non convertible value", () => {
+            @decorateClass({})
+            class AnimalClass {
+                constructor(
+                    public id: number,
+                    public name: string,
+                    public deceased: boolean,
+                    public birthday: Date
+                ) { }
+            }
+
+            expect(() => {
+                convert("Hello", { ...DefaultNumberProp, type: AnimalClass })
+            }).toThrow(`Unable to convert "Hello" into AnimalClass in parameter id`)
+        })
+
     })
 
     describe("Nested Model", () => {
@@ -263,10 +279,20 @@ describe("Converter", () => {
                 owner: { id: "400", name: "John Doe", join: "Hello" }
             }, prop)).toThrow(`Unable to convert "Hello" into Date in parameter id->owner->join`)
         })
+
+        it("Should throw if non convertible model provided", () => {
+            expect(() => convert({
+                id: "200",
+                name: "Mimi",
+                deceased: "ON",
+                birthday: "2018-1-1",
+                owner: "Hello"
+            }, prop)).toThrow(`Unable to convert "Hello" into ClientClass in parameter id->owner`)
+        })
     })
 
     describe("Array Converter", () => {
-        it("Should convert array", () => {
+        it("Should convert array of number", () => {
             const result = convert(["123", "123", "123"], { ...DefaultNumberProp })
             expect(result).toEqual([123, 123, 123])
         })

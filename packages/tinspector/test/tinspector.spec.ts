@@ -283,7 +283,7 @@ describe("Decorator", () => {
 })
 
 describe("Module Introspection", () => {
-    it.only("Should inspect function", async () => {
+    it("Should inspect function", async () => {
         const meta = await reflect(join(__dirname, "./mock.function.ts"))
         expect(meta.members[0]).toEqual({
             type: 'Function',

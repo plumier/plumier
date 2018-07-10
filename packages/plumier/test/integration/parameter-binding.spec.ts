@@ -274,8 +274,8 @@ describe("Parameter Binding", () => {
         it("Should skip undefined values", async () => {
             await Supertest((await fixture(AnimalController)).callback())
                 .post("/animal/save")
-                .send({ id: "200", tag: {id: "500"} })
-                .expect(200, { id: 200, tag: {id: 500} })
+                .send({ id: "200", tag: { id: "500" } })
+                .expect(200, { id: 200, tag: { id: 500 } })
         })
 
         it("Should return 400 if provided non convertible value", async () => {
@@ -290,7 +290,76 @@ describe("Parameter Binding", () => {
     })
 
     describe("Array parameter binding", () => {
+        it("Should bind array of number", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.array(Number) b: number[]) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send(["1", "2", "3"])
+                .expect(200, [1, 2, 3])
+        })
 
+        it("Should bind array of boolean", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.array(Boolean) b: boolean[]) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send(["YES", "TRUE", "1", "ON"])
+                .expect(200, [true, true, true, true])
+        })
+
+        it("Should bind array of Date", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.array(Date) b: Date[]) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send(["2018-1-1", "2018-1-1"])
+                .expect(200, [new Date("2018-1-1").toISOString(), new Date("2018-1-1").toISOString()])
+        })
+
+        it("Should bind array of Model", async () => {
+            @model()
+            class AnimalModel {
+                constructor(
+                    public id: number,
+                    public name: string) { }
+            }
+            class AnimalController {
+                @route.post()
+                save(@bind.array(AnimalModel) b: AnimalModel[]) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send([{ id: "123", name: "Mimi" }, { id: "123", name: "Mimi" }])
+                .expect(200, [{ id: 123, name: "Mimi" }, { id: 123, name: "Mimi" }])
+        })
+
+        it("Should return 400 if provided invalid value", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.array(Boolean) b: boolean[]) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send(["Hello", "TRUE", "1", "ON"])
+                .expect(400, `Unable to convert "Hello" into Boolean in parameter b`)
+        })
     })
 
     describe("Nested array parameter binding", () => {
@@ -306,9 +375,11 @@ describe("Parameter Binding", () => {
     })
 
     describe("Request header parameter binding", () => {
+
     })
 
     describe("Request query parameter binding", () => {
+        
     })
 })
 

@@ -4,9 +4,6 @@ import Supertest from "supertest";
 import { Plumier, route, WebApiFacility, HttpStatusError } from "../../src";
 import { Class, middleware } from '../../src/framework';
 
-
-
-
 function fixture(controller: Class) {
     return new Plumier()
         .set(new WebApiFacility())

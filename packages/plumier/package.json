@@ -2,8 +2,7 @@
   "name": "plumier",
   "version": "0.1.0-alpha.4a612e29",
   "description": "Pleasant TypeScript Web Api Framework",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "src/index.ts",
   "keywords": [
     "MVC",
     "Express",
@@ -14,7 +13,9 @@
     "TDD"
   ],
   "scripts": {
-    "compile": "tsc -p tsconfig.build.json"
+    "compile": "tsc -p tsconfig.build.json",
+    "package-prod": "node ../../.script/modify-package production",
+    "package-dev": "node ../../.script/modify-package"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
