@@ -6,6 +6,7 @@ import { Class, bind, model, ConversionError, HttpStatusError } from '../../src/
 import { decorateClass } from 'tinspector';
 import { Request } from 'koa';
 import { IncomingMessage, ServerResponse } from 'http';
+import { consoleLog } from '../helper';
 
 export class AnimalModel {
     constructor(
@@ -218,7 +219,7 @@ describe("Parameter Binding", () => {
                 .expect(400, `Unable to convert "Hello" into Date in parameter b->birthday`)
         })
 
-        it.only("Should provide informative error when model instantiation failed", async () => {
+        it("Should provide informative error when model instantiation failed", async () => {
             @model()
             class AnimalModel {
                 constructor() { 
@@ -232,10 +233,44 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController).initialize()).callback())
+            const koa = await fixture(AnimalController).initialize()
+            let error = false
+            koa.on("error", (e) => { 
+                expect(e.message).toContain("PLUM2000")
+                error = true
+            })
+            await Supertest(koa.callback())
                 .post("/animal/save")
                 .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "Hello" })
-                .expect(500, `Unable to convert "Hello" into Date in parameter b->birthday`)
+                .expect(500, `Internal Server Error`)
+            expect(error).toBe(true)
+        })
+
+        it("Should provide informative error when model instantiation failed and throws non Error instance", async () => {
+            @model()
+            class AnimalModel {
+                constructor() { 
+                    throw "Other error"
+                }
+            }
+            class AnimalController {
+                @route.post()
+                save(b: AnimalModel) {
+                    expect(b).toBeInstanceOf(AnimalModel)
+                    return b
+                }
+            }
+            const koa = await fixture(AnimalController).initialize()
+            let error = false
+            koa.on("error", (e) => { 
+                expect(e.message).toContain("PLUM2000")
+                error = true
+            })
+            await Supertest(koa.callback())
+                .post("/animal/save")
+                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "Hello" })
+                .expect(500, `Internal Server Error`)
+            expect(error).toBe(true)
         })
     })
 
@@ -810,7 +845,7 @@ describe("Custom Converter", () => {
             }
         }
         const koa = await fixture(AnimalController)
-            .set({ converters: [[AnimalModel, (value) => new AnimalModel(value)]] })
+            .set({ converters: [{type: AnimalModel, converter: (value) => new AnimalModel(value)}] })
             .initialize()
         await Supertest(koa.callback())
             .post("/animal/save")

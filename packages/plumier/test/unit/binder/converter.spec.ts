@@ -358,7 +358,7 @@ describe("Converter", () => {
 
     describe("Custom Converter", () => {
         it("Should able to use custom converter", () => {
-            const converters: TypeConverter = [[Boolean, x => "Custom Boolean"]]
+            const converters: TypeConverter[] = [{type: Boolean, converter: x => "Custom Boolean"}]
             const result = convert("TRUE", { ...DefaultNumberProp, parameterType: Boolean, converters: flattenConverters(converters) })
             expect(result).toBe("Custom Boolean")
         })

@@ -20,12 +20,12 @@ export type RequestPart = keyof Request
 export type HeaderPart = keyof IncomingHttpHeaders
 export type Class = new (...args: any[]) => any
 export type ValueConverter = (value: any, prop: ParameterProperties & { parameterType: Class }) => any
-export type TypeConverter = ([Function, ValueConverter])[]
+export type TypeConverter = { type: Class, converter: ValueConverter }
 
 export interface ParameterProperties {
     path: string[],
     parameterType: Class | undefined,
-    decorators:any[]
+    decorators: any[]
     converters: Map<Function, ValueConverter>,
 }
 
@@ -118,7 +118,7 @@ export interface Configuration {
     }
     ```
      */
-    converters?: TypeConverter,
+    converters?: TypeConverter[],
 
     /**
      * Set custom validator
@@ -226,7 +226,7 @@ export function hasKeyOf<T>(opt: any, key: string): opt is T {
 }
 
 export function b(msg: any) {
-    if(typeof msg === "object")
+    if (typeof msg === "object")
         return Chalk.blue(inspect(msg))
     else return Chalk.blue(msg)
 }
@@ -347,7 +347,7 @@ export class HttpStatusError extends Error {
 }
 
 export class ConversionError extends HttpStatusError {
-    constructor(public info: { path: string[], type: string, value:any }, message?: string) {
+    constructor(public info: { path: string[], type: string, value: any }, message?: string) {
         super(400, message)
         Object.setPrototypeOf(this, ConversionError.prototype)
     }

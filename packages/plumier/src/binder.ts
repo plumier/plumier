@@ -32,15 +32,15 @@ function createConversionError(value: any, prop: ParameterProperties & { paramet
 }
 
 
-export function flattenConverters(converters: [Function, ValueConverter][]) {
-    return converters.reduce((a, b) => { a.set(b[0], b[1]); return a }, new Map<Function, ValueConverter>())
+export function flattenConverters(converters: TypeConverter[]) {
+    return converters.reduce((a, b) => { a.set(b.type, b.converter); return a }, new Map<Function, ValueConverter>())
 }
 
 //some object can't simply convertible to string https://github.com/emberjs/ember.js/issues/14922#issuecomment-278986178
-function safeToString(value:any){
-    try{
+function safeToString(value: any) {
+    try {
         return value.toString()
-    } catch(e){
+    } catch (e) {
         return "[object Object]"
     }
 }
@@ -113,16 +113,16 @@ export function defaultModelConverter(value: any, prop: ParameterProperties & { 
     log(`[Model Converter] Sanitized value ${b(sanitized)}`)
 
     //crete new instance of the type and assigned the sanitized values
-    try{
+    try {
         return Object.assign(new prop.parameterType(), sanitized)
     }
-    catch(e){
+    catch (e) {
         const message = errorMessage.UnableToInstantiateModel.format(prop.parameterType.name)
-        if(e instanceof Error){
-            e.message =  message + "\n" + e.message
+        if (e instanceof Error) {
+            e.message = message + "\n" + e.message
             throw e
         }
-        else throw new Error(message) 
+        else throw new Error(message)
     }
 }
 
@@ -138,10 +138,10 @@ export function defaultArrayConverter(value: any[], prop: ParameterProperties & 
     })))
 }
 
-export const DefaultConverterList: [Function, ValueConverter][] = [
-    [Number, numberConverter],
-    [Date, dateConverter],
-    [Boolean, booleanConverter]
+export const DefaultConverterList: TypeConverter[] = [
+    { type: Number, converter: numberConverter },
+    { type: Date, converter: dateConverter },
+    { type: Boolean, converter: booleanConverter }
 ]
 
 export function convert(value: any, prop: ParameterProperties) {
@@ -208,7 +208,7 @@ function bindRegular(action: FunctionReflection, request: Request, par: Paramete
     return converter(request.query[par.name.toLowerCase()])
 }
 
-export function bindParameter(request: Request, action: FunctionReflection, converter?: TypeConverter) {
+export function bindParameter(request: Request, action: FunctionReflection, converter?: TypeConverter[]) {
     const mergedConverters = flattenConverters(DefaultConverterList.concat(converter || []))
     return action.parameters.map(((x, i) => {
         const converter = (result: any, type?: Class) => convert(result, {
