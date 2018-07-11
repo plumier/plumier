@@ -153,7 +153,6 @@ function checkUrlMatch(route: RouteInfo, ctx: Context) {
 
 export function router(infos: RouteInfo[], config: Configuration, handler: (ctx: Context) => Promise<void>) {
     return async (ctx: Context, next: () => Promise<void>) => {
-    console.log(ctx.path)
     const match = infos.map(x => checkUrlMatch(x, ctx))
             .find(x => Boolean(x.match) && x.method == ctx.method)
         if (match) {

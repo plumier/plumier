@@ -465,7 +465,7 @@ describe("Parameter Binding", () => {
     })
 
     describe("Request parameter binding", () => {
-        it.only("Should bind request", async () => {
+        it("Should bind request", async () => {
             class AnimalController {
                 @route.get()
                 get(@bind.request() b: Request) {
@@ -634,7 +634,7 @@ describe("Parameter Binding", () => {
                 .expect(200, { id: 747474, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
         })
 
-        it.only("Should be able to combine with model binding", async () => {
+        it("Should be able to combine with model binding", async () => {
             @model()
             class PagingModel {
                 constructor(
