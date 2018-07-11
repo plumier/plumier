@@ -19,11 +19,11 @@ import {
 
 const log = Debug("plum:binder")
 
-/* ------------------------------------------------------------------------------- */
-/* ------------------------------- CONVERTER ------------------------------------- */
-/* ------------------------------------------------------------------------------- */
+function getArrayDecorator(decorators: any[]) {
+    return decorators.find((x: ArrayBindingDecorator): x is ArrayBindingDecorator => x.type == "ParameterBinding" && x.name == "Array")
+}
 
-export function createConversionError(value: any, prop: ParameterProperties & { parameterType: Class }) {
+function createConversionError(value: any, prop: ParameterProperties & { parameterType: Class }) {
     const decorator = getArrayDecorator(prop.decorators)
     const type = decorator ? `Array<${decorator.typeAnnotation.name}>` : prop.parameterType.name
     log(`[Converter] Unable to convert ${b(value)} into ${b(type)}`)
@@ -31,26 +31,46 @@ export function createConversionError(value: any, prop: ParameterProperties & { 
         errorMessage.UnableToConvertValue.format(value, type, prop.path.join("->")))
 }
 
+
+export function flattenConverters(converters: [Function, ValueConverter][]) {
+    return converters.reduce((a, b) => { a.set(b[0], b[1]); return a }, new Map<Function, ValueConverter>())
+}
+
+//some object can't simply convertible to string https://github.com/emberjs/ember.js/issues/14922#issuecomment-278986178
+function safeToString(value:any){
+    try{
+        return value.toString()
+    } catch(e){
+        return "[object Object]"
+    }
+}
+
+/* ------------------------------------------------------------------------------- */
+/* ------------------------------- CONVERTER ------------------------------------- */
+/* ------------------------------------------------------------------------------- */
+
 export function booleanConverter(rawValue: any, prop: ParameterProperties & { parameterType: Class }) {
-    const value: string = rawValue.toString().toLowerCase()
+    const value: string = safeToString(rawValue)
     const list: { [key: string]: boolean | undefined } = {
         on: true, true: true, "1": true, yes: true,
         off: false, false: false, "0": false, no: false
     }
-    const result = list[value]
-    log(`[Boolean Converter] Raw: ${b(rawValue)} Value: ${b(result)}`)
-    if (result === undefined) throw createConversionError(rawValue, prop)
+    const result = list[value.toLowerCase()]
+    log(`[Boolean Converter] Raw: ${b(value)} Value: ${b(result)}`)
+    if (result === undefined) throw createConversionError(value, prop)
     return result
 }
 
-export function numberConverter(value: any, prop: ParameterProperties & { parameterType: Class }) {
+export function numberConverter(rawValue: any, prop: ParameterProperties & { parameterType: Class }) {
+    const value = safeToString(rawValue)
     const result = Number(value)
     if (isNaN(result) || value === "") throw createConversionError(value, prop)
     log(`[Number Converter] Raw: ${b(value)} Value: ${b(result)}`)
     return result
 }
 
-export function dateConverter(value: any, prop: ParameterProperties & { parameterType: Class }) {
+export function dateConverter(rawValue: any, prop: ParameterProperties & { parameterType: Class }) {
+    const value = safeToString(rawValue)
     const result = new Date(value)
     if (isNaN(result.getTime()) || value === "") throw createConversionError(value, prop)
     log(`[Date Converter] Raw: ${b(value)} Value: ${b(result)}`)
@@ -93,11 +113,21 @@ export function defaultModelConverter(value: any, prop: ParameterProperties & { 
     log(`[Model Converter] Sanitized value ${b(sanitized)}`)
 
     //crete new instance of the type and assigned the sanitized values
-    return Object.assign(new prop.parameterType(), sanitized)
+    try{
+        return Object.assign(new prop.parameterType(), sanitized)
+    }
+    catch(e){
+        const message = errorMessage.UnableToInstantiateModel.format(prop.parameterType.name)
+        if(e instanceof Error){
+            e.message =  message + "\n" + e.message
+            throw e
+        }
+        else throw new Error(message) 
+    }
 }
 
 export function defaultArrayConverter(value: any[], prop: ParameterProperties & { parameterType: Class }): any {
-    const decorator:ArrayBindingDecorator = getArrayDecorator(prop.decorators)!
+    const decorator: ArrayBindingDecorator = getArrayDecorator(prop.decorators)!
     if (!Array.isArray(value)) throw createConversionError(value, prop)
     log(`[Array Converter] converting ${b(value)} to Array<${decorator.typeAnnotation.name}>`)
     return value.map(((x, i) => convert(x, {
@@ -106,10 +136,6 @@ export function defaultArrayConverter(value: any[], prop: ParameterProperties & 
         decorators: [],
         parameterType: decorator.typeAnnotation
     })))
-}
-
-export function flattenConverters(converters: [Function, ValueConverter][]) {
-    return converters.reduce((a, b) => { a.set(b[0], b[1]); return a }, new Map<Function, ValueConverter>())
 }
 
 export const DefaultConverterList: [Function, ValueConverter][] = [
@@ -121,10 +147,15 @@ export const DefaultConverterList: [Function, ValueConverter][] = [
 export function convert(value: any, prop: ParameterProperties) {
     if (value === null || value === undefined) return undefined
     if (!prop.parameterType) return value
-    log(`[Converter] Path: ${b(prop.path.join("->"))} Type:${b(prop.parameterType.name)} Decorators: ${b(prop.decorators.map(x => x.name).join(", "))}`)
-    //if (prop.parameter.decorators.some((x:ArrayBindingDecorator)  => x.type == "ParameterBinding" && x.name == "Array"))
+    log(`[Converter] Path: ${b(prop.path.join("->"))} ` +
+        `Source Type: ${b(typeof value)} ` +
+        `Target Type:${b(prop.parameterType.name)} ` +
+        `Decorators: ${b(prop.decorators.map(x => x.name).join(", "))} ` +
+        `Value: ${b(value)}`)
+    //check if the parameter contains @bind.array()
     if (Boolean(getArrayDecorator(prop.decorators)))
         return defaultArrayConverter(value, { ...prop, parameterType: prop.parameterType })
+    //check if parameter is native value that has default converter (Number, Date, Boolean) or if user provided converter
     else if (prop.converters.has(prop.parameterType))
         return prop.converters.get(prop.parameterType)!(value, { ...prop, parameterType: prop.parameterType })
     //if type of model and has no  converter, use DefaultObject converter
@@ -152,7 +183,7 @@ function bindDecorator(action: FunctionReflection, request: Request, par: Parame
     const decorator: BindingDecorator = par.decorators.find((x: BindingDecorator) => x.type == "ParameterBinding")
     if (!decorator) return
     log(`[Decorator Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Decorator: ${b(decorator.name)} Part: ${b(decorator.part)}`)
-    const getDataOrPart = (data:any) => decorator.part ? data && data[decorator.part] : data
+    const getDataOrPart = (data: any) => decorator.part ? data && data[decorator.part] : data
     switch (decorator.name) {
         case "Body":
             return converter(getDataOrPart(request.body))
@@ -175,14 +206,6 @@ function bindArrayDecorator(action: FunctionReflection, request: Request, par: P
 function bindRegular(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): any {
     log(`[Regular Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Value: ${b(request.query[par.name])}`)
     return converter(request.query[par.name.toLowerCase()])
-}
-
-/* ------------------------------------------------------------------------------- */
-/* -------------------------- MAIN PARAMETER BINDER --------------------------- */
-/* ------------------------------------------------------------------------------- */
-
-function getArrayDecorator(decorators: any[]) {
-    return decorators.find((x: ArrayBindingDecorator): x is ArrayBindingDecorator => x.type == "ParameterBinding" && x.name == "Array")
 }
 
 export function bindParameter(request: Request, action: FunctionReflection, converter?: TypeConverter) {

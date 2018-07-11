@@ -2,7 +2,7 @@ import { basename } from "path";
 import Supertest from "supertest";
 
 import { Plumier, route, WebApiFacility } from "../../src";
-import { Class, bind, model } from '../../src/framework';
+import { Class, bind, model, ConversionError, HttpStatusError } from '../../src/framework';
 import { decorateClass } from 'tinspector';
 import { Request } from 'koa';
 import { IncomingMessage, ServerResponse } from 'http';
@@ -20,7 +20,6 @@ function fixture(controller: Class) {
         .set(new WebApiFacility())
         .set({ controller: [controller] })
         .set({ mode: "production" })
-        .initialize()
 }
 
 describe("Parameter Binding", () => {
@@ -30,32 +29,32 @@ describe("Parameter Binding", () => {
             get(b: boolean) { return { b } }
         }
         it("Should convert Truthy as true", async () => {
-            const callback = (await fixture(AnimalController)).callback()
+            const callback = (await fixture(AnimalController).initialize()).callback()
             const result = await Promise.all(["ON", "TRUE", "1", "YES"]
                 .map(x => Supertest(callback).get(`/animal/get?b=${x}`)))
             expect(result.map(x => x.body.b)).toEqual([true, true, true, true])
         })
         it("Should convert Falsy as false", async () => {
-            const callback = (await fixture(AnimalController)).callback()
+            const callback = (await fixture(AnimalController).initialize()).callback()
             const result = await Promise.all(["OFF", "FALSE", "0", "NO"]
                 .map(x => Supertest(callback).get(`/animal/get?b=${x}`)))
             expect(result.map(x => x.body.b)).toEqual([false, false, false, false])
         })
         it("Should return {} if value not provided", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
                 .expect(200, {})
         })
         it("Should return 400 if empty string provided", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=")
                 .expect(400, 'Unable to convert "" into Boolean in parameter b')
         })
         it("Should return 400 if any other value provided", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=2")
                 .expect(400, 'Unable to convert "2" into Boolean in parameter b')
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=hello")
                 .expect(400, 'Unable to convert "hello" into Boolean in parameter b')
         })
@@ -63,7 +62,7 @@ describe("Parameter Binding", () => {
             class AnimalController {
                 get(b: boolean) { return { b } }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=TRUE")
                 .expect(200, { b: "TRUE" })
         })
@@ -75,37 +74,37 @@ describe("Parameter Binding", () => {
             get(b: number) { return { b } }
         }
         it("Should return integer from string", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=123")
                 .expect(200, { b: 123 })
         })
         it("Should return negative integer from string", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=-123")
                 .expect(200, { b: -123 })
         })
         it("Should return float from string", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=123.4444")
                 .expect(200, { b: 123.4444 })
         })
         it("Should return negative float from string", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=-123.4444")
                 .expect(200, { b: -123.4444 })
         })
         it("Should return 400 if invalid number", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=hello")
                 .expect(400, `Unable to convert "hello" into Number in parameter b`)
         })
         it("Should return 400 if value not provided", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=")
                 .expect(400, `Unable to convert "" into Number in parameter b`)
         })
         it("Should return undefined if value not specified", async () => {
-            const result = await Supertest((await fixture(AnimalController)).callback())
+            const result = await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
                 .expect(200)
             expect(result.body).toEqual({})
@@ -114,7 +113,7 @@ describe("Parameter Binding", () => {
             class AnimalController {
                 get(b: number) { return { b } }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=12345")
                 .expect(200, { b: "12345" })
         })
@@ -126,12 +125,12 @@ describe("Parameter Binding", () => {
             get(b: string) { return { b } }
         }
         it("Should return integer from string", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=123")
                 .expect(200, { b: "123" })
         })
         it("Should return integer from string", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=TRUE")
                 .expect(200, { b: "TRUE" })
         })
@@ -143,22 +142,22 @@ describe("Parameter Binding", () => {
             get(b: Date) { return { b } }
         }
         it("Should return date from string", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=2018-12-22")
                 .expect(200, { b: new Date("2018-12-22").toISOString() })
         })
         it("Should return 400 if invalid number", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=hello")
                 .expect(400, `Unable to convert "hello" into Date in parameter b`)
         })
         it("Should return 400 if value not provided", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=")
                 .expect(400, `Unable to convert "" into Date in parameter b`)
         })
         it("Should return undefined if value not specified", async () => {
-            const result = await Supertest((await fixture(AnimalController)).callback())
+            const result = await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
                 .expect(200)
             expect(result.body).toEqual({})
@@ -167,7 +166,7 @@ describe("Parameter Binding", () => {
             class AnimalController {
                 get(b: number) { return { b } }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=2018-12-22")
                 .expect(200, { b: "2018-12-22" })
         })
@@ -192,31 +191,51 @@ describe("Parameter Binding", () => {
         }
 
         it("Should bind model and its properties", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
                 .expect(200, { id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
         })
 
         it("Should sanitize non member data", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", excess: "Malicious Script" })
                 .expect(200, { id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
         })
 
         it("Should skip undefined values", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({ id: "200" })
                 .expect(200, { id: 200 })
         })
 
         it("Should return 400 if provided non convertible value", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "Hello" })
                 .expect(400, `Unable to convert "Hello" into Date in parameter b->birthday`)
+        })
+
+        it.only("Should provide informative error when model instantiation failed", async () => {
+            @model()
+            class AnimalModel {
+                constructor() { 
+                    throw new Error("ERROR")
+                }
+            }
+            class AnimalController {
+                @route.post()
+                save(b: AnimalModel) {
+                    expect(b).toBeInstanceOf(AnimalModel)
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .post("/animal/save")
+                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "Hello" })
+                .expect(500, `Unable to convert "Hello" into Date in parameter b->birthday`)
         })
     })
 
@@ -248,7 +267,7 @@ describe("Parameter Binding", () => {
             }
         }
         it("Should bind nested model and its properties", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({
                     id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
@@ -261,7 +280,7 @@ describe("Parameter Binding", () => {
         })
 
         it("Should sanitize non member data", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({
                     id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", excess: "Malicious Script",
@@ -274,14 +293,14 @@ describe("Parameter Binding", () => {
         })
 
         it("Should skip undefined values", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({ id: "200", tag: { id: "500" } })
                 .expect(200, { id: 200, tag: { id: 500 } })
         })
 
         it("Should return 400 if provided non convertible value", async () => {
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({
                     id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
@@ -299,7 +318,7 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send(["1", "2", "3"])
                 .expect(200, [1, 2, 3])
@@ -312,7 +331,7 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send(["YES", "TRUE", "1", "ON"])
                 .expect(200, [true, true, true, true])
@@ -325,7 +344,7 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send(["2018-1-1", "2018-1-1"])
                 .expect(200, [new Date("2018-1-1").toISOString(), new Date("2018-1-1").toISOString()])
@@ -344,7 +363,7 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send([{ id: "123", name: "Mimi" }, { id: "123", name: "Mimi" }])
                 .expect(200, [{ id: 123, name: "Mimi" }, { id: 123, name: "Mimi" }])
@@ -357,7 +376,7 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send(["Hello", "TRUE", "1", "ON"])
                 .expect(400, `Unable to convert "Hello" into Boolean in parameter b->0`)
@@ -391,7 +410,7 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({
                     id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
@@ -410,7 +429,7 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send([{
                     id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
@@ -435,7 +454,7 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send([{
                     id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
@@ -451,7 +470,7 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send([{
                     id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
@@ -473,7 +492,7 @@ describe("Parameter Binding", () => {
                     expect(b.res).toBeInstanceOf(ServerResponse)
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
                 .expect(200)
         })
@@ -484,7 +503,7 @@ describe("Parameter Binding", () => {
                     expect(typeof b).toBe("string")
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
                 .expect(200)
         })
@@ -496,7 +515,7 @@ describe("Parameter Binding", () => {
                     expect(b.url).toEqual("/animal/get")
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
                 .expect(200)
         })
@@ -506,7 +525,17 @@ describe("Parameter Binding", () => {
                 get(@bind.request("req") b: number) {
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .get("/animal/get")
+                .expect(400, `Unable to convert "[object Object]" into Number in parameter b`)
+        })
+        it("Should return 400 if provided invalid type on whole request", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.request() b: number) {
+                }
+            }
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
                 .expect(400, `Unable to convert "[object Object]" into Number in parameter b`)
         })
@@ -531,7 +560,7 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
                 .expect(200, { id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
@@ -545,7 +574,7 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
                 .expect(200, "747474")
@@ -558,10 +587,23 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
                 .expect(400, `Unable to convert "747474" into Boolean in parameter b`)
+        })
+
+        it("Should return 400 if provided non convertible type on whole body", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.body() b: boolean) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .post("/animal/save")
+                .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(400, `Unable to convert "[object Object]" into Boolean in parameter b`)
         })
     })
 
@@ -573,7 +615,7 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            const result = await Supertest((await fixture(AnimalController)).callback())
+            const result = await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
                 .expect(200)
@@ -591,7 +633,7 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            const result = await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
                 .expect(200, "application/json")
@@ -604,10 +646,23 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            const result = await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
                 .expect(400, `Unable to convert "application/json" into Number in parameter b`)
+        })
+
+        it("Should return 400 if provided non convertible type on whole header", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.header() b: number) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .post("/animal/save")
+                .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(400, `Unable to convert "[object Object]" into Number in parameter b`)
         })
     })
 
@@ -629,7 +684,7 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
                 .expect(200, { id: 747474, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
         })
@@ -650,7 +705,7 @@ describe("Parameter Binding", () => {
                     return { page, model }
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save?start=200&limit=50")
                 .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
                 .expect(200, {
@@ -667,20 +722,100 @@ describe("Parameter Binding", () => {
                     return b
                 }
             }
-            await Supertest((await fixture(AnimalController)).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
-                .expect(200, "474747")
+                .expect(200, "747474")
         })
 
         it("Should return 400 if provided non convertible type", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.query("id") b: boolean) {
+                    expect(typeof b).toEqual("number")
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
+                .expect(400, `Unable to convert "747474" into Boolean in parameter b`)
+        })
 
+        it("Should return 400 if provided non convertible type on whole query", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.query() b: number) {
+                    return b
+                }
+            }
+
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
+                .expect(400, `Unable to convert "[object Object]" into Number in parameter b`)
         })
     })
 })
 
-describe("Custom Converter", () => {
-    it("Should able to define object converter", () => {
 
+describe("Custom Error Message", () => {
+    it("Should able to catch conversion error and re-throw custom conversion error message", async () => {
+        class AnimalController {
+            @route.get()
+            get(@bind.query() b: number) {
+                return b
+            }
+        }
+
+        const koa = await fixture(AnimalController)
+            .use({
+                execute: async x => {
+                    try {
+                        return await x.proceed()
+                    }
+                    catch (e) {
+                        if (e instanceof ConversionError)
+                            throw new HttpStatusError(400, "Conversion error occur")
+                        else
+                            throw e
+                    }
+                }
+            }).initialize()
+
+        await Supertest(koa.callback())
+            .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
+            .expect(400, `Conversion error occur`)
+    })
+})
+
+
+describe("Custom Converter", () => {
+    it("Should able to define object converter", async () => {
+        class AnimalModel {
+            id: number
+            name: string
+            deceased: boolean
+            birthday: Date
+            constructor(json: any) {
+                json = json || {}
+                this.id = json.id;
+                this.name = json.name
+                this.deceased = json.deceased
+                this.birthday = json.birthday
+            }
+        }
+        class AnimalController {
+            @route.post()
+            save(b: AnimalModel) {
+                expect(b).toBeInstanceOf(AnimalModel)
+                return b
+            }
+        }
+        const koa = await fixture(AnimalController)
+            .set({ converters: [[AnimalModel, (value) => new AnimalModel(value)]] })
+            .initialize()
+        await Supertest(koa.callback())
+            .post("/animal/save")
+            .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+            .expect(200, { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
     })
 
     it("Should use user defined converter vs default converter", () => {
@@ -688,10 +823,3 @@ describe("Custom Converter", () => {
     })
 })
 
-describe("Custom Error Message", () => {
-
-})
-
-describe("Static Analysis", () => {
-
-})

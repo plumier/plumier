@@ -3,7 +3,7 @@ import Supertest from "supertest";
 
 import { ActionResult, HttpStatusError, Middleware } from "../../../src";
 import { pipe, Plumier } from "../../../src/application";
-import { MiddlewareUtil, WebApiFacility } from "../../../src/framework";
+import { MiddlewareUtil, WebApiFacility, ConversionError } from "../../../src/framework";
 
 describe("ActionResult", () => {
     it("Should execute context properly", async () => {
@@ -60,7 +60,7 @@ describe("WebApiFacility", () => {
     class AnimalController { get() { } }
     it("Should able to configure body parser", async () => {
         const app = new Plumier()
-        app.set({controller: [AnimalController], mode: "production"})
+        app.set({ controller: [AnimalController], mode: "production" })
         app.set(new WebApiFacility({ bodyParser: { strict: false } }))
         await app.initialize()
         expect(app).not.toBeNull()
@@ -68,7 +68,7 @@ describe("WebApiFacility", () => {
 
     it("Should able to configure cors", async () => {
         const app = new Plumier()
-        app.set({controller: [AnimalController], mode: "production"})
+        app.set({ controller: [AnimalController], mode: "production" })
         app.set(new WebApiFacility({ cors: { maxAge: 50 } }))
         await app.initialize()
         expect(app).not.toBeNull()
@@ -85,6 +85,23 @@ describe("HttpStatusError", () => {
     it("Should be instance of Error", () => {
         const error = new HttpStatusError(200, "MESSAGE")
         expect(error).toBeInstanceOf(Error)
+        expect(error).toBeInstanceOf(HttpStatusError)
+    })
+})
+
+describe("ConversionError", () => {
+    it("Should instantiate properly", () => {
+        const error = new ConversionError({ path: ["a", "b"], type: "Number", value: 200 }, "MESSAGE")
+        expect(error.message).toBe("MESSAGE")
+        expect(error.status).toBe(400)
+        expect(error.info).toEqual({ path: ["a", "b"], type: "Number", value: 200 })
+    })
+
+    it("Should be instance of Error", () => {
+        const error = new ConversionError(<any>{})
+        expect(error).toBeInstanceOf(Error)
+        expect(error).toBeInstanceOf(HttpStatusError)
+        expect(error).toBeInstanceOf(ConversionError)
     })
 })
 

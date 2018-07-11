@@ -349,7 +349,7 @@ export class HttpStatusError extends Error {
 export class ConversionError extends HttpStatusError {
     constructor(public info: { path: string[], type: string, value:any }, message?: string) {
         super(400, message)
-        Object.setPrototypeOf(this, HttpStatusError.prototype)
+        Object.setPrototypeOf(this, ConversionError.prototype)
     }
 }
 
@@ -632,6 +632,7 @@ export namespace errorMessage {
     export const ArrayWithoutTypeInformation = "PLUM1006: Array without type information found in parameter {0}, parameter binding will be skipped"
 
     //PLUM2XXX internal app error
+    export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate model {0}. Model should be instantiable using default constructor`
 
 
     //End user error (no error code)
