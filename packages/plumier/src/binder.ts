@@ -152,15 +152,16 @@ function bindDecorator(action: FunctionReflection, request: Request, par: Parame
     const decorator: BindingDecorator = par.decorators.find((x: BindingDecorator) => x.type == "ParameterBinding")
     if (!decorator) return
     log(`[Decorator Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Decorator: ${b(decorator.name)} Part: ${b(decorator.part)}`)
+    const getDataOrPart = (data:any) => decorator.part ? data && data[decorator.part] : data
     switch (decorator.name) {
         case "Body":
-            return converter(decorator.part ? request.body && (<any>request.body)[decorator.part] : request.body)
+            return converter(getDataOrPart(request.body))
         case "Query":
-            return converter(decorator.part ? request.query && request.query[decorator.part] : request.query)
+            return converter(getDataOrPart(request.query))
         case "Header":
-            return converter(decorator.part ? request.headers && request.headers[decorator.part] : request.headers)
+            return converter(getDataOrPart(request.headers))
         case "Request":
-            return converter(decorator.part ? request[decorator.part] : request)
+            return converter(getDataOrPart(request))
     }
 }
 

@@ -660,7 +660,16 @@ describe("Parameter Binding", () => {
         })
 
         it("Should bind part of request header", async () => {
-
+            class AnimalController {
+                @route.get()
+                get(@bind.query("id") b: number) {
+                    expect(typeof b).toEqual("number")
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
+                .expect(200, "474747")
         })
 
         it("Should return 400 if provided non convertible type", async () => {
