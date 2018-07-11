@@ -12,20 +12,21 @@ import {
     ParameterReflection,
 } from "tinspector";
 import { join } from 'path';
+import { inspect } from 'util';
 
 export type HttpMethod = "post" | "get" | "put" | "delete"
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>
 export type RequestPart = keyof Request
 export type HeaderPart = keyof IncomingHttpHeaders
 export type Class = new (...args: any[]) => any
-export type ValueConverter = (value: any, prop: ParameterProperties) => any
+export type ValueConverter = (value: any, prop: ParameterProperties & { parameterType: Class }) => any
 export type TypeConverter = ([Function, ValueConverter])[]
 
 export interface ParameterProperties {
     path: string[],
-    type: Class | undefined,
+    parameterType: Class | undefined,
+    decorators:any[]
     converters: Map<Function, ValueConverter>,
-    action: FunctionReflection,
 }
 
 export interface BindingDecorator {
@@ -225,7 +226,9 @@ export function hasKeyOf<T>(opt: any, key: string): opt is T {
 }
 
 export function b(msg: any) {
-    return Chalk.blue(msg)
+    if(typeof msg === "object")
+        return Chalk.blue(inspect(msg))
+    else return Chalk.blue(msg)
 }
 
 export namespace MiddlewareUtil {

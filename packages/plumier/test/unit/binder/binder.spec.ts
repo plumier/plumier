@@ -167,23 +167,6 @@ describe("Parameter Binder", () => {
             expect(result[1]).toMatchObject({ id: 123, name: "Mimi" })
         })
 
-        it("Should not bind model if parameter decorated with other binding", () => {
-            class AnimalModel {
-                constructor(
-                    public id: string,
-                    public name: string
-                ) { }
-            }
-
-            class AnimalController {
-                @route.put()
-                saveAnimal(@bind.request() model: AnimalModel) { }
-            }
-
-            const metadata = reflect(AnimalController)
-            const result = bindParameter(request({ query: { id: "123" }, body: { id: 123, name: "Mimi" } }), metadata.methods[0])
-            expect(result[0]).toMatchObject({ query: { id: "123" }, body: { id: 123, name: "Mimi" } })
-        })
     })
 
     describe("Array Binder", () => {

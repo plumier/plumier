@@ -2,7 +2,7 @@ import { decorateClass, reflect } from "tinspector";
 
 import { bind, model, TypeConverter } from "../../../src";
 import { convert, DefaultConverterList, flattenConverters } from "../../../src/binder";
-import { ParameterProperties } from '../../../src/framework';
+import { ParameterProperties, ArrayBindingDecorator, Class } from '../../../src/framework';
 
 class AnimalController {
     get(id: number) { }
@@ -10,10 +10,10 @@ class AnimalController {
 const metaData = reflect(AnimalController)
 
 const DefaultNumberProp: ParameterProperties = {
-    action: metaData.methods[0],
     converters: flattenConverters(DefaultConverterList),
-    type: Number,
-    path: ["id"]
+    parameterType: Number,
+    path: ["id"],
+    decorators: metaData.methods[0].decorators[0] || []
 }
 
 describe("Converter", () => {
@@ -48,7 +48,7 @@ describe("Converter", () => {
     })
 
     describe("Boolean Converter", () => {
-        const Prop = { ...DefaultNumberProp, type: Boolean }
+        const Prop = { ...DefaultNumberProp, parameterType: Boolean }
         it("Should convert Trusty string to true", () => {
             const result = ["ON", "TRUE", "1", "YES", 1].map(x => convert(x, Prop))
             expect(result.every(x => x == true)).toEqual(true)
@@ -74,7 +74,7 @@ describe("Converter", () => {
     })
 
     describe("Date Converter", () => {
-        const Prop = { ...DefaultNumberProp, type: Date }
+        const Prop = { ...DefaultNumberProp, parameterType: Date }
         it("Should convert date", () => {
             const result = convert("2018-12-22", Prop)
             expect(result.getTime()).toEqual(new Date("2018-12-22").getTime())
@@ -108,7 +108,7 @@ describe("Converter", () => {
                 ) { }
             }
 
-            const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, { ...DefaultNumberProp, type: AnimalClass })
+            const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, { ...DefaultNumberProp, parameterType: AnimalClass })
             expect(result).toBeInstanceOf(AnimalClass)
             expect(result).toEqual({ birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi" })
         })
@@ -122,7 +122,7 @@ describe("Converter", () => {
                 ) { }
             }
 
-            const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", }, { ...DefaultNumberProp, type: AnimalClass })
+            const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", }, { ...DefaultNumberProp, parameterType: AnimalClass })
             expect(result).toBeInstanceOf(AnimalClass)
             expect(result).toEqual({ id: 200, name: "Mimi" })
         })
@@ -137,7 +137,7 @@ describe("Converter", () => {
                 ) { }
             }
 
-            const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, { ...DefaultNumberProp, type: AnimalClass })
+            const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, { ...DefaultNumberProp, parameterType: AnimalClass })
             expect(result).toBeInstanceOf(AnimalClass)
             expect(result).toEqual({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
         })
@@ -153,7 +153,7 @@ describe("Converter", () => {
                 ) { }
             }
 
-            const result = convert({}, { ...DefaultNumberProp, type: AnimalClass })
+            const result = convert({}, { ...DefaultNumberProp, parameterType: AnimalClass })
             expect(result).toBeInstanceOf(AnimalClass)
             expect(result).toEqual({})
         })
@@ -171,7 +171,7 @@ describe("Converter", () => {
 
             expect(() => {
                 convert({ id: "200", name: "Mimi", deceased: "Hello", birthday: "2018-1-1" },
-                    { ...DefaultNumberProp, type: AnimalClass })
+                    { ...DefaultNumberProp, parameterType: AnimalClass })
             }).toThrow(`Unable to convert "Hello" into Boolean in parameter id->deceased`)
         })
 
@@ -187,7 +187,7 @@ describe("Converter", () => {
             }
 
             expect(() => {
-                convert("Hello", { ...DefaultNumberProp, type: AnimalClass })
+                convert("Hello", { ...DefaultNumberProp, parameterType: AnimalClass })
             }).toThrow(`Unable to convert "Hello" into AnimalClass in parameter id`)
         })
 
@@ -214,7 +214,7 @@ describe("Converter", () => {
             ) { }
         }
 
-        const prop = { ...DefaultNumberProp, type: AnimalClass }
+        const prop = { ...DefaultNumberProp, parameterType: AnimalClass }
 
         it("Should convert nested model", () => {
             const result: AnimalClass = convert({
@@ -292,8 +292,14 @@ describe("Converter", () => {
     })
 
     describe("Array Converter", () => {
+        const getProp = (type:Class) => ({
+            ...DefaultNumberProp,
+            parameterType: Array,
+            decorators: [<ArrayBindingDecorator>{ type: "ParameterBinding", name: "Array", typeAnnotation: type }]
+        })
+
         it("Should convert array of number", () => {
-            const result = convert(["123", "123", "123"], { ...DefaultNumberProp })
+            const result = convert(["123", "123", "123"], getProp(Number))
             expect(result).toEqual([123, 123, 123])
         })
         it("Should convert array of model", () => {
@@ -310,7 +316,7 @@ describe("Converter", () => {
                 { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" },
                 { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" },
                 { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }
-            ], { ...DefaultNumberProp, type: AnimalClass })
+            ], getProp(AnimalClass))
             expect(result).toEqual([
                 { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi" },
                 { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi" },
@@ -341,7 +347,7 @@ describe("Converter", () => {
                 { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] },
                 { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] },
                 { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] }
-            ], { ...DefaultNumberProp, type: AnimalClass })
+            ], getProp(AnimalClass))
             expect(result).toEqual([
                 { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi", tags: [{ id: 300, name: "Tug" }] },
                 { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi", tags: [{ id: 300, name: "Tug" }] },
@@ -353,7 +359,7 @@ describe("Converter", () => {
     describe("Custom Converter", () => {
         it("Should able to use custom converter", () => {
             const converters: TypeConverter = [[Boolean, x => "Custom Boolean"]]
-            const result = convert("TRUE", { ...DefaultNumberProp, type: Boolean, converters: flattenConverters(converters) })
+            const result = convert("TRUE", { ...DefaultNumberProp, parameterType: Boolean, converters: flattenConverters(converters) })
             expect(result).toBe("Custom Boolean")
         })
     })

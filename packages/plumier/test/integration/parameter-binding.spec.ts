@@ -4,6 +4,8 @@ import Supertest from "supertest";
 import { Plumier, route, WebApiFacility } from "../../src";
 import { Class, bind, model } from '../../src/framework';
 import { decorateClass } from 'tinspector';
+import { Request } from 'koa';
+import { IncomingMessage, ServerResponse } from 'http';
 
 export class AnimalModel {
     constructor(
@@ -358,28 +360,312 @@ describe("Parameter Binding", () => {
             await Supertest((await fixture(AnimalController)).callback())
                 .post("/animal/save")
                 .send(["Hello", "TRUE", "1", "ON"])
-                .expect(400, `Unable to convert "Hello" into Boolean in parameter b`)
+                .expect(400, `Unable to convert "Hello" into Boolean in parameter b->0`)
         })
     })
 
     describe("Nested array parameter binding", () => {
+        @model()
+        class TagModel {
+            constructor(
+                public id: number,
+                public name: string,
+            ) { }
+        }
+        @model()
+        class AnimalModel {
+            constructor(
+                public id: number,
+                public name: string,
+                public deceased: boolean,
+                public birthday: Date,
+                @bind.array(TagModel)
+                public tags: TagModel[]
+            ) { }
+        }
 
+        it("Should bind nested array inside model", async () => {
+            class AnimalController {
+                @route.post()
+                save(b: AnimalModel) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({
+                    id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
+                    tags: [{ id: "500", name: "Rabies" }, { id: "600", name: "Rabies Two" }]
+                })
+                .expect(200, {
+                    id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString(),
+                    tags: [{ id: 500, name: "Rabies" }, { id: 600, name: "Rabies Two" }]
+                })
+        })
+
+        it("Should bind nested array inside array", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.array(AnimalModel) b: AnimalModel[]) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send([{
+                    id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
+                    tags: [{ id: "500", name: "Rabies" }, { id: "600", name: "Rabies Two" }]
+                }, {
+                    id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
+                    tags: [{ id: "500", name: "Rabies" }, { id: "600", name: "Rabies Two" }]
+                }])
+                .expect(200, [{
+                    id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString(),
+                    tags: [{ id: 500, name: "Rabies" }, { id: 600, name: "Rabies Two" }]
+                }, {
+                    id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString(),
+                    tags: [{ id: 500, name: "Rabies" }, { id: 600, name: "Rabies Two" }]
+                }])
+        })
+
+        it("Should return 400 if provided unconvertible value", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.array(AnimalModel) b: AnimalModel[]) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send([{
+                    id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
+                    tags: "Hello"
+                }])
+                .expect(400, `Unable to convert "Hello" into Array<TagModel> in parameter b->0->tags`)
+        })
+
+        it("Should return 400 if provided unconvertible value", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.array(AnimalModel) b: AnimalModel[]) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send([{
+                    id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
+                    tags: [{ id: "500", name: "Rabies" }, { id: "600", name: "Rabies Two" }]
+                }, {
+                    id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
+                    tags: [{ id: "500", name: "Rabies" }, { id: "Hello", name: "Rabies Two" }]
+                }])
+                .expect(400, `Unable to convert "Hello" into Number in parameter b->1->tags->1->id`)
+        })
     })
 
     describe("Request parameter binding", () => {
-
+        it.only("Should bind request", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.request() b: Request) {
+                    expect(b.req).toBeInstanceOf(IncomingMessage)
+                    expect(b.res).toBeInstanceOf(ServerResponse)
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .get("/animal/get")
+                .expect(200)
+        })
+        it("Should bind request part", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.request("ip") b: string) {
+                    expect(typeof b).toBe("string")
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .get("/animal/get")
+                .expect(200)
+        })
+        it("Should bind req and convert to IncomingMessage", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.request("req") b: IncomingMessage) {
+                    expect(b).toBeInstanceOf(IncomingMessage)
+                    expect(b.url).toEqual("/animal/get")
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .get("/animal/get")
+                .expect(200)
+        })
+        it("Should return 400 if provided invalid type", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.request("req") b: number) {
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .get("/animal/get")
+                .expect(400, `Unable to convert "[object Object]" into Number in parameter b`)
+        })
     })
 
     describe("Request body parameter binding", () => {
+        @model()
+        class AnimalModel {
+            constructor(
+                public id: number,
+                public name: string,
+                public deceased: boolean,
+                public birthday: Date
+            ) { }
+        }
 
+        it("Should bind request body", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.body() b: AnimalModel) {
+                    expect(b).toBeInstanceOf(AnimalModel)
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(200, { id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+
+        it("Should bind request body part", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.body("id") b: number) {
+                    expect(typeof b).toBe("number")
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(200, "747474")
+        })
+
+        it("Should return 400 if provided non convertible type ", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.body("id") b: boolean) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(400, `Unable to convert "747474" into Boolean in parameter b`)
+        })
     })
 
     describe("Request header parameter binding", () => {
+        it("Should bind request header", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.header() b: any) {
+                    return b
+                }
+            }
+            const result = await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(200)
+            expect(result.body).toMatchObject({
+                'accept-encoding': 'gzip, deflate',
+                'content-type': 'application/json',
+                connection: 'close'
+            })
+        })
 
+        it("Should bind part of request header", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.header("content-type") b: string) {
+                    return b
+                }
+            }
+            const result = await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(200, "application/json")
+        })
+
+        it("Should return 400 if provided non convertible type", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.header("content-type") b: number) {
+                    return b
+                }
+            }
+            const result = await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save")
+                .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(400, `Unable to convert "application/json" into Number in parameter b`)
+        })
     })
 
     describe("Request query parameter binding", () => {
-        
+        @model()
+        class AnimalModel {
+            constructor(
+                public id: number,
+                public name: string,
+                public deceased: boolean,
+                public birthday: Date
+            ) { }
+        }
+
+        it("Should bind request query", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.query() b: AnimalModel) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
+                .expect(200, { id: 747474, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+
+        it.only("Should be able to combine with model binding", async () => {
+            @model()
+            class PagingModel {
+                constructor(
+                    public start: number,
+                    public limit: number
+                ) { }
+            }
+            class AnimalController {
+                @route.post()
+                save(@bind.query() page: PagingModel, model: AnimalModel) {
+                    expect(page).toBeInstanceOf(PagingModel)
+                    expect(model).toBeInstanceOf(AnimalModel)
+                    return { page, model }
+                }
+            }
+            await Supertest((await fixture(AnimalController)).callback())
+                .post("/animal/save?start=200&limit=50")
+                .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(200, {
+                    page: { start: 200, limit: 50 },
+                    model: { id: 747474, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() }
+                })
+        })
+
+        it("Should bind part of request header", async () => {
+
+        })
+
+        it("Should return 400 if provided non convertible type", async () => {
+
+        })
     })
 })
 

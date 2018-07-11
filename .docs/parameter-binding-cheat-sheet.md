@@ -52,11 +52,10 @@ GET /animal/get?id=2018-2-1    -> equals to new Date(2018, 2, 1)
 GET /animal/get?id=hello       -> Error status 400
 ```
 
-
 ### Model Binding
 Model binding only works for POST and PUT method
 
-> To be able to make Model binding work properly, the model must use [Parameter Properties](https://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) and any of decorator (on the constructor, or on any of constructor parameter decorator)
+> To be able to make Model binding work properly, the model must use [Parameter Properties](https://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) and any of decorator (on the constructor, or on any of constructor parameter decorator). Best practice is using `@model()` decorator on the top of any model.
 
 ```typescript
 @model() //any decorator will works
@@ -145,7 +144,7 @@ AnimalModel {
 ### Array Binding
 Array binding a little bit different due to TypeScript [design type emit limitation](https://github.com/Microsoft/TypeScript/issues/12463).
 
-Plumier provided `@bind.array(TypeName)` to give prover type conversion for parameter binding.
+Plumier provided `@bind.array(TypeConstructor)` to give prover type conversion for parameter binding.
 
 ```typescript
 @model() 
@@ -173,6 +172,120 @@ Result:
     deceased: true,
     birthday: Date //equals to new Date(2018,1,1)
 }]
+```
+
+### Request Binding
+Bind request to action's parameter
+
+```typescript
+export class AnimalController {
+    @route.post()
+    save(@bind.request() model:Koa.Request){
+
+    }
+}
+```
+
+part of request can be issued by providing path parameter
+
+```typescript
+export class AnimalController {
+    @route.post()
+    save(@bind.request("ip") ip:string){
+
+    }
+}
+```
+
+### Request Body Binding
+Bind request body to action's parameter, this feature is the same with model binding but you can specify which property of the body will be bound to the parameter
+
+```typescript
+export class AnimalController {
+    @route.post()
+    save(@bind.body() model:any){
+
+    }
+}
+```
+
+You can specify model type to get correct conversion of the model's properties
+
+```typescript
+export class AnimalController {
+    @route.post()
+    save(@bind.body() model:AnimalModel){
+
+    }
+}
+```
+
+You can bind part of the body by specify the parameter
+
+```typescript
+export class AnimalController {
+    @route.post()
+    save(@bind.body("id") id:number){
+
+    }
+}
+```
+
+### Query Binding
+Bind query to action's parameter 
+
+```typescript
+export class AnimalController {
+    @route.post()
+    save(@bind.query() model:any){
+
+    }
+}
+```
+
+You can specify the model to get correct conversion
+
+```typescript
+@model()
+export class AnimalModel {
+    constructor(
+        public id:number,
+        public name:string,
+        public birthday:Date,
+        public deceased:boolean
+    ){}
+}
+
+export class AnimalController {
+    @route.get()
+    save(@bind.query() model:AnimalModel){
+
+    }
+}
+```
+
+And the query string will be populated to the body properly
+
+```
+GET /animal/save?id=200&name=Mimi&deceased=ON&birthday=2018-1-1
+Result populated to model: 
+AnimalModel{
+    id: 200,
+    name: "Mimi",
+    deceased: true,
+    birthday: Date //equals to new Date(2018,1,1)
+}
+```
+
+It can be combined with the model binding to get bound request body and query
+
+```typescript
+class AnimalController {
+    @route.post()
+    save(@bind.query() page: PagingModel, model: AnimalModel) {
+        return { page, model }
+    }
+}
 ```
 
 ## Custom Error Message

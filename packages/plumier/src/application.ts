@@ -53,19 +53,19 @@ export class ActionInvocation implements Invocation {
             const validate = (value: any, i: number) => config.validator!(value, param(i))
             const issues = parameters.map((value, index) => ({ parameter: param(index).name, issues: validate(value, index) }))
                 .filter(x => Boolean(x.issues))
-            log(`[Action Invocation] Validation result ${b(inspect(issues, false, null))}`)
+            log(`[Action Invocation] Validation result ${b(issues)}`)
             if (issues.length > 0) return new ActionResult(issues, 400)
         }
         const result = (<Function>controller[route.action.name]).apply(controller, parameters)
         const status = config.responseStatus && config.responseStatus[route.method] || 200
         if (result instanceof ActionResult) {
             result.status = result.status || status
-            log(`[Action Invocation] Method: ${b(route.method)} Status config: ${b(inspect(config.responseStatus, false, null))} Status: ${b(result.status)} `)
+            log(`[Action Invocation] Method: ${b(route.method)} Status config: ${b(config.responseStatus)} Status: ${b(result.status)} `)
             return Promise.resolve(result);
         }
         else {
             const awaitedResult = await Promise.resolve(result)
-            log(`[Action Invocation] Method: ${route.method} Status config: ${b(inspect(config.responseStatus, false, null))} Status: ${b(status)} `)
+            log(`[Action Invocation] Method: ${route.method} Status config: ${b(config.responseStatus)} Status: ${b(status)} `)
             return new ActionResult(awaitedResult, status)
         }
     }
@@ -87,9 +87,9 @@ async function requestHandler(ctx: Context) {
     const result = await pipeline.proceed()
     result.execute(ctx)
     log(`[Request Handler] ${b(ctx.path)} -> ${b(ctx.route.controller.name)}.${b(ctx.route.action.name)}`)
-    log(`[Request Handler] Request Query: ${b(inspect(ctx.query, false, null))}`)
-    log(`[Request Handler] Request Header: ${b(inspect(ctx.headers, false, null))}`)
-    log(`[Request Handler] Request Body: ${b(inspect(result.body, false, null))}`)
+    log(`[Request Handler] Request Query: ${b(ctx.query)}`)
+    log(`[Request Handler] Request Header: ${b(ctx.headers)}`)
+    log(`[Request Handler] Request Body: ${b(result.body)}`)
 }
 
 export class Plumier implements PlumierApplication {

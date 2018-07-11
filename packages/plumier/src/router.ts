@@ -147,12 +147,14 @@ function checkUrlMatch(route: RouteInfo, ctx: Context) {
     const keys: Ptr.Key[] = []
     const regexp = Ptr(route.url, keys)
     const match = regexp.exec(ctx.path)
+    log(`[Router] Route: ${b(route.method)} ${b(route.url)} Ctx Path: ${b(ctx.method)} ${b(ctx.path)} Match: ${b(match)}`)
     return { keys, match, method: route.method.toUpperCase(), route }
 }
 
 export function router(infos: RouteInfo[], config: Configuration, handler: (ctx: Context) => Promise<void>) {
     return async (ctx: Context, next: () => Promise<void>) => {
-        const match = infos.map(x => checkUrlMatch(x, ctx))
+    console.log(ctx.path)
+    const match = infos.map(x => checkUrlMatch(x, ctx))
             .find(x => Boolean(x.match) && x.method == ctx.method)
         if (match) {
             log(`[Router] Match route ${b(match.route.method)} ${b(match.route.url)} with ${b(ctx.method)} ${b(ctx.path)}`)
