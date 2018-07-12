@@ -1,8 +1,8 @@
-import { reflect, decorateMethod, decorateClass, decorateParameter } from "../src";
-import { inspect } from 'util';
-import { join } from 'path';
-import { MyClass } from './mock.class';
-import { myNameSpace } from "./mock.class-in-namespace"
+import { join } from "path";
+
+import { decorateClass, decorateMethod, decorateParameter, reflect } from "../src";
+import { MyClass } from "./mock.class";
+import { myNameSpace } from "./mock.class-in-namespace";
 
 describe("Class Introspection", () => {
     it("Should inspect class properly", () => {

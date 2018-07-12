@@ -3,6 +3,7 @@ import Chalk from "chalk";
 import { IncomingHttpHeaders } from "http";
 import Koa, { Context, Request } from "koa";
 import BodyParser from "koa-bodyparser";
+import { join } from "path";
 import {
     ClassReflection,
     decorateClass,
@@ -11,8 +12,7 @@ import {
     FunctionReflection,
     ParameterReflection,
 } from "tinspector";
-import { join } from 'path';
-import { inspect } from 'util';
+import { inspect } from "util";
 
 export type HttpMethod = "post" | "get" | "put" | "delete"
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>
@@ -95,7 +95,7 @@ export interface Configuration {
     /**
      * Specify controller path or the controller classes array, default to "process.cwd() ./controller" 
      */
-    controller: string | Class[]
+    controller: string | Class[] | Class
 
     /**
      * Set custom dependency resolver for dependency injection
@@ -124,6 +124,11 @@ export interface Configuration {
      * Set custom validator
      */
     validator?: (value: any, metadata: ParameterReflection) => string[] | undefined
+
+    /**
+     * Route generator will search for this file extension on controller directory
+     */
+    fileExtension?: ".js" | ".ts"
 }
 
 
@@ -202,8 +207,8 @@ export interface PlumierApplication extends Application {
 
 declare module "koa" {
     export interface Context {
-        route: RouteInfo,
-        config: Configuration
+        route: Readonly<RouteInfo>,
+        config: Readonly<Configuration>
     }
 }
 
@@ -618,18 +623,19 @@ export function model() { return decorateClass({}) }
 export const DefaultConfiguration: Configuration = {
     mode: "debug",
     controller: join(process.cwd(), "./controller"),
-    dependencyResolver: new DefaultDependencyResolver()
+    dependencyResolver: new DefaultDependencyResolver(),
+    fileExtension: ".js"
 }
 
 export namespace errorMessage {
     //PLUM1XXX User configuration error
     export const RouteDoesNotHaveBackingParam = "PLUM1000: Route parameters ({0}) doesn't have appropriate backing parameter"
-    export const ActionDoesNotHaveTypeInfo = "PLUM1001: Action doesn't contains parameter type information, parameter binding will be skipped"
+    export const ActionDoesNotHaveTypeInfo = "PLUM1001: Action doesn't have @route decorator, parameter binding will be skipped"
     export const MultipleDecoratorNotSupported = "PLUM1002: Multiple decorators doesn't supported"
     export const DuplicateRouteFound = "PLUM1003: Duplicate route found in {0}"
     export const ControllerPathNotFound = "PLUM1004: Controller file or directory {0} not found"
-    export const ModelWithoutTypeInformation = "PLUM1005: {0} class used in action parameter doesn't contains type information, parameter binding will be skipped"
-    export const ArrayWithoutTypeInformation = "PLUM1006: Array without type information found in parameter {0}, parameter binding will be skipped"
+    export const ModelWithoutTypeInformation = "PLUM1005: {0} doesn't have @model decorator, parameter binding will be skipped"
+    export const ArrayWithoutTypeInformation = "PLUM1006: Array without @bind.array() decorator found in parameter {0}, parameter binding will be skipped"
 
     //PLUM2XXX internal app error
     export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate model {0}. Model should be instantiable using default constructor`

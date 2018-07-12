@@ -1,7 +1,6 @@
 //version   1.3.0
 //github    https://github.com/ktutnik/my-own-reflect
 import "reflect-metadata";
-import { inspect } from 'util';
 
 /*
 version history:

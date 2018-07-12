@@ -206,7 +206,7 @@ describe("Analyzer", () => {
         const routeInfo = transformController(AnimalController)
         const analysis = analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
-        expect(analysis[0].issues[0].message).toContain("PLUM1005: TagModel class used in action parameter doesn't contains type information, parameter binding will be skipped")
+        expect(analysis[0].issues[0].message).toContain("PLUM1005")
     })
 
     it("Should identify if array doesn't contains type information", () => {

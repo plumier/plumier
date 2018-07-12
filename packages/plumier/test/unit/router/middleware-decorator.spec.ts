@@ -1,5 +1,6 @@
 import { Middleware, Invocation, ActionResult, middleware } from '../../../src';
-import { transformController, extractDecorators } from '../../../src/router';
+import { transformController } from '../../../src/router';
+import { extractDecorators } from '../../../src/application';
 
 
 class DummyMiddleware implements Middleware {

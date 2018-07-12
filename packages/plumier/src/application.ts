@@ -1,8 +1,6 @@
 import Debug from "debug";
 import { existsSync } from "fs";
 import Koa, { Context } from "koa";
-import { join } from "path";
-import { inspect } from "util";
 
 import { bindParameter } from "./binder";
 import {
@@ -10,24 +8,34 @@ import {
     Application,
     b,
     Configuration,
-    DefaultDependencyResolver,
     DefaultConfiguration,
     errorMessage,
     Facility,
     hasKeyOf,
+    HttpStatusError,
     Invocation,
     KoaMiddleware,
     Middleware,
+    MiddlewareDecorator,
     MiddlewareUtil,
     PlumierApplication,
     PlumierConfiguration,
     RouteInfo,
-    HttpStatusError,
 } from "./framework";
-import { analyzeRoutes, extractDecorators, printAnalysis, router, transformController, transformModule } from "./router";
+import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
 
 
 const log = Debug("plum:app")
+
+
+export function extractDecorators(route: RouteInfo): Middleware[] {
+    const classDecorator: MiddlewareDecorator[] = route.controller.decorators.filter(x => x.name == "Middleware")
+    const methodDecorator: MiddlewareDecorator[] = route.action.decorators.filter(x => x.name == "Middleware")
+    const extract = (d: MiddlewareDecorator[]) => d.map(x => x.value).reduce((a, b) => a.concat(b), [])
+    return extract(classDecorator)
+        .concat(extract(methodDecorator))
+        .reverse()
+}
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- INVOCATIONS ----------------------------------- */
@@ -57,15 +65,15 @@ export class ActionInvocation implements Invocation {
             if (issues.length > 0) return new ActionResult(issues, 400)
         }
         const result = (<Function>controller[route.action.name]).apply(controller, parameters)
+        const awaitedResult = await Promise.resolve(result)
         const status = config.responseStatus && config.responseStatus[route.method] || 200
-        if (result instanceof ActionResult) {
-            result.status = result.status || status
-            log(`[Action Invocation] Method: ${b(route.method)} Status config: ${b(config.responseStatus)} Status: ${b(result.status)} `)
-            return Promise.resolve(result);
+        if (awaitedResult instanceof ActionResult) {
+            awaitedResult.status = awaitedResult.status || status
+            log(`[Action Invocation] ActionResult value - Method: ${b(route.method)} Status config: ${b(config.responseStatus)} Status: ${b(result.status)} `)
+            return awaitedResult;
         }
         else {
-            const awaitedResult = await Promise.resolve(result)
-            log(`[Action Invocation] Method: ${route.method} Status config: ${b(config.responseStatus)} Status: ${b(status)} `)
+            log(`[Action Invocation] Raw value - Method: ${route.method} Status config: ${b(config.responseStatus)} Status: ${b(status)} `)
             return new ActionResult(awaitedResult, status)
         }
     }
@@ -129,11 +137,14 @@ export class Plumier implements PlumierApplication {
             if (typeof this.config.controller === "string") {
                 if (!existsSync(this.config.controller))
                     throw new Error(errorMessage.ControllerPathNotFound.format(this.config.controller))
-                routes = await transformModule(this.config.controller)
+                routes = await transformModule(this.config.controller, [this.config.fileExtension!])
             }
-            else {
+            else if(Array.isArray(this.config.controller)) {
                 routes = this.config.controller.map(x => transformController(x))
                     .reduce((a, b) => a.concat(b), [])
+            }
+            else {
+                routes = transformController(this.config.controller)
             }
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
             await Promise.all(this.config.facilities.map(x => x.setup(this)))

@@ -1,15 +1,10 @@
-import { basename } from "path";
+import { basename, join } from "path";
 import Supertest from "supertest";
 
-import { Plumier, route, WebApiFacility, HttpStatusError } from "../../src";
-import { Class, middleware } from '../../src/framework';
+import { Plumier, route, WebApiFacility, HttpStatusError } from "../../../src";
+import { Class, middleware } from '../../../src/framework';
+import { fixture } from '../../helper';
 
-function fixture(controller: Class) {
-    return new Plumier()
-        .set(new WebApiFacility())
-        .set({ controller: [controller] })
-        .set({ mode: "production" })
-}
 
 describe("Error Handling", () => {
     it("Should able to throw general Error from inside action", async () => {
@@ -137,7 +132,13 @@ describe("Error Handling", () => {
             .expect(404)
     })
 
-    it("Should handle server internal error with route information", async () => {
+    it("Should show correct error if provided controller folder not found", async () => {
+        const koa = fixture(join(__dirname, "controller"))
+        expect(koa.initialize()).rejects.toThrow("PLUM1004")
+    })
 
+    it("Should show correct error if provided controller file not found", async () => {
+        const koa = fixture(join(__dirname, "controller/animal-controller.ts"))
+        expect(koa.initialize()).rejects.toThrow("PLUM1004")
     })
 })

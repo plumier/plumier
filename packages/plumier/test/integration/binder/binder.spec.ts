@@ -1,12 +1,10 @@
-import { basename } from "path";
+import { IncomingMessage, ServerResponse } from "http";
+import { Request } from "koa";
 import Supertest from "supertest";
 
-import { Plumier, route, WebApiFacility } from "../../src";
-import { Class, bind, model, ConversionError, HttpStatusError } from '../../src/framework';
-import { decorateClass } from 'tinspector';
-import { Request } from 'koa';
-import { IncomingMessage, ServerResponse } from 'http';
-import { consoleLog } from '../helper';
+import { route } from "../../../src";
+import { bind, ConversionError, HttpStatusError, model } from "../../../src/framework";
+import { fixture } from "../../helper";
 
 export class AnimalModel {
     constructor(
@@ -14,13 +12,6 @@ export class AnimalModel {
         public name: string,
         public age: number
     ) { }
-}
-
-function fixture(controller: Class) {
-    return new Plumier()
-        .set(new WebApiFacility())
-        .set({ controller: [controller] })
-        .set({ mode: "production" })
 }
 
 describe("Parameter Binding", () => {
@@ -342,6 +333,16 @@ describe("Parameter Binding", () => {
                     tag: { id: "500", name: "Rabies", expired: "Hello" }
                 })
                 .expect(400, `Unable to convert "Hello" into Date in parameter b->tag->expired`)
+        })
+
+        it("Should return 400 if provided non convertible value on model", async () => {
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .post("/animal/save")
+                .send({
+                    id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
+                    tag: "Hello"
+                })
+                .expect(400, `Unable to convert "Hello" into TagModel in parameter b->tag`)
         })
     })
 
@@ -790,7 +791,6 @@ describe("Parameter Binding", () => {
     })
 })
 
-
 describe("Custom Error Message", () => {
     it("Should able to catch conversion error and re-throw custom conversion error message", async () => {
         class AnimalController {
@@ -820,7 +820,6 @@ describe("Custom Error Message", () => {
             .expect(400, `Conversion error occur`)
     })
 })
-
 
 describe("Custom Converter", () => {
     it("Should able to define object converter", async () => {
@@ -857,4 +856,3 @@ describe("Custom Converter", () => {
 
     })
 })
-

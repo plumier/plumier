@@ -5,7 +5,6 @@ import { Context } from "koa";
 import * as Path from "path";
 import Ptr from "path-to-regexp";
 import { ClassReflection, FunctionReflection, ParameterReflection, reflect, Reflection } from "tinspector";
-import { inspect } from "util";
 
 import {
     ArrayBindingDecorator,
@@ -15,8 +14,6 @@ import {
     errorMessage,
     IgnoreDecorator,
     isCustomClass,
-    Middleware,
-    MiddlewareDecorator,
     RootDecorator,
     RouteDecorator,
     RouteInfo,
@@ -45,22 +42,11 @@ export function getControllerRoute(controller: ClassReflection) {
     return (root && root.url) || `/${striveController(controller.name)}`
 }
 
-export function extractDecorators(route: RouteInfo): Middleware[] {
-    const classDecorator: MiddlewareDecorator[] = route.controller.decorators.filter(x => x.name == "Middleware")
-    const methodDecorator: MiddlewareDecorator[] = route.action.decorators.filter(x => x.name == "Middleware")
-    const extract = (d: MiddlewareDecorator[]) => d.map(x => x.value).reduce((a, b) => a.concat(b), [])
-    return extract(classDecorator)
-        .concat(extract(methodDecorator))
-        .reverse()
-}
-
 function getActionName(route: RouteInfo) {
     return `${route.controller.name}.${route.action.name}(${route.action.parameters.map(x => x.name).join(", ")})`
 }
 
-
-function resolvePath(path: string, extensions?: string[]): string[] {
-    const ext = extensions || [".js"]
+function resolvePath(path: string, ext: string[]): string[] {
     //resolve provided path directory or file
     if (Fs.lstatSync(path).isDirectory()) {
         const files = Fs.readdirSync(path)
@@ -123,7 +109,7 @@ export function transformController(object: ClassReflection | Class) {
         .filter(x => Boolean(x)) as RouteInfo[]
 }
 
-export async function transformModule(path: string, extensions?: string[]): Promise<RouteInfo[]> {
+export async function transformModule(path: string, extensions: string[]): Promise<RouteInfo[]> {
     //read all files and get module reflection
     const modules = await Promise.all(
         resolvePath(path, extensions)
@@ -164,7 +150,7 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
                 a[b.name.toString().toLowerCase()] = match.match![i + 1]
                 return a;
             }, <any>{})
-            log(`[Router] Extracted parameter from url ${b(inspect(query, false, null))}`)
+            log(`[Router] Extracted parameter from url ${b(query)}`)
             Object.assign(ctx.query, query)
             await handler(ctx)
         }
@@ -305,7 +291,7 @@ export function analyzeRoutes(routes: RouteInfo[]) {
 
 export function printAnalysis(results: TestResult[]) {
     const data = results.map(x => {
-        const method = x.route.method.toUpperCase().padEnd(5)
+        const method = x.route.method.toUpperCase()
         const action = getActionName(x.route)
         const issues = x.issues.map(issue => ` - ${issue.type} ${issue!.message}`)
         return { method, url: x.route.url, action, issues }
@@ -313,11 +299,11 @@ export function printAnalysis(results: TestResult[]) {
     data.forEach((x, i) => {
         const action = x.action.padEnd(Math.max(...data.map(x => x.action.length)))
         const method = x.method.padEnd(Math.max(...data.map(x => x.method.length)))
-        const url = x.url.padEnd(Math.max(...data.map(x => x.url.length)))
+        //const url = x.url.padEnd(Math.max(...data.map(x => x.url.length)))
         const issueColor = (issue: string) => issue.startsWith(" - warning") ? chalk.yellow(issue) : chalk.red(issue)
         const color = x.issues.length == 0 ? (x: string) => x :
             x.issues.some(x => x.startsWith(" - warning")) ? chalk.yellow : chalk.red
-        console.log(color(`${i + 1}. ${action} -> ${method} ${url}`))
+        console.log(color(`${i + 1}. ${action} -> ${method} ${x.url}`))
         x.issues.forEach(issue => console.log(issueColor(issue)))
     })
 }
