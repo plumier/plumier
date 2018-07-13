@@ -1,0 +1,24 @@
+{
+  "name": "validatorts",
+  "version": "0.1.0",
+  "description": "TypeScript object validator powered by Validator.JS",
+  "main": "src/index.ts",
+  "keywords": [
+    "reflection",
+    "introspection"
+  ],
+  "scripts": {
+    "compile": "tsc -p tsconfig.build.json",
+    "package-prod": "node ../../.script/modify-package production",
+    "package-dev": "node ../../.script/modify-package"
+  },
+  "author": "Ketut Sandiarsa",
+  "license": "MIT",
+  "dependencies": {
+    "@types/validator": "^9.4.1",
+    "tinspector": "^1.4.0-alpha.b123904d",
+    "validator": "^10.4.0"
+  },
+  "devDependencies": {
+  }
+}
