@@ -1,6 +1,9 @@
 //version   1.3.0
 //github    https://github.com/ktutnik/my-own-reflect
 import "reflect-metadata";
+import Debug from "debug"
+import { inspect } from 'util';
+import Chalk from "chalk"
 
 /*
 version history:
@@ -10,6 +13,8 @@ version history:
 1.0.0: initial 
 
 */
+
+const log = Debug("tinspector")
 
 /* ---------------------------------------------------------------- */
 /* --------------------------- TYPES ------------------------------ */
@@ -31,7 +36,6 @@ export const DESIGN_PARAMETER_TYPE = "design:paramtypes"
 /* ---------------------------------------------------------------- */
 /* --------------------------- HELPERS ---------------------------- */
 /* ---------------------------------------------------------------- */
-
 
 //logic from https://github.com/goatslacker/get-parameter-names
 function cleanUp(fn: string) {
@@ -100,6 +104,17 @@ export function getDecorators(target: any): Decorator[] {
     return Reflect.getMetadata(DECORATOR_KEY, target) || []
 }
 
+
+function b(value: any, part?: string) {
+    if (Array.isArray(value) && part) {
+        return Chalk.blue(value.map(x => x[part]).join(", "))
+    }
+    else if (typeof value === "object") {
+        return Chalk.blue(inspect(value))
+    }
+    else return Chalk.blue(value)
+}
+
 /* ---------------------------------------------------------------- */
 /* ------------------------- MAIN FUNCTIONS ----------------------- */
 /* ---------------------------------------------------------------- */
@@ -130,22 +145,26 @@ function reflectParameter(name: string, typeAnnotation?: any): ParameterReflecti
 
 function reflectFunction(fn: Function): FunctionReflection {
     const parameters = getParameterNames(fn).map(x => reflectParameter(x))
+    log(`[Reflect Method] ${b(fn.name)}(${b(parameters, "name")})`)
     return { type: "Function", name: fn.name, parameters, decorators: [] }
 }
 
 function reflectMethod(clazz: Class, method: Function): FunctionReflection {
     const parType: any[] = Reflect.getMetadata(DESIGN_PARAMETER_TYPE, clazz.prototype, method.name) || []
     const parameters = getParameterNames(method).map((x, i) => reflectParameter(x, parType[i]))
+    log(`[Reflect Method] ${b(clazz.name)}.${b(method.name)}(${b(parameters, "name")})`)
     return { type: "Function", name: method.name, parameters, decorators: [] }
 }
 
 function reflectConstructorParameters(fn: Class) {
     const parTypes: any[] = Reflect.getMetadata(DESIGN_PARAMETER_TYPE, fn) || []
-    return getConstructorParameters(fn)
-        .map((x, i) => reflectParameter(x, parTypes[i]))
+    const params = getConstructorParameters(fn)
+    log(`[Reflect Ctor] ${b(params)}`)
+    return params.map((x, i) => reflectParameter(x, parTypes[i]))
 }
 
 function reflectClass(fn: Class): ClassReflection {
+    log(`[Reflect Class] ${b(fn.name)}`)
     const methods = Object.getOwnPropertyNames(fn.prototype)
         .filter(x => x != "constructor")
         .map(x => reflectMethod(fn, fn.prototype[x]))
@@ -181,12 +200,21 @@ function traverse(fn: any, name: string): Reflection {
 
 export function reflect(path: string): Promise<ObjectReflection>
 export function reflect(classType: Class): ClassReflection
-export function reflect(option: string | Class) {
+export function reflect(object: Object): ClassReflection
+export function reflect(option: string | Class | object) {
     if (typeof option === "string") {
+        log(`Inspecting module ${b(option)}`)
         return Promise.resolve(import(option))
             .then(object => {
                 return reflectObject(object)
             })
     }
-    else return reflectClass(option)
+    else if(typeof option === "function") {
+        log(`Inspecting class ${b(option.name)}`)
+        return reflectClass(option)
+    }
+    else {
+        log(`Inspecting class ${b(option)}`)
+        return reflectObject(option)
+    }
 }
