@@ -256,25 +256,30 @@ export namespace val {
 /* ---------------------------------- VALIDATORS --------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function validateValue(value: string, decorators: ValidatorDecorator[], path: string[]): ValidationResult[] {
-    const messages = decorators.map(x => x.validator(value))
-        .filter((x): x is string => Boolean(x))
-    log(`[Value Validator] Value: ${b(value)} Decorators: ${b(decorators)} Path: ${b(path)}`)
-    log(`[Value Validator] Validation Result: ${b(messages)}`)
-    return messages.length > 0 ? [{ messages, path, value }] : []
-}
-
-function validateProperty(object: any, decorators: ValidatorDecorator[], path: string[]): ValidationResult[] {
-    switch (typeof object) {
-        case "object":
-            return validate(object, path)
-        default:
-            return validateValue("" + object, decorators, path)
-    }
-}
-
-export function validate(value: any, path?: string[]): ValidationResult[] {
-    const meta = reflect(getType(value))
-    return meta.ctorParameters.map(p => validateProperty(value[p.name], p.decorators, (path || []).concat(p.name)))
+export function validateArray(value: any[], path: string[]): ValidationResult[] {
+    return value.map((x, i) => validate(x, [], path.concat(i.toString())))
         .reduce((a, b) => a.concat(b), [])
+}
+
+
+export function validateObject(value: any, path?: string[]): ValidationResult[] {
+    const meta = reflect(getType(value))
+    return meta.ctorParameters.map(p => validate(value[p.name], p.decorators, (path || []).concat(p.name)))
+        .reduce((a, b) => a.concat(b), [])
+}
+
+export function validate(object: any, decorators: ValidatorDecorator[], path: string[]): ValidationResult[] {
+    if (Array.isArray(object))
+        return validateArray(object, path)
+    else if (typeof object === "object")
+        return validateObject(object, path)
+    else {
+        const value = "" + object
+        const messages = decorators.map(x => x.validator(value))
+            .filter((x): x is string => Boolean(x))
+        log(`[Value Validator] Value: ${b(value)} Decorators: ${b(decorators)} Path: ${b(path)}`)
+        log(`[Value Validator] Validation Result: ${b(messages)}`)
+        return messages.length > 0 ? [{ messages, path, value }] : []
+    }
+
 }

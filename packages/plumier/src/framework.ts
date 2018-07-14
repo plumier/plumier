@@ -1,8 +1,6 @@
-import Cors from "@koa/cors";
 import Chalk from "chalk";
 import { IncomingHttpHeaders } from "http";
 import Koa, { Context, Request } from "koa";
-import BodyParser from "koa-bodyparser";
 import { join } from "path";
 import {
     ClassReflection,
@@ -88,6 +86,11 @@ export interface BodyParserOption {
     onerror?: (err: Error, ctx: Koa.Context) => void;
 }
 
+export interface ValidationIssue {
+    path: string[]
+    messages: string[]
+}
+
 export interface Configuration {
     mode: "debug" | "production"
 
@@ -123,7 +126,7 @@ export interface Configuration {
     /**
      * Set custom validator
      */
-    validator?: (value: any, metadata: ParameterReflection) => string[] | undefined
+    validator?: (value: any, metadata: ParameterReflection) => ValidationIssue[]
 
     /**
      * Route generator will search for this file extension on controller directory
@@ -312,37 +315,6 @@ export class ActionResult {
 }
 
 
-
-/**
- * Preset configuration for building web api. This facility contains:
- * 
- * body parser: koa-bodyparser
- * 
- * cors: @koa/cors
- */
-export class WebApiFacility implements Facility {
-    constructor(private opt?: { bodyParser?: BodyParserOption, cors?: Cors.Options }) { }
-    async setup(app: Readonly<PlumierApplication>) {
-        app.koa.use(BodyParser(this.opt && this.opt.bodyParser))
-        app.koa.use(Cors(this.opt && this.opt.cors))
-    }
-}
-
-/**
- * Preset configuration for building restful style api. This facility contains:
- * 
- * body parser: koa-bodyparser
- * 
- * cors: @koa/cors
- * 
- * default response status: { get: 200, post: 201, put: 204, delete: 204 }
- */
-export class RestfulApiFacility extends WebApiFacility {
-    async setup(app: Readonly<PlumierApplication>) {
-        super.setup(app)
-        app.set({ responseStatus: { post: 201, put: 204, delete: 204 } })
-    }
-}
 
 export class HttpStatusError extends Error {
     constructor(public status: number, message?: string) {

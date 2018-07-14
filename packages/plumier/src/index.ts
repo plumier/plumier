@@ -19,6 +19,6 @@ export {
     route,
     RouteInfo,
     TypeConverter,
-    WebApiFacility
 } from "./framework"
-export { Plumier } from "./application"
+export { Plumier, WebApiFacility, RestfulApiFacility } from "./application"
+export { val } from "validatorts"

@@ -1,6 +1,8 @@
 import Debug from "debug";
 import { existsSync } from "fs";
 import Koa, { Context } from "koa";
+import Cors from "@koa/cors";
+import BodyParser from "koa-bodyparser";
 
 import { bindParameter } from "./binder";
 import {
@@ -21,8 +23,10 @@ import {
     PlumierApplication,
     PlumierConfiguration,
     RouteInfo,
+    BodyParserOption,
 } from "./framework";
 import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
+import { validateObject, validate, ValidatorDecorator } from 'validatorts';
 
 
 const log = Debug("plum:app")
@@ -84,6 +88,48 @@ export function pipe(middleware: Middleware[], context: Context, invocation: Inv
     return middleware.reverse().reduce((prev: Invocation, cur) => new MiddlewareInvocation(cur, context, prev), invocation)
 }
 
+/* ------------------------------------------------------------------------------- */
+/* -------------------------------- FACITLITIES ---------------------------------- */
+/* ------------------------------------------------------------------------------- */
+
+
+/**
+ * Preset configuration for building web api. This facility contains:
+ * 
+ * body parser: koa-bodyparser
+ * 
+ * cors: @koa/cors
+ */
+export class WebApiFacility implements Facility {
+    constructor(private opt?: { bodyParser?: BodyParserOption, cors?: Cors.Options }) { }
+    async setup(app: Readonly<PlumierApplication>) {
+        app.koa.use(BodyParser(this.opt && this.opt.bodyParser))
+        app.koa.use(Cors(this.opt && this.opt.cors))
+        app.set({
+            validator: (value, meta) => validate(value,
+                meta.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator"),
+                [meta.name]).map(x => ({ messages: x.messages, path: x.path }))
+        })
+    }
+}
+
+/**
+ * Preset configuration for building restful style api. This facility contains:
+ * 
+ * body parser: koa-bodyparser
+ * 
+ * cors: @koa/cors
+ * 
+ * default response status: { get: 200, post: 201, put: 204, delete: 204 }
+ */
+export class RestfulApiFacility extends WebApiFacility {
+    async setup(app: Readonly<PlumierApplication>) {
+        super.setup(app)
+        app.set({ responseStatus: { post: 201, put: 204, delete: 204 } })
+    }
+}
+
+
 
 /* ------------------------------------------------------------------------------- */
 /* --------------------------- MAIN APPLICATION ---------------------------------- */
@@ -139,7 +185,7 @@ export class Plumier implements PlumierApplication {
                     throw new Error(errorMessage.ControllerPathNotFound.format(this.config.controller))
                 routes = await transformModule(this.config.controller, [this.config.fileExtension!])
             }
-            else if(Array.isArray(this.config.controller)) {
+            else if (Array.isArray(this.config.controller)) {
                 routes = this.config.controller.map(x => transformController(x))
                     .reduce((a, b) => a.concat(b), [])
             }
