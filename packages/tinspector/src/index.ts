@@ -200,8 +200,7 @@ function traverse(fn: any, name: string): Reflection {
 
 export function reflect(path: string): Promise<ObjectReflection>
 export function reflect(classType: Class): ClassReflection
-export function reflect(object: Object): ClassReflection
-export function reflect(option: string | Class | object) {
+export function reflect(option: string | Class ) {
     if (typeof option === "string") {
         log(`Inspecting module ${b(option)}`)
         return Promise.resolve(import(option))
@@ -209,12 +208,8 @@ export function reflect(option: string | Class | object) {
                 return reflectObject(object)
             })
     }
-    else if(typeof option === "function") {
+    else{
         log(`Inspecting class ${b(option.name)}`)
         return reflectClass(option)
-    }
-    else {
-        log(`Inspecting class ${b(option)}`)
-        return reflectObject(option)
     }
 }
