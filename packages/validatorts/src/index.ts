@@ -257,12 +257,14 @@ export namespace val {
 /* ------------------------------------------------------------------------------- */
 
 export function validateArray(value: any[], path: string[]): ValidationResult[] {
+    log(`[Array Validator] Value ${b(value)} Path${b(path)}`)
     return value.map((x, i) => validate(x, [], path.concat(i.toString())))
         .reduce((a, b) => a.concat(b), [])
 }
 
 
 export function validateObject(value: any, path?: string[]): ValidationResult[] {
+    log(`[Object Validator] Type ${b(value.constructor)} Value ${b(value)} Path${b(path)}`)
     const meta = reflect(getType(value))
     return meta.ctorParameters.map(p => validate(value[p.name], p.decorators, (path || []).concat(p.name)))
         .reduce((a, b) => a.concat(b), [])

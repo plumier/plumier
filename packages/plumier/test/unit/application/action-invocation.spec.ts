@@ -165,29 +165,4 @@ describe("Action Invocation", () => {
             .expect(400)
     })
 
-    it("Should check for validation", async () => {
-        function required() { return decorateParameter({ type: "Validation", name: "Required" }) }
-        class AnimalController {
-            @route.get()
-            getAnimal(@required() id: number, name: string) {
-                return "The Body"
-            }
-        }
-
-        const app = new Koa()
-        app.use(fixture(AnimalController, {
-            validator: (v, r) => {
-                if (r.decorators.some(x => x.type == "Validation" && x.name == "Required") && !Boolean(v))
-                    return [`${r.name} is required`]
-            }
-        }))
-
-        await Supertest(app.callback())
-            .get("/")
-            .expect(400, [{ parameter: 'id', issues: ['id is required'] }])
-        await Supertest(app.callback())
-            .get("/?id=200")
-            .expect(200, "The Body")
-
-    })
 })

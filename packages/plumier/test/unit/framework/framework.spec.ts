@@ -2,8 +2,8 @@ import Koa from "koa";
 import Supertest from "supertest";
 
 import { ActionResult, HttpStatusError, Middleware } from "../../../src";
-import { pipe, Plumier } from "../../../src/application";
-import { MiddlewareUtil, WebApiFacility, ConversionError } from "../../../src/framework";
+import { pipe, Plumier, WebApiFacility } from "../../../src/application";
+import { MiddlewareUtil, ConversionError } from "../../../src/framework";
 
 describe("ActionResult", () => {
     it("Should execute context properly", async () => {

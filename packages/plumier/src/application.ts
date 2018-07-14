@@ -66,7 +66,7 @@ export class ActionInvocation implements Invocation {
             const issues = parameters.map((value, index) => ({ parameter: param(index).name, issues: validate(value, index) }))
                 .filter(x => Boolean(x.issues))
             log(`[Action Invocation] Validation result ${b(issues)}`)
-            if (issues.length > 0) return new ActionResult(issues, 400)
+            if (issues.some(x => x.issues.length > 0)) return new ActionResult(issues, 400)
         }
         const result = (<Function>controller[route.action.name]).apply(controller, parameters)
         const awaitedResult = await Promise.resolve(result)
@@ -106,9 +106,12 @@ export class WebApiFacility implements Facility {
         app.koa.use(BodyParser(this.opt && this.opt.bodyParser))
         app.koa.use(Cors(this.opt && this.opt.cors))
         app.set({
-            validator: (value, meta) => validate(value,
-                meta.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator"),
-                [meta.name]).map(x => ({ messages: x.messages, path: x.path }))
+            validator: (value, meta) => {
+                const decorators = meta.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
+                log(`[Validator] Validating ${b(value)} metadata: ${b(meta)}`)
+                return validate(value, decorators, [meta.name])
+                    .map(x => ({ messages: x.messages, path: x.path }))
+            }
         })
     }
 }

@@ -4,7 +4,7 @@ import { transformModule } from "../../../src/router";
 
 describe("Module Transformer Tests", () => {
     it("Should parse basic controller", async () => {
-        const route = await transformModule(join(__dirname, "./controller/basic-controller.ts"))
+        const route = await transformModule(join(__dirname, "./controller/basic-controller.ts"), [".ts"])
         expect(route).toMatchObject([
             { method: 'get', url: '/basic/getanimal' },
             { method: 'get', url: '/basic/getanimallist' },
@@ -12,7 +12,7 @@ describe("Module Transformer Tests", () => {
     })
 
     it("Should parse decorated controller", async () => {
-        const route = await transformModule(join(__dirname, "./controller/decorated-controller.ts"))
+        const route = await transformModule(join(__dirname, "./controller/decorated-controller.ts"), [".ts"])
         expect(route).toMatchObject([
             { method: 'post', url: '/decorated/saveanimal' },
             { method: 'get', url: '/decorated/:id' },
@@ -41,7 +41,7 @@ describe("Module Transformer Tests", () => {
     })
 
     it("Should not parse ignored action properly", async () => {
-        const route = await transformModule(join(__dirname, "./controller/ignore-controller.ts"))
+        const route = await transformModule(join(__dirname, "./controller/ignore-controller.ts"), [".ts"])
         expect(route).toMatchObject([
             { method: 'get', url: '/ignore/getanimallist' },
         ])

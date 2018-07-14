@@ -1,5 +1,5 @@
-import { Class, WebApiFacility, Configuration } from '../src/framework';
-import { Plumier } from '../src/application';
+import { Class, Configuration } from '../src/framework';
+import { Plumier, WebApiFacility } from '../src/application';
 
 const log = console.log;
 

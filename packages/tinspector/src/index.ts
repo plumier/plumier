@@ -105,11 +105,8 @@ export function getDecorators(target: any): Decorator[] {
 }
 
 
-function b(value: any, part?: string) {
-    if (Array.isArray(value) && part) {
-        return Chalk.blue(value.map(x => x[part]).join(", "))
-    }
-    else if (typeof value === "object") {
+function b(value: any) {
+    if (typeof value === "object") {
         return Chalk.blue(inspect(value))
     }
     else return Chalk.blue(value)
@@ -145,14 +142,14 @@ function reflectParameter(name: string, typeAnnotation?: any): ParameterReflecti
 
 function reflectFunction(fn: Function): FunctionReflection {
     const parameters = getParameterNames(fn).map(x => reflectParameter(x))
-    log(`[Reflect Method] ${b(fn.name)}(${b(parameters, "name")})`)
+    log(`[Reflect Method] ${b(fn.name)}(${b(parameters)})`)
     return { type: "Function", name: fn.name, parameters, decorators: [] }
 }
 
 function reflectMethod(clazz: Class, method: Function): FunctionReflection {
     const parType: any[] = Reflect.getMetadata(DESIGN_PARAMETER_TYPE, clazz.prototype, method.name) || []
     const parameters = getParameterNames(method).map((x, i) => reflectParameter(x, parType[i]))
-    log(`[Reflect Method] ${b(clazz.name)}.${b(method.name)}(${b(parameters, "name")})`)
+    log(`[Reflect Method] ParType ${b(parType)} Method: ${b(clazz.name)}.${b(method.name)}(${b(parameters)})`)
     return { type: "Function", name: method.name, parameters, decorators: [] }
 }
 
@@ -164,9 +161,10 @@ function reflectConstructorParameters(fn: Class) {
 }
 
 function reflectClass(fn: Class): ClassReflection {
-    log(`[Reflect Class] ${b(fn.name)}`)
+    log(`[Reflect Class] ${b(fn.name)} Properties: ${b(Object.getOwnPropertyNames(fn.prototype))}`)
     const methods = Object.getOwnPropertyNames(fn.prototype)
         .filter(x => x != "constructor")
+        .filter(x => !x.startsWith("__"))
         .map(x => reflectMethod(fn, fn.prototype[x]))
     const ctorParameters = reflectConstructorParameters(fn)
     const decorators = getDecorators(fn)
