@@ -142,31 +142,31 @@ export namespace val {
         return validate(x => Validator.isHexadecimal(x), opt && opt.message || "Invalid value provided")
     }
 
-    export function iP(opt?: Opt & { version?: number }) {
+    export function ip(opt?: Opt & { version?: number }) {
         return validate(x => Validator.isIP(x, opt && opt.version), opt && opt.message || "Invalid value provided")
     }
 
-    export function ISBN(opt?: Opt & { version?: number }) {
+    export function isbn(opt?: Opt & { version?: number }) {
         return validate(x => Validator.isISBN(x, opt && opt.version), opt && opt.message || "Invalid value provided")
     }
 
-    export function ISIN(opt?: Opt) {
+    export function isin(opt?: Opt) {
         return validate(x => Validator.isISIN(x), opt && opt.message || "Invalid value provided")
     }
 
-    export function ISO31661Alpha2(opt?: Opt) {
+    export function iso31661Alpha2(opt?: Opt) {
         return validate(x => Validator.isISO31661Alpha2(x), opt && opt.message || "Invalid value provided")
     }
 
-    export function ISO8601(opt?: Opt) {
+    export function iso8601(opt?: Opt) {
         return validate(x => Validator.isISO8601(x), opt && opt.message || "Invalid value provided")
     }
 
-    export function ISRC(opt?: Opt) {
+    export function isrc(opt?: Opt) {
         return validate(x => Validator.isISRC(x), opt && opt.message || "Invalid value provided")
     }
 
-    export function ISSN(opt?: Opt & { options?: ValidatorJS.IsISSNOptions }) {
+    export function issn(opt?: Opt & { options?: ValidatorJS.IsISSNOptions }) {
         return validate(x => Validator.isISSN(x, opt && opt.options), opt && opt.message || "Invalid value provided")
     }
 
@@ -174,7 +174,7 @@ export namespace val {
         return validate(x => Validator.isInt(x, opt && opt.options), opt && opt.message || "Invalid value provided")
     }
 
-    export function jSON(opt?: Opt) {
+    export function json(opt?: Opt) {
         return validate(x => Validator.isJSON(x), opt && opt.message || "Invalid value provided")
     }
 
@@ -186,15 +186,15 @@ export namespace val {
         return validate(x => Validator.isLength(x, opt && opt.options), opt && opt.message || "Invalid value provided")
     }
 
-    export function lowercase(opt?: Opt) {
+    export function lowerCase(opt?: Opt) {
         return validate(x => Validator.isLowercase(x), opt && opt.message || "Invalid value provided")
     }
 
-    export function mACAddress(opt?: Opt) {
+    export function macAddress(opt?: Opt) {
         return validate(x => Validator.isMACAddress(x), opt && opt.message || "Invalid value provided")
     }
 
-    export function mD5(opt?: Opt) {
+    export function md5(opt?: Opt) {
         return validate(x => Validator.isMD5(x), opt && opt.message || "Invalid value provided")
     }
 
@@ -230,11 +230,11 @@ export namespace val {
         return validate(x => Validator.isSurrogatePair(x), opt && opt.message || "Invalid value provided")
     }
 
-    export function uRL(opt?: Opt & { options?: ValidatorJS.IsURLOptions }) {
+    export function url(opt?: Opt & { options?: ValidatorJS.IsURLOptions }) {
         return validate(x => Validator.isURL(x, opt && opt.options), opt && opt.message || "Invalid value provided")
     }
 
-    export function uUID(opt?: Opt & { version?: 3 | 4 | 5 | "3" | "4" | "5" | "all" }) {
+    export function UUID(opt?: Opt & { version?: 3 | 4 | 5 | "3" | "4" | "5" | "all" }) {
         return validate(x => Validator.isUUID(x), opt && opt.message || "Invalid value provided")
     }
 
@@ -246,7 +246,7 @@ export namespace val {
         return validate(x => Validator.isVariableWidth(x), opt && opt.message || "Invalid value provided")
     }
 
-    export function whitelisted(opt: Opt & { chars: string[] }) {
+    export function whiteListed(opt: Opt & { chars: string | string[] }) {
         return validate(x => Validator.isWhitelisted(x, opt && opt.chars), opt && opt.message || "Invalid value provided")
     }
 
@@ -266,14 +266,10 @@ function validateValue(value: string, decorators: ValidatorDecorator[], path: st
 
 function validateProperty(object: any, decorators: ValidatorDecorator[], path: string[]): ValidationResult[] {
     switch (typeof object) {
-        case "string":
-        case "number":
-        case "boolean":
-            return validateValue(object, decorators, path)
         case "object":
             return validate(object, path)
         default:
-            return []
+            return validateValue("" + object, decorators, path)
     }
 }
 
