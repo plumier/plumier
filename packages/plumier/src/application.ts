@@ -63,10 +63,10 @@ export class ActionInvocation implements Invocation {
         if (config.validator) {
             const param = (i: number) => route.action.parameters[i]
             const validate = (value: any, i: number) => config.validator!(value, param(i))
-            const issues = parameters.map((value, index) => ({ parameter: param(index).name, issues: validate(value, index) }))
-                .filter(x => Boolean(x.issues))
+            const issues = parameters.map((value, index) => validate(value, index) )
+                .reduce((a,b) => a.concat(b), [])
             log(`[Action Invocation] Validation result ${b(issues)}`)
-            if (issues.some(x => x.issues.length > 0)) return new ActionResult(issues, 400)
+            if (issues.length > 0) return new ActionResult(issues, 400)
         }
         const result = (<Function>controller[route.action.name]).apply(controller, parameters)
         const awaitedResult = await Promise.resolve(result)
@@ -82,7 +82,6 @@ export class ActionInvocation implements Invocation {
         }
     }
 }
-
 
 export function pipe(middleware: Middleware[], context: Context, invocation: Invocation) {
     return middleware.reverse().reduce((prev: Invocation, cur) => new MiddlewareInvocation(cur, context, prev), invocation)

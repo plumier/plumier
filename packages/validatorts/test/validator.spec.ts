@@ -72,7 +72,7 @@ describe("String Validation", () => {
     test("byteLength", async () => {
         @model()
         class Dummy {
-            constructor(@val.byteLength({ options: { max: 5 } }) public property: string) { }
+            constructor(@val.byteLength({ max: 5 }) public property: string) { }
         }
         expect(validateObject(new Dummy("abc123-234")).length).toBe(1)
         expect(validateObject(new Dummy("123"))).toEqual([])
@@ -144,7 +144,7 @@ describe("String Validation", () => {
     test("fQDN", async () => {
         @model()
         class Dummy {
-            constructor(@val.fQDN() public property: string) { }
+            constructor(@val.fqdn() public property: string) { }
         }
         expect(validateObject(new Dummy("abc123-234")).length).toBe(1)
         expect(validateObject(new Dummy("domain.com"))).toEqual([])
@@ -297,7 +297,7 @@ describe("String Validation", () => {
     test("length", async () => {
         @model()
         class Dummy {
-            constructor(@val.length({ options: { max: 10 } }) public property: string) { }
+            constructor(@val.length({ max: 10 }) public property: string) { }
         }
         expect(validateObject(new Dummy("abc123-234fds")).length).toBe(1)
         expect(validateObject(new Dummy("abc123"))).toEqual([])
@@ -391,6 +391,17 @@ describe("String Validation", () => {
         }
         expect(validateObject(new Dummy("abc123-234")).length).toBe(1)
         //expect(validate(new Dummy(""))).toEqual([])
+    })
+
+    test("required", async () => {
+        @model()
+        class Dummy {
+            constructor(@val.required() public property?: string) { }
+        }
+        expect(validateObject(new Dummy()).length).toBe(1)
+        expect(validateObject(new Dummy(undefined)).length).toBe(1)
+        expect(validateObject(new Dummy("")).length).toBe(1)
+        expect(validateObject(new Dummy("hello"))).toEqual([])
     })
 
     test("surrogatePair", async () => {
@@ -511,7 +522,7 @@ describe("Custom Message", () => {
     test("byteLength", async () => {
         @model()
         class Dummy {
-            constructor(@val.byteLength({ message: "Invalid", options: { max: 5 } }) public property: string) { }
+            constructor(@val.byteLength({ message: "Invalid", max: 5 }) public property: string) { }
         }
         expect(validateObject(new Dummy("abc123-234"))[0].messages).toEqual(["Invalid"])
     })
@@ -575,7 +586,7 @@ describe("Custom Message", () => {
     test("fQDN", async () => {
         @model()
         class Dummy {
-            constructor(@val.fQDN({ message: "Invalid" }) public property: string) { }
+            constructor(@val.fqdn({ message: "Invalid" }) public property: string) { }
         }
         expect(validateObject(new Dummy("abc123-234"))[0].messages).toEqual(["Invalid"])
     })
@@ -711,7 +722,7 @@ describe("Custom Message", () => {
     test("length", async () => {
         @model()
         class Dummy {
-            constructor(@val.length({ message: "Invalid", options: { max: 10 } }) public property: string) { }
+            constructor(@val.length({ message: "Invalid", max: 10 }) public property: string) { }
         }
         expect(validateObject(new Dummy("abc123-234fds"))[0].messages).toEqual(["Invalid"])
     })
@@ -794,6 +805,14 @@ describe("Custom Message", () => {
             constructor(@val.postalCode({ message: "Invalid", locale: "any" }) public property: string) { }
         }
         expect(validateObject(new Dummy("abc123-234"))[0].messages).toEqual(["Invalid"])
+    })
+
+    test("required", async () => {
+        @model()
+        class Dummy {
+            constructor(@val.required({ message: "Invalid" }) public property?: string) { }
+        }
+        expect(validateObject(new Dummy())[0].messages).toEqual(["Invalid"])
     })
 
     test("surrogatePair", async () => {
@@ -930,6 +949,34 @@ describe("Array Validation", () => {
 })
 
 describe("Durability", () => {
+    it("Should skip null/undefined/empty", () => {
+        @model()
+        class ClientModel {
+            constructor(
+                @val.email()
+                public email?: string | null | undefined,
+            ) { }
+        }
+        expect(validateObject(new ClientModel()).length).toBe(0)
+        expect(validateObject(new ClientModel("")).length).toBe(0)
+        expect(validateObject(new ClientModel(null)).length).toBe(0)
+    })
+
+    it("Should skip null/undefined/empty except required", () => {
+        @model()
+        class ClientModel {
+            constructor(
+                @val.required()
+                @val.email()
+                public email?: string | null | undefined,
+            ) { }
+        }
+        expect(validateObject(new ClientModel())).toMatchObject([{ "messages": ["Required"] }])
+        expect(validateObject(new ClientModel(""))).toMatchObject([{ "messages": ["Required"] }])
+        expect(validateObject(new ClientModel("abc"))).toMatchObject([{ "messages": ["Invalid email address"] }])
+        expect(validateObject(new ClientModel("support@gmail.com"))).toEqual([])
+    })
+
     it("Should not error if provided boolean", () => {
         @model()
         class ClientModel {
