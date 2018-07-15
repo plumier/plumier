@@ -106,20 +106,6 @@ class ValidationMiddleware implements Middleware {
     }
 }
 
-export class ValidationFacility implements Facility {
-    async setup(app: Readonly<PlumierApplication>): Promise<void> {
-        app.set({
-            validator: (value, meta) => {
-                const decorators = meta.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
-                log(`[Validator] Validating ${b(value)} metadata: ${b(meta)}`)
-                return validate(value, decorators, [meta.name])
-                    .map(x => ({ messages: x.messages, path: x.path }))
-            }
-        })
-        app.use(new ValidationMiddleware())
-    }
-}
-
 /**
  * Preset configuration for building web api. This facility contains:
  * 
@@ -132,7 +118,15 @@ export class WebApiFacility implements Facility {
     async setup(app: Readonly<PlumierApplication>) {
         app.koa.use(BodyParser(this.opt && this.opt.bodyParser))
         app.koa.use(Cors(this.opt && this.opt.cors))
-        app.set(new ValidationFacility())
+        app.set({
+            validator: (value, meta) => {
+                const decorators = meta.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
+                log(`[Validator] Validating ${b(value)} metadata: ${b(meta)}`)
+                return validate(value, decorators, [meta.name])
+                    .map(x => ({ messages: x.messages, path: x.path }))
+            }
+        })
+        app.use(new ValidationMiddleware())
     }
 }
 

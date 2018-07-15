@@ -1,4 +1,5 @@
 import Chalk from "chalk";
+import Debug from "debug"
 import { IncomingHttpHeaders } from "http";
 import Koa, { Context, Request } from "koa";
 import { join } from "path";
@@ -11,6 +12,8 @@ import {
     ParameterReflection,
 } from "tinspector";
 import { inspect } from "util";
+
+const log = Debug("plum:fwk")
 
 export type HttpMethod = "post" | "get" | "put" | "delete"
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>
@@ -252,6 +255,7 @@ export namespace MiddlewareUtil {
         }
     }
     export function toKoa(middleware: Middleware): KoaMiddleware {
+        log(`[Middleware Plumier -> Koa] Registering`)
         return async (context: Context, next: () => Promise<any>) => {
             try {
                 const result = await middleware.execute({
@@ -260,6 +264,7 @@ export namespace MiddlewareUtil {
                         return ActionResult.fromContext(context)
                     }
                 })
+                log(`[Middleware Plumier -> Koa] ActionResult ${b(result)} Context: ${b({status: context.status, body: context.body})}`)
                 result.execute(context)
             }
             catch (e) {
@@ -333,6 +338,7 @@ export class ConversionError extends HttpStatusError {
 export class ValidationError extends HttpStatusError {
     constructor(public issues:ValidationIssue[]){
         super(400)
+        Object.setPrototypeOf(this, ValidationError.prototype)
     }
 }
 

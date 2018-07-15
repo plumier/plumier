@@ -1,4 +1,4 @@
-# Parameter Binding Cheat Sheet
+# Parameter Binding
 
 Parameter binding will automatically bind provided query string / form body into action parameter. 
 

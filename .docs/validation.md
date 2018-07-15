@@ -1,4 +1,4 @@
-# Validation Cheat Sheet
+# Validation
 Plumier provided decorator based Validator powered by [ValidatorJS](https://github.com/chriso/validator.js) which has comprehensive list of validation logic. 
 
 Validation handled internally by plumier (but possible to provided your own validation logic). By default if invalid value found Plumier will skip controller execution and throw `ValidationError`, if the `ValidationError` not handled it will automatically return http status 400 with an informative message.
