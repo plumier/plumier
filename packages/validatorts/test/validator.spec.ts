@@ -60,15 +60,6 @@ describe("String Validation", () => {
         expect(validateObject(new Dummy("2017-1-1"))).toEqual([])
     })
 
-    test("boolean", async () => {
-        @model()
-        class Dummy {
-            constructor(@val.boolean() public property: string) { }
-        }
-        expect(validateObject(new Dummy("abc123-234")).length).toBe(1)
-        expect(validateObject(new Dummy("true"))).toEqual([])
-    })
-
     test("byteLength", async () => {
         @model()
         class Dummy {
@@ -130,15 +121,6 @@ describe("String Validation", () => {
         }
         expect(validateObject(new Dummy("abc123-234")).length).toBe(1)
         expect(validateObject(new Dummy("support@gmail.com"))).toEqual([])
-    })
-
-    test("empty", async () => {
-        @model()
-        class Dummy {
-            constructor(@val.empty() public property: string) { }
-        }
-        expect(validateObject(new Dummy("abc123-234")).length).toBe(1)
-        expect(validateObject(new Dummy(""))).toEqual([])
     })
 
     test("fQDN", async () => {
@@ -511,14 +493,6 @@ describe("Custom Message", () => {
         expect(validateObject(new Dummy("2019-1-1"))[0].messages).toEqual(["Invalid"])
     })
 
-    test("boolean", async () => {
-        @model()
-        class Dummy {
-            constructor(@val.boolean({ message: "Invalid" }) public property: string) { }
-        }
-        expect(validateObject(new Dummy("abc123-234"))[0].messages).toEqual(["Invalid"])
-    })
-
     test("byteLength", async () => {
         @model()
         class Dummy {
@@ -571,14 +545,6 @@ describe("Custom Message", () => {
         @model()
         class Dummy {
             constructor(@val.email({ message: "Invalid" }) public property: string) { }
-        }
-        expect(validateObject(new Dummy("abc123-234"))[0].messages).toEqual(["Invalid"])
-    })
-
-    test("empty", async () => {
-        @model()
-        class Dummy {
-            constructor(@val.empty({ message: "Invalid" }) public property: string) { }
         }
         expect(validateObject(new Dummy("abc123-234"))[0].messages).toEqual(["Invalid"])
     })

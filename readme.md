@@ -9,11 +9,11 @@ Pleasant TypeScript Web Api Framework
 ## Features
 
 * Unopinionated MVC framework
-* [Testing friendly](.docs/testing-tips.md)
 * [Parameter binding](.docs/parameter-binding-cheat-sheet.md)
+* [Decorator based validation](.docs/validation-cheat-sheet.md)
+* [Static controller analysis](.docs/static-analysis-troubleshoot.md)
+* [Testing friendly](.docs/testing-tips.md)
 * [Decorator based route](.docs/route-generation-cheat-sheet.md)
-* Built-in validation
-* [Static analysis](.docs/static-analysis-troubleshoot.md)
 
 ## Requirements
 * TypeScript

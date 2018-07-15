@@ -330,6 +330,12 @@ export class ConversionError extends HttpStatusError {
     }
 }
 
+export class ValidationError extends HttpStatusError {
+    constructor(public issues:ValidationIssue[]){
+        super(400)
+    }
+}
+
 export class DefaultDependencyResolver implements DependencyResolver {
     resolve(type: new (...args: any[]) => any) {
         return new type()

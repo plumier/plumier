@@ -24,6 +24,7 @@ import {
     PlumierConfiguration,
     RouteInfo,
     BodyParserOption,
+    ValidationError,
 } from "./framework";
 import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
 import { validateObject, validate, ValidatorDecorator } from 'validatorts';
@@ -63,10 +64,10 @@ export class ActionInvocation implements Invocation {
         if (config.validator) {
             const param = (i: number) => route.action.parameters[i]
             const validate = (value: any, i: number) => config.validator!(value, param(i))
-            const issues = parameters.map((value, index) => validate(value, index) )
-                .reduce((a,b) => a.concat(b), [])
+            const issues = parameters.map((value, index) => validate(value, index))
+                .reduce((a, b) => a.concat(b), [])
             log(`[Action Invocation] Validation result ${b(issues)}`)
-            if (issues.length > 0) return new ActionResult(issues, 400)
+            if (issues.length > 0) throw new ValidationError(issues)
         }
         const result = (<Function>controller[route.action.name]).apply(controller, parameters)
         const awaitedResult = await Promise.resolve(result)
@@ -91,6 +92,33 @@ export function pipe(middleware: Middleware[], context: Context, invocation: Inv
 /* -------------------------------- FACITLITIES ---------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
+class ValidationMiddleware implements Middleware {
+    async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
+        try {
+            return await invocation.proceed()
+        }
+        catch (e) {
+            if (e instanceof ValidationError) {
+                return new ActionResult(e.issues, 400)
+            }
+            else throw e
+        }
+    }
+}
+
+export class ValidationFacility implements Facility {
+    async setup(app: Readonly<PlumierApplication>): Promise<void> {
+        app.set({
+            validator: (value, meta) => {
+                const decorators = meta.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
+                log(`[Validator] Validating ${b(value)} metadata: ${b(meta)}`)
+                return validate(value, decorators, [meta.name])
+                    .map(x => ({ messages: x.messages, path: x.path }))
+            }
+        })
+        app.use(new ValidationMiddleware())
+    }
+}
 
 /**
  * Preset configuration for building web api. This facility contains:
@@ -104,14 +132,7 @@ export class WebApiFacility implements Facility {
     async setup(app: Readonly<PlumierApplication>) {
         app.koa.use(BodyParser(this.opt && this.opt.bodyParser))
         app.koa.use(Cors(this.opt && this.opt.cors))
-        app.set({
-            validator: (value, meta) => {
-                const decorators = meta.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
-                log(`[Validator] Validating ${b(value)} metadata: ${b(meta)}`)
-                return validate(value, decorators, [meta.name])
-                    .map(x => ({ messages: x.messages, path: x.path }))
-            }
-        })
+        app.set(new ValidationFacility())
     }
 }
 

@@ -3,7 +3,7 @@ import { fixture } from '../../helper';
 import Supertest from "supertest"
 
 describe("Validation", () => {
-    it("Should validate parameter", async () => {
+    it.only("Should validate parameter", async () => {
         class AnimalController {
             get(@val.email() email: string) { }
         }
