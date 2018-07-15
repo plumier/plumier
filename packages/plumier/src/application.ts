@@ -27,7 +27,7 @@ import {
     ValidationError,
 } from "./framework";
 import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
-import { validateObject, validate, ValidatorDecorator } from 'validatorts';
+import { validateObject, validate, ValidatorDecorator } from 'tsval';
 
 
 const log = Debug("plum:app")

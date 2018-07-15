@@ -21,4 +21,4 @@ export {
     TypeConverter,
 } from "./framework"
 export { Plumier, WebApiFacility, RestfulApiFacility } from "./application"
-export { val } from "validatorts"
+export { val } from "tsval"
