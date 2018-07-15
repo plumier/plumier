@@ -1,5 +1,4 @@
-import Chalk from "chalk";
-import Debug from "debug"
+import Debug from "debug";
 import { IncomingHttpHeaders } from "http";
 import Koa, { Context, Request } from "koa";
 import { join } from "path";
@@ -11,9 +10,14 @@ import {
     FunctionReflection,
     ParameterReflection,
 } from "tinspector";
-import { inspect } from "util";
+
+import { b } from "./common";
 
 const log = Debug("plum:fwk")
+
+/* ------------------------------------------------------------------------------- */
+/* ----------------------------------- TYPES ------------------------------------- */
+/* ------------------------------------------------------------------------------- */
 
 export type HttpMethod = "post" | "get" | "put" | "delete"
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>
@@ -222,26 +226,6 @@ declare module "koa" {
 /* -------------------------------- HELPERS -------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-declare global {
-    interface String {
-        format(...args: any[]): string
-    }
-}
-
-String.prototype.format = function (this: string, ...args: any[]) {
-    return this.replace(/{(\d+)}/g, (m, i) => typeof args[i] != 'undefined' ? args[i] : m)
-}
-
-export function hasKeyOf<T>(opt: any, key: string): opt is T {
-    return key in opt;
-}
-
-export function b(msg: any) {
-    if (typeof msg === "object")
-        return Chalk.blue(inspect(msg))
-    else return Chalk.blue(msg)
-}
-
 export namespace MiddlewareUtil {
     export function fromKoa(middleware: KoaMiddleware): Middleware {
         return {
@@ -264,7 +248,7 @@ export namespace MiddlewareUtil {
                         return ActionResult.fromContext(context)
                     }
                 })
-                log(`[Middleware Plumier -> Koa] ActionResult ${b(result)} Context: ${b({status: context.status, body: context.body})}`)
+                log(`[Middleware Plumier -> Koa] ActionResult ${b(result)} Context: ${b({ status: context.status, body: context.body })}`)
                 result.execute(context)
             }
             catch (e) {
@@ -277,19 +261,6 @@ export namespace MiddlewareUtil {
     }
 }
 
-export function isCustomClass(type: Function) {
-    switch (type) {
-        case Boolean:
-        case String:
-        case Array:
-        case Number:
-        case Object:
-        case Date:
-            return false
-        default:
-            return true
-    }
-}
 
 /* ------------------------------------------------------------------------------- */
 /* -------------------------------- CLASSES -------------------------------------- */
@@ -336,7 +307,7 @@ export class ConversionError extends HttpStatusError {
 }
 
 export class ValidationError extends HttpStatusError {
-    constructor(public issues:ValidationIssue[]){
+    constructor(public issues: ValidationIssue[]) {
         super(400)
         Object.setPrototypeOf(this, ValidationError.prototype)
     }

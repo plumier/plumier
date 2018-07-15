@@ -2,7 +2,7 @@ import { decorateClass, reflect } from "tinspector";
 
 import { bind, model, TypeConverter } from "../../../src";
 import { convert, DefaultConverterList, flattenConverters } from "../../../src/binder";
-import { ParameterProperties, ArrayBindingDecorator, Class } from '../../../src/framework';
+import { ParameterProperties, ArrayBindingDecorator, Class } from '../../../src/core';
 
 class AnimalController {
     get(id: number) { }

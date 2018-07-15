@@ -2,7 +2,7 @@ import { basename, join } from "path";
 import Supertest from "supertest";
 
 import { Plumier, route, WebApiFacility, HttpStatusError } from "../../../src";
-import { Class, middleware } from '../../../src/framework';
+import { Class, middleware } from '../../../src/core';
 import { fixture } from '../../helper';
 
 

@@ -3,7 +3,7 @@ import Supertest from "supertest";
 
 import { ActionResult, HttpStatusError, Middleware } from "../../../src";
 import { pipe, Plumier, WebApiFacility } from "../../../src/application";
-import { MiddlewareUtil, ConversionError } from "../../../src/framework";
+import { MiddlewareUtil, ConversionError } from "../../../src/core";
 
 describe("ActionResult", () => {
     it("Should execute context properly", async () => {

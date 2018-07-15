@@ -19,6 +19,6 @@ export {
     route,
     RouteInfo,
     TypeConverter,
-} from "./framework"
+} from "./core"
 export { Plumier, WebApiFacility, RestfulApiFacility } from "./application"
 export { val } from "tsval"

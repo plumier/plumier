@@ -1,4 +1,4 @@
-import { Class, Configuration } from '../src/framework';
+import { Class, Configuration } from '../src/core';
 import { Plumier, WebApiFacility } from '../src/application';
 
 const log = console.log;

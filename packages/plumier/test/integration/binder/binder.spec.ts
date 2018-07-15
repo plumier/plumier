@@ -3,7 +3,7 @@ import { Request } from "koa";
 import Supertest from "supertest";
 
 import { route } from "../../../src";
-import { bind, ConversionError, HttpStatusError, model } from "../../../src/framework";
+import { bind, ConversionError, HttpStatusError, model } from "../../../src/core";
 import { fixture } from "../../helper";
 
 export class AnimalModel {

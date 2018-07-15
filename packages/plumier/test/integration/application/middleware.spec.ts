@@ -2,7 +2,7 @@ import { basename } from "path";
 import Supertest from "supertest";
 
 import { Plumier, WebApiFacility, middleware, Middleware, Invocation } from "../../../src";
-import { Class } from '../../../src/framework';
+import { Class } from '../../../src/core';
 import { Context } from 'koa';
 
 class InterceptBody implements Middleware {

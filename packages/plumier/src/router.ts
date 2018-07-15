@@ -6,18 +6,17 @@ import * as Path from "path";
 import Ptr from "path-to-regexp";
 import { ClassReflection, FunctionReflection, ParameterReflection, reflect, Reflection } from "tinspector";
 
+import { b, isCustomClass } from "./common";
 import {
     ArrayBindingDecorator,
-    b,
     Class,
     Configuration,
     errorMessage,
     IgnoreDecorator,
-    isCustomClass,
     RootDecorator,
     RouteDecorator,
     RouteInfo,
-} from "./framework";
+} from "./core";
 
 const log = Debug("plum:router")
 

@@ -4,7 +4,7 @@ import Supertest from "supertest";
 import { decorateParameter } from "tinspector";
 
 import { ActionInvocation } from "../../../src/application";
-import { ActionResult, Class, Configuration, DefaultConfiguration, HttpStatusError, route } from "../../../src/framework";
+import { ActionResult, Class, Configuration, DefaultConfiguration, HttpStatusError, route } from "../../../src/core";
 import { transformController } from "../../../src/router";
 
 
