@@ -1,4 +1,4 @@
-import { decorateClass, reflect } from "@plum/reflect";
+import { decorateClass, reflect } from "@plumjs/reflect";
 import { validateObject, val, validateArray } from '../src';
 import Validator from "validator"
 

@@ -6,7 +6,7 @@
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish",
 		"clean": "rimraf packages/*/lib packages/*/src/**/*.js packages/*/test/**/*.js && lerna run package-dev",
 		"compile": "npm run clean && jest && lerna run compile && lerna run package-prod",
-		"canary": "npm run compile && lerna publish -c --exact --yes && npm run clean"
+		"canary": "npm run compile && lerna publish -c --exact --yes -- --access public && npm run clean"
 	},
 	"author": "Ketut Sandiarsa",
 	"devDependencies": {

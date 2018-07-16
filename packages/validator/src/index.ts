@@ -1,4 +1,4 @@
-import { decorateParameter, reflect } from "@plum/reflect";
+import { decorateParameter, reflect } from "@plumjs/reflect";
 import Validator from "validator";
 import Debug from "debug"
 import { inspect } from 'util';

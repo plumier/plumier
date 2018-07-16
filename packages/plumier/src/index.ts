@@ -21,4 +21,4 @@ export {
     TypeConverter,
 } from "./core"
 export { Plumier, WebApiFacility, RestfulApiFacility } from "./application"
-export { val } from "@plum/validator"
+export { val } from "@plumjs/validator"

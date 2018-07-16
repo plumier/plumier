@@ -9,7 +9,7 @@ import {
     decorateParameter,
     FunctionReflection,
     ParameterReflection,
-} from "@plum/reflect";
+} from "@plumjs/reflect";
 
 import { b } from "./common";
 

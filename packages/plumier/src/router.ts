@@ -4,7 +4,7 @@ import * as Fs from "fs";
 import { Context } from "koa";
 import * as Path from "path";
 import Ptr from "path-to-regexp";
-import { ClassReflection, FunctionReflection, ParameterReflection, reflect, Reflection } from "@plum/reflect";
+import { ClassReflection, FunctionReflection, ParameterReflection, reflect, Reflection } from "@plumjs/reflect";
 
 import { b, isCustomClass } from "./common";
 import {
@@ -45,7 +45,7 @@ function getActionName(route: RouteInfo) {
     return `${route.controller.name}.${route.action.name}(${route.action.parameters.map(x => x.name).join(", ")})`
 }
 
-function resolvePath(path: string, ext: string[]): string[] {
+function resolveDir(path: string, ext: string[]): string[] {
     //resolve provided path directory or file
     if (Fs.lstatSync(path).isDirectory()) {
         const files = Fs.readdirSync(path)
@@ -111,7 +111,7 @@ export function transformController(object: ClassReflection | Class) {
 export async function transformModule(path: string, extensions: string[]): Promise<RouteInfo[]> {
     //read all files and get module reflection
     const modules = await Promise.all(
-        resolvePath(path, extensions)
+        resolveDir(path, extensions)
             //reflect the file
             .map(x => reflect(x)))
     //get all module.members and combine into one array
@@ -177,18 +177,6 @@ function traverseModel(par: ParameterReflection[]): ClassReflection[] {
         .reduce((a, b) => a!.concat(b!), [] as ClassReflection[])
     return models.concat(child)
 }
-
-// function getArrayInParameter(par:ParameterReflection){
-//     return Boolean(par.typeAnnotation == Array && par.decorators
-//         .find((x):x is ArrayBindingDecorator => x.type == "ParameterBinding" && x.name == "Array" ))
-// }
-
-// function traverseArray(par: ParameterReflection[]) {
-//     const parameterArray = par.filter(x => getArrayInParameter(x))
-//     const models = getModelsInParameters(parameterArray)
-//     const modelContained = 
-// }
-
 
 //----- 
 

@@ -1,6 +1,6 @@
 import Debug from "debug";
 import { Request } from "koa";
-import { FunctionReflection, ParameterReflection, reflect } from "@plum/reflect";
+import { FunctionReflection, ParameterReflection, reflect } from "@plumjs/reflect";
 
 import { b, isCustomClass } from "./common";
 import {

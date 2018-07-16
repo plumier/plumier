@@ -1,5 +1,5 @@
 import { middleware, ActionResult } from "../../../src";
-import { getDecorators } from '@plum/reflect';
+import { getDecorators } from '@plumjs/reflect';
 
 
 
