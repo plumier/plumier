@@ -3,7 +3,7 @@ import Debug from "debug";
 import { existsSync } from "fs";
 import Koa, { Context } from "koa";
 import BodyParser from "koa-bodyparser";
-import { validate, ValidatorDecorator } from "tsval";
+import { validate, ValidatorDecorator } from "@plum/validator";
 
 import { bindParameter } from "./binder";
 import { b, hasKeyOf } from "./common";

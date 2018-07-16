@@ -1,7 +1,7 @@
 import Koa, { Context } from "koa";
 import BodyParser from "koa-bodyparser";
 import Supertest from "supertest";
-import { decorateParameter } from "tinspector";
+import { decorateParameter } from "@plum/reflect";
 
 import { ActionInvocation } from "../../../src/application";
 import { ActionResult, Class, Configuration, DefaultConfiguration, HttpStatusError, route } from "../../../src/core";

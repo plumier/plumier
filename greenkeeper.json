@@ -4,7 +4,9 @@
       "packages": [
         "package.json",
         "packages/plumier/package.json",
-        "packages/tinspector/package.json"
+        "packages/reflect/package.json",
+        "packages/validator/package.json",
+        "packages/mongoose/package.json"
       ]
     }
   }

@@ -1,4 +1,4 @@
-import { getDecorators } from "tinspector";
+import { getDecorators } from "@plum/reflect";
 import { route } from '../../../src';
 
 

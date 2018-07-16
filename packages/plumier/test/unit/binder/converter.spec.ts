@@ -1,4 +1,4 @@
-import { decorateClass, reflect } from "tinspector";
+import { decorateClass, reflect } from "@plum/reflect";
 
 import { bind, model, TypeConverter } from "../../../src";
 import { convert, DefaultConverterList, flattenConverters } from "../../../src/binder";

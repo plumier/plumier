@@ -1,5 +1,5 @@
 import { middleware, ActionResult } from "../../../src";
-import { getDecorators } from 'tinspector';
+import { getDecorators } from '@plum/reflect';
 
 
 

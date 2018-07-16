@@ -1,10 +1,10 @@
-import { decorateParameter, reflect } from "tinspector";
+import { decorateParameter, reflect } from "@plum/reflect";
 import Validator from "validator";
 import Debug from "debug"
 import { inspect } from 'util';
 import Chalk from 'chalk'
 
-const log = Debug("validatorts")
+const log = Debug("plum:validator")
 
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- TYPES -------------------------------------- */

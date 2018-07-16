@@ -9,7 +9,7 @@ import {
     decorateParameter,
     FunctionReflection,
     ParameterReflection,
-} from "tinspector";
+} from "@plum/reflect";
 
 import { b } from "./common";
 

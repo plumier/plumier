@@ -4,7 +4,7 @@ import * as Fs from "fs";
 import { Context } from "koa";
 import * as Path from "path";
 import Ptr from "path-to-regexp";
-import { ClassReflection, FunctionReflection, ParameterReflection, reflect, Reflection } from "tinspector";
+import { ClassReflection, FunctionReflection, ParameterReflection, reflect, Reflection } from "@plum/reflect";
 
 import { b, isCustomClass } from "./common";
 import {
