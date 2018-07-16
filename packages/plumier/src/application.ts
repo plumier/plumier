@@ -4,6 +4,7 @@ import { existsSync } from "fs";
 import Koa, { Context } from "koa";
 import BodyParser from "koa-bodyparser";
 import { validate, ValidatorDecorator } from "@plumjs/validator";
+import Callsites from "callsites"
 
 import { bindParameter } from "./binder";
 import { b, hasKeyOf } from "./common";
@@ -27,6 +28,7 @@ import {
     ValidationError,
 } from "./core";
 import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
+import { resolve, join, dirname, isAbsolute } from 'path';
 
 
 const log = Debug("plum:app")
@@ -202,6 +204,10 @@ export class Plumier implements PlumierApplication {
         try {
             let routes: RouteInfo[] = []
             if (typeof this.config.controller === "string") {
+                if(!isAbsolute(this.config.controller)){
+                    const file = Callsites()[1].getFileName();
+                    Object.assign(this.config, { controller: join(dirname(file!), this.config.controller) })
+                }
                 if (!existsSync(this.config.controller))
                     throw new Error(errorMessage.ControllerPathNotFound.format(this.config.controller))
                 routes = await transformModule(this.config.controller, [this.config.fileExtension!])

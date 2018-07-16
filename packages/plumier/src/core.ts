@@ -1,7 +1,3 @@
-import Debug from "debug";
-import { IncomingHttpHeaders } from "http";
-import Koa, { Context, Request } from "koa";
-import { join } from "path";
 import {
     ClassReflection,
     decorateClass,
@@ -10,8 +6,12 @@ import {
     FunctionReflection,
     ParameterReflection,
 } from "@plumjs/reflect";
+import Debug from "debug";
+import { IncomingHttpHeaders } from "http";
+import Koa, { Context, Request } from "koa";
 
 import { b } from "./common";
+
 
 const log = Debug("plum:fwk")
 
@@ -577,7 +577,7 @@ export function model() { return decorateClass({}) }
 
 export const DefaultConfiguration: Configuration = {
     mode: "debug",
-    controller: join(process.cwd(), "./controller"),
+    controller: "./controller",
     dependencyResolver: new DefaultDependencyResolver(),
     fileExtension: ".js"
 }
