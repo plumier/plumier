@@ -1,5 +1,5 @@
 {
-  "name": "@plum/reflect",
+  "name": "@plumjs/reflect",
   "version": "1.3.0",
   "description": "TypeScript reflection and type inspector library",
   "main": "src/index.ts",
