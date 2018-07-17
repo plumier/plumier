@@ -2,7 +2,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { Request } from "koa";
 import Supertest from "supertest";
 
-import { bind, ConversionError, HttpStatusError, model, route } from "../../../src";
+import { bind, ConversionError, HttpStatusError, model, route, array } from "../../../src";
 import { fixture } from "../../helper";
 
 export class AnimalModel {
@@ -349,7 +349,7 @@ describe("Parameter Binding", () => {
         it("Should bind array of number", async () => {
             class AnimalController {
                 @route.post()
-                save(@bind.array(Number) b: number[]) {
+                save(@array(Number) b: number[]) {
                     return b
                 }
             }
@@ -362,7 +362,7 @@ describe("Parameter Binding", () => {
         it("Should bind array of boolean", async () => {
             class AnimalController {
                 @route.post()
-                save(@bind.array(Boolean) b: boolean[]) {
+                save(@array(Boolean) b: boolean[]) {
                     return b
                 }
             }
@@ -375,7 +375,7 @@ describe("Parameter Binding", () => {
         it("Should bind array of Date", async () => {
             class AnimalController {
                 @route.post()
-                save(@bind.array(Date) b: Date[]) {
+                save(@array(Date) b: Date[]) {
                     return b
                 }
             }
@@ -394,7 +394,7 @@ describe("Parameter Binding", () => {
             }
             class AnimalController {
                 @route.post()
-                save(@bind.array(AnimalModel) b: AnimalModel[]) {
+                save(@array(AnimalModel) b: AnimalModel[]) {
                     return b
                 }
             }
@@ -407,7 +407,7 @@ describe("Parameter Binding", () => {
         it("Should return 400 if provided invalid value", async () => {
             class AnimalController {
                 @route.post()
-                save(@bind.array(Boolean) b: boolean[]) {
+                save(@array(Boolean) b: boolean[]) {
                     return b
                 }
             }
@@ -433,7 +433,7 @@ describe("Parameter Binding", () => {
                 public name: string,
                 public deceased: boolean,
                 public birthday: Date,
-                @bind.array(TagModel)
+                @array(TagModel)
                 public tags: TagModel[]
             ) { }
         }
@@ -460,7 +460,7 @@ describe("Parameter Binding", () => {
         it("Should bind nested array inside array", async () => {
             class AnimalController {
                 @route.post()
-                save(@bind.array(AnimalModel) b: AnimalModel[]) {
+                save(@array(AnimalModel) b: AnimalModel[]) {
                     return b
                 }
             }
@@ -485,7 +485,7 @@ describe("Parameter Binding", () => {
         it("Should return 400 if provided unconvertible value", async () => {
             class AnimalController {
                 @route.post()
-                save(@bind.array(AnimalModel) b: AnimalModel[]) {
+                save(@array(AnimalModel) b: AnimalModel[]) {
                     return b
                 }
             }
@@ -501,7 +501,7 @@ describe("Parameter Binding", () => {
         it("Should return 400 if provided unconvertible value", async () => {
             class AnimalController {
                 @route.post()
-                save(@bind.array(AnimalModel) b: AnimalModel[]) {
+                save(@array(AnimalModel) b: AnimalModel[]) {
                     return b
                 }
             }

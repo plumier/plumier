@@ -1,26 +1,15 @@
-//version   1.3.0
-//github    https://github.com/ktutnik/my-own-reflect
 import "reflect-metadata";
 import Debug from "debug"
 import { inspect } from 'util';
 import Chalk from "chalk"
-
-/*
-version history:
-1.3.0: added property reflection
-1.2.0: added decorator reflection
-1.1.0: 
-1.0.0: initial 
-
-*/
 
 const log = Debug("plum:reflect")
 
 /* ---------------------------------------------------------------- */
 /* --------------------------- TYPES ------------------------------ */
 /* ---------------------------------------------------------------- */
+
 type Class = new (...arg: any[]) => any
-//export type ReflectionType = "Object" | "Function" | "Parameter" | "Class" | "Method" | "Property"
 export interface Decorator { targetType: "Method" | "Class" | "Parameter", target: string, value: any }
 export interface ParameterDecorator extends Decorator { targetType: "Parameter", targetIndex: number }
 export type Reflection = ParameterReflection | FunctionReflection | ClassReflection | ObjectReflection
@@ -29,9 +18,11 @@ export interface ParameterReflection extends ReflectionBase { type: "Parameter",
 export interface FunctionReflection extends ReflectionBase { type: "Function", parameters: ParameterReflection[], decorators: any[] }
 export interface ClassReflection extends ReflectionBase { type: "Class", ctorParameters: ParameterReflection[], methods: FunctionReflection[], decorators: any[], object: Class }
 export interface ObjectReflection extends ReflectionBase { type: "Object", members: Reflection[] }
+export interface ArrayDecorator { type: "Array", object: Class }
 
 export const DECORATOR_KEY = "plumier.key:DECORATOR"
 export const DESIGN_PARAMETER_TYPE = "design:paramtypes"
+
 
 /* ---------------------------------------------------------------- */
 /* --------------------------- HELPERS ---------------------------- */
@@ -112,25 +103,33 @@ function b(value: any) {
     else return Chalk.blue(value)
 }
 
+
+export function array(type: Class) {
+    return decorateParameter(<ArrayDecorator>{ type: "Array", object: type })
+}
+
 /* ---------------------------------------------------------------- */
 /* ------------------------- MAIN FUNCTIONS ----------------------- */
 /* ---------------------------------------------------------------- */
 
-function decorateReflection(decorators: Decorator[], reflection: ClassReflection) {
-    const toParameter = (method: string, index: number, par: ParameterReflection) => ({
-        ...par,
-        decorators: (<ParameterDecorator[]>decorators)
+function decorateReflection(decs: Decorator[], reflection: ClassReflection) {
+    const toParameter = (method: string, index: number, par: ParameterReflection) => {
+        const decorators = (<ParameterDecorator[]>decs)
             .filter((x) => x.targetType == "Parameter" && x.target == method && x.targetIndex == index)
             .map(x => ({ ...x.value }))
-    })
+        const array = decorators.find((x: ArrayDecorator): x is ArrayDecorator => x.type === "Array")
+        return {
+            ...par, decorators, typeAnnotation: array ? [array.object] : par.typeAnnotation
+        }
+    }
     const toFunction = (fn: FunctionReflection) => ({
         ...fn,
-        decorators: decorators.filter(x => x.targetType == "Method" && x.target == fn.name).map(x => ({ ...x.value })),
+        decorators: decs.filter(x => x.targetType == "Method" && x.target == fn.name).map(x => ({ ...x.value })),
         parameters: fn.parameters.map((x, i) => toParameter(fn.name, i, x))
     })
     return <ClassReflection>{
         ...reflection,
-        decorators: decorators.filter(x => x.targetType == "Class" && x.target == reflection.name).map(x => ({ ...x.value })),
+        decorators: decs.filter(x => x.targetType == "Class" && x.target == reflection.name).map(x => ({ ...x.value })),
         methods: reflection.methods.map(x => toFunction(x)),
         ctorParameters: reflection.ctorParameters.map((x, i) => toParameter("constructor", i, x))
     }
@@ -196,17 +195,14 @@ function traverse(fn: any, name: string): Reflection {
     }
 }
 
-export function reflect(path: string): Promise<ObjectReflection>
+export function reflect(path: string): ObjectReflection
 export function reflect(classType: Class): ClassReflection
-export function reflect(option: string | Class ) {
+export function reflect(option: string | Class) {
     if (typeof option === "string") {
         log(`Inspecting module ${b(option)}`)
-        return Promise.resolve(import(option))
-            .then(object => {
-                return reflectObject(object)
-            })
+        return reflectObject(require(option))
     }
-    else{
+    else {
         log(`Inspecting class ${b(option.name)}`)
         return reflectClass(option)
     }

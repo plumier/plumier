@@ -1,5 +1,4 @@
 import {
-    ArrayBindingDecorator,
     b,
     BindingDecorator,
     Class,
@@ -16,13 +15,9 @@ import { Request } from "koa";
 
 const log = Debug("plum:binder")
 
-function getArrayDecorator(decorators: any[]) {
-    return decorators.find((x: ArrayBindingDecorator): x is ArrayBindingDecorator => x.type == "ParameterBinding" && x.name == "Array")
-}
 
-function createConversionError(value: any, prop: ParameterProperties & { parameterType: Class }) {
-    const decorator = getArrayDecorator(prop.decorators)
-    const type = decorator ? `Array<${decorator.typeAnnotation.name}>` : prop.parameterType.name
+function createConversionError(value: any, prop: ParameterProperties & { parameterType: Class | Class[] }) {
+    const type = Array.isArray(prop.parameterType) ? `Array<${prop.parameterType[0].name}>` : prop.parameterType.name
     log(`[Converter] Unable to convert ${b(value)} into ${b(type)}`)
     return new ConversionError({ path: prop.path, type, value },
         errorMessage.UnableToConvertValue.format(value, type, prop.path.join("->")))
@@ -46,7 +41,7 @@ function safeToString(value: any) {
 /* ------------------------------- CONVERTER ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-export function booleanConverter(rawValue: any, prop: ParameterProperties & { parameterType: Class }) {
+export function booleanConverter(rawValue: any, prop: ParameterProperties & { parameterType: Class | Class[] }) {
     const value: string = safeToString(rawValue)
     const list: { [key: string]: boolean | undefined } = {
         on: true, true: true, "1": true, yes: true,
@@ -58,7 +53,7 @@ export function booleanConverter(rawValue: any, prop: ParameterProperties & { pa
     return result
 }
 
-export function numberConverter(rawValue: any, prop: ParameterProperties & { parameterType: Class }) {
+export function numberConverter(rawValue: any, prop: ParameterProperties & { parameterType: Class | Class[] }) {
     const value = safeToString(rawValue)
     const result = Number(value)
     if (isNaN(result) || value === "") throw createConversionError(value, prop)
@@ -66,7 +61,7 @@ export function numberConverter(rawValue: any, prop: ParameterProperties & { par
     return result
 }
 
-export function dateConverter(rawValue: any, prop: ParameterProperties & { parameterType: Class }) {
+export function dateConverter(rawValue: any, prop: ParameterProperties & { parameterType: Class | Class[] }) {
     const value = safeToString(rawValue)
     const result = new Date(value)
     if (isNaN(result.getTime()) || value === "") throw createConversionError(value, prop)
@@ -89,6 +84,7 @@ export function defaultModelConverter(value: any, prop: ParameterProperties & { 
     //if the value already instance of the type then return immediately
     //this is possible when using decorator binding such as @bind.request("req")
     if (value instanceof prop.parameterType) return value
+    if (Array.isArray(prop.parameterType)) return value
 
     //get reflection metadata of the class
     const reflection = reflect(prop.parameterType)
@@ -123,15 +119,14 @@ export function defaultModelConverter(value: any, prop: ParameterProperties & { 
     }
 }
 
-export function defaultArrayConverter(value: any[], prop: ParameterProperties & { parameterType: Class }): any {
-    const decorator: ArrayBindingDecorator = getArrayDecorator(prop.decorators)!
+export function defaultArrayConverter(value: any[], prop: ParameterProperties & { parameterType: Class[] }): any {
     if (!Array.isArray(value)) throw createConversionError(value, prop)
-    log(`[Array Converter] converting ${b(value)} to Array<${decorator.typeAnnotation.name}>`)
+    log(`[Array Converter] converting ${b(value)} to Array<${prop.parameterType[0].name}>`)
     return value.map(((x, i) => convert(x, {
         path: prop.path.concat(i.toString()),
         converters: prop.converters,
         decorators: [],
-        parameterType: decorator.typeAnnotation
+        parameterType: prop.parameterType[0]
     })))
 }
 
@@ -146,11 +141,10 @@ export function convert(value: any, prop: ParameterProperties) {
     if (!prop.parameterType) return value
     log(`[Converter] Path: ${b(prop.path.join("->"))} ` +
         `Source Type: ${b(typeof value)} ` +
-        `Target Type:${b(prop.parameterType.name)} ` +
-        `Decorators: ${b(prop.decorators.map(x => x.name).join(", "))} ` +
+        `Target Type:${b(prop.parameterType)} ` +
         `Value: ${b(value)}`)
-    //check if the parameter contains @bind.array()
-    if (Boolean(getArrayDecorator(prop.decorators)))
+    //check if the parameter contains @array()
+    if (Array.isArray(prop.parameterType))
         return defaultArrayConverter(value, { ...prop, parameterType: prop.parameterType })
     //check if parameter is native value that has default converter (Number, Date, Boolean) or if user provided converter
     else if (prop.converters.has(prop.parameterType))
@@ -193,11 +187,10 @@ function bindDecorator(action: FunctionReflection, request: Request, par: Parame
     }
 }
 
-function bindArrayDecorator(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any, type: Class) => any): any {
-    const decorator = getArrayDecorator(par.decorators)
-    if (!decorator) return
-    log(`[Array Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Type: ${b(decorator.typeAnnotation.name)}`)
-    return converter(request.body, decorator.typeAnnotation)
+function bindArrayDecorator(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any, type: Class | Class[]) => any): any {
+    if (!Array.isArray(par.typeAnnotation)) return
+    log(`[Array Binder] Action: ${b(action.name)} Parameter: ${b(par.name)} Type: ${b(par.typeAnnotation)}`)
+    return converter(request.body, par.typeAnnotation)
 }
 
 function bindRegular(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): any {
@@ -208,7 +201,7 @@ function bindRegular(action: FunctionReflection, request: Request, par: Paramete
 export function bindParameter(request: Request, action: FunctionReflection, converter?: TypeConverter[]) {
     const mergedConverters = flattenConverters(DefaultConverterList.concat(converter || []))
     return action.parameters.map(((x, i) => {
-        const converter = (result: any, type?: Class) => convert(result, {
+        const converter = (result: any, type?: Class | Class[]) => convert(result, {
             path: [x.name], parameterType: type || x.typeAnnotation,
             converters: mergedConverters, decorators: x.decorators
         });

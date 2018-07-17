@@ -26,3 +26,4 @@ export {
 } from "@plumjs/core"
 export { Plumier, WebApiFacility, RestfulApiFacility } from "./application"
 export { val } from "@plumjs/validator"
+export { array } from "@plumjs/reflect"

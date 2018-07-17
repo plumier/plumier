@@ -29,21 +29,15 @@ export type TypeConverter = { type: Class, converter: ValueConverter }
 
 export interface ParameterProperties {
     path: string[],
-    parameterType: Class | undefined,
+    parameterType: Class | Class[] | undefined,
     decorators: any[]
     converters: Map<Function, ValueConverter>,
 }
 
 export interface BindingDecorator {
     type: "ParameterBinding",
-    name: "Request" | "Body" | "Header" | "Query" | "Array",
+    name: "Request" | "Body" | "Header" | "Query" ,
     part?: RequestPart
-}
-
-export interface ArrayBindingDecorator {
-    type: "ParameterBinding",
-    name: "Array",
-    typeAnnotation: Class
 }
 
 export interface RouteDecorator { name: "Route", method: HttpMethod, url?: string }
@@ -386,15 +380,6 @@ export namespace bind {
         return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", name: "Query", part: name })
     }
 
-    /**
-     * Bind array of type
-     * 
-     *     method(@bind.array(AnimalModel) query:AnimalModel[]){}
-     * @param type Type of item
-     */
-    export function array(type: Class) {
-        return decorateParameter(<ArrayBindingDecorator>{ type: "ParameterBinding", name: "Array", typeAnnotation: type })
-    }
 }
 
 export class RouteDecoratorImpl {

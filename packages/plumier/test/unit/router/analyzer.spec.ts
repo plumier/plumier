@@ -1,4 +1,4 @@
-import { bind, model, route } from "../../../src";
+import { bind, model, route, array } from "../../../src";
 import { analyzeRoutes, printAnalysis, transformController } from "../../../src/router";
 import { consoleLog } from "../../helper";
 
@@ -133,14 +133,14 @@ describe("Analyzer", () => {
         consoleLog.clearMock()
     })
 
-    it("Model with correct configuration should be pass", () => {
+    it.only("Model with correct configuration should be pass", () => {
         @model()
         class AnimalModel {
             constructor(public id: number){}
         }
         class AnimalController {
             @route.post()
-            getAnimal(id:number, model:AnimalModel, @bind.array(AnimalModel) models:AnimalModel[]) { }
+            getAnimal(id:number, model:AnimalModel, @array(AnimalModel) models:AnimalModel[]) { }
         }
         const routeInfo = transformController(AnimalController)
         const analysis = analyzeRoutes(routeInfo)

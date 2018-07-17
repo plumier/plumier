@@ -1,8 +1,8 @@
-import { decorateClass, reflect } from "@plumjs/reflect";
+import { decorateClass, reflect, array } from "@plumjs/reflect";
 
 import { bind, model, TypeConverter } from "../../../src";
 import { convert, DefaultConverterList, flattenConverters } from "../../../src/binder";
-import { ParameterProperties, ArrayBindingDecorator, Class } from '@plumjs/core';
+import { ParameterProperties, Class } from '@plumjs/core';
 
 class AnimalController {
     get(id: number) { }
@@ -294,8 +294,7 @@ describe("Converter", () => {
     describe("Array Converter", () => {
         const getProp = (type:Class) => ({
             ...DefaultNumberProp,
-            parameterType: Array,
-            decorators: [<ArrayBindingDecorator>{ type: "ParameterBinding", name: "Array", typeAnnotation: type }]
+            parameterType: [type]
         })
 
         it("Should convert array of number", () => {
@@ -339,7 +338,7 @@ describe("Converter", () => {
                     public name: string,
                     public deceased: boolean,
                     public birthday: Date,
-                    @bind.array(TagModel)
+                    @array(TagModel)
                     public tags: TagModel[]
                 ) { }
             }

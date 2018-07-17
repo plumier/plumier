@@ -1,5 +1,4 @@
 import {
-    ArrayBindingDecorator,
     b,
     Class,
     Configuration,
@@ -108,12 +107,11 @@ export function transformController(object: ClassReflection | Class) {
         .filter(x => Boolean(x)) as RouteInfo[]
 }
 
-export async function transformModule(path: string, extensions: string[]): Promise<RouteInfo[]> {
+export function transformModule(path: string, extensions: string[]): RouteInfo[] {
     //read all files and get module reflection
-    const modules = await Promise.all(
-        resolveDir(path, extensions)
-            //reflect the file
-            .map(x => reflect(x)))
+    const modules = resolveDir(path, extensions)
+        //reflect the file
+        .map(x => reflect(x))
     //get all module.members and combine into one array
     return modules.reduce((a, b) => a.concat(b.members), <Reflection[]>[])
         //take only the controller class
@@ -166,6 +164,7 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
 
 //------ Analyzer Helpers
 function getModelsInParameters(par: ParameterReflection[]) {
+    log(`[Analyzer] Analyzing ${b(par)}`)
     return par.filter(x => x.typeAnnotation && isCustomClass(x.typeAnnotation))
         .map(x => reflect(x.typeAnnotation as Class))
 }
@@ -247,7 +246,6 @@ function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
 
 function arrayTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     const array = route.action.parameters.filter(x => x.typeAnnotation == Array)
-        .filter(x => !x.decorators.some((x): x is ArrayBindingDecorator => x.type == "ParameterBinding" && x.name == "Array"))
     if (array.length > 0) {
         log(`[Analyzer] Array without item type information in ${array.map(x => x.name).join(", ")}`)
         return {
@@ -269,6 +267,7 @@ function analyzeRoute(route: RouteInfo, tests: AnalyzerFunction[], allRoutes: Ro
 }
 
 export function analyzeRoutes(routes: RouteInfo[]) {
+    log(`[Analyzer] Analysing ${b(routes.map(x => x.url).join(", "))}`)
     const tests: AnalyzerFunction[] = [
         backingParameterTest, metadataTypeTest, multipleDecoratorTest,
         duplicateRouteTest, modelTypeInfoTest, arrayTypeInfoTest

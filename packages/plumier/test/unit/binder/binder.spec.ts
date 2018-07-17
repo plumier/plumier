@@ -1,8 +1,8 @@
+import { reflect } from "@plumjs/reflect";
 import { Request } from "koa";
 
+import { array, bind, model, route } from "../../../src";
 import { bindParameter } from "../../../src/binder";
-import { reflect } from "@plumjs/reflect";
-import { bind, route, model } from '../../../src';
 
 function request(opt?: Partial<Request>): Request {
     return <Request>{ body: { name: "The Body" }, ...opt }
@@ -173,7 +173,7 @@ describe("Parameter Binder", () => {
         it("Should bind array of number", () => {
             class AnimalController {
                 @route.post()
-                saveAnimal(@bind.array(Number) model: number[]) { }
+                saveAnimal(@array(Number) model: number[]) { }
             }
             const metadata = reflect(AnimalController)
             const result = bindParameter(request({ query: {}, body: ["1", "2", "3"] }), metadata.methods[0])
@@ -190,7 +190,7 @@ describe("Parameter Binder", () => {
 
             class AnimalController {
                 @route.post()
-                saveAnimal(@bind.array(AnimalModel) model: AnimalModel[]) { }
+                saveAnimal(@array(AnimalModel) model: AnimalModel[]) { }
             }
 
             const metadata = reflect(AnimalController)

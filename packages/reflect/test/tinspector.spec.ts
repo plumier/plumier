@@ -1,6 +1,6 @@
 import { join } from "path";
 
-import { decorateClass, decorateMethod, decorateParameter, reflect } from "../src";
+import { decorateClass, decorateMethod, decorateParameter, reflect, array } from "../src";
 import { MyClass } from "./mock.class";
 import { myNameSpace } from "./mock.class-in-namespace";
 
@@ -96,6 +96,52 @@ describe("Class Introspection", () => {
                     parameters: [
                         { type: 'Parameter', name: 'dummy', decorators: [], typeAnnotation: String },
                         { type: 'Parameter', name: 'other', decorators: [], typeAnnotation: Object }],
+                    decorators: [{}]
+                }],
+            decorators: [],
+            object: DummyClass
+        })
+    })
+
+    it("Should inspect array on constructor parameters", () => {
+        class EmptyClass { }
+        @decorateClass({})
+        class DummyClass {
+            constructor(@array(EmptyClass) empty: EmptyClass[]) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toEqual({
+            type: 'Class',
+            ctorParameters: [
+                { type: 'Parameter', name: 'empty', decorators: [{ object: EmptyClass, type: "Array" }], typeAnnotation: [EmptyClass] }
+            ],
+            name: 'DummyClass',
+            methods: [],
+            decorators: [{}],
+            object: DummyClass
+        })
+    })
+
+    it("Should inspect array on method parameter", () => {
+        class EmptyClass { }
+        class DummyClass {
+            @decorateMethod({})
+            dummyMethod(@array(EmptyClass) empty: EmptyClass[]) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toEqual({
+            type: 'Class',
+            ctorParameters: [],
+            name: 'DummyClass',
+            methods:
+                [{
+                    type: 'Function',
+                    name: 'dummyMethod',
+                    parameters: [{
+                        type: 'Parameter', name: 'empty',
+                        decorators: [{ object: EmptyClass, type: "Array" }],
+                        typeAnnotation: [EmptyClass]
+                    }],
                     decorators: [{}]
                 }],
             decorators: [],
