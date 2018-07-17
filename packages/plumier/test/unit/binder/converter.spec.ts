@@ -2,7 +2,7 @@ import { decorateClass, reflect } from "@plumjs/reflect";
 
 import { bind, model, TypeConverter } from "../../../src";
 import { convert, DefaultConverterList, flattenConverters } from "../../../src/binder";
-import { ParameterProperties, ArrayBindingDecorator, Class } from '../../../src/core';
+import { ParameterProperties, ArrayBindingDecorator, Class } from '@plumjs/core';
 
 class AnimalController {
     get(id: number) { }

@@ -2,7 +2,7 @@ import Koa from "koa";
 import Supertest from "supertest";
 
 import { Configuration, route } from "../../../src";
-import { Class, DefaultDependencyResolver } from "../../../src/core";
+import { Class, DefaultDependencyResolver } from "@plumjs/core";
 import { router, transformController } from "../../../src/router";
 
 function fixture(controller: Class) {

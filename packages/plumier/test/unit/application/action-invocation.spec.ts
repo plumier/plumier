@@ -4,7 +4,7 @@ import Supertest from "supertest";
 import { decorateParameter } from "@plumjs/reflect";
 
 import { ActionInvocation } from "../../../src/application";
-import { ActionResult, Class, Configuration, DefaultConfiguration, HttpStatusError, route } from "../../../src/core";
+import { ActionResult, Class, Configuration, DefaultConfiguration, HttpStatusError, route } from "@plumjs/core";
 import { transformController } from "../../../src/router";
 
 

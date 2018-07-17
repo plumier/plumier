@@ -11,7 +11,6 @@ import { IncomingHttpHeaders } from "http";
 import Koa, { Context, Request } from "koa";
 
 import { b } from "./common";
-import { join } from 'path';
 
 
 const log = Debug("plum:core")

@@ -145,7 +145,7 @@ import { join } from "path"
 new Plumier()
     .set({ rootPath: __dirname })
     .set(new RestfulApiFacility())
-    .set(new MongooseFacility())
+    .set(new MongooseFacility({ uri: "mongodb://localhost/myapp" }))
     .initialize()
     .then(x => x.listen(8000))
     .catch(x => console.error(e))

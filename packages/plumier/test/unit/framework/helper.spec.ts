@@ -1,4 +1,4 @@
-import "../../../src/core"
+import "@plumjs/core"
 
 describe("StringUtil.format", () => {
     it("Should assigned value properly", () => {
