@@ -144,7 +144,7 @@ AnimalModel {
 ### Array Binding
 Array binding a little bit different due to TypeScript [design type emit limitation](https://github.com/Microsoft/TypeScript/issues/12463).
 
-Plumier provided `@bind.array(TypeConstructor)` to give prover type conversion for parameter binding.
+Plumier provided `@array(TypeConstructor)` to give prover type conversion for parameter binding.
 
 ```typescript
 @model() 
@@ -159,7 +159,7 @@ class AnimalModel {
 
 export class AnimalController {
     @route.post()
-    save(@bind.array(AnimalModel) model:AnimalModel[]){}
+    save(@array(AnimalModel) model:AnimalModel[]){}
 }
 ```
 ```
