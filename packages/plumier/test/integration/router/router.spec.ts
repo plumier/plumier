@@ -666,10 +666,10 @@ describe("Router", () => {
 describe("Router with external controller", () => {
     it("Should load .js file by default", async () => {
         consoleLog.startMock()
-        const app = await new Plumier()
+        const app = new Plumier()
+            .set({ rootPath: __dirname })
             .set(new WebApiFacility())
-            //.set({ controller: join(__dirname, "controller") })
-            .initialize()
+        await app.initialize()
         expect((console.log as any).mock.calls).toEqual([])
         consoleLog.clearMock()
     })
@@ -677,24 +677,24 @@ describe("Router with external controller", () => {
     it("Should load controllers", async () => {
         consoleLog.startMock()
         const app = await new Plumier()
+            .set({ rootPath: __dirname })
             .set(new WebApiFacility())
             .set({ fileExtension: ".ts" })
             .initialize()
-        expect((console.log as any).mock.calls.length).toBe(3)
-        expect((console.log as any).mock.calls[0][0]).toContain("GET /animal/get")
-        expect((console.log as any).mock.calls[1][0]).toContain("GET /beast/get")
-        expect((console.log as any).mock.calls[2][0]).toContain("GET /creature/get")
+        expect((console.log as any).mock.calls[2][0]).toContain("GET /animal/get")
+        expect((console.log as any).mock.calls[3][0]).toContain("GET /beast/get")
+        expect((console.log as any).mock.calls[4][0]).toContain("GET /creature/get")
         consoleLog.clearMock()
     })
 
     it("Should able to specify file instead of folder", async () => {
         consoleLog.startMock()
         const app = await new Plumier()
-            .set(new WebApiFacility())
-            .set({ controller: join(__dirname, "controller/animal-controller.ts"), fileExtension: ".ts" })
+        .set({rootPath: __dirname})
+        .set(new WebApiFacility())
+            .set({ controller: "controller/animal-controller.ts", fileExtension: ".ts" })
             .initialize()
-        expect((console.log as any).mock.calls.length).toBe(1)
-        expect((console.log as any).mock.calls[0][0]).toContain("/animal/get")
+        expect((console.log as any).mock.calls[2][0]).toContain("/animal/get")
         consoleLog.clearMock()
     })
 })
@@ -703,16 +703,16 @@ describe("Analyzer", () => {
     it("Should identify missing backing parameter", async () => {
         class AnimalController {
             @route.get(":c")
-            method(a:number, b:number){}
+            method(a: number, b: number) { }
         }
         consoleLog.startMock()
         const app = await new Plumier()
             .set(new WebApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls[1][0]).toContain("PLUM1000")
-        expect((console.log as any).mock.calls[1][0]).toContain("(c)")
-        expect((console.log as any).mock.calls[1][0]).toContain("error")
+        expect((console.log as any).mock.calls[3][0]).toContain("PLUM1000")
+        expect((console.log as any).mock.calls[3][0]).toContain("(c)")
+        expect((console.log as any).mock.calls[3][0]).toContain("error")
         consoleLog.clearMock()
     })
 
@@ -720,43 +720,43 @@ describe("Analyzer", () => {
         @route.root("/beast/:type")
         class AnimalController {
             @route.get(":a")
-            method(a:number, b:number){}
+            method(a: number, b: number) { }
         }
         consoleLog.startMock()
         const app = await new Plumier()
             .set(new WebApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls[1][0]).toContain("PLUM1000")
-        expect((console.log as any).mock.calls[1][0]).toContain("(type)")
-        expect((console.log as any).mock.calls[1][0]).toContain("error")
+        expect((console.log as any).mock.calls[3][0]).toContain("PLUM1000")
+        expect((console.log as any).mock.calls[3][0]).toContain("(type)")
+        expect((console.log as any).mock.calls[3][0]).toContain("error")
         consoleLog.clearMock()
     })
 
     it("Should identify missing type information for data binding", async () => {
         class AnimalController {
-            method(a:number){}
+            method(a: number) { }
         }
         consoleLog.startMock()
         const app = await new Plumier()
             .set(new WebApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls[1][0]).toContain("PLUM1001")
-        expect((console.log as any).mock.calls[1][0]).toContain("warning")
+        expect((console.log as any).mock.calls[3][0]).toContain("PLUM1001")
+        expect((console.log as any).mock.calls[3][0]).toContain("warning")
         consoleLog.clearMock()
     })
 
     it("Should not identify missing type information for data binding if method has no parameter", async () => {
         class AnimalController {
-            method(){}
+            method() { }
         }
         consoleLog.startMock()
         const app = await new Plumier()
             .set(new WebApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls.length).toBe(1)
+        expect((console.log as any).mock.calls.length).toBe(4)
         consoleLog.clearMock()
     })
 
@@ -764,15 +764,15 @@ describe("Analyzer", () => {
         class AnimalController {
             @route.get()
             @route.get("/data")
-            method(a:number){}
+            method(a: number) { }
         }
         consoleLog.startMock()
         const app = await new Plumier()
             .set(new WebApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls[1][0]).toContain("PLUM1002")
-        expect((console.log as any).mock.calls[1][0]).toContain("error")
+        expect((console.log as any).mock.calls[3][0]).toContain("PLUM1002")
+        expect((console.log as any).mock.calls[3][0]).toContain("error")
         consoleLog.clearMock()
     })
 
@@ -780,73 +780,73 @@ describe("Analyzer", () => {
         @route.root("/beast")
         class AnimalController {
             @route.get()
-            method(a:number){}
+            method(a: number) { }
         }
         class BeastController {
             @route.get()
-            method(a:number){}
+            method(a: number) { }
         }
         consoleLog.startMock()
         const app = await new Plumier()
             .set(new WebApiFacility())
             .set({ controller: [AnimalController, BeastController] })
             .initialize()
-        expect((console.log as any).mock.calls[1][0]).toContain("PLUM1003")
-        expect((console.log as any).mock.calls[1][0]).toContain("AnimalController.method(a)")
-        expect((console.log as any).mock.calls[1][0]).toContain("BeastController.method(a)")
-        expect((console.log as any).mock.calls[1][0]).toContain("error")
+        expect((console.log as any).mock.calls[3][0]).toContain("PLUM1003")
+        expect((console.log as any).mock.calls[3][0]).toContain("AnimalController.method(a)")
+        expect((console.log as any).mock.calls[3][0]).toContain("BeastController.method(a)")
+        expect((console.log as any).mock.calls[3][0]).toContain("error")
         consoleLog.clearMock()
     })
 
     it("Should identify if model doesn't have type information for parameter binding", async () => {
         class AnimalModel {
             constructor(
-                public id:number,
+                public id: number,
                 public name: string
-            ){}
+            ) { }
         }
         class AnimalController {
             @route.post()
-            method(a:AnimalModel){}
+            method(a: AnimalModel) { }
         }
         consoleLog.startMock()
         const app = await new Plumier()
             .set(new WebApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls[1][0]).toContain("PLUM1005")
-        expect((console.log as any).mock.calls[1][0]).toContain("AnimalModel")
-        expect((console.log as any).mock.calls[1][0]).toContain("warning")
+        expect((console.log as any).mock.calls[3][0]).toContain("PLUM1005")
+        expect((console.log as any).mock.calls[3][0]).toContain("AnimalModel")
+        expect((console.log as any).mock.calls[3][0]).toContain("warning")
         consoleLog.clearMock()
     })
 
     it("Should identify if model doesn't have type information for parameter binding recursive", async () => {
         class TagModel {
             constructor(
-                public id:number,
+                public id: number,
                 public name: string
-            ){}
+            ) { }
         }
         @model()
         class AnimalModel {
             constructor(
-                public id:number,
+                public id: number,
                 public name: string,
-                public tag:TagModel
-            ){}
+                public tag: TagModel
+            ) { }
         }
         class AnimalController {
             @route.post()
-            method(a:AnimalModel){}
+            method(a: AnimalModel) { }
         }
         consoleLog.startMock()
         const app = await new Plumier()
             .set(new WebApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls[1][0]).toContain("PLUM1005")
-        expect((console.log as any).mock.calls[1][0]).toContain("TagModel")
-        expect((console.log as any).mock.calls[1][0]).toContain("warning")
+        expect((console.log as any).mock.calls[3][0]).toContain("PLUM1005")
+        expect((console.log as any).mock.calls[3][0]).toContain("TagModel")
+        expect((console.log as any).mock.calls[3][0]).toContain("warning")
         consoleLog.clearMock()
     })
 
@@ -854,21 +854,21 @@ describe("Analyzer", () => {
         @model()
         class AnimalModel {
             constructor(
-                public id:number,
+                public id: number,
                 public name: string
-            ){}
+            ) { }
         }
         class AnimalController {
             @route.post()
-            method(a:AnimalModel[]){}
+            method(a: AnimalModel[]) { }
         }
         consoleLog.startMock()
         const app = await new Plumier()
             .set(new WebApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls[1][0]).toContain("PLUM1006")
-        expect((console.log as any).mock.calls[1][0]).toContain("warning")
+        expect((console.log as any).mock.calls[3][0]).toContain("PLUM1006")
+        expect((console.log as any).mock.calls[3][0]).toContain("warning")
         consoleLog.clearMock()
     })
 })

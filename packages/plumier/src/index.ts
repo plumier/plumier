@@ -19,6 +19,10 @@ export {
     route,
     RouteInfo,
     TypeConverter,
+    ConversionError,
+    ValidationError,
+    ValidationIssue,
+    ValueConverter
 } from "./core"
 export { Plumier, WebApiFacility, RestfulApiFacility } from "./application"
 export { val } from "@plumjs/validator"

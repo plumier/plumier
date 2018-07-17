@@ -23,7 +23,7 @@ describe("Plumier", () => {
         plum.set({ controller: [AnimalController] })
         await plum.initialize()
         const log = (console.log as any).mock.calls
-        expect(log[0][0]).toContain("1. AnimalController.get(id) -> GET /animal/get")
+        expect(log[2][0]).toContain("1. AnimalController.get(id) -> GET /animal/get")
         consoleLog.clearMock()
     })
 })

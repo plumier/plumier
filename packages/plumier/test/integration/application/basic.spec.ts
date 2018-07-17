@@ -42,7 +42,7 @@ export class AnimalController {
 function fixture() {
     return new Plumier()
         .set(new WebApiFacility())
-        .set({ controller: __filename })
+        .set({ controller: AnimalController })
         .set({ mode: "production" })
 }
 
@@ -76,10 +76,4 @@ describe("Basic Controller", () => {
             .delete("/animal/delete?id=474747")
             .expect(200, { id: 474747, name: 'Mimi', age: 5 })
     })
-})
-
-describe("Return value", () => {
-    it("Should be able to return primitive", () => {})
-    it("Should be able to return object", () => {})
-    it("Should be able to return action result", () => {})
 })

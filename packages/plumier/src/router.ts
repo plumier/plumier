@@ -138,7 +138,7 @@ function checkUrlMatch(route: RouteInfo, ctx: Context) {
 
 export function router(infos: RouteInfo[], config: Configuration, handler: (ctx: Context) => Promise<void>) {
     return async (ctx: Context, next: () => Promise<void>) => {
-    const match = infos.map(x => checkUrlMatch(x, ctx))
+        const match = infos.map(x => checkUrlMatch(x, ctx))
             .find(x => Boolean(x.match) && x.method == ctx.method)
         if (match) {
             log(`[Router] Match route ${b(match.route.method)} ${b(match.route.url)} with ${b(ctx.method)} ${b(ctx.path)}`)
@@ -283,6 +283,10 @@ export function printAnalysis(results: TestResult[]) {
         const issues = x.issues.map(issue => ` - ${issue.type} ${issue!.message}`)
         return { method, url: x.route.url, action, issues }
     })
+    if (data.length > 0) {
+        console.log()
+        console.log(chalk.bold("Route Analysis Report"))
+    }
     data.forEach((x, i) => {
         const action = x.action.padEnd(Math.max(...data.map(x => x.action.length)))
         const method = x.method.padEnd(Math.max(...data.map(x => x.method.length)))
@@ -293,4 +297,5 @@ export function printAnalysis(results: TestResult[]) {
         console.log(color(`${i + 1}. ${action} -> ${method} ${x.url}`))
         x.issues.forEach(issue => console.log(issueColor(issue)))
     })
+    if (data.length > 0) console.log()
 }

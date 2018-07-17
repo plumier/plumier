@@ -2,8 +2,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { Request } from "koa";
 import Supertest from "supertest";
 
-import { route } from "../../../src";
-import { bind, ConversionError, HttpStatusError, model } from "../../../src/core";
+import { bind, ConversionError, HttpStatusError, model, route } from "../../../src";
 import { fixture } from "../../helper";
 
 export class AnimalModel {

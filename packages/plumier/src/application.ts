@@ -26,6 +26,7 @@ import {
     PlumierConfiguration,
     RouteInfo,
     ValidationError,
+    Class,
 } from "./core";
 import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
 import { resolve, join, dirname, isAbsolute } from 'path';
@@ -120,10 +121,13 @@ class ValidationMiddleware implements Middleware {
  * cors: @koa/cors
  */
 export class WebApiFacility implements Facility {
-    constructor(private opt?: { bodyParser?: BodyParserOption, cors?: Cors.Options }) { }
+    constructor(private opt?: { controller?: string | Class | Class[], bodyParser?: BodyParserOption, cors?: Cors.Options }) { }
+
     async setup(app: Readonly<PlumierApplication>) {
         app.koa.use(BodyParser(this.opt && this.opt.bodyParser))
         app.koa.use(Cors(this.opt && this.opt.cors))
+        if (this.opt && this.opt.controller)
+            app.set({ controller: this.opt.controller })
         app.set({
             validator: (value, meta) => {
                 const decorators = meta.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
@@ -203,24 +207,24 @@ export class Plumier implements PlumierApplication {
     async initialize(): Promise<Koa> {
         try {
             let routes: RouteInfo[] = []
+            await Promise.all(this.config.facilities.map(x => x.setup(this)))
             if (typeof this.config.controller === "string") {
-                if(!isAbsolute(this.config.controller)){
-                    const file = Callsites()[1].getFileName();
-                    Object.assign(this.config, { controller: join(dirname(file!), this.config.controller) })
-                }
-                if (!existsSync(this.config.controller))
-                    throw new Error(errorMessage.ControllerPathNotFound.format(this.config.controller))
-                routes = await transformModule(this.config.controller, [this.config.fileExtension!])
+                const path = join(this.config.rootPath, this.config.controller)
+                if (!existsSync(path))
+                    throw new Error(errorMessage.ControllerPathNotFound.format(path))
+                routes = await transformModule(path, [this.config.fileExtension!])
             }
             else if (Array.isArray(this.config.controller)) {
+                log(`[Initialize] Controller ${b(this.config.controller)}`)
                 routes = this.config.controller.map(x => transformController(x))
                     .reduce((a, b) => a.concat(b), [])
             }
             else {
+                log(`[Initialize] Controller ${b(this.config.controller)}`)
                 routes = transformController(this.config.controller)
             }
+            log(`[Initialize] Routes ${b(routes)}`)
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
-            await Promise.all(this.config.facilities.map(x => x.setup(this)))
             this.koa.use(async (ctx, next) => {
                 try {
                     await next()

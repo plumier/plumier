@@ -11,9 +11,10 @@ import { IncomingHttpHeaders } from "http";
 import Koa, { Context, Request } from "koa";
 
 import { b } from "./common";
+import { join } from 'path';
 
 
-const log = Debug("plum:fwk")
+const log = Debug("plum:core")
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------------- TYPES ------------------------------------- */
@@ -101,9 +102,13 @@ export interface ValidationIssue {
 export interface Configuration {
     mode: "debug" | "production"
 
+    /**
+     * Specify root path of controller. process.cwd is default
+     */
+    rootPath: string,
 
     /**
-     * Specify controller path or the controller classes array, default to "process.cwd() ./controller" 
+     * Specify controller path or the controller classes array, default to "./controller" relative to rootPath
      */
     controller: string | Class[] | Class
 
@@ -577,6 +582,7 @@ export function model() { return decorateClass({}) }
 
 export const DefaultConfiguration: Configuration = {
     mode: "debug",
+    rootPath: process.cwd(),
     controller: "./controller",
     dependencyResolver: new DefaultDependencyResolver(),
     fileExtension: ".js"
