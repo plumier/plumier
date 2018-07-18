@@ -1,7 +1,7 @@
 import { basename } from "path";
 import Supertest from "supertest";
 
-import { Plumier, route, RestfulApiFacility } from "../../../src";
+import Plumier, { route, RestfulApiFacility } from "../../../src";
 
 function fixture() {
     return new Plumier()

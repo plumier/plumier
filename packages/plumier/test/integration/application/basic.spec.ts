@@ -1,7 +1,7 @@
 import { basename } from "path";
 import Supertest from "supertest";
 
-import { Plumier, route, WebApiFacility } from "../../../src";
+import Plumier, { route, WebApiFacility } from "../../../src";
 
 export class AnimalModel {
     constructor(

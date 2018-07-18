@@ -24,6 +24,9 @@ export {
     ValidationIssue,
     ValueConverter
 } from "@plumjs/core"
-export { Plumier, WebApiFacility, RestfulApiFacility } from "./application"
+export { WebApiFacility, RestfulApiFacility } from "./application"
 export { val } from "@plumjs/validator"
 export { array } from "@plumjs/reflect"
+
+import {Plumier} from "./application"
+export default Plumier

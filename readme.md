@@ -7,23 +7,21 @@ Pleasant TypeScript Web Api Framework
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6d61987244f1471abe915292cb3add1b)](https://www.codacy.com/app/ktutnik/plumier?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ktutnik/plumier&amp;utm_campaign=Badge_Grade)
 
 ## Motivation
-Developing a good web api require extra work for some important task such as security, data sanitation, validation, logging, auditing etc etc, which make code look messy. 
-
 - Provided clean code with flexible code separation
 - Provided built in function such as comprehensive validation, parameter binding, data sanitation.
 - Help developer reveal confusing bugs caused by miss configuration by providing static analysis
-- Highly testable, Action is pure function and controller is totally POTO (plain old TypeScript object)
+- Highly testable controller free from framework dependency and totally POTO (plain old TypeScript object). 
 - Wrap production-ready library for stability (koa, validatorjs, mongoose)
 - Compact and light weight with small size codebase
 - Uses TypeScript, provided good tooling support for IDE
 
 ## Features
 
-* [Parameter binding](.docs/parameter-binding.md)
-* [Decorator based validation](.docs/validation.md)
-* [Static controller analysis](.docs/static-analysis-troubleshoot.md)
-* [Testing friendly](.docs/testing-tips.md)
-* [Decorator based route](.docs/route-generation-cheat-sheet.md)
+* [Parameter binding](.docs/parameter-binding.md): Transform and sanitize request data (body, query) match with action's parameter type.
+* [Decorator based validation](.docs/validation.md): Comprehensive list of validation powered by [ValidatorJS](https://github.com/chriso/validator.js)
+* [Static controller analysis](.docs/static-analysis-troubleshoot.md): Provided detection for misconfigured controller, missing data type that cause difficult to trace bugs.
+* [Testing friendly](.docs/testing-tips.md): Controller free from framework dependency, controller's action follow the concept of pure function (take thing, return thing, don't mutate thing) make them easy to test with minimum usage of mock & stub. Use [supertest]() only for integration testing. Perform TDD/BDD easily
+* [Decorator based route](.docs/route-generation-cheat-sheet.md): Decorator usage is minimal and flexible, can perform difficult configuration nicely such as nested restful resources.
 
 ## Requirements
 * TypeScript
@@ -31,7 +29,9 @@ Developing a good web api require extra work for some important task such as sec
 
 ## Getting Started
 
-We will creating a complete restful api bare handedly (without any generator). Create some files like below:
+In this example we will creating a complete restful api bare handedly (without any generator) which will save data to MongoDB database. 
+
+Create some files with folder schema like below:
 
 ```
 + src
@@ -53,7 +53,7 @@ Copy paste file content below to appropriate file
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "DEBUG=plum:* node index"
+    "start": "DEBUG=plum:* node src/index"
   },
   "dependencies": {
     "@plumjs/plumier": "^0.1.0",
@@ -137,7 +137,7 @@ export class PetController {
 ```typescript
 //file: ./src/index.ts
 
-import { Plumier, RestfulApiFacility } from "@plumjs/plumier"
+import Plumier, { RestfulApiFacility } from "@plumjs/plumier"
 import { MongooseFacility } from "@plumjs/mongoose"
 import { join } from "path"
 
@@ -151,7 +151,7 @@ new Plumier()
     .catch(x => console.error(e))
 ```
 
-Thats it, whit above you will got:
+Thats it, with above you will got:
 
 ### Restful style route
 Plumier will generate controller into restful style routes

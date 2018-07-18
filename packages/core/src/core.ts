@@ -36,7 +36,7 @@ export interface ParameterProperties {
 
 export interface BindingDecorator {
     type: "ParameterBinding",
-    name: "Request" | "Body" | "Header" | "Query" ,
+    name: "Request" | "Body" | "Header" | "Query",
     part?: RequestPart
 }
 
@@ -557,7 +557,7 @@ export namespace middleware {
     }
 }
 
-export function model() { return decorateClass({}) }
+export function model() { return decorateClass({ Type: "ModelDecorator" }) }
 
 /* ------------------------------------------------------------------------------- */
 /* -------------------------------- CONSTANTS ------------------------------------ */
@@ -581,6 +581,7 @@ export namespace errorMessage {
     export const ControllerPathNotFound = "PLUM1004: Controller file or directory {0} not found"
     export const ModelWithoutTypeInformation = "PLUM1005: {0} doesn't have @model decorator, parameter binding will be skipped"
     export const ArrayWithoutTypeInformation = "PLUM1006: Array without @bind.array() decorator found in parameter {0}, parameter binding will be skipped"
+    export const ModelNotFound = "PLUM1007: Model not found, no class decorated with @model() on provided configuration"
 
     //PLUM2XXX internal app error
     export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate model {0}. Model should be instantiable using default constructor`

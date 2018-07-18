@@ -1,4 +1,4 @@
-import { Plumier } from "../../../src";
+import Plumier from "../../../src";
 import { consoleLog } from '../../helper';
 
 

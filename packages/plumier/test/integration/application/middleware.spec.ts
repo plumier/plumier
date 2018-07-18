@@ -2,7 +2,7 @@ import { Class } from "@plumjs/core";
 import { Context } from "koa";
 import Supertest from "supertest";
 
-import { Invocation, Middleware, middleware, Plumier, WebApiFacility } from "../../../src";
+import Plumier, { Invocation, Middleware, middleware, WebApiFacility } from "../../../src";
 
 class InterceptBody implements Middleware {
     constructor(private newBody: any) { }
