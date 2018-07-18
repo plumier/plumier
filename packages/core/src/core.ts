@@ -96,12 +96,7 @@ export interface Configuration {
     mode: "debug" | "production"
 
     /**
-     * Specify root path of controller. process.cwd is default
-     */
-    rootPath: string,
-
-    /**
-     * Specify controller path or the controller classes array, default to "./controller" relative to rootPath
+     * Specify controller path (absolute or relative to entry point) or the controller classes array.
      */
     controller: string | Class[] | Class
 
@@ -566,7 +561,6 @@ export function model() { return decorateClass({ Type: "ModelDecorator" }) }
 
 export const DefaultConfiguration: Configuration = {
     mode: "debug",
-    rootPath: process.cwd(),
     controller: "./controller",
     dependencyResolver: new DefaultDependencyResolver(),
     fileExtension: ".js"

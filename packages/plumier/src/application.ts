@@ -26,7 +26,7 @@ import Debug from "debug";
 import { existsSync } from "fs";
 import Koa, { Context } from "koa";
 import BodyParser from "koa-bodyparser";
-import { join } from "path";
+import { join, basename, isAbsolute, dirname } from "path";
 
 import { bindParameter } from "./binder";
 import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
@@ -208,8 +208,11 @@ export class Plumier implements PlumierApplication {
         try {
             let routes: RouteInfo[] = []
             await Promise.all(this.config.facilities.map(x => x.setup(this)))
+            const executionPath = dirname(module.parent!.parent!.filename)
+            log(`[Initialize] execution path ${executionPath}`)
             if (typeof this.config.controller === "string") {
-                const path = join(this.config.rootPath, this.config.controller)
+                const path = isAbsolute(this.config.controller) ? this.config.controller :
+                     join(executionPath, this.config.controller)
                 if (!existsSync(path))
                     throw new Error(errorMessage.ControllerPathNotFound.format(path))
                 routes = transformModule(path, [this.config.fileExtension!])

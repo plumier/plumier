@@ -669,7 +669,7 @@ describe("Router with external controller", () => {
         Rimraf.sync(join(__dirname, "./controller/*.js"))
         consoleLog.startMock()
         const app = new Plumier()
-            .set({ rootPath: __dirname })
+            //.set({ rootPath: __dirname })
             .set(new WebApiFacility())
         await app.initialize()
         expect((console.log as any).mock.calls).toEqual([])
@@ -679,7 +679,6 @@ describe("Router with external controller", () => {
     it("Should load controllers", async () => {
         consoleLog.startMock()
         const app = await new Plumier()
-            .set({ rootPath: __dirname })
             .set(new WebApiFacility())
             .set({ fileExtension: ".ts" })
             .initialize()
@@ -692,7 +691,6 @@ describe("Router with external controller", () => {
     it("Should able to specify file instead of folder", async () => {
         consoleLog.startMock()
         const app = await new Plumier()
-        .set({rootPath: __dirname})
         .set(new WebApiFacility())
             .set({ controller: "controller/animal-controller.ts", fileExtension: ".ts" })
             .initialize()
