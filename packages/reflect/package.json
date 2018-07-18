@@ -2,15 +2,14 @@
   "name": "@plumjs/reflect",
   "version": "1.3.0",
   "description": "TypeScript reflection and type inspector library",
-  "main": "src/index.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "keywords": [
     "reflection",
     "introspection"
   ],
   "scripts": {
-    "compile": "tsc -p tsconfig.build.json",
-    "package-prod": "node ../../.script/modify-package production",
-    "package-dev": "node ../../.script/modify-package"
+    "compile": "tsc -p tsconfig.build.json"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",

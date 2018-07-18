@@ -164,9 +164,8 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
 
 //------ Analyzer Helpers
 function getModelsInParameters(par: ParameterReflection[]) {
-    log(`[Analyzer] Analyzing ${b(par)}`)
     return par.filter(x => x.typeAnnotation && isCustomClass(x.typeAnnotation))
-        .map(x => reflect(x.typeAnnotation as Class))
+        .map(x => reflect((Array.isArray(x.typeAnnotation) ? x.typeAnnotation[0] : x.typeAnnotation) as Class))
 }
 
 function traverseModel(par: ParameterReflection[]): ClassReflection[] {
@@ -232,6 +231,7 @@ function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     const classes = traverseModel(route.action.parameters)
         .filter(x => x.ctorParameters.every(par => typeof par.typeAnnotation == "undefined"))
         .map(x => x.object)
+    log(`[Analyzer] Checking model types ${b(classes)}`)
     //get only unique type
     const noTypeInfo = Array.from(new Set(classes))
     if (noTypeInfo.length > 0) {
@@ -261,7 +261,10 @@ function arrayTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
 /* ------------------------------------------------------------------------------- */
 
 function analyzeRoute(route: RouteInfo, tests: AnalyzerFunction[], allRoutes: RouteInfo[]): TestResult {
-    const issues = tests.map(test => test(route, allRoutes))
+    const issues = tests.map(test => {
+        log(`[Analyzer] Analyzing using ${b(test.name)}`)
+        return test(route, allRoutes)
+    })
         .filter(x => x.type != "success")
     return { route, issues }
 }

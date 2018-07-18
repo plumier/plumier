@@ -2,6 +2,7 @@ import { route, WebApiFacility, Plumier, model, bind } from "../../../src";
 import { fixture, consoleLog } from '../../helper';
 import Supertest from "supertest"
 import { join } from 'path';
+import Rimraf from "rimraf"
 
 describe("Router", () => {
     it("Should transform regular method to GET", async () => {
@@ -665,6 +666,7 @@ describe("Router", () => {
 
 describe("Router with external controller", () => {
     it("Should load .js file by default", async () => {
+        Rimraf.sync(join(__dirname, "./controller/*.js"))
         consoleLog.startMock()
         const app = new Plumier()
             .set({ rootPath: __dirname })

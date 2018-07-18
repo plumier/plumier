@@ -21,8 +21,8 @@ export function b(msg: any) {
     else return Chalk.blue(msg)
 }
 
-export function isCustomClass(type: Function) {
-    switch (type) {
+export function isCustomClass(type: Function | Function[]) {
+    switch (Array.isArray(type) ? type[0] : type) {
         case Boolean:
         case String:
         case Array:

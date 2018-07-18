@@ -133,7 +133,7 @@ describe("Analyzer", () => {
         consoleLog.clearMock()
     })
 
-    it.only("Model with correct configuration should be pass", () => {
+    it("Model with correct configuration should be pass", () => {
         @model()
         class AnimalModel {
             constructor(public id: number){}
@@ -144,7 +144,6 @@ describe("Analyzer", () => {
         }
         const routeInfo = transformController(AnimalController)
         const analysis = analyzeRoutes(routeInfo)
-        console.log(analysis)
         expect(analysis[0].issues.length).toBe(0)
     })
 

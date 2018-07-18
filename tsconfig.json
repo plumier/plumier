@@ -1,3 +1,10 @@
 {
   "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "inlineSourceMap": true,
+    "baseUrl": "./packages",
+    "paths": {
+      "@plumjs/*": ["*/src"]
+    }
+  }
 }

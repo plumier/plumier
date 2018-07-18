@@ -13,6 +13,11 @@ module.exports = {
             statements: 100
         }
     },
+    rootDir: ".",
+    moduleNameMapper: {
+        "@plumjs/(.*)": "<rootDir>packages/$1/src"
+    }
+    ,
     transform: {
         "^.+\\.tsx?$": "ts-jest",
     },
