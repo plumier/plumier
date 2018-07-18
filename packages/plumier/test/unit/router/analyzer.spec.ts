@@ -144,6 +144,7 @@ describe("Analyzer", () => {
         }
         const routeInfo = transformController(AnimalController)
         const analysis = analyzeRoutes(routeInfo)
+        console.log(analysis)
         expect(analysis[0].issues.length).toBe(0)
     })
 
