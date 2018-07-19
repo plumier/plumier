@@ -21,8 +21,8 @@ Above code will make sure the `id` parameter exists and a valid MongodDB id.
 ## Validate Request Body
 
 ```typescript
-@model()
-export class AnimalModel {
+@domain()
+export class AnimalDto {
     constructor(
         @val.alpha()
         @val.required()
@@ -37,7 +37,7 @@ export class AnimalModel {
 
 export class AnimalController {
     @route.post()
-    saveAnimal(model:AnimalModel){}
+    saveAnimal(model:AnimalDto){}
 }
 ```
 

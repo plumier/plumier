@@ -2,7 +2,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { Request } from "koa";
 import Supertest from "supertest";
 
-import { bind, ConversionError, HttpStatusError, model, route, array } from "../../../src";
+import { bind, ConversionError, HttpStatusError, domain, route, array } from "../../../src";
 import { fixture } from "../../helper";
 
 export class AnimalModel {
@@ -164,7 +164,7 @@ describe("Parameter Binding", () => {
     })
 
     describe("Model parameter binding", () => {
-        @model()
+        @domain()
         class AnimalModel {
             constructor(
                 public id: number,
@@ -210,7 +210,7 @@ describe("Parameter Binding", () => {
         })
 
         it("Should provide informative error when model instantiation failed", async () => {
-            @model()
+            @domain()
             class AnimalModel {
                 constructor() { 
                     throw new Error("ERROR")
@@ -237,7 +237,7 @@ describe("Parameter Binding", () => {
         })
 
         it("Should provide informative error when model instantiation failed and throws non Error instance", async () => {
-            @model()
+            @domain()
             class AnimalModel {
                 constructor() { 
                     throw "Other error"
@@ -265,7 +265,7 @@ describe("Parameter Binding", () => {
     })
 
     describe("Nested model parameter binding", () => {
-        @model()
+        @domain()
         class TagModel {
             constructor(
                 public id: number,
@@ -273,7 +273,7 @@ describe("Parameter Binding", () => {
                 public expired: Date
             ) { }
         }
-        @model()
+        @domain()
         class AnimalModel {
             constructor(
                 public id: number,
@@ -386,7 +386,7 @@ describe("Parameter Binding", () => {
         })
 
         it("Should bind array of Model", async () => {
-            @model()
+            @domain()
             class AnimalModel {
                 constructor(
                     public id: number,
@@ -419,14 +419,14 @@ describe("Parameter Binding", () => {
     })
 
     describe("Nested array parameter binding", () => {
-        @model()
+        @domain()
         class TagModel {
             constructor(
                 public id: number,
                 public name: string,
             ) { }
         }
-        @model()
+        @domain()
         class AnimalModel {
             constructor(
                 public id: number,
@@ -577,7 +577,7 @@ describe("Parameter Binding", () => {
     })
 
     describe("Request body parameter binding", () => {
-        @model()
+        @domain()
         class AnimalModel {
             constructor(
                 public id: number,
@@ -702,7 +702,7 @@ describe("Parameter Binding", () => {
     })
 
     describe("Request query parameter binding", () => {
-        @model()
+        @domain()
         class AnimalModel {
             constructor(
                 public id: number,
@@ -725,7 +725,7 @@ describe("Parameter Binding", () => {
         })
 
         it("Should be able to combine with model binding", async () => {
-            @model()
+            @domain()
             class PagingModel {
                 constructor(
                     public start: number,

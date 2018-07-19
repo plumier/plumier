@@ -1,4 +1,4 @@
-import Plumier, { route, WebApiFacility, model, bind } from "../../../src";
+import Plumier, { route, WebApiFacility, domain, bind } from "../../../src";
 import { fixture, consoleLog } from '../../helper';
 import Supertest from "supertest"
 import { join } from 'path';
@@ -827,7 +827,7 @@ describe("Analyzer", () => {
                 public name: string
             ) { }
         }
-        @model()
+        @domain()
         class AnimalModel {
             constructor(
                 public id: number,
@@ -851,7 +851,7 @@ describe("Analyzer", () => {
     })
 
     it("Should identify if array doesn't have type information for parameter binding", async () => {
-        @model()
+        @domain()
         class AnimalModel {
             constructor(
                 public id: number,

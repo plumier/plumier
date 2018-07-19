@@ -1,6 +1,6 @@
 import { decorateClass, reflect, array } from "@plumjs/reflect";
 
-import { bind, model, TypeConverter } from "../../../src";
+import { bind, domain, TypeConverter } from "../../../src";
 import { convert, DefaultConverterList, flattenConverters } from "../../../src/binder";
 import { ParameterProperties, Class } from '@plumjs/core';
 
@@ -302,7 +302,7 @@ describe("Converter", () => {
             expect(result).toEqual([123, 123, 123])
         })
         it("Should convert array of model", () => {
-            @model()
+            @domain()
             class AnimalClass {
                 constructor(
                     public id: number,
@@ -324,14 +324,14 @@ describe("Converter", () => {
         })
 
         it("Should convert nested array inside model", () => {
-            @model()
+            @domain()
             class TagModel {
                 constructor(
                     public id: number,
                     public name: string,
                 ) { }
             }
-            @model()
+            @domain()
             class AnimalClass {
                 constructor(
                     public id: number,

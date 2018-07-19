@@ -1,4 +1,4 @@
-import { bind, model, route, array } from "../../../src";
+import { bind, domain, route, array } from "../../../src";
 import { analyzeRoutes, printAnalysis, transformController } from "../../../src/router";
 import { consoleLog } from "../../helper";
 
@@ -134,7 +134,7 @@ describe("Analyzer", () => {
     })
 
     it("Model with correct configuration should be pass", () => {
-        @model()
+        @domain()
         class AnimalModel {
             constructor(public id: number){}
         }
@@ -167,7 +167,7 @@ describe("Analyzer", () => {
                 public id:number
             ){}
         }
-        @model()
+        @domain()
         class AnimalModel {
             constructor(
                 public id: number,
@@ -191,7 +191,7 @@ describe("Analyzer", () => {
                 public childTag:TagModel
             ){}
         }
-        @model()
+        @domain()
         class AnimalModel {
             constructor(
                 public id: number,
@@ -210,7 +210,7 @@ describe("Analyzer", () => {
     })
 
     it("Should identify if array doesn't contains type information", () => {
-        @model()
+        @domain()
         class AnimalModel {
             constructor(public id: number){}
         }

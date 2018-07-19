@@ -1,4 +1,4 @@
-import { val, model, route } from "../../../src";
+import { val, domain, route } from "../../../src";
 import { fixture } from '../../helper';
 import Supertest from "supertest"
 
@@ -34,7 +34,7 @@ describe("Validation", () => {
     })
 
     it("Should validate nested object", async () => {
-        @model()
+        @domain()
         class AnimalModel {
             constructor(
                 @val.required()

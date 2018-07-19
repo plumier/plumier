@@ -552,7 +552,7 @@ export namespace middleware {
     }
 }
 
-export function model() { return decorateClass({ Type: "ModelDecorator" }) }
+export function domain() { return decorateClass({ Type: "ModelDecorator" }) }
 
 /* ------------------------------------------------------------------------------- */
 /* -------------------------------- CONSTANTS ------------------------------------ */
@@ -573,9 +573,10 @@ export namespace errorMessage {
     export const MultipleDecoratorNotSupported = "PLUM1002: Multiple decorators doesn't supported"
     export const DuplicateRouteFound = "PLUM1003: Duplicate route found in {0}"
     export const ControllerPathNotFound = "PLUM1004: Controller file or directory {0} not found"
-    export const ModelWithoutTypeInformation = "PLUM1005: {0} doesn't have @model decorator, parameter binding will be skipped"
+    export const ModelWithoutTypeInformation = "PLUM1005: {0} doesn't have @domain() decorator, parameter binding will be skipped"
     export const ArrayWithoutTypeInformation = "PLUM1006: Array without @bind.array() decorator found in parameter {0}, parameter binding will be skipped"
-    export const ModelNotFound = "PLUM1007: Model not found, no class decorated with @model() on provided configuration"
+    export const ModelNotFound = "PLUM1007: Model not found, no class decorated with @domain() on provided classes"
+    export const ModelPathNotFound = "PLUM1007: Model not found, no class decorated with @domain() on path {0}"
 
     //PLUM2XXX internal app error
     export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate model {0}. Model should be instantiable using default constructor`

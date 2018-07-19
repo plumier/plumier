@@ -12,7 +12,7 @@ export {
     KoaMiddleware,
     middleware,
     Middleware,
-    model,
+    domain,
     PlumierApplication,
     PlumierConfiguration,
     RequestPart,

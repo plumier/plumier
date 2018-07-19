@@ -2,12 +2,12 @@ import { decorateClass, reflect } from "@plumjs/reflect";
 import { validateObject, val, validateArray } from '../src';
 import Validator from "validator"
 
-function model() { return decorateClass({}) }
+function domain() { return decorateClass({}) }
 
 describe("String Validation", () => {
 
     test("after", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.after({ date: "2018-1-1" }) public property: string) { }
         }
@@ -16,7 +16,7 @@ describe("String Validation", () => {
     })
 
     test("alpha", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.alpha() public property: string) { }
         }
@@ -25,7 +25,7 @@ describe("String Validation", () => {
     })
 
     test("alphanumeric", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.alphanumeric() public property: string) { }
         }
@@ -34,7 +34,7 @@ describe("String Validation", () => {
     })
 
     test("ascii", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.ascii() public property: string) { }
         }
@@ -43,7 +43,7 @@ describe("String Validation", () => {
     })
 
     test("base64", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.base64() public property: string) { }
         }
@@ -52,7 +52,7 @@ describe("String Validation", () => {
     })
 
     test("before", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.before({ date: "2018-1-1" }) public property: string) { }
         }
@@ -61,7 +61,7 @@ describe("String Validation", () => {
     })
 
     test("byteLength", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.byteLength({ max: 5 }) public property: string) { }
         }
@@ -70,7 +70,7 @@ describe("String Validation", () => {
     })
 
     test("creditCard", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.creditCard() public property: string) { }
         }
@@ -79,7 +79,7 @@ describe("String Validation", () => {
     })
 
     test("currency", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.currency() public property: string) { }
         }
@@ -88,7 +88,7 @@ describe("String Validation", () => {
     })
 
     test("dataURI", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.dataURI() public property: string) { }
         }
@@ -97,7 +97,7 @@ describe("String Validation", () => {
     })
 
     test("decimal", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.decimal() public property: string) { }
         }
@@ -106,7 +106,7 @@ describe("String Validation", () => {
     })
 
     test("divisibleBy", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.divisibleBy({ num: 4 }) public property: string) { }
         }
@@ -115,7 +115,7 @@ describe("String Validation", () => {
     })
 
     test("email", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.email() public property: string) { }
         }
@@ -124,7 +124,7 @@ describe("String Validation", () => {
     })
 
     test("fQDN", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.fqdn() public property: string) { }
         }
@@ -133,7 +133,7 @@ describe("String Validation", () => {
     })
 
     test("float", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.float() public property: string) { }
         }
@@ -142,7 +142,7 @@ describe("String Validation", () => {
     })
 
     test("fullWidth", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.fullWidth() public property: string) { }
         }
@@ -151,7 +151,7 @@ describe("String Validation", () => {
     })
 
     test("halfWidth", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.halfWidth() public property: string) { }
         }
@@ -160,7 +160,7 @@ describe("String Validation", () => {
     })
 
     test("hash", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.hash({ algorithm: "md5" }) public property: string) { }
         }
@@ -169,7 +169,7 @@ describe("String Validation", () => {
     })
 
     test("hexColor", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.hexColor() public property: string) { }
         }
@@ -178,7 +178,7 @@ describe("String Validation", () => {
     })
 
     test("hexadecimal", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.hexadecimal() public property: string) { }
         }
@@ -187,7 +187,7 @@ describe("String Validation", () => {
     })
 
     test("iP", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.ip() public property: string) { }
         }
@@ -196,7 +196,7 @@ describe("String Validation", () => {
     })
 
     test("iSBN", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.isbn() public property: string) { }
         }
@@ -205,7 +205,7 @@ describe("String Validation", () => {
     })
 
     test("iSIN", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.isin() public property: string) { }
         }
@@ -214,7 +214,7 @@ describe("String Validation", () => {
     })
 
     test("iSO31661Alpha2", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.iso31661Alpha2() public property: string) { }
         }
@@ -223,7 +223,7 @@ describe("String Validation", () => {
     })
 
     test("iSO8601", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.iso8601() public property: string) { }
         }
@@ -232,7 +232,7 @@ describe("String Validation", () => {
     })
 
     test("iSRC", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.isrc() public property: string) { }
         }
@@ -241,7 +241,7 @@ describe("String Validation", () => {
     })
 
     test("iSSN", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.issn() public property: string) { }
         }
@@ -250,7 +250,7 @@ describe("String Validation", () => {
     })
 
     test("int", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.int() public property: string) { }
         }
@@ -259,7 +259,7 @@ describe("String Validation", () => {
     })
 
     test("jSON", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.json() public property: string) { }
         }
@@ -268,7 +268,7 @@ describe("String Validation", () => {
     })
 
     test("latLong", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.latLong() public property: string) { }
         }
@@ -277,7 +277,7 @@ describe("String Validation", () => {
     })
 
     test("length", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.length({ max: 10 }) public property: string) { }
         }
@@ -286,7 +286,7 @@ describe("String Validation", () => {
     })
 
     test("lowercase", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.lowerCase() public property: string) { }
         }
@@ -295,7 +295,7 @@ describe("String Validation", () => {
     })
 
     test("mACAddress", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.macAddress() public property: string) { }
         }
@@ -304,7 +304,7 @@ describe("String Validation", () => {
     })
 
     test("mD5", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.md5() public property: string) { }
         }
@@ -313,7 +313,7 @@ describe("String Validation", () => {
     })
 
     test("mimeType", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.mimeType() public property: string) { }
         }
@@ -322,7 +322,7 @@ describe("String Validation", () => {
     })
 
     test("mobilePhone", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.mobilePhone({ locale: "id-ID" }) public property: string) { }
         }
@@ -331,7 +331,7 @@ describe("String Validation", () => {
     })
 
     test("mongoId", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.mongoId() public property: string) { }
         }
@@ -340,7 +340,7 @@ describe("String Validation", () => {
     })
 
     test("multibyte", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.multibyte() public property: string) { }
         }
@@ -349,7 +349,7 @@ describe("String Validation", () => {
     })
 
     test("numeric", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.numeric() public property: string) { }
         }
@@ -358,7 +358,7 @@ describe("String Validation", () => {
     })
 
     test("port", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.port() public property: string) { }
         }
@@ -367,7 +367,7 @@ describe("String Validation", () => {
     })
 
     test("postalCode", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.postalCode({ locale: "any" }) public property: string) { }
         }
@@ -376,7 +376,7 @@ describe("String Validation", () => {
     })
 
     test("required", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.required() public property?: string) { }
         }
@@ -387,7 +387,7 @@ describe("String Validation", () => {
     })
 
     test("surrogatePair", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.surrogatePair() public property: string) { }
         }
@@ -396,7 +396,7 @@ describe("String Validation", () => {
     })
 
     test("uRL", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.url() public property: string) { }
         }
@@ -405,7 +405,7 @@ describe("String Validation", () => {
     })
 
     test("uUID", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.UUID() public property: string) { }
         }
@@ -414,7 +414,7 @@ describe("String Validation", () => {
     })
 
     test("uppercase", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.uppercase() public property: string) { }
         }
@@ -423,7 +423,7 @@ describe("String Validation", () => {
     })
 
     test("variableWidth", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.variableWidth() public property: string) { }
         }
@@ -432,7 +432,7 @@ describe("String Validation", () => {
     })
 
     test("whitelisted", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.whiteListed({ chars: 'abcdefghijklmnopqrstuvwxyz-' }) public property: string) { }
         }
@@ -446,7 +446,7 @@ describe("String Validation", () => {
 describe("Custom Message", () => {
 
     test("after", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.after({ message: "Invalid", date: "2018-1-1" }) public property: string) { }
         }
@@ -454,7 +454,7 @@ describe("Custom Message", () => {
     })
 
     test("alpha", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.alpha({ message: "Invalid" }) public property: string) { }
         }
@@ -462,7 +462,7 @@ describe("Custom Message", () => {
     })
 
     test("alphanumeric", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.alphanumeric({ message: "Invalid" }) public property: string) { }
         }
@@ -470,7 +470,7 @@ describe("Custom Message", () => {
     })
 
     test("ascii", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.ascii({ message: "Invalid" }) public property: string) { }
         }
@@ -478,7 +478,7 @@ describe("Custom Message", () => {
     })
 
     test("base64", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.base64({ message: "Invalid" }) public property: string) { }
         }
@@ -486,7 +486,7 @@ describe("Custom Message", () => {
     })
 
     test("before", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.before({ message: "Invalid", date: "2018-1-1" }) public property: string) { }
         }
@@ -494,7 +494,7 @@ describe("Custom Message", () => {
     })
 
     test("byteLength", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.byteLength({ message: "Invalid", max: 5 }) public property: string) { }
         }
@@ -502,7 +502,7 @@ describe("Custom Message", () => {
     })
 
     test("creditCard", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.creditCard({ message: "Invalid" }) public property: string) { }
         }
@@ -510,7 +510,7 @@ describe("Custom Message", () => {
     })
 
     test("currency", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.currency({ message: "Invalid" }) public property: string) { }
         }
@@ -518,7 +518,7 @@ describe("Custom Message", () => {
     })
 
     test("dataURI", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.dataURI({ message: "Invalid" }) public property: string) { }
         }
@@ -526,7 +526,7 @@ describe("Custom Message", () => {
     })
 
     test("decimal", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.decimal({ message: "Invalid" }) public property: string) { }
         }
@@ -534,7 +534,7 @@ describe("Custom Message", () => {
     })
 
     test("divisibleBy", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.divisibleBy({ message: "Invalid", num: 4 }) public property: string) { }
         }
@@ -542,7 +542,7 @@ describe("Custom Message", () => {
     })
 
     test("email", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.email({ message: "Invalid" }) public property: string) { }
         }
@@ -550,7 +550,7 @@ describe("Custom Message", () => {
     })
 
     test("fQDN", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.fqdn({ message: "Invalid" }) public property: string) { }
         }
@@ -558,7 +558,7 @@ describe("Custom Message", () => {
     })
 
     test("float", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.float({ message: "Invalid" }) public property: string) { }
         }
@@ -566,7 +566,7 @@ describe("Custom Message", () => {
     })
 
     test("fullWidth", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.fullWidth({ message: "Invalid" }) public property: string) { }
         }
@@ -574,7 +574,7 @@ describe("Custom Message", () => {
     })
 
     test("halfWidth", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.halfWidth({ message: "Invalid" }) public property: string) { }
         }
@@ -582,7 +582,7 @@ describe("Custom Message", () => {
     })
 
     test("hash", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.hash({ message: "Invalid", algorithm: "md5" }) public property: string) { }
         }
@@ -590,7 +590,7 @@ describe("Custom Message", () => {
     })
 
     test("hexColor", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.hexColor({ message: "Invalid" }) public property: string) { }
         }
@@ -598,7 +598,7 @@ describe("Custom Message", () => {
     })
 
     test("hexadecimal", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.hexadecimal({ message: "Invalid" }) public property: string) { }
         }
@@ -606,7 +606,7 @@ describe("Custom Message", () => {
     })
 
     test("iP", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.ip({ message: "Invalid" }) public property: string) { }
         }
@@ -614,7 +614,7 @@ describe("Custom Message", () => {
     })
 
     test("iSBN", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.isbn({ message: "Invalid" }) public property: string) { }
         }
@@ -622,7 +622,7 @@ describe("Custom Message", () => {
     })
 
     test("iSIN", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.isin({ message: "Invalid" }) public property: string) { }
         }
@@ -630,7 +630,7 @@ describe("Custom Message", () => {
     })
 
     test("iSO31661Alpha2", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.iso31661Alpha2({ message: "Invalid" }) public property: string) { }
         }
@@ -638,7 +638,7 @@ describe("Custom Message", () => {
     })
 
     test("iSO8601", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.iso8601({ message: "Invalid" }) public property: string) { }
         }
@@ -646,7 +646,7 @@ describe("Custom Message", () => {
     })
 
     test("iSRC", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.isrc({ message: "Invalid" }) public property: string) { }
         }
@@ -654,7 +654,7 @@ describe("Custom Message", () => {
     })
 
     test("iSSN", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.issn({ message: "Invalid" }) public property: string) { }
         }
@@ -662,7 +662,7 @@ describe("Custom Message", () => {
     })
 
     test("int", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.int({ message: "Invalid" }) public property: string) { }
         }
@@ -670,7 +670,7 @@ describe("Custom Message", () => {
     })
 
     test("jSON", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.json({ message: "Invalid" }) public property: string) { }
         }
@@ -678,7 +678,7 @@ describe("Custom Message", () => {
     })
 
     test("latLong", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.latLong({ message: "Invalid" }) public property: string) { }
         }
@@ -686,7 +686,7 @@ describe("Custom Message", () => {
     })
 
     test("length", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.length({ message: "Invalid", max: 10 }) public property: string) { }
         }
@@ -694,7 +694,7 @@ describe("Custom Message", () => {
     })
 
     test("lowercase", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.lowerCase({ message: "Invalid" }) public property: string) { }
         }
@@ -702,7 +702,7 @@ describe("Custom Message", () => {
     })
 
     test("mACAddress", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.macAddress({ message: "Invalid" }) public property: string) { }
         }
@@ -710,7 +710,7 @@ describe("Custom Message", () => {
     })
 
     test("mD5", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.md5({ message: "Invalid" }) public property: string) { }
         }
@@ -718,7 +718,7 @@ describe("Custom Message", () => {
     })
 
     test("mimeType", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.mimeType({ message: "Invalid" }) public property: string) { }
         }
@@ -726,7 +726,7 @@ describe("Custom Message", () => {
     })
 
     test("mobilePhone", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.mobilePhone({ message: "Invalid", locale: "id-ID" }) public property: string) { }
         }
@@ -734,7 +734,7 @@ describe("Custom Message", () => {
     })
 
     test("mongoId", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.mongoId({ message: "Invalid" }) public property: string) { }
         }
@@ -742,7 +742,7 @@ describe("Custom Message", () => {
     })
 
     test("multibyte", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.multibyte({ message: "Invalid" }) public property: string) { }
         }
@@ -750,7 +750,7 @@ describe("Custom Message", () => {
     })
 
     test("numeric", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.numeric({ message: "Invalid" }) public property: string) { }
         }
@@ -758,7 +758,7 @@ describe("Custom Message", () => {
     })
 
     test("port", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.port({ message: "Invalid" }) public property: string) { }
         }
@@ -766,7 +766,7 @@ describe("Custom Message", () => {
     })
 
     test("postalCode", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.postalCode({ message: "Invalid", locale: "any" }) public property: string) { }
         }
@@ -774,7 +774,7 @@ describe("Custom Message", () => {
     })
 
     test("required", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.required({ message: "Invalid" }) public property?: string) { }
         }
@@ -782,7 +782,7 @@ describe("Custom Message", () => {
     })
 
     test("surrogatePair", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.surrogatePair({ message: "Invalid" }) public property: string) { }
         }
@@ -790,7 +790,7 @@ describe("Custom Message", () => {
     })
 
     test("uRL", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.url({ message: "Invalid" }) public property: string) { }
         }
@@ -798,7 +798,7 @@ describe("Custom Message", () => {
     })
 
     test("uUID", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.UUID({ message: "Invalid" }) public property: string) { }
         }
@@ -806,7 +806,7 @@ describe("Custom Message", () => {
     })
 
     test("uppercase", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.uppercase({ message: "Invalid" }) public property: string) { }
         }
@@ -814,7 +814,7 @@ describe("Custom Message", () => {
     })
 
     test("variableWidth", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.variableWidth({ message: "Invalid" }) public property: string) { }
         }
@@ -822,7 +822,7 @@ describe("Custom Message", () => {
     })
 
     test("whitelisted", async () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(@val.whiteListed({ message: "Invalid", chars: 'abcdefghijklmnopqrstuvwxyz-' }) public property: string) { }
         }
@@ -836,7 +836,7 @@ describe("Custom Message", () => {
 describe("Object Validation", () => {
 
     it("Should validate object", () => {
-        @model()
+        @domain()
         class ClientModel {
             constructor(
                 @val.email()
@@ -859,7 +859,7 @@ describe("Object Validation", () => {
                 public creditCard: string,
             ) { }
         }
-        @model()
+        @domain()
         class ClientModel {
             constructor(
                 @val.email()
@@ -880,7 +880,7 @@ describe("Object Validation", () => {
 
 describe("Array Validation", () => {
     it("Should validate object inside array", () => {
-        @model()
+        @domain()
         class Dummy {
             constructor(
                 @val.email()
@@ -893,13 +893,13 @@ describe("Array Validation", () => {
         ])
     })
     it("Should validate nested array inside object", () => {
-        @model()
+        @domain()
         class Empty {
             constructor(
                 public dummies: Dummy[],
             ) { }
         }
-        @model()
+        @domain()
         class Dummy {
             constructor(
                 @val.email()
@@ -916,7 +916,7 @@ describe("Array Validation", () => {
 
 describe("Durability", () => {
     it("Should skip null/undefined/empty", () => {
-        @model()
+        @domain()
         class ClientModel {
             constructor(
                 @val.email()
@@ -929,7 +929,7 @@ describe("Durability", () => {
     })
 
     it("Should skip null/undefined/empty except required", () => {
-        @model()
+        @domain()
         class ClientModel {
             constructor(
                 @val.required()
@@ -944,7 +944,7 @@ describe("Durability", () => {
     })
 
     it("Should not error if provided boolean", () => {
-        @model()
+        @domain()
         class ClientModel {
             constructor(
                 @val.email()
@@ -957,7 +957,7 @@ describe("Durability", () => {
         }])
     })
     it("Should not error if provided number", () => {
-        @model()
+        @domain()
         class ClientModel {
             constructor(
                 @val.email()
@@ -970,7 +970,7 @@ describe("Durability", () => {
         }])
     })
     it("Should not error if provided function", () => {
-        @model()
+        @domain()
         class ClientModel {
             constructor(
                 @val.email()

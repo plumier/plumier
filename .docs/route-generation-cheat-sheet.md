@@ -20,8 +20,8 @@ GET /animal/list?last=<number>&limit=<number>
 With `@route` decorator parameter binding will automatically convert query to appropriate type. Parameter binding will automatically assigned Model to the request body.
 
 ```typescript
-@model()
-export class AnimalModel {
+@domain()
+export class AnimalDto {
     constructor(
         public id:number,
         public name:string

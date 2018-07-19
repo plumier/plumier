@@ -146,11 +146,11 @@ For example your application have `Service` layer which will communicate with da
 ```javascript
 export class UserService {
     //this will save user to database
-    async saveUser(user:UserModel){}
+    async saveUser(user:UserDto){}
 }
 
-@model()
-export class UserModel{
+@domain()
+export class UserDto{
     constructor(
         public userName:string
     ){}
@@ -159,7 +159,7 @@ export class UserModel{
 export class UserController{
     controller(public service:UserService){}
 
-    saveUser(user:UserModel){
+    saveUser(user:UserDto){
 
     }
 }

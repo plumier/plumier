@@ -1,7 +1,7 @@
 import { reflect } from "@plumjs/reflect";
 import { Request } from "koa";
 
-import { array, bind, model, route } from "../../../src";
+import { array, bind, domain, route } from "../../../src";
 import { bindParameter } from "../../../src/binder";
 
 function request(opt?: Partial<Request>): Request {
@@ -128,7 +128,7 @@ describe("Parameter Binder", () => {
 
     describe("Model Binder", () => {
         it("Should bind model on post method", () => {
-            @model()
+            @domain()
             class AnimalModel {
                 constructor(
                     public id: number,
@@ -180,7 +180,7 @@ describe("Parameter Binder", () => {
             expect(result[0]).toEqual([1, 2, 3])
         })
         it("Should bind array of model", () => {
-            @model()
+            @domain()
             class AnimalModel {
                 constructor(
                     public id: number,

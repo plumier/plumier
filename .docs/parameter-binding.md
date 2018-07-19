@@ -52,14 +52,14 @@ GET /animal/get?id=2018-2-1    -> equals to new Date(2018, 2, 1)
 GET /animal/get?id=hello       -> Error status 400
 ```
 
-### Model Binding
+### DTO Binding
 Model binding only works for POST and PUT method
 
-> To be able to make Model binding work properly, the model must use [Parameter Properties](https://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) and any of decorator (on the constructor, or on any of constructor parameter decorator). Best practice is using `@model()` decorator on the top of any model.
+> To be able to make Model binding work properly, the model must use [Parameter Properties](https://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) and any of decorator (on the constructor, or on any of constructor parameter decorator). Best practice is using `@domain()` decorator on the top of any dto.
 
 ```typescript
-@model() //any decorator will works
-class AnimalModel {
+@domain() //any decorator will works
+class AnimalDto {
     constructor(
         public id:number
         public name:string
@@ -70,10 +70,10 @@ class AnimalModel {
 
 export class AnimalController {
     @route.post()
-    save(model:AnimalModel){}
+    save(model:AnimalDto){}
 }
 ```
-model parameter will automatically convert to `AnimalModel` inside `save` action
+model parameter will automatically convert to `AnimalDto` inside `save` action
 ```
 POST /animal/save
 JSON Payload: { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }
@@ -86,18 +86,18 @@ AnimalController {
 }
 ```
 
-### Nested Model Binding
+### Nested DTO Binding
 ```typescript
-@model()
-class ClientModel {
+@domain()
+class ClientDto {
     constructor(
         public id: number,
         public name: string,
         public join: Date
     ) { }
 }
-@model()
-class AnimalModel {
+@domain()
+class AnimalDto {
     constructor(
         public id: number,
         public name: string,
@@ -109,10 +109,10 @@ class AnimalModel {
 
 export class AnimalController {
     @route.post()
-    save(model:AnimalModel){}
+    save(model:AnimalDto){}
 }
 ```
-model parameter will automatically convert to `AnimalModel` inside `save` action
+model parameter will automatically convert to `AnimalDto` inside `save` action
 ```
 POST /animal/save
 JSON Payload: {
@@ -128,7 +128,7 @@ JSON Payload: {
 }
 
 Result: 
-AnimalModel {
+AnimalDto {
     birthday: new Date("2018-1-1"), 
     deceased: true, 
     id: 200, 
@@ -147,8 +147,8 @@ Array binding a little bit different due to TypeScript [design type emit limitat
 Plumier provided `@array(TypeConstructor)` to give prover type conversion for parameter binding.
 
 ```typescript
-@model() 
-class AnimalModel {
+@domain() 
+class AnimalDto {
     constructor(
         public id:number
         public name:string
@@ -159,7 +159,7 @@ class AnimalModel {
 
 export class AnimalController {
     @route.post()
-    save(@array(AnimalModel) model:AnimalModel[]){}
+    save(@array(AnimalDto) model:AnimalDto[]){}
 }
 ```
 ```
@@ -214,7 +214,7 @@ You can specify model type to get correct conversion of the model's properties
 ```typescript
 export class AnimalController {
     @route.post()
-    save(@bind.body() model:AnimalModel){
+    save(@bind.body() model:AnimalDto){
 
     }
 }
@@ -246,8 +246,8 @@ export class AnimalController {
 You can specify the model to get correct conversion
 
 ```typescript
-@model()
-export class AnimalModel {
+@domain()
+export class AnimalDto {
     constructor(
         public id:number,
         public name:string,
@@ -258,7 +258,7 @@ export class AnimalModel {
 
 export class AnimalController {
     @route.get()
-    save(@bind.query() model:AnimalModel){
+    save(@bind.query() model:AnimalDto){
 
     }
 }
@@ -269,7 +269,7 @@ And the query string will be populated to the body properly
 ```
 GET /animal/save?id=200&name=Mimi&deceased=ON&birthday=2018-1-1
 Result populated to model: 
-AnimalModel{
+AnimalDto{
     id: 200,
     name: "Mimi",
     deceased: true,
@@ -282,7 +282,7 @@ It can be combined with the model binding to get bound request body and query
 ```typescript
 class AnimalController {
     @route.post()
-    save(@bind.query() page: PagingModel, model: AnimalModel) {
+    save(@bind.query() page: PagingModel, model: AnimalDto) {
         return { page, model }
     }
 }
