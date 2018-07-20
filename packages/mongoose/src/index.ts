@@ -105,13 +105,7 @@ class ModelProxyHandler<T extends object> implements ProxyHandler<Mongoose.Model
     }
 
     construct?(target: Mongoose.Model<T & Mongoose.Document>, argArray: any, newTarget?: any): object {
-        if (GlobalMongooseSchema[this.domain.name]) {
-            const Model = this.getModel();
-            return new Model(...argArray)
-        }
-        else {
-            const Model = this.domain
-            return new Model()
-        }
+        const Model = this.getModel();
+        return new Model(...argArray)
     }
 }
