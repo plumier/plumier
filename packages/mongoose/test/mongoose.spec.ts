@@ -51,7 +51,7 @@ async function save<T>(cls: Constructor<T>, value: T) {
 describe("Mongoose Reference Domain Directly", () => {
     beforeAll(async () => {
         const facility = new MongooseFacility({
-            model: [
+            domainModel: [
                 DomainWithPrimitives,
                 DomainWithArrays,
                 DomainWithDomain,
@@ -103,7 +103,7 @@ describe("Mongoose Reference Domain Directly", () => {
 
 describe("Mongoose Reference Default Folder", () => {
     it("Should load default location domain", async () => {
-        const facility = new MongooseFacility({ model: join(__dirname, "./model"), uri: "mongodb://localhost:27017/test-data" })
+        const facility = new MongooseFacility({ domainModel: join(__dirname, "./model"), uri: "mongodb://localhost:27017/test-data" })
         await facility.setup({} as Application)
         const child = await save(MyDomain, new MyDomain("Mimi"))
         const parent = await save(MyParentDomain, new MyParentDomain(child.result._id))
@@ -115,7 +115,7 @@ describe("Mongoose Reference Default Folder", () => {
     })
 
     it("Should load default location domain", async () => {
-        const facility = new MongooseFacility({ model: "./custom-location/my-domain", uri: "mongodb://localhost:27017/test-data" })
+        const facility = new MongooseFacility({ domainModel: "./custom-location/my-domain", uri: "mongodb://localhost:27017/test-data" })
         await facility.setup({} as Application)
         const child = await save(CustomLocationDomain, new CustomLocationDomain("Mimi"))
         const parent = await save(ParentCustomLocationDomain, new ParentCustomLocationDomain(child.result._id))
@@ -134,7 +134,7 @@ describe("Mongoose Reference Default Folder", () => {
             ) { }
         }
         const facility = new MongooseFacility({
-            model: MySingleDomain,
+            domainModel: MySingleDomain,
             uri: "mongodb://localhost:27017/test-data"
         })
         await facility.setup({} as Application)
@@ -152,7 +152,7 @@ describe("Error Handling", () => {
             ) { }
         }
         expect(() => new MongooseFacility({
-            model: MySingleDomain,
+            domainModel: MySingleDomain,
             uri: "mongodb://localhost:27017/test-data"
         })).toThrow("PLUM1007")
         
@@ -160,9 +160,8 @@ describe("Error Handling", () => {
 
     it("Should report if path doesn't contains domain", async () => {
         expect(() => new MongooseFacility({
-            model: "./no-domain",
+            domainModel: "./no-domain",
             uri: "mongodb://localhost:27017/test-data"
         })).toThrow("PLUM1007")
-        
     })
 })

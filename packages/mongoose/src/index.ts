@@ -1,6 +1,6 @@
 import { reflect, ClassReflection, ParameterReflection } from "@plumjs/reflect"
 import { Class, Facility, Application, errorMessage, isCustomClass, b, DomainDecorator, reflectPath } from "@plumjs/core"
-import Mongoose from "mongoose"
+import Mongoose, { Model } from "mongoose"
 import { dirname, isAbsolute, join } from 'path';
 import Debug from "debug"
 
@@ -9,7 +9,7 @@ const log = Debug("plum:mongo")
 export type Constructor<T> = new (...args: any[]) => T
 export type SchemaRegistry = { [key: string]: Mongoose.Schema }
 export interface MongooseFacilityOption {
-    model?: string | Class | Class[],
+    domainModel?: string | Class | Class[],
     uri: string,
 }
 export interface SubSchema {
@@ -22,10 +22,10 @@ const GlobalMongooseSchema: SchemaRegistry = {}
 export class MongooseFacility implements Facility {
     option: MongooseFacilityOption
     constructor(private opts: MongooseFacilityOption) {
-        this.option = { model: "./model", ...opts }
-        const model = typeof this.option.model === "string" ?
-            isAbsolute(this.option.model) ? this.option.model! : join(dirname(module.parent!.filename), this.option.model)
-            : this.option.model!
+        this.option = { domainModel: "./model", ...opts }
+        const model = typeof this.option.domainModel === "string" ?
+            isAbsolute(this.option.domainModel) ? this.option.domainModel! : join(dirname(module.parent!.filename), this.option.domainModel)
+            : this.option.domainModel!
         log(`[Constructor] model ${b(model)}`)
         generateSchema(model, GlobalMongooseSchema)
     }
@@ -72,6 +72,35 @@ function generateSchema(opt: string | Class | Class[], registry: SchemaRegistry)
     models.map(x => generateModel(x, registry))
 }
 
-export function model<T>(type: Constructor<T>) {
+function getModel<T>(type: Constructor<T>) {
     return Mongoose.model<T & Mongoose.Document>(type.name, GlobalMongooseSchema[type.name])
+}
+
+
+export function model<T>(type: Constructor<T>) {
+    class ModelMock { }
+    return new Proxy(ModelMock as Mongoose.Model<T & Mongoose.Document>, new ModelProxyHandler<T>(type))
+}
+
+
+class ModelProxyHandler<T> implements ProxyHandler<Mongoose.Model<T & Mongoose.Document>> {
+    model?: Mongoose.Model<T & Mongoose.Document>
+
+    private getModel() {
+        if (!this.model)
+            this.model = getModel(this.domain)
+        return this.model
+    }
+
+    constructor(private domain: Constructor<T>) { }
+
+    get(target: Mongoose.Model<T & Mongoose.Document>, p: PropertyKey, receiver: any): any {
+        const Model = this.getModel();
+        return (Model as any)[p]
+    }
+
+    construct?(target: Mongoose.Model<T & Mongoose.Document>, argArray: any, newTarget?: any): object {
+        const Model = this.getModel();
+        return new Model(...argArray)
+    }
 }
