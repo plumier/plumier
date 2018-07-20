@@ -54,7 +54,7 @@ export function getConstructorParameters(fn: Class) {
 }
 
 function isConstructor(value: Function) {
-    return value.toString().indexOf("class") == 0
+    return ("" + value).indexOf("class") == 0
 }
 
 function getType(object: any) {

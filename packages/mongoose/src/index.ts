@@ -77,13 +77,13 @@ function getModel<T>(type: Constructor<T>) {
 }
 
 
-export function model<T>(type: Constructor<T>) {
+export function model<T extends object>(type: Constructor<T>) {
     class ModelMock { }
-    return new Proxy(ModelMock as Mongoose.Model<T & Mongoose.Document>, new ModelProxyHandler<T>(type))
+    return new Proxy(Mongoose.Model as Mongoose.Model<T & Mongoose.Document>, new ModelProxyHandler<T>(type))
 }
 
 
-class ModelProxyHandler<T> implements ProxyHandler<Mongoose.Model<T & Mongoose.Document>> {
+class ModelProxyHandler<T extends object> implements ProxyHandler<Mongoose.Model<T & Mongoose.Document>> {
     model?: Mongoose.Model<T & Mongoose.Document>
 
     private getModel() {
@@ -95,12 +95,23 @@ class ModelProxyHandler<T> implements ProxyHandler<Mongoose.Model<T & Mongoose.D
     constructor(private domain: Constructor<T>) { }
 
     get(target: Mongoose.Model<T & Mongoose.Document>, p: PropertyKey, receiver: any): any {
-        const Model = this.getModel();
-        return (Model as any)[p]
+        if (GlobalMongooseSchema[this.domain.name]) {
+            const Model = this.getModel();
+            return (Model as any)[p]
+        }
+        else {
+            return p === "toString" ? () => this.domain.toString() : (target as any)[p]
+        }
     }
 
     construct?(target: Mongoose.Model<T & Mongoose.Document>, argArray: any, newTarget?: any): object {
-        const Model = this.getModel();
-        return new Model(...argArray)
+        if (GlobalMongooseSchema[this.domain.name]) {
+            const Model = this.getModel();
+            return new Model(...argArray)
+        }
+        else {
+            const Model = this.domain
+            return new Model()
+        }
     }
 }

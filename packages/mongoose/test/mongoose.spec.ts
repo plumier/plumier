@@ -41,7 +41,7 @@ class DomainWithArrayOfDomain {
     ) { }
 }
 
-async function save<T>(cls: Constructor<T>, value: T) {
+async function save<T extends object>(cls: Constructor<T>, value: T) {
     const Model = model(cls)
     await Model.remove({})
     const result = await new Model(value).save()
