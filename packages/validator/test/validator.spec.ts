@@ -9,10 +9,17 @@ describe("String Validation", () => {
     test("after", async () => {
         @domain()
         class Dummy {
+            constructor(@val.after({ date: "2018-1-1" }) public property: Date) { }
+        }
+        expect(validateObject(new Dummy(new Date("2017-1-1"))).length).toBe(1)
+        expect(validateObject(new Dummy(new Date("2019-1-1")))).toEqual([])
+
+        @domain()
+        class DummyString {
             constructor(@val.after({ date: "2018-1-1" }) public property: string) { }
         }
-        expect(validateObject(new Dummy("2017-1-1")).length).toBe(1)
-        expect(validateObject(new Dummy("2019-1-1"))).toEqual([])
+        expect(validateObject(new DummyString("2017-1-1")).length).toBe(1)
+        expect(validateObject(new DummyString("2019-1-1"))).toEqual([])
     })
 
     test("alpha", async () => {
@@ -54,10 +61,17 @@ describe("String Validation", () => {
     test("before", async () => {
         @domain()
         class Dummy {
+            constructor(@val.before({ date: "2018-1-1" }) public property: Date) { }
+        }
+        expect(validateObject(new Dummy(new Date("2019-1-1"))).length).toBe(1)
+        expect(validateObject(new Dummy(new Date("2017-1-1")))).toEqual([])
+
+        @domain()
+        class DummyString {
             constructor(@val.before({ date: "2018-1-1" }) public property: string) { }
         }
-        expect(validateObject(new Dummy("2019-1-1")).length).toBe(1)
-        expect(validateObject(new Dummy("2017-1-1"))).toEqual([])
+        expect(validateObject(new DummyString("2019-1-1")).length).toBe(1)
+        expect(validateObject(new DummyString("2017-1-1"))).toEqual([])
     })
 
     test("byteLength", async () => {

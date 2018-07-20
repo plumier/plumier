@@ -280,7 +280,7 @@ export function validate(object: any, decorators: ValidatorDecorator[], path: st
     const empty = () => (object === undefined || object === null || object === "")
     if (Array.isArray(object))
         return validateArray(object, path)
-    else if (typeof object === "object" && object !== null)
+    else if (typeof object === "object" && object !== null && object.constructor !== Date)
         return validateObject(object, path)
     else {
         //empty value should be ignored except it is required
