@@ -7,5 +7,4 @@ lerna-debug.log
 *.js.map
 .DS_Store
 !jest.config.js
-!script/*.js
-!resolve-path/my-module.js
+!test.js
