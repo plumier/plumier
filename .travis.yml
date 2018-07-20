@@ -3,3 +3,4 @@ node_js:
   - stable
   - 8
 after_script: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+services: mongodb
