@@ -1,6 +1,6 @@
 {
   "name": "@plumjs/reflect",
-  "version": "1.3.0",
+  "version": "1.4.0-alpha.56f2ec99",
   "description": "TypeScript reflection and type inspector library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -27,5 +27,8 @@
   "bugs": {
     "url": "https://github.com/ktutnik/plumier/issues"
   },
-  "homepage": "https://github.com/ktutnik/plumier"
+  "homepage": "https://github.com/ktutnik/plumier",
+  "publishConfig": {
+    "access": "public"
+  }
 }
