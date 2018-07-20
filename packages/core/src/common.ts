@@ -2,7 +2,7 @@ import Chalk from "chalk";
 import { inspect } from "util";
 import { lstatSync, readdirSync, existsSync } from 'fs';
 import { extname, join, basename } from 'path';
-import { reflect } from '@plumjs/reflect';
+import { reflect, Reflection } from '@plumjs/reflect';
 
 declare global {
     interface String {
@@ -56,7 +56,7 @@ export function resolvePath(path: string): string[] {
     else return [path]
 }
 
-export function reflectPath(path: string) {
+export function reflectPath(path: string): Reflection[] {
     return resolvePath(path)
         .map(x => reflect(x))
         .map(x => x.members)

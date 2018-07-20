@@ -3,7 +3,7 @@ module.exports = {
     verbose: false,
     collectCoverage: true,
     collectCoverageFrom: [
-        'packages/*/src/**/*.{js}'
+        "packages/*/src/**/*.{js}"
     ],
     coverageThreshold: {
         global: {
