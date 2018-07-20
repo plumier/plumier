@@ -1,5 +1,6 @@
 node_modules
 coverage
+packages/*/lib
 yarn-error.log
 lerna-debug.log
 *.js
@@ -7,3 +8,4 @@ lerna-debug.log
 .DS_Store
 !jest.config.js
 !.script/*.js
+!resolve-path/my-module.js

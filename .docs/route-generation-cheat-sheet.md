@@ -17,7 +17,7 @@ GET /animal/list?last=<number>&limit=<number>
 
 ### Basic Controller With Decorator and Data Binding
 
-With `@route` decorator parameter binding will automatically convert query to appropriate type. Parameter binding will automatically assigned Model to the request body.
+With `@route` decorator parameter binding will automatically convert query to appropriate type. Parameter binding will automatically assigned domain to the request body.
 
 ```typescript
 @domain()
@@ -29,9 +29,9 @@ export class AnimalDto {
 }
 export class AnimalController {
     @route.put()
-    modify(id:number, model:AnimalModel)
+    modify(id:number, model:AnimalDto)
     @route.post()
-    save(model:AnimalModel){}
+    save(model:AnimalDto){}
 }
 ```
 ```

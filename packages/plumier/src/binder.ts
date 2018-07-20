@@ -8,6 +8,7 @@ import {
     ParameterProperties,
     TypeConverter,
     ValueConverter,
+    ParameterPropertiesType,
 } from "@plumjs/core";
 import { FunctionReflection, ParameterReflection, reflect } from "@plumjs/reflect";
 import Debug from "debug";
@@ -16,7 +17,7 @@ import { Request } from "koa";
 const log = Debug("plum:binder")
 
 
-function createConversionError(value: any, prop: ParameterProperties & { parameterType: Class | Class[] }) {
+function createConversionError(value: any, prop: ParameterProperties) {
     const type = Array.isArray(prop.parameterType) ? `Array<${prop.parameterType[0].name}>` : prop.parameterType.name
     log(`[Converter] Unable to convert ${b(value)} into ${b(type)}`)
     return new ConversionError({ path: prop.path, type, value },
@@ -41,7 +42,7 @@ function safeToString(value: any) {
 /* ------------------------------- CONVERTER ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-export function booleanConverter(rawValue: any, prop: ParameterProperties & { parameterType: Class | Class[] }) {
+export function booleanConverter(rawValue: any, prop: ParameterProperties) {
     const value: string = safeToString(rawValue)
     const list: { [key: string]: boolean | undefined } = {
         on: true, true: true, "1": true, yes: true,
@@ -53,7 +54,7 @@ export function booleanConverter(rawValue: any, prop: ParameterProperties & { pa
     return result
 }
 
-export function numberConverter(rawValue: any, prop: ParameterProperties & { parameterType: Class | Class[] }) {
+export function numberConverter(rawValue: any, prop: ParameterProperties) {
     const value = safeToString(rawValue)
     const result = Number(value)
     if (isNaN(result) || value === "") throw createConversionError(value, prop)
@@ -61,7 +62,7 @@ export function numberConverter(rawValue: any, prop: ParameterProperties & { par
     return result
 }
 
-export function dateConverter(rawValue: any, prop: ParameterProperties & { parameterType: Class | Class[] }) {
+export function dateConverter(rawValue: any, prop: ParameterProperties) {
     const value = safeToString(rawValue)
     const result = new Date(value)
     if (isNaN(result.getTime()) || value === "") throw createConversionError(value, prop)
@@ -71,7 +72,7 @@ export function dateConverter(rawValue: any, prop: ParameterProperties & { param
 
 
 
-export function defaultModelConverter(value: any, prop: ParameterProperties & { parameterType: Class }): any {
+export function defaultModelConverter(value: any, prop: ParameterPropertiesType<Class>): any {
     //--- helper functions
     const isConvertibleToObject = (value: any) => {
         if (typeof value == "boolean" ||
@@ -84,7 +85,6 @@ export function defaultModelConverter(value: any, prop: ParameterProperties & { 
     //if the value already instance of the type then return immediately
     //this is possible when using decorator binding such as @bind.request("req")
     if (value instanceof prop.parameterType) return value
-    if (Array.isArray(prop.parameterType)) return value
 
     //get reflection metadata of the class
     const reflection = reflect(prop.parameterType)
@@ -119,7 +119,7 @@ export function defaultModelConverter(value: any, prop: ParameterProperties & { 
     }
 }
 
-export function defaultArrayConverter(value: any[], prop: ParameterProperties & { parameterType: Class[] }): any {
+export function defaultArrayConverter(value: any[], prop: ParameterPropertiesType<Class[]>): any {
     if (!Array.isArray(value)) throw createConversionError(value, prop)
     log(`[Array Converter] converting ${b(value)} to Array<${prop.parameterType[0].name}>`)
     return value.map(((x, i) => convert(x, {

@@ -4,7 +4,7 @@
 	"scripts": {
 		"test": "jest",
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish",
-		"clean": "rimraf packages/*/lib packages/*/src/**/*.js packages/*/test/**/*.js",
+		"clean": "del 'packages/*/lib' 'packages/*/src/**/*.js' 'packages/*/test/**/*.js' '!packages/",
 		"compile": "npm run clean && jest && lerna run compile",
 		"canary": "npm run compile && lerna publish -c --exact --yes -- --access public && npm run clean"
 	},
@@ -13,12 +13,13 @@
 		"@types/jest": "^23.1.0",
 		"babel-core": "^6.26.3",
 		"coveralls": "^3.0.1",
+		"del": "^3.0.0",
+		"del-cli": "^1.1.0",
 		"edit-json-file": "^1.1.0",
 		"jest": "^23.1.0",
 		"lerna": "^2.11.0",
 		"pre-push": "^0.1.1",
 		"reflect-metadata": "^0.1.12",
-		"rimraf": "^2.6.2",
 		"ts-jest": "^23.0.0",
 		"tslint": "^5.10.0",
 		"typescript": "^2.9.2",

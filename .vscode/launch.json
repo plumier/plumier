@@ -13,22 +13,13 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Jest All",
-            "program": "${workspaceFolder}/node_modules/jest/bin/jest",
-            "args": [
-                "--runInBand"
-            ],
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen"
-        },
-        {
-            "type": "node",
-            "request": "launch",
             "name": "Jest Current File",
             "program": "${workspaceFolder}/node_modules/.bin/jest",
             "args": [
                 "${relativeFile}",
-                "--runInBand"
+                "--runInBand",
+                "--config",
+                "jest.config.debug.js"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"

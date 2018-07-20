@@ -52,10 +52,10 @@ GET /animal/get?id=2018-2-1    -> equals to new Date(2018, 2, 1)
 GET /animal/get?id=hello       -> Error status 400
 ```
 
-### DTO Binding
-Model binding only works for POST and PUT method
+### Domain Binding
+Domain binding only works for POST and PUT method
 
-> To be able to make Model binding work properly, the model must use [Parameter Properties](https://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) and any of decorator (on the constructor, or on any of constructor parameter decorator). Best practice is using `@domain()` decorator on the top of any dto.
+> To be able to make Domain binding work properly, the domain model must use [Parameter Properties](https://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) and any of decorator (on the constructor, or on any of constructor parameter decorator). Best practice is using `@domain()` decorator on the top of any dto.
 
 ```typescript
 @domain() //any decorator will works
@@ -103,7 +103,7 @@ class AnimalDto {
         public name: string,
         public deceased: boolean,
         public birthday: Date,
-        public owner: ClientModel
+        public owner: ClientDto
     ) { }
 }
 
@@ -133,7 +133,7 @@ AnimalDto {
     deceased: true, 
     id: 200, 
     name: "Mimi",
-    owner: ClientModel {
+    owner: ClientDto {
         id: 400,
         name: "John Doe",
         join: new Date("2015-1-1")
@@ -282,7 +282,7 @@ It can be combined with the model binding to get bound request body and query
 ```typescript
 class AnimalController {
     @route.post()
-    save(@bind.query() page: PagingModel, model: AnimalDto) {
+    save(@bind.query() page: PagingDto, model: AnimalDto) {
         return { page, model }
     }
 }

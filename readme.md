@@ -7,13 +7,12 @@ Pleasant TypeScript Web Api Framework
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6d61987244f1471abe915292cb3add1b)](https://www.codacy.com/app/ktutnik/plumier?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ktutnik/plumier&amp;utm_campaign=Badge_Grade)
 
 ## Motivation
-- Provided clean code with flexible code separation
-- Provided built in function such as comprehensive validation, parameter binding, data sanitation.
+- Provided built in function such as validation, parameter binding, data sanitation vs opinionated code separation.
 - Help developer reveal confusing bugs caused by miss configuration by providing static analysis
 - Highly testable controller free from framework dependency and totally POTO (plain old TypeScript object). 
 - Wrap production-ready library for stability (koa, validatorjs, mongoose)
 - Compact and light weight with small size codebase
-- Uses TypeScript, provided great features such as decorators, design type emit, auto complete etc.
+- Uses TypeScript, provided great features such as decorators, design type information and IDE support for refactoring, auto complete etc.
 
 ## Features
 
@@ -29,7 +28,12 @@ Pleasant TypeScript Web Api Framework
 
 ## Getting Started
 
-In this example we will create a complete restful api bare handedly (without any generator) with MongodDB database. 
+In this example we will create a production ready restful api bare handedly (without any generator).
+
+This example cover:
+* Create restful style web api
+* Add validation rule to restrict invalid data sent by end user
+* Save data to MongoDB database
 
 Create some files with folder schema like below:
 
@@ -104,7 +108,7 @@ const PetModel = model(PetDto)
 //file: ./src/controller/pet-controller.ts
 
 import { route, val } from "@plumjs/plumier"
-import { PetDto, PetModel } from "../model"
+import { PetDto, PetModel } from "../pet-model"
 
 //controller
 export class PetController {

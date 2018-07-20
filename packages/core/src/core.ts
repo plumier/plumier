@@ -24,12 +24,14 @@ export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise
 export type RequestPart = keyof Request
 export type HeaderPart = keyof IncomingHttpHeaders
 export type Class = new (...args: any[]) => any
-export type ValueConverter = (value: any, prop: ParameterProperties & { parameterType: Class }) => any
+export type ValueConverter = (value: any, prop: ParameterProperties) => any
 export type TypeConverter = { type: Class, converter: ValueConverter }
 
-export interface ParameterProperties {
+export interface ParameterProperties extends ParameterPropertiesType<Class | Class[]> {}
+
+export interface ParameterPropertiesType<T> {
     path: string[],
-    parameterType: Class | Class[] | undefined,
+    parameterType: T,
     decorators: any[]
     converters: Map<Function, ValueConverter>,
 }
@@ -47,6 +49,8 @@ export interface IgnoreDecorator { name: "Ignore" }
 export interface RootDecorator { name: "Root", url: string }
 
 export interface MiddlewareDecorator { name: "Middleware", value: Middleware[] }
+
+export interface DomainDecorator { name: "Domain" }
 
 export interface RouteInfo {
     url: string,
@@ -117,7 +121,7 @@ export interface Configuration {
      * Set custom converters for parameter binding
     ```
     converters: {
-        AnimalModel: (value:any, type:Function) => new AnimalModel(value)
+        AnimalDto: (value:any, type:Function) => new AnimalDto(value)
     }
     ```
      */
@@ -336,7 +340,7 @@ export namespace bind {
     /**
      * Bind request body to parameter
      *    
-     *     method(@bind.body() body:AnimalModel){}
+     *     method(@bind.body() body:AnimalDto){}
      * 
      * If parameter provided, part of body property will be bound
      * 
@@ -552,7 +556,7 @@ export namespace middleware {
     }
 }
 
-export function domain() { return decorateClass({ Type: "ModelDecorator" }) }
+export function domain() { return decorateClass(<DomainDecorator>{ name: "Domain" }) }
 
 /* ------------------------------------------------------------------------------- */
 /* -------------------------------- CONSTANTS ------------------------------------ */
@@ -575,11 +579,11 @@ export namespace errorMessage {
     export const ControllerPathNotFound = "PLUM1004: Controller file or directory {0} not found"
     export const ModelWithoutTypeInformation = "PLUM1005: {0} doesn't have @domain() decorator, parameter binding will be skipped"
     export const ArrayWithoutTypeInformation = "PLUM1006: Array without @bind.array() decorator found in parameter {0}, parameter binding will be skipped"
-    export const ModelNotFound = "PLUM1007: Model not found, no class decorated with @domain() on provided classes"
-    export const ModelPathNotFound = "PLUM1007: Model not found, no class decorated with @domain() on path {0}"
+    export const ModelNotFound = "PLUM1007: Domain model not found, no class decorated with @domain() on provided classes"
+    export const ModelPathNotFound = "PLUM1007: Domain model not found, no class decorated with @domain() on path {0}"
 
     //PLUM2XXX internal app error
-    export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate model {0}. Model should be instantiable using default constructor`
+    export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate model {0}. Domain model should be instantiable using default constructor`
 
 
     //End user error (no error code)

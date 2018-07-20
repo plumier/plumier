@@ -1,5 +1,5 @@
 import { getDecorators } from "@plumjs/reflect";
-import { route } from '../../../src';
+import { route } from '@plumjs/core';
 
 
 describe("Route Decorator", () => {
