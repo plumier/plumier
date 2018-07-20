@@ -1,4 +1,4 @@
-const del = require("del")
+const del = require("del");
 const list = [
     "packages/*/lib",
     "packages/*/src/*.js",
@@ -10,5 +10,5 @@ const list = [
     "packages/*/test/*.d.ts",
     "packages/*/test/*.d.ts.map",
     "!resolve-path/my-module.js"
-]
-del.sync(list)
+];
+del.sync(list);
