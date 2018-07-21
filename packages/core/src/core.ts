@@ -573,12 +573,12 @@ export const DefaultConfiguration: Configuration = {
 export namespace errorMessage {
     //PLUM1XXX User configuration error
     export const RouteDoesNotHaveBackingParam = "PLUM1000: Route parameters ({0}) doesn't have appropriate backing parameter"
-    export const ActionDoesNotHaveTypeInfo = "PLUM1001: Action doesn't have @route decorator, parameter binding will be skipped"
+    export const ActionDoesNotHaveTypeInfo = "PLUM1001: Parameter binding skipped because action doesn't have @route decorator"
+    export const ModelWithoutTypeInformation = "PLUM1005: Parameter binding skipped because  {0} doesn't have @domain() decorator"
+    export const ArrayWithoutTypeInformation = "PLUM1006: Parameter binding skipped because array field without @array() decorator found in ({0})"
     export const MultipleDecoratorNotSupported = "PLUM1002: Multiple decorators doesn't supported"
     export const DuplicateRouteFound = "PLUM1003: Duplicate route found in {0}"
     export const ControllerPathNotFound = "PLUM1004: Controller file or directory {0} not found"
-    export const ModelWithoutTypeInformation = "PLUM1005: {0} doesn't have @domain() decorator, parameter binding will be skipped"
-    export const ArrayWithoutTypeInformation = "PLUM1006: Array without @bind.array() decorator found in parameter {0}, parameter binding will be skipped"
     export const ModelNotFound = "PLUM1007: Domain model not found, no class decorated with @domain() on provided classes"
     export const ModelPathNotFound = "PLUM1007: Domain model not found, no class decorated with @domain() on path {0}"
 

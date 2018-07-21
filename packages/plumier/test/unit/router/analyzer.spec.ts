@@ -133,14 +133,14 @@ describe("Analyzer", () => {
         consoleLog.clearMock()
     })
 
-    it("Model with correct configuration should be pass", () => {
+    it.only("Model with correct configuration should be pass", () => {
         @domain()
         class AnimalModel {
-            constructor(public id: number){}
+            constructor(public id: number) { }
         }
         class AnimalController {
             @route.post()
-            getAnimal(id:number, model:AnimalModel, @array(AnimalModel) models:AnimalModel[]) { }
+            getAnimal(id: number, model: AnimalModel, @array(AnimalModel) models: AnimalModel[]) { }
         }
         const routeInfo = transformController(AnimalController)
         const analysis = analyzeRoutes(routeInfo)
@@ -149,11 +149,11 @@ describe("Analyzer", () => {
 
     it("Should identify if model doesn't contains type information", () => {
         class AnimalModel {
-            constructor(public id: number){}
+            constructor(public id: number) { }
         }
         class AnimalController {
             @route.post()
-            getAnimal(id:number, model:AnimalModel) { }
+            getAnimal(id: number, model: AnimalModel) { }
         }
         const routeInfo = transformController(AnimalController)
         const analysis = analyzeRoutes(routeInfo)
@@ -164,19 +164,19 @@ describe("Analyzer", () => {
     it("Should identify if model doesn't contains type information recursive", () => {
         class TagModel {
             constructor(
-                public id:number
-            ){}
+                public id: number
+            ) { }
         }
         @domain()
         class AnimalModel {
             constructor(
                 public id: number,
-                public tag:TagModel
-            ){}
+                public tag: TagModel
+            ) { }
         }
         class AnimalController {
             @route.post()
-            getAnimal(id:number, model:AnimalModel) { }
+            getAnimal(id: number, model: AnimalModel) { }
         }
         const routeInfo = transformController(AnimalController)
         const analysis = analyzeRoutes(routeInfo)
@@ -187,47 +187,102 @@ describe("Analyzer", () => {
     it("Should identify if model doesn't contains type information only once in recursive mode", () => {
         class TagModel {
             constructor(
-                public id:number,
-                public childTag:TagModel
-            ){}
+                public id: number,
+                public childTag: TagModel
+            ) { }
         }
         @domain()
         class AnimalModel {
             constructor(
                 public id: number,
-                public tag:TagModel,
-                public siblingTag:TagModel
-            ){}
+                public tag: TagModel,
+                public siblingTag: TagModel
+            ) { }
         }
         class AnimalController {
             @route.post()
-            getAnimal(id:number, model:AnimalModel) { }
+            getAnimal(id: number, model: AnimalModel) { }
         }
         const routeInfo = transformController(AnimalController)
         const analysis = analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
+        console.log(analysis[0].issues)
         expect(analysis[0].issues[0].message).toContain("PLUM1005")
     })
 
-    it("Should identify if array doesn't contains type information", () => {
+    it.only("Should identify if array doesn't contains type information", () => {
         @domain()
         class AnimalModel {
-            constructor(public id: number){}
+            constructor(public id: number) { }
         }
         class AnimalController {
             @route.post()
-            getAnimal(id:number, models:AnimalModel[], otherModels:AnimalModel[]) { }
+            getAnimal(id: number, models: AnimalModel[], otherModels: number[]) { }
         }
         const routeInfo = transformController(AnimalController)
         const analysis = analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
+        expect(analysis[0].issues[0].message).toContain("PLUM1006")
+        expect(analysis[0].issues[0].message).toContain("AnimalController.getAnimal.models, AnimalController.getAnimal.otherModels")
     })
 
-    // it("Should identify if array doesn't contains type information inside model", () => {
-        
-    // })
+    it.only("Should identify if array doesn't contains type information inside model", () => {
+        @domain()
+        class TagModel {
+            constructor(public name: string) { }
+        }
+        @domain()
+        class AnimalModel {
+            constructor(public id: number, tags: TagModel[]) { }
+        }
+        class AnimalController {
+            @route.post()
+            getAnimal(id: number, model: AnimalModel) { }
+        }
+        const routeInfo = transformController(AnimalController)
+        const analysis = analyzeRoutes(routeInfo)
+        expect(analysis[0].issues.length).toBe(1)
+        expect(analysis[0].issues[0].message).toContain("PLUM1006")
+        expect(analysis[0].issues[0].message).toContain("(AnimalModel.tags)")
+    })
 
-    // it("Should identify if array doesn't contains type information inside model recursive", () => {
-        
-    // })
+    it.only("Should identify if array doesn't contains type information inside model recursive", () => {
+        @domain()
+        class TagModel {
+            constructor(public name: string) { }
+        }
+        @domain()
+        class AnimalModel {
+            constructor(public id: number, tags: TagModel[]) { }
+        }
+        class AnimalController {
+            @route.post()
+            getAnimal(id: number, @array(AnimalModel) models: AnimalModel[]) { }
+        }
+        const routeInfo = transformController(AnimalController)
+        const analysis = analyzeRoutes(routeInfo)
+        expect(analysis[0].issues.length).toBe(1)
+        expect(analysis[0].issues[0].message).toContain("PLUM1006")
+        expect(analysis[0].issues[0].message).toContain("(AnimalModel.tags)")
+    })
+
+    it.only("Should not report missing array type on type already reported", () => {
+        @domain()
+        class TagModel {
+            constructor(public name: string) { }
+        }
+        @domain()
+        class AnimalModel {
+            constructor(public id: number, tags: TagModel[]) { }
+        }
+        class AnimalController {
+            @route.post()
+            getAnimal(id: number, @array(AnimalModel) models: AnimalModel[], @array(AnimalModel) otherModels: AnimalModel[]) { }
+        }
+        const routeInfo = transformController(AnimalController)
+        const analysis = analyzeRoutes(routeInfo)
+        expect(analysis[0].issues.length).toBe(1)
+        expect(analysis[0].issues[0].message).toContain("PLUM1006")
+        expect(analysis[0].issues[0].message).toContain("(AnimalModel.tags)")
+    })
 })

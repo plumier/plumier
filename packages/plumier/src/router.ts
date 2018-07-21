@@ -16,6 +16,7 @@ import * as Fs from "fs";
 import { Context } from "koa";
 import * as Path from "path";
 import Ptr from "path-to-regexp";
+import { model } from 'mongoose';
 
 const log = Debug("plum:router")
 
@@ -164,16 +165,28 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
 
 //------ Analyzer Helpers
 function getModelsInParameters(par: ParameterReflection[]) {
-    return par.filter(x => x.typeAnnotation && isCustomClass(x.typeAnnotation))
-        .map(x => reflect((Array.isArray(x.typeAnnotation) ? x.typeAnnotation[0] : x.typeAnnotation) as Class))
+    return par
+        .map((x, i) => ({ type: x.typeAnnotation, index: i }))
+        .filter(x => x.type && isCustomClass(x.type))
+        .map(x => ({ meta: reflect((Array.isArray(x.type) ? x.type[0] : x.type) as Class), index: x.index }))
 }
 
 function traverseModel(par: ParameterReflection[]): ClassReflection[] {
-    const models = getModelsInParameters(par)
+    const models = getModelsInParameters(par).map(x => x.meta)
     const child = models.map(x => traverseModel(x.ctorParameters))
         .filter((x): x is ClassReflection[] => Boolean(x))
         .reduce((a, b) => a!.concat(b!), [] as ClassReflection[])
     return models.concat(child)
+}
+
+function traverseArray(parent: string, par: ParameterReflection[]): string[] {
+    const models = getModelsInParameters(par)
+    if (models.length > 0) {
+        return models.map((x, i) => traverseArray(x.meta.name, x.meta.ctorParameters))
+            .reduce((a, b) => a.concat(b), [])
+    }
+    return par.filter(x => x.typeAnnotation === Array)
+        .map(x => `${parent}.${x.name}`)
 }
 
 //----- 
@@ -227,7 +240,6 @@ function duplicateRouteTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
 }
 
 function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
-
     const classes = traverseModel(route.action.parameters)
         .filter(x => x.ctorParameters.every(par => typeof par.typeAnnotation == "undefined"))
         .map(x => x.object)
@@ -245,12 +257,13 @@ function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
 }
 
 function arrayTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
-    const array = route.action.parameters.filter(x => x.typeAnnotation == Array)
+    const issues = traverseArray(`${route.controller.name}.${route.action.name}`, route.action.parameters)
+    const array = Array.from(new Set(issues))
     if (array.length > 0) {
-        log(`[Analyzer] Array without item type information in ${array.map(x => x.name).join(", ")}`)
+        log(`[Analyzer] Array without item type information in ${array.join(", ")}`)
         return {
             type: "warning",
-            message: errorMessage.ArrayWithoutTypeInformation.format(array.map(x => x.name).join(", "))
+            message: errorMessage.ArrayWithoutTypeInformation.format(array.join(", "))
         }
     }
     else return { type: 'success' }
