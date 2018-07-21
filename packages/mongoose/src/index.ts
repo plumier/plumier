@@ -1,45 +1,49 @@
-import { reflect, ClassReflection, ParameterReflection } from "@plumjs/reflect"
-import { Class, Facility, Application, errorMessage, isCustomClass, b, DomainDecorator, reflectPath } from "@plumjs/core"
+import { reflect, ClassReflection, ParameterReflection, decorateClass } from "@plumjs/reflect"
+import { Class, Facility, Application, errorMessage, isCustomClass, b, DomainDecorator, reflectPath, resolvePath, domain, PlumierApplication } from "@plumjs/core"
 import Mongoose, { Model } from "mongoose"
 import { dirname, isAbsolute, join } from 'path';
 import Debug from "debug"
 
 const log = Debug("plum:mongo")
 
+/* ------------------------------------------------------------------------------- */
+/* ------------------------------------ TYPES ------------------------------------ */
+/* ------------------------------------------------------------------------------- */
+
 export type Constructor<T> = new (...args: any[]) => T
 export type SchemaRegistry = { [key: string]: Mongoose.Schema }
 export interface MongooseFacilityOption {
-    domainModel?: string | Class | Class[],
+    model?: string | Class | Class[]
     uri: string,
 }
 export interface SubSchema {
     type: typeof Mongoose.Schema.Types.ObjectId,
     ref: string
 }
-
-const GlobalMongooseSchema: SchemaRegistry = {}
-
-export class MongooseFacility implements Facility {
-    option: MongooseFacilityOption
-    constructor(private opts: MongooseFacilityOption) {
-        this.option = { domainModel: "./model", ...opts }
-        const model = typeof this.option.domainModel === "string" ?
-            isAbsolute(this.option.domainModel) ? this.option.domainModel! : join(dirname(module.parent!.filename), this.option.domainModel)
-            : this.option.domainModel!
-        log(`[Constructor] model ${b(model)}`)
-        generateSchema(model, GlobalMongooseSchema)
-    }
-
-    async setup(app: Application) {
-        await Mongoose.connect(this.option.uri, { useNewUrlParser: true })
-    }
+interface AnalysisResult {
+    type: "warning" | "error",
+    message: string
+}
+interface DomainAnalysis {
+    domain: ClassReflection
+    analysis: AnalysisResult[]
+}
+interface MongooseCollectionDecorator {
+    type: "MongooseCollectionDecorator",
+    alias?: string
 }
 
-function loadModels(opt: string | Class | Class[]) {
-    if (Array.isArray(opt))
-        return opt.map(x => reflect(x))
-    return ((typeof opt === "string") ? reflectPath(opt) : [reflect(opt)])
-        .filter((x): x is ClassReflection => x.type == "Class" && x.decorators.some((y: DomainDecorator) => y.name === "Domain"))
+
+const GlobalMongooseSchema: SchemaRegistry = {}
+const ArrayHasNoTypeInfo = `MONG1000: Array property {0}.{1} require @array(<Type>) decorator to be able to generated into mongoose schema`
+const NoClassFound = `MONG1001: No class decorated with @collection() found`
+
+/* ------------------------------------------------------------------------------- */
+/* ------------------------------- SCHEMA GENERATOR ------------------------------ */
+/* ------------------------------------------------------------------------------- */
+
+function loadModels(opt: Class[]) {
+    return opt.map(x => reflect(x))
 }
 
 function getType(prop: ParameterReflection, registry: SchemaRegistry): Function | Function[] | SubSchema | SubSchema[] {
@@ -59,53 +63,117 @@ function generateModel(model: ClassReflection, registry: SchemaRegistry) {
             return a
         }, {} as any)
     log(`[GenerateModel] Creating schema for ${b(model.name)} Schema ${b(schema)}`)
-    registry[model.name] = new Mongoose.Schema(schema)
+    registry[getName(model)] = new Mongoose.Schema(schema)
 }
 
-function generateSchema(opt: string | Class | Class[], registry: SchemaRegistry) {
-    const models = loadModels(opt)
-    log(`[GenerateSchema] Loaded models ${b(models)}`)
-    if (models.length == 0) {
-        const message = typeof opt === "string" ? errorMessage.ModelPathNotFound.format(opt) : errorMessage.ModelNotFound
-        throw new Error(message)
+function generateSchema(opt: Class[], registry: SchemaRegistry) {
+    loadModels(opt).forEach(x => generateModel(x, registry))
+}
+
+/* ------------------------------------------------------------------------------- */
+/* --------------------------------- ANALYZER ------------------------------------ */
+/* ------------------------------------------------------------------------------- */
+
+function noArrayTypeInfoTest(domain: ClassReflection): AnalysisResult[] {
+    return domain.ctorParameters
+        .map(x => (x.typeAnnotation === Array) ?
+            <AnalysisResult>{ message: ArrayHasNoTypeInfo.format(domain.name, x.name), type: "error" } : undefined)
+        .filter((x): x is AnalysisResult => Boolean(x))
+}
+
+function analyze(domains: ClassReflection[]) {
+    const tests = [noArrayTypeInfoTest]
+    return domains.map(x => (<DomainAnalysis>{
+        domain: x,
+        analysis: tests.map(test => test(x))
+            .reduce((x, y) => x.concat(y), [])
+    }))
+}
+
+function printAnalysis(analysis: DomainAnalysis[]) {
+    console.log()
+    console.log("Mongoose model analysis")
+    if (!analysis.map(x => x.domain).some(x =>
+        x.decorators.some((y: MongooseCollectionDecorator) => y.type === "MongooseCollectionDecorator"))) {
+        console.log(NoClassFound)
     }
-    models.map(x => generateModel(x, registry))
+    else {
+        const namePad = Math.max(...analysis.map(x => x.domain.name.length))
+        analysis.forEach((x, i) => {
+            console.log(`${i + 1}. ${x.domain.name.padEnd(namePad)} -> ${getName(x.domain)}`)
+            x.analysis.forEach(y => {
+                console.log(`  - ${y.type} ${y.message}`)
+            })
+        })
+        console.log()
+    }
 }
 
-function getModel<T>(type: Constructor<T>) {
-    return Mongoose.model<T & Mongoose.Document>(type.name, GlobalMongooseSchema[type.name])
+/* ------------------------------------------------------------------------------- */
+/* ------------------------------- MAIN FUNCTIONS -------------------------------- */
+/* ------------------------------------------------------------------------------- */
+
+export function collection(alias?: string) {
+    return decorateClass(<MongooseCollectionDecorator>{ type: "MongooseCollectionDecorator", alias })
 }
 
+export function getName(meta: ClassReflection) {
+    const decorator = meta.decorators.find((x: MongooseCollectionDecorator): x is MongooseCollectionDecorator => x.type === "MongooseCollectionDecorator")
+    return decorator && decorator.alias || meta.name
+}
+
+export class MongooseFacility implements Facility {
+    option: MongooseFacilityOption
+    constructor(opts: MongooseFacilityOption) {
+        const model = opts.model || "./model"
+        const domain = typeof model === "string" ? isAbsolute(model) ?
+            model! : join(dirname(module.parent!.filename), model) : model
+        this.option = { ...opts, model: domain }
+    }
+
+    async setup(app: Readonly<PlumierApplication>) {
+        const metadata = reflectPath(this.option.model!)
+            .filter((x): x is ClassReflection => x.type === "Class")
+        if (app.config.mode === "debug") {
+            const analysis = analyze(metadata)
+            printAnalysis(analysis)
+        }
+        const collection = metadata.filter(x => x.decorators.some((x: MongooseCollectionDecorator) => x.type == "MongooseCollectionDecorator"))
+        generateSchema(collection.map(x => x.object), GlobalMongooseSchema)
+        await Mongoose.connect(this.option.uri, { useNewUrlParser: true })
+    }
+}
 
 export function model<T extends object>(type: Constructor<T>) {
-    class ModelMock { }
-    return new Proxy(Mongoose.Model as Mongoose.Model<T & Mongoose.Document>, new ModelProxyHandler<T>(type))
-}
+    class ModelProxyHandler<T extends object> implements ProxyHandler<Mongoose.Model<T & Mongoose.Document>> {
+        model?: Mongoose.Model<T & Mongoose.Document>
+        modelName: string;
 
+        constructor(domain: Constructor<T>) {
+            const meta = reflect(domain)
+            this.modelName = getName(meta)
+        }
 
-class ModelProxyHandler<T extends object> implements ProxyHandler<Mongoose.Model<T & Mongoose.Document>> {
-    model?: Mongoose.Model<T & Mongoose.Document>
+        private getModel() {
+            if (!this.model)
+                this.model = Mongoose.model(this.modelName, GlobalMongooseSchema[this.modelName])
+            return this.model
+        }
 
-    private getModel() {
-        if (!this.model)
-            this.model = getModel(this.domain)
-        return this.model
-    }
+        get(target: Mongoose.Model<T & Mongoose.Document>, p: PropertyKey, receiver: any): any {
+            if (GlobalMongooseSchema[this.modelName]) {
+                const Model = this.getModel();
+                return (Model as any)[p]
+            }
+            else {
+                return p === "toString" ? () => "[Function]" : (target as any)[p]
+            }
+        }
 
-    constructor(private domain: Constructor<T>) { }
-
-    get(target: Mongoose.Model<T & Mongoose.Document>, p: PropertyKey, receiver: any): any {
-        if (GlobalMongooseSchema[this.domain.name]) {
+        construct?(target: Mongoose.Model<T & Mongoose.Document>, argArray: any, newTarget?: any): object {
             const Model = this.getModel();
-            return (Model as any)[p]
-        }
-        else {
-            return p === "toString" ? () => this.domain.toString() : (target as any)[p]
+            return new Model(...argArray)
         }
     }
-
-    construct?(target: Mongoose.Model<T & Mongoose.Document>, argArray: any, newTarget?: any): object {
-        const Model = this.getModel();
-        return new Model(...argArray)
-    }
+    return new Proxy(Mongoose.Model as Mongoose.Model<T & Mongoose.Document>, new ModelProxyHandler<T>(type))
 }

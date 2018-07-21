@@ -1,6 +1,6 @@
 import { bind, domain, route, array } from "../../../src";
 import { analyzeRoutes, printAnalysis, transformController } from "../../../src/router";
-import { consoleLog } from "../../helper";
+import { consoleLog } from '@plumjs/core';
 
 describe("Analyzer", () => {
     it("Should analyze missing backing parameter", () => {
@@ -206,7 +206,6 @@ describe("Analyzer", () => {
         const routeInfo = transformController(AnimalController)
         const analysis = analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
-        console.log(analysis[0].issues)
         expect(analysis[0].issues[0].message).toContain("PLUM1005")
     })
 

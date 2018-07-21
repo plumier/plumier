@@ -1,45 +1,12 @@
-import { domain, Application } from "@plumjs/core";
-import { MongooseFacility, model, Constructor, SchemaRegistry } from '@plumjs/mongoose';
-import Mongoose from "mongoose"
-import { array, reflect } from '@plumjs/reflect';
-import { MyDomain, MyParentDomain } from './model/my-domain';
+import { Constructor, model, MongooseFacility, collection } from "@plumjs/mongoose";
+import Mongoose from "mongoose";
+
+import { DomainWithArrayOfDomain, DomainWithArrays, DomainWithDomain, DomainWithPrimitives } from "./model/my-domain";
+import { consoleLog } from '@plumjs/core';
 import { join } from 'path';
-import { CustomLocationDomain, ParentCustomLocationDomain } from './custom-location/my-domain';
 
 type Model<T> = Mongoose.Model<T & Mongoose.Document>
 
-@domain()
-class DomainWithPrimitives {
-    constructor(
-        public name: string,
-        public deceased: boolean,
-        public age: number,
-        public registerDate: Date
-    ) { }
-}
-
-@domain()
-class DomainWithArrays {
-    constructor(
-        public name: string,
-        public children: string[]
-    ) { }
-}
-
-@domain()
-class DomainWithDomain {
-    constructor(
-        public child: DomainWithPrimitives
-    ) { }
-}
-
-@domain()
-class DomainWithArrayOfDomain {
-    constructor(
-        @array(DomainWithPrimitives)
-        public children: DomainWithPrimitives[]
-    ) { }
-}
 
 async function save<T extends object>(cls: Constructor<T>, value: T) {
     const Model = model(cls)
@@ -51,15 +18,9 @@ async function save<T extends object>(cls: Constructor<T>, value: T) {
 describe("Mongoose Reference Domain Directly", () => {
     beforeAll(async () => {
         const facility = new MongooseFacility({
-            domainModel: [
-                DomainWithPrimitives,
-                DomainWithArrays,
-                DomainWithDomain,
-                DomainWithArrayOfDomain
-            ],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup({} as Application)
+        await facility.setup({ config: { mode: "production" } } as any)
     })
 
     afterAll(async () => await Mongoose.disconnect())
@@ -101,67 +62,117 @@ describe("Mongoose Reference Domain Directly", () => {
     })
 })
 
-describe("Mongoose Reference Default Folder", () => {
-    it("Should load default location domain", async () => {
-        const facility = new MongooseFacility({ domainModel: join(__dirname, "./model"), uri: "mongodb://localhost:27017/test-data" })
-        await facility.setup({} as Application)
-        const child = await save(MyDomain, new MyDomain("Mimi"))
-        const parent = await save(MyParentDomain, new MyParentDomain(child.result._id))
-        const savedParent = await parent.model.findById(parent.result._id).populate("child")
-        expect(savedParent).toMatchObject(new MyParentDomain(new MyDomain("Mimi")))
-        await child.model.remove({})
-        await parent.model.remove({})
-        await Mongoose.disconnect()
+describe("Model Load", () => {
+    afterEach(async () => Mongoose.disconnect())
+    
+    it("Should be able to provide absolute path", async () => {
+        const facility = new MongooseFacility({
+            model: join(__dirname, "./model/my-domain"),
+            uri: "mongodb://localhost:27017/test-data"
+        })
+        consoleLog.startMock()
+        await facility.setup({ config: { mode: "debug" } } as any)
+        expect((console.log as jest.Mock).mock.calls[2][0]).toContain("DomainWithPrimitives")
+        expect((console.log as jest.Mock).mock.calls[3][0]).toContain("DomainWithArrays")
+        expect((console.log as jest.Mock).mock.calls[4][0]).toContain("DomainWithDomain")
+        expect((console.log as jest.Mock).mock.calls[5][0]).toContain("DomainWithArrayOfDomain")
+        consoleLog.clearMock()
     })
 
-    it("Should load default location domain", async () => {
-        const facility = new MongooseFacility({ domainModel: "./custom-location/my-domain", uri: "mongodb://localhost:27017/test-data" })
-        await facility.setup({} as Application)
-        const child = await save(CustomLocationDomain, new CustomLocationDomain("Mimi"))
-        const parent = await save(ParentCustomLocationDomain, new ParentCustomLocationDomain(child.result._id))
-        const savedParent = await parent.model.findById(parent.result._id).populate("child")
-        expect(savedParent).toMatchObject(new ParentCustomLocationDomain(new CustomLocationDomain("Mimi")))
-        await child.model.remove({})
-        await parent.model.remove({})
-        await Mongoose.disconnect()
-    })
-
-    it("Should load single domain", async () => {
-        @domain()
-        class MySingleDomain {
+    it("Should be able to provide absolute path", async () => {
+        @collection()
+        class DomainA {
             constructor(
-                public name: string
+                public name: string,
+            ) { }
+        }
+        @collection()
+        class DomainB {
+            constructor(
+                public name: string,
             ) { }
         }
         const facility = new MongooseFacility({
-            domainModel: MySingleDomain,
+            model: [DomainA, DomainB],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup({} as Application)
-        const Model = model(MySingleDomain)
-        expect(Model).not.toBeNull()
-        await Mongoose.disconnect()
+        consoleLog.startMock()
+        await facility.setup({ config: { mode: "debug" } } as any)
+        expect((console.log as jest.Mock).mock.calls[2][0]).toContain("DomainA")
+        expect((console.log as jest.Mock).mock.calls[3][0]).toContain("DomainB")
+        consoleLog.clearMock()
+    })
+
+    it("Should be able change name", async () => {
+        @collection("MyOtherDomain")
+        class DomainA {
+            constructor(
+                public name: string,
+            ) { }
+        }
+        const facility = new MongooseFacility({
+            model: DomainA,
+            uri: "mongodb://localhost:27017/test-data"
+        })
+        consoleLog.startMock()
+        await facility.setup({ config: { mode: "debug" } } as any)
+        expect((console.log as jest.Mock).mock.calls[2][0]).toBe("1. DomainA -> MyOtherDomain")
+        consoleLog.clearMock()
     })
 })
 
-describe("Error Handling", () => {
-    it("Should report non domain class", async () => {
-        class MySingleDomain {
+describe("Proxy", () => {
+    it("Should ok with toString() method is called", async () => {
+        @collection()
+        class OtherDomain {
             constructor(
-                public name: string
+                public name: string,
+                public children: string[]
             ) { }
         }
-        expect(() => new MongooseFacility({
-            domainModel: MySingleDomain,
+        const Model = model(OtherDomain)
+        expect(Model.toString()).toBe("[Function]")
+        expect(() => Model.remove({})).toThrow("this.Query is not a constructor")
+    })
+})
+
+
+describe("Analysis", () => {
+    afterEach(async () => await Mongoose.disconnect())
+    it("Should analyze missing @array decorator", async () => {
+        @collection()
+        class DomainWithArrays {
+            constructor(
+                public name: string,
+                public children: string[]
+            ) { }
+        }
+        const facility = new MongooseFacility({
+            model: DomainWithArrays,
             uri: "mongodb://localhost:27017/test-data"
-        })).toThrow("PLUM1007")
-        
+        })
+        consoleLog.startMock()
+        await facility.setup({ config: { mode: "debug" } } as any)
+        expect((console.log as jest.Mock).mock.calls[2][0]).toBe("1. DomainWithArrays -> DomainWithArrays")
+        expect((console.log as jest.Mock).mock.calls[3][0]).toContain("MONG1000")
+        consoleLog.clearMock()
     })
 
-    it("Should report if path doesn't contains domain", async () => {
-        expect(() => new MongooseFacility({
-            domainModel: "./no-domain",
+    it("Should show error if no class decorated with @collection() found", async () => {
+        class DomainWithArrays {
+            constructor(
+                public name: string,
+                public children: string[]
+            ) { }
+        }
+        const facility = new MongooseFacility({
+            model: DomainWithArrays,
             uri: "mongodb://localhost:27017/test-data"
-        })).toThrow("PLUM1007")
+        })
+        consoleLog.startMock()
+        await facility.setup({ config: { mode: "debug" } } as any)
+        expect((console.log as jest.Mock).mock.calls[2][0]).toContain("MONG1001")
+        consoleLog.clearMock()
     })
+
 })

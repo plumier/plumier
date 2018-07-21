@@ -3,6 +3,7 @@ import { inspect } from "util";
 import { lstatSync, readdirSync, existsSync } from 'fs';
 import { extname, join, basename } from 'path';
 import { reflect, Reflection } from '@plumjs/reflect';
+import { Class } from './core';
 
 declare global {
     interface String {
@@ -40,7 +41,7 @@ export function isCustomClass(type: Function | Function[]) {
 
 
 export function resolvePath(path: string): string[] {
-    const removeExtension = (x:string) => x.replace(/\.[^/.]+$/, "")
+    const removeExtension = (x: string) => x.replace(/\.[^/.]+$/, "")
     if (existsSync(`${path}.js`)) return [removeExtension(path)]
     else if (existsSync(`${path}.ts`)) return [removeExtension(path)]
     //resolve provided path directory or file
@@ -56,11 +57,26 @@ export function resolvePath(path: string): string[] {
     else return [path]
 }
 
-export function reflectPath(path: string): Reflection[] {
-    return resolvePath(path)
-        .map(x => reflect(x))
-        .map(x => x.members)
-        .reduce((a, b) => a.concat(b), [])
+export function reflectPath(path: string | Class | Class[]): Reflection[] {
+    if (Array.isArray(path))
+        return path.map(x => reflect(x))
+    else if (typeof path === "string")
+        return resolvePath(path)
+            .map(x => reflect(x))
+            .map(x => x.members)
+            .reduce((a, b) => a.concat(b), [])
+    else
+        return [reflect(path)]
 }
 
 
+const log = console.log;
+
+export namespace consoleLog {
+    export function startMock() {
+        console.log = jest.fn(message => { })
+    }
+    export function clearMock() {
+        console.log = log
+    }
+}
