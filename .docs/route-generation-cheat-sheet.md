@@ -1,8 +1,10 @@
 # Route Generation Cheat Sheet
 
-### Basic Controller Without Parameter Binding
+## Without Route
 
-If no `@route` decorator provided all data passed to the action parameter by default will be of type of string.
+If no `@route` decorator provided, generated route will be of type GET. 
+> Parameter binding will be ignored (due to no type information if no decorator provided)
+> All data type assumed to be of type string even if you provided other type
 
 ```typescript
 export class AnimalController {
@@ -15,18 +17,11 @@ GET /animal/get?id=<number>
 GET /animal/list?last=<number>&limit=<number>
 ```
 
-### Basic Controller With Decorator and Data Binding
+## Basic Route (No Route Override)
 
-With `@route` decorator parameter binding will automatically convert query to appropriate type. Parameter binding will automatically assigned domain to the request body.
+Basic route will only defined http method of the route, route will be constructed using controller name and action name
 
 ```typescript
-@domain()
-export class AnimalDto {
-    constructor(
-        public id:number,
-        public name:string
-    ){}
-}
 export class AnimalController {
     @route.put()
     modify(id:number, model:AnimalDto)
@@ -39,7 +34,10 @@ POST /animal/save
 PUT  /animal/modify?id=<number>
 ```
 
-### Controller With Route Override
+## Absolute Route Override
+
+Absolute route override (route start with `/`) will ignore all the controller and action name, instead it will used provided route.
+
 ```typescript
 export class AnimalController {
     @route.get("/beast/:id")
@@ -53,7 +51,10 @@ GET /beast/:id
 GET /beast/list?last=<number>&limit=<number>
 ```
 
-### Controller With Relative Override
+## Relative Route Override
+
+Relative route override will only rename the name of the action and keep using controller name.
+
 ```typescript
 export class AnimalController {
     @route.get(":id")
@@ -68,7 +69,10 @@ GET /animal/list?last=<number>&limit=<number>
 ```
 
 
-### Restful style
+## Example Restful Api
+
+Sum up of above rule you can create Restful API route like below:
+
 ```typescript
 export class AnimalController {
     @route.get(":id")
@@ -91,7 +95,10 @@ PUT    /animal/:id
 DELETE /animal/:id
 ```
 
-### Controller Name Override
+## Root Route
+
+Root route override only the controller name
+
 ```typescript
 @route.root("/beast")
 export class AnimalController {
@@ -104,25 +111,29 @@ GET /beast/get?id=<number>
 GET /beast/list?last=<number>&limit=<number>
 ```
 
-### Controller Name Override and Relative Override
+## Parameterized Root Route
+
+Root route can be parameterized and provided backing parameter on all of the action, except absolute route
+
 ```typescript
-@route.root("/beast")
+@route.root("/beast/:beastId")
 export class AnimalController {
-    @route.get("retrieve/:id")
-    get(id:number){}
-    @route.get("paginate/:last/:limit")
+    get(beastId:number, id:number){}
+    //absolute route doesn't need to provided backing parameter
+    //fpr beastId
+    @route.get("/list")
     list(last:number, limit:number)
-    @route.get("/category/:type")
-    getByCategory(type:string){}
 }
 ```
 ```
-GET /beast/retrieve/:id
-GET /beast/paginate/:last/:limit
-GET /category/:type
+GET /beast/<beastId>/get?id=<number>
+GET /list?last=<number>&limit=<number>
 ```
 
-### Nested Restful style
+## Example Nested Restful API
+
+By using rules above you can configure nested restful api like below:
+
 ```typescript
 @route.root("category/:type/animal")
 export class AnimalController {
