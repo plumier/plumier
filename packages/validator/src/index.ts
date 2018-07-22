@@ -43,7 +43,7 @@ export namespace val {
     }
 
     export function after(opt?: Opt & { date?: string }) {
-        return validate(x => Validator.isAfter(x, opt && opt.date), opt && opt.message || `Date must after ${opt && opt.date}`, "after")
+        return validate(x => Validator.isAfter(x, opt && opt.date), opt && opt.message || `Date must after ${opt && opt.date || new Date()}`, "after")
     }
 
     export function alpha(opt?: Opt & { locale?: ValidatorJS.AlphaLocale }) {
@@ -63,12 +63,8 @@ export namespace val {
     }
 
     export function before(opt?: Opt & { date?: string }) {
-        return validate(x => Validator.isBefore(x, opt && opt.date), opt && opt.message || `Date must before ${opt && opt.date}`, "before")
+        return validate(x => Validator.isBefore(x, opt && opt.date), opt && opt.message || `Date must before ${opt && opt.date || new Date()}`, "before")
     }
-
-    // export function boolean(opt?: Opt) {
-    //     return validate(x => Validator.isBoolean(x), opt && opt.message || "Invalid boolean", "boolean")
-    // }
 
     export function byteLength(opt: Opt & ValidatorJS.IsByteLengthOptions) {
         return validate(x => Validator.isByteLength(x, opt), opt && opt.message || "Invalid byte length", "byteLength")
@@ -97,10 +93,6 @@ export namespace val {
     export function email(opt?: Opt & ValidatorJS.IsEmailOptions) {
         return validate(x => Validator.isEmail(x, opt), opt && opt.message || "Invalid email address", "email")
     }
-
-    // export function empty(opt?: Opt) {
-    //     return validate(x => Validator.isEmpty(x), opt && opt.message || "Not empty", "empty")
-    // }
 
     export function fqdn(opt?: Opt & ValidatorJS.IsFQDNOptions) {
         return validate(x => Validator.isFQDN(x, opt), opt && opt.message || "Invalid FQDN", "fQDN")
