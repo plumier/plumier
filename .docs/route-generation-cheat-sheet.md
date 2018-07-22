@@ -19,7 +19,7 @@ GET /animal/list?last=<number>&limit=<number>
 
 ## Basic Route (No Route Override)
 
-Basic route will only defined http method of the route, route will be constructed using controller name and action name
+Basic route will only defined http method of the route, route will be constructed using controller name (omit controller word) and action name
 
 ```typescript
 export class AnimalController {
@@ -68,6 +68,19 @@ GET /animal/:id
 GET /animal/list?last=<number>&limit=<number>
 ```
 
+## Ignore Action Name
+
+You can provided empty string on the route parameter to ignore action name
+
+```typescript
+export class AnimalController {
+    @route.get("")
+    get(id:number){}
+}
+```
+```
+GET /animal?id=<number>
+```
 
 ## Example Restful Api
 
@@ -97,7 +110,7 @@ DELETE /animal/:id
 
 ## Root Route
 
-Root route override only the controller name
+Root route only override the controller name
 
 ```typescript
 @route.root("/beast")
