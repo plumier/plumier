@@ -22,6 +22,14 @@ describe("String Validation", () => {
         expect(validateObject(new DummyString("2019-1-1"))).toEqual([])
     })
 
+    test("after()", async () => {
+        @domain()
+        class Dummy {
+            constructor(@val.after() public property: Date) { }
+        }
+        expect(validateObject(new Dummy(new Date("2017-1-1")))[0].messages[0]).toContain("today")
+    })
+
     test("alpha", async () => {
         @domain()
         class Dummy {
@@ -72,6 +80,14 @@ describe("String Validation", () => {
         }
         expect(validateObject(new DummyString("2019-1-1")).length).toBe(1)
         expect(validateObject(new DummyString("2017-1-1"))).toEqual([])
+    })
+
+    test("before()", async () => {
+        @domain()
+        class Dummy {
+            constructor(@val.before() public property: Date) { }
+        }
+        expect(validateObject(new Dummy(new Date("2025-1-1")))[0].messages[0]).toContain("today")
     })
 
     test("byteLength", async () => {

@@ -673,7 +673,7 @@ describe("Router with external controller", () => {
             //.set({ rootPath: __dirname })
             .set(new WebApiFacility())
         await app.initialize()
-        expect((console.log as any).mock.calls).toEqual([])
+        expect((console.log as any).mock.calls[2][0]).toBe("No controller found")
         consoleLog.clearMock()
     })
 

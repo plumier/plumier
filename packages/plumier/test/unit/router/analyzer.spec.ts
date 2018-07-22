@@ -133,7 +133,7 @@ describe("Analyzer", () => {
         consoleLog.clearMock()
     })
 
-    it.only("Model with correct configuration should be pass", () => {
+    it("Model with correct configuration should be pass", () => {
         @domain()
         class AnimalModel {
             constructor(public id: number) { }
@@ -209,7 +209,7 @@ describe("Analyzer", () => {
         expect(analysis[0].issues[0].message).toContain("PLUM1005")
     })
 
-    it.only("Should identify if array doesn't contains type information", () => {
+    it("Should identify if array doesn't contains type information", () => {
         @domain()
         class AnimalModel {
             constructor(public id: number) { }
@@ -225,7 +225,7 @@ describe("Analyzer", () => {
         expect(analysis[0].issues[0].message).toContain("AnimalController.getAnimal.models, AnimalController.getAnimal.otherModels")
     })
 
-    it.only("Should identify if array doesn't contains type information inside model", () => {
+    it("Should identify if array doesn't contains type information inside model", () => {
         @domain()
         class TagModel {
             constructor(public name: string) { }
@@ -245,7 +245,7 @@ describe("Analyzer", () => {
         expect(analysis[0].issues[0].message).toContain("(AnimalModel.tags)")
     })
 
-    it.only("Should identify if array doesn't contains type information inside model recursive", () => {
+    it("Should identify if array doesn't contains type information inside model recursive", () => {
         @domain()
         class TagModel {
             constructor(public name: string) { }
@@ -265,7 +265,7 @@ describe("Analyzer", () => {
         expect(analysis[0].issues[0].message).toContain("(AnimalModel.tags)")
     })
 
-    it.only("Should not report missing array type on type already reported", () => {
+    it("Should not report missing array type on type already reported", () => {
         @domain()
         class TagModel {
             constructor(public name: string) { }

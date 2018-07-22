@@ -298,10 +298,9 @@ export function printAnalysis(results: TestResult[]) {
         const issues = x.issues.map(issue => ` - ${issue.type} ${issue!.message}`)
         return { method, url: x.route.url, action, issues }
     })
-    if (data.length > 0) {
-        console.log()
-        console.log(chalk.bold("Route Analysis Report"))
-    }
+    console.log()
+    console.log(chalk.bold("Route Analysis Report"))
+    if(data.length == 0) console.log("No controller found")
     data.forEach((x, i) => {
         const action = x.action.padEnd(Math.max(...data.map(x => x.action.length)))
         const method = x.method.padEnd(Math.max(...data.map(x => x.method.length)))

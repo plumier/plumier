@@ -43,7 +43,7 @@ export namespace val {
     }
 
     export function after(opt?: Opt & { date?: string }) {
-        return validate(x => Validator.isAfter(x, opt && opt.date), opt && opt.message || `Date must after ${opt && opt.date || new Date()}`, "after")
+        return validate(x => Validator.isAfter(x, opt && opt.date), opt && opt.message || `Date must after ${opt && opt.date || "today"}`, "after")
     }
 
     export function alpha(opt?: Opt & { locale?: ValidatorJS.AlphaLocale }) {
@@ -63,7 +63,7 @@ export namespace val {
     }
 
     export function before(opt?: Opt & { date?: string }) {
-        return validate(x => Validator.isBefore(x, opt && opt.date), opt && opt.message || `Date must before ${opt && opt.date || new Date()}`, "before")
+        return validate(x => Validator.isBefore(x, opt && opt.date), opt && opt.message || `Date must before ${opt && opt.date || "today"}`, "before")
     }
 
     export function byteLength(opt: Opt & ValidatorJS.IsByteLengthOptions) {

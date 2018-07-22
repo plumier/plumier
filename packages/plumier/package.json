@@ -1,6 +1,6 @@
 {
   "name": "@plumjs/plumier",
-  "version": "0.1.0-alpha.56f2ec99",
+  "version": "0.1.0-alpha.9aaa0a15",
   "description": "Pleasant TypeScript Web Api Framework",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,9 +20,9 @@
   "license": "MIT",
   "dependencies": {
     "@koa/cors": "^2.2.1",
-    "@plumjs/core": "0.1.0-alpha.56f2ec99",
-    "@plumjs/reflect": "1.4.0-alpha.56f2ec99",
-    "@plumjs/validator": "0.1.0-alpha.56f2ec99",
+    "@plumjs/core": "0.1.0-alpha.9aaa0a15",
+    "@plumjs/reflect": "1.4.0-alpha.9aaa0a15",
+    "@plumjs/validator": "0.1.0-alpha.9aaa0a15",
     "@types/debug": "^0.0.30",
     "@types/koa": "^2.0.46",
     "@types/koa-bodyparser": "^5.0.0",
