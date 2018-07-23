@@ -22,7 +22,7 @@ export class AnimalController {
     @route.post()
     save(model: AnimalModel) {
         expect(model).toBeInstanceOf(AnimalModel)
-        return new AnimalModel(474747, "Mimi", 5)
+        return model
     }
 
     @route.put()
@@ -58,7 +58,7 @@ describe("Basic Controller", () => {
         const koa = await fixture().initialize()
         await Supertest(koa.callback())
             .post("/animal/save")
-            .send({ name: 'Mimi', age: 5 })
+            .send({ id: 474747, name: 'Mimi', age: 5 })
             .expect(200, { id: 474747, name: 'Mimi', age: 5 })
     })
 
@@ -66,7 +66,7 @@ describe("Basic Controller", () => {
         const koa = await fixture().initialize()
         await Supertest(koa.callback())
             .put("/animal/modify?id=474747")
-            .send({ name: 'Mimi', age: 5 })
+            .send({ id: 474747, name: 'Mimi', age: 5 })
             .expect(200, { id: 474747, name: 'Mimi', age: 5 })
     })
 

@@ -130,9 +130,8 @@ export class WebApiFacility implements Facility {
             app.set({ controller: this.opt.controller })
         app.set({
             validator: (value, meta) => {
-                const decorators = meta.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
                 log(`[Validator] Validating ${b(value)} metadata: ${b(meta)}`)
-                return validate(value, decorators, [meta.name])
+                return validate(value, meta.decorators, [meta.name])
                     .map(x => ({ messages: x.messages, path: x.path }))
             }
         })

@@ -1,7 +1,7 @@
 import { basename } from "path";
 import Supertest from "supertest";
 
-import Plumier, { route, RestfulApiFacility } from "../../../src";
+import Plumier, { route, RestfulApiFacility, val } from "../../../src";
 
 function fixture() {
     return new Plumier()
@@ -13,9 +13,10 @@ describe("Restful API", () => {
     describe("Basic Restful API", () => {
         class ClientModel {
             constructor(
-                public id: number,
                 public name: string,
-                public email: string
+                public email: string,
+                @val.optional()
+                public id?: number,
             ) { }
         }
 
@@ -23,7 +24,7 @@ describe("Restful API", () => {
         class ClientController {
             @route.get(":id")
             get(id: number) {
-                return new ClientModel(id, "John Doe", "mimi@gmail.com")
+                return new ClientModel("John Doe", "mimi@gmail.com", id)
             }
 
             @route.post("")
@@ -89,10 +90,12 @@ describe("Restful API", () => {
     describe("Nested Restful API", () => {
         class PetModel {
             constructor(
-                public id: number,
-                public clientId: number,
                 public name: string,
-                public age: number
+                public age: number,
+                @val.optional()
+                public clientI?: number,
+                @val.optional()
+                public id?: number,
             ) { }
         }
 
@@ -101,7 +104,7 @@ describe("Restful API", () => {
         class PetController {
             @route.get(":id")
             get(clientId: number, id: number) {
-                return new PetModel(id, clientId, "Mimi", 5)
+                return new PetModel("Mimi", 5, clientId, id)
             }
 
             @route.post("")
@@ -134,7 +137,7 @@ describe("Restful API", () => {
                 .initialize()
             await Supertest(koa.callback())
                 .get("/client/474747/pet/252525")
-                .expect(200, { id: 252525, clientId: 474747, name: 'Mimi', age: 5 })
+                .expect(200, { name: 'Mimi', age: 5, clientI: 474747, id: 252525 })
         })
 
         it("Should able to post resource", async () => {

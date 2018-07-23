@@ -2,7 +2,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { Request } from "koa";
 import Supertest from "supertest";
 
-import { bind, ConversionError, HttpStatusError, domain, route, array } from "../../../src";
+import { bind, ConversionError, HttpStatusError, domain, route, array, val } from "../../../src";
 import { fixture } from "../../helper";
 
 export class AnimalModel {
@@ -31,10 +31,10 @@ describe("Parameter Binding", () => {
                 .map(x => Supertest(callback).get(`/animal/get?b=${x}`)))
             expect(result.map(x => x.body.b)).toEqual([false, false, false, false])
         })
-        it("Should return {} if value not provided", async () => {
+        it("Should return 400 if value not provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
-                .expect(200, {})
+                .expect(400, [{ messages: ['Required'], path: ['b'] }])
         })
         it("Should return 400 if empty string provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
@@ -94,11 +94,10 @@ describe("Parameter Binding", () => {
                 .get("/animal/get?b=")
                 .expect(400, `Unable to convert "" into Number in parameter b`)
         })
-        it("Should return undefined if value not specified", async () => {
-            const result = await Supertest((await fixture(AnimalController).initialize()).callback())
+        it("Should return 400 if value not specified", async () => {
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
-                .expect(200)
-            expect(result.body).toEqual({})
+                .expect(400, [{messages:["Required"], path: ["b"]}])
         })
         it("Should return string if no decorator provided", async () => {
             class AnimalController {
@@ -148,10 +147,9 @@ describe("Parameter Binding", () => {
                 .expect(400, `Unable to convert "" into Date in parameter b`)
         })
         it("Should return undefined if value not specified", async () => {
-            const result = await Supertest((await fixture(AnimalController).initialize()).callback())
+            await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
-                .expect(200)
-            expect(result.body).toEqual({})
+                .expect(400, [{messages:["Required"], path: ["b"]}])
         })
         it("Should return string if no decorator provided", async () => {
             class AnimalController {
@@ -195,13 +193,6 @@ describe("Parameter Binding", () => {
                 .expect(200, { id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
         })
 
-        it("Should skip undefined values", async () => {
-            await Supertest((await fixture(AnimalController).initialize()).callback())
-                .post("/animal/save")
-                .send({ id: "200" })
-                .expect(200, { id: 200 })
-        })
-
         it("Should return 400 if provided non convertible value", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
@@ -212,7 +203,7 @@ describe("Parameter Binding", () => {
         it("Should provide informative error when model instantiation failed", async () => {
             @domain()
             class AnimalModel {
-                constructor() { 
+                constructor() {
                     throw new Error("ERROR")
                 }
             }
@@ -225,7 +216,7 @@ describe("Parameter Binding", () => {
             }
             const koa = await fixture(AnimalController).initialize()
             let error = false
-            koa.on("error", (e) => { 
+            koa.on("error", (e) => {
                 expect(e.message).toContain("PLUM2000")
                 error = true
             })
@@ -239,7 +230,7 @@ describe("Parameter Binding", () => {
         it("Should provide informative error when model instantiation failed and throws non Error instance", async () => {
             @domain()
             class AnimalModel {
-                constructor() { 
+                constructor() {
                     throw "Other error"
                 }
             }
@@ -252,7 +243,7 @@ describe("Parameter Binding", () => {
             }
             const koa = await fixture(AnimalController).initialize()
             let error = false
-            koa.on("error", (e) => { 
+            koa.on("error", (e) => {
                 expect(e.message).toContain("PLUM2000")
                 error = true
             })
@@ -315,13 +306,6 @@ describe("Parameter Binding", () => {
                     id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString(),
                     tag: { id: 500, name: "Rabies", expired: new Date("2019-1-1").toISOString() }
                 })
-        })
-
-        it("Should skip undefined values", async () => {
-            await Supertest((await fixture(AnimalController).initialize()).callback())
-                .post("/animal/save")
-                .send({ id: "200", tag: { id: "500" } })
-                .expect(200, { id: 200, tag: { id: 500 } })
         })
 
         it("Should return 400 if provided non convertible value", async () => {
@@ -827,7 +811,7 @@ describe("Custom Converter", () => {
             name: string
             deceased: boolean
             birthday: Date
-            constructor(json: any) {
+            constructor(@val.optional() json: any) {
                 json = json || {}
                 this.id = json.id;
                 this.name = json.name
@@ -843,15 +827,11 @@ describe("Custom Converter", () => {
             }
         }
         const koa = await fixture(AnimalController)
-            .set({ converters: [{type: AnimalModel, converter: (value) => new AnimalModel(value)}] })
+            .set({ converters: [{ type: AnimalModel, converter: (value) => new AnimalModel(value) }] })
             .initialize()
         await Supertest(koa.callback())
             .post("/animal/save")
             .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
             .expect(200, { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
-    })
-
-    it("Should use user defined converter vs default converter", () => {
-
     })
 })

@@ -1,4 +1,4 @@
-import { decorateParameter, reflect } from "@plumjs/reflect";
+import { decorateParameter, reflect, Decorator, type } from "@plumjs/reflect";
 import Validator from "validator";
 import Debug from "debug"
 import { inspect } from 'util';
@@ -237,6 +237,9 @@ export namespace val {
     export function optional() {
         return decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", name: "optional" })
     }
+    export function partial(typ:Class){
+        return type(typ, "Partial")
+    }
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -271,7 +274,8 @@ export function validateObject(value: any, path?: string[]): ValidationResult[] 
         .reduce((a, b) => a.concat(b), [])
 }
 
-export function validate(object: any, decorators: ValidatorDecorator[], path: string[]): ValidationResult[] {
+export function validate(object: any, decs: any[], path: string[]): ValidationResult[] {
+    const decorators = decs.filter((x: ValidatorDecorator) : x is ValidatorDecorator => x.type === "ValidatorDecorator")
     const empty = () => (object === undefined || object === null || object === "")
     if (Array.isArray(object))
         return validateArray(object, path)
