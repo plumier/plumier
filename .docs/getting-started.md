@@ -1,12 +1,6 @@
 # Getting Started
 
-In this example we will create a production ready restful api with ability to save data to MongoDB database, do some data sanitation and conversion and validation. 
-
-This example intended to use single file for controller, dto, model and entry point so it easier to get started. 
-
-> Plumier giving flexibility for you to arrange your project files (controllers, DTOs and models), by default Plumier will look into `./controller` folder for controllers and `./models` folder for DTO and Model.
-
-This example will create a restful style `Pet Web API` to store pet information into MongoDB database. Open terminal app and execute commands below:
+In this example we will create a production ready restful api with ability to save data to MongoDB database, do some data sanitation, conversion and validation. Open terminal app and execute commands below:
 
 ```
 $ mkdir plumier-pet-api
@@ -38,6 +32,98 @@ Open the `plumier-pet-api` folder with Visual Studio Code, modify the `tsconfig.
 ```
 
 Point to `index.ts` and copy paste the content below:
+
+```typescript
+import { HttpStatusError, route } from "@plumjs/core";
+import { collection, model, MongooseFacility } from "@plumjs/mongoose";
+import Plumier, { RestfulApiFacility, val } from "@plumjs/plumier";
+
+@collection()
+export class PetDto {
+    constructor(
+        @val.required()
+        public name: string,
+        @val.required()
+        public active: boolean,
+        @val.before()
+        public birthday: Date
+    ) { }
+}
+
+export const PetModel = model(PetDto)
+
+export class PetController {
+    
+    @route.ignore()
+    private async getPetById(id: string) {
+        const pet = await PetModel.findById(id)
+        return pet
+    }
+
+    @route.get(":id")
+    get(@val.mongoId() id: string) {
+        return this.getPetById(id)
+    }
+
+    post("")
+    save(data: PetDto) {
+        return new PetModel(data).save()
+    }
+
+    @route.put(":id")
+    async modify(@val.mongoId() id: string, @val.partial(PetDto) data: Partial<PetDto>) {
+        const pet = await this.getPetById(id)
+        Object.assign(pet, data)
+        await pet.save()
+    }
+
+    @route.delete(":id")
+    async delete(@val.mongoId() id: string) {
+        const pet = await this.getPetById(id)
+        await pet.remove()
+    }
+}
+
+const plum = new Plumier()
+plum.set(new RestfulApiFacility({controller: PetController}))
+    .set(new MongooseFacility({ model: PetDto, uri: "mongodb://localhost:27017/my-app-data" }))
+    .initialize()
+    .then(x => x.listen(8000))
+    .catch(e => console.error(e))
+```
+
+Thats enough to create restful api with validation, data conversion and saving the data to MongoDB database.
+Go back to the terminal app and execute command below:
+
+```
+$ tsc
+$ node index
+```
+
+Above API follow restful style api below:
+
+### Restful style route
+
+| Controller        | Http Method | Route    |
+| ----------------- | ----------- | -------- |
+| get(id)           | GET         | /pet/:id |
+| save(model)       | POST        | /pet     |
+| modify(id, model) | PUT         | /pet/:id |
+| delete(id)        | DELETE      | /pet     |
+
+
+### Restful style status code
+
+| Method/Issue     | Status |
+| ---------------- | ------ |
+| GET              | 200    |
+| POST             | 201    |
+| PUT              | 204    |
+| DELETE           | 204    |
+| Validation Error | 400    |
+| Conversion Error | 400    |
+| Internal Error   | 500    |
+
 
 ```typescript
 import { HttpStatusError, route } from "@plumjs/core";
@@ -208,36 +294,3 @@ plum.set(new RestfulApiFacility({controller: PetController}))
     .then(x => x.listen(8000))
     .catch(e => console.error(e))
 ```
-
-Thats enough to create restful api with validation, data conversion and saving the data to MongoDB database.
-Go back to the terminal app and execute command below:
-
-```
-$ tsc
-$ node index
-```
-
-Above API follow restful style api below:
-
-### Restful style route
-
-| Controller        | Http Method | Route    |
-| ----------------- | ----------- | -------- |
-| get(id)           | GET         | /pet/:id |
-| save(model)       | POST        | /pet     |
-| modify(id, model) | PUT         | /pet/:id |
-| delete(id)        | DELETE      | /pet     |
-
-
-### Restful style status code
-
-| Method/Issue     | Status |
-| ---------------- | ------ |
-| GET              | 200    |
-| POST             | 201    |
-| PUT              | 204    |
-| DELETE           | 204    |
-| Validation Error | 400    |
-| Conversion Error | 400    |
-| Internal Error   | 500    |
-

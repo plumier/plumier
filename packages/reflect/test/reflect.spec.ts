@@ -1,8 +1,9 @@
 import { join } from "path";
 
-import { decorateClass, decorateMethod, decorateParameter, reflect, array } from "../src";
+import { decorateClass, decorateMethod, decorateParameter, reflect, array, type } from "../src";
 import { MyClass } from "./mock.class";
 import { myNameSpace } from "./mock.class-in-namespace";
+import { inspect } from 'util';
 
 describe("Class Introspection", () => {
     it("Should inspect class properly", () => {
@@ -143,6 +144,39 @@ describe("Class Introspection", () => {
                         typeAnnotation: [EmptyClass]
                     }],
                     decorators: [{}]
+                }],
+            decorators: [],
+            object: DummyClass
+        })
+    })
+
+    it("Should able to override type with other type", () => {
+        class OtherDummyClass { }
+        class DummyClass {
+            method(@type(OtherDummyClass, "Readonly") dummy: Readonly<OtherDummyClass>) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toEqual({
+            type: 'Class',
+            ctorParameters: [],
+            name: 'DummyClass',
+            methods:
+                [{
+                    type: 'Function',
+                    name: 'method',
+                    parameters:
+                        [{
+                            type: 'Parameter',
+                            name: 'dummy',
+                            decorators:
+                                [{
+                                    type: 'Override',
+                                    object: OtherDummyClass,
+                                    info: 'Readonly'
+                                }],
+                            typeAnnotation: OtherDummyClass
+                        }],
+                    decorators: []
                 }],
             decorators: [],
             object: DummyClass
