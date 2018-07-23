@@ -16,7 +16,7 @@
             },
             "isBackground": true,
             "presentation": {
-                "echo": true,
+                "echo": false,
                 "reveal": "silent",
                 "focus": false,
                 "panel": "shared",

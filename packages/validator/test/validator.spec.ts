@@ -405,17 +405,6 @@ describe("String Validation", () => {
         //expect(validate(new Dummy(""))).toEqual([])
     })
 
-    test("required", async () => {
-        @domain()
-        class Dummy {
-            constructor(@val.required() public property?: string) { }
-        }
-        expect(validateObject(new Dummy()).length).toBe(1)
-        expect(validateObject(new Dummy(undefined)).length).toBe(1)
-        expect(validateObject(new Dummy("")).length).toBe(1)
-        expect(validateObject(new Dummy("hello"))).toEqual([])
-    })
-
     test("surrogatePair", async () => {
         @domain()
         class Dummy {
@@ -803,14 +792,6 @@ describe("Custom Message", () => {
         expect(validateObject(new Dummy("abc123-234"))[0].messages).toEqual(["Invalid"])
     })
 
-    test("required", async () => {
-        @domain()
-        class Dummy {
-            constructor(@val.required({ message: "Invalid" }) public property?: string) { }
-        }
-        expect(validateObject(new Dummy())[0].messages).toEqual(["Invalid"])
-    })
-
     test("surrogatePair", async () => {
         @domain()
         class Dummy {
@@ -945,24 +926,10 @@ describe("Array Validation", () => {
 })
 
 describe("Durability", () => {
-    it("Should skip null/undefined/empty", () => {
+    it("Should treat property as required except @optional() defined", () => {
         @domain()
         class ClientModel {
             constructor(
-                @val.email()
-                public email?: string | null | undefined,
-            ) { }
-        }
-        expect(validateObject(new ClientModel()).length).toBe(0)
-        expect(validateObject(new ClientModel("")).length).toBe(0)
-        expect(validateObject(new ClientModel(null)).length).toBe(0)
-    })
-
-    it("Should skip null/undefined/empty except required", () => {
-        @domain()
-        class ClientModel {
-            constructor(
-                @val.required()
                 @val.email()
                 public email?: string | null | undefined,
             ) { }
@@ -971,6 +938,21 @@ describe("Durability", () => {
         expect(validateObject(new ClientModel(""))).toMatchObject([{ "messages": ["Required"] }])
         expect(validateObject(new ClientModel("abc"))).toMatchObject([{ "messages": ["Invalid email address"] }])
         expect(validateObject(new ClientModel("support@gmail.com"))).toEqual([])
+    })
+
+    it("Should skip required if @option() is provided", () => {
+        @domain()
+        class ClientModel {
+            constructor(
+                @val.optional()
+                @val.email()
+                public email?: string | null | undefined,
+            ) { }
+        }
+        expect(validateObject(new ClientModel()).length).toBe(0)
+        expect(validateObject(new ClientModel("")).length).toBe(0)
+        expect(validateObject(new ClientModel(null)).length).toBe(0)
+        expect(validateObject(new ClientModel("abc"))).toMatchObject([{ "messages": ["Invalid email address"] }])
     })
 
     it("Should not error if provided boolean", () => {

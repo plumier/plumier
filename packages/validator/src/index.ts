@@ -206,9 +206,9 @@ export namespace val {
         return validate(x => Validator.isPostalCode(x, opt.locale), opt && opt.message || "Invalid postal code", "postalCode")
     }
 
-    export function required(opt?: Opt) {
-        return validate(x => x !== undefined && x !== null && x !== "", opt && opt.message || "Required", "required")
-    }
+    // export function required(opt?: Opt) {
+    //     return validate(x => x !== undefined && x !== null && x !== "", opt && opt.message || "Required", "required")
+    // }
 
     export function surrogatePair(opt?: Opt) {
         return validate(x => Validator.isSurrogatePair(x), opt && opt.message || "Invalid surrogate pair", "surrogatePair")
@@ -234,6 +234,9 @@ export namespace val {
         return validate(x => Validator.isWhitelisted(x, opt && opt.chars), opt && opt.message || "Invalid white listed", "whiteListed")
     }
 
+    export function optional() {
+        return decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", name: "optional" })
+    }
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -275,16 +278,12 @@ export function validate(object: any, decorators: ValidatorDecorator[], path: st
     else if (typeof object === "object" && object !== null && object.constructor !== Date)
         return validateObject(object, path)
     else {
-        //empty value should be ignored except it is required
-        if (empty() && decorators.some(x => x.name == "required")) {
-            const messages = decorators.filter(x => x.name == "required").map(x => x.validator(object))
-                .filter((x): x is string => Boolean(x))
-            return [{ messages, path, value: object }]
+        if (empty()) {
+            return decorators.some(x => x.name == "optional") ? [] : [{ messages: ["Required"], path, value: object }]
         }
-        else if (empty()) return []
         else {
             const value = "" + object
-            const messages = decorators.map(x => x.validator(value))
+            const messages = decorators.filter(x => x.name !== "optional").map(x => x.validator(value))
                 .filter((x): x is string => Boolean(x))
             log(`[Value Validator] Value: ${b(value)} Decorators: ${b(decorators)} Path: ${b(path)}`)
             log(`[Value Validator] Validation Result: ${b(messages)}`)

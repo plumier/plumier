@@ -1,6 +1,6 @@
 module.exports = {
     silent: false,
-    verbose: false,
+    verbose: true,
     collectCoverage: true,
     collectCoverageFrom: [
         "packages/*/src/**/*.{js}"
