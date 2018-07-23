@@ -1,5 +1,5 @@
-import { decorateClass, reflect } from "@plumjs/reflect";
-import { validateObject, val, validateArray } from '../src';
+import { decorateClass, reflect, TypeDecorator } from "@plumjs/reflect";
+import { validateObject, val, validateArray, validate } from '../src';
 import Validator from "validator"
 
 function domain() { return decorateClass({}) }
@@ -993,5 +993,23 @@ describe("Durability", () => {
         expect(result).toMatchObject([{
             path: ["fn"], value: "() => {}"
         }])
+    })
+})
+
+describe("Partial Validation", () => {
+    class ClientModel {
+        constructor(
+            public name?:string,
+            @val.email()
+            public email?: string,
+        ) { }
+    }
+    it("Should called without error", () => {
+        const result = val.partial(ClientModel)
+        expect(result).not.toBeNull()
+    })
+    it("Should skip required validation on partial type", () => {
+        const result = validate(new ClientModel(), [<TypeDecorator>{type: "Override", object: ClientModel, info: "Partial"}], [])
+        expect(result).toEqual([])
     })
 })

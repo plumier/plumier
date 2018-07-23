@@ -19,7 +19,7 @@ export interface FunctionReflection extends ReflectionBase { type: "Function", p
 export interface ClassReflection extends ReflectionBase { type: "Class", ctorParameters: ParameterReflection[], methods: FunctionReflection[], decorators: any[], object: Class }
 export interface ObjectReflection extends ReflectionBase { type: "Object", members: Reflection[] }
 export interface ArrayDecorator { type: "Array", object: Class }
-export interface OverrideDecorator { type: "Override", object: Class, info?: string }
+export interface TypeDecorator { type: "Override", object: Class, info?: string }
 
 export const DECORATOR_KEY = "plumier.key:DECORATOR"
 export const DESIGN_PARAMETER_TYPE = "design:paramtypes"
@@ -115,7 +115,7 @@ export function array(type: Class) {
  * @param info Additional information about type (readonly, partial etc)
  */
 export function type(type: Class, info?: string) {
-    return decorateParameter(<OverrideDecorator>{ type: "Override", object: type, info })
+    return decorateParameter(<TypeDecorator>{ type: "Override", object: type, info })
 }
 
 /* ---------------------------------------------------------------- */
@@ -128,7 +128,7 @@ function decorateReflection(decs: Decorator[], reflection: ClassReflection) {
             .filter((x) => x.targetType == "Parameter" && x.target == method && x.targetIndex == index)
             .map(x => ({ ...x.value }))
         const array = decorators.find((x: ArrayDecorator): x is ArrayDecorator => x.type === "Array")
-        const override = decorators.find((x: OverrideDecorator): x is OverrideDecorator => x.type === "Override")
+        const override = decorators.find((x: TypeDecorator): x is TypeDecorator => x.type === "Override")
         return {
             ...par, decorators, typeAnnotation: override ? override.object : array ? [array.object] : par.typeAnnotation
         }

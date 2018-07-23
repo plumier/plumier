@@ -1,4 +1,4 @@
-import { decorateParameter, reflect, Decorator, type } from "@plumjs/reflect";
+import { decorateParameter, reflect, Decorator, type, TypeDecorator } from "@plumjs/reflect";
 import Validator from "validator";
 import Debug from "debug"
 import { inspect } from 'util';
@@ -26,6 +26,8 @@ export interface ValidatorDecorator {
 }
 
 export interface Opt { message?: string }
+
+const OptionalDecorator = <ValidatorDecorator>{ type: "ValidatorDecorator", name: "optional" }
 
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- DECORATORS --------------------------------- */
@@ -235,9 +237,9 @@ export namespace val {
     }
 
     export function optional() {
-        return decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", name: "optional" })
+        return decorateParameter({ ...OptionalDecorator })
     }
-    export function partial(typ:Class){
+    export function partial(typ: Class) {
         return type(typ, "Partial")
     }
 }
@@ -267,20 +269,23 @@ export function validateArray(value: any[], path: string[]): ValidationResult[] 
         .reduce((a, b) => a.concat(b), [])
 }
 
-export function validateObject(value: any, path?: string[]): ValidationResult[] {
+export function validateObject(value: any, partialType?: Class, path?: string[]): ValidationResult[] {
     log(`[Object Validator] Type ${b(value.constructor.name)} Value ${b(value)} Path${b(path || [])}`)
-    const meta = reflect(getType(value))
-    return meta.ctorParameters.map(p => validate(value[p.name], p.decorators, (path || []).concat(p.name)))
+    const meta = reflect(partialType || getType(value))
+    return meta.ctorParameters.map(p => validate(value[p.name],
+        p.decorators.concat(partialType && { ...OptionalDecorator } || []), (path || []).concat(p.name)))
         .reduce((a, b) => a.concat(b), [])
 }
 
 export function validate(object: any, decs: any[], path: string[]): ValidationResult[] {
-    const decorators = decs.filter((x: ValidatorDecorator) : x is ValidatorDecorator => x.type === "ValidatorDecorator")
+    const decorators = decs.filter((x: ValidatorDecorator): x is ValidatorDecorator => x.type === "ValidatorDecorator")
     const empty = () => (object === undefined || object === null || object === "")
     if (Array.isArray(object))
         return validateArray(object, path)
-    else if (typeof object === "object" && object !== null && object.constructor !== Date)
-        return validateObject(object, path)
+    else if (typeof object === "object" && object !== null && object.constructor !== Date) {
+        const partial = decs.find((x: TypeDecorator): x is TypeDecorator => x.type === "Override" && x.info === "Partial")
+        return validateObject(object, partial && partial.object, path)
+    }
     else {
         if (empty()) {
             return decorators.some(x => x.name == "optional") ? [] : [{ messages: ["Required"], path, value: object }]

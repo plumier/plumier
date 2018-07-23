@@ -106,7 +106,7 @@ class ValidationMiddleware implements Middleware {
         }
         catch (e) {
             if (e instanceof ValidationError) {
-                return new ActionResult(e.issues, 400)
+                return new ActionResult(e.issues, e.status)
             }
             else throw e
         }
@@ -232,11 +232,7 @@ export class Plumier implements PlumierApplication {
                     await next()
                 }
                 catch (e) {
-                    if(e instanceof ValidationError){
-                        ctx.body = e.issues
-                        ctx.status = e.status
-                    }
-                    else if (e instanceof HttpStatusError)
+                    if (e instanceof HttpStatusError)
                         ctx.throw(e.status, e)
                     else
                         ctx.throw(500, e)
