@@ -305,7 +305,7 @@ export class ConversionError extends HttpStatusError {
 
 export class ValidationError extends HttpStatusError {
     constructor(public issues: ValidationIssue[]) {
-        super(400)
+        super(422)
         Object.setPrototypeOf(this, ValidationError.prototype)
     }
 }

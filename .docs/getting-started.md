@@ -120,7 +120,7 @@ Above API follow restful style api below:
 | POST             | 201    |
 | PUT              | 204    |
 | DELETE           | 204    |
-| Validation Error | 400    |
+| Validation Error | 422    |
 | Conversion Error | 400    |
 | Internal Error   | 500    |
 

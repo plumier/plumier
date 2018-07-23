@@ -31,10 +31,10 @@ describe("Parameter Binding", () => {
                 .map(x => Supertest(callback).get(`/animal/get?b=${x}`)))
             expect(result.map(x => x.body.b)).toEqual([false, false, false, false])
         })
-        it("Should return 400 if value not provided", async () => {
+        it("Should return 422 if value not provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
-                .expect(400, [{ messages: ['Required'], path: ['b'] }])
+                .expect(422, [{ messages: ['Required'], path: ['b'] }])
         })
         it("Should return 400 if empty string provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
@@ -94,10 +94,10 @@ describe("Parameter Binding", () => {
                 .get("/animal/get?b=")
                 .expect(400, `Unable to convert "" into Number in parameter b`)
         })
-        it("Should return 400 if value not specified", async () => {
+        it("Should return 422 if value not specified", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
-                .expect(400, [{messages:["Required"], path: ["b"]}])
+                .expect(422, [{messages:["Required"], path: ["b"]}])
         })
         it("Should return string if no decorator provided", async () => {
             class AnimalController {
@@ -146,10 +146,10 @@ describe("Parameter Binding", () => {
                 .get("/animal/get?b=")
                 .expect(400, `Unable to convert "" into Date in parameter b`)
         })
-        it("Should return undefined if value not specified", async () => {
+        it("Should return 422 if value not specified", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
-                .expect(400, [{messages:["Required"], path: ["b"]}])
+                .expect(422, [{messages:["Required"], path: ["b"]}])
         })
         it("Should return string if no decorator provided", async () => {
             class AnimalController {

@@ -10,7 +10,7 @@ describe("Required Is Mandatory", () => {
         const koa = await fixture(AnimalController).initialize()
         const result = await Supertest(koa.callback())
             .get("/animal/get")
-            .expect(400, [
+            .expect(422, [
                 {
                     "messages": ["Required"],
                     "path": ["email"]
@@ -34,7 +34,7 @@ describe("Required Is Mandatory", () => {
         let result = await Supertest(koa.callback())
             .post("/animal/get")
             .send({ id: "123", name: "Mimi" })
-            .expect(400, [
+            .expect(422, [
                 {
                     "messages": ["Required"],
                     "path": ["model", "deceased"]
@@ -44,7 +44,7 @@ describe("Required Is Mandatory", () => {
     it("Should validate nested model with correct path", async () => {
         @domain()
         class TagModel {
-            constructor(public name:string, public id:number){}
+            constructor(public name: string, public id: number) { }
         }
         @domain()
         class AnimalModel {
@@ -61,8 +61,8 @@ describe("Required Is Mandatory", () => {
         const koa = await fixture(AnimalController).initialize()
         let result = await Supertest(koa.callback())
             .post("/animal/get")
-            .send({ id: "123", name: "Mimi", tag: {name: "The Tag"} })
-            .expect(400, [
+            .send({ id: "123", name: "Mimi", tag: { name: "The Tag" } })
+            .expect(422, [
                 {
                     "messages": ["Required"],
                     "path": ["model", "tag", "id"]
@@ -78,7 +78,7 @@ describe("Validation", () => {
         const koa = await fixture(AnimalController).initialize()
         const result = await Supertest(koa.callback())
             .get("/animal/get?email=hello")
-            .expect(400)
+            .expect(422)
         expect(result.body).toMatchObject([
             {
                 "messages": ["Invalid email address"],
