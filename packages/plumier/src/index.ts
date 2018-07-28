@@ -3,6 +3,7 @@ export {
     Application,
     bind,
     Configuration,
+    Class,
     DependencyResolver,
     Facility,
     HeaderPart,
