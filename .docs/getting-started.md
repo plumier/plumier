@@ -41,9 +41,7 @@ import Plumier, { RestfulApiFacility, val } from "@plumjs/plumier";
 @collection()
 export class PetDto {
     constructor(
-        @val.required()
         public name: string,
-        @val.required()
         public active: boolean,
         @val.before()
         public birthday: Date
@@ -125,6 +123,8 @@ Above API follow restful style api below:
 | Internal Error   | 500    |
 
 
+## Code Explanation 
+
 ```typescript
 import { HttpStatusError, route } from "@plumjs/core";
 import { collection, model, MongooseFacility } from "@plumjs/mongoose";
@@ -140,11 +140,7 @@ to make the parameter binding work properly
 @collection()
 export class PetDto {
     constructor(
-        //name field is required
-        @val.required()
         public name: string,
-        //active field is required
-        @val.required()
         public active: boolean,
         //birthday should before today
         //the naming follow the ValidatorJS api

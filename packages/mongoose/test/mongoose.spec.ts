@@ -64,7 +64,7 @@ describe("Mongoose Reference Domain Directly", () => {
 
 describe("Model Load", () => {
     afterEach(async () => Mongoose.disconnect())
-    
+
     it("Should be able to provide absolute path", async () => {
         const facility = new MongooseFacility({
             model: join(__dirname, "./model/my-domain"),
@@ -103,7 +103,7 @@ describe("Model Load", () => {
         consoleLog.clearMock()
     })
 
-    it("Should be able change name", async () => {
+    it("Should be able to use name alias", async () => {
         @collection("MyOtherDomain")
         class DomainA {
             constructor(
@@ -114,15 +114,48 @@ describe("Model Load", () => {
             model: DomainA,
             uri: "mongodb://localhost:27017/test-data"
         })
-        consoleLog.startMock()
         await facility.setup({ config: { mode: "debug" } } as any)
-        expect((console.log as jest.Mock).mock.calls[2][0]).toBe("1. DomainA -> MyOtherDomain")
-        consoleLog.clearMock()
+        const mdl = model(DomainA)
+        expect(new mdl({})).toBeInstanceOf(Mongoose.Model)
+        expect(Mongoose.connection.models["MyOtherDomain"]).not.toBeUndefined()
+        expect(Mongoose.connection.models["DomainA"]).toBeUndefined()
+    })
+
+    it("Should be able to use name alias on relation", async () => {
+        @collection("Child")
+        class DomainB {
+            constructor(public name: string) { }
+        }
+
+        @collection("Parent")
+        class DomainA {
+            constructor(
+                public name: string,
+                public child?: DomainB
+            ) { }
+        }
+
+        const facility = new MongooseFacility({
+            model: [DomainA, DomainB],
+            uri: "mongodb://localhost:27017/test-data"
+        })
+        await facility.setup({ config: { mode: "production" } } as any)
+        const Parent = model(DomainA)
+        const Child = model(DomainB)
+        await Parent.remove({})
+        await Child.remove({})
+        const child = new DomainB("Kima")
+        const savedChild = await new Child(child).save()
+        const data = new DomainA("Ketut", savedChild)
+        const newParent = await new Parent(data).save()
+        const savedParent = await Parent.findById(newParent._id).populate("child")
+        expect(savedParent!.name).toBe("Ketut")
+        expect(savedParent!.child!.name).toBe("Kima")
     })
 })
 
 describe("Proxy", () => {
-    it("Should ok with toString() method is called", async () => {
+    it("Should ok if toString() method is called", async () => {
         @collection()
         class OtherDomain {
             constructor(

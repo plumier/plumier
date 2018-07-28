@@ -50,8 +50,8 @@ function getType(prop: ParameterReflection, registry: SchemaRegistry): Function 
     log(`[GetType] Custom class ${b(prop.typeAnnotation)}`)
     if (isCustomClass(prop.typeAnnotation)) {
         const schema = { type: Mongoose.Schema.Types.ObjectId, ref: "" }
-        return Array.isArray(prop.typeAnnotation) ? [{ ...schema, ref: prop.typeAnnotation[0].name }]
-            : { ...schema, ref: prop.typeAnnotation.name }
+        return Array.isArray(prop.typeAnnotation) ? [{ ...schema, ref: getName(prop.typeAnnotation[0]) }]
+            : { ...schema, ref: getName(prop.typeAnnotation) }
     }
     else return prop.typeAnnotation
 }
@@ -117,7 +117,8 @@ export function collection(alias?: string) {
     return decorateClass(<MongooseCollectionDecorator>{ type: "MongooseCollectionDecorator", alias })
 }
 
-export function getName(meta: ClassReflection) {
+export function getName(opt: ClassReflection | Class) {
+    const meta = typeof opt === "function" ? reflect(opt) : opt
     const decorator = meta.decorators.find((x: MongooseCollectionDecorator): x is MongooseCollectionDecorator => x.type === "MongooseCollectionDecorator")
     return decorator && decorator.alias || meta.name
 }
