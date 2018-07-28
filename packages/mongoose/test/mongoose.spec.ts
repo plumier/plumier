@@ -114,7 +114,7 @@ describe("Model Load", () => {
             model: DomainA,
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup({ config: { mode: "debug" } } as any)
+        await facility.setup({ config: { mode: "production" } } as any)
         const mdl = model(DomainA)
         expect(new mdl({})).toBeInstanceOf(Mongoose.Model)
         expect(Mongoose.connection.models["MyOtherDomain"]).not.toBeUndefined()
@@ -122,6 +122,8 @@ describe("Model Load", () => {
     })
 
     it("Should be able to use name alias on relation", async () => {
+        delete Mongoose.connection.models["Child"]
+        delete Mongoose.connection.models["Parent"]
         @collection("Child")
         class DomainB {
             constructor(public name: string) { }
@@ -149,6 +151,41 @@ describe("Model Load", () => {
         const data = new DomainA("Ketut", savedChild)
         const newParent = await new Parent(data).save()
         const savedParent = await Parent.findById(newParent._id).populate("child")
+        expect(savedParent!.name).toBe("Ketut")
+        expect(savedParent!.child!.name).toBe("Kima")
+    })
+
+    it("Should able to populate child without creating child model", async () => {
+        delete Mongoose.connection.models["Child"]
+        delete Mongoose.connection.models["Parent"]
+
+        @collection("Child")
+        class DomainB {
+            constructor(public name: string) { }
+        }
+
+        @collection("Parent")
+        class DomainA {
+            constructor(
+                public name: string,
+                public child?: DomainB
+            ) { }
+        }
+
+        const facility = new MongooseFacility({
+            model: [DomainA, DomainB],
+            uri: "mongodb://localhost:27017/test-data"
+        })
+        await facility.setup({ config: { mode: "production" } } as any)
+
+        //setup db
+        const childId = new Mongoose.Types.ObjectId()
+        const parentId = new Mongoose.Types.ObjectId()
+        Mongoose.connection.collection("children").insert({__v: 0, _id: childId, name: "Kima" })
+        Mongoose.connection.collection("parents").insert({__v: 0, _id: parentId, name: "Ketut", child: childId })
+
+        const Parent = model(DomainA)
+        const savedParent = await Parent.findById(parentId.toHexString()).populate("child")
         expect(savedParent!.name).toBe("Ketut")
         expect(savedParent!.child!.name).toBe("Kima")
     })

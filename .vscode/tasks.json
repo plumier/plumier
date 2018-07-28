@@ -17,10 +17,10 @@
             "isBackground": true,
             "presentation": {
                 "echo": false,
-                "reveal": "silent",
+                "reveal": "never",
                 "focus": false,
                 "panel": "shared",
-                "showReuseMessage": true
+                "showReuseMessage": false
             }
         }
     ]

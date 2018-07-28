@@ -147,18 +147,33 @@ export class MongooseFacility implements Facility {
 
 export function model<T extends object>(type: Constructor<T>) {
     class ModelProxyHandler<T extends object> implements ProxyHandler<Mongoose.Model<T & Mongoose.Document>> {
-        model?: Mongoose.Model<T & Mongoose.Document>
+        private isLoaded = false
         modelName: string;
+        metaData: ClassReflection
 
         constructor(domain: Constructor<T>) {
             const meta = reflect(domain)
             this.modelName = getName(meta)
+            this.metaData = meta
         }
 
-        private getModel() {
-            if (!this.model)
-                this.model = Mongoose.model(this.modelName, GlobalMongooseSchema[this.modelName])
-            return this.model
+        private getModelByName(name: string): Mongoose.Model<T & Mongoose.Document> {
+            if (!Mongoose.connection.models[name])
+                return Mongoose.model(name, GlobalMongooseSchema[name])
+            else
+                return Mongoose.model(name)
+        }
+
+        private getModel(): Mongoose.Model<T & Mongoose.Document> {
+            if (!this.isLoaded) {
+                const properties = this.metaData.ctorParameters
+                    .filter(x => isCustomClass(x.typeAnnotation))
+                    .map((x) => <Class>(Array.isArray(x.typeAnnotation) ? x.typeAnnotation[0] : x.typeAnnotation))
+                const unique = Array.from(new Set(properties))
+                unique.forEach(x => this.getModelByName(getName(x)))
+                this.isLoaded = true
+            }
+            return this.getModelByName(this.modelName)
         }
 
         get(target: Mongoose.Model<T & Mongoose.Document>, p: PropertyKey, receiver: any): any {
