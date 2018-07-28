@@ -181,8 +181,8 @@ describe("Model Load", () => {
         //setup db
         const childId = new Mongoose.Types.ObjectId()
         const parentId = new Mongoose.Types.ObjectId()
-        Mongoose.connection.collection("children").insert({__v: 0, _id: childId, name: "Kima" })
-        Mongoose.connection.collection("parents").insert({__v: 0, _id: parentId, name: "Ketut", child: childId })
+        await Mongoose.connection.collection("children").insert({__v: 0, _id: childId, name: "Kima" })
+        await Mongoose.connection.collection("parents").insert({__v: 0, _id: parentId, name: "Ketut", child: childId })
 
         const Parent = model(DomainA)
         const savedParent = await Parent.findById(parentId.toHexString()).populate("child")
