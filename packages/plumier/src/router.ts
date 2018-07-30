@@ -302,7 +302,7 @@ export function printAnalysis(results: TestResult[]) {
     console.log(chalk.bold("Route Analysis Report"))
     if(data.length == 0) console.log("No controller found")
     data.forEach((x, i) => {
-        const num = (i + 1).toString().padEnd(data.length.toString().length)
+        const num = (i + 1).toString().padStart(data.length.toString().length)
         const action = x.action.padEnd(Math.max(...data.map(x => x.action.length)))
         const method = x.method.padEnd(Math.max(...data.map(x => x.method.length)))
         //const url = x.url.padEnd(Math.max(...data.map(x => x.url.length)))

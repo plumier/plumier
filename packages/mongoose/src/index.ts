@@ -101,8 +101,9 @@ function printAnalysis(analysis: DomainAnalysis[]) {
     else {
         const namePad = Math.max(...analysis.map(x => x.domain.name.length))
         analysis.forEach((x, i) => {
+            const num = (i + 1).toString().padStart(analysis.length.toString().length)
             const color = x.analysis.some(x => x.type === "error") ? Chalk.red : (x:string) => x
-            console.log(color(`${i + 1}. ${x.domain.name.padEnd(namePad)} -> ${getName(x.domain)}`))
+            console.log(color(`${num}. ${x.domain.name.padEnd(namePad)} -> ${getName(x.domain)}`))
             x.analysis.forEach(y => {
                 console.log(Chalk.red(`  - ${y.type} ${y.message}`))
             })
