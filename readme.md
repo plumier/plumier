@@ -30,3 +30,27 @@ Pleasant TypeScript Web Api Framework
 ## Getting Started
 
 Go to [getting started](.docs/getting-started.md) to start codding
+
+## API
+
+### Domain Model 
+
+```typescript
+@domain()
+export class User {
+    constructor(
+        @val.email()
+        public email:string,
+        public name:string,
+        public address:string
+    )
+}
+```
+
+### Controller 
+
+```typescript
+export class UsersController {
+    
+}
+```

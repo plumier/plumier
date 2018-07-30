@@ -3,6 +3,7 @@ import { Class, Facility, Application, errorMessage, isCustomClass, b, DomainDec
 import Mongoose, { Model } from "mongoose"
 import { dirname, isAbsolute, join } from 'path';
 import Debug from "debug"
+import Chalk from 'chalk';
 
 const log = Debug("plum:mongo")
 
@@ -92,7 +93,7 @@ function analyze(domains: ClassReflection[]) {
 
 function printAnalysis(analysis: DomainAnalysis[]) {
     console.log()
-    console.log("Mongoose model analysis")
+    console.log(Chalk.bold("Model Analysis Report"))
     if (!analysis.map(x => x.domain).some(x =>
         x.decorators.some((y: MongooseCollectionDecorator) => y.type === "MongooseCollectionDecorator"))) {
         console.log(NoClassFound)
@@ -100,12 +101,12 @@ function printAnalysis(analysis: DomainAnalysis[]) {
     else {
         const namePad = Math.max(...analysis.map(x => x.domain.name.length))
         analysis.forEach((x, i) => {
-            console.log(`${i + 1}. ${x.domain.name.padEnd(namePad)} -> ${getName(x.domain)}`)
+            const color = x.analysis.some(x => x.type === "error") ? Chalk.red : (x:string) => x
+            console.log(color(`${i + 1}. ${x.domain.name.padEnd(namePad)} -> ${getName(x.domain)}`))
             x.analysis.forEach(y => {
-                console.log(`  - ${y.type} ${y.message}`)
+                console.log(Chalk.red(`  - ${y.type} ${y.message}`))
             })
         })
-        console.log()
     }
 }
 

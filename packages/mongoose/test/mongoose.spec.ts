@@ -223,7 +223,7 @@ describe("Analysis", () => {
         })
         consoleLog.startMock()
         await facility.setup({ config: { mode: "debug" } } as any)
-        expect((console.log as jest.Mock).mock.calls[2][0]).toBe("1. DomainWithArrays -> DomainWithArrays")
+        expect((console.log as jest.Mock).mock.calls[2][0]).toContain("1. DomainWithArrays -> DomainWithArrays")
         expect((console.log as jest.Mock).mock.calls[3][0]).toContain("MONG1000")
         consoleLog.clearMock()
     })
