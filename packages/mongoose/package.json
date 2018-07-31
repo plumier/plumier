@@ -17,10 +17,10 @@
     "@plumjs/core": "0.1.0-alpha.9aaa0a15",
     "@plumjs/reflect": "1.4.0-alpha.9aaa0a15",
     "@types/debug": "^0.0.30",
-    "@types/mongoose": "^5.2.1",
+    "@types/mongoose": "^5.2.3",
     "chalk": "^2.4.1",
     "debug": "^3.1.0",
-    "mongoose": "^5.2.5"
+    "mongoose": "^5.2.6"
   },
   "bugs": {
     "url": "https://github.com/ktutnik/plumier/issues"

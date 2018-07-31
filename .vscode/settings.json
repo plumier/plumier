@@ -7,5 +7,6 @@
         "**/package-lock.json": false,
         "**/yarn-error.log": false,
         "packages/**/*.js.map": false
-    }
+    },
+    "typescript.tsdk": "node_modules/typescript/lib"
 }

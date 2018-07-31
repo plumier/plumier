@@ -7,7 +7,7 @@ Pleasant TypeScript Web Api Framework
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6d61987244f1471abe915292cb3add1b)](https://www.codacy.com/app/ktutnik/plumier?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ktutnik/plumier&amp;utm_campaign=Badge_Grade)
 
 ## Motivation
-- Provided built in function such as validation, parameter binding, data sanitation vs opinionated code separation.
+- Provided built in function such as validation, parameter binding, data sanitation.
 - Help developer reveal confusing bugs caused by miss configuration by providing static analysis
 - Highly testable controller free from framework dependency and totally POTO (plain old TypeScript object). 
 - Wrap production-ready library for stability ([Koa](https://github.com/koajs/koa), [Validatorjs](https://github.com/chriso/validator.js), [Mongoose](http://mongoosejs.com/))
@@ -32,6 +32,8 @@ Pleasant TypeScript Web Api Framework
 Go to [getting started](.docs/getting-started.md) to start codding
 
 ## API
+
+
 
 ### Domain Model 
 
