@@ -47,6 +47,28 @@ describe("unique validator", () => {
         Mongoose.disconnect()
     })
 
+    it("Should return valid if data not exist but other data exists", async () => {
+        @collection()
+        class User {
+            constructor(
+                public name: string,
+                @val.unique()
+                public email: string
+            ) { }
+        }
+        const facility = new MongooseFacility({
+            model: [User],
+            uri: "mongodb://localhost:27017/test-data"
+        })
+        await facility.setup({ config: { mode: "production" } } as any)
+        const UserModel = model(User)
+        await UserModel.remove({})
+        await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
+        const result = await validateObject(new User("Ketut", "m.ketut@gmail.com"))
+        expect(result).toEqual([])
+        Mongoose.disconnect()
+    })
+
     it("Should return valid if data is undefined", async () => {
         @collection()
         class User {

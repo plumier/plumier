@@ -96,7 +96,7 @@ You can provide `message` parameter on each validator decorator like below:
 ```
 
 ## Custom Http Status 
-By default Plumier will return http status 400 for some invalid values. You can override this behavior by provide a middleware and catch the `ValidationError` thrown by Plumier
+By default Plumier will return http status 422 for some invalid values. You can override this behavior by provide a middleware and catch the `ValidationError` thrown by Plumier
 
 ```typescript
 const app = new Plumier()

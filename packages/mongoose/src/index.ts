@@ -125,8 +125,8 @@ async function isUnique(value: string, target: Class, index: number) {
     const Model = model(target)
     const condition: { [key: string]: string } = {}
     condition[field] = value
-    const result = await Model.countDocuments(value)
-    if (result > 0) return `${value} already exists`
+    const result = await Model.findOne(condition)
+    if (!!result) return `${value} already exists`
 }
 
 declare module "@plumjs/validator" {
