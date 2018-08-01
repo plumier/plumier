@@ -20,9 +20,11 @@ export interface ClassReflection extends ReflectionBase { type: "Class", ctorPar
 export interface ObjectReflection extends ReflectionBase { type: "Object", members: Reflection[] }
 export interface ArrayDecorator { type: "Array", object: Class }
 export interface TypeDecorator { type: "Override", object: Class, info?: string }
+interface CacheItem {key:string | Class, result: Reflection}
 
 export const DECORATOR_KEY = "plumier.key:DECORATOR"
 export const DESIGN_PARAMETER_TYPE = "design:paramtypes"
+const CACHE: CacheItem[] = []
 
 
 /* ---------------------------------------------------------------- */
@@ -133,6 +135,20 @@ export function type(type: Class, info?: string) {
 }
 
 /* ---------------------------------------------------------------- */
+/* ------------------------- CACHE FUNCTIONS ----------------------- */
+/* ---------------------------------------------------------------- */
+
+function getCache(key:string | Class){
+    return CACHE.find(x => x.key === key)
+}
+
+function setCache(key:string | Class, result:Reflection){
+    CACHE.push({key, result})
+    return result
+}
+
+
+/* ---------------------------------------------------------------- */
 /* ------------------------- MAIN FUNCTIONS ----------------------- */
 /* ---------------------------------------------------------------- */
 
@@ -223,12 +239,14 @@ function traverse(fn: any, name: string): Reflection {
 export function reflect(path: string): ObjectReflection
 export function reflect(classType: Class): ClassReflection
 export function reflect(option: string | Class) {
+    const cache = getCache(option)
+    if(!!cache) return cache.result
     if (typeof option === "string") {
         log(`Inspecting module ${b(option)}`)
-        return reflectObject(require(option))
+        return setCache(option, reflectObject(require(option)))
     }
     else {
         log(`Inspecting class ${b(option.name)}`)
-        return reflectClass(option)
+        return setCache(option, reflectClass(option))
     }
 }

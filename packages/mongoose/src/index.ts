@@ -1,9 +1,11 @@
-import { b, Class, domain, Facility, isCustomClass, PlumierApplication, reflectPath } from "@plumjs/core";
-import { ClassReflection, decorateClass, ParameterReflection, reflect } from "@plumjs/reflect";
+import { b, Class, domain, Facility, isCustomClass, PlumierApplication, reflectPath, ValidatorDecorator } from "@plumjs/core";
+import { ClassReflection, decorateClass, ParameterReflection, reflect, decorateParameter } from "@plumjs/reflect";
 import Chalk from "chalk";
 import Debug from "debug";
 import Mongoose, { Model } from "mongoose";
 import { dirname, isAbsolute, join } from "path";
+import { val } from "@plumjs/validator"
+import { inspect } from 'util';
 
 const log = Debug("plum:mongo")
 
@@ -38,6 +40,7 @@ interface MongooseCollectionDecorator {
 const GlobalMongooseSchema: SchemaRegistry = {}
 const ArrayHasNoTypeInfo = `MONG1000: Array property {0}.{1} require @array(<Type>) decorator to be able to generated into mongoose schema`
 const NoClassFound = `MONG1001: No class decorated with @collection() found`
+const CanNotValidateNonCollection = `MONG1002: @val.unique()  only can be applied to a class that mapped to mongodb collection, in class {0}.{1}`
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- SCHEMA GENERATOR ------------------------------ */
@@ -101,13 +104,46 @@ function printAnalysis(analysis: DomainAnalysis[]) {
         const namePad = Math.max(...analysis.map(x => x.domain.name.length))
         analysis.forEach((x, i) => {
             const num = (i + 1).toString().padStart(analysis.length.toString().length)
-            const color = x.analysis.some(x => x.type === "error") ? Chalk.red : (x:string) => x
+            const color = x.analysis.some(x => x.type === "error") ? Chalk.red : (x: string) => x
             console.log(color(`${num}. ${x.domain.name.padEnd(namePad)} -> ${getName(x.domain)}`))
             x.analysis.forEach(y => {
                 console.log(Chalk.red(`  - ${y.type} ${y.message}`))
             })
         })
     }
+}
+
+/* ------------------------------------------------------------------------------- */
+/* ------------------------------- MAIN FUNCTIONS -------------------------------- */
+/* ------------------------------------------------------------------------------- */
+
+async function isUnique(value: string, target: Class, index: number) {
+    const meta = reflect(target)
+    const field = meta.ctorParameters[index].name
+    if (!meta.decorators.find((x: MongooseCollectionDecorator) => x.type === "MongooseCollectionDecorator"))
+        throw new Error(CanNotValidateNonCollection.format(meta.name, field))
+    const Model = model(target)
+    const condition: { [key: string]: string } = {}
+    condition[field] = value
+    const result = await Model.countDocuments(value)
+    if (result > 0) return `${value} already exists`
+}
+
+declare module "@plumjs/validator" {
+    namespace val {
+        function unique(): (target: any, name: string, index: number) => void
+    }
+}
+
+val.unique = () => {
+    return decorateParameter((target, name, index) => {
+        const createValidator = (target: Class, index:number) => (value: string) => isUnique(value, target, index)
+        return <ValidatorDecorator>{
+            type: "ValidatorDecorator",
+            name: "mongoose:unique",
+            validator: createValidator(target, index)
+        }
+    })
 }
 
 /* ------------------------------------------------------------------------------- */
