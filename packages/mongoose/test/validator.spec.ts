@@ -47,6 +47,28 @@ describe("unique validator", () => {
         Mongoose.disconnect()
     })
 
+    it("Should return valid if data is undefined", async () => {
+        @collection()
+        class User {
+            constructor(
+                public name: string,
+                @val.optional()
+                @val.unique()
+                public email: string | undefined
+            ) { }
+        }
+        const facility = new MongooseFacility({
+            model: [User],
+            uri: "mongodb://localhost:27017/test-data"
+        })
+        await facility.setup({ config: { mode: "production" } } as any)
+        const UserModel = model(User)
+        await UserModel.remove({})
+        const result = await validateObject(new User("Ketut", undefined))
+        expect(result).toEqual([])
+        Mongoose.disconnect()
+    })
+
 
     it("Should throw error when used on class that is not mapped to collection", async () => {
         @domain()
