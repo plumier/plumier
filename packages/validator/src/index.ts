@@ -239,6 +239,7 @@ export namespace val {
     export function optional() {
         return decorateParameter({ ...OptionalDecorator })
     }
+    
     export function partial(typ: Class) {
         return type(typ, "Partial")
     }

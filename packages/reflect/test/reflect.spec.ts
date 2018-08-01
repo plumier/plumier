@@ -214,6 +214,20 @@ describe("Decorator", () => {
         })
     })
 
+    it("Should able to decorate class using callback", () => {
+        @decorateClass(x => ({ name: x.name }))
+        class DummyClass { }
+        const meta = reflect(DummyClass)
+        expect(meta).toEqual({
+            type: 'Class',
+            ctorParameters: [],
+            name: 'DummyClass',
+            methods: [],
+            decorators: [{ name: "DummyClass" }],
+            object: DummyClass
+        })
+    })
+
     it("Should decorate method", () => {
         class DummyClass {
             @decorateMethod({ info: "Some Info" })
@@ -251,6 +265,27 @@ describe("Decorator", () => {
                 parameters: [],
                 type: "Function",
                 decorators: [{ info: "Some Info" }, { otherInfo: "Some Other Info" }]
+            }],
+            decorators: [],
+            object: DummyClass
+        })
+    })
+
+    it("Should decorate method with callback", () => {
+        class DummyClass {
+            @decorateMethod((a, b) => ({ target: a.name, method: b }))
+            method() { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toEqual({
+            type: 'Class',
+            ctorParameters: [],
+            name: 'DummyClass',
+            methods: [{
+                name: "method",
+                parameters: [],
+                type: "Function",
+                decorators: [{ target: "DummyClass", method: "method" }]
             }],
             decorators: [],
             object: DummyClass
@@ -314,6 +349,34 @@ describe("Decorator", () => {
         })
     })
 
+    it("Should able to decorate method parameter with callback", () => {
+        class DummyClass {
+            method(
+                @decorateParameter((a, b, c) => ({ target: a.name, name: b, index: c }))
+                id: number
+            ) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toEqual({
+            type: 'Class',
+            ctorParameters: [],
+            name: 'DummyClass',
+            methods: [{
+                name: "method",
+                parameters: [{
+                    name: "id",
+                    type: "Parameter",
+                    typeAnnotation: Number,
+                    decorators: [{ target: "DummyClass", name: "method", index: 0 }]
+                }],
+                type: "Function",
+                decorators: []
+            }],
+            decorators: [],
+            object: DummyClass
+        })
+    })
+
     it("Should able to decorate constructor parameter", () => {
         class DummyClass {
             constructor(
@@ -354,6 +417,29 @@ describe("Decorator", () => {
                 type: "Parameter",
                 typeAnnotation: Number,
                 decorators: [{ info: "Some Info" }, { otherInfo: "Some Other Info" }]
+            }],
+            methods: [],
+            decorators: [],
+            object: DummyClass
+        })
+    })
+
+    it("Should able to decorate constructor parameter", () => {
+        class DummyClass {
+            constructor(
+                @decorateParameter((a, b, c) => ({ target: a.name, name: b, index: c }))
+                id: number
+            ) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toEqual({
+            type: 'Class',
+            name: 'DummyClass',
+            ctorParameters: [{
+                name: "id",
+                type: "Parameter",
+                typeAnnotation: Number,
+                decorators: [{ target: "DummyClass", name: "constructor", index: 0 }]
             }],
             methods: [],
             decorators: [],

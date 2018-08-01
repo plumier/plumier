@@ -66,28 +66,42 @@ function getType(object: any) {
     else return "Object"
 }
 
-export function decorateParameter(data: any) {
+export function decorateParameter(data: object | ((target: Class, name: string, index: number) => object)) {
     return (target: any, name: string, index: number) => {
         const isCtorParam = isConstructor(target)
-        const newTarget = isCtorParam ? target : target.constructor
-        const decorators: Decorator[] = Reflect.getMetadata(DECORATOR_KEY, newTarget) || []
-        decorators.push(<ParameterDecorator>{ targetType: "Parameter", target: isCtorParam ? "constructor" : name, targetIndex: index, value: data })
-        Reflect.defineMetadata(DECORATOR_KEY, decorators, newTarget)
+        const targetType = isCtorParam ? target : target.constructor
+        const targetName = isCtorParam ? "constructor" : name
+        const decorators: Decorator[] = Reflect.getMetadata(DECORATOR_KEY, targetType) || []
+        decorators.push(<ParameterDecorator>{
+            targetType: "Parameter",
+            target: targetName,
+            targetIndex: index,
+            value: typeof data === "function" ? data(targetType, targetName, index) : data
+        })
+        Reflect.defineMetadata(DECORATOR_KEY, decorators, targetType)
     }
 }
 
-export function decorateMethod(data: any) {
+export function decorateMethod(data: object | ((target: Class, name: string) => object)) {
     return (target: any, name: string) => {
         const decorators: Decorator[] = Reflect.getMetadata(DECORATOR_KEY, target.constructor) || []
-        decorators.push({ targetType: "Method", target: name, value: data })
+        decorators.push({
+            targetType: "Method",
+            target: name,
+            value: typeof data === "function" ? data(target.constructor, name) : data
+        })
         Reflect.defineMetadata(DECORATOR_KEY, decorators, target.constructor)
     }
 }
 
-export function decorateClass(data: any) {
+export function decorateClass(data: object | ((target: Class) => object)) {
     return (target: any) => {
         const decorators: Decorator[] = Reflect.getMetadata(DECORATOR_KEY, target) || []
-        decorators.push({ targetType: "Class", target: target.prototype.constructor.name, value: data })
+        decorators.push({
+            targetType: "Class",
+            target: target.prototype.constructor.name,
+            value: typeof data === "function" ? data(target) : data
+        })
         Reflect.defineMetadata(DECORATOR_KEY, decorators, target)
     }
 }
