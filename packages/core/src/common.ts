@@ -1,18 +1,27 @@
+import { reflect, Reflection } from "@plumjs/reflect";
 import Chalk from "chalk";
+import { existsSync, lstatSync, readdirSync } from "fs";
+import { extname, join } from "path";
 import { inspect } from "util";
-import { lstatSync, readdirSync, existsSync } from 'fs';
-import { extname, join, basename } from 'path';
-import { reflect, Reflection } from '@plumjs/reflect';
-import { Class } from './core';
+
+import { Class } from "./core";
 
 declare global {
     interface String {
         format(...args: any[]): string
     }
+
+    interface Array<T> {
+        flatten():T
+    }
 }
 
 String.prototype.format = function (this: string, ...args: any[]) {
     return this.replace(/{(\d+)}/g, (m, i) => typeof args[i] != 'undefined' ? args[i] : m)
+}
+
+Array.prototype.flatten = function<T>(this:Array<T>){
+    return this.reduce((a, b) => a.concat(b), <T[]>[])
 }
 
 export function hasKeyOf<T>(opt: any, key: string): opt is T {
@@ -64,7 +73,7 @@ export function reflectPath(path: string | Class | Class[]): Reflection[] {
         return resolvePath(path)
             .map(x => reflect(x))
             .map(x => x.members)
-            .reduce((a, b) => a.concat(b), [])
+            .flatten()
     else
         return [reflect(path)]
 }

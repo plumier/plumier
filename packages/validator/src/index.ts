@@ -1,29 +1,17 @@
-import { decorateParameter, reflect, Decorator, type, TypeDecorator } from "@plumjs/reflect";
+import "@plumjs/core";
+
+import { Class, ValidationIssue, ValidatorDecorator } from "@plumjs/core";
+import { decorateParameter, reflect, type, TypeDecorator } from "@plumjs/reflect";
+import Chalk from "chalk";
+import Debug from "debug";
+import { inspect } from "util";
 import Validator from "validator";
-import Debug from "debug"
-import { inspect } from 'util';
-import Chalk from 'chalk'
 
 const log = Debug("plum:validator")
 
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- TYPES -------------------------------------- */
 /* ------------------------------------------------------------------------------- */
-
-export type Class = new (...args: any[]) => any
-export type ValidatorFunction = (value: string) => string | undefined
-
-export interface ValidationResult {
-    value: string
-    path: string[]
-    messages: string[]
-}
-
-export interface ValidatorDecorator {
-    type: "ValidatorDecorator",
-    validator: ValidatorFunction,
-    name: string
-}
 
 export interface Opt { message?: string }
 
@@ -38,7 +26,7 @@ export namespace val {
         //log(`[Validator] Name: ${b(name)}`)
         const decorator: ValidatorDecorator = {
             type: "ValidatorDecorator",
-            validator: x => !validator(x) ? message : undefined,
+            validator: async x => !validator(x) ? message : undefined,
             name
         }
         return decorateParameter(decorator)
@@ -239,7 +227,7 @@ export namespace val {
     export function optional() {
         return decorateParameter({ ...OptionalDecorator })
     }
-    
+
     export function partial(typ: Class) {
         return type(typ, "Partial")
     }
@@ -264,21 +252,21 @@ function getType(value: any) {
 /* ---------------------------------- VALIDATORS --------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-export function validateArray(value: any[], path: string[]): ValidationResult[] {
+export async function validateArray(value: any[], path: string[]): Promise<ValidationIssue[]> {
     log(`[Array Validator] Value ${b(value)} Path${b(path)}`)
-    return value.map((x, i) => validate(x, [], path.concat(i.toString())))
-        .reduce((a, b) => a.concat(b), [])
+    const result = await Promise.all(value.map((x, i) => validate(x, [], path.concat(i.toString()))))
+    return result.flatten()
 }
 
-export function validateObject(value: any, partialType?: Class, path?: string[]): ValidationResult[] {
+export async function validateObject(value: any, partialType?: Class, path?: string[]): Promise<ValidationIssue[]> {
     log(`[Object Validator] Type ${b(value.constructor.name)} Value ${b(value)} Path${b(path || [])}`)
     const meta = reflect(partialType || getType(value))
-    return meta.ctorParameters.map(p => validate(value[p.name],
-        p.decorators.concat(partialType && { ...OptionalDecorator } || []), (path || []).concat(p.name)))
-        .reduce((a, b) => a.concat(b), [])
+    const result = await Promise.all(meta.ctorParameters.map(p => validate(value[p.name],
+        p.decorators.concat(partialType && { ...OptionalDecorator } || []), (path || []).concat(p.name))))
+    return result.flatten()
 }
 
-export function validate(object: any, decs: any[], path: string[]): ValidationResult[] {
+export async function validate(object: any, decs: any[], path: string[]): Promise<ValidationIssue[]> {
     const decorators = decs.filter((x: ValidatorDecorator): x is ValidatorDecorator => x.type === "ValidatorDecorator")
     const empty = () => (object === undefined || object === null || object === "")
     if (Array.isArray(object))
@@ -289,15 +277,15 @@ export function validate(object: any, decs: any[], path: string[]): ValidationRe
     }
     else {
         if (empty()) {
-            return decorators.some(x => x.name == "optional") ? [] : [{ messages: ["Required"], path, value: object }]
+            return decorators.some(x => x.name == "optional") ? [] : [{ messages: ["Required"], path }]
         }
         else {
             const value = "" + object
-            const messages = decorators.filter(x => x.name !== "optional").map(x => x.validator(value))
-                .filter((x): x is string => Boolean(x))
+            const result = await Promise.all(decorators.filter(x => x.name !== "optional").map(x => x.validator(value)))
+            const messages = result.filter((x): x is string => Boolean(x))
             log(`[Value Validator] Value: ${b(value)} Decorators: ${b(decorators)} Path: ${b(path)}`)
             log(`[Value Validator] Validation Result: ${b(messages)}`)
-            return messages.length > 0 ? [{ messages, path, value }] : []
+            return messages.length > 0 ? [{ messages, path }] : []
         }
     }
 }

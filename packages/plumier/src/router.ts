@@ -120,7 +120,7 @@ export function transformModule(path: string, extensions: string[]): RouteInfo[]
         //traverse and change into route
         .map(x => transformController(<ClassReflection>x))
         //flatten the result
-        .reduce((a, b) => a.concat(b), [])
+        .flatten()
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -183,7 +183,7 @@ function traverseArray(parent: string, par: ParameterReflection[]): string[] {
     const models = getModelsInParameters(par)
     if (models.length > 0) {
         return models.map((x, i) => traverseArray(x.meta.name, x.meta.ctorParameters))
-            .reduce((a, b) => a.concat(b), [])
+            .flatten()
     }
     return par.filter(x => x.typeAnnotation === Array)
         .map(x => `${parent}.${x.name}`)

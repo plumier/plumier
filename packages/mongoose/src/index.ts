@@ -86,8 +86,7 @@ function analyze(domains: ClassReflection[]) {
     const tests = [noArrayTypeInfoTest]
     return domains.map(x => (<DomainAnalysis>{
         domain: x,
-        analysis: tests.map(test => test(x))
-            .reduce((x, y) => x.concat(y), [])
+        analysis: tests.map(test => test(x)).flatten()
     }))
 }
 

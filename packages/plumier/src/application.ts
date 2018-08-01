@@ -21,12 +21,12 @@ import {
     RouteInfo,
     ValidationError,
 } from "@plumjs/core";
-import { validate, ValidatorDecorator } from "@plumjs/validator";
+import { validate } from "@plumjs/validator";
 import Debug from "debug";
 import { existsSync } from "fs";
 import Koa, { Context } from "koa";
 import BodyParser from "koa-bodyparser";
-import { join, basename, isAbsolute, dirname } from "path";
+import { dirname, isAbsolute, join } from "path";
 
 import { bindParameter } from "./binder";
 import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
@@ -42,7 +42,7 @@ const log = Debug("plum:app")
 export function extractDecorators(route: RouteInfo): Middleware[] {
     const classDecorator: MiddlewareDecorator[] = route.controller.decorators.filter(x => x.name == "Middleware")
     const methodDecorator: MiddlewareDecorator[] = route.action.decorators.filter(x => x.name == "Middleware")
-    const extract = (d: MiddlewareDecorator[]) => d.map(x => x.value).reduce((a, b) => a.concat(b), [])
+    const extract = (d: MiddlewareDecorator[]) => d.map(x => x.value).flatten()
     return extract(classDecorator)
         .concat(extract(methodDecorator))
         .reverse()
@@ -71,8 +71,8 @@ export class ActionInvocation implements Invocation {
         if (config.validator) {
             const param = (i: number) => route.action.parameters[i]
             const validate = (value: any, i: number) => config.validator!(value, param(i))
-            const issues = parameters.map((value, index) => validate(value, index))
-                .reduce((a, b) => a.concat(b), [])
+            const result = await Promise.all(parameters.map((value, index) => validate(value, index)))
+            const issues = result.flatten()
             log(`[Action Invocation] Validation result ${b(issues)}`)
             if (issues.length > 0) throw new ValidationError(issues)
         }
@@ -129,11 +129,7 @@ export class WebApiFacility implements Facility {
         if (this.opt && this.opt.controller)
             app.set({ controller: this.opt.controller })
         app.set({
-            validator: (value, meta) => {
-                log(`[Validator] Validating ${b(value)} metadata: ${b(meta)}`)
-                return validate(value, meta.decorators, [meta.name])
-                    .map(x => ({ messages: x.messages, path: x.path }))
-            }
+            validator: (value, meta) => validate(value, meta.decorators, [meta.name])
         })
         app.use(new ValidationMiddleware())
     }
@@ -211,7 +207,7 @@ export class Plumier implements PlumierApplication {
             log(`[Initialize] execution path ${executionPath}`)
             if (typeof this.config.controller === "string") {
                 const path = isAbsolute(this.config.controller) ? this.config.controller :
-                     join(executionPath, this.config.controller)
+                    join(executionPath, this.config.controller)
                 if (!existsSync(path))
                     throw new Error(errorMessage.ControllerPathNotFound.format(path))
                 routes = transformModule(path, [this.config.fileExtension!])
@@ -219,7 +215,7 @@ export class Plumier implements PlumierApplication {
             else if (Array.isArray(this.config.controller)) {
                 log(`[Initialize] Controller ${b(this.config.controller)}`)
                 routes = this.config.controller.map(x => transformController(x))
-                    .reduce((a, b) => a.concat(b), [])
+                    .flatten()
             }
             else {
                 log(`[Initialize] Controller ${b(this.config.controller)}`)

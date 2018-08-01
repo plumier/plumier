@@ -26,6 +26,7 @@ export type HeaderPart = keyof IncomingHttpHeaders
 export type Class = new (...args: any[]) => any
 export type ValueConverter = (value: any, prop: ParameterProperties) => any
 export type TypeConverter = { type: Class, converter: ValueConverter }
+export type ValidatorFunction = (value: string) => Promise<string | undefined>
 
 export interface ParameterProperties extends ParameterPropertiesType<Class | Class[]> {}
 
@@ -57,6 +58,12 @@ export interface RouteInfo {
     method: HttpMethod
     action: FunctionReflection
     controller: ClassReflection
+}
+
+export interface ValidatorDecorator {
+    type: "ValidatorDecorator",
+    validator: ValidatorFunction,
+    name: string
 }
 
 export interface Invocation {
@@ -130,7 +137,7 @@ export interface Configuration {
     /**
      * Set custom validator
      */
-    validator?: (value: any, metadata: ParameterReflection) => ValidationIssue[]
+    validator?: (value: any, metadata: ParameterReflection) => Promise<ValidationIssue[]>
 
     /**
      * Route generator will search for this file extension on controller directory
