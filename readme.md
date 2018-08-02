@@ -14,23 +14,6 @@ Pleasant TypeScript Web Api Framework
 - Compact and light weight with small size codebase
 - Uses TypeScript, provided great features such as decorators, design type information and IDE support for refactoring, auto complete etc.
 
-## Features
-
-* [Decorator based route](.docs/route-generation-cheat-sheet.md): Decorator usage is minimal and flexible, can perform difficult configuration nicely such as nested restful resources.
-* [Parameter binding](.docs/parameter-binding.md): Transform and sanitize request data (body, query) match with action's parameter type.
-* [Decorator based validation](.docs/validation.md): Comprehensive list of validation powered by [ValidatorJS](https://github.com/chriso/validator.js)
-* [Static controller analysis](.docs/static-analysis-troubleshoot.md): Provided detection for misconfigured controller, missing data type that cause difficult to trace bugs.
-* [Testing friendly](.docs/testing-tips.md): Controller free from framework dependency, controller's action follow the concept of pure function (take thing, return thing, don't mutate thing) make them easy to test with minimum usage of mock & stub. Use [supertest]() only for integration testing. Perform TDD/BDD easily
-
-## Requirements
-* TypeScript
-* NodeJS >= 8.0.0
-* Visual Studio Code
-
-## Getting Started
-
-Go to [getting started](.docs/getting-started.md) to start codding
-
 ## API
 
 Plumier consist of 3 main parts. Domain model, controller and entry point
@@ -95,3 +78,20 @@ new Plumier()
    .then(x => x.listen(8000))
    .catch(e => console.error(e))
 ```
+
+## Features
+
+* [Decorator based route](.docs/route-generation-cheat-sheet.md): Decorator usage is minimal and flexible, can perform difficult configuration nicely such as nested restful resources.
+* [Parameter binding](.docs/parameter-binding.md): Transform and sanitize request data (body, query) match with action's parameter type.
+* [Decorator based validation](.docs/validation.md): Comprehensive list of validation powered by [ValidatorJS](https://github.com/chriso/validator.js)
+* [Static controller analysis](.docs/static-analysis-troubleshoot.md): Provided detection for misconfigured controller, missing data type that cause difficult to trace bugs.
+* [Testing friendly](.docs/testing-tips.md): Controller free from framework dependency, controller's action follow the concept of pure function (take thing, return thing, don't mutate thing) make them easy to test with minimum usage of mock & stub. Use [supertest]() only for integration testing. Perform TDD/BDD easily
+
+## Requirements
+* TypeScript
+* NodeJS >= 8.0.0
+* Visual Studio Code
+
+## Getting Started
+
+Go to [getting started](.docs/getting-started.md) to start codding
