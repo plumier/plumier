@@ -33,26 +33,65 @@ Go to [getting started](.docs/getting-started.md) to start codding
 
 ## API
 
-
+Plumier consist of 3 main parts. Domain model, controller and entry point
 
 ### Domain Model 
 
+Your domain model contains data type and validation rule. Plumier will make sure the data submitted by API consumer match your rule by sanitized the excess field, convert to appropriate data type, and validate the field match your configuration.
+
 ```typescript
-@domain()
+@collection()
 export class User {
     constructor(
+        //should be maximum 64 characters
+        @val.length({ max: 64 })
+        public name: string,
+        //should be a valid url
+        @val.url()
+        public image: string,
+        //should be a valid email address
         @val.email()
+        //automatically check to mongodb for uniqueness
+        @val.unique()
         public email:string,
-        public name:string,
-        public address:string
-    )
+        public address:string,
+        public city:string,
+        public zip:string
+    ) { }
 }
+//mongoose model, schema automatically generated
+export const UserModel = model(User)
 ```
 
 ### Controller 
 
+Controller is where your logic stays, your focus is how the data will be saved to database, you don't need to worry about validation and conversion.
+
 ```typescript
 export class UsersController {
-    
+
+    //handle POST /users
+    @route.post("")
+    save(data: User) {
+        return new UserModel(data).save()
+    }
 }
+```
+
+### Entry Point
+
+Plug what functionality you need, remove them if you don't need it, develop a custom one is easy!
+
+```typescript
+new Plumier()
+   //plug restful predefined configuration
+   .set(new RestfulApiFacility())
+   //plug mongoose predefined configuration (optional)
+   //if not used then automatic schema generation and 
+   //@val.unique() will not work
+   .set(new MongooseFacility({uri: "mongodb://localhost:27017/test-data"}))
+   .initialize()
+   //start the app by listening to port 8000
+   .then(x => x.listen(8000))
+   .catch(e => console.error(e))
 ```
