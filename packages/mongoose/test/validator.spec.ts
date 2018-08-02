@@ -26,6 +26,28 @@ describe("unique validator", () => {
         Mongoose.disconnect()
     })
 
+    it("Should check data with case insensitive", async () => {
+        @collection()
+        class User {
+            constructor(
+                public name: string,
+                @val.unique()
+                public email: string
+            ) { }
+        }
+        const facility = new MongooseFacility({
+            model: [User],
+            uri: "mongodb://localhost:27017/test-data"
+        })
+        await facility.setup({ config: { mode: "production" } } as any)
+        const UserModel = model(User)
+        await UserModel.remove({})
+        await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
+        const result = await validateObject(new User("Ketut", "KETUT@gmail.com"))
+        expect(result).toEqual([{ messages: ['KETUT@gmail.com already exists'], path: ['email'] }])
+        Mongoose.disconnect()
+    })
+
     it("Should return valid if data not exist", async () => {
         @collection()
         class User {

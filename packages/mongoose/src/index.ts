@@ -123,8 +123,9 @@ async function isUnique(value: string, target: Class, index: number) {
     if (!meta.decorators.find((x: MongooseCollectionDecorator) => x.type === "MongooseCollectionDecorator"))
         throw new Error(CanNotValidateNonCollection.format(meta.name, field))
     const Model = model(target)
-    const condition: { [key: string]: string } = {}
-    condition[field] = value
+    const condition: { [key: string]: object } = {}
+    //case insensitive comparison
+    condition[field] = { $regex: value, $options: "i" }
     const result = await Model.findOne(condition)
     if (!!result) return `${value} already exists`
 }
@@ -137,7 +138,7 @@ declare module "@plumjs/validator" {
 
 val.unique = () => {
     return decorateParameter((target, name, index) => {
-        const createValidator = (target: Class, index:number) => (value: string) => isUnique(value, target, index)
+        const createValidator = (target: Class, index: number) => (value: string) => isUnique(value, target, index)
         return <ValidatorDecorator>{
             type: "ValidatorDecorator",
             name: "mongoose:unique",
