@@ -34,9 +34,8 @@ Open the `plumier-pet-api` folder with Visual Studio Code, modify the `tsconfig.
 Point to `index.ts` and copy paste the content below:
 
 ```typescript
-import { HttpStatusError, route } from "@plumjs/core";
 import { collection, model, MongooseFacility } from "@plumjs/mongoose";
-import Plumier, { RestfulApiFacility, val } from "@plumjs/plumier";
+import Plumier, { RestfulApiFacility, val, HttpStatusError, route } from "@plumjs/plumier";
 
 @collection()
 export class Pet {
