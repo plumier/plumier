@@ -1,0 +1,26 @@
+{
+  "name": "@plumjs/jwt",
+  "version": "0.1.0-alpha.9aaa0a15",
+  "description": "Pleasant TypeScript Web Api Framework",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "compile": "tsc -p tsconfig.build.json"
+  },
+  "author": "Ketut Sandiarsa",
+  "license": "MIT",
+  "dependencies": {
+    "@plumjs/core": "0.1.0-alpha.9aaa0a15",
+    "koa-jwt": "^3.3.2",
+    "tslib": "^1.9.2"
+  },
+  "devDependencies": {
+  },
+  "bugs": {
+    "url": "https://github.com/ktutnik/plumier/issues"
+  },
+  "homepage": "https://github.com/ktutnik/plumier",
+  "publishConfig": {
+    "access": "public"
+  }
+}

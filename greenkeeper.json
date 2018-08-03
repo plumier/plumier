@@ -6,7 +6,8 @@
         "packages/plumier/package.json",
         "packages/reflect/package.json",
         "packages/validator/package.json",
-        "packages/mongoose/package.json"
+        "packages/mongoose/package.json",
+        "packages/jwt/package.json"
       ]
     }
   }
