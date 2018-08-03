@@ -6,7 +6,6 @@ import {
     FunctionReflection,
     ParameterReflection,
 } from "@plumjs/reflect";
-import Debug from "debug";
 import { IncomingHttpHeaders } from "http";
 import Koa, { Context, Request } from "koa";
 
