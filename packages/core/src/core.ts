@@ -6,14 +6,9 @@ import {
     FunctionReflection,
     ParameterReflection,
 } from "@plumjs/reflect";
-import Debug from "debug";
 import { IncomingHttpHeaders } from "http";
 import Koa, { Context, Request } from "koa";
 
-import { b } from "./common";
-
-
-const log = Debug("plum:core")
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------------- TYPES ------------------------------------- */
@@ -241,9 +236,8 @@ export namespace MiddlewareUtil {
                 return ActionResult.fromContext(x.context)
             }
         }
-    }
+    }/*
     export function toKoa(middleware: Middleware): KoaMiddleware {
-        log(`[Middleware Plumier -> Koa] Registering`)
         return async (context: Context, next: () => Promise<any>) => {
             try {
                 const result = await middleware.execute({
@@ -252,7 +246,6 @@ export namespace MiddlewareUtil {
                         return ActionResult.fromContext(context)
                     }
                 })
-                log(`[Middleware Plumier -> Koa] ActionResult ${b(result)} Context: ${b({ status: context.status, body: context.body })}`)
                 result.execute(context)
             }
             catch (e) {
@@ -262,7 +255,7 @@ export namespace MiddlewareUtil {
                     context.throw(500, e)
             }
         }
-    }
+    }*/
 }
 
 

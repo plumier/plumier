@@ -2,16 +2,21 @@ import Koa from "koa";
 import Supertest from "supertest";
 
 import { Configuration, route } from "../../../src";
-import { Class, DefaultDependencyResolver } from "@plumjs/core";
+import { Class, DefaultDependencyResolver, Invocation, ActionResult } from "@plumjs/core";
 import { router, transformController } from "../../../src/router";
+
+class DummyInvocation implements Invocation{
+    constructor(public context: Readonly<Koa.Context>){}
+    async proceed(){
+        return new ActionResult("OK")
+    }
+}
 
 function fixture(controller: Class) {
     const route = transformController(controller)
     const app = new Koa()
     const configuration = <Configuration>{ dependencyResolver: new DefaultDependencyResolver() }
-    app.use(router(route, configuration, async ctx => {
-        ctx.body = "OK"
-    }))
+    app.use(router(route, configuration, ctx => new DummyInvocation(ctx)))
     return app.callback()
 }
 

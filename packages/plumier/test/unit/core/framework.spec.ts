@@ -106,6 +106,7 @@ describe("ConversionError", () => {
 })
 
 describe("Middleware", () => {
+    /*
     describe("Middleware.toKoa", () => {
         it("Should able end request by returning ActionResult", async () => {
             const app = new Koa()
@@ -155,7 +156,7 @@ describe("Middleware", () => {
         })
 
     })
-
+*/
     describe("Middleware.fromKoa", () => {
 
         function fixture(mdw: Middleware) {

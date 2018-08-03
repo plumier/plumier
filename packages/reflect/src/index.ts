@@ -1,9 +1,8 @@
 import "reflect-metadata";
-import Debug from "debug"
-import { inspect } from 'util';
-import Chalk from "chalk"
 
-const log = Debug("plum:reflect")
+import Chalk from "chalk";
+import { inspect } from "util";
+
 
 /* ---------------------------------------------------------------- */
 /* --------------------------- TYPES ------------------------------ */
@@ -112,14 +111,6 @@ export function getDecorators(target: any): Decorator[] {
     return Reflect.getMetadata(DECORATOR_KEY, target) || []
 }
 
-
-function b(value: any) {
-    if (typeof value === "object") {
-        return Chalk.blue(inspect(value))
-    }
-    else return Chalk.blue(value)
-}
-
 export function array(type: Class) {
     return decorateParameter(<ArrayDecorator>{ type: "Array", object: type })
 }
@@ -182,26 +173,22 @@ function reflectParameter(name: string, typeAnnotation?: any): ParameterReflecti
 
 function reflectFunction(fn: Function): FunctionReflection {
     const parameters = getParameterNames(fn).map(x => reflectParameter(x))
-    log(`[Reflect Method] ${b(fn.name)}(${b(parameters)})`)
     return { type: "Function", name: fn.name, parameters, decorators: [] }
 }
 
 function reflectMethod(clazz: Class, method: Function): FunctionReflection {
     const parType: any[] = Reflect.getMetadata(DESIGN_PARAMETER_TYPE, clazz.prototype, method.name) || []
     const parameters = getParameterNames(method).map((x, i) => reflectParameter(x, parType[i]))
-    log(`[Reflect Method] ParType ${b(parType)} Method: ${b(clazz.name)}.${b(method.name)}(${b(parameters)})`)
     return { type: "Function", name: method.name, parameters, decorators: [] }
 }
 
 function reflectConstructorParameters(fn: Class) {
     const parTypes: any[] = Reflect.getMetadata(DESIGN_PARAMETER_TYPE, fn) || []
     const params = getConstructorParameters(fn)
-    log(`[Reflect Ctor] ${b(params)}`)
     return params.map((x, i) => reflectParameter(x, parTypes[i]))
 }
 
 function reflectClass(fn: Class): ClassReflection {
-    log(`[Reflect Class] ${b(fn.name)} Properties: ${b(Object.getOwnPropertyNames(fn.prototype))}`)
     const methods = Object.getOwnPropertyNames(fn.prototype)
         .filter(x => x != "constructor")
         .filter(x => !x.startsWith("__"))
@@ -242,11 +229,9 @@ export function reflect(option: string | Class) {
     const cache = getCache(option)
     if(!!cache) return cache.result
     if (typeof option === "string") {
-        log(`Inspecting module ${b(option)}`)
         return setCache(option, reflectObject(require(option)))
     }
     else {
-        log(`Inspecting class ${b(option.name)}`)
         return setCache(option, reflectClass(option))
     }
 }

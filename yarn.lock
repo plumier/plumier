@@ -58,10 +58,6 @@
     "@types/keygrip" "*"
     "@types/node" "*"
 
-"@types/debug@^0.0.30":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@types/debug/-/debug-0.0.30.tgz#dc1e40f7af3b9c815013a7860e6252f6352a84df"
-
 "@types/ejs@^2.6.0":
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/@types/ejs/-/ejs-2.6.0.tgz#56502bca6e2e1b4cf9351918ca76cdaa93fe3b6c"

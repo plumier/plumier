@@ -1,5 +1,4 @@
 import {
-    b,
     Class,
     Configuration,
     errorMessage,
@@ -8,17 +7,14 @@ import {
     RootDecorator,
     RouteDecorator,
     RouteInfo,
+    Invocation,
 } from "@plumjs/core";
 import { ClassReflection, FunctionReflection, ParameterReflection, reflect, Reflection } from "@plumjs/reflect";
 import chalk from "chalk";
-import Debug from "debug";
 import * as Fs from "fs";
 import { Context } from "koa";
 import * as Path from "path";
 import Ptr from "path-to-regexp";
-import { model } from 'mongoose';
-
-const log = Debug("plum:router")
 
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- TYPES -------------------------------------- */
@@ -53,8 +49,6 @@ function resolveDir(path: string, ext: string[]): string[] {
             .filter(x => ext.some(ex => Path.extname(x) === ex))
             //add root path + file name
             .map(x => Path.join(path, x))
-        log(`[Router] Resolve files with ${ext.join("|")}`)
-        log(`${files.join("\n")}`)
         return files
     }
 
@@ -131,16 +125,14 @@ function checkUrlMatch(route: RouteInfo, ctx: Context) {
     const keys: Ptr.Key[] = []
     const regexp = Ptr(route.url, keys)
     const match = regexp.exec(ctx.path)
-    log(`[Router] Route: ${b(route.method)} ${b(route.url)} Ctx Path: ${b(ctx.method)} ${b(ctx.path)} Match: ${b(match)}`)
     return { keys, match, method: route.method.toUpperCase(), route }
 }
 
-export function router(infos: RouteInfo[], config: Configuration, handler: (ctx: Context) => Promise<void>) {
+export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:Context) => Invocation) {
     return async (ctx: Context, next: () => Promise<void>) => {
         const match = infos.map(x => checkUrlMatch(x, ctx))
             .find(x => Boolean(x.match) && x.method == ctx.method)
         if (match) {
-            log(`[Router] Match route ${b(match.route.method)} ${b(match.route.url)} with ${b(ctx.method)} ${b(ctx.path)}`)
             //assign config and route to context
             Object.assign(ctx, { config, route: match.route })
             //add query
@@ -148,12 +140,12 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
                 a[b.name.toString().toLowerCase()] = match.match![i + 1]
                 return a;
             }, <any>{})
-            log(`[Router] Extracted parameter from url ${b(query)}`)
             Object.assign(ctx.query, query)
-            await handler(ctx)
+            const invocation = handler(ctx)
+            const result = await invocation.proceed()
+            result.execute(ctx)
         }
         else {
-            log(`[Router] Not route match ${b(ctx.method)} ${b(ctx.url)}`)
             await next()
         }
     }
@@ -243,11 +235,9 @@ function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     const classes = traverseModel(route.action.parameters)
         .filter(x => x.ctorParameters.every(par => typeof par.typeAnnotation == "undefined"))
         .map(x => x.object)
-    log(`[Analyzer] Checking model types ${b(classes)}`)
     //get only unique type
     const noTypeInfo = Array.from(new Set(classes))
     if (noTypeInfo.length > 0) {
-        log(`[Analyzer] Model without type information ${b(noTypeInfo.map(x => x.name).join(", "))}`)
         return {
             type: "warning",
             message: errorMessage.ModelWithoutTypeInformation.format(noTypeInfo.map(x => x.name).join(", "))
@@ -260,7 +250,6 @@ function arrayTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     const issues = traverseArray(`${route.controller.name}.${route.action.name}`, route.action.parameters)
     const array = Array.from(new Set(issues))
     if (array.length > 0) {
-        log(`[Analyzer] Array without item type information in ${array.join(", ")}`)
         return {
             type: "warning",
             message: errorMessage.ArrayWithoutTypeInformation.format(array.join(", "))
@@ -275,7 +264,6 @@ function arrayTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
 
 function analyzeRoute(route: RouteInfo, tests: AnalyzerFunction[], allRoutes: RouteInfo[]): TestResult {
     const issues = tests.map(test => {
-        log(`[Analyzer] Analyzing using ${b(test.name)}`)
         return test(route, allRoutes)
     })
         .filter(x => x.type != "success")
@@ -283,7 +271,6 @@ function analyzeRoute(route: RouteInfo, tests: AnalyzerFunction[], allRoutes: Ro
 }
 
 export function analyzeRoutes(routes: RouteInfo[]) {
-    log(`[Analyzer] Analysing ${b(routes.map(x => x.url).join(", "))}`)
     const tests: AnalyzerFunction[] = [
         backingParameterTest, metadataTypeTest, multipleDecoratorTest,
         duplicateRouteTest, modelTypeInfoTest, arrayTypeInfoTest

@@ -28,12 +28,6 @@ export function hasKeyOf<T>(opt: any, key: string): opt is T {
     return key in opt;
 }
 
-export function b(msg: any) {
-    if (typeof msg === "object")
-        return Chalk.blue(inspect(msg, false, null))
-    else return Chalk.blue(msg)
-}
-
 export function isCustomClass(type: Function | Function[]) {
     switch (Array.isArray(type) ? type[0] : type) {
         case Boolean:

@@ -16,10 +16,8 @@
   "dependencies": {
     "@plumjs/core": "0.1.0-alpha.9aaa0a15",
     "@plumjs/reflect": "1.4.0-alpha.9aaa0a15",
-    "@types/debug": "^0.0.30",
     "@types/validator": "^9.4.1",
     "chalk": "^2.4.1",
-    "debug": "^3.1.0",
     "validator": "^10.4.0"
   },
   "bugs": {
