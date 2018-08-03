@@ -1,4 +1,4 @@
-import { Class } from "@plumjs/core";
+import { Class, ActionResult } from "@plumjs/core";
 import { Context } from "koa";
 import Supertest from "supertest";
 
@@ -42,6 +42,25 @@ describe("Middleware", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .expect(200, "The Body")
+        })
+
+        it("Should be able to access route and configuration from global middleware", async () => {
+            class AnimalController {
+                get() {
+                    return "Body"
+                }
+            }
+            const fn = jest.fn(() => {})
+            const app = await fixture(AnimalController)
+                .use({execute: async x => {
+                    fn(x.context.route.url, x.context.config.mode)
+                    return x.proceed()
+                }})
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(200)
+            expect(fn).toBeCalledWith("/animal/get", "production")
         })
 
         it("Should be able to use Koa middleware", async () => {

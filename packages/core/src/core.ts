@@ -236,7 +236,7 @@ export namespace MiddlewareUtil {
                 return ActionResult.fromContext(x.context)
             }
         }
-    }
+    }/*
     export function toKoa(middleware: Middleware): KoaMiddleware {
         return async (context: Context, next: () => Promise<any>) => {
             try {
@@ -255,7 +255,7 @@ export namespace MiddlewareUtil {
                     context.throw(500, e)
             }
         }
-    }
+    }*/
 }
 
 

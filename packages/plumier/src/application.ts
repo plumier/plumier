@@ -162,10 +162,6 @@ export class RestfulApiFacility extends WebApiFacility {
 /* --------------------------- MAIN APPLICATION ---------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-async function controllerInvocator(ctx: Context) {
-    return 
-}
-
 export class Plumier implements PlumierApplication {
     readonly config: Readonly<PlumierConfiguration>;
     readonly koa: Koa
