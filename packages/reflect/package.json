@@ -14,9 +14,7 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@types/debug": "^0.0.30",
     "chalk": "^2.4.1",
-    "debug": "^3.1.0",
     "reflect-metadata": "^0.1.12"
   },
   "devDependencies": {

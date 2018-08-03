@@ -2,7 +2,6 @@ import Cors from "@koa/cors";
 import {
     ActionResult,
     Application,
-    b,
     BodyParserOption,
     Class,
     Configuration,
@@ -22,7 +21,6 @@ import {
     ValidationError,
 } from "@plumjs/core";
 import { validate } from "@plumjs/validator";
-import Debug from "debug";
 import { existsSync } from "fs";
 import Koa, { Context } from "koa";
 import BodyParser from "koa-bodyparser";
@@ -32,7 +30,6 @@ import { bindParameter } from "./binder";
 import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
 
 
-const log = Debug("plum:app")
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------------- HELPERS ----------------------------------- */
@@ -73,7 +70,6 @@ export class ActionInvocation implements Invocation {
             const validate = (value: any, i: number) => config.validator!(value, param(i))
             const result = await Promise.all(parameters.map((value, index) => validate(value, index)))
             const issues = result.flatten()
-            log(`[Action Invocation] Validation result ${b(issues)}`)
             if (issues.length > 0) throw new ValidationError(issues)
         }
         const result = (<Function>controller[route.action.name]).apply(controller, parameters)
@@ -81,11 +77,9 @@ export class ActionInvocation implements Invocation {
         const status = config.responseStatus && config.responseStatus[route.method] || 200
         if (awaitedResult instanceof ActionResult) {
             awaitedResult.status = awaitedResult.status || status
-            log(`[Action Invocation] ActionResult value - Method: ${b(route.method)} Status config: ${b(config.responseStatus)} Status: ${b(result.status)} `)
             return awaitedResult;
         }
         else {
-            log(`[Action Invocation] Raw value - Method: ${route.method} Status config: ${b(config.responseStatus)} Status: ${b(status)} `)
             return new ActionResult(awaitedResult, status)
         }
     }
@@ -162,10 +156,6 @@ async function requestHandler(ctx: Context) {
     const pipeline = pipe(controllerMiddleware, ctx, new ActionInvocation(ctx))
     const result = await pipeline.proceed()
     result.execute(ctx)
-    log(`[Request Handler] ${b(ctx.path)} -> ${b(ctx.route.controller.name)}.${b(ctx.route.action.name)}`)
-    log(`[Request Handler] Request Query: ${b(ctx.query)}`)
-    log(`[Request Handler] Request Header: ${b(ctx.headers)}`)
-    log(`[Request Handler] Request Body: ${b(result.body)}`)
 }
 
 export class Plumier implements PlumierApplication {
@@ -204,7 +194,6 @@ export class Plumier implements PlumierApplication {
             let routes: RouteInfo[] = []
             await Promise.all(this.config.facilities.map(x => x.setup(this)))
             const executionPath = dirname(module.parent!.parent!.filename)
-            log(`[Initialize] execution path ${executionPath}`)
             if (typeof this.config.controller === "string") {
                 const path = isAbsolute(this.config.controller) ? this.config.controller :
                     join(executionPath, this.config.controller)
@@ -213,15 +202,12 @@ export class Plumier implements PlumierApplication {
                 routes = transformModule(path, [this.config.fileExtension!])
             }
             else if (Array.isArray(this.config.controller)) {
-                log(`[Initialize] Controller ${b(this.config.controller)}`)
                 routes = this.config.controller.map(x => transformController(x))
                     .flatten()
             }
             else {
-                log(`[Initialize] Controller ${b(this.config.controller)}`)
                 routes = transformController(this.config.controller)
             }
-            log(`[Initialize] Routes ${b(routes)}`)
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
             this.koa.use(async (ctx, next) => {
                 try {

@@ -1,13 +1,18 @@
-import { b, Class, domain, Facility, isCustomClass, PlumierApplication, reflectPath, ValidatorDecorator } from "@plumjs/core";
-import { ClassReflection, decorateClass, ParameterReflection, reflect, decorateParameter } from "@plumjs/reflect";
+import {
+    Class,
+    domain,
+    Facility,
+    isCustomClass,
+    PlumierApplication,
+    reflectPath,
+    ValidatorDecorator,
+} from "@plumjs/core";
+import { ClassReflection, decorateClass, decorateParameter, ParameterReflection, reflect } from "@plumjs/reflect";
+import { val } from "@plumjs/validator";
 import Chalk from "chalk";
-import Debug from "debug";
 import Mongoose, { Model } from "mongoose";
 import { dirname, isAbsolute, join } from "path";
-import { val } from "@plumjs/validator"
-import { inspect } from 'util';
 
-const log = Debug("plum:mongo")
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------------ TYPES ------------------------------------ */
@@ -51,7 +56,6 @@ function loadModels(opt: Class[]) {
 }
 
 function getType(prop: ParameterReflection, registry: SchemaRegistry): Function | Function[] | SubSchema | SubSchema[] {
-    log(`[GetType] Custom class ${b(prop.typeAnnotation)}`)
     if (isCustomClass(prop.typeAnnotation)) {
         const schema = { type: Mongoose.Schema.Types.ObjectId, ref: "" }
         return Array.isArray(prop.typeAnnotation) ? [{ ...schema, ref: getName(prop.typeAnnotation[0]) }]
@@ -66,7 +70,6 @@ function generateModel(model: ClassReflection, registry: SchemaRegistry) {
             a[b.name] = getType(b, registry)
             return a
         }, {} as any)
-    log(`[GenerateModel] Creating schema for ${b(model.name)} Schema ${b(schema)}`)
     registry[getName(model)] = new Mongoose.Schema(schema)
 }
 
