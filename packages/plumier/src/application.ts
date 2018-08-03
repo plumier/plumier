@@ -118,6 +118,17 @@ export class WebApiFacility implements Facility {
     constructor(private opt?: { controller?: string | Class | Class[], bodyParser?: BodyParserOption, cors?: Cors.Options }) { }
 
     async setup(app: Readonly<PlumierApplication>) {
+        app.koa.use(async (ctx, next) => {
+            try {
+                await next()
+            }
+            catch (e) {
+                if (e instanceof HttpStatusError)
+                    ctx.throw(e.status, e)
+                else
+                    ctx.throw(500, e)
+            }
+        })
         app.koa.use(BodyParser(this.opt && this.opt.bodyParser))
         app.koa.use(Cors(this.opt && this.opt.cors))
         if (this.opt && this.opt.controller)
@@ -151,16 +162,14 @@ export class RestfulApiFacility extends WebApiFacility {
 /* --------------------------- MAIN APPLICATION ---------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-async function requestHandler(ctx: Context) {
-    const controllerMiddleware = extractDecorators(ctx.route)
-    const pipeline = pipe(controllerMiddleware, ctx, new ActionInvocation(ctx))
-    const result = await pipeline.proceed()
-    result.execute(ctx)
+async function controllerInvocator(ctx: Context) {
+    return 
 }
 
 export class Plumier implements PlumierApplication {
     readonly config: Readonly<PlumierConfiguration>;
     readonly koa: Koa
+    private globalMiddleware:Middleware[] = []
 
     constructor() {
         this.koa = new Koa()
@@ -171,10 +180,10 @@ export class Plumier implements PlumierApplication {
     use(option: Middleware): Application
     use(option: KoaMiddleware | Middleware): Application {
         if (typeof option === "function") {
-            this.koa.use(option)
+            this.globalMiddleware.push(MiddlewareUtil.fromKoa(option))
         }
         else {
-            this.koa.use(MiddlewareUtil.toKoa(option))
+            this.globalMiddleware.push(option)
         }
         return this
     }
@@ -189,38 +198,34 @@ export class Plumier implements PlumierApplication {
         return this;
     }
 
+    private createRoutes(executionPath:string) {
+        let routes: RouteInfo[] = []
+        if (typeof this.config.controller === "string") {
+            const path = isAbsolute(this.config.controller) ? this.config.controller :
+                join(executionPath, this.config.controller)
+            if (!existsSync(path))
+                throw new Error(errorMessage.ControllerPathNotFound.format(path))
+            routes = transformModule(path, [this.config.fileExtension!])
+        }
+        else if (Array.isArray(this.config.controller)) {
+            routes = this.config.controller.map(x => transformController(x))
+                .flatten()
+        }
+        else {
+            routes = transformController(this.config.controller)
+        }
+        return routes
+    }
+
     async initialize(): Promise<Koa> {
         try {
-            let routes: RouteInfo[] = []
             await Promise.all(this.config.facilities.map(x => x.setup(this)))
-            const executionPath = dirname(module.parent!.parent!.filename)
-            if (typeof this.config.controller === "string") {
-                const path = isAbsolute(this.config.controller) ? this.config.controller :
-                    join(executionPath, this.config.controller)
-                if (!existsSync(path))
-                    throw new Error(errorMessage.ControllerPathNotFound.format(path))
-                routes = transformModule(path, [this.config.fileExtension!])
-            }
-            else if (Array.isArray(this.config.controller)) {
-                routes = this.config.controller.map(x => transformController(x))
-                    .flatten()
-            }
-            else {
-                routes = transformController(this.config.controller)
-            }
+            let routes: RouteInfo[] = this.createRoutes(dirname(module.parent!.parent!.filename))
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
-            this.koa.use(async (ctx, next) => {
-                try {
-                    await next()
-                }
-                catch (e) {
-                    if (e instanceof HttpStatusError)
-                        ctx.throw(e.status, e)
-                    else
-                        ctx.throw(500, e)
-                }
-            })
-            this.koa.use(router(routes, this.config, requestHandler))
+            this.koa.use(router(routes, this.config, ctx => {
+                const middleware = this.globalMiddleware.concat(extractDecorators(ctx.route))
+                return pipe(middleware, ctx, new ActionInvocation(ctx))
+            }))
             return this.koa
         }
         catch (e) {

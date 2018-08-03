@@ -7,6 +7,7 @@ import {
     RootDecorator,
     RouteDecorator,
     RouteInfo,
+    Invocation,
 } from "@plumjs/core";
 import { ClassReflection, FunctionReflection, ParameterReflection, reflect, Reflection } from "@plumjs/reflect";
 import chalk from "chalk";
@@ -127,7 +128,7 @@ function checkUrlMatch(route: RouteInfo, ctx: Context) {
     return { keys, match, method: route.method.toUpperCase(), route }
 }
 
-export function router(infos: RouteInfo[], config: Configuration, handler: (ctx: Context) => Promise<void>) {
+export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:Context) => Invocation) {
     return async (ctx: Context, next: () => Promise<void>) => {
         const match = infos.map(x => checkUrlMatch(x, ctx))
             .find(x => Boolean(x.match) && x.method == ctx.method)
@@ -140,7 +141,9 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
                 return a;
             }, <any>{})
             Object.assign(ctx.query, query)
-            await handler(ctx)
+            const invocation = handler(ctx)
+            const result = await invocation.proceed()
+            result.execute(ctx)
         }
         else {
             await next()
