@@ -34,8 +34,7 @@ export interface ParameterPropertiesType<T> {
 
 export interface BindingDecorator {
     type: "ParameterBinding",
-    name: "Request" | "Body" | "Header" | "Query",
-    part?: RequestPart
+    part?: string
 }
 
 export interface RouteDecorator { name: "Route", method: HttpMethod, url?: string }
@@ -236,26 +235,7 @@ export namespace MiddlewareUtil {
                 return ActionResult.fromContext(x.context)
             }
         }
-    }/*
-    export function toKoa(middleware: Middleware): KoaMiddleware {
-        return async (context: Context, next: () => Promise<any>) => {
-            try {
-                const result = await middleware.execute({
-                    context, proceed: async () => {
-                        await next()
-                        return ActionResult.fromContext(context)
-                    }
-                })
-                result.execute(context)
-            }
-            catch (e) {
-                if (e instanceof HttpStatusError)
-                    context.throw(e.status, e)
-                else
-                    context.throw(500, e)
-            }
-        }
-    }*/
+    }
 }
 
 
@@ -322,6 +302,23 @@ export class DefaultDependencyResolver implements DependencyResolver {
 
 export namespace bind {
     /**
+     * Bind Koa Context
+     * 
+     *    method(@bind.ctx() ctx:any) {}
+     * 
+     * Use dot separated string to access child property
+     * 
+     *    method(@bind.ctx("state.user") ctx:User) {}
+     *    method(@bind.ctx("request.headers.ip") ip:string) {}
+     *    method(@bind.ctx("body[0].id") id:string) {}
+     * 
+     * @param part part of context, use dot separator to access child property
+     */
+    export function ctx(part?:string){
+        return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", name: "Context", part })
+    }
+
+    /**
      * Bind Koa request to parameter
      * 
      *    method(@bind.request() req:Request){}
@@ -334,7 +331,7 @@ export namespace bind {
      * @param part part of request ex: body, method, query etc
      */
     export function request(part?: RequestPart) {
-        return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", name: "Request", part })
+        return ctx(["request", part].join("."))
     }
 
     /**
@@ -348,7 +345,7 @@ export namespace bind {
      *     method(@bind.body("age") age:number){}
      */
     export function body(part?: string) {
-        return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", name: "Body", part })
+        return ctx(["request", "body", part].join("."))
     }
 
     /**
@@ -362,7 +359,7 @@ export namespace bind {
      *     method(@bind.header("cookie") age:any){}
      */
     export function header(key?: HeaderPart) {
-        return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", name: "Header", part: key })
+        return ctx(["request", "headers", key].join("."))
     }
 
     /**
@@ -376,9 +373,17 @@ export namespace bind {
      *     method(@bind.query("type") type:string){}
      */
     export function query(name?: string) {
-        return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", name: "Query", part: name })
+        return ctx(["request", "query", name].join("."))
     }
 
+    /**
+     * Bind current login user to parameter
+     *    
+     *     method(@bind.user() user:User){}
+     */
+    export function user() {
+        return ctx("state.user")
+    }
 }
 
 export class RouteDecoratorImpl {

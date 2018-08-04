@@ -12,7 +12,7 @@ declare global {
     }
 
     interface Array<T> {
-        flatten():T
+        flatten(): T
     }
 }
 
@@ -20,7 +20,7 @@ String.prototype.format = function (this: string, ...args: any[]) {
     return this.replace(/{(\d+)}/g, (m, i) => typeof args[i] != 'undefined' ? args[i] : m)
 }
 
-Array.prototype.flatten = function<T>(this:Array<T>){
+Array.prototype.flatten = function <T>(this: Array<T>) {
     return this.reduce((a, b) => a.concat(b), <T[]>[])
 }
 
@@ -82,4 +82,11 @@ export namespace consoleLog {
     export function clearMock() {
         console.log = log
     }
+}
+
+export function getChildValue(object: any, path: string, defaultValue?: any) {
+    return path
+        .split(/[\.\[\]\'\"]/)
+        .filter(p => p)
+        .reduce((o, p) => o ? o[p] : defaultValue, object)
 }

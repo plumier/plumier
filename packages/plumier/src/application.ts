@@ -60,10 +60,10 @@ export class MiddlewareInvocation implements Invocation {
 export class ActionInvocation implements Invocation {
     constructor(public context: Context) { }
     async proceed(): Promise<ActionResult> {
-        const { request, route, config } = this.context
+        const { route, config } = this.context
         const controller: any = config.dependencyResolver.resolve(route.controller.object)
         //bind parameters
-        const parameters = bindParameter(request, route.action, config.converters)
+        const parameters = bindParameter(this.context, route.action, config.converters)
         //check validation
         if (config.validator) {
             const param = (i: number) => route.action.parameters[i]

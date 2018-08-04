@@ -174,6 +174,36 @@ Result:
 }]
 ```
 
+### Ctx Binding
+Bind Koa context to action's parameter 
+
+```typescript
+export class AnimalController {
+    @route.post()
+    save(@bind.ctx() model:Koa.Context){
+
+    }
+}
+```
+
+Part of context can be issued by providing path
+
+```typescript
+export class AnimalController {
+    @route.post()
+    save(@bind.ctx("request.body") model:any){
+
+    }
+}
+```
+
+Above code will be the same as access `ctx.request.body`. 
+
+Allowed path example: 
+* Using dot to access child property `request.headers.ip` etc
+* Using array notation `request.body[0]`
+
+
 ### Request Binding
 Bind request to action's parameter
 
@@ -284,6 +314,19 @@ class AnimalController {
     @route.post()
     save(@bind.query() page: PagingDto, model: AnimalDto) {
         return { page, model }
+    }
+}
+```
+
+## Login User Binding
+
+Bind login user to action's parameter. This functionalities require `JwtAuthFacility` see how to setup user authorization [here](./authorization.md)
+
+```typescript
+export class AnimalController {
+    @route.get()
+    save(@bind.user() user:User){
+
     }
 }
 ```

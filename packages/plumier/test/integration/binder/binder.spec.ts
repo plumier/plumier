@@ -1,9 +1,10 @@
 import { IncomingMessage, ServerResponse } from "http";
-import { Request } from "koa";
+import { Request, Context } from "koa";
 import Supertest from "supertest";
 
-import { bind, ConversionError, HttpStatusError, domain, route, array, val } from "../../../src";
+import { bind, ConversionError, HttpStatusError, domain, route, array, val, JwtAuthFacility } from "../../../src";
 import { fixture } from "../../helper";
+import { sign } from 'jsonwebtoken';
 
 export class AnimalModel {
     constructor(
@@ -97,7 +98,7 @@ describe("Parameter Binding", () => {
         it("Should return 422 if value not specified", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
-                .expect(422, [{messages:["Required"], path: ["b"]}])
+                .expect(422, [{ messages: ["Required"], path: ["b"] }])
         })
         it("Should return string if no decorator provided", async () => {
             class AnimalController {
@@ -149,7 +150,7 @@ describe("Parameter Binding", () => {
         it("Should return 422 if value not specified", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
-                .expect(422, [{messages:["Required"], path: ["b"]}])
+                .expect(422, [{ messages: ["Required"], path: ["b"] }])
         })
         it("Should return string if no decorator provided", async () => {
             class AnimalController {
@@ -770,6 +771,92 @@ describe("Parameter Binding", () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
                 .expect(400, `Unable to convert "[object Object]" into Number in parameter b`)
+        })
+    })
+
+    describe("Context parameter binding", () => {
+        it("Should able to bind context", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.ctx() b: Context) {
+                    return b.request.query
+                }
+            }
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
+                .expect(200, { id: '747474', name: 'Mimi', deceased: 'ON', birthday: '2018-1-1' })
+        })
+
+        it("Should be able to get part of context using dot", async () => {
+            @domain()
+            class AnimalModel {
+                constructor(
+                    public id: number,
+                    public name: string,
+                    public deceased: boolean,
+                    public birthday: Date
+                ) { }
+            }
+            class AnimalController {
+                @route.get()
+                get(@bind.ctx("request.query") b: AnimalModel) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
+                .expect(200, { id: 747474, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+
+        it("Should be able to get part of context using array notation", async () => {
+            @domain()
+            class AnimalModel {
+                constructor(
+                    public id: number,
+                    public name: string,
+                    public deceased: boolean,
+                    public birthday: Date
+                ) { }
+            }
+            class AnimalController {
+                @route.post()
+                get(@bind.ctx("request.body[0]") b: AnimalModel) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .post("/animal/get")
+                .send([{ id: '747474', name: 'Mimi', deceased: 'ON', birthday: '2018-1-1' }])
+                .expect(200, { id: 747474, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+    })
+
+    describe("User parameter binding", () => {
+        it("Should able to bind context", async () => {
+            const SECRET = "Lorem Ipsum Dolor"
+            const TOKEN = sign({ email: "ketut@gmail.com", role: "Admin" }, SECRET)
+            @domain()
+            class User {
+                constructor(
+                    public email: string,
+                    public role: "Admin" | "User"
+                ) { }
+            }
+
+            class AnimalController {
+                @route.get()
+                get(@bind.user() b: User) {
+                    return b
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            const result = await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${TOKEN}`)
+                .expect(200)
+            expect(result.body).toMatchObject({ email: "ketut@gmail.com", role: "Admin" })
         })
     })
 })

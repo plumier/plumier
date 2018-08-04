@@ -8,9 +8,10 @@ import {
     ParameterPropertiesType,
     TypeConverter,
     ValueConverter,
+    getChildValue,
 } from "@plumjs/core";
 import { FunctionReflection, ParameterReflection, reflect } from "@plumjs/reflect";
-import { Request } from "koa";
+import { Context } from "koa";
 
 
 function createConversionError(value: any, prop: ParameterProperties) {
@@ -147,47 +148,37 @@ export function convert(value: any, prop: ParameterProperties) {
 /* ------------------------------------------------------------------------------- */
 
 
-function bindModel(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): any {
+function bindModel(action: FunctionReflection, ctx: Context, par: ParameterReflection, converter: (value: any) => any): any {
     if (!par.typeAnnotation) return
     if (!isCustomClass(par.typeAnnotation)) return
-    return converter(request.body)
+    return converter(ctx.request.body)
 }
 
-function bindDecorator(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): any {
+function bindDecorator(action: FunctionReflection, ctx: Context, par: ParameterReflection, converter: (value: any) => any): any {
     const decorator: BindingDecorator = par.decorators.find((x: BindingDecorator) => x.type == "ParameterBinding")
     if (!decorator) return
-    const getDataOrPart = (data: any) => decorator.part ? data && data[decorator.part] : data
-    switch (decorator.name) {
-        case "Body":
-            return converter(getDataOrPart(request.body))
-        case "Query":
-            return converter(getDataOrPart(request.query))
-        case "Header":
-            return converter(getDataOrPart(request.headers))
-        case "Request":
-            return converter(getDataOrPart(request))
-    }
+    return converter(decorator.part ? ctx && getChildValue(ctx, decorator.part) : ctx)
 }
 
-function bindArrayDecorator(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any, type: Class | Class[]) => any): any {
-    if (!Array.isArray(par.typeAnnotation)) return
-    return converter(request.body, par.typeAnnotation)
+function bindArrayDecorator(action: FunctionReflection, ctx: Context, par: ParameterReflection, converter: (value: any, type: Class | Class[]) => any): any {
+    if (!Array.isArray(par.typeAnnotation)) return 
+    return converter(ctx.request.body, par.typeAnnotation)
 }
 
-function bindRegular(action: FunctionReflection, request: Request, par: ParameterReflection, converter: (value: any) => any): any {
-    return converter(request.query[par.name.toLowerCase()])
+function bindRegular(action: FunctionReflection, ctx: Context, par: ParameterReflection, converter: (value: any) => any): any {
+    return converter(ctx.request.query[par.name.toLowerCase()])
 }
 
-export function bindParameter(request: Request, action: FunctionReflection, converter?: TypeConverter[]) {
+export function bindParameter(ctx: Context, action: FunctionReflection, converter?: TypeConverter[]) {
     const mergedConverters = flattenConverters(DefaultConverterList.concat(converter || []))
     return action.parameters.map(((x, i) => {
         const converter = (result: any, type?: Class | Class[]) => convert(result, {
             path: [x.name], parameterType: type || x.typeAnnotation,
             converters: mergedConverters, decorators: x.decorators
         });
-        return bindArrayDecorator(action, request, x, converter) ||
-            bindDecorator(action, request, x, converter) ||
-            bindModel(action, request, x, converter) ||
-            bindRegular(action, request, x, converter)
+        return bindArrayDecorator(action, ctx, x, converter) ||
+            bindDecorator(action, ctx, x, converter) ||
+            bindModel(action, ctx, x, converter) ||
+            bindRegular(action, ctx, x, converter)
     }))
 }

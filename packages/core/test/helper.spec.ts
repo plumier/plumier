@@ -1,5 +1,5 @@
 import "@plumjs/core"
-import { resolvePath } from '@plumjs/core';
+import { resolvePath, getChildValue } from '@plumjs/core';
 import { join } from 'path';
 import { unlinkSync, existsSync } from 'fs';
 
@@ -34,7 +34,7 @@ describe("resolvePath", () => {
 
     it("Should resolve file if extension not specified", () => {
         const jsFile = join(__dirname, "./no-js/no-js.js")
-        if(existsSync(jsFile)) unlinkSync(jsFile)
+        if (existsSync(jsFile)) unlinkSync(jsFile)
         const result = resolvePath(join(__dirname, "./no-js/no-js"))
         expect(result[0]).toBe(join(__dirname, "./no-js/no-js"))
     })
@@ -44,4 +44,31 @@ describe("resolvePath", () => {
         expect(result[0]).toBe(join(__dirname, "./resolve-path/my-module.ts"))
     })
 
+})
+
+describe("getChildProperty", () => {
+    it("Should able to get nested child property value", () => {
+        const result = getChildValue({ a: { b: { c: "Hello" } } }, "a.b")
+        expect(result).toEqual({c: "Hello"})
+    })
+    it("Should able to get nested child property value", () => {
+        const result = getChildValue({ a: { b: { c: "Hello" } } }, "a.b.c")
+        expect(result).toBe("Hello")
+    })
+    it("Should able to access array", () => {
+        const result = getChildValue({ a: [true, "Hello", 2] }, "a[1]")
+        expect(result).toBe("Hello")
+    })
+    it("Should work with falsy value", () => {
+        const result = getChildValue({ a: [false] }, "a[0]")
+        expect(result).toBe(false)
+    })
+    it("Should able to access array", () => {
+        const result = getChildValue([1, 2, 3], "[0]")
+        expect(result).toBe(1)
+    })
+    it("Should return undefined if property not match", () => {
+        const result = getChildValue({ a: { b: { c: "Hello" } } }, "a.d.e.f.g[0]")
+        expect(result).toBeUndefined()
+    })
 })

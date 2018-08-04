@@ -1,13 +1,18 @@
 import { reflect } from "@plumjs/reflect";
-import { Request } from "koa";
+import { Request, Context } from "koa";
 
 import { array, bind, domain, route } from "../../../src";
 import { bindParameter } from "../../../src/binder";
 
-function request(opt?: Partial<Request>): Request {
-    return <Request>{ body: { name: "The Body" }, ...opt }
+function fromRequest(opt?: Partial<Request>): Context {
+    const body = { name: "The Body" }
+    return <Context>{ request: { body, ...opt } }
 }
 
+function context(opt?: Partial<Context>): Context {
+    const body = { name: "The Body" }
+    return <Context>{ body, request: { body }, ...opt }
+}
 
 describe("Parameter Binder", () => {
     it("Should bind non decorated action", () => {
@@ -15,8 +20,39 @@ describe("Parameter Binder", () => {
             getAnimal(id: number, name: string) { }
         }
         const metadata = reflect(AnimalController)
-        const result = bindParameter(request({ query: { id: 123, name: "Mimi" } }), metadata.methods[0])
+        const result = bindParameter(fromRequest({ query: { id: 123, name: "Mimi" } }), metadata.methods[0])
         expect(result).toEqual([123, "Mimi"])
+    })
+
+    describe("Context Binder", () => {
+        it("Should bind context", () => {
+            class AnimalController {
+                saveAnimal(@bind.ctx() model: any) { }
+            }
+            const metadata = reflect(AnimalController)
+            const result = bindParameter(context(), metadata.methods[0])
+            expect(result).toEqual([context()])
+        })
+
+        it("Should able to bind using dot separator", () => {
+            class AnimalController {
+                saveAnimal(@bind.ctx("request.body.name") model: any) { }
+            }
+            const metadata = reflect(AnimalController)
+            const result = bindParameter(fromRequest(), metadata.methods[0])
+            expect(result).toEqual(["The Body"])
+        })
+    })
+
+    describe("User Binder", () => {
+        it("Should bind user", () => {
+            class AnimalController {
+                saveAnimal(@bind.user() user: any) { }
+            }
+            const metadata = reflect(AnimalController)
+            const result = bindParameter(context({ state: { user: { name: "Mimi" } } }), metadata.methods[0])
+            expect(result).toEqual([{name: "Mimi"}])
+        })
     })
 
     describe("Request Binder", () => {
@@ -25,7 +61,7 @@ describe("Parameter Binder", () => {
                 saveAnimal(@bind.request("body") model: any) { }
             }
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request(), metadata.methods[0])
+            const result = bindParameter(fromRequest(), metadata.methods[0])
             expect(result).toEqual([{ name: "The Body" }])
         })
 
@@ -34,7 +70,7 @@ describe("Parameter Binder", () => {
                 saveAnimal(id: number, name: string, @bind.request("body") model: any, email: string) { }
             }
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request({ query: { id: 123, name: "Mimi", email: "mimi@gmail.com" } }), metadata.methods[0])
+            const result = bindParameter(fromRequest({ query: { id: 123, name: "Mimi", email: "mimi@gmail.com" } }), metadata.methods[0])
             expect(result).toEqual([123, "Mimi", { name: "The Body" }, "mimi@gmail.com"])
         })
 
@@ -43,8 +79,8 @@ describe("Parameter Binder", () => {
                 saveAnimal(@bind.request() model: any) { }
             }
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request(), metadata.methods[0])
-            expect(result).toEqual([request()])
+            const result = bindParameter(fromRequest(), metadata.methods[0])
+            expect(result).toEqual([fromRequest().request])
         })
     })
 
@@ -54,7 +90,7 @@ describe("Parameter Binder", () => {
                 saveAnimal(@bind.body() model: any) { }
             }
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request(), metadata.methods[0])
+            const result = bindParameter(fromRequest(), metadata.methods[0])
             expect(result).toEqual([{ name: "The Body" }])
         })
 
@@ -63,7 +99,7 @@ describe("Parameter Binder", () => {
                 saveAnimal(@bind.body("name") model: any) { }
             }
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request(), metadata.methods[0])
+            const result = bindParameter(fromRequest(), metadata.methods[0])
             expect(result).toEqual(["The Body"])
         })
 
@@ -72,7 +108,7 @@ describe("Parameter Binder", () => {
                 saveAnimal(id: number, name: string, @bind.body() model: any, email: string) { }
             }
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request({ query: { id: 123, name: "Mimi", email: "mimi@gmail.com" } }), metadata.methods[0])
+            const result = bindParameter(fromRequest({ query: { id: 123, name: "Mimi", email: "mimi@gmail.com" } }), metadata.methods[0])
             expect(result).toEqual([123, "Mimi", { name: "The Body" }, "mimi@gmail.com"])
         })
     })
@@ -83,7 +119,7 @@ describe("Parameter Binder", () => {
                 saveAnimal(@bind.header() model: any) { }
             }
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request({ headers: { accept: "gzip" } }), metadata.methods[0])
+            const result = bindParameter(fromRequest({ headers: { accept: "gzip" } }), metadata.methods[0])
             expect(result).toEqual([{ accept: "gzip" }])
         })
 
@@ -92,7 +128,7 @@ describe("Parameter Binder", () => {
                 saveAnimal(@bind.header("accept") model: any) { }
             }
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request({ headers: { accept: "gzip" } }), metadata.methods[0])
+            const result = bindParameter(fromRequest({ headers: { accept: "gzip" } }), metadata.methods[0])
             expect(result).toEqual(["gzip"])
         })
 
@@ -101,7 +137,7 @@ describe("Parameter Binder", () => {
                 saveAnimal(id: number, name: string, @bind.header() model: any, email: string) { }
             }
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request({ headers: { accept: "gzip" }, query: { id: 123, name: "Mimi", email: "mimi@gmail.com" } }), metadata.methods[0])
+            const result = bindParameter(fromRequest({ headers: { accept: "gzip" }, query: { id: 123, name: "Mimi", email: "mimi@gmail.com" } }), metadata.methods[0])
             expect(result).toEqual([123, "Mimi", { accept: "gzip" }, "mimi@gmail.com"])
         })
     })
@@ -112,7 +148,7 @@ describe("Parameter Binder", () => {
                 saveAnimal(@bind.query() model: any) { }
             }
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request({ query: { accept: "gzip" } }), metadata.methods[0])
+            const result = bindParameter(fromRequest({ query: { accept: "gzip" } }), metadata.methods[0])
             expect(result).toEqual([{ accept: "gzip" }])
         })
 
@@ -121,7 +157,7 @@ describe("Parameter Binder", () => {
                 saveAnimal(@bind.query("accept") model: any) { }
             }
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request({ query: { accept: "gzip" } }), metadata.methods[0])
+            const result = bindParameter(fromRequest({ query: { accept: "gzip" } }), metadata.methods[0])
             expect(result).toEqual(["gzip"])
         })
     })
@@ -142,7 +178,7 @@ describe("Parameter Binder", () => {
             }
 
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request({ body: { id: "123", name: "Mimi", other: "MALICIOUS CODE" } }), metadata.methods[0])
+            const result = bindParameter(fromRequest({ body: { id: "123", name: "Mimi", other: "MALICIOUS CODE" } }), metadata.methods[0])
             expect(result[0]).toBeInstanceOf(AnimalModel)
             expect(result[0]).toEqual({ id: 123, name: "Mimi" })
         })
@@ -161,7 +197,7 @@ describe("Parameter Binder", () => {
             }
 
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request({ query: { id: "123" }, body: { id: 123, name: "Mimi" } }), metadata.methods[0])
+            const result = bindParameter(fromRequest({ query: { id: "123" }, body: { id: 123, name: "Mimi" } }), metadata.methods[0])
             expect(result[0]).toBe(123)
             expect(result[1]).toBeInstanceOf(AnimalModel)
             expect(result[1]).toMatchObject({ id: 123, name: "Mimi" })
@@ -176,7 +212,7 @@ describe("Parameter Binder", () => {
                 saveAnimal(@array(Number) model: number[]) { }
             }
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request({ query: {}, body: ["1", "2", "3"] }), metadata.methods[0])
+            const result = bindParameter(fromRequest({ query: {}, body: ["1", "2", "3"] }), metadata.methods[0])
             expect(result[0]).toEqual([1, 2, 3])
         })
         it("Should bind array of model", () => {
@@ -194,15 +230,17 @@ describe("Parameter Binder", () => {
             }
 
             const metadata = reflect(AnimalController)
-            const result = bindParameter(request({ query: {}, body: [
-                {id: "123", name: "Mimi"},
-                {id: "123", name: "Mimi"},
-                {id: "123", name: "Mimi"}
-            ] }), metadata.methods[0])
+            const result = bindParameter(fromRequest({
+                query: {}, body: [
+                    { id: "123", name: "Mimi" },
+                    { id: "123", name: "Mimi" },
+                    { id: "123", name: "Mimi" }
+                ]
+            }), metadata.methods[0])
             expect(result[0]).toEqual([
-                {id: 123, name: "Mimi"},
-                {id: 123, name: "Mimi"},
-                {id: 123, name: "Mimi"}
+                { id: 123, name: "Mimi" },
+                { id: 123, name: "Mimi" },
+                { id: 123, name: "Mimi" }
             ])
 
         })
