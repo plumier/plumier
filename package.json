@@ -21,7 +21,7 @@
 		"reflect-metadata": "^0.1.12",
 		"ts-jest": "^23.0.0",
 		"tslint": "^5.10.0",
-		"typescript": "2.9.1",
+		"typescript": "3.0.1",
 		"typestrict": "^0.0.9"
 	},
 	"workspaces": [
