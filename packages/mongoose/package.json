@@ -14,7 +14,7 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumjs/core": "0.1.0-alpha.9aaa0a15",
+    "@plumjs/core": "0.1.0-alpha.e8d121b4",
     "@plumjs/reflect": "1.4.0-alpha.9aaa0a15",
     "@plumjs/validator": "0.1.0-alpha.9aaa0a15",
     "@types/mongoose": "^5.2.3",
