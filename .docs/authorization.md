@@ -33,6 +33,8 @@ class AuthController{
 }
 ```
 
+Value of the role can be a string or an array of string that will be used by `@authorize.role(<user role>)`. 
+
 ## Custom Field Name
 By default `JwtAuthFacility` will look for `role` field in your signed token. If you don't like the `role` field on the signed token you can specify the `roleField` with the name of the field in your token.
 
