@@ -1,7 +1,6 @@
-import { Facility, PlumierApplication, Middleware, Invocation, ActionResult, HttpStatusError } from "@plumjs/core";
+import { Facility, PlumierApplication, Middleware, Invocation, ActionResult, HttpStatusError, RouteInfo } from "@plumjs/core";
 import KoaJwt from "koa-jwt"
 import { decorateClass, decorateMethod } from "@plumjs/reflect";
-import { RouteInfo } from "@plumjs/plumier";
 
 export type RoleField = string | ((value: any) => Promise<string[]>)
 export interface JwtSecurityFacilityOption { secret: string, roleField?: RoleField }
