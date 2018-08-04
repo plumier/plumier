@@ -47,7 +47,7 @@ function getDecorator(info: RouteInfo) {
 
 //implementation 
 
-export class JwtSecurityFacility implements Facility {
+export class JwtAuthFacility implements Facility {
     constructor(private option: JwtSecurityFacilityOption) { }
 
     async setup(app: Readonly<PlumierApplication>): Promise<void> {
@@ -59,24 +59,25 @@ export class JwtSecurityFacility implements Facility {
 export class AuthorizeMiddleware implements Middleware {
     constructor(private roleField: RoleField) { }
 
+    private async getRole(user:any):Promise<string[]>{
+        if (typeof this.roleField === "function")
+            return await this.roleField(user)
+        else {
+            const role = user[this.roleField]
+            return Array.isArray(role) ? role : [role]
+        }
+    }
+
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
-        console.log(invocation.context.url)
-        console.log(invocation.context.route)
         const decorator = getDecorator(invocation.context.route)
         if (decorator && decorator.type === "authorize:public") return invocation.proceed()
         const isLogin = !!invocation.context.state.user
-        if (!isLogin) throw new HttpStatusError(403) //forbidden 
-        if (!decorator) throw new HttpStatusError(401) //unauthorized
-        let userRole: string[]
-        if (typeof this.roleField === "function")
-            userRole = await this.roleField(invocation.context.state.user)
-        else {
-            const role = invocation.context.state.user[this.roleField]
-            userRole = Array.isArray(role) ? role : [role]
-        }
+        if (!isLogin) throw new HttpStatusError(403, "Forbidden") //forbidden 
+        if (!decorator) return invocation.proceed()
+        const userRole = await this.getRole(invocation.context.state.user)
         if (userRole.some(x => decorator.value.some(y => x === y)))
             return invocation.proceed()
         else
-            throw new HttpStatusError(401) //unauthorized
+            throw new HttpStatusError(401, "Unauthorized") //unauthorized
     }
 }

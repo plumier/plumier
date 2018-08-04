@@ -48,15 +48,35 @@ export const UserModel = model(User)
 
 ### Controller 
 
-Controller is where your logic stays, your focus is how the data will be saved to database, you don't need to worry about validation and conversion.
+Controller is where your logic stays, your focus is how the data will be saved to database, you don't need to worry about validation and conversion. Further more you can apply role authorization to your API using decorator to restrict access to some routes
 
 ```typescript
+//only admin can access all containing routes under /users
+//except overridden see get(id) method
+@authorize.role("admin")
 export class UsersController {
 
-    //handle POST /users
+    //POST /users
     @route.post("")
     save(data: User) {
         return new UserModel(data).save()
+    }
+
+    //PUT /users/<id>
+    @route.put(":id")
+    async modify(id:string, @partial(User) data:Partial<User>){
+        const user = User.findById(id)
+        if(!user) throw new HttpStatusError(404, "User not found")
+        Object.assign(user, data)
+        await user.save()
+    }
+
+    //GET /pets/<id>
+    @route.get(":id")
+    //authorize user and admin to access GET /pets/<id>
+    @authorize.role("user", "admin")
+    get(id: string) {
+        return User.findById(id)
     }
 }
 ```
@@ -70,9 +90,11 @@ new Plumier()
    //plug restful predefined configuration
    .set(new RestfulApiFacility())
    //plug mongoose predefined configuration (optional)
-   //if not used then automatic schema generation and 
-   //@val.unique() will not work
+   //this facility required for auto generated mongoose schema
+   //and @val.unique() validator
    .set(new MongooseFacility({uri: "mongodb://localhost:27017/test-data"}))
+   //plug jwt authorization to enable role authorization
+   .set(new JwtAuthFacility({ secret: "<very secret>" }))
    .initialize()
    //start the app by listening to port 8000
    .then(x => x.listen(8000))
