@@ -10,7 +10,7 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumjs/core": "0.1.0-alpha.9aaa0a15",
+    "@plumjs/core": "0.1.0-alpha.e8d121b4",
     "koa-jwt": "^3.3.2",
     "tslib": "^1.9.2"
   },
