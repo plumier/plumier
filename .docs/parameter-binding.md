@@ -200,7 +200,7 @@ export class AnimalController {
 Above code will be the same as access `ctx.request.body`. 
 
 Allowed path example: 
-* Using dot to access child property `request.headers.ip` etc
+* Using dot to access child property `request.ip` etc
 * Using array notation `request.body[0]`
 
 

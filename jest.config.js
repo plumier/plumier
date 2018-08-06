@@ -1,6 +1,7 @@
 module.exports = {
     silent: false,
     verbose: false,
+    testEnvironment: "node",
     collectCoverage: true,
     collectCoverageFrom: [
         "packages/*/src/**/*.{ts}"
