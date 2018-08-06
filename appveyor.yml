@@ -14,6 +14,9 @@ environment:
 
 build: off
 
+services:
+  - mongodb
+
 branches:
   only:
   - master
