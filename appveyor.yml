@@ -20,16 +20,13 @@ branches:
 
 install:
   - ps: Install-Product node $env:nodejs_version
-  - npm install -g npm
-  - npm config set progress=false
-  - npm install
+  - npm install -g yarn
+  - yarn install
 
-# Fix line endings on Windows
 init:
   - git config --global core.autocrlf true
 
 test_script:
-  # Output useful info for debugging.
-  - node --version && npm --version
+  - node --version && npm --version && yarn --version
   - ps: "npm --version # PowerShell" # Pass comment to PS for easier debugging
   - cmd: npm run test
