@@ -17,9 +17,9 @@
     "@plumjs/core": "0.1.0-alpha.9aaa0a15",
     "@plumjs/reflect": "1.4.0-alpha.9aaa0a15",
     "@plumjs/validator": "0.1.0-alpha.9aaa0a15",
-    "@types/mongoose": "^5.2.3",
+    "@types/mongoose": "^5.2.4",
     "chalk": "^2.4.1",
-    "mongoose": "^5.2.6"
+    "mongoose": "^5.2.7"
   },
   "bugs": {
     "url": "https://github.com/ktutnik/plumier/issues"
