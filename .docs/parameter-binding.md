@@ -59,21 +59,21 @@ Domain binding only works for POST and PUT method
 
 ```typescript
 @domain() //any decorator will works
-class AnimalDto {
+class Animal {
     constructor(
-        public id:number
-        public name:string
-        public deceased:boolean
+        public id:number,
+        public name:string,
+        public deceased:boolean,
         public birthday:Date
     ){}
 }
 
 export class AnimalController {
     @route.post()
-    save(model:AnimalDto){}
+    save(model:Animal){}
 }
 ```
-model parameter will automatically convert to `AnimalDto` inside `save` action
+model parameter will automatically convert to `Animal` inside `save` action
 ```
 POST /animal/save
 JSON Payload: { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }
@@ -86,10 +86,10 @@ AnimalController {
 }
 ```
 
-### Nested DTO Binding
+### Nested Domain Binding
 ```typescript
 @domain()
-class ClientDto {
+class Client {
     constructor(
         public id: number,
         public name: string,
@@ -97,22 +97,22 @@ class ClientDto {
     ) { }
 }
 @domain()
-class AnimalDto {
+class Animal {
     constructor(
         public id: number,
         public name: string,
         public deceased: boolean,
         public birthday: Date,
-        public owner: ClientDto
+        public owner: Client
     ) { }
 }
 
 export class AnimalController {
     @route.post()
-    save(model:AnimalDto){}
+    save(model:Animal){}
 }
 ```
-model parameter will automatically convert to `AnimalDto` inside `save` action
+model parameter will automatically convert to `Animal` inside `save` action
 ```
 POST /animal/save
 JSON Payload: {
@@ -128,18 +128,51 @@ JSON Payload: {
 }
 
 Result: 
-AnimalDto {
+Animal {
     birthday: new Date("2018-1-1"), 
     deceased: true, 
     id: 200, 
     name: "Mimi",
-    owner: ClientDto {
+    owner: Client {
         id: 400,
         name: "John Doe",
         join: new Date("2015-1-1")
     }
 }
 ```
+
+### Bind Body to Parameters
+Its best practice to bind body request to a domain model class, but if you don't want to add another class, request body field can be bound to separate parameters.
+
+```typescript
+export class AnimalController {
+    @route.post()
+    save(id:number, name:string, deceased:boolean, birthday:Date){}
+}
+```
+
+Sending POST payload below will bound body property to the parameters properly
+
+```
+POST /animal/save
+JSON Payload: { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }
+```
+
+If you have a mix request query and body, plumier will identified properly unless they have different name, 
+
+```typescript
+export class AnimalController {
+    @route.post()
+    save(id:number, name:string, deceased:boolean, birthday:Date, type:string){}
+}
+```
+
+```
+POST /animal/save?type=HappyPet
+JSON Payload: { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }
+```
+
+The order of the action parameter is not important. Plumier bind the parameter based on name.
 
 ### Array Binding
 Array binding a little bit different due to TypeScript [design type emit limitation](https://github.com/Microsoft/TypeScript/issues/12463).
