@@ -37,10 +37,10 @@ describe("Parameter Binding", () => {
                 .get("/animal/get")
                 .expect(422, [{ messages: ['Required'], path: ['b'] }])
         })
-        it("Should return 400 if empty string provided", async () => {
+        it("Should return 422 if empty string provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=")
-                .expect(400, 'Unable to convert "" into Boolean in parameter b')
+                .expect(422, [{ "messages": ["Required"], "path": ["b"] }])
         })
         it("Should return 400 if any other value provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
@@ -90,10 +90,10 @@ describe("Parameter Binding", () => {
                 .get("/animal/get?b=hello")
                 .expect(400, `Unable to convert "hello" into Number in parameter b`)
         })
-        it("Should return 400 if value not provided", async () => {
+        it("Should return 422 if value not provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=")
-                .expect(400, `Unable to convert "" into Number in parameter b`)
+                .expect(422, [{ "messages": ["Required"], "path": ["b"] }])
         })
         it("Should return 422 if value not specified", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
@@ -142,10 +142,10 @@ describe("Parameter Binding", () => {
                 .get("/animal/get?b=hello")
                 .expect(400, `Unable to convert "hello" into Date in parameter b`)
         })
-        it("Should return 400 if value not provided", async () => {
+        it("Should return 422 if value not provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=")
-                .expect(400, `Unable to convert "" into Date in parameter b`)
+                .expect(422, [{ "messages": ["Required"], "path": ["b"] }])
         })
         it("Should return 422 if value not specified", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
@@ -859,6 +859,37 @@ describe("Parameter Binding", () => {
             expect(result.body).toMatchObject({ email: "ketut@gmail.com", role: "Admin" })
         })
     })
+
+    describe("Binding body to parameters", () => {
+        it("Should able to bind body to parameters to limit usage of domain model", async () => {
+            class AnimalController {
+                @route.post()
+                save(id: number, name: string, deceased: boolean, birthday: Date) {
+                    return { id, name, deceased, birthday }
+                }
+            }
+            const koa = await fixture(AnimalController).initialize()
+            await Supertest(koa.callback())
+                .post("/animal/save")
+                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(200, { id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+
+        it("Should be able to mix body binding with query binding", async () => {
+            class AnimalController {
+                @route.post()
+                save(type:string, id: number, name: string, deceased: boolean, birthday: Date) {
+                    return { id, name, deceased, birthday, type }
+                }
+            }
+            const koa = await fixture(AnimalController).initialize()
+            await Supertest(koa.callback())
+                .post("/animal/save?type=HappyAnimal")
+                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(200, { id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString(), type: "HappyAnimal" })
+        })
+    })
+
 })
 
 describe("Custom Error Message", () => {
