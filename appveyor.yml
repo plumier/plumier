@@ -1,10 +1,8 @@
 # AppVeyor file
 # http://www.appveyor.com/docs/appveyor-yml
 
-# Build version format
 version: "{build}"
 
-# Test against this version of Node.js
 environment:
   NODE_ENV: test
 
@@ -31,5 +29,5 @@ init:
 
 test_script:
   - node --version && npm --version && yarn --version
-  - ps: "npm --version # PowerShell" # Pass comment to PS for easier debugging
+  - ps: "npm --version # PowerShell" 
   - cmd: npm run test

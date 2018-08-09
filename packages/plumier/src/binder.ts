@@ -166,7 +166,8 @@ function bindArrayDecorator(action: FunctionReflection, ctx: Context, par: Param
 }
 
 function bindRegular(action: FunctionReflection, ctx: Context, par: ParameterReflection, converter: (value: any) => any): any {
-    return converter(ctx.request.query[par.name.toLowerCase()])
+    const key = Object.keys(ctx.request.query).find(x => x.toLowerCase() === par.name.toLocaleLowerCase())
+    return converter(ctx.request.query[key!])
 }
 
 export function bindParameter(ctx: Context, action: FunctionReflection, converter?: TypeConverter[]) {

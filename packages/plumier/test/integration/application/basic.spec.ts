@@ -54,6 +54,13 @@ describe("Basic Controller", () => {
             .expect(200, { id: 474747, name: 'Mimi', age: 5 })
     })
 
+    it("Should able to perform GET request with case insensitive", async () => {
+        const koa = await fixture().initialize()
+        await Supertest(koa.callback())
+            .get("/animal/get?ID=474747")
+            .expect(200, { id: 474747, name: 'Mimi', age: 5 })
+    })
+
     it("Should able to perform POST request", async () => {
         const koa = await fixture().initialize()
         await Supertest(koa.callback())
@@ -70,10 +77,25 @@ describe("Basic Controller", () => {
             .expect(200, { id: 474747, name: 'Mimi', age: 5 })
     })
 
+    it("Should able to perform PUT request with case insensitive", async () => {
+        const koa = await fixture().initialize()
+        await Supertest(koa.callback())
+            .put("/animal/modify?ID=474747")
+            .send({ id: 474747, name: 'Mimi', age: 5 })
+            .expect(200, { id: 474747, name: 'Mimi', age: 5 })
+    })
+
     it("Should able to perform DELETE request", async () => {
         const koa = await fixture().initialize()
         await Supertest(koa.callback())
             .delete("/animal/delete?id=474747")
+            .expect(200, { id: 474747, name: 'Mimi', age: 5 })
+    })
+
+    it("Should able to perform DELETE request with case insensitive", async () => {
+        const koa = await fixture().initialize()
+        await Supertest(koa.callback())
+            .delete("/animal/delete?ID=474747")
             .expect(200, { id: 474747, name: 'Mimi', age: 5 })
     })
 })

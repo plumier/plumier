@@ -128,7 +128,7 @@ function checkUrlMatch(route: RouteInfo, ctx: Context) {
     return { keys, match, method: route.method.toUpperCase(), route }
 }
 
-export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:Context) => Invocation) {
+export function router(infos: RouteInfo[], config: Configuration, handler: (ctx: Context) => Invocation) {
     return async (ctx: Context, next: () => Promise<void>) => {
         const match = infos.map(x => checkUrlMatch(x, ctx))
             .find(x => Boolean(x.match) && x.method == ctx.method)
@@ -137,10 +137,10 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
             Object.assign(ctx, { config, route: match.route })
             //add query
             const query = match.keys.reduce((a, b, i) => {
-                a[b.name.toString().toLowerCase()] = match.match![i + 1]
+                a[b.name] = match.match![i + 1]
                 return a;
             }, <any>{})
-            Object.assign(ctx.query, query)
+            Object.assign(ctx.request.query, query)
             const invocation = handler(ctx)
             const result = await invocation.proceed()
             result.execute(ctx)
@@ -287,7 +287,7 @@ export function printAnalysis(results: TestResult[]) {
     })
     console.log()
     console.log(chalk.bold("Route Analysis Report"))
-    if(data.length == 0) console.log("No controller found")
+    if (data.length == 0) console.log("No controller found")
     data.forEach((x, i) => {
         const num = (i + 1).toString().padStart(data.length.toString().length)
         const action = x.action.padEnd(Math.max(...data.map(x => x.action.length)))

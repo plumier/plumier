@@ -23,7 +23,7 @@ class AuthController{
         //check for username / password
         //if OK then return signed token
         return { 
-            user: jwt.sign({ 
+            accessToken: jwt.sign({ 
                 email: "<user email>", 
                 //defined the role
                 role: "<user role>" 
@@ -56,7 +56,7 @@ const app = new Plumier()
 app.set(new JwtAuthFacility({ secret: "<your secret key>", roleField: "access" }))
 ```
 
-If you don't like sharing your user role in the token, you can provide a function to get the user role:
+If you require a real time access to the role vs reading from token claim (because the user role changes needs to wait for the token to expired first), you can provide a function to get the user role for real time role access. But keep in mind that this trick will make every request touch the database that will impact performance:
 
 ```typescript
 const app = new Plumier()
