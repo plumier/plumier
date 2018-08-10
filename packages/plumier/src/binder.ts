@@ -98,7 +98,11 @@ export function defaultModelConverter(value: any, prop: ParameterPropertiesType<
 
     //crete new instance of the type and assigned the sanitized values
     try {
-        return Object.assign(new prop.parameterType(), sanitized)
+        const result = Object.assign(new prop.parameterType(), sanitized)
+        Object.keys(result).forEach(x => {
+            if(typeof result[x] === "undefined") delete result[x]
+        })
+        return result
     }
     catch (e) {
         const message = errorMessage.UnableToInstantiateModel.format(prop.parameterType.name)

@@ -191,6 +191,22 @@ describe("Converter", () => {
             }).toThrow(`Unable to convert "Hello" into AnimalClass in parameter id`)
         })
 
+        it("Should not populate optional properties with undefined", () => {
+            @decorateClass({})
+            class AnimalClass {
+                constructor(
+                    public id: number,
+                    public name: string,
+                    public deceased: boolean | undefined,
+                    public birthday: Date | undefined
+                ) { }
+            }
+
+            const result = convert({ id: "200", name: "Mimi" }, { ...DefaultNumberProp, parameterType: AnimalClass })
+            expect(result).toBeInstanceOf(AnimalClass)
+            expect(Object.keys(result)).toEqual(["id", "name"])
+            expect(result).toEqual({ id: 200, name: "Mimi" })
+        })
     })
 
     describe("Nested Model", () => {
@@ -292,7 +308,7 @@ describe("Converter", () => {
     })
 
     describe("Array Converter", () => {
-        const getProp = (type:Class) => ({
+        const getProp = (type: Class) => ({
             ...DefaultNumberProp,
             parameterType: [type]
         })
@@ -357,7 +373,7 @@ describe("Converter", () => {
 
     describe("Custom Converter", () => {
         it("Should able to use custom converter", () => {
-            const converters: TypeConverter[] = [{type: Boolean, converter: x => "Custom Boolean"}]
+            const converters: TypeConverter[] = [{ type: Boolean, converter: x => "Custom Boolean" }]
             const result = convert("TRUE", { ...DefaultNumberProp, parameterType: Boolean, converters: flattenConverters(converters) })
             expect(result).toBe("Custom Boolean")
         })
