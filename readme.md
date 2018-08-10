@@ -60,7 +60,7 @@ export class UsersController {
 
     //POST /users
     @route.post("")
-    //make registration public
+    //make registration accessible to public
     @authorize.public()
     save(data: User) {
         return new UserModel(data).save()
@@ -70,21 +70,31 @@ export class UsersController {
     @route.put(":id")
     async modify(id:string, @partial(User) data:Partial<User>, @bind.user() user:LoginUser){
         //if user try to edit other user data, throw 401
-        if(id !== user.id && user.role === "User") throw new HttpStatusError(401, "Only authentic user allowed")
-        const user = User.findById(id)
+        if(id !== user.id && user.role === "User") 
+            throw new HttpStatusError(401, "Only authentic user allowed")
+        const user = UserModel.findById(id)
         if(!user) throw new HttpStatusError(404, "User not found")
         Object.assign(user, data)
         await user.save()
     }
 
-    //GET /pets/<id>
+    //GET /users/<id>
     @route.get(":id")
-    //authorize user and admin to access GET /pets/<id>
-    @authorize.role("user", "admin")
     get(id: string, @bind.user() user:LoginUser) {
         //if user try to access other user info, throw 401
-        if(id !== user.id && user.role === "User") throw new HttpStatusError(401, "Only authentic user allowed")
-        return User.findById(id)
+        if(id !== user.id && user.role === "User") 
+            throw new HttpStatusError(401, "Only authentic user allowed")
+        return UserModel.findById(id)
+    }
+
+    //GET /users?offset=<number>&limit=<number>
+    @route.get("")
+    //get all only accessible to admins
+    @authorize.role("Admin", "SuperAdmin")
+    all(@val.optional() offset:number = 0, @val.optional() limit:number = 50){
+        return UserModel.find()
+            .skip(offset)
+            .limit(limit)
     }
 }
 ```
