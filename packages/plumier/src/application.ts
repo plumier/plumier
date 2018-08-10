@@ -163,7 +163,7 @@ export class RestfulApiFacility extends WebApiFacility {
 export class Plumier implements PlumierApplication {
     readonly config: Readonly<PlumierConfiguration>;
     readonly koa: Koa
-    private globalMiddleware:Middleware[] = []
+    private globalMiddleware: Middleware[] = []
 
     constructor() {
         this.koa = new Koa()
@@ -192,7 +192,7 @@ export class Plumier implements PlumierApplication {
         return this;
     }
 
-    private createRoutes(executionPath:string) {
+    private createRoutes(executionPath: string) {
         let routes: RouteInfo[] = []
         if (typeof this.config.controller === "string") {
             const path = isAbsolute(this.config.controller) ? this.config.controller :
@@ -213,6 +213,8 @@ export class Plumier implements PlumierApplication {
 
     async initialize(): Promise<Koa> {
         try {
+            if (process.env["NODE_ENV"] === "production")
+                Object.assign(this.config, { mode: "production" })
             await Promise.all(this.config.facilities.map(x => x.setup(this)))
             let routes: RouteInfo[] = this.createRoutes(dirname(module.parent!.parent!.filename))
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
