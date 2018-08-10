@@ -363,3 +363,5 @@ export class AnimalController {
     }
 }
 ```
+
+`User` type is type of claim that you specify when you sign the access token.

@@ -40,10 +40,13 @@ export class User {
         public email:string,
         public address:string,
         public city:string,
-        public zip:string
+        public zip:string,
+        //only super admin can set role
+        @authorize.role("SuperAdmin")
+        public role: "Admin" | "SuperAdmin" | "User" | undefined
     ) { }
 }
-//mongoose model, schema automatically generated
+//mongoose model, schema automatically generated (optional, can use other ORM)
 export const UserModel = model(User)
 ```
 
@@ -52,20 +55,22 @@ export const UserModel = model(User)
 Controller is where your logic stays, your focus is how the data will be saved to database, you don't need to worry about validation and conversion. Further more you can apply role authorization to your API using decorator to restrict access to some routes
 
 ```typescript
-//only admin can access all containing routes under /users
-//except overridden see get(id) method
-@authorize.role("admin")
+//by default only login user can access all route under /users
 export class UsersController {
 
     //POST /users
     @route.post("")
+    //make registration public
+    @authorize.public()
     save(data: User) {
         return new UserModel(data).save()
     }
 
     //PUT /users/<id>
     @route.put(":id")
-    async modify(id:string, @partial(User) data:Partial<User>){
+    async modify(id:string, @partial(User) data:Partial<User>, @bind.user() user:LoginUser){
+        //if user try to edit other user data, throw 401
+        if(id !== user.id && user.role === "User") throw new HttpStatusError(401, "Only authentic user allowed")
         const user = User.findById(id)
         if(!user) throw new HttpStatusError(404, "User not found")
         Object.assign(user, data)
@@ -76,7 +81,9 @@ export class UsersController {
     @route.get(":id")
     //authorize user and admin to access GET /pets/<id>
     @authorize.role("user", "admin")
-    get(id: string) {
+    get(id: string, @bind.user() user:LoginUser) {
+        //if user try to access other user info, throw 401
+        if(id !== user.id && user.role === "User") throw new HttpStatusError(401, "Only authentic user allowed")
         return User.findById(id)
     }
 }
