@@ -1,4 +1,4 @@
-import { Class, ActionResult } from "@plumjs/core";
+import { Class, ActionResult, route } from "@plumjs/core";
 import { Context } from "koa";
 import Supertest from "supertest";
 
@@ -10,6 +10,14 @@ class InterceptBody implements Middleware {
         const result = await i.proceed()
         result.body = this.newBody
         return result
+    }
+}
+
+class AssertParameterMiddleware implements Middleware {
+    constructor(private expected: any[]) { }
+    async execute(i: Invocation) {
+        expect(i.context.parameters).toMatchObject(this.expected)
+        return i.proceed()
     }
 }
 
@@ -50,12 +58,14 @@ describe("Middleware", () => {
                     return "Body"
                 }
             }
-            const fn = jest.fn(() => {})
+            const fn = jest.fn(() => { })
             const app = await fixture(AnimalController)
-                .use({execute: async x => {
-                    fn(x.context.route.url, x.context.config.mode)
-                    return x.proceed()
-                }})
+                .use({
+                    execute: async x => {
+                        fn(x.context.route.url, x.context.config.mode)
+                        return x.proceed()
+                    }
+                })
                 .initialize()
             await Supertest(app.callback())
                 .get("/animal/get")
@@ -112,6 +122,22 @@ describe("Middleware", () => {
                 .expect(200)
             expect(spy.mock.calls).toEqual([[1], [3], [5], [6], [4], [2]])
         })
+
+        it("Should able to access action parameter from middleware", async () => {
+            class AnimalController {
+                @route.get()
+                get(a: number, b: string, c: boolean) {
+                    return "Body"
+                }
+            }
+            const app = await fixture(AnimalController)
+                .use(new AssertParameterMiddleware([1, "1", true]))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get?a=1&b=1&c=1")
+                .expect(200)
+        })
+
     })
 
     describe("Controller Middleware", () => {
@@ -179,6 +205,21 @@ describe("Middleware", () => {
             expect(spy.mock.calls).toEqual([[1], [3], [5], [6], [4], [2]])
         })
 
+        it("Should able to access action parameter from middleware", async () => {
+
+            @middleware.use(new AssertParameterMiddleware([1, "1", true]))
+            class AnimalController {
+                @route.get()
+                get(a: number, b: string, c: boolean) {
+                    return "Body"
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get?a=1&b=1&c=1")
+                .expect(200)
+        })
     })
 
     describe("Action Middleware", () => {
@@ -244,6 +285,22 @@ describe("Middleware", () => {
                 .get("/animal/get")
                 .expect(200)
             expect(spy.mock.calls).toEqual([[1], [3], [5], [6], [4], [2]])
+        })
+
+        it("Should able to access action parameter from middleware", async () => {
+
+            class AnimalController {
+                @middleware.use(new AssertParameterMiddleware([1, "1", true]))
+                @route.get()
+                get(a: number, b: string, c: boolean) {
+                    return "Body"
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get?a=1&b=1&c=1")
+                .expect(200)
         })
     })
 })

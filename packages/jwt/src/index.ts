@@ -1,6 +1,6 @@
 import { Facility, PlumierApplication, Middleware, Invocation, ActionResult, HttpStatusError, RouteInfo } from "@plumjs/core";
 import KoaJwt from "koa-jwt"
-import { decorateClass, decorateMethod } from "@plumjs/reflect";
+import { decorateClass, decorateMethod, decorateParameter } from "@plumjs/reflect";
 
 export type RoleField = string | ((value: any) => Promise<string[]>)
 export interface JwtSecurityFacilityOption { secret: string, roleField?: RoleField }
@@ -16,8 +16,10 @@ function decorate(data: any) {
     return (...args: any[]) => {
         if (args.length === 1)
             decorateClass(data)(args[0])
-        else
+        else if(args.length === 2)
             decorateMethod(data)(args[0], args[1])
+        else 
+            decorateParameter(data)(args[0], args[1], args[2])
     }
 }
 
