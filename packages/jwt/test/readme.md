@@ -1,1 +1,1 @@
-tests is in @plumjs/plumier
+some of tests is in @plumjs/plumier

@@ -148,5 +148,31 @@ export class ProductsController {
 | `POST /products`     | admin       |
 | `PUT /products/<id>` | admin       |
 
+## Parameter Authorization
+Grant access to pass value to parameter to specific role. This feature useful when you want to restrict the API consumer to set some property of your domain without creating a new domain/method.
 
-## Hierarchical Authorization
+> Parameter authorization only affect on how the end user send/provided the data. It will not affect how the data will be retrieved. Means **it will not** automatically filter some property based on role on the JSON result.
+
+> Parameter decorated with `@authorize.role()` will automatically have [`@val.optional()`](./validation.md#optional-validation). Make sure to use optional parameter `?` or `| undefined` datatype to properly catch the null safety.
+
+
+```typescript
+@domain()
+export class User {
+    constructor(
+        name: string,
+        //only admin can send deceased
+        @authorize.role("admin")
+        disabled: boolean | undefined
+    ) { }
+}
+
+export class UsersController {
+    @route.post()
+    save(data: User) {   }
+    @route.put(":id")
+    save(@val.partial(User) data: Partial<User>) {   }
+}
+```
+
+Using above code, only admin can disabled the user, if user doesn't have admin role Plumier will return 401 with informative error result.
