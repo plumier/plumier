@@ -62,17 +62,15 @@ export class ActionInvocation implements Invocation {
     async proceed(): Promise<ActionResult> {
         const { route, config } = this.context
         const controller: any = config.dependencyResolver.resolve(route.controller.object)
-        //bind parameters
-        const parameters = bindParameter(this.context, route.action, config.converters)
         //check validation
         if (config.validator) {
             const param = (i: number) => route.action.parameters[i]
             const validate = (value: any, i: number) => config.validator!(value, param(i))
-            const result = await Promise.all(parameters.map((value, index) => validate(value, index)))
+            const result = await Promise.all(this.context.parameters.map((value, index) => validate(value, index)))
             const issues = result.flatten()
             if (issues.length > 0) throw new ValidationError(issues)
         }
-        const result = (<Function>controller[route.action.name]).apply(controller, parameters)
+        const result = (<Function>controller[route.action.name]).apply(controller, this.context.parameters)
         const awaitedResult = await Promise.resolve(result)
         const status = config.responseStatus && config.responseStatus[route.method] || 200
         if (awaitedResult instanceof ActionResult) {

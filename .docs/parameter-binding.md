@@ -363,33 +363,3 @@ export class AnimalController {
     }
 }
 ```
-
-## Custom Error Message
-By default if value conversion failed Plumier will throw `ConversionError` with status 400 with message `Unable to convert "<value>" into <Type> in parameter <parameter path>`
-
-If you want to provide another error message you can catch the error on the global middleware and re-throw error with your custom message. 
-
-```typescript
-const app = new Plumier()
-app.set(new WebApiFacility())
-app.use({execute: async x => {
-    try{
-        return await x.proceed()
-    }
-    catch(e){
-        if(e instanceof ConversionError){
-            //e.info contains information of current error such as:
-            //- parameter path
-            //- parameter type
-            //- parameter value
-            throw new HttpStatusError(400, "<Your custom message>")
-        }
-        else 
-            throw e
-    }
-}})
-
-```
-
-
-

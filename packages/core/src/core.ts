@@ -216,7 +216,8 @@ export interface PlumierApplication extends Application {
 declare module "koa" {
     export interface Context {
         route: Readonly<RouteInfo>,
-        config: Readonly<Configuration>
+        config: Readonly<Configuration>,
+        parameters: any[]
     }
 }
 

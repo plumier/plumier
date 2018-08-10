@@ -50,7 +50,7 @@ export class JwtAuthFacility implements Facility {
     constructor(private option: JwtSecurityFacilityOption) { }
 
     async setup(app: Readonly<PlumierApplication>): Promise<void> {
-        app.use(KoaJwt({ secret: this.option.secret, passthrough: true }))
+        app.koa.use(KoaJwt({ secret: this.option.secret, passthrough: true }))
         app.use(new AuthorizeMiddleware(this.option.roleField || "role"))
     }
 }

@@ -15,6 +15,7 @@ import * as Fs from "fs";
 import { Context } from "koa";
 import * as Path from "path";
 import Ptr from "path-to-regexp";
+import { bindParameter } from './binder';
 
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- TYPES -------------------------------------- */
@@ -133,14 +134,15 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
         const match = infos.map(x => checkUrlMatch(x, ctx))
             .find(x => Boolean(x.match) && x.method == ctx.method)
         if (match) {
-            //assign config and route to context
-            Object.assign(ctx, { config, route: match.route })
             //add query
             const query = match.keys.reduce((a, b, i) => {
                 a[b.name] = match.match![i + 1]
                 return a;
             }, <any>{})
             Object.assign(ctx.request.query, query)
+            //assign config and route to context
+            const parameters = bindParameter(ctx, match.route.action, config.converters)
+            Object.assign(ctx, { config, route: match.route, parameters })
             const invocation = handler(ctx)
             const result = await invocation.proceed()
             result.execute(ctx)

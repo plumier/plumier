@@ -6,6 +6,7 @@ import { decorateParameter } from "@plumjs/reflect";
 import { ActionInvocation } from "../../../src/application";
 import { ActionResult, Class, Configuration, DefaultConfiguration, HttpStatusError, route } from "@plumjs/core";
 import { transformController } from "../../../src/router";
+import { bindParameter } from '../../../src/binder';
 
 
 function fixture(controller: Class, config?: Partial<Configuration>) {
@@ -13,6 +14,7 @@ function fixture(controller: Class, config?: Partial<Configuration>) {
         const ctlRoute = transformController(controller)
         ctx.route = ctlRoute[0]
         ctx.config = Object.assign(DefaultConfiguration, config)
+        ctx.parameters = bindParameter(ctx, ctlRoute[0].action, ctx.config.converters)
         const invocation = new ActionInvocation(ctx)
         const result = await invocation.proceed()
         result.execute(ctx)

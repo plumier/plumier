@@ -832,7 +832,7 @@ describe("Parameter Binding", () => {
     })
 
     describe("User parameter binding", () => {
-        it("Should able to bind context", async () => {
+        it("Should able to bind user", async () => {
             const SECRET = "Lorem Ipsum Dolor"
             const TOKEN = sign({ email: "ketut@gmail.com", role: "Admin" }, SECRET)
             @domain()
@@ -890,36 +890,6 @@ describe("Parameter Binding", () => {
         })
     })
 
-})
-
-describe("Custom Error Message", () => {
-    it("Should able to catch conversion error and re-throw custom conversion error message", async () => {
-        class AnimalController {
-            @route.get()
-            get(@bind.query() b: number) {
-                return b
-            }
-        }
-
-        const koa = await fixture(AnimalController)
-            .use({
-                execute: async x => {
-                    try {
-                        return await x.proceed()
-                    }
-                    catch (e) {
-                        if (e instanceof ConversionError)
-                            throw new HttpStatusError(400, "Conversion error occur")
-                        else
-                            throw e
-                    }
-                }
-            }).initialize()
-
-        await Supertest(koa.callback())
-            .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
-            .expect(400, `Conversion error occur`)
-    })
 })
 
 describe("Custom Converter", () => {

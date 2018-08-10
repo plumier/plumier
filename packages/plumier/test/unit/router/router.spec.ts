@@ -44,7 +44,7 @@ describe("Router", () => {
         @route.root("/beast/:type/animal")
         class AnimalController {
             @route.get(":id")
-            get(id: number) { }
+            get(type:string, id: string) { }
         }
         const app = fixture(AnimalController)
         await Supertest(app)
