@@ -2,7 +2,7 @@
 	"private": true,
 	"description": "Pleasant TypeScript Web Api Framework",
 	"scripts": {
-		"test": "jest",
+		"test": "jest --maxWorkers=4",
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish",
 		"clean": "node script/cleanup",
 		"compile": "npm run clean && jest && lerna run compile",
