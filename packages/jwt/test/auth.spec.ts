@@ -61,6 +61,12 @@ describe("checkParameters", () => {
             expect(result).toMatchObject(["data.status"])
         })
 
+        it("Should return unauthorized path with partial type", () => {
+            const meta = reflect(AnimalController)
+            const result = checkParameters([], meta.methods[0].parameters, [{ status: "Active" }], ["Users"])
+            expect(result).toMatchObject(["data.status"])
+        })
+
         it("Should return empty array if has authorization", () => {
             const meta = reflect(AnimalController)
             const result = checkParameters([], meta.methods[0].parameters, [new Animal("1", true, new Date(), "Active")], ["Admin"])

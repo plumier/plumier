@@ -191,7 +191,7 @@ describe("Converter", () => {
             }).toThrow(`Unable to convert "Hello" into AnimalClass in parameter id`)
         })
 
-        it("Should not populate optional properties with undefined", () => {
+        it.only("Should not populate optional properties with undefined", () => {
             @decorateClass({})
             class AnimalClass {
                 constructor(
@@ -202,7 +202,7 @@ describe("Converter", () => {
                 ) { }
             }
 
-            const result = convert({ id: "200", name: "Mimi" }, { ...DefaultNumberProp, parameterType: AnimalClass })
+            const result = convert({ id: "200", name: "Mimi", excess: "Hola" }, { ...DefaultNumberProp, parameterType: AnimalClass })
             expect(result).toBeInstanceOf(AnimalClass)
             expect(Object.keys(result)).toEqual(["id", "name"])
             expect(result).toEqual({ id: 200, name: "Mimi" })

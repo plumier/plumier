@@ -99,7 +99,10 @@ export function defaultModelConverter(value: any, prop: ParameterPropertiesType<
     //crete new instance of the type and assigned the sanitized values
     try {
         const result = Object.assign(new prop.parameterType(), sanitized)
-        Object.keys(result).forEach(x => {
+        //remove property that is not defined in value
+        //because new prop.parameterType() will create property with undefined value
+        const trim = Object.keys(result).filter(x => Object.keys(value).indexOf(x) === -1)
+        trim.forEach(x => {
             if(typeof result[x] === "undefined") delete result[x]
         })
         return result

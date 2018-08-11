@@ -57,7 +57,8 @@ export function checkParameter(path: string[], meta: ParameterReflection, value:
     }
     else if (isCustomClass(meta.typeAnnotation)) {
         const classMeta = reflect(<Class>meta.typeAnnotation)
-        return checkParameters(path, classMeta.ctorParameters, Object.values(value), userRole)
+        const values = classMeta.ctorParameters.map(x => value[x.name])
+        return checkParameters(path, classMeta.ctorParameters, values, userRole)
     }
     else if (typeof value !== "undefined") {
         const requestRoles = meta.decorators.find((x): x is AuthDecorator => isAuthDecorator(x))
