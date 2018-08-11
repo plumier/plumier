@@ -24,5 +24,3 @@ export class AnimalController {
     get(id:number, type:string){}
 }
 ```
-
-## Error Code: PLUM1001

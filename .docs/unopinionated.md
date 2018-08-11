@@ -1,2 +1,0 @@
-# Unopinionated MVC Framework
-

@@ -1,6 +1,5 @@
 # Authorization
 
-
 ## Enable Facility
 Authorization can be enabled by plugging `JwtAuthFacility` into Plumier application
 
