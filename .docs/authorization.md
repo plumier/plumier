@@ -148,6 +148,21 @@ export class ProductsController {
 | `POST /products`     | admin       |
 | `PUT /products/<id>` | admin       |
 
+
+## Getting Login User Information
+
+To get login user information from within action, you can use `@bind.user()` parameter binding.
+
+```typescript
+export class ProductsController {
+    @route.get(":id")
+    get(id: string, @bind.user() user:LoginUser) { }
+}
+```
+
+`LoginUser` class is a class that the properties match with claims when you signed the token.
+
+
 ## Parameter Authorization
 Grant access to pass value to parameter to specific role. This feature useful when you want to restrict the API consumer to set some property of your domain without creating a new domain/method.
 
@@ -176,3 +191,12 @@ export class UsersController {
 ```
 
 Using above code, only admin can disabled the user, if user doesn't have admin role Plumier will return 401 with informative error result.
+
+## Global Authorization
+As mentioned above, by default all routes is secured when `JwtAuthFacility` applied, you can override this default behavior by applying `authorize` on the `JwtAuthFacility` configuration like below:
+
+
+```typescript
+const app = new Plumier()
+app.set(new JwtAuthFacility({ secret: "<your secret key>", global: authorize.public() }))
+```
