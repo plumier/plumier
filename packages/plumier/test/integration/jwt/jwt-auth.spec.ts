@@ -221,6 +221,86 @@ describe("JwtAuth", () => {
         })
     })
 
+    describe("Global Authorization", () => {
+        it("Should able to set authorize on global level using public", async () => {
+            class AnimalController {
+                get() { return "Hello" }
+                @route.post()
+                save() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(200)
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .expect(200)
+        })
+
+        it("Should able to set authorize on global level using role", async () => {
+            class AnimalController {
+                get() { return "Hello" }
+                @route.post()
+                save() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.role("superadmin") }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
+                .expect(200)
+        })
+
+        it("Should able override global auth on controller", async () => {
+            @authorize.role("user")
+            class AnimalController {
+                get() { return "Hello" }
+                @route.post()
+                save() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .expect(403)
+        })
+
+        it("Should able override global auth on action", async () => {
+            class AnimalController {
+                @authorize.role("user")
+                get() { return "Hello" }
+                @route.post()
+                save() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .expect(200)
+        })
+    })
+
     describe("Hierarchical Role", () => {
         const MANAGER_ROLE_TOKEN = sign({ email: "ketut@gmail.com", role: ["level1", "level2", "level3"] }, SECRET)
         const SUPER_ROLE_TOKEN = sign({ email: "ketut@gmail.com", role: ["level2", "level3"] }, SECRET)
@@ -466,4 +546,6 @@ describe("JwtAuth", () => {
                 .expect(200)
         })
     })
+
+
 })

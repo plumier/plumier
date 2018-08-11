@@ -1,11 +1,31 @@
-import { Facility, PlumierApplication, Middleware, Invocation, ActionResult, HttpStatusError, RouteInfo, isCustomClass, Class, ValidatorDecorator } from "@plumjs/core";
-import KoaJwt from "koa-jwt"
+import {
+    ActionResult,
+    Class,
+    Facility,
+    HttpStatusError,
+    Invocation,
+    isCustomClass,
+    Middleware,
+    PlumierApplication,
+    RouteInfo,
+    ValidatorDecorator,
+    PlumierConfiguration,
+    Configuration,
+
+} from "@plumjs/core";
 import { decorateClass, decorateMethod, decorateParameter, ParameterReflection, reflect } from "@plumjs/reflect";
+import KoaJwt from "koa-jwt";
+
+/* ------------------------------------------------------------------------------- */
+/* ------------------------------- TYPES ----------------------------------------- */
+/* ------------------------------------------------------------------------------- */
 
 export type RoleField = string | ((value: any) => Promise<string[]>)
-export interface JwtSecurityFacilityOption { secret: string, roleField?: RoleField }
+export interface JwtAuthFacilityOption { secret: string, roleField?: RoleField, global?: (...args: any[]) => void }
 
-//decorators
+/* ------------------------------------------------------------------------------- */
+/* ----------------------------- DECORATORS -------------------------------------- */
+/* ------------------------------------------------------------------------------- */
 
 export interface AuthDecorator {
     type: "authorize:public" | "authorize:role",
@@ -38,15 +58,28 @@ export class AuthDecoratorImpl {
 
 export const authorize = new AuthDecoratorImpl()
 
-// helpers
+/* ------------------------------------------------------------------------------- */
+/* ------------------------------- HELPERS --------------------------------------- */
+/* ------------------------------------------------------------------------------- */
 
 function isAuthDecorator(decorator: any) {
     return decorator.type === "authorize:role" || decorator.type === "authorize:public"
 }
 
-function getDecorator(info: RouteInfo) {
+function getGlobalDecorator(globalDecorator?: (...args: any[]) => void) {
+    if (globalDecorator) {
+        @globalDecorator
+        class DummyClass { }
+        const meta = reflect(DummyClass)
+        const auth = meta.decorators.find((x): x is AuthDecorator => isAuthDecorator(x))
+        return auth
+    }
+}
+
+function getDecorator(info: RouteInfo, globalDecorator?: (...args: any[]) => void) {
     return info.action.decorators.find((x): x is AuthDecorator => isAuthDecorator(x)) ||
-        info.controller.decorators.find((x): x is AuthDecorator => isAuthDecorator(x))
+        info.controller.decorators.find((x): x is AuthDecorator => isAuthDecorator(x)) ||
+        getGlobalDecorator(globalDecorator)
 }
 
 export function checkParameter(path: string[], meta: ParameterReflection, value: any, userRole: string[]): string[] {
@@ -73,21 +106,24 @@ export function checkParameters(path: string[], meta: ParameterReflection[], val
         .flatten()
 }
 
-//implementation 
+/* ------------------------------------------------------------------------------- */
+/* --------------------------- MAIN IMPLEMENTATION ------------------------------- */
+/* ------------------------------------------------------------------------------- */
+
 
 export class JwtAuthFacility implements Facility {
-    constructor(private option: JwtSecurityFacilityOption) { }
+    constructor(private option: JwtAuthFacilityOption) { }
 
     async setup(app: Readonly<PlumierApplication>): Promise<void> {
         app.koa.use(KoaJwt({ secret: this.option.secret, passthrough: true }))
-        app.use(new AuthorizeMiddleware(this.option.roleField || "role"))
+        app.use(new AuthorizeMiddleware(this.option.roleField || "role", this.option.global))
     }
 }
 
 
 
 export class AuthorizeMiddleware implements Middleware {
-    constructor(private roleField: RoleField) { }
+    constructor(private roleField: RoleField, private global?: (...args: any[]) => void) { }
 
     private async getRole(user: any): Promise<string[]> {
         if (typeof this.roleField === "function")
@@ -99,14 +135,14 @@ export class AuthorizeMiddleware implements Middleware {
     }
 
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
-        const decorator = getDecorator(invocation.context.route)
+        const decorator = getDecorator(invocation.context.route, this.global)
         if (decorator && decorator.type === "authorize:public") return invocation.proceed()
         const isLogin = !!invocation.context.state.user
         if (!isLogin) throw new HttpStatusError(403, "Forbidden") //forbidden 
         const userRoles = await this.getRole(invocation.context.state.user)
-        if (!decorator || userRoles.some(x => decorator.value.some(y => x === y))){
+        if (!decorator || userRoles.some(x => decorator.value.some(y => x === y))) {
             const unauthorizedPaths = checkParameters([], invocation.context.route.action.parameters, invocation.context.parameters, userRoles)
-            if(unauthorizedPaths.length > 0)
+            if (unauthorizedPaths.length > 0)
                 throw new HttpStatusError(401, `Unauthorized to populate parameter paths (${unauthorizedPaths.join(", ")})`)
             else
                 return invocation.proceed()
