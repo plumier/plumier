@@ -191,7 +191,7 @@ describe("Converter", () => {
             }).toThrow(`Unable to convert "Hello" into AnimalClass in parameter id`)
         })
 
-        it.only("Should not populate optional properties with undefined", () => {
+        it("Should not populate optional properties with undefined", () => {
             @decorateClass({})
             class AnimalClass {
                 constructor(
