@@ -1,6 +1,6 @@
 {
   "name": "@plumjs/validator",
-  "version": "0.1.0-alpha.9aaa0a15",
+  "version": "0.1.0",
   "description": "TypeScript object validator powered by Validator.JS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,8 +14,8 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumjs/core": "0.1.0-alpha.9aaa0a15",
-    "@plumjs/reflect": "1.4.0-alpha.9aaa0a15",
+    "@plumjs/core": "^0.1.0",
+    "@plumjs/reflect": "^1.4.0",
     "@types/validator": "^9.4.1",
     "chalk": "^2.4.1",
     "validator": "^10.5.0"
