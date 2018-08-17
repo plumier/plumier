@@ -126,6 +126,7 @@ export class AuthorizeMiddleware implements Middleware {
     constructor(private roleField: RoleField, private global?: (...args: any[]) => void) { }
 
     private async getRole(user: any): Promise<string[]> {
+        if(!user) return []
         if (typeof this.roleField === "function")
             return await this.roleField(user)
         else {
@@ -134,19 +135,23 @@ export class AuthorizeMiddleware implements Middleware {
         }
     }
 
+    async checkParameterAuthorization(invocation: Readonly<Invocation>, userRoles: string[]) {
+        const unauthorizedPaths = checkParameters([], invocation.context.route.action.parameters, invocation.context.parameters, userRoles)
+        if (unauthorizedPaths.length > 0)
+            throw new HttpStatusError(401, `Unauthorized to populate parameter paths (${unauthorizedPaths.join(", ")})`)
+        else
+            return invocation.proceed()
+    }
+
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
         const decorator = getDecorator(invocation.context.route, this.global)
-        if (decorator && decorator.type === "authorize:public") return invocation.proceed()
+        const userRoles = await this.getRole(invocation.context.state.user)
+        if (decorator && decorator.type === "authorize:public")
+            return this.checkParameterAuthorization(invocation, userRoles)
         const isLogin = !!invocation.context.state.user
         if (!isLogin) throw new HttpStatusError(403, "Forbidden") //forbidden 
-        const userRoles = await this.getRole(invocation.context.state.user)
-        if (!decorator || userRoles.some(x => decorator.value.some(y => x === y))) {
-            const unauthorizedPaths = checkParameters([], invocation.context.route.action.parameters, invocation.context.parameters, userRoles)
-            if (unauthorizedPaths.length > 0)
-                throw new HttpStatusError(401, `Unauthorized to populate parameter paths (${unauthorizedPaths.join(", ")})`)
-            else
-                return invocation.proceed()
-        }
+        if (!decorator || userRoles.some(x => decorator.value.some(y => x === y)))
+            return this.checkParameterAuthorization(invocation, userRoles)
         else
             throw new HttpStatusError(401, "Unauthorized") //unauthorized
     }

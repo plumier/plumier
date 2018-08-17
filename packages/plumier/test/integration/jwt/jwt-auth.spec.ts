@@ -545,6 +545,59 @@ describe("JwtAuth", () => {
                 .send([{ id: "123", name: "Mimi", deceased: "Yes" }])
                 .expect(200)
         })
+
+        it("Should check for parameter authorization even if the action access is public", async () => {
+            class AnimalController {
+                @authorize.public()
+                @route.post()
+                save(@array(Animal) data: Animal[]) { return "Hello" }
+            }
+    
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .send([{ id: "123", name: "Mimi", deceased: "Yes" }])
+                .expect(401, "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)")
+        })
+
+        it("Should check for parameter authorization even if the controller access is public", async () => {
+            @authorize.public()
+            class AnimalController {
+                @route.post()
+                save(@array(Animal) data: Animal[]) { return "Hello" }
+            }
+    
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .send([{ id: "123", name: "Mimi", deceased: "Yes" }])
+                .expect(401, "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)")
+        })
+
+        it("Should check for parameter authorization even if the controller access is public", async () => {
+            class AnimalController {
+                @route.post()
+                save(@array(Animal) data: Animal[]) { return "Hello" }
+            }
+    
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET, global:  authorize.public()}))
+                .initialize()
+
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .send([{ id: "123", name: "Mimi", deceased: "Yes" }])
+                .expect(401, "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)")
+        })
     })
 
 
