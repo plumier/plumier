@@ -1,6 +1,6 @@
 {
   "name": "@plumjs/jwt",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pleasant TypeScript Web Api Framework",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
