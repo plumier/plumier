@@ -309,7 +309,7 @@ describe("String Validation", () => {
     test("length", async () => {
         @domain()
         class Dummy {
-            constructor( @val.length({ max: 10 }) public property: string) { }
+            constructor(@val.length({ max: 10 }) public property: string) { }
         }
         expect((await validateObject(new Dummy("abc123-234fds"))).length).toBe(1)
         expect((await validateObject(new Dummy("abc123")))).toEqual([])
@@ -331,6 +331,15 @@ describe("String Validation", () => {
         }
         expect((await validateObject(new Dummy("01:02:03:04:05"))).length).toBe(1)
         expect((await validateObject(new Dummy("FF:FF:FF:FF:FF:FF")))).toEqual([])
+    })
+
+    test("matches", async () => {
+        @domain()
+        class Dummy {
+            constructor(@val.matches({ pattern: /^[a-z0-9 ]+$/i }) public property: string) { }
+        }
+        expect((await validateObject(new Dummy("the;hero"))).length).toBe(1)
+        expect((await validateObject(new Dummy("the hero")))).toEqual([])
     })
 
     test("mD5", async () => {
@@ -728,6 +737,14 @@ describe("Custom Message", () => {
         expect((await validateObject(new Dummy("01:02:03:04:05")))[0].messages).toEqual(["Invalid"])
     })
 
+    test("matches", async () => {
+        @domain()
+        class Dummy {
+            constructor(@val.matches({ pattern: /^[a-z0-9 ]+$/i,  message: "Invalid" }) public property: string) { }
+        }
+        expect((await validateObject(new Dummy("the;name")))[0].messages).toEqual(["Invalid"])
+    })
+
     test("mD5", async () => {
         @domain()
         class Dummy {
@@ -999,7 +1016,7 @@ describe("Durability", () => {
 describe("Partial Validation", () => {
     class ClientModel {
         constructor(
-            public name?:string,
+            public name?: string,
             @val.email()
             public email?: string,
         ) { }
@@ -1009,7 +1026,7 @@ describe("Partial Validation", () => {
         expect(result).not.toBeNull()
     })
     it("Should skip required validation on partial type", async () => {
-        const result = await validate(new ClientModel(), [<TypeDecorator>{type: "Override", object: ClientModel, info: "Partial"}], [])
+        const result = await validate(new ClientModel(), [<TypeDecorator>{ type: "Override", object: ClientModel, info: "Partial" }], [])
         expect(result).toEqual([])
     })
 })

@@ -141,8 +141,8 @@ Animal {
 }
 ```
 
-### Bind Body to Parameters
-Its best practice to bind body request to a domain model class, but if you don't want to add another class, request body field can be bound to separate parameters.
+### Bind Request Body to Some Parameters
+Its best practice to bind request body to a domain model class, but if you don't want to add another class, it can be bound to some action parameters.
 
 ```typescript
 export class AnimalController {
@@ -158,7 +158,7 @@ POST /animal/save
 JSON Payload: { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }
 ```
 
-If you have a mix request query and body, plumier will identified properly unless they have different name, 
+If you have a mix request query and body, plumier will identified properly as long as they have different name, 
 
 ```typescript
 export class AnimalController {
@@ -177,7 +177,7 @@ The order of the action parameter is not important. Plumier bind the parameter b
 ### Array Binding
 Array binding a little bit different due to TypeScript [design type emit limitation](https://github.com/Microsoft/TypeScript/issues/12463).
 
-Plumier provided `@array(TypeConstructor)` to give prover type conversion for parameter binding.
+Plumier provided `@array(TypeConstructor)` to give proper type conversion for parameter binding.
 
 ```typescript
 @domain() 

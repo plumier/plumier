@@ -162,6 +162,10 @@ export namespace val {
         return validate(x => Validator.isMACAddress(x), opt && opt.message || "Invalid MAC address", "macAddress")
     }
 
+    export function matches(opt: Opt & { pattern: string | RegExp, modifier?: string }) {
+        return validate(x => Validator.matches(x, opt.pattern, opt.modifier), opt.message || "Invalid string", "matches")
+    }
+
     export function md5(opt?: Opt) {
         return validate(x => Validator.isMD5(x), opt && opt.message || "Invalid MD5 hash", "md5")
     }
