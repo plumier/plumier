@@ -214,12 +214,13 @@ export class Plumier implements PlumierApplication {
     async initialize(): Promise<Koa> {
         try {
             if (process.env["NODE_ENV"] === "production")
-                Object.assign(this.config, { mode: "production" })
+            Object.assign(this.config, { mode: "production" })
             await Promise.all(this.config.facilities.map(x => x.setup(this)))
             let routes: RouteInfo[] = this.createRoutes(dirname(module.parent!.parent!.filename))
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
+            const decorators: { [key: string]: Middleware[] } = {}
             this.koa.use(router(routes, this.config, ctx => {
-                const middleware = this.globalMiddleware.concat(extractDecorators(ctx.route))
+                const middleware = decorators[ctx.route.url] || (decorators[ctx.route.url] = this.globalMiddleware.concat(extractDecorators(ctx.route)))
                 return pipe(middleware, ctx, new ActionInvocation(ctx))
             }))
             return this.koa

@@ -122,24 +122,32 @@ export function transformModule(path: string, extensions: string[]): RouteInfo[]
 /* ------------------------------- ROUTER ---------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function checkUrlMatch(route: RouteInfo, ctx: Context) {
+function toRegExp(route: RouteInfo, path: string): RouteMatcher {
     const keys: Ptr.Key[] = []
     const regexp = Ptr(route.url, keys)
-    const match = regexp.exec(ctx.path)
-    return { keys, match, method: route.method.toUpperCase(), route }
+    const match = regexp.exec(path)
+    const query = !match ? {} : keys.reduce((a, b, i) => {
+        a[b.name] = match![i + 1]
+        return a;
+    }, <any>{})
+    return { match, query, method: route.method.toUpperCase(), route }
+}
+
+interface RouteMatcher {
+    match: RegExpExecArray | null,
+    query: any,
+    method: string,
+    route: RouteInfo
 }
 
 export function router(infos: RouteInfo[], config: Configuration, handler: (ctx: Context) => Invocation) {
+    const matchers: { [key: string]: RouteMatcher | undefined } = {}
+    const getMatcher = (path: string, method: string) => infos.map(x => toRegExp(x, path)).find(x => Boolean(x.match) && x.method == method)
     return async (ctx: Context, next: () => Promise<void>) => {
-        const match = infos.map(x => checkUrlMatch(x, ctx))
-            .find(x => Boolean(x.match) && x.method == ctx.method)
+        const key = `${ctx.method}${ctx.path}`
+        const match = matchers[key] || (matchers[key] = getMatcher(ctx.path, ctx.method))
         if (match) {
-            //add query
-            const query = match.keys.reduce((a, b, i) => {
-                a[b.name] = match.match![i + 1]
-                return a;
-            }, <any>{})
-            Object.assign(ctx.request.query, query)
+            Object.assign(ctx.request.query, match.query)
             //assign config and route to context
             const parameters = bindParameter(ctx, match.route.action, config.converters)
             Object.assign(ctx, { config, route: match.route, parameters })
