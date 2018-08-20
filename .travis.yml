@@ -4,3 +4,5 @@ node_js:
   - 8
 after_script: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 services: mongodb
+git:
+  submodules_depth: 10
