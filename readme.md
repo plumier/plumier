@@ -121,13 +121,13 @@ new Plumier()
 
 ## Features
 
-* [Decorator based route](wiki/route-generation-cheat-sheet): Decorator usage is minimal and flexible, can perform difficult configuration nicely such as nested restful resources.
-* [Parameter binding](wiki/parameter-binding): Transform and sanitize request data (body, query) match with action's parameter type.
-* [Validation](wiki/validation): Comprehensive list of validation powered by [ValidatorJS](https://github.com/chriso/validator.js)
-* [Authorization](wiki/authorization): Restrict access to controllers/actions based on user role using decorator.
-* [Mongoose Helper](wiki/mongoose-helper): Automatically generate schema from domain model, provided unique validator that automatically check to MongoDB database for uniqueness.
-* [Static controller analysis](wiki/static-analysis-troubleshoot): Provided detection for misconfigured controller, missing data type that cause difficult to trace bugs.
-* [Testing friendly](wiki/testing-tips): Controller free from framework dependency, controller's action follow the concept of pure function (take thing, return thing, don't mutate thing) make them easy to test with minimum usage of mock & stub. Use [supertest]() only for integration testing. Perform TDD/BDD easily
+* [Decorator based route](../../wiki/route-generation-cheat-sheet): Decorator usage is minimal and flexible, can perform difficult configuration nicely such as nested restful resources.
+* [Parameter binding](../../wiki/parameter-binding): Transform and sanitize request data (body, query) match with action's parameter type.
+* [Validation](../../wiki/validation): Comprehensive list of validation powered by [ValidatorJS](https://github.com/chriso/validator.js)
+* [Authorization](../../wiki/authorization): Restrict access to controllers/actions based on user role using decorator.
+* [Mongoose Helper](../../wiki/mongoose-helper): Automatically generate schema from domain model, provided unique validator that automatically check to MongoDB database for uniqueness.
+* [Static controller analysis](../../wiki/static-analysis-troubleshoot): Provided detection for misconfigured controller, missing data type that cause difficult to trace bugs.
+* [Testing friendly](../../wiki/testing-tips): Controller free from framework dependency, controller's action follow the concept of pure function (take thing, return thing, don't mutate thing) make them easy to test with minimum usage of mock & stub. Use [supertest]() only for integration testing. Perform TDD/BDD easily
 
 ## Requirements
 * TypeScript
@@ -136,4 +136,4 @@ new Plumier()
 
 ## Getting Started
 
-Go to [getting started](wiki/getting-started) to start codding
+Go to [getting started](../../wiki/getting-started) to start codding
