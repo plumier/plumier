@@ -23,7 +23,7 @@
 		"ts-jest": "^23.0.0",
 		"tslint": "^5.10.0",
 		"typescript": "2.9.1",
-		"typestrict": "^0.0.9"
+		"typestrict": "^1.0.0"
 	},
 	"workspaces": [
 		"packages/*"
