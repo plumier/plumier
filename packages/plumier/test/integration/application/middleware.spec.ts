@@ -62,7 +62,7 @@ describe("Middleware", () => {
             const app = await fixture(AnimalController)
                 .use({
                     execute: async x => {
-                        fn(x.context.route.url, x.context.config.mode)
+                        fn(x.context.route!.url, x.context.config.mode)
                         return x.proceed()
                     }
                 })

@@ -136,7 +136,7 @@ export class AuthorizeMiddleware implements Middleware {
     }
 
     async checkParameterAuthorization(invocation: Readonly<Invocation>, userRoles: string[]) {
-        const unauthorizedPaths = checkParameters([], invocation.context.route.action.parameters, invocation.context.parameters, userRoles)
+        const unauthorizedPaths = checkParameters([], invocation.context.route!.action.parameters, invocation.context.parameters!, userRoles)
         if (unauthorizedPaths.length > 0)
             throw new HttpStatusError(401, `Unauthorized to populate parameter paths (${unauthorizedPaths.join(", ")})`)
         else
@@ -144,6 +144,7 @@ export class AuthorizeMiddleware implements Middleware {
     }
 
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
+        if(!invocation.context.route) return invocation.proceed()
         const decorator = getDecorator(invocation.context.route, this.global)
         const userRoles = await this.getRole(invocation.context.state.user)
         if (decorator && decorator.type === "authorize:public")

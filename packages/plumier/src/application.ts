@@ -26,10 +26,13 @@ import Koa, { Context } from "koa";
 import BodyParser from "koa-bodyparser";
 import { dirname, isAbsolute, join } from "path";
 
-import { bindParameter } from "./binder";
 import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
 
 
+export interface RouteContext extends Koa.Context {
+    route: Readonly<RouteInfo>,
+    parameters: any[]
+}
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------------- HELPERS ----------------------------------- */
@@ -57,8 +60,16 @@ export class MiddlewareInvocation implements Invocation {
     }
 }
 
-export class ActionInvocation implements Invocation {
+class NotFoundActionInvocation implements Invocation {
     constructor(public context: Context) { }
+
+    proceed(): Promise<ActionResult> {
+        throw new HttpStatusError(404)
+    }
+}
+
+export class ActionInvocation implements Invocation {
+    constructor(public context: RouteContext) { }
     async proceed(): Promise<ActionResult> {
         const { route, config } = this.context
         const controller: any = config.dependencyResolver.resolve(route.controller.object)
@@ -214,14 +225,22 @@ export class Plumier implements PlumierApplication {
     async initialize(): Promise<Koa> {
         try {
             if (process.env["NODE_ENV"] === "production")
-            Object.assign(this.config, { mode: "production" })
+                Object.assign(this.config, { mode: "production" })
             await Promise.all(this.config.facilities.map(x => x.setup(this)))
             let routes: RouteInfo[] = this.createRoutes(dirname(module.parent!.parent!.filename))
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
             const decorators: { [key: string]: Middleware[] } = {}
             this.koa.use(router(routes, this.config, ctx => {
-                const middleware = decorators[ctx.route.url] || (decorators[ctx.route.url] = this.globalMiddleware.concat(extractDecorators(ctx.route)))
-                return pipe(middleware, ctx, new ActionInvocation(ctx))
+                if(ctx.route && ctx.parameters){
+                    //execute global middleware and controller
+                    const middleware = decorators[ctx.route.url] || (decorators[ctx.route.url] = this.globalMiddleware.concat(extractDecorators(ctx.route)))
+                    return pipe(middleware, ctx, new ActionInvocation(<RouteContext>ctx))
+                }
+                else {
+                    //execute global middleware only 
+                    const middleware = this.globalMiddleware.slice(0)
+                    return pipe(middleware, ctx, new NotFoundActionInvocation(ctx))
+                }
             }))
             return this.koa
         }

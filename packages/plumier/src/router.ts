@@ -148,16 +148,13 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
         const match = matchers[key] || (matchers[key] = getMatcher(ctx.path, ctx.method))
         if (match) {
             Object.assign(ctx.request.query, match.query)
-            //assign config and route to context
             const parameters = bindParameter(ctx, match.route.action, config.converters)
-            Object.assign(ctx, { config, route: match.route, parameters })
-            const invocation = handler(ctx)
-            const result = await invocation.proceed()
-            result.execute(ctx)
+            Object.assign(ctx, { route: match.route, parameters })
         }
-        else {
-            await next()
-        }
+        Object.assign(ctx, { config })
+        const invocation = handler(ctx)
+        const result = await invocation.proceed()
+        result.execute(ctx)
     }
 }
 

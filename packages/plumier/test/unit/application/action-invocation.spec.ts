@@ -1,12 +1,11 @@
+import { ActionResult, Class, Configuration, DefaultConfiguration, HttpStatusError, route } from "@plumjs/core";
 import Koa, { Context } from "koa";
 import BodyParser from "koa-bodyparser";
 import Supertest from "supertest";
-import { decorateParameter } from "@plumjs/reflect";
 
-import { ActionInvocation } from "../../../src/application";
-import { ActionResult, Class, Configuration, DefaultConfiguration, HttpStatusError, route } from "@plumjs/core";
+import { ActionInvocation, RouteContext } from "../../../src/application";
+import { bindParameter } from "../../../src/binder";
 import { transformController } from "../../../src/router";
-import { bindParameter } from '../../../src/binder';
 
 
 function fixture(controller: Class, config?: Partial<Configuration>) {
@@ -15,7 +14,7 @@ function fixture(controller: Class, config?: Partial<Configuration>) {
         ctx.route = ctlRoute[0]
         ctx.config = Object.assign(DefaultConfiguration, config)
         ctx.parameters = bindParameter(ctx, ctlRoute[0].action, ctx.config.converters)
-        const invocation = new ActionInvocation(ctx)
+        const invocation = new ActionInvocation(<RouteContext>ctx)
         const result = await invocation.proceed()
         result.execute(ctx)
     }
