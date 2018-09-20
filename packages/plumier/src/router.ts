@@ -61,32 +61,40 @@ function getRoot(rootPath: string, path: string) {
 /* ---------------------------------- TRANSFORMER -------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function transformRouteDecorator(controller: ClassReflection, method: FunctionReflection, opt?: TransformOption): RouteInfo | undefined {
-    if (method.decorators.some((x: IgnoreDecorator) => x.name == "Ignore")) return
-    const ctlRoute = getControllerRoute(controller)
-    const decorator: RouteDecorator = method.decorators.find((x: RouteDecorator) => x.name == "Route")
-    const result = <RouteInfo>{ action: method, method: decorator.method, controller: controller }
-    const rootRoute = opt && opt.root || ""
+function transformDecorator(rootRoute: string, controllerRoute: string, actionName: string, actionDecorator: RouteDecorator) {
     //absolute route
-    if (decorator.url && decorator.url.startsWith("/"))
-        return { ...result, url: Path.join(rootRoute, decorator.url) }
+    if (actionDecorator.url && actionDecorator.url.startsWith("/"))
+        return Path.join(rootRoute, actionDecorator.url)
     //empty string
-    else if (decorator.url === "")
-        return { ...result, url: Path.join(rootRoute, ctlRoute) }
+    else if (actionDecorator.url === "")
+        return Path.join(rootRoute, controllerRoute)
     //relative route
     else {
-        const actionUrl = decorator.url || method.name.toLowerCase()
-        return { ...result, url: Path.join(rootRoute, ctlRoute, actionUrl) }
+        const actionUrl = actionDecorator.url || actionName.toLowerCase()
+        return Path.join(rootRoute, controllerRoute, actionUrl)
     }
 }
 
-function transformRegular(controller: ClassReflection, method: FunctionReflection, opt?: TransformOption): RouteInfo | undefined {
-    return {
+function transformControllerWithDecorator(controller: ClassReflection, method: FunctionReflection, opt?: TransformOption): RouteInfo[] {
+    if (method.decorators.some((x: IgnoreDecorator) => x.name == "Ignore")) return []
+    const ctlRoute = getControllerRoute(controller)
+    const result = <RouteInfo>{ action: method, controller: controller }
+    const rootRoute = opt && opt.root || ""
+    return method.decorators.reverse().filter((x: RouteDecorator): x is RouteDecorator => x.name == "Route")
+        .map(x => ({
+            ...result,
+            method: x.method,
+            url: transformDecorator(rootRoute, ctlRoute, method.name, x)
+        }))
+}
+
+function transformRegularController(controller: ClassReflection, method: FunctionReflection, opt?: TransformOption): RouteInfo[] {
+    return [{
         method: "get",
         url: Path.join(opt && opt.root || "", getControllerRoute(controller), method.name.toLowerCase()),
         action: method,
         controller: controller,
-    }
+    }]
 }
 
 export function transformController(object: ClassReflection | Class, opt?: TransformOption) {
@@ -95,12 +103,10 @@ export function transformController(object: ClassReflection | Class, opt?: Trans
     return controller.methods.map(method => {
         //first priority is decorator
         if (method.decorators.some((x: IgnoreDecorator | RouteDecorator) => x.name == "Ignore" || x.name == "Route"))
-            return transformRouteDecorator(controller, method, opt)
+            return transformControllerWithDecorator(controller, method, opt)
         else
-            return transformRegular(controller, method, opt)
-    })
-        //ignore undefined
-        .filter(x => Boolean(x)) as RouteInfo[]
+            return transformRegularController(controller, method, opt)
+    }).flatten()
 }
 
 export function transformModule(path: string, extensions: string[]): RouteInfo[] {
@@ -109,12 +115,14 @@ export function transformModule(path: string, extensions: string[]): RouteInfo[]
         //reflect the file
         .map(x => ({
             root: getRoot(path, x),
-            meta: reflect(x).members
-                .filter((x): x is ClassReflection => x.type === "Class"
-                    && x.name.toLowerCase().endsWith("controller"))
+            meta: reflect(x).members.filter((x): x is ClassReflection => x.type === "Class"
+                && x.name.toLowerCase().endsWith("controller"))
         }))
-        .map(x => x.meta
-            .map(meta => transformController(meta, { root: x.root })).flatten())
+        .map(
+            x => x.meta
+                .map(meta => transformController(meta, { root: x.root }))
+                .flatten()
+        )
         .flatten()
 }
 

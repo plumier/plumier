@@ -26,7 +26,7 @@ describe("Router", () => {
             .expect(404)
     })
 
-    it("Should not transform if controller name not end with controller", async () => {
+    it("Should not transform if controller name does not end with controller", async () => {
         class AnimalClass {
             method() { }
         }
@@ -38,6 +38,22 @@ describe("Router", () => {
         await Supertest(app.callback())
             .get("/animalclass/method")
             .expect(404)
+    })
+
+    it("Should transform action with multiple routes", async () => {
+        class AnimalController {
+            @route.get("/home")
+            @route.get("/about")
+            @route.get("/new")
+            @route.get("/transaction")
+            method() { return "OK" }
+        }
+        const app = await fixture(AnimalController)
+            .initialize()
+        await Supertest(app.callback()).get("/home").expect(200, "OK")
+        await Supertest(app.callback()).get("/about").expect(200, "OK")
+        await Supertest(app.callback()).get("/new").expect(200, "OK")
+        await Supertest(app.callback()).get("/transaction").expect(200, "OK")
     })
 
     describe("GET route", () => {

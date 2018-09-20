@@ -114,6 +114,23 @@ describe("Controller Transformer", () => {
             const result = transformController(AnimalController)
             expect(result).toMatchObject([{ method: "get", url: "/animal" }])
         })
+
+        it("Should able transform method with multiple routes", () => {
+            class AnimalController {
+                @route.get("/home")
+                @route.get("/about")
+                @route.get("/new")
+                @route.get("/transaction")
+                theMethod(id: string) { }
+            }
+            const result = transformController(AnimalController)
+            expect(result).toMatchObject([
+                { method: "get", url: "/home" },
+                { method: "get", url: "/about" },
+                { method: "get", url: "/new" },
+                { method: "get", url: "/transaction" }
+            ])
+        })
     })
 
     describe("Ignore Transformation", () => {
