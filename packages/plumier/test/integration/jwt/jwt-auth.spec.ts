@@ -219,6 +219,25 @@ describe("JwtAuth", () => {
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .expect(200)
         })
+
+        it("Should skip authentication for route that not handled with controller", async () => {
+            class AnimalController {
+                get() { return "Hello" }
+            }
+            const fn = jest.fn()
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .use({execute: async i => {
+                    fn()
+                    return i.proceed()
+                }})
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/nohandler")
+                .expect(404)
+            expect(fn).toBeCalled()
+        })
     })
 
     describe("Global Authorization", () => {

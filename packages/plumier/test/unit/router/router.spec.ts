@@ -97,7 +97,7 @@ describe("Router", () => {
         })
     })
 
-    describe.only("Middleware function", () => {
+    describe("Middleware function", () => {
         class AnimalController {
             @route.get()
             get(id: number) { }

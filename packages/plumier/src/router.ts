@@ -16,6 +16,7 @@ import { Context } from "koa";
 import * as Path from "path";
 import Ptr from "path-to-regexp";
 import { bindParameter } from './binder';
+import Glob from "glob"
 
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- TYPES -------------------------------------- */
@@ -24,6 +25,7 @@ import { bindParameter } from './binder';
 type AnalyzerFunction = (route: RouteInfo, allRoutes: RouteInfo[]) => Issue
 interface Issue { type: "error" | "warning" | "success", message?: string }
 interface TestResult { route: RouteInfo, issues: Issue[] }
+export interface TransformOption { root?: string }
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- HELPERS --------------------------------------- */
@@ -43,61 +45,59 @@ function getActionName(route: RouteInfo) {
 }
 
 function resolveDir(path: string, ext: string[]): string[] {
-    //resolve provided path directory or file
-    if (Fs.lstatSync(path).isDirectory()) {
-        const files = Fs.readdirSync(path)
-            //take only file in extension list
-            .filter(x => ext.some(ex => Path.extname(x) === ex))
-            //add root path + file name
-            .map(x => Path.join(path, x))
-        return files
-    }
-
+    if (Fs.lstatSync(path).isDirectory())
+        return Glob.sync(`${path}/**/*+(${ext.join("|")})`)
     else
         return [path]
+}
+
+function getRoot(rootPath: string, path: string) {
+    const part = path.slice(rootPath.length).split("/").filter(x => !!x)
+        .slice(0, -1)
+    return (part.length === 0) ? undefined : `/${part.join("/")}`
 }
 
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- TRANSFORMER -------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function transformRouteDecorator(controller: ClassReflection, method: FunctionReflection): RouteInfo | undefined {
+function transformRouteDecorator(controller: ClassReflection, method: FunctionReflection, opt?: TransformOption): RouteInfo | undefined {
     if (method.decorators.some((x: IgnoreDecorator) => x.name == "Ignore")) return
-    const root = getControllerRoute(controller)
+    const ctlRoute = getControllerRoute(controller)
     const decorator: RouteDecorator = method.decorators.find((x: RouteDecorator) => x.name == "Route")
     const result = <RouteInfo>{ action: method, method: decorator.method, controller: controller }
+    const rootRoute = opt && opt.root || ""
     //absolute route
     if (decorator.url && decorator.url.startsWith("/"))
-        return { ...result, url: decorator.url }
+        return { ...result, url: Path.join(rootRoute, decorator.url) }
     //empty string
     else if (decorator.url === "")
-        return { ...result, url: root }
+        return { ...result, url: Path.join(rootRoute, ctlRoute) }
     //relative route
     else {
         const actionUrl = decorator.url || method.name.toLowerCase()
-        return { ...result, url: [root, actionUrl].join("/") }
+        return { ...result, url: Path.join(rootRoute, ctlRoute, actionUrl) }
     }
-
 }
 
-function transformRegular(controller: ClassReflection, method: FunctionReflection): RouteInfo | undefined {
+function transformRegular(controller: ClassReflection, method: FunctionReflection, opt?: TransformOption): RouteInfo | undefined {
     return {
         method: "get",
-        url: `${getControllerRoute(controller)}/${method.name.toLowerCase()}`,
+        url: Path.join(opt && opt.root || "", getControllerRoute(controller), method.name.toLowerCase()),
         action: method,
         controller: controller,
     }
 }
 
-export function transformController(object: ClassReflection | Class) {
+export function transformController(object: ClassReflection | Class, opt?: TransformOption) {
     const controller = typeof object === "function" ? reflect(object) : object
     if (!controller.name.toLowerCase().endsWith("controller")) return []
     return controller.methods.map(method => {
         //first priority is decorator
         if (method.decorators.some((x: IgnoreDecorator | RouteDecorator) => x.name == "Ignore" || x.name == "Route"))
-            return transformRouteDecorator(controller, method)
+            return transformRouteDecorator(controller, method, opt)
         else
-            return transformRegular(controller, method)
+            return transformRegular(controller, method, opt)
     })
         //ignore undefined
         .filter(x => Boolean(x)) as RouteInfo[]
@@ -105,16 +105,16 @@ export function transformController(object: ClassReflection | Class) {
 
 export function transformModule(path: string, extensions: string[]): RouteInfo[] {
     //read all files and get module reflection
-    const modules = resolveDir(path, extensions)
+    return resolveDir(path, extensions)
         //reflect the file
-        .map(x => reflect(x))
-    //get all module.members and combine into one array
-    return modules.reduce((a, b) => a.concat(b.members), <Reflection[]>[])
-        //take only the controller class
-        .filter(x => x.type === "Class" && x.name.toLowerCase().endsWith("controller"))
-        //traverse and change into route
-        .map(x => transformController(<ClassReflection>x))
-        //flatten the result
+        .map(x => ({
+            root: getRoot(path, x),
+            meta: reflect(x).members
+                .filter((x): x is ClassReflection => x.type === "Class"
+                    && x.name.toLowerCase().endsWith("controller"))
+        }))
+        .map(x => x.meta
+            .map(meta => transformController(meta, { root: x.root })).flatten())
         .flatten()
 }
 

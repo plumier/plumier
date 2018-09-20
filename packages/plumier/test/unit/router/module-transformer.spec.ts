@@ -40,6 +40,16 @@ describe("Module Transformer Tests", () => {
         ])
     })
 
+    it("Should parse controllers with nested directory", async () => {
+        const route = await transformModule(join(__dirname, "./nested"), [".ts"])
+        expect(route).toMatchObject([
+            { method: 'get', url: '/api/v1/basic/getanimal' },
+            { method: 'get', url: '/api/v1/basic/getanimallist' },
+            { method: 'get', url: '/api/v2/basic/getanimal' },
+            { method: 'get', url: '/api/v2/basic/getanimallist' },
+        ])
+    })
+
     it("Should not parse ignored action properly", async () => {
         const route = await transformModule(join(__dirname, "./controller/ignore-controller.ts"), [".ts"])
         expect(route).toMatchObject([
