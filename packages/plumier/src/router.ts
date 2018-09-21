@@ -8,6 +8,7 @@ import {
     RouteDecorator,
     RouteInfo,
     Invocation,
+    createRoute,
 } from "@plumjs/core";
 import { ClassReflection, FunctionReflection, ParameterReflection, reflect, Reflection } from "@plumjs/reflect";
 import chalk from "chalk";
@@ -17,7 +18,6 @@ import * as Path from "path";
 import Ptr from "path-to-regexp";
 import { bindParameter } from './binder';
 import Glob from "glob"
-import urlJoin from "url-join"
 
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- TYPES -------------------------------------- */
@@ -55,7 +55,7 @@ function resolveDir(path: string, ext: string[]): string[] {
 function getRoot(rootPath: string, path: string) {
     const part = path.slice(rootPath.length).split("/").filter(x => !!x)
         .slice(0, -1)
-    return (part.length === 0) ? undefined : `/${part.join("/")}`
+    return (part.length === 0) ? undefined : createRoute(...part)
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -65,14 +65,14 @@ function getRoot(rootPath: string, path: string) {
 function transformDecorator(rootRoute: string, controllerRoute: string, actionName: string, actionDecorator: RouteDecorator) {
     //absolute route
     if (actionDecorator.url && actionDecorator.url.startsWith("/"))
-        return "/" + urlJoin(rootRoute, actionDecorator.url)
+        return createRoute(rootRoute, actionDecorator.url)
     //empty string
     else if (actionDecorator.url === "")
-        return "/" + urlJoin(rootRoute, controllerRoute)
+        return createRoute(rootRoute, controllerRoute)
     //relative route
     else {
         const actionUrl = actionDecorator.url || actionName.toLowerCase()
-        return "/" + urlJoin(rootRoute, controllerRoute, actionUrl)
+        return createRoute(rootRoute, controllerRoute, actionUrl)
     }
 }
 

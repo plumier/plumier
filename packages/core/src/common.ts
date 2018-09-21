@@ -90,3 +90,12 @@ export function getChildValue(object: any, path: string, defaultValue?: any) {
         .filter(p => p)
         .reduce((o, p) => o ? o[p] : defaultValue, object)
 }
+
+export function createRoute(...args: string[]): string {
+    return "/" + args
+        .filter(x => !!x)
+        .map(x => x.toLowerCase())
+        .map(x => x.startsWith("/") ? x.slice(1) : x)
+        .filter(x => !!x)
+        .join("/")
+}

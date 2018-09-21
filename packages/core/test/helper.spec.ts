@@ -1,5 +1,5 @@
 import "@plumjs/core"
-import { resolvePath, getChildValue } from '@plumjs/core';
+import { resolvePath, getChildValue, createRoute } from '@plumjs/core';
 import { join } from 'path';
 import { unlinkSync, existsSync } from 'fs';
 
@@ -70,5 +70,37 @@ describe("getChildProperty", () => {
     it("Should return undefined if property not match", () => {
         const result = getChildValue({ a: { b: { c: "Hello" } } }, "a.d.e.f.g[0]")
         expect(result).toBeUndefined()
+    })
+})
+
+describe("createRoute", () => {
+    it("Should join path properly", () => {
+        const result = createRoute("a", "b", "c")
+        expect(result).toBe("/a/b/c")
+    })
+
+    it("Should transform to lowercase", () => {
+        const result = createRoute("a", "B", "c")
+        expect(result).toBe("/a/b/c")
+    })
+
+    it("Should ignore undefined", () => {
+        const result = createRoute("a", <any>undefined, "B", "c")
+        expect(result).toBe("/a/b/c")
+    })
+
+    it("Should ignore empty string", () => {
+        const result = createRoute("a", "", "B", "c")
+        expect(result).toBe("/a/b/c")
+    })
+
+    it("Should ignore slash", () => {
+        const result = createRoute("/a", "/", "B", "/c")
+        expect(result).toBe("/a/b/c")
+    })
+
+    it("Should keep route", () => {
+        const result = createRoute("/a", "/B/c", "d")
+        expect(result).toBe("/a/b/c/d")
     })
 })
