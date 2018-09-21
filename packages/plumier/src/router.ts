@@ -17,6 +17,7 @@ import * as Path from "path";
 import Ptr from "path-to-regexp";
 import { bindParameter } from './binder';
 import Glob from "glob"
+import urlJoin from "url-join"
 
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- TYPES -------------------------------------- */
@@ -64,14 +65,14 @@ function getRoot(rootPath: string, path: string) {
 function transformDecorator(rootRoute: string, controllerRoute: string, actionName: string, actionDecorator: RouteDecorator) {
     //absolute route
     if (actionDecorator.url && actionDecorator.url.startsWith("/"))
-        return Path.join(rootRoute, actionDecorator.url)
+        return "/" + urlJoin(rootRoute, actionDecorator.url)
     //empty string
     else if (actionDecorator.url === "")
-        return Path.join(rootRoute, controllerRoute)
+        return "/" + urlJoin(rootRoute, controllerRoute)
     //relative route
     else {
         const actionUrl = actionDecorator.url || actionName.toLowerCase()
-        return Path.join(rootRoute, controllerRoute, actionUrl)
+        return "/" + urlJoin(rootRoute, controllerRoute, actionUrl)
     }
 }
 

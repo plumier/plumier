@@ -732,6 +732,10 @@
   dependencies:
     "@types/superagent" "*"
 
+"@types/url-join@^0.8.2":
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/@types/url-join/-/url-join-0.8.2.tgz#1181ecbe1d97b7034e0ea1e35e62e86cc26b422d"
+
 "@types/validator@^9.4.1":
   version "9.4.1"
   resolved "https://registry.yarnpkg.com/@types/validator/-/validator-9.4.1.tgz#bea5a290e61f1cbf12af3fd878706aeec2ba0087"
@@ -6141,6 +6145,10 @@ unset-value@^1.0.0:
 urix@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/urix/-/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
+
+url-join@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/url-join/-/url-join-4.0.0.tgz#4d3340e807d3773bda9991f8305acdcc2a665d2a"
 
 use@^3.1.0:
   version "3.1.0"
