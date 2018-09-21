@@ -8,9 +8,9 @@ import { pipe } from "../../../src/application";
 describe("ActionResult", () => {
     it("Should execute context properly", async () => {
         const app = new Koa()
-        app.use((ctx, next) => {
+        app.use(async (ctx, next) => {
             const result = new ActionResult({ body: "The Body" })
-            result.execute(ctx)
+            await result.execute(ctx)
         })
         await Supertest(app.callback())
             .get("/")
@@ -20,9 +20,9 @@ describe("ActionResult", () => {
 
     it("Should not set body if not provided", async () => {
         const app = new Koa()
-        app.use((ctx, next) => {
+        app.use(async (ctx, next) => {
             const result = new ActionResult(undefined, 200)
-            result.execute(ctx)
+            await result.execute(ctx)
         })
         const result = await Supertest(app.callback())
             .get("/")
@@ -32,9 +32,9 @@ describe("ActionResult", () => {
 
     it("Should execute context with status", async () => {
         const app = new Koa()
-        app.use((ctx, next) => {
+        app.use(async (ctx, next) => {
             const result = new ActionResult({ body: "The Body" }, 201)
-            result.execute(ctx)
+            await result.execute(ctx)
         })
         await Supertest(app.callback())
             .get("/")
@@ -44,10 +44,10 @@ describe("ActionResult", () => {
 
     it("Should execute context with header information", async () => {
         const app = new Koa()
-        app.use((ctx, next) => {
+        app.use(async (ctx, next) => {
             const result = new ActionResult({ body: "The Body" })
-                .header("accept", "gzip")
-            result.execute(ctx)
+                .setHeader("accept", "gzip")
+            await result.execute(ctx)
         })
         const result = await Supertest(app.callback())
             .get("/")
@@ -164,7 +164,7 @@ describe("Middleware", () => {
             return pipe([mdw], ctx, {
                 context: ctx, proceed: async () => {
                     const result = new ActionResult({ body: "The Main Body" })
-                    result.execute(ctx)
+                    await result.execute(ctx)
                     return result
                 }
             })

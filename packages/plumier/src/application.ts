@@ -25,14 +25,40 @@ import { existsSync } from "fs";
 import Koa, { Context } from "koa";
 import BodyParser from "koa-bodyparser";
 import { dirname, isAbsolute, join } from "path";
+import send from "koa-send"
 
 import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
 
+/* ------------------------------------------------------------------------------- */
+/* ----------------------------------- CORE -------------------------------------- */
+/* ------------------------------------------------------------------------------- */
 
 export interface RouteContext extends Koa.Context {
     route: Readonly<RouteInfo>,
     parameters: any[]
 }
+
+export class FileActionResult extends ActionResult {
+    constructor(private path: string) {
+        super()
+    }
+
+    async execute(ctx: Context) {
+        await super.execute(ctx)
+        if (!existsSync(this.path)) throw new HttpStatusError(500, `${this.path} not exists`)
+        await send(ctx, this.path, { root: "/" })
+    }
+}
+
+export namespace response {
+    export function json(body: any) {
+        return new ActionResult(body)
+    }
+    export function file(path: string) {
+        return new FileActionResult(path)
+    }
+}
+
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------------- HELPERS ----------------------------------- */
@@ -231,15 +257,14 @@ export class Plumier implements PlumierApplication {
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
             const decorators: { [key: string]: Middleware[] } = {}
             this.koa.use(router(routes, this.config, ctx => {
-                if(ctx.route && ctx.parameters){
+                if (ctx.route && ctx.parameters) {
                     //execute global middleware and controller
                     const middleware = decorators[ctx.route.url] || (decorators[ctx.route.url] = this.globalMiddleware.concat(extractDecorators(ctx.route)))
                     return pipe(middleware, ctx, new ActionInvocation(<RouteContext>ctx))
                 }
                 else {
                     //execute global middleware only 
-                    const middleware = this.globalMiddleware.slice(0)
-                    return pipe(middleware, ctx, new NotFoundActionInvocation(ctx))
+                    return pipe(this.globalMiddleware.slice(0), ctx, new NotFoundActionInvocation(ctx))
                 }
             }))
             return this.koa

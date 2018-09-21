@@ -16,7 +16,7 @@ function fixture(controller: Class, config?: Partial<Configuration>) {
         ctx.parameters = bindParameter(ctx, ctlRoute[0].action, ctx.config.converters)
         const invocation = new ActionInvocation(<RouteContext>ctx)
         const result = await invocation.proceed()
-        result.execute(ctx)
+        await result.execute(ctx)
     }
 }
 

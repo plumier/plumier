@@ -162,7 +162,7 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
         Object.assign(ctx, { config })
         const invocation = handler(ctx)
         const result = await invocation.proceed()
-        result.execute(ctx)
+        await result.execute(ctx)
     }
 }
 

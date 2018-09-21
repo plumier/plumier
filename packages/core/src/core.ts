@@ -252,12 +252,17 @@ export class ActionResult {
     private readonly headers: { [key: string]: string } = {}
     constructor(public body?: any, public status?: number) { }
 
-    header(key: string, value: string) {
+    setHeader(key: string, value: string) {
         this.headers[key] = value;
         return this
     }
 
-    execute(ctx: Context): void {
+    setStatus(status:number){
+        this.status = status
+        return this
+    }
+
+    async execute(ctx: Context): Promise<void> {
         Object.keys(this.headers).forEach(x => {
             ctx.set(x, this.headers[x])
         })
