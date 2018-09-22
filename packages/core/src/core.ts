@@ -8,6 +8,7 @@ import {
 } from "@plumjs/reflect";
 import { IncomingHttpHeaders } from "http";
 import Koa, { Context, Request } from "koa";
+import { getChildValue } from './common';
 
 
 /* ------------------------------------------------------------------------------- */
@@ -34,7 +35,7 @@ export interface ParameterPropertiesType<T> {
 
 export interface BindingDecorator {
     type: "ParameterBinding",
-    part?: string
+    process: (ctx:Context) => any
 }
 
 export interface RouteDecorator { name: "Route", method: HttpMethod, url?: string }
@@ -321,7 +322,10 @@ export namespace bind {
      * @param part part of context, use dot separator to access child property
      */
     export function ctx(part?:string){
-        return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", name: "Context", part })
+        return decorateParameter(<BindingDecorator>{ 
+            type: "ParameterBinding", 
+            process: ctx => part ? getChildValue(ctx, part) : ctx
+         })
     }
 
     /**

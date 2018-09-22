@@ -162,7 +162,7 @@ function bindModel(action: FunctionReflection, ctx: Context, par: ParameterRefle
 function bindDecorator(action: FunctionReflection, ctx: Context, par: ParameterReflection, converter: (value: any) => any): any {
     const decorator: BindingDecorator = par.decorators.find((x: BindingDecorator) => x.type == "ParameterBinding")
     if (!decorator) return
-    return converter(decorator.part ? ctx && getChildValue(ctx, decorator.part) : ctx)
+    return converter(decorator.process(ctx))
 }
 
 function bindArrayDecorator(action: FunctionReflection, ctx: Context, par: ParameterReflection, converter: (value: any, type: Class | Class[]) => any): any {
