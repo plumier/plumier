@@ -100,14 +100,15 @@ export interface ValidationIssue {
 
 export interface FileUploadInfo {
     field:string,
-    name: string,
+    fileName: string,
+    originalName:string,
     mime: string,
     size: number,
     encoding:string
 }
 
 export interface FileParser {
-    parse(): Promise<FileUploadInfo[]>
+    save(subDirectory?:string): Promise<FileUploadInfo[]>
 }
 
 export interface Configuration {
@@ -639,5 +640,6 @@ export namespace errorMessage {
 
     //End user error (no error code)
     export const UnableToConvertValue = `Unable to convert "{0}" into {1} in parameter {2}`
-
+    export const FileSizeExceeded = "File {0} size exceeded the maximum size"
+    export const NumberOfFilesExceeded = "Number of files exceeded the maximum allowed"
 }

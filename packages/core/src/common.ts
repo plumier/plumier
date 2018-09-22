@@ -1,7 +1,7 @@
 import { reflect, Reflection } from "@plumjs/reflect";
 import Chalk from "chalk";
-import { existsSync, lstatSync, readdirSync } from "fs";
-import { extname, join } from "path";
+import { existsSync, lstatSync, readdirSync, mkdirSync, unlink } from "fs";
+import { extname, join, dirname } from "path";
 import { inspect } from "util";
 
 import { Class } from "./core";
@@ -98,4 +98,12 @@ export function createRoute(...args: string[]): string {
         .map(x => x.startsWith("/") ? x.slice(1) : x)
         .filter(x => !!x)
         .join("/")
+}
+
+export function mkdirp(path: string) {
+    var dir = dirname(path);
+    if (!existsSync(dir)) {
+        mkdirp(dir);
+    }
+    mkdirSync(path);
 }

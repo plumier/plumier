@@ -21,9 +21,10 @@ import {
     ValidationError,
     FileParser,
     FileUploadInfo,
+    mkdirp,
 } from "@plumjs/core";
 import { validate } from "@plumjs/validator";
-import { existsSync, createWriteStream } from "fs";
+import { existsSync, createWriteStream, unlink, mkdirSync } from "fs";
 import Koa, { Context } from "koa";
 import BodyParser from "koa-bodyparser";
 import { dirname, isAbsolute, join, extname } from "path";
@@ -32,6 +33,7 @@ import Busboy from "busboy"
 import ShortId from "shortid"
 
 import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
+import { promisify } from 'util';
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------------- CORE -------------------------------------- */
@@ -204,7 +206,7 @@ interface FileUploadOption {
     uploadPath: string,
 
     /**
-     * Maximum file size allowed, default: infinity
+     * Maximum file size (in bytes) allowed, default: infinity
      */
     maxFileSize?: number;
 
@@ -215,36 +217,59 @@ interface FileUploadOption {
 }
 
 class BusboyParser implements FileParser {
-    constructor(private context: Context, private option: FileUploadOption) { }
+    busboy: busboy.Busboy
+    constructor(private context: Context, private option: FileUploadOption) {
+        this.busboy = new Busboy({
+            headers: this.context.request.headers,
+            limits: {
+                fileSize: this.option.maxFileSize,
+                files: this.option.maxFiles
+            }
+        })
+    }
 
-    parse(): Promise<FileUploadInfo[]> {
+    save(subDirectory?: string): Promise<FileUploadInfo[]> {
         return new Promise<FileUploadInfo[]>((resolve, reject) => {
-            const info: FileUploadInfo[] = []
-            const busboy = new Busboy({
-                headers: this.context.request.headers,
-                limits: {
-                    fileSize: this.option.maxFileSize,
-                    files: this.option.maxFiles
-                }
-            })
-            busboy
-                .on("file", (field, stream, fileName, encoding, mime) => {
-                    const name = ShortId.generate() + extname(fileName)
-                    let size = 0;
-                    stream
-                        .on("data", (data: Buffer) => { size += data.length })
-                        .pipe(createWriteStream(join(this.option.uploadPath, name)))
-                        .on("close", () => {
-                            info.push({ field, encoding, name, mime, size })
-                        })
+            const result: FileUploadInfo[] = []
+            const unlinkAsync = promisify(unlink)
+            const deleteAll = async () => await Promise.all(result
+                .map(x => unlinkAsync(join(this.option.uploadPath, x.fileName))))
+            const rollback = async () => {
+                this.context.req.unpipe()
+                await deleteAll()
+            }
+            this.busboy
+                .on("file", (field, stream, originalName, encoding, mime) => {
+                    try {
+                        const fileName = join(subDirectory || "", ShortId.generate() + extname(originalName))
+                        if (subDirectory && !existsSync(join(this.option.uploadPath, subDirectory)))
+                            mkdirp(join(this.option.uploadPath, subDirectory))
+                        const fullPath = join(this.option.uploadPath, fileName)
+                        const info = { field, encoding, fileName, mime, originalName, size: 0 }
+                        result.push(info)
+                        stream
+                            .on("data", (data: Buffer) => { info.size += data.length })
+                            .on("limit", async () => {
+                                await rollback()
+                                reject(new HttpStatusError(422, errorMessage.FileSizeExceeded.format(originalName)))
+                            })
+                            .pipe(createWriteStream(fullPath))
+                    }
+                    catch (e) {
+                        reject(new Error(e.stack))
+                    }
+                })
+                .on("filesLimit", async () => {
+                    await rollback()
+                    reject(new HttpStatusError(422, errorMessage.NumberOfFilesExceeded))
                 })
                 .on("finish", () => {
-                    resolve(info)
+                    resolve(result)
                 })
                 .on("error", (e: any) => {
                     reject(e)
                 })
-            this.context.req.pipe(busboy)
+            this.context.req.pipe(this.busboy)
         })
     }
 }
