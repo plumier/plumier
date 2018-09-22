@@ -19,19 +19,24 @@ import {
     PlumierConfiguration,
     RouteInfo,
     ValidationError,
+    FileParser,
+    FileUploadInfo,
 } from "@plumjs/core";
 import { validate } from "@plumjs/validator";
-import { existsSync } from "fs";
+import { existsSync, createWriteStream } from "fs";
 import Koa, { Context } from "koa";
 import BodyParser from "koa-bodyparser";
-import { dirname, isAbsolute, join } from "path";
+import { dirname, isAbsolute, join, extname } from "path";
 import send from "koa-send"
+import Busboy from "busboy"
+import ShortId from "shortid"
 
 import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------------- CORE -------------------------------------- */
 /* ------------------------------------------------------------------------------- */
+
 
 export interface RouteContext extends Koa.Context {
     route: Readonly<RouteInfo>,
@@ -191,7 +196,69 @@ export class RestfulApiFacility extends WebApiFacility {
     }
 }
 
+interface FileUploadOption {
 
+    /**
+     * Path of uploaded files (required)
+     */
+    uploadPath: string,
+
+    /**
+     * Maximum file size allowed, default: infinity
+     */
+    maxFileSize?: number;
+
+    /**
+     * Maximum number of files uploaded, default; infinity
+     */
+    maxFiles?: number;
+}
+
+class BusboyParser implements FileParser {
+    constructor(private context: Context, private option: FileUploadOption) { }
+
+    parse(): Promise<FileUploadInfo[]> {
+        return new Promise<FileUploadInfo[]>((resolve, reject) => {
+            const info: FileUploadInfo[] = []
+            const busboy = new Busboy({
+                headers: this.context.request.headers,
+                limits: {
+                    fileSize: this.option.maxFileSize,
+                    files: this.option.maxFiles
+                }
+            })
+            busboy
+                .on("file", (field, stream, fileName, encoding, mime) => {
+                    const name = ShortId.generate() + extname(fileName)
+                    let size = 0;
+                    stream
+                        .on("data", (data: Buffer) => { size += data.length })
+                        .pipe(createWriteStream(join(this.option.uploadPath, name)))
+                        .on("close", () => {
+                            info.push({ field, encoding, name, mime, size })
+                        })
+                })
+                .on("finish", () => {
+                    resolve(info)
+                })
+                .on("error", (e: any) => {
+                    reject(e)
+                })
+            this.context.req.pipe(busboy)
+        })
+    }
+}
+
+/**
+ * Add multi part file upload facility
+ */
+export class FileUploadFacility implements Facility {
+    constructor(private option: FileUploadOption) { }
+
+    async setup(app: Readonly<PlumierApplication>): Promise<void> {
+        Object.assign(app.config, { fileParser: (ctx: Context) => new BusboyParser(ctx, this.option) })
+    }
+}
 
 /* ------------------------------------------------------------------------------- */
 /* --------------------------- MAIN APPLICATION ---------------------------------- */

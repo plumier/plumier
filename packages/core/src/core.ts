@@ -24,7 +24,7 @@ export type ValueConverter = (value: any, prop: ParameterProperties) => any
 export type TypeConverter = { type: Class, converter: ValueConverter }
 export type ValidatorFunction = (value: string) => Promise<string | undefined>
 
-export interface ParameterProperties extends ParameterPropertiesType<Class | Class[]> {}
+export interface ParameterProperties extends ParameterPropertiesType<Class | Class[]> { }
 
 export interface ParameterPropertiesType<T> {
     path: string[],
@@ -35,7 +35,7 @@ export interface ParameterPropertiesType<T> {
 
 export interface BindingDecorator {
     type: "ParameterBinding",
-    process: (ctx:Context) => any
+    process: (ctx: Context) => any
 }
 
 export interface RouteDecorator { name: "Route", method: HttpMethod, url?: string }
@@ -98,6 +98,18 @@ export interface ValidationIssue {
     messages: string[]
 }
 
+export interface FileUploadInfo {
+    field:string,
+    name: string,
+    mime: string,
+    size: number,
+    encoding:string
+}
+
+export interface FileParser {
+    parse(): Promise<FileUploadInfo[]>
+}
+
 export interface Configuration {
     mode: "debug" | "production"
 
@@ -137,7 +149,12 @@ export interface Configuration {
     /**
      * Route generator will search for this file extension on controller directory
      */
-    fileExtension?: ".js" | ".ts"
+    fileExtension?: ".js" | ".ts",
+
+    /**
+     * Multi part form file parser implementation
+     */
+    fileParser?: (ctx: Context) => FileParser
 }
 
 
@@ -258,7 +275,7 @@ export class ActionResult {
         return this
     }
 
-    setStatus(status:number){
+    setStatus(status: number) {
         this.status = status
         return this
     }
@@ -321,11 +338,11 @@ export namespace bind {
      * 
      * @param part part of context, use dot separator to access child property
      */
-    export function ctx(part?:string){
-        return decorateParameter(<BindingDecorator>{ 
-            type: "ParameterBinding", 
+    export function ctx(part?: string) {
+        return decorateParameter(<BindingDecorator>{
+            type: "ParameterBinding",
             process: ctx => part ? getChildValue(ctx, part) : ctx
-         })
+        })
     }
 
     /**
@@ -393,6 +410,25 @@ export namespace bind {
      */
     export function user() {
         return ctx("state.user")
+    }
+
+    /**
+     * Bind file parser for multi part file upload. This function required `FileUploadFacility`
+    ```
+    @route.post()
+    async method(@bind.file() file:FileParser){
+        const info = await file.parse()
+    }
+    ```
+     */
+    export function file() {
+        return decorateParameter(<BindingDecorator>{
+            type: "ParameterBinding",
+            process: ctx => {
+                if (!ctx.config.fileParser) throw new Error("No file parser found in configuration")
+                return ctx.config.fileParser(ctx)
+            }
+        })
     }
 }
 

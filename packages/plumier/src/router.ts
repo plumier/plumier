@@ -156,12 +156,12 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
     return async (ctx: Context, next: () => Promise<void>) => {
         const key = `${ctx.method}${ctx.path}`
         const match = matchers[key] || (matchers[key] = getMatcher(ctx.path, ctx.method))
+        Object.assign(ctx, { config })
         if (match) {
             Object.assign(ctx.request.query, match.query)
             const parameters = bindParameter(ctx, match.route.action, config.converters)
             Object.assign(ctx, { route: match.route, parameters })
         }
-        Object.assign(ctx, { config })
         const invocation = handler(ctx)
         const result = await invocation.proceed()
         await result.execute(ctx)
