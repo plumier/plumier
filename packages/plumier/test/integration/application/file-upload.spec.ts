@@ -1,11 +1,11 @@
+import { bind, FileParser, FileUploadInfo, route } from "@plumjs/core";
+import { existsSync, rmdirSync, unlinkSync } from "fs";
+import { extname, join } from "path";
+import shortid from "shortid";
+import Supertest from "supertest";
+
+import { FileUploadFacility } from "../../../src/application";
 import { fixture } from "../../helper";
-import { bind, FileParser, route, FileUploadInfo, mkdirp } from '@plumjs/core';
-import { FileUploadFacility } from '../../../src/application';
-import { join, extname, dirname } from 'path';
-import Supertest from "supertest"
-import { unlinkSync, existsSync, mkdirSync, rmdirSync } from 'fs';
-import shortid from "shortid"
-import rimraf from "rimraf"
 
 jest.mock("shortid")
 
@@ -59,7 +59,7 @@ describe("File Upload", () => {
         const info: FileUploadInfo = fn.mock.calls[0][0][0]
         const filePath = join(__dirname, "upload", info.fileName)
         expect(extname(info.fileName)).toEqual(".html")
-        expect(info.size).toBe(385)
+        expect(info.size).toBeGreaterThan(100)
         expect(info.field).toBe("file")
         expect(existsSync(filePath)).toBe(true)
         unlinkSync(filePath)
