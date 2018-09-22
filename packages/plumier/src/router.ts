@@ -1,24 +1,25 @@
 import {
     Class,
     Configuration,
+    createRoute,
     errorMessage,
     IgnoreDecorator,
+    Invocation,
     isCustomClass,
     RootDecorator,
     RouteDecorator,
     RouteInfo,
-    Invocation,
-    createRoute,
 } from "@plumjs/core";
-import { ClassReflection, FunctionReflection, ParameterReflection, reflect, Reflection } from "@plumjs/reflect";
+import { ClassReflection, FunctionReflection, ParameterReflection, reflect } from "@plumjs/reflect";
 import chalk from "chalk";
 import * as Fs from "fs";
+import Glob from "glob";
 import { Context } from "koa";
-import * as Path from "path";
 import Ptr from "path-to-regexp";
-import { bindParameter } from './binder';
-import Glob from "glob"
 
+import { bindParameter } from "./binder";
+
+//import * as Path from "path";
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- TYPES -------------------------------------- */
 /* ------------------------------------------------------------------------------- */
@@ -92,7 +93,7 @@ function transformControllerWithDecorator(controller: ClassReflection, method: F
 function transformRegularController(controller: ClassReflection, method: FunctionReflection, opt?: TransformOption): RouteInfo[] {
     return [{
         method: "get",
-        url: Path.join(opt && opt.root || "", getControllerRoute(controller), method.name.toLowerCase()),
+        url: createRoute(opt && opt.root || "", getControllerRoute(controller), method.name),
         action: method,
         controller: controller,
     }]
