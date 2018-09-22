@@ -345,6 +345,7 @@ export class Plumier implements PlumierApplication {
             if (process.env["NODE_ENV"] === "production")
                 Object.assign(this.config, { mode: "production" })
             await Promise.all(this.config.facilities.map(x => x.setup(this)))
+            //module.parent.parent.filename -> because Plumier app also exported in plumier/src/index.ts
             let routes: RouteInfo[] = this.createRoutes(dirname(module.parent!.parent!.filename))
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
             const decorators: { [key: string]: Middleware[] } = {}

@@ -1,14 +1,20 @@
-import { bind, FileParser, FileUploadInfo, route } from "@plumjs/core";
+import { bind, FileParser, FileUploadInfo, route, Class, Configuration } from "@plumjs/core";
 import { existsSync, rmdirSync, unlinkSync } from "fs";
 import { extname, join } from "path";
 import shortid from "shortid";
 import Supertest from "supertest";
 
-import { FileUploadFacility } from "../../../src/application";
-import { fixture } from "../../helper";
+import Plumier, { FileUploadFacility, WebApiFacility } from "../../../src";
 
 jest.mock("shortid")
 
+
+export function fixture(controller: Class | Class[] | string, config?: Partial<Configuration>) {
+    const mergedConfig = <Configuration>{ mode: "production", ...config }
+    return new Plumier()
+        .set(new WebApiFacility({ controller }))
+        .set(mergedConfig)
+}
 
 describe("File Upload", () => {
     const shortidMock = (shortid.generate as any as jest.Mock)

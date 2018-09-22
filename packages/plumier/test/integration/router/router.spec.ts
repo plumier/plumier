@@ -682,11 +682,10 @@ describe("Router", () => {
 })
 
 describe("Router with external controller", () => {
-    it("Should load .js file by default", async () => {
+    it.only("Should load .js file by default", async () => {
         Rimraf.sync(join(__dirname, "./controller/*.js"))
         consoleLog.startMock()
         const app = new Plumier()
-            //.set({ rootPath: __dirname })
             .set(new WebApiFacility())
         await app.initialize()
         expect((console.log as any).mock.calls[2][0]).toBe("No controller found")

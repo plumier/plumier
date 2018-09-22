@@ -6,6 +6,8 @@ export {
     Class,
     DependencyResolver,
     Facility,
+    FileUploadInfo,
+    FileParser,
     HeaderPart,
     HttpMethod,
     HttpStatusError,
@@ -25,7 +27,7 @@ export {
     ValidationIssue,
     ValueConverter
 } from "@plumjs/core"
-export { WebApiFacility, RestfulApiFacility, FileActionResult, response } from "./application"
+export { WebApiFacility, RestfulApiFacility, FileActionResult, FileUploadFacility, response } from "./application"
 export { val } from "@plumjs/validator"
 export { array } from "@plumjs/reflect"
 export * from "@plumjs/jwt"

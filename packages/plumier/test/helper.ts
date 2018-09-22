@@ -1,5 +1,5 @@
 import { Class, Configuration } from '@plumjs/core';
-import { Plumier, WebApiFacility } from '../src/application';
+import Plumier, { WebApiFacility } from '../src';
 
 
 export function fixture(controller: Class | Class[] | string, config?: Partial<Configuration>) {
