@@ -687,9 +687,9 @@
     "@types/events" "*"
     "@types/node" "*"
 
-"@types/mongoose@^5.2.16":
-  version "5.2.16"
-  resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-5.2.16.tgz#33b0ff8429e63f100e2b68a12e7856ad273b9e9b"
+"@types/mongoose@^5.2.17":
+  version "5.2.17"
+  resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-5.2.17.tgz#cea448667810f4e27cd1e27067ee2e534018d227"
   dependencies:
     "@types/events" "*"
     "@types/mongodb" "*"
