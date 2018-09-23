@@ -1,13 +1,9 @@
 import { bind, FileParser, FileUploadInfo, route, Class, Configuration } from "@plumjs/core";
 import { existsSync, rmdirSync, unlinkSync } from "fs";
 import { extname, join } from "path";
-import shortid from "shortid";
 import Supertest from "supertest";
 
 import Plumier, { FileUploadFacility, WebApiFacility } from "../../../src";
-
-jest.mock("shortid")
-
 
 export function fixture(controller: Class | Class[] | string, config?: Partial<Configuration>) {
     const mergedConfig = <Configuration>{ mode: "production", ...config }
@@ -17,9 +13,7 @@ export function fixture(controller: Class | Class[] | string, config?: Partial<C
 }
 
 describe("File Upload", () => {
-    const shortidMock = (shortid.generate as any as jest.Mock)
 
-    beforeEach(() => shortidMock.mockClear())
 
     it("Should upload file properly", async () => {
         const fn = jest.fn()
@@ -224,17 +218,17 @@ describe("File Upload", () => {
     })
 
     it("Should reject promise if error occur", async () => {
-        shortidMock.mockImplementation(() => { throw new Error() })
         class ImageController {
             @route.post()
-            async upload(@bind.file() parser: FileParser) {
+            async upload(@bind.file() parser: any) {
+                parser.nameGenerator = (a: string) => { throw new Error() }
                 const files = await parser.save()
             }
         }
         const app = fixture(ImageController)
         app.set(new FileUploadFacility({ uploadPath: join(__dirname, "./upload") }))
         const koa = await app.initialize()
-        koa.on("error", () => {})
+        koa.on("error", () => { })
         await Supertest(koa.callback())
             .post("/image/upload")
             .attach("file", join(__dirname, "./assets/index.html"))
@@ -242,7 +236,6 @@ describe("File Upload", () => {
     })
 
     it("Should reject promise on busboy error", async () => {
-        shortidMock.mockImplementation(() => { throw new Error() })
         class ImageController {
             @route.post()
             async upload(@bind.file() parser: any) {
@@ -254,7 +247,7 @@ describe("File Upload", () => {
         const app = fixture(ImageController)
         app.set(new FileUploadFacility({ uploadPath: join(__dirname, "./upload") }))
         const koa = await app.initialize()
-        koa.on("error", () => {})
+        koa.on("error", () => { })
         await Supertest(koa.callback())
             .post("/image/upload")
             .attach("file", join(__dirname, "./assets/index.html"))

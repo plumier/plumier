@@ -682,7 +682,7 @@ describe("Router", () => {
 })
 
 describe("Router with external controller", () => {
-    it.only("Should load .js file by default", async () => {
+    it("Should load .js file by default", async () => {
         Rimraf.sync(join(__dirname, "./controller/*.js"))
         consoleLog.startMock()
         const app = new Plumier()

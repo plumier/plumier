@@ -30,7 +30,7 @@ import BodyParser from "koa-bodyparser";
 import { dirname, isAbsolute, join, extname } from "path";
 import send from "koa-send"
 import Busboy from "busboy"
-import ShortId from "shortid"
+import crypto from "crypto"
 
 import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
 import { promisify } from 'util';
@@ -218,6 +218,7 @@ interface FileUploadOption {
 
 class BusboyParser implements FileParser {
     busboy: busboy.Busboy
+    nameGenerator: (original:string) => string
     constructor(private context: Context, private option: FileUploadOption) {
         this.busboy = new Busboy({
             headers: this.context.request.headers,
@@ -226,6 +227,7 @@ class BusboyParser implements FileParser {
                 files: this.option.maxFiles
             }
         })
+        this.nameGenerator = (original:string) => crypto.randomBytes(12).toString("hex") + extname(original)
     }
 
     save(subDirectory?: string): Promise<FileUploadInfo[]> {
@@ -241,7 +243,7 @@ class BusboyParser implements FileParser {
             this.busboy
                 .on("file", (field, stream, originalName, encoding, mime) => {
                     try {
-                        const fileName = join(subDirectory || "", ShortId.generate() + extname(originalName))
+                        const fileName = join(subDirectory || "", this.nameGenerator(originalName))
                         if (subDirectory && !existsSync(join(this.option.uploadPath, subDirectory)))
                             mkdirp(join(this.option.uploadPath, subDirectory))
                         const fullPath = join(this.option.uploadPath, fileName)
