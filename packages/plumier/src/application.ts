@@ -46,14 +46,15 @@ export interface RouteContext extends Koa.Context {
 }
 
 export class FileActionResult extends ActionResult {
-    constructor(private path: string) {
-        super()
+    constructor(path: string) {
+        super(path)
     }
 
     async execute(ctx: Context) {
         await super.execute(ctx)
-        if (!existsSync(this.path)) throw new HttpStatusError(500, `${this.path} not exists`)
-        await send(ctx, this.path, { root: "/" })
+        if (!existsSync(this.body)) throw new HttpStatusError(500, `${this.body} not exists`)
+        ctx.type = extname(this.body)
+        await send(ctx, this.body, { root: "/" })
     }
 }
 
