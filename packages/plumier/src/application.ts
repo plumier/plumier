@@ -19,54 +19,34 @@ import {
     PlumierConfiguration,
     RouteInfo,
     ValidationError,
-    FileParser,
-    FileUploadInfo,
-    mkdirp,
 } from "@plumjs/core";
 import { validate } from "@plumjs/validator";
-import { existsSync, createWriteStream, unlink, mkdirSync } from "fs";
+import { existsSync } from "fs";
 import Koa, { Context } from "koa";
 import BodyParser from "koa-bodyparser";
-import { dirname, isAbsolute, join, extname } from "path";
-import send from "koa-send"
-import Busboy from "busboy"
-import crypto from "crypto"
+import send from "koa-send";
+import { dirname, extname, isAbsolute, join } from "path";
 
 import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
-import { promisify } from 'util';
+import { FileActionResult, ServeStaticOptions } from './serve-static';
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------------- CORE -------------------------------------- */
 /* ------------------------------------------------------------------------------- */
-
 
 export interface RouteContext extends Koa.Context {
     route: Readonly<RouteInfo>,
     parameters: any[]
 }
 
-export class FileActionResult extends ActionResult {
-    constructor(path: string) {
-        super(path)
-    }
-
-    async execute(ctx: Context) {
-        await super.execute(ctx)
-        if (!existsSync(this.body)) throw new HttpStatusError(500, `${this.body} not exists`)
-        ctx.type = extname(this.body)
-        await send(ctx, this.body, { root: "/" })
-    }
-}
-
 export namespace response {
     export function json(body: any) {
         return new ActionResult(body)
     }
-    export function file(path: string) {
-        return new FileActionResult(path)
+    export function file(path: string, opt?:ServeStaticOptions) {
+        return new FileActionResult(path, opt)
     }
 }
-
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------------- HELPERS ----------------------------------- */
@@ -199,94 +179,6 @@ export class RestfulApiFacility extends WebApiFacility {
     }
 }
 
-interface FileUploadOption {
-
-    /**
-     * Path of uploaded files (required)
-     */
-    uploadPath: string,
-
-    /**
-     * Maximum file size (in bytes) allowed, default: infinity
-     */
-    maxFileSize?: number;
-
-    /**
-     * Maximum number of files uploaded, default; infinity
-     */
-    maxFiles?: number;
-}
-
-class BusboyParser implements FileParser {
-    busboy: busboy.Busboy
-    nameGenerator: (original:string) => string
-    constructor(private context: Context, private option: FileUploadOption) {
-        this.busboy = new Busboy({
-            headers: this.context.request.headers,
-            limits: {
-                fileSize: this.option.maxFileSize,
-                files: this.option.maxFiles
-            }
-        })
-        this.nameGenerator = (original:string) => crypto.randomBytes(12).toString("hex") + extname(original)
-    }
-
-    save(subDirectory?: string): Promise<FileUploadInfo[]> {
-        return new Promise<FileUploadInfo[]>((resolve, reject) => {
-            const result: FileUploadInfo[] = []
-            const unlinkAsync = promisify(unlink)
-            const deleteAll = async () => await Promise.all(result
-                .map(x => unlinkAsync(join(this.option.uploadPath, x.fileName))))
-            const rollback = async () => {
-                this.context.req.unpipe()
-                await deleteAll()
-            }
-            this.busboy
-                .on("file", (field, stream, originalName, encoding, mime) => {
-                    try {
-                        const fileName = join(subDirectory || "", this.nameGenerator(originalName))
-                        if (subDirectory && !existsSync(join(this.option.uploadPath, subDirectory)))
-                            mkdirp(join(this.option.uploadPath, subDirectory))
-                        const fullPath = join(this.option.uploadPath, fileName)
-                        const info = { field, encoding, fileName, mime, originalName, size: 0 }
-                        result.push(info)
-                        stream
-                            .on("data", (data: Buffer) => { info.size += data.length })
-                            .on("limit", async () => {
-                                await rollback()
-                                reject(new HttpStatusError(422, errorMessage.FileSizeExceeded.format(originalName)))
-                            })
-                            .pipe(createWriteStream(fullPath))
-                    }
-                    catch (e) {
-                        reject(new Error(e.stack))
-                    }
-                })
-                .on("filesLimit", async () => {
-                    await rollback()
-                    reject(new HttpStatusError(422, errorMessage.NumberOfFilesExceeded))
-                })
-                .on("finish", () => {
-                    resolve(result)
-                })
-                .on("error", (e: any) => {
-                    reject(e)
-                })
-            this.context.req.pipe(this.busboy)
-        })
-    }
-}
-
-/**
- * Add multi part file upload facility
- */
-export class FileUploadFacility implements Facility {
-    constructor(private option: FileUploadOption) { }
-
-    async setup(app: Readonly<PlumierApplication>): Promise<void> {
-        Object.assign(app.config, { fileParser: (ctx: Context) => new BusboyParser(ctx, this.option) })
-    }
-}
 
 /* ------------------------------------------------------------------------------- */
 /* --------------------------- MAIN APPLICATION ---------------------------------- */

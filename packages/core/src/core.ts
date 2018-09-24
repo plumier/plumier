@@ -250,7 +250,7 @@ export namespace MiddlewareUtil {
             execute: async x => {
                 await middleware(x.context, async () => {
                     const nextResult = await x.proceed()
-                    nextResult.execute(x.context)
+                    await nextResult.execute(x.context)
                 })
                 return ActionResult.fromContext(x.context)
             }

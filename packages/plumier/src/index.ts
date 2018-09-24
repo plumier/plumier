@@ -27,7 +27,9 @@ export {
     ValidationIssue,
     ValueConverter
 } from "@plumjs/core"
-export { WebApiFacility, RestfulApiFacility, FileActionResult, FileUploadFacility, response } from "./application"
+export { WebApiFacility, RestfulApiFacility, response } from "./application"
+export { MultiPartFacility } from "./multipart"
+export { FileActionResult, ServeStaticFacility, ServeStaticMiddleware, ServeStaticOptions } from "./serve-static"
 export { val } from "@plumjs/validator"
 export { array } from "@plumjs/reflect"
 export * from "@plumjs/jwt"

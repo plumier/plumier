@@ -3,7 +3,7 @@ import { existsSync, rmdirSync, unlinkSync } from "fs";
 import { extname, join } from "path";
 import Supertest from "supertest";
 
-import Plumier, { FileUploadFacility, WebApiFacility } from "../../../src";
+import Plumier, { MultiPartFacility, WebApiFacility } from "../../../src";
 
 export function fixture(controller: Class | Class[] | string, config?: Partial<Configuration>) {
     const mergedConfig = <Configuration>{ mode: "production", ...config }
@@ -25,7 +25,7 @@ describe("File Upload", () => {
             }
         }
         const app = fixture(ImageController)
-        app.set(new FileUploadFacility({ uploadPath: join(__dirname, "./upload") }))
+        app.set(new MultiPartFacility({ uploadPath: join(__dirname, "./upload") }))
         const koa = await app.initialize()
         await Supertest(koa.callback())
             .post("/image/upload")
@@ -50,7 +50,7 @@ describe("File Upload", () => {
             }
         }
         const app = fixture(ImageController)
-        app.set(new FileUploadFacility({ uploadPath: join(__dirname, "./upload") }))
+        app.set(new MultiPartFacility({ uploadPath: join(__dirname, "./upload") }))
         const koa = await app.initialize()
         await Supertest(koa.callback())
             .post("/image/upload")
@@ -92,7 +92,7 @@ describe("File Upload", () => {
             }
         }
         const app = fixture(ImageController)
-        app.set(new FileUploadFacility({ uploadPath: join(__dirname, "./upload"), maxFileSize: 10 }))
+        app.set(new MultiPartFacility({ uploadPath: join(__dirname, "./upload"), maxFileSize: 10 }))
         const koa = await app.initialize()
         await Supertest(koa.callback())
             .post("/image/upload")
@@ -110,7 +110,7 @@ describe("File Upload", () => {
             }
         }
         const app = fixture(ImageController)
-        app.set(new FileUploadFacility({ uploadPath: join(__dirname, "./upload") }))
+        app.set(new MultiPartFacility({ uploadPath: join(__dirname, "./upload") }))
         const koa = await app.initialize()
         await Supertest(koa.callback())
             .post("/image/upload")
@@ -148,7 +148,7 @@ describe("File Upload", () => {
             }
         }
         const app = fixture(ImageController)
-        app.set(new FileUploadFacility({ uploadPath: join(__dirname, "./upload") }))
+        app.set(new MultiPartFacility({ uploadPath: join(__dirname, "./upload") }))
         const koa = await app.initialize()
         await Supertest(koa.callback())
             .post("/image/upload")
@@ -186,7 +186,7 @@ describe("File Upload", () => {
             }
         }
         const app = fixture(ImageController)
-        app.set(new FileUploadFacility({ uploadPath: join(__dirname, "./upload"), maxFiles: 2 }))
+        app.set(new MultiPartFacility({ uploadPath: join(__dirname, "./upload"), maxFiles: 2 }))
         const koa = await app.initialize()
         await Supertest(koa.callback())
             .post("/image/upload")
@@ -206,7 +206,7 @@ describe("File Upload", () => {
             }
         }
         const app = fixture(ImageController)
-        app.set(new FileUploadFacility({ uploadPath: join(__dirname, "./upload"), maxFiles: 2 }))
+        app.set(new MultiPartFacility({ uploadPath: join(__dirname, "./upload"), maxFiles: 2 }))
         const koa = await app.initialize()
         await Supertest(koa.callback())
             .post("/image/upload")
@@ -226,7 +226,7 @@ describe("File Upload", () => {
             }
         }
         const app = fixture(ImageController)
-        app.set(new FileUploadFacility({ uploadPath: join(__dirname, "./upload") }))
+        app.set(new MultiPartFacility({ uploadPath: join(__dirname, "./upload") }))
         const koa = await app.initialize()
         koa.on("error", () => { })
         await Supertest(koa.callback())
@@ -245,7 +245,7 @@ describe("File Upload", () => {
             }
         }
         const app = fixture(ImageController)
-        app.set(new FileUploadFacility({ uploadPath: join(__dirname, "./upload") }))
+        app.set(new MultiPartFacility({ uploadPath: join(__dirname, "./upload") }))
         const koa = await app.initialize()
         koa.on("error", () => { })
         await Supertest(koa.callback())
