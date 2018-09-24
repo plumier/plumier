@@ -628,7 +628,6 @@ export namespace errorMessage {
     export const ActionDoesNotHaveTypeInfo = "PLUM1001: Parameter binding skipped because action doesn't have @route decorator"
     export const ModelWithoutTypeInformation = "PLUM1005: Parameter binding skipped because  {0} doesn't have @domain() decorator"
     export const ArrayWithoutTypeInformation = "PLUM1006: Parameter binding skipped because array field without @array() decorator found in ({0})"
-    export const MultipleDecoratorNotSupported = "PLUM1002: Multiple decorators doesn't supported"
     export const DuplicateRouteFound = "PLUM1003: Duplicate route found in {0}"
     export const ControllerPathNotFound = "PLUM1004: Controller file or directory {0} not found"
     export const ModelNotFound = "PLUM1007: Domain model not found, no class decorated with @domain() on provided classes"

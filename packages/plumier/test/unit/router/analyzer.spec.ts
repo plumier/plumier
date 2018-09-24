@@ -51,19 +51,6 @@ describe("Analyzer", () => {
         expect(analysis[0].issues.length).toBe(0)
     })
 
-    it("Should identify multiple decorators", () => {
-        class AnimalController {
-            @route.get("/animal")
-            @route.get("/animal/get")
-            getAnimal(a: string, b: string) { }
-        }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
-        expect(analysis[0].issues.length).toBe(1)
-        expect(analysis[0].issues[0].message).toContain("PLUM1002")
-        expect(analysis[0].issues[0].type).toBe("error")
-    })
-
     it("Should identify duplicate route", () => {
 
         class AnimalController {

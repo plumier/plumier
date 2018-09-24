@@ -226,17 +226,6 @@ function metadataTypeTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     else return { type: "success" }
 }
 
-function multipleDecoratorTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
-    const decorator = route.action.decorators.filter(x => x.name == "Route")
-    if (decorator.length > 1) {
-        return {
-            type: "error",
-            message: errorMessage.MultipleDecoratorNotSupported
-        }
-    }
-    else return { type: "success" }
-}
-
 function duplicateRouteTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     const dup = allRoutes.filter(x => x.url == route.url && x.method == route.method)
     if (dup.length > 1) {
@@ -289,8 +278,9 @@ function analyzeRoute(route: RouteInfo, tests: AnalyzerFunction[], allRoutes: Ro
 
 export function analyzeRoutes(routes: RouteInfo[]) {
     const tests: AnalyzerFunction[] = [
-        backingParameterTest, metadataTypeTest, multipleDecoratorTest,
-        duplicateRouteTest, modelTypeInfoTest, arrayTypeInfoTest
+        backingParameterTest, metadataTypeTest, 
+        duplicateRouteTest, modelTypeInfoTest, 
+        arrayTypeInfoTest
     ]
     return routes.map(x => analyzeRoute(x, tests, routes))
 }

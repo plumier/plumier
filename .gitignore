@@ -9,3 +9,4 @@ lerna-debug.log
 !jest.config.js
 !jest.config.debug.js
 !test.js
+.docs

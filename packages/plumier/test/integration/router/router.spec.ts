@@ -776,22 +776,6 @@ describe("Analyzer", () => {
         consoleLog.clearMock()
     })
 
-    it("Should identify multiple decorators", async () => {
-        class AnimalController {
-            @route.get()
-            @route.get("/data")
-            method(a: number) { }
-        }
-        consoleLog.startMock()
-        const app = await new Plumier()
-            .set(new WebApiFacility())
-            .set({ controller: [AnimalController] })
-            .initialize()
-        expect((console.log as any).mock.calls[3][0]).toContain("PLUM1002")
-        expect((console.log as any).mock.calls[3][0]).toContain("error")
-        consoleLog.clearMock()
-    })
-
     it("Should identify duplicate route", async () => {
         @route.root("/beast")
         class AnimalController {
