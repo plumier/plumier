@@ -4,6 +4,8 @@ import { fixture } from '../../helper';
 import Supertest from "supertest"
 import { readFileSync } from 'fs';
 import { ServeStaticFacility } from '../../../src';
+import send from "koa-send"
+
 
 describe("Serve File From Controller", () => {
     it("Should able to provided absolute path without specifying root", async () => {
@@ -110,5 +112,81 @@ describe("Serve Files", () => {
         await Supertest(koa.callback())
             .get("/clock.jpeg")
             .expect(200, "Hello")
+    })
+
+    it("Should return 404 if file not found", async () => {
+        const root = join(__dirname, "./assets");
+        class HomeController {
+            @route.get("/")
+            index() {
+                return "Hello"
+            }
+        }
+        const app = fixture(HomeController)
+        app.set(new ServeStaticFacility({ root }))
+        const koa = await app.initialize()
+        const result = await Supertest(koa.callback())
+            .get("/new-image.jpeg")
+            .expect(404)
+    })
+
+    it("Should be able to serve nested files", async () => {
+        const root = join(__dirname, "./assets-nested");
+        class HomeController {
+            @route.get("/")
+            index() {
+                return "Hello"
+            }
+        }
+        const app = fixture(HomeController)
+        app.set(new ServeStaticFacility({ root }))
+        const koa = await app.initialize()
+        const result = await Supertest(koa.callback())
+            .get("/static/base.css")
+            .expect(200)
+        expect(result.type).toBe("text/css")
+    })
+
+    it("Should be able to serve with multiple root location", async () => {
+        const nested = join(__dirname, "./assets-nested");
+        const root = join(__dirname, "./assets");
+        class HomeController {
+            @route.get("/")
+            index() {
+                return "Hello"
+            }
+        }
+        const app = fixture(HomeController)
+        app.set(new ServeStaticFacility({ root: nested }))
+        app.set(new ServeStaticFacility({ root }))
+        const koa = await app.initialize()
+        await Supertest(koa.callback())
+            .get("/static/base.css")
+            .expect(200)
+        await Supertest(koa.callback())
+            .get("/clock.jpeg")
+            .expect(200)
+    })
+
+    it("Should handle error properly", async () => {
+        jest.resetModules()
+        jest.doMock("koa-send", () => function() { throw new Error() })
+        const serve = require("../../../src/serve-static")
+        const root = join(__dirname, "./assets");
+        class HomeController {
+            @route.get("/")
+            index() {
+                return "Hello"
+            }
+        }
+        const app = fixture(HomeController)
+        app.set(new serve.ServeStaticFacility({ root }))
+        const koa = await app.initialize()
+        koa.on("error", () => {})
+        await Supertest(koa.callback())
+            .get("/clock.jpeg")
+            .expect(500)
+        jest.dontMock("koa-send")
+        jest.resetModules()
     })
 })

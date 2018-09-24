@@ -1,4 +1,4 @@
-import { ActionResult, Facility, Invocation, Middleware, PlumierApplication } from "@plumjs/core";
+import { ActionResult, Facility, Invocation, Middleware, PlumierApplication, HttpStatusError } from "@plumjs/core";
 import { Context } from "koa";
 import send from "koa-send";
 import { extname } from "path";
@@ -33,8 +33,8 @@ export interface ServeStaticOptions {
 export class FileActionResult extends ActionResult {
     constructor(path: string, private opt?: ServeStaticOptions) {
         super(path)
-        if(!this.opt)
-            this.opt = {root: "/"}
+        if (!this.opt)
+            this.opt = { root: "/" }
     }
 
     async execute(ctx: Context) {
@@ -50,9 +50,21 @@ export class ServeStaticMiddleware implements Middleware {
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
         //no route = no controller = possibly static file request
         if (!invocation.context.route) {
-            return new FileActionResult(invocation.context.path, this.option)
+            //execute action result directly here, so if file not found it will possible to chain with next middleware
+            try {
+                const result = new FileActionResult(invocation.context.path, this.option)
+                await result.execute(invocation.context)
+                return ActionResult.fromContext(invocation.context)
+            }
+            catch (e) {
+                if (e.status && e.status === 404)
+                    return invocation.proceed()
+                else 
+                    throw e
+            }
         }
-        else return invocation.proceed()
+        else
+            return invocation.proceed()
     }
 }
 
