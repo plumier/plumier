@@ -30,6 +30,7 @@ export function hasKeyOf<T>(opt: any, key: string): opt is T {
 
 export function isCustomClass(type: Function | Function[]) {
     switch (Array.isArray(type) ? type[0] : type) {
+        case undefined:
         case Boolean:
         case String:
         case Array:

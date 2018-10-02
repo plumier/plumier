@@ -15,7 +15,7 @@ import { Context } from "koa";
 
 
 function createConversionError(value: any, prop: ParameterProperties) {
-    const type = Array.isArray(prop.parameterType) ? `Array<${prop.parameterType[0].name}>` : prop.parameterType.name
+    const type = (prop.parameterType as Class).name
     return new ConversionError({ path: prop.path, type, value },
         errorMessage.UnableToConvertValue.format(value, type, prop.path.join("->")))
 }
@@ -38,7 +38,7 @@ function safeToString(value: any) {
 /* ------------------------------- CONVERTER ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-export function booleanConverter(rawValue: any, prop: ParameterProperties) {
+export function booleanConverter(rawValue: {}, prop: ParameterProperties) {
     const value: string = safeToString(rawValue)
     const list: { [key: string]: boolean | undefined } = {
         on: true, true: true, "1": true, yes: true,
@@ -49,30 +49,26 @@ export function booleanConverter(rawValue: any, prop: ParameterProperties) {
     return result
 }
 
-export function numberConverter(rawValue: any, prop: ParameterProperties) {
+export function numberConverter(rawValue: {}, prop: ParameterProperties) {
     const value = safeToString(rawValue)
     const result = Number(value)
     if (isNaN(result) || value === "") throw createConversionError(value, prop)
     return result
 }
 
-export function dateConverter(rawValue: any, prop: ParameterProperties) {
+export function dateConverter(rawValue: {}, prop: ParameterProperties) {
     const value = safeToString(rawValue)
     const result = new Date(value)
     if (isNaN(result.getTime()) || value === "") throw createConversionError(value, prop)
     return result
 }
 
-
-
-export function defaultModelConverter(value: any, prop: ParameterPropertiesType<Class>): any {
+export function defaultModelConverter(value: {}, prop: ParameterPropertiesType<Class>): any {
     //--- helper functions
-    const isConvertibleToObject = (value: any) => {
-        if (typeof value == "boolean" ||
-            typeof value == "number" ||
-            typeof value == "string") return false
-        else return true
-    }
+    const isConvertibleToObject = (value: any) =>
+        typeof value !== "boolean"
+        && typeof value !== "number"
+        && typeof value !== "string"
     //---
 
     //if the value already instance of the type then return immediately
@@ -88,7 +84,7 @@ export function defaultModelConverter(value: any, prop: ParameterPropertiesType<
     //traverse through the object properties and convert to appropriate property's type
     const sanitized = reflection.ctorParameters.map(x => ({
         name: x.name,
-        value: convert(value[x.name], {
+        value: convert((value as any)[x.name], {
             parameterType: x.typeAnnotation,
             path: prop.path.concat(x.name),
             decorators: x.decorators,
@@ -102,7 +98,7 @@ export function defaultModelConverter(value: any, prop: ParameterPropertiesType<
         //remove property that is not defined in value
         //because new prop.parameterType() will create property with undefined value
         const trim = Object.keys(result).filter(x => Object.keys(value).indexOf(x) === -1)
-        trim.forEach(x =>  delete result[x])
+        trim.forEach(x => delete result[x])
         return result
     }
     catch (e) {
@@ -115,8 +111,9 @@ export function defaultModelConverter(value: any, prop: ParameterPropertiesType<
     }
 }
 
-export function defaultArrayConverter(value: any[], prop: ParameterPropertiesType<Class[]>): any {
-    if (!Array.isArray(value)) throw createConversionError(value, prop)
+export function defaultArrayConverter(value: {}[], prop: ParameterPropertiesType<Class[]>): any {
+    //allow single value as array for url encoded
+    if (!Array.isArray(value)) value = [value]
     return value.map(((x, i) => convert(x, {
         path: prop.path.concat(i.toString()),
         converters: prop.converters,
@@ -152,41 +149,48 @@ export function convert(value: any, prop: ParameterProperties) {
 /* ----------------------------- BINDER FUNCTIONS -------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
+type Binder = (ctx: Context, par: ParameterReflection) => any
+class Next { }
 
-function bindModel(action: FunctionReflection, ctx: Context, par: ParameterReflection, converter: (value: any) => any): any {
-    if (!par.typeAnnotation) return
-    if (!isCustomClass(par.typeAnnotation)) return
-    return converter(ctx.request.body)
+function getProperty(obj: any, key: string) {
+    const realKey = Object.keys(obj).find(x => x.toLowerCase() === key.toLowerCase())
+    return realKey && obj[realKey]
 }
 
-function bindDecorator(action: FunctionReflection, ctx: Context, par: ParameterReflection, converter: (value: any) => any): any {
+function bindBody(ctx: Context, par: ParameterReflection): any {
+    return isCustomClass(par.typeAnnotation) || Array.isArray(par.typeAnnotation) ? ctx.request.body : undefined
+}
+
+function bindDecorator(ctx: Context, par: ParameterReflection): any {
     const decorator: BindingDecorator = par.decorators.find((x: BindingDecorator) => x.type == "ParameterBinding")
-    if (!decorator) return
-    return converter(decorator.process(ctx))
+    if (!decorator) return new Next()
+    return decorator.process(ctx)
 }
 
-function bindArrayDecorator(action: FunctionReflection, ctx: Context, par: ParameterReflection, converter: (value: any, type: Class | Class[]) => any): any {
-    if (!Array.isArray(par.typeAnnotation)) return 
-    return converter(ctx.request.body, par.typeAnnotation)
+function bindByName(ctx: Context, par: ParameterReflection): any {
+    const { body, query } = ctx.request;
+    const keys = Object.keys(query || {}).concat(Object.keys(body || {})).map(x => x.toLowerCase())
+    if (keys.some(x => x === par.name.toLowerCase())) {
+        return getProperty(query, par.name) || getProperty(body, par.name)
+    }
+    else return new Next()
 }
 
-function bindRegular(action: FunctionReflection, ctx: Context, par: ParameterReflection, converter: (value: any) => any): any {
-    const queryKey = Object.keys(ctx.request.query).find(x => x.toLowerCase() === par.name.toLocaleLowerCase())
-    const bodyKey = Object.keys(ctx.request.body || {}).find(x => x.toLowerCase() === par.name.toLocaleLowerCase())
-    const body:any = ctx.request.body;
-    return converter(ctx.request.query[queryKey!] || body && body[bodyKey!])
+function chain(...binder: Binder[]) {
+    return (ctx: Context, par: ParameterReflection) => binder
+        .reduce((a, b) => a instanceof Next ? b(ctx, par) : a, new Next())
 }
 
 export function bindParameter(ctx: Context, action: FunctionReflection, converter?: TypeConverter[]) {
     const mergedConverters = flattenConverters(DefaultConverterList.concat(converter || []))
     return action.parameters.map(((x, i) => {
-        const converter = (result: any, type?: Class | Class[]) => convert(result, {
-            path: [x.name], parameterType: type || x.typeAnnotation,
-            converters: mergedConverters, decorators: x.decorators
-        });
-        return bindArrayDecorator(action, ctx, x, converter) ||
-            bindDecorator(action, ctx, x, converter) ||
-            bindModel(action, ctx, x, converter) ||
-            bindRegular(action, ctx, x, converter)
+        const binder = chain(bindDecorator, bindByName, bindBody)
+        const result = binder(ctx, x)
+        return convert(result, {
+            path: [x.name],
+            parameterType: x.typeAnnotation,
+            converters: mergedConverters,
+            decorators: x.decorators
+        })
     }))
 }

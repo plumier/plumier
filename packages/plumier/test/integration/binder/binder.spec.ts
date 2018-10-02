@@ -344,6 +344,34 @@ describe("Parameter Binding", () => {
                 .expect(200, [1, 2, 3])
         })
 
+        it("Should bind array of number using url encoded", async () => {
+            class AnimalController {
+                @route.post()
+                save(@array(Number) b: number[]) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .post("/animal/save")
+                .send("b=1")
+                .send("b=2")
+                .send("b=3")
+                .expect(200, [1, 2, 3])
+        })
+
+        it("Should allow single value on url encoded as array", async () => {
+            class AnimalController {
+                @route.post()
+                save(@array(Number) b: number[]) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .post("/animal/save")
+                .send("b=1")
+                .expect(200, [1])
+        })
+
         it("Should bind array of boolean", async () => {
             class AnimalController {
                 @route.post()
@@ -480,7 +508,7 @@ describe("Parameter Binding", () => {
                     id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
                     tags: "Hello"
                 }])
-                .expect(400, `Unable to convert "Hello" into Array<TagModel> in parameter b->0->tags`)
+                .expect(400, `Unable to convert "Hello" into TagModel in parameter b->0->tags->0`)
         })
 
         it("Should return 400 if provided unconvertible value", async () => {
@@ -875,10 +903,31 @@ describe("Parameter Binding", () => {
                 .expect(200, { id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
         })
 
+        it("Should be able to bind parameters with nested model", async () => {
+            @domain()
+            class Name {
+                constructor(
+                    public first: string,
+                    public last: string
+                ) { }
+            }
+            class AnimalController {
+                @route.post()
+                save(id: number, name: Name, deceased: boolean, birthday: Date) {
+                    return { id, name, deceased, birthday }
+                }
+            }
+            const koa = await fixture(AnimalController).initialize()
+            await Supertest(koa.callback())
+                .post("/animal/save")
+                .send({ id: "200", name: { first: "Mimi", last: "Dog" }, deceased: "ON", birthday: "2018-1-1" })
+                .expect(200, { id: 200, name: { first: "Mimi", last: "Dog" }, deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+
         it("Should be able to mix body binding with query binding", async () => {
             class AnimalController {
                 @route.post()
-                save(type:string, id: number, name: string, deceased: boolean, birthday: Date) {
+                save(type: string, id: number, name: string, deceased: boolean, birthday: Date) {
                     return { id, name, deceased, birthday, type }
                 }
             }

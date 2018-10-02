@@ -137,3 +137,27 @@ new Plumier()
 ## Getting Started
 
 Go to [getting started](../../wiki/getting-started) to start codding
+
+## Contributing
+To run Plumier project on local machine, some setup/app required
+
+### App requirements
+* Visual Studio Code (Recommended)
+* Nodejs 8+
+* Yarn `npm install -g yarn`
+
+### Local Setup
+* Fork and clone the project
+* Install dependencies by `yarn install`
+* Run test by `yarn test`
+
+### Debugging
+Plumier already provided vscode `task` and `launch` setting. To start debugging a test scenario:
+* Build the project 
+* Locate the test file and narrow the test runs by using `.only`
+* Put breakpoint on any location you need on `.ts` file 
+* Locate the `.js` version of the test file that will be run **(important)**
+* On start/debug configuration select `Jest Current File` and start debugging
+* Process will halt properly on the `.ts` file.
+
+
