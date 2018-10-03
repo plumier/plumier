@@ -99,6 +99,43 @@ describe("checkParameters", () => {
             const result = checkParameters([], meta.methods[0].parameters, [new Animal("1", true, new Date(), "Active")], ["Admin", "Users"])
             expect(result).toMatchObject([])
         })
+
+        it("Should not error if provided undefined array field", () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public name?:string,
+                    @array(String)
+                    public images?:string[]
+                ) { }
+            }
+
+            class AnimalController {
+                @route.post()
+                save(data: Animal) { }
+            }
+            const meta = reflect(AnimalController)
+            const result = checkParameters([], meta.methods[0].parameters, [new Animal(undefined, undefined)], ["Admin", "Users"])
+            expect(result).toMatchObject([])
+        })
+
+        it("Should not error if provided empty object", () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public name?:string,
+                    public images?:string[]
+                ) { }
+            }
+
+            class AnimalController {
+                @route.post()
+                save(data: Animal) { }
+            }
+            const meta = reflect(AnimalController)
+            const result = checkParameters([], meta.methods[0].parameters, [{}], ["Admin", "Users"])
+            expect(result).toMatchObject([])
+        })
     })
 
     describe("Nested Object Parameter", () => {
