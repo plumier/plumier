@@ -45,10 +45,10 @@ describe("Parameter Binding", () => {
         it("Should return 400 if any other value provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=2")
-                .expect(400, 'Unable to convert "2" into Boolean in parameter b')
+                .expect(400, [{ "path": ["b"], "messages": [`Unable to convert "2" into Boolean`] }])
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=hello")
-                .expect(400, 'Unable to convert "hello" into Boolean in parameter b')
+                .expect(400, [{ "path": ["b"], "messages": [`Unable to convert "hello" into Boolean`] }])
         })
         it("Should return string if no decorator provided", async () => {
             class AnimalController {
@@ -88,7 +88,7 @@ describe("Parameter Binding", () => {
         it("Should return 400 if invalid number", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=hello")
-                .expect(400, `Unable to convert "hello" into Number in parameter b`)
+                .expect(400, [{ "path": ["b"], "messages": [`Unable to convert "hello" into Number`] }])
         })
         it("Should return 422 if value not provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
@@ -140,7 +140,7 @@ describe("Parameter Binding", () => {
         it("Should return 400 if invalid number", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=hello")
-                .expect(400, `Unable to convert "hello" into Date in parameter b`)
+                .expect(400, [{ "path": ["b"], "messages": [`Unable to convert "hello" into Date`] }])
         })
         it("Should return 422 if value not provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
@@ -198,7 +198,7 @@ describe("Parameter Binding", () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "Hello" })
-                .expect(400, `Unable to convert "Hello" into Date in parameter b->birthday`)
+                .expect(400, [{ "path": ["b", "birthday"], "messages": [`Unable to convert "Hello" into Date`] }])
         })
 
         it("Should provide informative error when model instantiation failed", async () => {
@@ -316,7 +316,7 @@ describe("Parameter Binding", () => {
                     id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
                     tag: { id: "500", name: "Rabies", expired: "Hello" }
                 })
-                .expect(400, `Unable to convert "Hello" into Date in parameter b->tag->expired`)
+                .expect(400, [{ "path": ["b", "tag", "expired"], "messages": [`Unable to convert "Hello" into Date`] }])
         })
 
         it("Should return 400 if provided non convertible value on model", async () => {
@@ -326,7 +326,7 @@ describe("Parameter Binding", () => {
                     id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
                     tag: "Hello"
                 })
-                .expect(400, `Unable to convert "Hello" into TagModel in parameter b->tag`)
+                .expect(400, [{ "path": ["b", "tag"], "messages": [`Unable to convert "Hello" into TagModel`] }])
         })
     })
 
@@ -427,7 +427,7 @@ describe("Parameter Binding", () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send(["Hello", "TRUE", "1", "ON"])
-                .expect(400, `Unable to convert "Hello" into Boolean in parameter b->0`)
+                .expect(400, [{ "path": ["b", "0"], "messages": [`Unable to convert "Hello" into Boolean`] }])
         })
     })
 
@@ -508,7 +508,7 @@ describe("Parameter Binding", () => {
                     id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
                     tags: "Hello"
                 }])
-                .expect(400, `Unable to convert "Hello" into TagModel in parameter b->0->tags->0`)
+                .expect(400, [{ "path": ["b", "0", "tags", "0"], "messages": [`Unable to convert "Hello" into TagModel`] }])
         })
 
         it("Should return 400 if provided unconvertible value", async () => {
@@ -527,7 +527,7 @@ describe("Parameter Binding", () => {
                     id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
                     tags: [{ id: "500", name: "Rabies" }, { id: "Hello", name: "Rabies Two" }]
                 }])
-                .expect(400, `Unable to convert "Hello" into Number in parameter b->1->tags->1->id`)
+                .expect(400, [{ "path": ["b", "1", "tags", "1", "id"], "messages": [`Unable to convert "Hello" into Number`] }])
         })
     })
 
@@ -575,7 +575,7 @@ describe("Parameter Binding", () => {
             }
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
-                .expect(400, `Unable to convert "[object Object]" into Number in parameter b`)
+                .expect(400, [{ "path": ["b"], "messages": [`Unable to convert "[object Object]" into Number`] }])
         })
         it("Should return 400 if provided invalid type on whole request", async () => {
             class AnimalController {
@@ -585,7 +585,7 @@ describe("Parameter Binding", () => {
             }
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
-                .expect(400, `Unable to convert "[object Object]" into Number in parameter b`)
+                .expect(400, [{ "path": ["b"], "messages": [`Unable to convert "[object Object]" into Number`] }])
         })
     })
 
@@ -638,7 +638,7 @@ describe("Parameter Binding", () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
-                .expect(400, `Unable to convert "747474" into Boolean in parameter b`)
+                .expect(400, [{ "path": ["b"], "messages": [`Unable to convert "747474" into Boolean`] }])
         })
 
         it("Should return 400 if provided non convertible type on whole body", async () => {
@@ -651,7 +651,7 @@ describe("Parameter Binding", () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
                 .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
-                .expect(400, `Unable to convert "[object Object]" into Boolean in parameter b`)
+                .expect(400, [{ "path": ["b"], "messages": [`Unable to convert "[object Object]" into Boolean`] }])
         })
     })
 
@@ -696,8 +696,8 @@ describe("Parameter Binding", () => {
             }
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
-                .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
-                .expect(400, `Unable to convert "application/json" into Number in parameter b`)
+                .send({})
+                .expect(400, [{ "path": ["b"], "messages": [`Unable to convert "application/json" into Number`] }])
         })
 
         it("Should return 400 if provided non convertible type on whole header", async () => {
@@ -709,8 +709,8 @@ describe("Parameter Binding", () => {
             }
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .post("/animal/save")
-                .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
-                .expect(400, `Unable to convert "[object Object]" into Number in parameter b`)
+                .send({})
+                .expect(400, [{ "path": ["b"], "messages": [`Unable to convert "[object Object]" into Number`] }])
         })
     })
 
@@ -785,7 +785,7 @@ describe("Parameter Binding", () => {
             }
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
-                .expect(400, `Unable to convert "747474" into Boolean in parameter b`)
+                .expect(400, [{ "path": ["b"], "messages": [`Unable to convert "747474" into Boolean`] }])
         })
 
         it("Should return 400 if provided non convertible type on whole query", async () => {
@@ -798,7 +798,7 @@ describe("Parameter Binding", () => {
 
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
-                .expect(400, `Unable to convert "[object Object]" into Number in parameter b`)
+                .expect(400, [{ "path": ["b"], "messages": [`Unable to convert "[object Object]" into Number`] }])
         })
     })
 

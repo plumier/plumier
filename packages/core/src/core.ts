@@ -302,8 +302,8 @@ export class HttpStatusError extends Error {
 }
 
 export class ConversionError extends HttpStatusError {
-    constructor(public info: { path: string[], type: string, value: any }, message?: string) {
-        super(400, message)
+    constructor(public issues: ValidationIssue) {
+        super(400)
         Object.setPrototypeOf(this, ConversionError.prototype)
     }
 }
@@ -638,7 +638,7 @@ export namespace errorMessage {
 
 
     //End user error (no error code)
-    export const UnableToConvertValue = `Unable to convert "{0}" into {1} in parameter {2}`
+    export const UnableToConvertValue = `Unable to convert "{0}" into {1}`
     export const FileSizeExceeded = "File {0} size exceeded the maximum size"
     export const NumberOfFilesExceeded = "Number of files exceeded the maximum allowed"
 }

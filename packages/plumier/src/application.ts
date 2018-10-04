@@ -19,6 +19,7 @@ import {
     PlumierConfiguration,
     RouteInfo,
     ValidationError,
+    ConversionError,
 } from "@plumjs/core";
 import { validate } from "@plumjs/validator";
 import { existsSync } from "fs";
@@ -116,20 +117,6 @@ export function pipe(middleware: Middleware[], context: Context, invocation: Inv
 /* -------------------------------- FACITLITIES ---------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-class ValidationMiddleware implements Middleware {
-    async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
-        try {
-            return await invocation.proceed()
-        }
-        catch (e) {
-            if (e instanceof ValidationError) {
-                return new ActionResult(e.issues, e.status)
-            }
-            else throw e
-        }
-    }
-}
-
 /**
  * Preset configuration for building web api. This facility contains:
  * 
@@ -146,7 +133,15 @@ export class WebApiFacility implements Facility {
                 await next()
             }
             catch (e) {
-                if (e instanceof HttpStatusError)
+                if(e instanceof ValidationError){
+                    ctx.body = e.issues
+                    ctx.status = e.status
+                }
+                else if(e instanceof ConversionError){
+                    ctx.body = [e.issues]
+                    ctx.status = e.status
+                }
+                else if (e instanceof HttpStatusError)
                     ctx.throw(e.status, e)
                 else
                     ctx.throw(500, e)
@@ -159,7 +154,6 @@ export class WebApiFacility implements Facility {
         app.set({
             validator: (value, meta) => validate(value, meta.decorators, [meta.name])
         })
-        app.use(new ValidationMiddleware())
     }
 }
 

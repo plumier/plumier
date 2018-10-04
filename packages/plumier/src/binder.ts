@@ -13,11 +13,9 @@ import {
 import { FunctionReflection, ParameterReflection, reflect } from "@plumjs/reflect";
 import { Context } from "koa";
 
-
 function createConversionError(value: any, prop: ParameterProperties) {
     const type = (prop.parameterType as Class).name
-    return new ConversionError({ path: prop.path, type, value },
-        errorMessage.UnableToConvertValue.format(value, type, prop.path.join("->")))
+    return new ConversionError({ path: prop.path, messages: [errorMessage.UnableToConvertValue.format(value, type)] })
 }
 
 

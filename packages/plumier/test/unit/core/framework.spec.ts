@@ -91,10 +91,9 @@ describe("HttpStatusError", () => {
 
 describe("ConversionError", () => {
     it("Should instantiate properly", () => {
-        const error = new ConversionError({ path: ["a", "b"], type: "Number", value: 200 }, "MESSAGE")
-        expect(error.message).toBe("MESSAGE")
+        const error = new ConversionError({ path: ["a", "b"], messages: ["MESSAGE"] })
         expect(error.status).toBe(400)
-        expect(error.info).toEqual({ path: ["a", "b"], type: "Number", value: 200 })
+        expect(error.issues).toEqual({ path: ["a", "b"], messages: ["MESSAGE"] })
     })
 
     it("Should be instance of Error", () => {

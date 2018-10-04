@@ -2,7 +2,7 @@ import { decorateClass, reflect, array } from "@plumjs/reflect";
 
 import { bind, domain, TypeConverter } from "../../../src";
 import { convert, DefaultConverterList, flattenConverters } from "../../../src/binder";
-import { ParameterProperties, Class } from '@plumjs/core';
+import { ParameterProperties, Class, ConversionError } from '@plumjs/core';
 
 class AnimalController {
     get(id: number) { }
@@ -43,7 +43,7 @@ describe("Converter", () => {
             expect(result).toBeUndefined()
         })
         it("Should not convert string", () => {
-            expect(() => convert("hello", DefaultNumberProp)).toThrow(`Unable to convert "hello" into Number in parameter id`)
+            expect(() => convert("hello", DefaultNumberProp)).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "hello" into Number in parameter id`] }))
         })
     })
 
@@ -66,10 +66,10 @@ describe("Converter", () => {
             expect(result).toBeUndefined()
         })
         it("Should throw error when provided non convertible string", () => {
-            expect(() => convert("Hello", Prop)).toThrow(`Unable to convert "Hello" into Boolean in parameter id`)
+            expect(() => convert("Hello", Prop)).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "Hello" into Boolean`] }))
         })
         it("Should throw error when provided non convertible number", () => {
-            expect(() => convert(200, Prop)).toThrow(`Unable to convert "200" into Boolean in parameter id`)
+            expect(() => convert(200, Prop)).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "200" into Boolean`] }))
         })
     })
 
@@ -92,7 +92,7 @@ describe("Converter", () => {
             expect(result).toBeUndefined()
         })
         it("Should throw error when provided non convertible string", () => {
-            expect(() => convert("Hello", Prop)).toThrow(`Unable to convert "Hello" into Date in parameter id`)
+            expect(() => convert("Hello", Prop)).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "Hello" into Date `] }))
         })
     })
 
@@ -172,7 +172,7 @@ describe("Converter", () => {
             expect(() => {
                 convert({ id: "200", name: "Mimi", deceased: "Hello", birthday: "2018-1-1" },
                     { ...DefaultNumberProp, parameterType: AnimalClass })
-            }).toThrow(`Unable to convert "Hello" into Boolean in parameter id->deceased`)
+            }).toThrow(new ConversionError({ path: ["id", "deceased"], messages: [`Unable to convert "Hello" into Boolean`] }))
         })
 
         it("Should throw if provided non convertible value", () => {
@@ -188,7 +188,7 @@ describe("Converter", () => {
 
             expect(() => {
                 convert("Hello", { ...DefaultNumberProp, parameterType: AnimalClass })
-            }).toThrow(`Unable to convert "Hello" into AnimalClass in parameter id`)
+            }).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "Hello" into AnimalClass`] }))
         })
 
         it("Should not populate optional properties with undefined", () => {
@@ -293,7 +293,7 @@ describe("Converter", () => {
                 deceased: "ON",
                 birthday: "2018-1-1",
                 owner: { id: "400", name: "John Doe", join: "Hello" }
-            }, prop)).toThrow(`Unable to convert "Hello" into Date in parameter id->owner->join`)
+            }, prop)).toThrow(new ConversionError({ path: ["id", "owner", "join"], messages: [`Unable to convert "Hello" into Date`] }))
         })
 
         it("Should throw if non convertible model provided", () => {
@@ -303,7 +303,7 @@ describe("Converter", () => {
                 deceased: "ON",
                 birthday: "2018-1-1",
                 owner: "Hello"
-            }, prop)).toThrow(`Unable to convert "Hello" into ClientClass in parameter id->owner`)
+            }, prop)).toThrow(new ConversionError({ path: ["id", "owner"], messages: [`Unable to convert "Hello" into ClientClass`] }))
         })
     })
 
