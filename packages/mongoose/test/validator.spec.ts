@@ -1,7 +1,8 @@
 import { collection, model, MongooseFacility } from "@plumjs/mongoose";
 import { val, validateObject } from "@plumjs/validator";
 import Mongoose from 'mongoose';
-import { domain } from '@plumjs/core';
+import { domain, PlumierApplication } from '@plumjs/core';
+import Plumier from "@plumjs/plumier"
 
 describe("unique validator", () => {
     it("Should return invalid if data already exist", async () => {
@@ -17,7 +18,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup({ config: { mode: "production" } } as any)
+        await facility.setup(<PlumierApplication>new Plumier().set({mode: "production"}))
         const UserModel = model(User)
         await UserModel.remove({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
@@ -39,7 +40,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup({ config: { mode: "production" } } as any)
+        await facility.setup(<PlumierApplication>new Plumier().set({mode: "production"}))
         const UserModel = model(User)
         await UserModel.remove({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
@@ -61,7 +62,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup({ config: { mode: "production" } } as any)
+        await facility.setup(<PlumierApplication>new Plumier().set({mode: "production"}))
         const UserModel = model(User)
         await UserModel.remove({})
         const result = await validateObject(new User("Ketut", "ketut@gmail.com"))
@@ -82,7 +83,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup({ config: { mode: "production" } } as any)
+        await facility.setup(<PlumierApplication>new Plumier().set({mode: "production"}))
         const UserModel = model(User)
         await UserModel.remove({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
@@ -105,7 +106,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup({ config: { mode: "production" } } as any)
+        await facility.setup(<PlumierApplication>new Plumier().set({mode: "production"}))
         const UserModel = model(User)
         await UserModel.remove({})
         const result = await validateObject(new User("Ketut", undefined))

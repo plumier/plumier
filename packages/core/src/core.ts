@@ -20,8 +20,10 @@ export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise
 export type RequestPart = keyof Request
 export type HeaderPart = keyof IncomingHttpHeaders
 export type Class = new (...args: any[]) => any
-export type ValueConverter = (value: any, path:string[], expectedType:Function, converters:Map<Function, ValueConverter>) => any
-export type TypeConverter = { type: Class, converter: ValueConverter }
+export type DefaultConverter = "Boolean" | "Number" | "Date" | "Object" | "Array"
+export type Converters = { default: { [key in DefaultConverter]: ConverterFunction }, converters: Map<Function, ConverterFunction> }
+export type ConverterFunction = (value: any, path: string[], expectedType: Function | Function[], converters: Converters) => any
+export type TypeConverter = { type: Class, converter: ConverterFunction }
 export type ValidatorFunction = (value: string) => Promise<string | undefined>
 
 
@@ -91,16 +93,16 @@ export interface ValidationIssue {
 }
 
 export interface FileUploadInfo {
-    field:string,
+    field: string,
     fileName: string,
-    originalName:string,
+    originalName: string,
     mime: string,
     size: number,
-    encoding:string
+    encoding: string
 }
 
 export interface FileParser {
-    save(subDirectory?:string): Promise<FileUploadInfo[]>
+    save(subDirectory?: string): Promise<FileUploadInfo[]>
 }
 
 export interface Configuration {

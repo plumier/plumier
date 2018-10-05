@@ -108,3 +108,12 @@ export function mkdirp(path: string) {
     }
     mkdirSync(path);
 }
+
+//some object can't simply convertible to string https://github.com/emberjs/ember.js/issues/14922#issuecomment-278986178
+export function safeToString(value: any) {
+    try {
+        return value.toString()
+    } catch (e) {
+        return "[object Object]"
+    }
+}

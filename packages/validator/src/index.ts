@@ -253,10 +253,15 @@ export async function validateArray(value: any[], path: string[]): Promise<Valid
 }
 
 export async function validateObject(value: any, partialType?: Class, path?: string[]): Promise<ValidationIssue[]> {
-    const meta = reflect(partialType || getType(value))
-    const result = await Promise.all(meta.ctorParameters.map(p => validate(value[p.name],
-        p.decorators.concat(partialType && { ...OptionalDecorator } || []), (path || []).concat(p.name))))
-    return result.flatten()
+    try{
+        const meta = reflect(partialType || getType(value))
+        const result = await Promise.all(meta.ctorParameters.map(p => validate(value[p.name],
+            p.decorators.concat(partialType && { ...OptionalDecorator } || []), (path || []).concat(p.name))))
+        return result.flatten()
+    }
+    catch(e){
+        return []
+    }
 }
 
 export async function validate(object: any, decs: any[], path: string[]): Promise<ValidationIssue[]> {

@@ -5,7 +5,10 @@ import {
     errorMessage,
     isCustomClass,
     TypeConverter,
-    ValueConverter,
+    ConverterFunction,
+    Converters,
+    DefaultConverter,
+    safeToString,
 } from "@plumjs/core";
 import { FunctionReflection, ParameterReflection, reflect } from "@plumjs/reflect";
 import { Context } from "koa";
@@ -13,20 +16,6 @@ import { Context } from "koa";
 function createConversionError(value: any, typ: Function, path: string[]) {
     const type = (typ as Class).name
     return new ConversionError({ path: path, messages: [errorMessage.UnableToConvertValue.format(value, type)] })
-}
-
-
-export function flattenConverters(converters: TypeConverter[]) {
-    return converters.reduce((a, b) => { a.set(b.type, b.converter); return a }, new Map<Function, ValueConverter>())
-}
-
-//some object can't simply convertible to string https://github.com/emberjs/ember.js/issues/14922#issuecomment-278986178
-function safeToString(value: any) {
-    try {
-        return value.toString()
-    } catch (e) {
-        return "[object Object]"
-    }
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -58,22 +47,24 @@ export function dateConverter(rawValue: {}, path: string[]) {
     return result
 }
 
-export function modelConverter(value: {}, path: string[], expectedType: Class, converters?: Map<Function, ValueConverter>): any {
+export function modelConverter(value: {}, path: string[], expectedType: Function | Function[], converters: Converters): any {
     //--- helper functions
     const isConvertibleToObject = (value: any) =>
         typeof value !== "boolean"
         && typeof value !== "number"
         && typeof value !== "string"
     //---
+    if (Array.isArray(expectedType)) throw createConversionError(value, expectedType[0], path)
+    const TheType = expectedType as Class
 
     //if the value already instance of the type then return immediately
     //this is possible when using decorator binding such as @bind.request("req")
-    if (value instanceof expectedType) return value
+    if (value instanceof TheType) return value
 
     //get reflection metadata of the class
-    const reflection = reflect(expectedType)
+    const reflection = reflect(TheType)
     //check if the value is possible to convert to model
-    if (!isConvertibleToObject(value)) throw createConversionError(value, expectedType, path)
+    if (!isConvertibleToObject(value)) throw createConversionError(value, TheType, path)
 
     //sanitize excess property to prevent object having properties that doesn't match with declaration
     //traverse through the object properties and convert to appropriate property's type
@@ -84,15 +75,15 @@ export function modelConverter(value: {}, path: string[], expectedType: Class, c
 
     //crete new instance of the type and assigned the sanitized values
     try {
-        const result = Object.assign(new expectedType(), sanitized)
+        const result = Object.assign(new TheType(), sanitized)
         //remove property that is not defined in value
-        //because new expectedType() will create property with undefined value
+        //because new TheType() will create property with undefined value
         const trim = Object.keys(result).filter(x => Object.keys(value).indexOf(x) === -1)
         trim.forEach(x => delete result[x])
         return result
     }
     catch (e) {
-        const message = errorMessage.UnableToInstantiateModel.format(expectedType.name)
+        const message = errorMessage.UnableToInstantiateModel.format(TheType.name)
         if (e instanceof Error) {
             e.message = message + "\n" + e.message
             throw e
@@ -101,34 +92,47 @@ export function modelConverter(value: {}, path: string[], expectedType: Class, c
     }
 }
 
-export function arrayConverter(value: {}[], path: string[], expectedType: Function[], converters?: Map<Function, ValueConverter>): any {
+export function arrayConverter(value: {}[], path: string[], expectedType: Function | Function[], converters: Converters): any {
     //allow single value as array for url encoded
     if (!Array.isArray(value)) value = [value]
+    if (!Array.isArray(expectedType)) throw createConversionError(value, expectedType, path)
     return value.map((x, i) => convert(x, path.concat(i.toString()), expectedType[0], converters))
 }
 
-export function convert(value: any, path: string[], expectedType?: Function | Function[], converters?: Map<Function, ValueConverter>) {
+export function convert(value: any, path: string[], expectedType: Function | Function[] | undefined, conf: Converters) {
     if (value === null || value === undefined) return undefined
     if (!expectedType) return value
     //check if the parameter contains @array()
     if (Array.isArray(expectedType))
-        return arrayConverter(value, path, expectedType, converters)
+        return arrayConverter(value, path, expectedType, conf)
     //check if parameter is native value that has default converter (Number, Date, Boolean) or if user provided converter
-    else if (converters && converters.has(expectedType))
-        return converters.get(expectedType)!(value, path, expectedType, converters)
+    else if (conf.converters.has(expectedType))
+        return conf.converters.get(expectedType)!(value, path, expectedType, conf)
     //if type of model and has no  converter, use DefaultObject converter
     else if (isCustomClass(expectedType))
-        return modelConverter(value, path, expectedType as Class, converters)
+        return modelConverter(value, path, expectedType as Class, conf)
     //no converter, return the value
     else
         return value
 }
 
-export const DefaultConverterList: TypeConverter[] = [
+export function flattenConverters(converters: TypeConverter[]) {
+    return converters.reduce((a, b) => { a.set(b.type, b.converter); return a }, new Map<Function, ConverterFunction>())
+}
+
+export const TypeConverters: TypeConverter[] = [
     { type: Number, converter: numberConverter },
     { type: Date, converter: dateConverter },
     { type: Boolean, converter: booleanConverter }
 ]
+
+export const DefaultConverters: { [key in DefaultConverter]: ConverterFunction } = {
+    "Boolean": booleanConverter,
+    "Number": numberConverter,
+    "Date": dateConverter,
+    "Object": modelConverter,
+    "Array": arrayConverter
+}
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------- BINDER FUNCTIONS -------------------------------- */
@@ -167,10 +171,12 @@ function chain(...binder: Binder[]) {
 }
 
 export function bindParameter(ctx: Context, action: FunctionReflection, converter?: TypeConverter[]) {
-    const mergedConverters = flattenConverters(DefaultConverterList.concat(converter || []))
+    const converters = flattenConverters(TypeConverters.concat(converter || []))
     return action.parameters.map(((x, i) => {
         const binder = chain(bindDecorator, bindByName, bindBody)
         const result = binder(ctx, x)
-        return convert(result,[x.name], x.typeAnnotation, mergedConverters)
+        return convert(result, [x.name], x.typeAnnotation, {
+            default: DefaultConverters, converters
+        })
     }))
 }

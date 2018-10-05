@@ -1,5 +1,6 @@
 import { collection } from '@plumjs/mongoose';
 import { array } from '@plumjs/reflect';
+import { domain } from '@plumjs/core';
 
 @collection()
 export class DomainWithPrimitives {
@@ -32,5 +33,11 @@ export class DomainWithArrayOfDomain {
     constructor(
         @array(DomainWithPrimitives)
         public children: DomainWithPrimitives[]
+    ) { }
+}
+
+export class NonDecoratedDomain {
+    constructor(
+        public name: string
     ) { }
 }

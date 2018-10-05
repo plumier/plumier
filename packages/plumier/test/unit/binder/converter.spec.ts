@@ -1,15 +1,13 @@
-import { Class, ConversionError } from "@plumjs/core";
+import { ConversionError, Converters } from "@plumjs/core";
 import { array, decorateClass, reflect } from "@plumjs/reflect";
 
 import { domain, TypeConverter } from "../../../src";
-import { convert, DefaultConverterList, flattenConverters } from "../../../src/binder";
+import { convert, DefaultConverters, flattenConverters, TypeConverters, modelConverter, arrayConverter } from "../../../src/binder";
 
-class AnimalController {
-    get(id: number) { }
+const CONVERTERS: Converters = {
+    default: DefaultConverters,
+    converters: flattenConverters(TypeConverters)
 }
-const metaData = reflect(AnimalController)
-
-const CONVERTERS = flattenConverters(DefaultConverterList)
 
 describe("Converter", () => {
     describe("Number Converter", () => {
@@ -199,6 +197,20 @@ describe("Converter", () => {
             expect(Object.keys(result)).toEqual(["id", "name"])
             expect(result).toEqual({ id: 200, name: "Mimi" })
         })
+
+        it("Should throw error if provided expectedType of type of array", () => {
+            @decorateClass({})
+            class AnimalClass {
+                constructor(
+                    public id: number,
+                    public name: string,
+                    public deceased: boolean,
+                    public birthday: Date
+                ) { }
+            }
+            expect(() => modelConverter({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, ["id"], [AnimalClass], CONVERTERS))
+                .toThrow(ConversionError)
+        })
     })
 
     describe("Nested Model", () => {
@@ -355,12 +367,20 @@ describe("Converter", () => {
                 { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi", tags: [{ id: 300, name: "Tug" }] }
             ])
         })
+
+        it("Should throw error if provided non array on expectedType", () => {
+            expect(() => arrayConverter(["123", "123", "123"], ["id"], Number, CONVERTERS)).toThrow(ConversionError)
+        })
     })
 
     describe("Custom Converter", () => {
         it("Should able to use custom converter", () => {
             const converters: TypeConverter[] = [{ type: Boolean, converter: x => "Custom Boolean" }]
-            const result = convert("TRUE", [], Boolean, flattenConverters(converters))
+
+            const result = convert("TRUE", [], Boolean, {
+                default: DefaultConverters,
+                converters: flattenConverters(TypeConverters.concat(converters))
+            })
             expect(result).toBe("Custom Boolean")
         })
     })

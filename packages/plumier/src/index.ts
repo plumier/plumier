@@ -27,7 +27,7 @@ export {
     ConversionError,
     ValidationError,
     ValidationIssue,
-    ValueConverter
+    ConverterFunction
 } from "@plumjs/core"
 export { WebApiFacility, RestfulApiFacility, response } from "./application"
 export { MultiPartFacility } from "./multipart"

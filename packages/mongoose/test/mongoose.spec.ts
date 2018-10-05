@@ -1,9 +1,11 @@
 import { Constructor, model, MongooseFacility, collection } from "@plumjs/mongoose";
 import Mongoose from "mongoose";
 
-import { DomainWithArrayOfDomain, DomainWithArrays, DomainWithDomain, DomainWithPrimitives } from "./model/my-domain";
-import { consoleLog } from '@plumjs/core';
+import { DomainWithArrayOfDomain, DomainWithArrays, DomainWithDomain, DomainWithPrimitives, NonDecoratedDomain } from "./model/my-domain";
+import { consoleLog, PlumierApplication, Class, route } from '@plumjs/core';
 import { join } from 'path';
+import Plumier, { WebApiFacility, array } from "@plumjs/plumier"
+import supertest from "supertest"
 
 type Model<T> = Mongoose.Model<T & Mongoose.Document>
 
@@ -17,10 +19,11 @@ async function save<T extends object>(cls: Constructor<T>, value: T) {
 
 describe("Mongoose Reference Domain Directly", () => {
     beforeAll(async () => {
+        const app = new Plumier().set({ mode: "production" })
         const facility = new MongooseFacility({
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup({ config: { mode: "production" } } as any)
+        await facility.setup(<PlumierApplication>app)
     })
 
     afterAll(async () => await Mongoose.disconnect())
@@ -71,7 +74,7 @@ describe("Model Load", () => {
             uri: "mongodb://localhost:27017/test-data"
         })
         consoleLog.startMock()
-        await facility.setup({ config: { mode: "debug" } } as any)
+        await facility.setup(<PlumierApplication>new Plumier())
         expect((console.log as jest.Mock).mock.calls[2][0]).toContain("DomainWithPrimitives")
         expect((console.log as jest.Mock).mock.calls[3][0]).toContain("DomainWithArrays")
         expect((console.log as jest.Mock).mock.calls[4][0]).toContain("DomainWithDomain")
@@ -97,7 +100,7 @@ describe("Model Load", () => {
             uri: "mongodb://localhost:27017/test-data"
         })
         consoleLog.startMock()
-        await facility.setup({ config: { mode: "debug" } } as any)
+        await facility.setup(<PlumierApplication>new Plumier())
         expect((console.log as jest.Mock).mock.calls[2][0]).toContain("DomainA")
         expect((console.log as jest.Mock).mock.calls[3][0]).toContain("DomainB")
         consoleLog.clearMock()
@@ -114,7 +117,7 @@ describe("Model Load", () => {
             model: DomainA,
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup({ config: { mode: "production" } } as any)
+        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const mdl = model(DomainA)
         expect(new mdl({})).toBeInstanceOf(Mongoose.Model)
         expect(Mongoose.connection.models["MyOtherDomain"]).not.toBeUndefined()
@@ -141,7 +144,7 @@ describe("Model Load", () => {
             model: [DomainA, DomainB],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup({ config: { mode: "production" } } as any)
+        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const Parent = model(DomainA)
         const Child = model(DomainB)
         await Parent.remove({})
@@ -176,18 +179,36 @@ describe("Model Load", () => {
             model: [DomainA, DomainB],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup({ config: { mode: "production" } } as any)
+        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
 
         //setup db
         const childId = new Mongoose.Types.ObjectId()
         const parentId = new Mongoose.Types.ObjectId()
-        await Mongoose.connection.collection("children").insert({__v: 0, _id: childId, name: "Kima" })
-        await Mongoose.connection.collection("parents").insert({__v: 0, _id: parentId, name: "Ketut", child: childId })
+        await Mongoose.connection.collection("children").insert({ __v: 0, _id: childId, name: "Kima" })
+        await Mongoose.connection.collection("parents").insert({ __v: 0, _id: parentId, name: "Ketut", child: childId })
 
         const Parent = model(DomainA)
         const savedParent = await Parent.findById(parentId.toHexString()).populate("child")
         expect(savedParent!.name).toBe("Ketut")
         expect(savedParent!.child!.name).toBe("Kima")
+    })
+})
+
+describe("Error Handling", () => {
+    afterEach(async () => await Mongoose.disconnect())
+    it("Should show friendly error for model that doesn't decorated with collection", async () => {
+        const facility = new MongooseFacility({
+            model: join(__dirname, "./model/my-domain"),
+            uri: "mongodb://localhost:27017/test-data"
+        })
+        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        const Model = model(NonDecoratedDomain)
+        try {
+            await new Model({ name: "hello" }).save()
+        }
+        catch (e) {
+            expect(e.message).toBe("MONG1003: NonDecoratedDomain not decorated with @collection()")
+        }
     })
 })
 
@@ -222,7 +243,7 @@ describe("Analysis", () => {
             uri: "mongodb://localhost:27017/test-data"
         })
         consoleLog.startMock()
-        await facility.setup({ config: { mode: "debug" } } as any)
+        await facility.setup(<PlumierApplication>new Plumier())
         expect((console.log as jest.Mock).mock.calls[2][0]).toContain("1. DomainWithArrays -> DomainWithArrays")
         expect((console.log as jest.Mock).mock.calls[3][0]).toContain("MONG1000")
         consoleLog.clearMock()
@@ -240,9 +261,62 @@ describe("Analysis", () => {
             uri: "mongodb://localhost:27017/test-data"
         })
         consoleLog.startMock()
-        await facility.setup({ config: { mode: "debug" } } as any)
+        await facility.setup(<PlumierApplication>new Plumier())
         expect((console.log as jest.Mock).mock.calls[2][0]).toContain("MONG1001")
         consoleLog.clearMock()
     })
 
+})
+
+describe("Post Relational Data", () => {
+    function fixture(controller: Class, model: Class[]) {
+        const app = new Plumier()
+        app.set(new WebApiFacility({ controller }))
+        app.set(new MongooseFacility({
+            model, uri: "mongodb://localhost:27017/test-data"
+        }))
+        app.set({ mode: "production" })
+        return app.initialize()
+    }
+
+    afterEach(async () => await Mongoose.disconnect())
+
+    it("Should able to send MongoDbId for relational model", async () => {
+        @collection()
+        class Image {
+            constructor(
+                public name: string
+            ) { }
+        }
+        @collection()
+        class Animal {
+            constructor(
+                public name: string,
+                @array(Image)
+                public images: Image[]
+            ) { }
+        }
+        const ImageModel = model(Image)
+        const AnimalModel = model(Animal)
+        class AnimalController {
+            @route.post()
+            async save(data: Animal) {
+                const newly = await new AnimalModel(data).save()
+                return newly._id
+            }
+        }
+        const koa = await fixture(AnimalController, [Image, Animal])
+        const [image1, image2] = await Promise.all([
+            await new ImageModel({ name: "Image1.jpg" }).save(),
+            await new ImageModel({ name: "Image2.jpg" }).save()
+        ]);
+        const response = await supertest(koa.callback())
+            .post("/animal/save")
+            .send({ name: "Mimi", images: [image1._id, image2._id] })
+            .expect(200)
+        const result = await AnimalModel.findById(response.body)
+            .populate("images")
+        expect(result!.images[0].name).toBe("Image1.jpg")
+        expect(result!.images[1].name).toBe("Image2.jpg")
+    })
 })

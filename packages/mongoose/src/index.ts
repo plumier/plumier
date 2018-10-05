@@ -6,6 +6,9 @@ import {
     PlumierApplication,
     reflectPath,
     ValidatorDecorator,
+    Converters,
+    safeToString,
+    TypeConverter,
 } from "@plumjs/core";
 import { ClassReflection, decorateClass, decorateParameter, ParameterReflection, reflect } from "@plumjs/reflect";
 import { val } from "@plumjs/validator";
@@ -46,6 +49,7 @@ const GlobalMongooseSchema: SchemaRegistry = {}
 const ArrayHasNoTypeInfo = `MONG1000: Array property {0}.{1} require @array(<Type>) decorator to be able to generated into mongoose schema`
 const NoClassFound = `MONG1001: No class decorated with @collection() found`
 const CanNotValidateNonCollection = `MONG1002: @val.unique()  only can be applied to a class that mapped to mongodb collection, in class {0}.{1}`
+const ModelNotDecoratedWithCollection = `MONG1003: {0} not decorated with @collection()`
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- SCHEMA GENERATOR ------------------------------ */
@@ -164,6 +168,19 @@ export function getName(opt: ClassReflection | Class) {
     return decorator && decorator.alias || meta.name
 }
 
+/**
+ * Custom model converter to allow relational data using mongoose ObjectId
+ */
+export function customModelConverter(value: any, path: string[], expectedType: Function | Function[], converters: Converters) {
+    const strObject = safeToString(value)
+    if (Mongoose.Types.ObjectId.isValid(strObject)) {
+        return Mongoose.Types.ObjectId(strObject)
+    }
+    else {
+        return converters.default["Object"](value, path, expectedType, converters)
+    }
+}
+
 export class MongooseFacility implements Facility {
     option: MongooseFacilityOption
     constructor(opts: MongooseFacilityOption) {
@@ -174,14 +191,21 @@ export class MongooseFacility implements Facility {
     }
 
     async setup(app: Readonly<PlumierApplication>) {
-        const metadata = reflectPath(this.option.model!)
+        //generate schemas
+        const collections = reflectPath(this.option.model!)
             .filter((x): x is ClassReflection => x.type === "Class")
+            .filter(x => x.decorators.some((x: MongooseCollectionDecorator) => x.type == "MongooseCollectionDecorator"))
         if (app.config.mode === "debug") {
-            const analysis = analyze(metadata)
+            const analysis = analyze(collections)
             printAnalysis(analysis)
         }
-        const collection = metadata.filter(x => x.decorators.some((x: MongooseCollectionDecorator) => x.type == "MongooseCollectionDecorator"))
-        generateSchema(collection.map(x => x.object), GlobalMongooseSchema)
+        generateSchema(collections.map(x => x.object), GlobalMongooseSchema)
+        //register custom converter
+        const converters = app.config.converters || []
+        app.set({
+            converters: converters.concat(collections
+                .map(x => <TypeConverter>{ type: x.object, converter: customModelConverter }))
+        })
         await Mongoose.connect(this.option.uri, { useNewUrlParser: true })
     }
 }
@@ -228,8 +252,12 @@ export function model<T extends object>(type: Constructor<T>) {
         }
 
         construct?(target: Mongoose.Model<T & Mongoose.Document>, argArray: any, newTarget?: any): object {
-            const Model = this.getModel();
-            return new Model(...argArray)
+            try {
+                const Model = this.getModel();
+                return new Model(...argArray)
+            } catch (e) {
+                throw new Error(ModelNotDecoratedWithCollection.format(this.modelName))
+            }
         }
     }
     return new Proxy(Mongoose.Model as Mongoose.Model<T & Mongoose.Document>, new ModelProxyHandler<T>(type))
