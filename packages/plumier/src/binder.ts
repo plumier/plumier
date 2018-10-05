@@ -4,18 +4,15 @@ import {
     ConversionError,
     errorMessage,
     isCustomClass,
-    ParameterProperties,
-    ParameterPropertiesType,
     TypeConverter,
     ValueConverter,
-    getChildValue,
 } from "@plumjs/core";
 import { FunctionReflection, ParameterReflection, reflect } from "@plumjs/reflect";
 import { Context } from "koa";
 
-function createConversionError(value: any, prop: ParameterProperties) {
-    const type = (prop.parameterType as Class).name
-    return new ConversionError({ path: prop.path, messages: [errorMessage.UnableToConvertValue.format(value, type)] })
+function createConversionError(value: any, typ: Function, path: string[]) {
+    const type = (typ as Class).name
+    return new ConversionError({ path: path, messages: [errorMessage.UnableToConvertValue.format(value, type)] })
 }
 
 
@@ -36,32 +33,32 @@ function safeToString(value: any) {
 /* ------------------------------- CONVERTER ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-export function booleanConverter(rawValue: {}, prop: ParameterProperties) {
+export function booleanConverter(rawValue: {}, path: string[]) {
     const value: string = safeToString(rawValue)
     const list: { [key: string]: boolean | undefined } = {
         on: true, true: true, "1": true, yes: true,
         off: false, false: false, "0": false, no: false
     }
     const result = list[value.toLowerCase()]
-    if (result === undefined) throw createConversionError(value, prop)
+    if (result === undefined) throw createConversionError(value, Boolean, path)
     return result
 }
 
-export function numberConverter(rawValue: {}, prop: ParameterProperties) {
+export function numberConverter(rawValue: {}, path: string[]) {
     const value = safeToString(rawValue)
     const result = Number(value)
-    if (isNaN(result) || value === "") throw createConversionError(value, prop)
+    if (isNaN(result) || value === "") throw createConversionError(value, Number, path)
     return result
 }
 
-export function dateConverter(rawValue: {}, prop: ParameterProperties) {
+export function dateConverter(rawValue: {}, path: string[]) {
     const value = safeToString(rawValue)
     const result = new Date(value)
-    if (isNaN(result.getTime()) || value === "") throw createConversionError(value, prop)
+    if (isNaN(result.getTime()) || value === "") throw createConversionError(value, Date, path)
     return result
 }
 
-export function defaultModelConverter(value: {}, prop: ParameterPropertiesType<Class>): any {
+export function modelConverter(value: {}, path: string[], expectedType: Class, converters?: Map<Function, ValueConverter>): any {
     //--- helper functions
     const isConvertibleToObject = (value: any) =>
         typeof value !== "boolean"
@@ -71,36 +68,31 @@ export function defaultModelConverter(value: {}, prop: ParameterPropertiesType<C
 
     //if the value already instance of the type then return immediately
     //this is possible when using decorator binding such as @bind.request("req")
-    if (value instanceof prop.parameterType) return value
+    if (value instanceof expectedType) return value
 
     //get reflection metadata of the class
-    const reflection = reflect(prop.parameterType)
+    const reflection = reflect(expectedType)
     //check if the value is possible to convert to model
-    if (!isConvertibleToObject(value)) throw createConversionError(value, prop)
+    if (!isConvertibleToObject(value)) throw createConversionError(value, expectedType, path)
 
     //sanitize excess property to prevent object having properties that doesn't match with declaration
     //traverse through the object properties and convert to appropriate property's type
     const sanitized = reflection.ctorParameters.map(x => ({
         name: x.name,
-        value: convert((value as any)[x.name], {
-            parameterType: x.typeAnnotation,
-            path: prop.path.concat(x.name),
-            decorators: x.decorators,
-            converters: prop.converters
-        })
+        value: convert((value as any)[x.name], path.concat(x.name), x.typeAnnotation, converters)
     })).reduce((a, b) => { a[b.name] = b.value; return a }, {} as any)
 
     //crete new instance of the type and assigned the sanitized values
     try {
-        const result = Object.assign(new prop.parameterType(), sanitized)
+        const result = Object.assign(new expectedType(), sanitized)
         //remove property that is not defined in value
-        //because new prop.parameterType() will create property with undefined value
+        //because new expectedType() will create property with undefined value
         const trim = Object.keys(result).filter(x => Object.keys(value).indexOf(x) === -1)
         trim.forEach(x => delete result[x])
         return result
     }
     catch (e) {
-        const message = errorMessage.UnableToInstantiateModel.format(prop.parameterType.name)
+        const message = errorMessage.UnableToInstantiateModel.format(expectedType.name)
         if (e instanceof Error) {
             e.message = message + "\n" + e.message
             throw e
@@ -109,15 +101,27 @@ export function defaultModelConverter(value: {}, prop: ParameterPropertiesType<C
     }
 }
 
-export function defaultArrayConverter(value: {}[], prop: ParameterPropertiesType<Class[]>): any {
+export function arrayConverter(value: {}[], path: string[], expectedType: Function[], converters?: Map<Function, ValueConverter>): any {
     //allow single value as array for url encoded
     if (!Array.isArray(value)) value = [value]
-    return value.map(((x, i) => convert(x, {
-        path: prop.path.concat(i.toString()),
-        converters: prop.converters,
-        decorators: [],
-        parameterType: prop.parameterType[0]
-    })))
+    return value.map((x, i) => convert(x, path.concat(i.toString()), expectedType[0], converters))
+}
+
+export function convert(value: any, path: string[], expectedType?: Function | Function[], converters?: Map<Function, ValueConverter>) {
+    if (value === null || value === undefined) return undefined
+    if (!expectedType) return value
+    //check if the parameter contains @array()
+    if (Array.isArray(expectedType))
+        return arrayConverter(value, path, expectedType, converters)
+    //check if parameter is native value that has default converter (Number, Date, Boolean) or if user provided converter
+    else if (converters && converters.has(expectedType))
+        return converters.get(expectedType)!(value, path, expectedType, converters)
+    //if type of model and has no  converter, use DefaultObject converter
+    else if (isCustomClass(expectedType))
+        return modelConverter(value, path, expectedType as Class, converters)
+    //no converter, return the value
+    else
+        return value
 }
 
 export const DefaultConverterList: TypeConverter[] = [
@@ -125,23 +129,6 @@ export const DefaultConverterList: TypeConverter[] = [
     { type: Date, converter: dateConverter },
     { type: Boolean, converter: booleanConverter }
 ]
-
-export function convert(value: any, prop: ParameterProperties) {
-    if (value === null || value === undefined) return undefined
-    if (!prop.parameterType) return value
-    //check if the parameter contains @array()
-    if (Array.isArray(prop.parameterType))
-        return defaultArrayConverter(value, { ...prop, parameterType: prop.parameterType })
-    //check if parameter is native value that has default converter (Number, Date, Boolean) or if user provided converter
-    else if (prop.converters.has(prop.parameterType))
-        return prop.converters.get(prop.parameterType)!(value, { ...prop, parameterType: prop.parameterType })
-    //if type of model and has no  converter, use DefaultObject converter
-    else if (isCustomClass(prop.parameterType))
-        return defaultModelConverter(value, { ...prop, parameterType: prop.parameterType })
-    //no converter, return the value
-    else
-        return value
-}
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------- BINDER FUNCTIONS -------------------------------- */
@@ -184,11 +171,6 @@ export function bindParameter(ctx: Context, action: FunctionReflection, converte
     return action.parameters.map(((x, i) => {
         const binder = chain(bindDecorator, bindByName, bindBody)
         const result = binder(ctx, x)
-        return convert(result, {
-            path: [x.name],
-            parameterType: x.typeAnnotation,
-            converters: mergedConverters,
-            decorators: x.decorators
-        })
+        return convert(result,[x.name], x.typeAnnotation, mergedConverters)
     }))
 }

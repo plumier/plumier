@@ -117,7 +117,7 @@ function printAnalysis(analysis: DomainAnalysis[]) {
 }
 
 /* ------------------------------------------------------------------------------- */
-/* ------------------------------- MAIN FUNCTIONS -------------------------------- */
+/* --------------------------------- HELPERS ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
 async function isUnique(value: string, target: Class, index: number) {
@@ -132,6 +132,10 @@ async function isUnique(value: string, target: Class, index: number) {
     const result = await Model.findOne(condition)
     if (!!result) return `${value} already exists`
 }
+
+/* ------------------------------------------------------------------------------- */
+/* ------------------------------- MAIN FUNCTIONS -------------------------------- */
+/* ------------------------------------------------------------------------------- */
 
 declare module "@plumjs/validator" {
     namespace val {
@@ -149,10 +153,6 @@ val.unique = () => {
         }
     })
 }
-
-/* ------------------------------------------------------------------------------- */
-/* ------------------------------- MAIN FUNCTIONS -------------------------------- */
-/* ------------------------------------------------------------------------------- */
 
 export function collection(alias?: string) {
     return decorateClass(<MongooseCollectionDecorator>{ type: "MongooseCollectionDecorator", alias })

@@ -1,3 +1,5 @@
+import { arrayConverter, modelConverter, numberConverter, dateConverter, booleanConverter } from "./binder"
+
 export {
     ActionResult,
     Application,
@@ -33,6 +35,14 @@ export { FileActionResult, ServeStaticFacility, ServeStaticMiddleware, ServeStat
 export { val } from "@plumjs/validator"
 export { array } from "@plumjs/reflect"
 export * from "@plumjs/jwt"
+
+export const converters = {
+    arrayConverter,
+    modelConverter,
+    numberConverter,
+    dateConverter,
+    booleanConverter
+}
 
 import { Plumier } from "./application"
 export default Plumier

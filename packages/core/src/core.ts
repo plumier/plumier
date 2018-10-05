@@ -20,18 +20,10 @@ export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise
 export type RequestPart = keyof Request
 export type HeaderPart = keyof IncomingHttpHeaders
 export type Class = new (...args: any[]) => any
-export type ValueConverter = (value: any, prop: ParameterProperties) => any
+export type ValueConverter = (value: any, path:string[], expectedType:Function, converters:Map<Function, ValueConverter>) => any
 export type TypeConverter = { type: Class, converter: ValueConverter }
 export type ValidatorFunction = (value: string) => Promise<string | undefined>
 
-export interface ParameterProperties extends ParameterPropertiesType<Class | Class[]> { }
-
-export interface ParameterPropertiesType<T> {
-    path: string[],
-    parameterType: T,
-    decorators: any[]
-    converters: Map<Function, ValueConverter>,
-}
 
 export interface BindingDecorator {
     type: "ParameterBinding",

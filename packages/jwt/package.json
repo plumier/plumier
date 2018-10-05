@@ -1,7 +1,7 @@
 {
   "name": "@plumjs/jwt",
   "version": "0.1.1",
-  "description": "Pleasant TypeScript Web Api Framework",
+  "description": "Plumier authorization module using JWT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
