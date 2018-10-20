@@ -31,6 +31,17 @@ describe("Analyzer", () => {
         expect(analysis[0].issues[0].type).toBe("error")
     })
 
+    it("Should ignore case on backing parameter route", () => {
+        @route.root("/root/:type/animal")
+        class AnimalController {
+            @route.get(":name")
+            getAnimal(TYPE: string, NAME: string) { }
+        }
+        const routeInfo = transformController(AnimalController)
+        const analysis = analyzeRoutes(routeInfo)
+        expect(analysis[0].issues.length).toBe(0)
+    })
+
     it("Should identify missing design type information", () => {
         class AnimalController {
             getAnimal(a: string, b: string) { }

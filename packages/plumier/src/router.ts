@@ -203,8 +203,8 @@ function traverseArray(parent: string, par: ParameterReflection[]): string[] {
 function backingParameterTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     const ids = route.url.split("/")
         .filter(x => x.startsWith(":"))
-        .map(x => x.substring(1))
-    const missing = ids.filter(id => route.action.parameters.map(x => x.name).indexOf(id) === -1)
+        .map(x => x.substring(1).toLowerCase())
+    const missing = ids.filter(id => route.action.parameters.map(x => x.name.toLowerCase()).indexOf(id) === -1)
     if (missing.length > 0) {
         return {
             type: "error",

@@ -56,6 +56,35 @@ describe("Router", () => {
         await Supertest(app.callback()).get("/transaction").expect(200, "OK")
     })
 
+    it("Should allow case insensitive backing parameter", async () => {
+        class AnimalController {
+            @route.get(":animalid")
+            method(AnimalId: string) {
+                return { AnimalId }
+            }
+        }
+        const app = await fixture(AnimalController)
+            .initialize()
+        await Supertest(app.callback())
+            .get("/animal/123")
+            .expect(200, { AnimalId: "123" })
+    })
+
+    it("Should allow case insensitive backing parameter in root route", async () => {
+        @route.root("/beast/:beastId/animal")
+        class AnimalController {
+            @route.get(":animalid")
+            method(BeastId:string, AnimalId: string) {
+                return { BeastId, AnimalId }
+            }
+        }
+        const app = await fixture(AnimalController)
+            .initialize()
+        await Supertest(app.callback())
+            .get("/beast/123/animal/123")
+            .expect(200, { BeastId: "123", AnimalId: "123" })
+    })
+
     describe("GET route", () => {
         it("Should route simple path", async () => {
             class AnimalController {
@@ -707,7 +736,7 @@ describe("Router with external controller", () => {
     it("Should able to specify file instead of folder", async () => {
         consoleLog.startMock()
         const app = await new Plumier()
-        .set(new WebApiFacility())
+            .set(new WebApiFacility())
             .set({ controller: "controller/animal-controller.ts", fileExtension: ".ts" })
             .initialize()
         expect((console.log as any).mock.calls[2][0]).toContain("/animal/get")

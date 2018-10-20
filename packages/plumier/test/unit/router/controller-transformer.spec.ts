@@ -169,6 +169,16 @@ describe("Controller Transformer", () => {
             expect(result).toMatchObject([{ method: "get", url: "/beast/get" }])
         })
 
+        it("Should be able to transform root route with parameter", () => {
+            @route.root("/beast/:beastId/animal")
+            class AnimalController {
+                @route.get("get")
+                theMethod(beastId:string, id: string) { }
+            }
+            const result = transformController(AnimalController)
+            expect(result).toMatchObject([{ method: "get", url: "/beast/:beastid/animal/get" }])
+        })
+
         it("Should be able to skip class name override from action by absolute route", () => {
             @route.root("/beast")
             class AnimalController {

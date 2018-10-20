@@ -83,9 +83,10 @@ function getDecorator(info: RouteInfo, globalDecorator?: (...args: any[]) => voi
 }
 
 export function checkParameter(path: string[], meta: ParameterReflection, value: any, userRole: string[]): string[] {
-    if (Array.isArray(meta.typeAnnotation)) {
+    if (typeof value === "undefined") return []
+    else if (Array.isArray(meta.typeAnnotation)) {
         const newMeta = { ...meta, typeAnnotation: meta.typeAnnotation[0] };
-        return (value as any[] || []).map((x, i) => checkParameter(path.concat(i.toString()), newMeta, x, userRole))
+        return (value as any[]).map((x, i) => checkParameter(path.concat(i.toString()), newMeta, x, userRole))
             .flatten()
     }
     else if (isCustomClass(meta.typeAnnotation)) {
@@ -93,7 +94,7 @@ export function checkParameter(path: string[], meta: ParameterReflection, value:
         const values = classMeta.ctorParameters.map(x => value[x.name])
         return checkParameters(path, classMeta.ctorParameters, values, userRole)
     }
-    else if (typeof value !== "undefined") {
+    else {
         const requestRoles = meta.decorators.find((x): x is AuthDecorator => isAuthDecorator(x))
         if (requestRoles && !userRole.some(x => requestRoles.value.some(y => y === x)))
             return [path.join(".")]
@@ -126,7 +127,7 @@ export class AuthorizeMiddleware implements Middleware {
     constructor(private roleField: RoleField, private global?: (...args: any[]) => void) { }
 
     private async getRole(user: any): Promise<string[]> {
-        if(!user) return []
+        if (!user) return []
         if (typeof this.roleField === "function")
             return await this.roleField(user)
         else {
@@ -144,7 +145,7 @@ export class AuthorizeMiddleware implements Middleware {
     }
 
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
-        if(!invocation.context.route) return invocation.proceed()
+        if (!invocation.context.route) return invocation.proceed()
         const decorator = getDecorator(invocation.context.route, this.global)
         const userRoles = await this.getRole(invocation.context.state.user)
         if (decorator && decorator.type === "authorize:public")
