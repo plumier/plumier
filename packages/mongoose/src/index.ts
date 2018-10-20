@@ -26,11 +26,13 @@ export type SchemaRegistry = { [key: string]: Mongoose.Schema }
 export interface MongooseFacilityOption {
     model?: string | Class | Class[]
     uri: string,
+    schemaGenerator?:SchemaGenerator
 }
 export interface SubSchema {
     type: typeof Mongoose.Schema.Types.ObjectId,
     ref: string
 }
+export type SchemaGenerator = (definition:any, meta:ClassReflection) => Mongoose.Schema
 interface AnalysisResult {
     type: "warning" | "error",
     message: string
@@ -68,17 +70,17 @@ function getType(prop: ParameterReflection, registry: SchemaRegistry): Function 
     else return prop.typeAnnotation
 }
 
-function generateModel(model: ClassReflection, registry: SchemaRegistry) {
-    const schema = model.ctorParameters
+function generateModel(model: ClassReflection, registry: SchemaRegistry, generator?: SchemaGenerator) {
+    const definition = model.ctorParameters
         .reduce((a, b) => {
             a[b.name] = getType(b, registry)
             return a
         }, {} as any)
-    registry[getName(model)] = new Mongoose.Schema(schema)
+    registry[getName(model)] = !!generator ? generator(definition, model) : new Mongoose.Schema(definition)
 }
 
-function generateSchema(opt: Class[], registry: SchemaRegistry) {
-    loadModels(opt).forEach(x => generateModel(x, registry))
+function generateSchema(opt: Class[], registry: SchemaRegistry, generator?:SchemaGenerator) {
+    loadModels(opt).forEach(x => generateModel(x, registry, generator))
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -199,7 +201,7 @@ export class MongooseFacility implements Facility {
             const analysis = analyze(collections)
             printAnalysis(analysis)
         }
-        generateSchema(collections.map(x => x.object), GlobalMongooseSchema)
+        generateSchema(collections.map(x => x.object), GlobalMongooseSchema, this.option.schemaGenerator)
         //register custom converter
         const converters = app.config.converters || []
         app.set({

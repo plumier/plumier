@@ -194,6 +194,63 @@ describe("Model Load", () => {
     })
 })
 
+describe("Custom Schema Generator", () => {
+    afterEach(async () => Mongoose.disconnect())
+
+    it("Should provided correct parameters", async () => {
+        @collection()
+        class DomainA {
+            constructor(
+                public name: string,
+            ) { }
+        }
+        @collection()
+        class DomainB {
+            constructor(
+                public name: string,
+            ) { }
+        }
+        const fn = jest.fn()
+        const facility = new MongooseFacility({
+            model: [DomainA, DomainB],
+            uri: "mongodb://localhost:27017/test-data",
+            schemaGenerator: (a, b) => {
+                fn(a, b)
+                return new Mongoose.Schema(a)
+            }
+        })
+        await facility.setup(<PlumierApplication>new Plumier().set({mode: "production"}))
+        expect(fn.mock.calls[0][0]).toMatchObject({ name: String })
+        expect(fn.mock.calls[0][1]).toMatchObject({ name: 'DomainA' })
+        expect(fn.mock.calls[1][0]).toMatchObject({ name: String })
+        expect(fn.mock.calls[1][1]).toMatchObject({ name: 'DomainB' })
+    })
+
+    it("Should able to override schema", async () => {
+        @collection()
+        class DomainA {
+            constructor(
+                public name: string,
+            ) { }
+        }
+
+        const Model = model(DomainA)
+        const facility = new MongooseFacility({
+            model: [DomainA],
+            uri: "mongodb://localhost:27017/test-data",
+            schemaGenerator: (a, b) => {
+                return new Mongoose.Schema(a, {timestamps: true})
+            }
+        })
+        await facility.setup(<PlumierApplication>new Plumier().set({mode: "production"}))
+        const result = await new Model({name: "Hello"}).save()
+        const props = Object.keys(result.toObject())
+        expect(props.some(x => x === "createdAt")).toBe(true)
+        expect(props.some(x => x === "updatedAt")).toBe(true)
+    })
+
+})
+
 describe("Error Handling", () => {
     afterEach(async () => await Mongoose.disconnect())
     it("Should show friendly error for model that doesn't decorated with collection", async () => {
