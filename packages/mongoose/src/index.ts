@@ -26,13 +26,13 @@ export type SchemaRegistry = { [key: string]: Mongoose.Schema }
 export interface MongooseFacilityOption {
     model?: string | Class | Class[]
     uri: string,
-    schemaGenerator?:SchemaGenerator
+    schemaGenerator?: SchemaGenerator
 }
 export interface SubSchema {
     type: typeof Mongoose.Schema.Types.ObjectId,
     ref: string
 }
-export type SchemaGenerator = (definition:any, meta:ClassReflection) => Mongoose.Schema
+export type SchemaGenerator = (definition: any, meta: ClassReflection) => Mongoose.Schema
 interface AnalysisResult {
     type: "warning" | "error",
     message: string
@@ -79,7 +79,7 @@ function generateModel(model: ClassReflection, registry: SchemaRegistry, generat
     registry[getName(model)] = !!generator ? generator(definition, model) : new Mongoose.Schema(definition)
 }
 
-function generateSchema(opt: Class[], registry: SchemaRegistry, generator?:SchemaGenerator) {
+function generateSchema(opt: Class[], registry: SchemaRegistry, generator?: SchemaGenerator) {
     loadModels(opt).forEach(x => generateModel(x, registry, generator))
 }
 
@@ -213,6 +213,17 @@ export class MongooseFacility implements Facility {
 }
 
 export function model<T extends object>(type: Constructor<T>) {
+
+    function traversePropertyType(meta: ClassReflection): Class[] {
+        const properties = meta.ctorParameters
+            .filter(x => isCustomClass(x.typeAnnotation))
+            .map((x) => <Class>(Array.isArray(x.typeAnnotation) ? x.typeAnnotation[0] : x.typeAnnotation))
+        return properties.length > 0 ?
+            properties.concat(properties.map(x => reflect(x))
+                .map(x => traversePropertyType(x))
+                .flatten()) : []
+    }
+
     class ModelProxyHandler<T extends object> implements ProxyHandler<Mongoose.Model<T & Mongoose.Document>> {
         private isLoaded = false
         modelName: string;
@@ -233,9 +244,7 @@ export function model<T extends object>(type: Constructor<T>) {
 
         private getModel(): Mongoose.Model<T & Mongoose.Document> {
             if (!this.isLoaded) {
-                const properties = this.metaData.ctorParameters
-                    .filter(x => isCustomClass(x.typeAnnotation))
-                    .map((x) => <Class>(Array.isArray(x.typeAnnotation) ? x.typeAnnotation[0] : x.typeAnnotation))
+                const properties = traversePropertyType(this.metaData)
                 const unique = Array.from(new Set(properties))
                 unique.forEach(x => this.getModelByName(getName(x)))
                 this.isLoaded = true

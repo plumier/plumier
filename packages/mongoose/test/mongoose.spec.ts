@@ -9,6 +9,11 @@ import supertest from "supertest"
 
 type Model<T> = Mongoose.Model<T & Mongoose.Document>
 
+function clearCache(){
+    Object.keys(Mongoose.connection.models)
+        .forEach(name => delete Mongoose.connection.models[name])
+}
+
 
 async function save<T extends object>(cls: Constructor<T>, value: T) {
     const Model = model(cls)
@@ -19,6 +24,7 @@ async function save<T extends object>(cls: Constructor<T>, value: T) {
 
 describe("Mongoose Reference Domain Directly", () => {
     beforeAll(async () => {
+        clearCache()
         const app = new Plumier().set({ mode: "production" })
         const facility = new MongooseFacility({
             uri: "mongodb://localhost:27017/test-data"
@@ -66,6 +72,7 @@ describe("Mongoose Reference Domain Directly", () => {
 })
 
 describe("Model Load", () => {
+    beforeEach(() => clearCache())
     afterEach(async () => Mongoose.disconnect())
 
     it("Should be able to provide absolute path", async () => {
@@ -125,8 +132,6 @@ describe("Model Load", () => {
     })
 
     it("Should be able to use name alias on relation", async () => {
-        delete Mongoose.connection.models["Child"]
-        delete Mongoose.connection.models["Parent"]
         @collection("Child")
         class DomainB {
             constructor(public name: string) { }
@@ -158,9 +163,7 @@ describe("Model Load", () => {
         expect(savedParent!.child!.name).toBe("Kima")
     })
 
-    it("Should able to populate child without creating child model", async () => {
-        delete Mongoose.connection.models["Child"]
-        delete Mongoose.connection.models["Parent"]
+    it("Model proxy should load children schema", async () => {
 
         @collection("Child")
         class DomainB {
@@ -184,17 +187,93 @@ describe("Model Load", () => {
         //setup db
         const childId = new Mongoose.Types.ObjectId()
         const parentId = new Mongoose.Types.ObjectId()
-        await Mongoose.connection.collection("children").insert({ __v: 0, _id: childId, name: "Kima" })
-        await Mongoose.connection.collection("parents").insert({ __v: 0, _id: parentId, name: "Ketut", child: childId })
+        await Mongoose.connection.collection("children").insertOne({ __v: 0, _id: childId, name: "Kima" })
+        await Mongoose.connection.collection("parents").insertOne({ __v: 0, _id: parentId, name: "Ketut", child: childId })
 
         const Parent = model(DomainA)
         const savedParent = await Parent.findById(parentId.toHexString()).populate("child")
         expect(savedParent!.name).toBe("Ketut")
         expect(savedParent!.child!.name).toBe("Kima")
     })
+
+    it("Model proxy should load nested children schema", async () => {
+
+        @collection()
+        class Tag {
+            constructor(public name: string) { }
+        }
+
+        @collection()
+        class Animal {
+            constructor(public name: string, public tag: Tag) { }
+        }
+
+        @collection()
+        class Human {
+            constructor(public name: string, public pet: Animal) { }
+        }
+
+        const facility = new MongooseFacility({
+            model: [Human, Animal, Tag],
+            uri: "mongodb://localhost:27017/test-data"
+        })
+        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        const humanId = new Mongoose.Types.ObjectId()
+        const animalId = new Mongoose.Types.ObjectId()
+        const tagId = new Mongoose.Types.ObjectId()
+        await Mongoose.connection.collection("tags").insertOne({ __v: 0, _id: tagId, name: "The Tag" })
+        await Mongoose.connection.collection("animals").insertOne({ __v: 0, _id: animalId, name: "Mimi", tag: tagId })
+        await Mongoose.connection.collection("humen").insertOne({ __v: 0, _id: humanId, name: "Ketut", pet: animalId })
+
+        const HumanModel = model(Human)
+        const result = await HumanModel.findById(humanId.toHexString())
+            .populate({
+                path: "pet",
+                populate: {
+                    path: "tag"
+                }
+            })
+        expect(result!.name).toBe("Ketut")
+        expect(result!.pet.name).toBe("Mimi")
+        expect(result!.pet.tag.name).toBe("The Tag")
+    })
+
+    it("Model proxy should not register dup properties twice", async () => {
+
+
+        @collection()
+        class Animal {
+            constructor(public name: string) { }
+        }
+
+        @collection()
+        class Human {
+            constructor(public name: string, public pet: Animal, public secondPet: Animal) { }
+        }
+
+        const facility = new MongooseFacility({
+            model: [Human, Animal],
+            uri: "mongodb://localhost:27017/test-data"
+        })
+        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        const humanId = new Mongoose.Types.ObjectId()
+        const mimiId = new Mongoose.Types.ObjectId()
+        const bubId = new Mongoose.Types.ObjectId()
+        await Mongoose.connection.collection("animals").insertOne({ __v: 0, _id: mimiId, name: "Mimi" })
+        await Mongoose.connection.collection("animals").insertOne({ __v: 0, _id: bubId, name: "Bub" })
+        await Mongoose.connection.collection("humen").insertOne({ __v: 0, _id: humanId, name: "Ketut", pet: mimiId, secondPet: bubId })
+
+        const HumanModel = model(Human)
+        const result = await HumanModel.findById(humanId.toHexString())
+            .populate([{ path: "pet" }, { path: "secondPet" }])
+        expect(result!.name).toBe("Ketut")
+        expect(result!.pet.name).toBe("Mimi")
+        expect(result!.secondPet.name).toBe("Bub")
+    })
 })
 
 describe("Custom Schema Generator", () => {
+    beforeEach(() => clearCache())
     afterEach(async () => Mongoose.disconnect())
 
     it("Should provided correct parameters", async () => {
@@ -219,7 +298,7 @@ describe("Custom Schema Generator", () => {
                 return new Mongoose.Schema(a)
             }
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({mode: "production"}))
+        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
         expect(fn.mock.calls[0][0]).toMatchObject({ name: String })
         expect(fn.mock.calls[0][1]).toMatchObject({ name: 'DomainA' })
         expect(fn.mock.calls[1][0]).toMatchObject({ name: String })
@@ -239,11 +318,11 @@ describe("Custom Schema Generator", () => {
             model: [DomainA],
             uri: "mongodb://localhost:27017/test-data",
             schemaGenerator: (a, b) => {
-                return new Mongoose.Schema(a, {timestamps: true})
+                return new Mongoose.Schema(a, { timestamps: true })
             }
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({mode: "production"}))
-        const result = await new Model({name: "Hello"}).save()
+        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        const result = await new Model({ name: "Hello" }).save()
         const props = Object.keys(result.toObject())
         expect(props.some(x => x === "createdAt")).toBe(true)
         expect(props.some(x => x === "updatedAt")).toBe(true)
@@ -252,6 +331,7 @@ describe("Custom Schema Generator", () => {
 })
 
 describe("Error Handling", () => {
+    beforeEach(() => clearCache())
     afterEach(async () => await Mongoose.disconnect())
     it("Should show friendly error for model that doesn't decorated with collection", async () => {
         const facility = new MongooseFacility({
@@ -270,6 +350,7 @@ describe("Error Handling", () => {
 })
 
 describe("Proxy", () => {
+    beforeEach(() => clearCache())
     it("Should ok if toString() method is called", async () => {
         @collection()
         class OtherDomain {
@@ -286,6 +367,7 @@ describe("Proxy", () => {
 
 
 describe("Analysis", () => {
+    beforeEach(() => clearCache())
     afterEach(async () => await Mongoose.disconnect())
     it("Should analyze missing @array decorator", async () => {
         @collection()
@@ -336,9 +418,11 @@ describe("Post Relational Data", () => {
         return app.initialize()
     }
 
+    beforeEach(() => clearCache())
     afterEach(async () => await Mongoose.disconnect())
 
     it("Should able to send MongoDbId for relational model", async () => {
+
         @collection()
         class Image {
             constructor(
