@@ -1,1 +1,1 @@
-export function myFunction(id:number, name:string){}
+export function myFunction(id: number, name: string) { }

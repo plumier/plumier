@@ -19,7 +19,7 @@ export interface ClassReflection extends ReflectionBase { type: "Class", ctorPar
 export interface ObjectReflection extends ReflectionBase { type: "Object", members: Reflection[] }
 export interface ArrayDecorator { type: "Array", object: Class }
 export interface TypeDecorator { type: "Override", object: Class, info?: string }
-interface CacheItem {key:string | Class, result: Reflection}
+interface CacheItem { key: string | Class, result: Reflection }
 
 export const DECORATOR_KEY = "plumier.key:DECORATOR"
 export const DESIGN_PARAMETER_TYPE = "design:paramtypes"
@@ -64,10 +64,16 @@ function getType(object: any) {
         if (isConstructor(object)) return "Class"
         else return "Function"
     }
-    else return "Object"
+    else if (Array.isArray(object))
+        return "Array"
+    else
+        return "Object"
 }
 
-export function decorateParameter(data: object | ((target: Class, name: string, index: number) => object)) {
+
+export function decorateParameter(callback:((target: Class, name: string, index: number) => object)): (target: any, name: string, index: number) => void
+export function decorateParameter(data:{}): (target: any, name: string, index: number) => void
+export function decorateParameter(data: any ) {
     return (target: any, name: string, index: number) => {
         const isCtorParam = isConstructor(target)
         const targetType = isCtorParam ? target : target.constructor
@@ -83,7 +89,9 @@ export function decorateParameter(data: object | ((target: Class, name: string, 
     }
 }
 
-export function decorateMethod(data: object | ((target: Class, name: string) => object)) {
+export function decorateMethod(callback: ((target: Class, name: string) => object)): (target: any, name: string) => void
+export function decorateMethod(data: {}): (target: any, name: string) => void
+export function decorateMethod(data: any) {
     return (target: any, name: string) => {
         const decorators: Decorator[] = Reflect.getMetadata(DECORATOR_KEY, target.constructor) || []
         decorators.push({
@@ -95,7 +103,9 @@ export function decorateMethod(data: object | ((target: Class, name: string) => 
     }
 }
 
-export function decorateClass(data: object | ((target: Class) => object)) {
+export function decorateClass(callback: ((target: Class) => object)): (target: any) => void
+export function decorateClass(data: {}): (target: any) => void
+export function decorateClass(data: any) {
     return (target: any) => {
         const decorators: Decorator[] = Reflect.getMetadata(DECORATOR_KEY, target) || []
         decorators.push({
@@ -129,12 +139,12 @@ export function type(type: Class, info?: string) {
 /* ------------------------- CACHE FUNCTIONS ----------------------- */
 /* ---------------------------------------------------------------- */
 
-function getCache(key:string | Class){
+function getCache(key: string | Class) {
     return CACHE.find(x => x.key === key)
 }
 
-function setCache(key:string | Class, result:Reflection){
-    CACHE.push({key, result})
+function setCache(key: string | Class, result: Reflection) {
+    CACHE.push({ key, result })
     return result
 }
 
@@ -208,18 +218,20 @@ function reflectClass(fn: Class): ClassReflection {
 function reflectObject(object: any, name: string = "module"): ObjectReflection {
     return {
         type: "Object", name,
-        members: Object.keys(object).map(x => traverse(object[x], x))
+        members: Object.keys(object).map(x => traverse(object[x], x)).filter((x): x is Reflection => !!x)
     }
 }
 
-function traverse(fn: any, name: string): Reflection {
+function traverse(fn: any, name: string): Reflection | undefined {
     switch (getType(fn)) {
         case "Function":
             return reflectFunction(fn)
         case "Class":
             return reflectClass(fn)
-        default:
+        case "Object":
             return reflectObject(fn, name)
+        default:
+            return
     }
 }
 
@@ -227,7 +239,7 @@ export function reflect(path: string): ObjectReflection
 export function reflect(classType: Class): ClassReflection
 export function reflect(option: string | Class) {
     const cache = getCache(option)
-    if(!!cache) return cache.result
+    if (!!cache) return cache.result
     if (typeof option === "string") {
         return setCache(option, reflectObject(require(option)))
     }

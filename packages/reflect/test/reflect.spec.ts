@@ -513,6 +513,19 @@ describe("Module Introspection", () => {
                 }]
         })
     })
+
+    it("Should inspect module with constant", async () => {
+        const meta = await reflect(join(__dirname, "./mock.module-with-value"))
+        expect(meta.members.length).toBe(1)
+        expect(meta.members[0]).toMatchObject({
+            type: 'Class',
+            ctorParameters: [],
+            name: 'MyClass',
+            methods:
+                [{ type: 'Function', name: 'method', parameters: [], decorators: [] }],
+            decorators: [],
+        })
+    })
 })
 
 describe("Cache Function", () => {
