@@ -22,7 +22,7 @@
     "@koa/cors": "^2.2.1",
     "@plumjs/core": "^0.1.0",
     "@plumjs/jwt": "^0.1.1",
-    "@plumjs/reflect": "^1.4.0",
+    "@plumjs/reflect": "^1.4.1",
     "@plumjs/validator": "^0.1.1",
     "@types/busboy": "^0.2.3",
     "@types/glob": "^7.1.0",

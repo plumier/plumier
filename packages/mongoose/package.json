@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@plumjs/core": "^0.1.0",
-    "@plumjs/reflect": "^1.4.0",
+    "@plumjs/reflect": "^1.4.1",
     "@plumjs/validator": "^0.1.1",
     "@types/mongoose": "^5.2.17",
     "chalk": "^2.4.1",
