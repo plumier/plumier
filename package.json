@@ -17,7 +17,7 @@
 		"del": "^3.0.0",
 		"edit-json-file": "^1.1.0",
 		"jest": "^23.1.0",
-		"lerna": "^3.0.0",
+		"lerna": "^3.4.3",
 		"pre-push": "^0.1.1",
 		"reflect-metadata": "^0.1.12",
 		"ts-jest": "^23.0.0",
