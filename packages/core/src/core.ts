@@ -24,7 +24,7 @@ export type DefaultConverter = "Boolean" | "Number" | "Date" | "Object" | "Array
 export type Converters = { default: { [key in DefaultConverter]: ConverterFunction }, converters: Map<Function, ConverterFunction> }
 export type ConverterFunction = (value: any, path: string[], expectedType: Function | Function[], converters: Converters) => any
 export type TypeConverter = { type: Class, converter: ConverterFunction }
-export type ValidatorFunction = (value: string) => Promise<string | undefined>
+export type ValidatorFunction = (value: string, ctx:Context) => Promise<string | undefined>
 
 
 export interface BindingDecorator {
@@ -139,7 +139,7 @@ export interface Configuration {
     /**
      * Set custom validator
      */
-    validator?: (value: any, metadata: ParameterReflection) => Promise<ValidationIssue[]>
+    validator?: (value: any, metadata: ParameterReflection, context:Context) => Promise<ValidationIssue[]>
 
     /**
      * Route generator will search for this file extension on controller directory

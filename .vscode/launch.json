@@ -16,7 +16,7 @@
             "name": "Jest Current File",
             "program": "${workspaceFolder}/node_modules/.bin/jest",
             "args": [
-                "${relativeFile}",
+                "${fileBasenameNoExtension}.js",
                 "--runInBand",
                 "--config",
                 "jest.config.debug.js"

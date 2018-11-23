@@ -91,7 +91,7 @@ export class ActionInvocation implements Invocation {
         //check validation
         if (config.validator) {
             const param = (i: number) => route.action.parameters[i]
-            const validate = (value: any, i: number) => config.validator!(value, param(i))
+            const validate = (value: any, i: number) => config.validator!(value, param(i), this.context)
             const result = await Promise.all(this.context.parameters.map((value, index) => validate(value, index)))
             const issues = result.flatten()
             if (issues.length > 0) throw new ValidationError(issues)
@@ -152,7 +152,7 @@ export class WebApiFacility implements Facility {
         if (this.opt && this.opt.controller)
             app.set({ controller: this.opt.controller })
         app.set({
-            validator: (value, meta) => validate(value, meta.decorators, [meta.name])
+            validator: (value, meta, ctx) => validate(value, meta.decorators, [meta.name], ctx)
         })
     }
 }
