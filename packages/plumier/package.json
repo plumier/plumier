@@ -37,7 +37,7 @@
     "koa": "^2.5.1",
     "koa-bodyparser": "^4.2.1",
     "koa-send": "^5.0.0",
-    "path-to-regexp": "^2.2.1",
+    "path-to-regexp": "^3.0.0",
     "tslib": "^1.9.2"
   },
   "devDependencies": {
