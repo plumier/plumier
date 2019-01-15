@@ -1,0 +1,374 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Property Introspection Should inspect class with get set 1`] = `
+Object {
+  "ctorParameters": Array [],
+  "decorators": Array [],
+  "methods": Array [],
+  "name": "DummyClass",
+  "object": [Function],
+  "properties": Array [
+    Object {
+      "decorators": Array [],
+      "get": [Function],
+      "name": "data",
+      "set": [Function],
+      "type": "Property",
+      "typeAnnotation": undefined,
+    },
+  ],
+  "type": "Class",
+}
+`;
+
+exports[`Property Introspection Should inspect class with get set with decorator 1`] = `
+Object {
+  "ctorParameters": Array [],
+  "decorators": Array [],
+  "methods": Array [],
+  "name": "DummyClass",
+  "object": [Function],
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {},
+      ],
+      "get": [Function],
+      "name": "data",
+      "set": [Function],
+      "type": "Property",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "type": "Class",
+}
+`;
+
+exports[`Property Introspection Should inspect class with get set with decorator callback 1`] = `
+Object {
+  "ctorParameters": Array [],
+  "decorators": Array [],
+  "methods": Array [],
+  "name": "DummyClass",
+  "object": [Function],
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "name": "data",
+          "target": [Function],
+        },
+      ],
+      "get": [Function],
+      "name": "data",
+      "set": [Function],
+      "type": "Property",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "type": "Class",
+}
+`;
+
+exports[`Property Introspection Should inspect class with get set with decorator multiple 1`] = `
+Object {
+  "ctorParameters": Array [],
+  "decorators": Array [],
+  "methods": Array [],
+  "name": "DummyClass",
+  "object": [Function],
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "value": 2,
+        },
+        Object {
+          "value": 1,
+        },
+      ],
+      "get": [Function],
+      "name": "data",
+      "set": [Function],
+      "type": "Property",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "type": "Class",
+}
+`;
+
+exports[`Property Introspection Should inspect class with properties 1`] = `
+Object {
+  "ctorParameters": Array [],
+  "decorators": Array [],
+  "methods": Array [],
+  "name": "DummyClass",
+  "object": [Function],
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {},
+      ],
+      "get": undefined,
+      "name": "dummyProp",
+      "set": undefined,
+      "type": "Property",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "type": "Class",
+}
+`;
+
+exports[`Property Introspection Should inspect class with properties multiple 1`] = `
+Object {
+  "ctorParameters": Array [],
+  "decorators": Array [],
+  "methods": Array [],
+  "name": "DummyClass",
+  "object": [Function],
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "value": 2,
+        },
+        Object {
+          "value": 1,
+        },
+      ],
+      "get": undefined,
+      "name": "dummyProp",
+      "set": undefined,
+      "type": "Property",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "type": "Class",
+}
+`;
+
+exports[`Property Introspection Should inspect class with properties with callback 1`] = `
+Object {
+  "ctorParameters": Array [],
+  "decorators": Array [],
+  "methods": Array [],
+  "name": "DummyClass",
+  "object": [Function],
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "name": "dummyProp",
+          "target": [Function],
+        },
+      ],
+      "get": undefined,
+      "name": "dummyProp",
+      "set": undefined,
+      "type": "Property",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "type": "Class",
+}
+`;
+
+exports[`Property Introspection Should inspect constructor property 1`] = `
+Object {
+  "ctorParameters": Array [
+    Object {
+      "decorators": Array [],
+      "name": "data",
+      "type": "Parameter",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "decorators": Array [
+    Object {
+      "type": "AutoProperties",
+    },
+  ],
+  "methods": Array [],
+  "name": "DummyClass",
+  "object": [Function],
+  "properties": Array [
+    Object {
+      "decorators": Array [],
+      "get": undefined,
+      "name": "data",
+      "set": undefined,
+      "type": "Property",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "type": "Class",
+}
+`;
+
+exports[`Property Introspection Should inspect constructor property with decorator 1`] = `
+Object {
+  "ctorParameters": Array [
+    Object {
+      "decorators": Array [
+        Object {},
+      ],
+      "name": "data",
+      "type": "Parameter",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "decorators": Array [
+    Object {
+      "type": "AutoProperties",
+    },
+  ],
+  "methods": Array [],
+  "name": "DummyClass",
+  "object": [Function],
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {},
+      ],
+      "get": undefined,
+      "name": "data",
+      "set": undefined,
+      "type": "Property",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "type": "Class",
+}
+`;
+
+exports[`Property Introspection Should inspect constructor property with decorator callback 1`] = `
+Object {
+  "ctorParameters": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "name": "constructor",
+          "target": [Function],
+        },
+      ],
+      "name": "data",
+      "type": "Parameter",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "decorators": Array [
+    Object {
+      "type": "AutoProperties",
+    },
+  ],
+  "methods": Array [],
+  "name": "DummyClass",
+  "object": [Function],
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "name": "constructor",
+          "target": [Function],
+        },
+      ],
+      "get": undefined,
+      "name": "data",
+      "set": undefined,
+      "type": "Property",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "type": "Class",
+}
+`;
+
+exports[`Property Introspection Should inspect constructor property with decorator multiple 1`] = `
+Object {
+  "ctorParameters": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "value": 2,
+        },
+        Object {
+          "value": 1,
+        },
+      ],
+      "name": "data",
+      "type": "Parameter",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "decorators": Array [
+    Object {
+      "type": "AutoProperties",
+    },
+  ],
+  "methods": Array [],
+  "name": "DummyClass",
+  "object": [Function],
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "value": 2,
+        },
+        Object {
+          "value": 1,
+        },
+      ],
+      "get": undefined,
+      "name": "data",
+      "set": undefined,
+      "type": "Property",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "type": "Class",
+}
+`;
+
+exports[`Property Introspection Should not inspect private constructor property 1`] = `
+Object {
+  "ctorParameters": Array [
+    Object {
+      "decorators": Array [],
+      "name": "data",
+      "type": "Parameter",
+      "typeAnnotation": [Function],
+    },
+    Object {
+      "decorators": Array [
+        Object {
+          "type": "Private",
+        },
+      ],
+      "name": "myPrivateField",
+      "type": "Parameter",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "decorators": Array [
+    Object {
+      "type": "AutoProperties",
+    },
+  ],
+  "methods": Array [],
+  "name": "DummyClass",
+  "object": [Function],
+  "properties": Array [
+    Object {
+      "decorators": Array [],
+      "get": undefined,
+      "name": "data",
+      "set": undefined,
+      "type": "Property",
+      "typeAnnotation": [Function],
+    },
+  ],
+  "type": "Class",
+}
+`;

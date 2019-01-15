@@ -9,20 +9,25 @@ import { inspect } from "util";
 /* ---------------------------------------------------------------- */
 
 type Class = new (...arg: any[]) => any
-export interface Decorator { targetType: "Method" | "Class" | "Parameter", target: string, value: any }
+export type DecoratorTargetType = "Method" | "Class" | "Parameter" | "Property"
+export interface Decorator { targetType: DecoratorTargetType, target: string, value: any }
 export interface ParameterDecorator extends Decorator { targetType: "Parameter", targetIndex: number }
-export type Reflection = ParameterReflection | FunctionReflection | ClassReflection | ObjectReflection
+export type Reflection = ParameterReflection | FunctionReflection | PropertyReflection | ClassReflection | ObjectReflection
 export interface ReflectionBase { type: string, name: string }
 export interface ParameterReflection extends ReflectionBase { type: "Parameter", decorators: any[], typeAnnotation?: any }
-export interface FunctionReflection extends ReflectionBase { type: "Function", parameters: ParameterReflection[], decorators: any[] }
-export interface ClassReflection extends ReflectionBase { type: "Class", ctorParameters: ParameterReflection[], methods: FunctionReflection[], decorators: any[], object: Class }
+export interface PropertyReflection extends ReflectionBase { type: "Property", decorators: any[], typeAnnotation?: any, get: any, set: any }
+export interface FunctionReflection extends ReflectionBase { type: "Function", parameters: ParameterReflection[], returnType: any, decorators: any[] }
+export interface ClassReflection extends ReflectionBase { type: "Class", ctorParameters: ParameterReflection[], methods: FunctionReflection[], properties: PropertyReflection[], decorators: any[], object: Class }
 export interface ObjectReflection extends ReflectionBase { type: "Object", members: Reflection[] }
 export interface ArrayDecorator { type: "Array", object: Class }
 export interface TypeDecorator { type: "Override", object: Class, info?: string }
+export interface PrivateDecorator { type: "Private" }
 interface CacheItem { key: string | Class, result: Reflection }
 
 export const DECORATOR_KEY = "plumier.key:DECORATOR"
+export const DESIGN_TYPE = "design:type"
 export const DESIGN_PARAMETER_TYPE = "design:paramtypes"
+export const DESIGN_RETURN_TYPE = "design:returntype"
 const CACHE: CacheItem[] = []
 
 
@@ -70,50 +75,80 @@ function getType(object: any) {
         return "Object"
 }
 
+function addDecorator<T extends Decorator>(target: any, decorator: T) {
+    const decorators: Decorator[] = Reflect.getMetadata(DECORATOR_KEY, target) || []
+    decorators.push(decorator)
+    Reflect.defineMetadata(DECORATOR_KEY, decorators, target)
+}
 
-export function decorateParameter(callback:((target: Class, name: string, index: number) => object)): (target: any, name: string, index: number) => void
-export function decorateParameter(data:{}): (target: any, name: string, index: number) => void
-export function decorateParameter(data: any ) {
-    return (target: any, name: string, index: number) => {
-        const isCtorParam = isConstructor(target)
-        const targetType = isCtorParam ? target : target.constructor
-        const targetName = isCtorParam ? "constructor" : name
-        const decorators: Decorator[] = Reflect.getMetadata(DECORATOR_KEY, targetType) || []
-        decorators.push(<ParameterDecorator>{
-            targetType: "Parameter",
-            target: targetName,
-            targetIndex: index,
-            value: typeof data === "function" ? data(targetType, targetName, index) : data
-        })
-        Reflect.defineMetadata(DECORATOR_KEY, decorators, targetType)
-    }
+export function decorateParameter(callback: ((target: Class, name: string, index: number) => object)): (target: any, name: string, index: number) => void
+export function decorateParameter(data: {}): (target: any, name: string, index: number) => void
+export function decorateParameter(data: any) {
+    return decorate(data, ["Parameter"])
 }
 
 export function decorateMethod(callback: ((target: Class, name: string) => object)): (target: any, name: string) => void
 export function decorateMethod(data: {}): (target: any, name: string) => void
 export function decorateMethod(data: any) {
-    return (target: any, name: string) => {
-        const decorators: Decorator[] = Reflect.getMetadata(DECORATOR_KEY, target.constructor) || []
-        decorators.push({
-            targetType: "Method",
-            target: name,
-            value: typeof data === "function" ? data(target.constructor, name) : data
-        })
-        Reflect.defineMetadata(DECORATOR_KEY, decorators, target.constructor)
-    }
+    return decorate(data, ["Method"])
+}
+
+export function decorateProperty(callback: ((target: Class, name: string) => object)): (target: any, name: string, index?: any) => void
+export function decorateProperty(data: {}): (target: any, name: string, index?: any) => void
+export function decorateProperty(data: any) {
+    return decorate(data, ["Property", "Parameter"])
 }
 
 export function decorateClass(callback: ((target: Class) => object)): (target: any) => void
 export function decorateClass(data: {}): (target: any) => void
 export function decorateClass(data: any) {
-    return (target: any) => {
-        const decorators: Decorator[] = Reflect.getMetadata(DECORATOR_KEY, target) || []
-        decorators.push({
-            targetType: "Class",
-            target: target.prototype.constructor.name,
-            value: typeof data === "function" ? data(target) : data
+    return decorate(data, ["Class"])
+}
+
+export function decorate(data: any, targetTypes: DecoratorTargetType[] = []) {
+    const throwIfNotOfType = (target: DecoratorTargetType) => {
+        if (targetTypes.length > 0 && !targetTypes.some(x => x === target))
+            throw new Error(`Reflect Error: Decorator of type ${targetTypes.join(", ")} applied into ${target}`)
+    }
+
+    return (...args: any[]) => {
+        //class decorator
+        if (args.length === 1) {
+            throwIfNotOfType("Class")
+            return addDecorator(args[0], {
+                targetType: "Class",
+                target: args[0].name,
+                value: typeof data === "function" ? data(args[0]) : data
+            })
+        }
+        //parameter decorator
+        if (args.length === 3 && typeof args[2] === "number") {
+            throwIfNotOfType("Parameter")
+            const isCtorParam = isConstructor(args[0])
+            const targetType = isCtorParam ? args[0] : args[0].constructor
+            const targetName = isCtorParam ? "constructor" : args[1]
+            return addDecorator<ParameterDecorator>(targetType, {
+                targetType: "Parameter",
+                target: targetName,
+                targetIndex: args[2],
+                value: typeof data === "function" ? data(targetType, targetName, args[2]) : data
+            })
+        }
+        //property
+        if (args[2] === undefined || args[2].get || args[2].set) {
+            throwIfNotOfType("Property")
+            return addDecorator(args[0].constructor, {
+                targetType: "Property",
+                target: args[1],
+                value: typeof data === "function" ? data(args[0].constructor, args[1]) : data
+            })
+        }
+        throwIfNotOfType("Method")
+        return addDecorator(args[0].constructor, {
+            targetType: "Method",
+            target: args[1],
+            value: typeof data === "function" ? data(args[0].constructor, args[1]) : data
         })
-        Reflect.defineMetadata(DECORATOR_KEY, decorators, target)
     }
 }
 
@@ -121,22 +156,50 @@ export function getDecorators(target: any): Decorator[] {
     return Reflect.getMetadata(DECORATOR_KEY, target) || []
 }
 
+/* ---------------------------------------------------------------- */
+/* ------------------------- DECORATORS --------------------------- */
+/* ---------------------------------------------------------------- */
+
+/**
+ * Add type information for array element
+ * @param type Data type of array element
+ */
 export function array(type: Class) {
-    return decorateParameter(<ArrayDecorator>{ type: "Array", object: type })
+    return decorate(<ArrayDecorator>{ type: "Array", object: type }, ["Parameter", "Method", "Property"])
 }
 
 /**
- * Add manual type definition to a parameter property. Useful on non array type that translated into Object 
- * on design type information such as Partial<Type> or ReadOnly<Type>
+ * Override type definition information. Useful to add type definition for some data type that is erased 
+ * after transfile such as Partial<Type> or ReadOnly<Type>
+ * 
+ * If applied to parameter it will override the parameter type
+ * 
+ * If applied to property it will override the property type
+ * 
+ * if applied to method it will overrid the method return value
  * @param type The type overridden
  * @param info Additional information about type (readonly, partial etc)
  */
 export function type(type: Class, info?: string) {
-    return decorateParameter(<TypeDecorator>{ type: "Override", object: type, info })
+    return decorate(<TypeDecorator>{ type: "Override", object: type, info }, ["Parameter", "Method", "Property"])
+}
+
+/**
+ * Mark member as private
+ */
+export function ignore() {
+    return decorate(<PrivateDecorator>{ type: "Private" }, ["Property", "Parameter", "Method"])
+}
+
+/**
+ * Mark all constructor parameters as properties
+ */
+export function autoProperties() {
+    return decorateClass({ type: "AutoProperties" })
 }
 
 /* ---------------------------------------------------------------- */
-/* ------------------------- CACHE FUNCTIONS ----------------------- */
+/* ------------------------- CACHE FUNCTIONS ---------------------- */
 /* ---------------------------------------------------------------- */
 
 function getCache(key: string | Class) {
@@ -153,27 +216,60 @@ function setCache(key: string | Class, result: Reflection) {
 /* ------------------------- MAIN FUNCTIONS ----------------------- */
 /* ---------------------------------------------------------------- */
 
-function decorateReflection(decs: Decorator[], reflection: ClassReflection) {
-    const toParameter = (method: string, index: number, par: ParameterReflection) => {
-        const decorators = (<ParameterDecorator[]>decs)
-            .filter((x) => x.targetType == "Parameter" && x.target == method && x.targetIndex == index)
-            .map(x => ({ ...x.value }))
-        const array = decorators.find((x: ArrayDecorator): x is ArrayDecorator => x.type === "Array")
-        const override = decorators.find((x: TypeDecorator): x is TypeDecorator => x.type === "Override")
-        return {
-            ...par, decorators, typeAnnotation: override ? override.object : array ? [array.object] : par.typeAnnotation
-        }
+function getReflectionType(decorators: any[], type: any) {
+    const array = decorators.find((x: ArrayDecorator): x is ArrayDecorator => x.type === "Array")
+    const override = decorators.find((x: TypeDecorator): x is TypeDecorator => x.type === "Override")
+    if (override)
+        return override.object
+    else if (array)
+        return [array.object]
+    else
+        return type
+}
+
+function addParameterDecorator(decs: Decorator[], method: string, index: number, par: ParameterReflection): ParameterReflection {
+    const decorators = (<ParameterDecorator[]>decs)
+        .filter((x) => x.targetType == "Parameter" && x.target == method && x.targetIndex == index)
+        .map(x => ({ ...x.value }))
+    return {
+        ...par, decorators, typeAnnotation: getReflectionType(decorators, par.typeAnnotation)
     }
-    const toFunction = (fn: FunctionReflection) => ({
+}
+
+function addMethodDecorator(decs: Decorator[], fn: FunctionReflection): FunctionReflection {
+    const decorators = decs.filter(x => x.targetType == "Method" && x.target == fn.name).map(x => ({ ...x.value }))
+    return {
         ...fn,
-        decorators: decs.filter(x => x.targetType == "Method" && x.target == fn.name).map(x => ({ ...x.value })),
-        parameters: fn.parameters.map((x, i) => toParameter(fn.name, i, x))
-    })
+        decorators,
+        parameters: fn.parameters.map((x, i) => addParameterDecorator(decs, fn.name, i, x)),
+        returnType: getReflectionType(decorators, fn.returnType)
+    }
+}
+
+function addPropertyDecorator(decs: Decorator[], ref: PropertyReflection): PropertyReflection {
+    const decorators = decs.filter(x => x.targetType == "Property" && x.target == ref.name).map(x => ({ ...x.value }))
+    return {
+        ...ref,
+        decorators,
+        typeAnnotation: getReflectionType(decorators, ref.typeAnnotation)
+    }
+}
+
+function getClassReflection(decs: Decorator[], reflection: ClassReflection): ClassReflection {
+    const methods = reflection.methods.map(x => addMethodDecorator(decs, x))
+    const decorators = decs.filter(x => x.targetType == "Class" && x.target == reflection.name).map(x => ({ ...x.value }))
+    const ctorParameters = reflection.ctorParameters.map((x, i) => addParameterDecorator(decs, "constructor", i, x))
+    const properties = reflection.properties.map(x => addPropertyDecorator(decs, x))
+    let ctorProperties: PropertyReflection[] = []
+    if (decorators.some(x => x.type === "AutoProperties")) {
+        ctorProperties = ctorParameters.filter(x => !x.decorators.some(x => x.type === "Private"))
+            .map(x => <PropertyReflection>{
+                decorators: x.decorators, typeAnnotation: x.typeAnnotation,
+                name: x.name, type: "Property", get: undefined, set: undefined
+            })
+    }
     return <ClassReflection>{
-        ...reflection,
-        decorators: decs.filter(x => x.targetType == "Class" && x.target == reflection.name).map(x => ({ ...x.value })),
-        methods: reflection.methods.map(x => toFunction(x)),
-        ctorParameters: reflection.ctorParameters.map((x, i) => toParameter("constructor", i, x))
+        ...reflection, decorators, methods, ctorParameters, properties: properties.concat(ctorProperties),
     }
 }
 
@@ -183,13 +279,29 @@ function reflectParameter(name: string, typeAnnotation?: any): ParameterReflecti
 
 function reflectFunction(fn: Function): FunctionReflection {
     const parameters = getParameterNames(fn).map(x => reflectParameter(x))
-    return { type: "Function", name: fn.name, parameters, decorators: [] }
+    return { type: "Function", name: fn.name, parameters, decorators: [], returnType: undefined }
 }
 
 function reflectMethod(clazz: Class, method: Function): FunctionReflection {
     const parType: any[] = Reflect.getMetadata(DESIGN_PARAMETER_TYPE, clazz.prototype, method.name) || []
+    const returnType: any = Reflect.getMetadata(DESIGN_RETURN_TYPE, clazz.prototype, method.name)
     const parameters = getParameterNames(method).map((x, i) => reflectParameter(x, parType[i]))
-    return { type: "Function", name: method.name, parameters, decorators: [] }
+    return { type: "Function", name: method.name, parameters, decorators: [], returnType }
+}
+
+function reflectProperty(name: string, type: Class, get: any, set: any): PropertyReflection {
+    return { type: "Property", name, typeAnnotation: type, decorators: [], get, set }
+}
+
+function reflectMember(clazz: Class, name: string) {
+    const type: any = Reflect.getMetadata(DESIGN_TYPE, clazz.prototype, name)
+    const des = Reflect.getOwnPropertyDescriptor(clazz.prototype, name)
+    if (des && typeof des.value === "function" && !des.get && !des.set) {
+        return reflectMethod(clazz, clazz.prototype[name])
+    }
+    else {
+        return reflectProperty(name, type, des && des.get, des && des.set)
+    }
 }
 
 function reflectConstructorParameters(fn: Class) {
@@ -199,20 +311,26 @@ function reflectConstructorParameters(fn: Class) {
 }
 
 function reflectClass(fn: Class): ClassReflection {
-    const methods = Object.getOwnPropertyNames(fn.prototype)
+    const memberByDescriptor = Object.getOwnPropertyNames(fn.prototype)
         .filter(x => x != "constructor")
         .filter(x => !x.startsWith("__"))
-        .map(x => reflectMethod(fn, fn.prototype[x]))
+    const memberByPropertyDecorator: string[] = (Reflect.getOwnMetadata(DECORATOR_KEY, fn) || [])
+        .filter((x: Decorator) => x.targetType === "Property")
+        .map((x: Decorator) => x.target)
+    const members = Array.from(new Set(memberByDescriptor.concat(memberByPropertyDecorator)))
+        .map(x => reflectMember(fn, x))
     const ctorParameters = reflectConstructorParameters(fn)
     const decorators = getDecorators(fn)
     const reflct: ClassReflection = {
         type: "Class",
         ctorParameters,
-        name: fn.name, methods,
+        name: fn.name,
+        methods: members.filter((x): x is FunctionReflection => x.type === "Function"),
+        properties: members.filter((x): x is PropertyReflection => x.type === "Property"),
         decorators: [],
         object: fn
     }
-    return decorateReflection(decorators, reflct)
+    return getClassReflection(decorators, reflct)
 }
 
 function reflectObject(object: any, name: string = "module"): ObjectReflection {
@@ -247,3 +365,6 @@ export function reflect(option: string | Class) {
         return setCache(option, reflectClass(option))
     }
 }
+reflect.private = ignore
+reflect.type = type
+reflect.array = array

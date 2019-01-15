@@ -1,9 +1,20 @@
-import { join } from "path";
+import { join } from "path"
 
-import { decorateClass, decorateMethod, decorateParameter, reflect, array, type } from "../src";
-import { MyClass } from "./mock.class";
-import { myNameSpace } from "./mock.class-in-namespace";
-import { inspect } from 'util';
+import {
+    array,
+    autoProperties,
+    decorate,
+    decorateClass,
+    decorateMethod,
+    decorateParameter,
+    decorateProperty,
+    DECORATOR_KEY,
+    ignore,
+    reflect,
+    type,
+} from "../src"
+import { myNameSpace } from "./mocks/mock.class-in-namespace"
+import { MyClass } from "./mocks/mock.class";
 
 describe("Class Introspection", () => {
     it("Should inspect class properly", () => {
@@ -16,9 +27,10 @@ describe("Class Introspection", () => {
             ctorParameters: [],
             name: 'DummyClass',
             methods:
-                [{ type: 'Function', name: 'dummyMethod', parameters: [], decorators: [] }],
+                [{ type: 'Function', name: 'dummyMethod', parameters: [], decorators: [], returnType: undefined }],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -35,7 +47,8 @@ describe("Class Introspection", () => {
             name: 'DummyClass',
             methods: [],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -55,10 +68,12 @@ describe("Class Introspection", () => {
                     parameters: [
                         { type: 'Parameter', name: 'dummy', decorators: [], typeAnnotation: undefined },
                         { type: 'Parameter', name: 'other', decorators: [], typeAnnotation: undefined }],
-                    decorators: []
+                    decorators: [],
+                    returnType: undefined
                 }],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -76,14 +91,15 @@ describe("Class Introspection", () => {
             name: 'DummyClass',
             methods: [],
             decorators: [{}],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
     it("Should inspect parameters type with method decorator", () => {
         class DummyClass {
             @decorateMethod({})
-            dummyMethod(dummy: string, other: any) { }
+            dummyMethod(dummy: string, other: any): number { return 1 }
         }
         const meta = reflect(DummyClass)
         expect(meta).toEqual({
@@ -97,10 +113,12 @@ describe("Class Introspection", () => {
                     parameters: [
                         { type: 'Parameter', name: 'dummy', decorators: [], typeAnnotation: String },
                         { type: 'Parameter', name: 'other', decorators: [], typeAnnotation: Object }],
-                    decorators: [{}]
+                    decorators: [{}],
+                    returnType: Number
                 }],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: [],
         })
     })
 
@@ -119,7 +137,8 @@ describe("Class Introspection", () => {
             name: 'DummyClass',
             methods: [],
             decorators: [{}],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -143,10 +162,12 @@ describe("Class Introspection", () => {
                         decorators: [{ object: EmptyClass, type: "Array" }],
                         typeAnnotation: [EmptyClass]
                     }],
-                    decorators: [{}]
+                    decorators: [{}],
+                    returnType: undefined
                 }],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -176,10 +197,12 @@ describe("Class Introspection", () => {
                                 }],
                             typeAnnotation: OtherDummyClass
                         }],
-                    decorators: []
+                    decorators: [],
+                    returnType: undefined
                 }],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 })
@@ -195,7 +218,8 @@ describe("Decorator", () => {
             name: 'DummyClass',
             methods: [],
             decorators: [{ info: "Some Info" }],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -210,7 +234,8 @@ describe("Decorator", () => {
             name: 'DummyClass',
             methods: [],
             decorators: [{ info: "Some Info" }, { otherInfo: "Some Other Info" }],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -224,7 +249,8 @@ describe("Decorator", () => {
             name: 'DummyClass',
             methods: [],
             decorators: [{ name: "DummyClass" }],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -245,7 +271,8 @@ describe("Decorator", () => {
                 decorators: [{ info: "Some Info" }]
             }],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -267,7 +294,8 @@ describe("Decorator", () => {
                 decorators: [{ info: "Some Info" }, { otherInfo: "Some Other Info" }]
             }],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -288,7 +316,76 @@ describe("Decorator", () => {
                 decorators: [{ target: "DummyClass", method: "method" }]
             }],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
+        })
+    })
+
+    it("Should decorate method", () => {
+        class DummyClass {
+            @decorateMethod({ info: "Some Info" })
+            method() { }
+        }
+        const rrr = Reflect.getMetadata(DECORATOR_KEY, DummyClass)
+        const meta = reflect(DummyClass)
+        expect(meta).toEqual({
+            type: 'Class',
+            ctorParameters: [],
+            name: 'DummyClass',
+            methods: [{
+                name: "method",
+                parameters: [],
+                type: "Function",
+                decorators: [{ info: "Some Info" }]
+            }],
+            decorators: [],
+            object: DummyClass,
+            properties: []
+        })
+    })
+
+    it("Should able to decorate method multiple", () => {
+        class DummyClass {
+            @decorateMethod({ otherInfo: "Some Other Info" })
+            @decorateMethod({ info: "Some Info" })
+            method() { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toEqual({
+            type: 'Class',
+            ctorParameters: [],
+            name: 'DummyClass',
+            methods: [{
+                name: "method",
+                parameters: [],
+                type: "Function",
+                decorators: [{ info: "Some Info" }, { otherInfo: "Some Other Info" }]
+            }],
+            decorators: [],
+            object: DummyClass,
+            properties: []
+        })
+    })
+
+    it("Should decorate method with callback", () => {
+        class DummyClass {
+            @decorateMethod((a, b) => ({ target: a.name, method: b }))
+            method() { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toEqual({
+            type: 'Class',
+            ctorParameters: [],
+            name: 'DummyClass',
+            methods: [{
+                name: "method",
+                parameters: [],
+                type: "Function",
+                decorators: [{ target: "DummyClass", method: "method" }]
+            }],
+            decorators: [],
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -316,7 +413,8 @@ describe("Decorator", () => {
                 decorators: []
             }],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -345,7 +443,8 @@ describe("Decorator", () => {
                 decorators: []
             }],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -373,7 +472,8 @@ describe("Decorator", () => {
                 decorators: []
             }],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -396,7 +496,8 @@ describe("Decorator", () => {
             }],
             methods: [],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -420,7 +521,8 @@ describe("Decorator", () => {
             }],
             methods: [],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
         })
     })
 
@@ -443,14 +545,64 @@ describe("Decorator", () => {
             }],
             methods: [],
             decorators: [],
-            object: DummyClass
+            object: DummyClass,
+            properties: []
+        })
+    })
+
+
+
+    describe("Error Handling", () => {
+        it("Should throw when method decorator applied on wrong location", () => {
+            try {
+                @decorate({}, ["Method", "Parameter"])
+                class DummyClass { }
+            }
+            catch (e) {
+                expect(e.message).toBe('Reflect Error: Decorator of type Method, Parameter applied into Class')
+            }
+        })
+
+        it("Should throw when method decorator applied on wrong location", () => {
+            try {
+                class DummyClass {
+                    @decorate({}, ["Method"])
+                    myProp = 200
+                }
+            }
+            catch (e) {
+                expect(e.message).toBe('Reflect Error: Decorator of type Method applied into Property')
+            }
+        })
+
+        it("Should throw when method decorator applied on wrong location", () => {
+            try {
+                class DummyClass {
+                    @decorate({}, ["Property"])
+                    myFunction() { }
+                }
+            }
+            catch (e) {
+                expect(e.message).toBe('Reflect Error: Decorator of type Property applied into Method')
+            }
+        })
+
+        it("Should throw when method decorator applied on wrong location", () => {
+            try {
+                class DummyClass {
+                    constructor(@decorate({}, ["Parameter"]) param: string) { }
+                }
+            }
+            catch (e) {
+                expect(e.message).toBe('Reflect Error: Decorator of type Property applied into Parameter')
+            }
         })
     })
 })
 
 describe("Module Introspection", () => {
     it("Should inspect function", async () => {
-        const meta = await reflect(join(__dirname, "./mock.function.ts"))
+        const meta = await reflect(join(__dirname, "./mocks/mock.function.ts"))
         expect(meta.members[0]).toEqual({
             type: 'Function',
             name: 'myFunction',
@@ -462,7 +614,7 @@ describe("Module Introspection", () => {
     })
 
     it("Should inspect function inside namespace", async () => {
-        const meta = await reflect(join(__dirname, "./mock.function-in-namespace.ts"))
+        const meta = await reflect(join(__dirname, "./mocks/mock.function-in-namespace.ts"))
         expect(meta.members[0]).toEqual({
             type: 'Object',
             name: 'myNamespace',
@@ -479,20 +631,21 @@ describe("Module Introspection", () => {
     })
 
     it("Should inspect class", async () => {
-        const meta = await reflect(join(__dirname, "./mock.class.ts"))
+        const meta = await reflect(join(__dirname, "./mocks/mock.class.ts"))
         expect(meta.members[0]).toEqual({
             type: 'Class',
             ctorParameters: [],
             name: 'MyClass',
             methods:
-                [{ type: 'Function', name: 'method', parameters: [], decorators: [] }],
+                [{ type: 'Function', name: 'method', parameters: [], decorators: [], returnType: undefined }],
             decorators: [],
-            object: MyClass
+            object: MyClass,
+            properties: []
         })
     })
 
     it("Should inspect class inside namespace", async () => {
-        const meta = await reflect(join(__dirname, "./mock.class-in-namespace.ts"))
+        const meta = await reflect(join(__dirname, "./mocks/mock.class-in-namespace.ts"))
         expect(meta.members[0]).toMatchObject({
             type: 'Object',
             name: 'myNameSpace',
@@ -515,7 +668,7 @@ describe("Module Introspection", () => {
     })
 
     it("Should inspect module with constant", async () => {
-        const meta = await reflect(join(__dirname, "./mock.module-with-value"))
+        const meta = await reflect(join(__dirname, "./mocks/mock.module-with-value"))
         expect(meta.members.length).toBe(1)
         expect(meta.members[0]).toMatchObject({
             type: 'Class',
@@ -576,10 +729,12 @@ describe("Cache Function", () => {
                             decorators: [],
                             typeAnnotation: undefined
                         }],
-                    decorators: []
+                    decorators: [],
+                    returnType: undefined
                 }],
             decorators: [{ name: 'first' }],
-            object: first
+            object: first,
+            properties: []
         })
         expect(secondMeta).toEqual({
             type: 'Class',
@@ -596,10 +751,145 @@ describe("Cache Function", () => {
                             decorators: [],
                             typeAnnotation: undefined
                         }],
-                    decorators: []
+                    decorators: [],
+                    returnType: undefined
                 }],
             decorators: [{ name: 'second' }],
-            object: second
+            object: second,
+            properties: []
         })
     })
 })
+
+describe("Property Introspection", () => {
+    it("Should inspect class with properties", () => {
+        class DummyClass {
+            @decorateProperty({})
+            dummyProp: string = "Hello"
+        }
+        const meta = reflect(DummyClass)
+        expect(meta.properties[0].typeAnnotation).toBe(String)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect class with properties multiple", () => {
+        class DummyClass {
+            @decorateProperty({ value: 1 })
+            @decorateProperty({ value: 2 })
+            dummyProp: string = "Hello"
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect class with properties with callback", () => {
+        class DummyClass {
+            @decorateProperty((target, name) => ({ target, name }))
+            dummyProp: string = "Hello"
+        }
+        const meta = reflect(DummyClass)
+        expect(meta.properties[0].typeAnnotation).toBe(String)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect class with get set", () => {
+        class DummyClass {
+            get data() { return 1 }
+            set data(value: number) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect class with get set with decorator", () => {
+        class DummyClass {
+            @decorateProperty({})
+            get data() { return 1 }
+            set data(value: number) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta.properties[0].typeAnnotation).toBe(Number)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect class with get set with decorator multiple", () => {
+        class DummyClass {
+            @decorateProperty({ value: 1 })
+            @decorateProperty({ value: 2 })
+            get data() { return 1 }
+            set data(value: number) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta.properties[0].typeAnnotation).toBe(Number)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect class with get set with decorator callback", () => {
+        class DummyClass {
+            @decorateProperty((target, name) => ({ target, name }))
+            get data() { return 1 }
+            set data(value: number) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta.properties[0].typeAnnotation).toBe(Number)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect constructor property", () => {
+        @autoProperties()
+        class DummyClass {
+            constructor(public data: string) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect constructor property with decorator", () => {
+        @autoProperties()
+        class DummyClass {
+            constructor(@decorateProperty({}) public data: string) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta.properties[0].typeAnnotation).toBe(String)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect constructor property with decorator multiple", () => {
+        @autoProperties()
+        class DummyClass {
+            constructor(
+                @decorateProperty({ value: 1 })
+                @decorateProperty({ value: 2 })
+                public data: string) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta.properties[0].typeAnnotation).toBe(String)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect constructor property with decorator callback", () => {
+        @autoProperties()
+        class DummyClass {
+            constructor(
+                @decorateProperty((target, name) => ({ target, name }))
+                public data: string) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta.properties[0].typeAnnotation).toBe(String)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should not inspect private constructor property", () => {
+        @autoProperties()
+        class DummyClass {
+            constructor(public data: string, @ignore() myPrivateField: string) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+})
+
+describe("Inheritance", () => {
+    
+})
+
