@@ -87,7 +87,7 @@ export class ActionInvocation implements Invocation {
     constructor(public context: RouteContext) { }
     async proceed(): Promise<ActionResult> {
         const { route, config } = this.context
-        const controller: any = config.dependencyResolver.resolve(route.controller.object)
+        const controller: any = config.dependencyResolver.resolve(route.controller.type)
         //check validation
         if (config.validator) {
             const param = (i: number) => route.action.parameters[i]

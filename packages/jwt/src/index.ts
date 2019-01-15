@@ -84,13 +84,13 @@ function getDecorator(info: RouteInfo, globalDecorator?: (...args: any[]) => voi
 
 export function checkParameter(path: string[], meta: ParameterReflection, value: any, userRole: string[]): string[] {
     if (typeof value === "undefined") return []
-    else if (Array.isArray(meta.typeAnnotation)) {
-        const newMeta = { ...meta, typeAnnotation: meta.typeAnnotation[0] };
+    else if (Array.isArray(meta.type)) {
+        const newMeta = { ...meta, typeAnnotation: meta.type[0] };
         return (value as any[]).map((x, i) => checkParameter(path.concat(i.toString()), newMeta, x, userRole))
             .flatten()
     }
-    else if (isCustomClass(meta.typeAnnotation)) {
-        const classMeta = reflect(<Class>meta.typeAnnotation)
+    else if (isCustomClass(meta.type)) {
+        const classMeta = reflect(<Class>meta.type)
         const values = classMeta.ctorParameters.map(x => value[x.name])
         return checkParameters(path, classMeta.ctorParameters, values, userRole)
     }

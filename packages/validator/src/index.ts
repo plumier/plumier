@@ -271,7 +271,7 @@ export async function validate(object: any, decs: any[], path: string[], ctx: Co
     if (Array.isArray(object))
         return validateArray(object, path, ctx)
     else if (typeof object === "object" && object !== null && object.constructor !== Date) {
-        const partial = decs.find((x: TypeDecorator): x is TypeDecorator => x.type === "Override" && x.info === "Partial")
+        const partial = decs.find((x: TypeDecorator): x is TypeDecorator => x.kind === "Override" && x.info === "Partial")
         return validateObject(object, ctx, partial && partial.object, path)
     }
     else {

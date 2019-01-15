@@ -70,7 +70,7 @@ export function modelConverter(value: {}, path: string[], expectedType: Function
     //traverse through the object properties and convert to appropriate property's type
     const sanitized = reflection.ctorParameters.map(x => ({
         name: x.name,
-        value: convert((value as any)[x.name], path.concat(x.name), x.typeAnnotation, converters)
+        value: convert((value as any)[x.name], path.concat(x.name), x.type, converters)
     })).reduce((a, b) => { a[b.name] = b.value; return a }, {} as any)
 
     //crete new instance of the type and assigned the sanitized values
@@ -147,7 +147,7 @@ function getProperty(obj: any, key: string) {
 }
 
 function bindBody(ctx: Context, par: ParameterReflection): any {
-    return isCustomClass(par.typeAnnotation) || Array.isArray(par.typeAnnotation) ? ctx.request.body : undefined
+    return isCustomClass(par.type) || Array.isArray(par.type) ? ctx.request.body : undefined
 }
 
 function bindDecorator(ctx: Context, par: ParameterReflection): any {
@@ -175,7 +175,7 @@ export function bindParameter(ctx: Context, action: FunctionReflection, converte
     return action.parameters.map(((x, i) => {
         const binder = chain(bindDecorator, bindByName, bindBody)
         const result = binder(ctx, x)
-        return convert(result, [x.name], x.typeAnnotation, {
+        return convert(result, [x.name], x.type, {
             default: DefaultConverters, converters
         })
     }))

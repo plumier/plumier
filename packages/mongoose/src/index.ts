@@ -62,12 +62,12 @@ function loadModels(opt: Class[]) {
 }
 
 function getType(prop: ParameterReflection, registry: SchemaRegistry): Function | Function[] | SubSchema | SubSchema[] {
-    if (isCustomClass(prop.typeAnnotation)) {
+    if (isCustomClass(prop.type)) {
         const schema = { type: Mongoose.Schema.Types.ObjectId, ref: "" }
-        return Array.isArray(prop.typeAnnotation) ? [{ ...schema, ref: getName(prop.typeAnnotation[0]) }]
-            : { ...schema, ref: getName(prop.typeAnnotation) }
+        return Array.isArray(prop.type) ? [{ ...schema, ref: getName(prop.type[0]) }]
+            : { ...schema, ref: getName(prop.type) }
     }
-    else return prop.typeAnnotation
+    else return prop.type
 }
 
 function generateModel(model: ClassReflection, registry: SchemaRegistry, generator?: SchemaGenerator) {
@@ -89,7 +89,7 @@ function generateSchema(opt: Class[], registry: SchemaRegistry, generator?: Sche
 
 function noArrayTypeInfoTest(domain: ClassReflection): AnalysisResult[] {
     return domain.ctorParameters
-        .map(x => (x.typeAnnotation === Array) ?
+        .map(x => (x.type === Array) ?
             <AnalysisResult>{ message: ArrayHasNoTypeInfo.format(domain.name, x.name), type: "error" } : undefined)
         .filter((x): x is AnalysisResult => Boolean(x))
 }
@@ -195,18 +195,18 @@ export class MongooseFacility implements Facility {
     async setup(app: Readonly<PlumierApplication>) {
         //generate schemas
         const collections = reflectPath(this.option.model!)
-            .filter((x): x is ClassReflection => x.type === "Class")
+            .filter((x): x is ClassReflection => x.kind === "Class")
             .filter(x => x.decorators.some((x: MongooseCollectionDecorator) => x.type == "MongooseCollectionDecorator"))
         if (app.config.mode === "debug") {
             const analysis = analyze(collections)
             printAnalysis(analysis)
         }
-        generateSchema(collections.map(x => x.object), GlobalMongooseSchema, this.option.schemaGenerator)
+        generateSchema(collections.map(x => x.type), GlobalMongooseSchema, this.option.schemaGenerator)
         //register custom converter
         const converters = app.config.converters || []
         app.set({
             converters: converters.concat(collections
-                .map(x => <TypeConverter>{ type: x.object, converter: customModelConverter }))
+                .map(x => <TypeConverter>{ type: x.type, converter: customModelConverter }))
         })
         await Mongoose.connect(this.option.uri, { useNewUrlParser: true })
     }
@@ -216,8 +216,8 @@ export function model<T extends object>(type: Constructor<T>) {
 
     function traversePropertyType(meta: ClassReflection): Class[] {
         const properties = meta.ctorParameters
-            .filter(x => isCustomClass(x.typeAnnotation))
-            .map((x) => <Class>(Array.isArray(x.typeAnnotation) ? x.typeAnnotation[0] : x.typeAnnotation))
+            .filter(x => isCustomClass(x.type))
+            .map((x) => <Class>(Array.isArray(x.type) ? x.type[0] : x.type))
         return properties.length > 0 ?
             properties.concat(properties.map(x => reflect(x))
                 .map(x => traversePropertyType(x))

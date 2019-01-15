@@ -117,7 +117,7 @@ export function transformModule(path: string, extensions: string[]): RouteInfo[]
         //reflect the file
         .map(x => ({
             root: getRoot(path, x),
-            meta: reflect(x).members.filter((x): x is ClassReflection => x.type === "Class"
+            meta: reflect(x).members.filter((x): x is ClassReflection => x.kind === "Class"
                 && x.name.toLowerCase().endsWith("controller"))
         }))
         .map(
@@ -175,7 +175,7 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
 //------ Analyzer Helpers
 function getModelsInParameters(par: ParameterReflection[]) {
     return par
-        .map((x, i) => ({ type: x.typeAnnotation, index: i }))
+        .map((x, i) => ({ type: x.type, index: i }))
         .filter(x => x.type && isCustomClass(x.type))
         .map(x => ({ meta: reflect((Array.isArray(x.type) ? x.type[0] : x.type) as Class), index: x.index }))
 }
@@ -194,7 +194,7 @@ function traverseArray(parent: string, par: ParameterReflection[]): string[] {
         return models.map((x, i) => traverseArray(x.meta.name, x.meta.ctorParameters))
             .flatten()
     }
-    return par.filter(x => x.typeAnnotation === Array)
+    return par.filter(x => x.type === Array)
         .map(x => `${parent}.${x.name}`)
 }
 
@@ -216,7 +216,7 @@ function backingParameterTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
 
 function metadataTypeTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     const hasTypeInfo = route.action
-        .parameters.some(x => Boolean(x.typeAnnotation))
+        .parameters.some(x => Boolean(x.type))
     if (!hasTypeInfo && route.action.parameters.length > 0) {
         return {
             type: "warning",
@@ -239,8 +239,8 @@ function duplicateRouteTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
 
 function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     const classes = traverseModel(route.action.parameters)
-        .filter(x => x.ctorParameters.every(par => typeof par.typeAnnotation == "undefined"))
-        .map(x => x.object)
+        .filter(x => x.ctorParameters.every(par => typeof par.type == "undefined"))
+        .map(x => x.type)
     //get only unique type
     const noTypeInfo = Array.from(new Set(classes))
     if (noTypeInfo.length > 0) {

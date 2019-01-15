@@ -13,15 +13,15 @@ export type DecoratorTargetType = "Method" | "Class" | "Parameter" | "Property"
 export interface Decorator { targetType: DecoratorTargetType, target: string, value: any }
 export interface ParameterDecorator extends Decorator { targetType: "Parameter", targetIndex: number }
 export type Reflection = ParameterReflection | FunctionReflection | PropertyReflection | ClassReflection | ObjectReflection
-export interface ReflectionBase { type: string, name: string }
-export interface ParameterReflection extends ReflectionBase { type: "Parameter", decorators: any[], typeAnnotation?: any }
-export interface PropertyReflection extends ReflectionBase { type: "Property", decorators: any[], typeAnnotation?: any, get: any, set: any }
-export interface FunctionReflection extends ReflectionBase { type: "Function", parameters: ParameterReflection[], returnType: any, decorators: any[] }
-export interface ClassReflection extends ReflectionBase { type: "Class", ctorParameters: ParameterReflection[], methods: FunctionReflection[], properties: PropertyReflection[], decorators: any[], object: Class }
-export interface ObjectReflection extends ReflectionBase { type: "Object", members: Reflection[] }
-export interface ArrayDecorator { type: "Array", object: Class }
-export interface TypeDecorator { type: "Override", object: Class, info?: string }
-export interface PrivateDecorator { type: "Private" }
+export interface ReflectionBase { kind: string, name: string }
+export interface ParameterReflection extends ReflectionBase { kind: "Parameter", decorators: any[], type?: any }
+export interface PropertyReflection extends ReflectionBase { kind: "Property", decorators: any[], type?: any, get: any, set: any }
+export interface FunctionReflection extends ReflectionBase { kind: "Function", parameters: ParameterReflection[], returnType: any, decorators: any[] }
+export interface ClassReflection extends ReflectionBase { kind: "Class", ctorParameters: ParameterReflection[], methods: FunctionReflection[], properties: PropertyReflection[], decorators: any[], type: Class }
+export interface ObjectReflection extends ReflectionBase { kind: "Object", members: Reflection[] }
+export interface ArrayDecorator { kind: "Array", type: Class }
+export interface TypeDecorator { kind: "Override", type: Class, info?: string }
+export interface PrivateDecorator { kind: "Private" }
 interface CacheItem { key: string | Class, result: Reflection }
 
 export const DECORATOR_KEY = "plumier.key:DECORATOR"
@@ -165,7 +165,7 @@ export function getDecorators(target: any): Decorator[] {
  * @param type Data type of array element
  */
 export function array(type: Class) {
-    return decorate(<ArrayDecorator>{ type: "Array", object: type }, ["Parameter", "Method", "Property"])
+    return decorate(<ArrayDecorator>{ kind: "Array", type: type }, ["Parameter", "Method", "Property"])
 }
 
 /**
@@ -181,14 +181,14 @@ export function array(type: Class) {
  * @param info Additional information about type (readonly, partial etc)
  */
 export function type(type: Class, info?: string) {
-    return decorate(<TypeDecorator>{ type: "Override", object: type, info }, ["Parameter", "Method", "Property"])
+    return decorate(<TypeDecorator>{ kind: "Override", type: type, info }, ["Parameter", "Method", "Property"])
 }
 
 /**
  * Mark member as private
  */
 export function ignore() {
-    return decorate(<PrivateDecorator>{ type: "Private" }, ["Property", "Parameter", "Method"])
+    return decorate(<PrivateDecorator>{ kind: "Private" }, ["Property", "Parameter", "Method"])
 }
 
 /**
@@ -217,12 +217,12 @@ function setCache(key: string | Class, result: Reflection) {
 /* ---------------------------------------------------------------- */
 
 function getReflectionType(decorators: any[], type: any) {
-    const array = decorators.find((x: ArrayDecorator): x is ArrayDecorator => x.type === "Array")
-    const override = decorators.find((x: TypeDecorator): x is TypeDecorator => x.type === "Override")
+    const array = decorators.find((x: ArrayDecorator): x is ArrayDecorator => x.kind === "Array")
+    const override = decorators.find((x: TypeDecorator): x is TypeDecorator => x.kind === "Override")
     if (override)
-        return override.object
+        return override.type
     else if (array)
-        return [array.object]
+        return [array.type]
     else
         return type
 }
@@ -232,7 +232,7 @@ function addParameterDecorator(decs: Decorator[], method: string, index: number,
         .filter((x) => x.targetType == "Parameter" && x.target == method && x.targetIndex == index)
         .map(x => ({ ...x.value }))
     return {
-        ...par, decorators, typeAnnotation: getReflectionType(decorators, par.typeAnnotation)
+        ...par, decorators, type: getReflectionType(decorators, par.type)
     }
 }
 
@@ -251,7 +251,7 @@ function addPropertyDecorator(decs: Decorator[], ref: PropertyReflection): Prope
     return {
         ...ref,
         decorators,
-        typeAnnotation: getReflectionType(decorators, ref.typeAnnotation)
+        type: getReflectionType(decorators, ref.type)
     }
 }
 
@@ -262,10 +262,10 @@ function getClassReflection(decs: Decorator[], reflection: ClassReflection): Cla
     const properties = reflection.properties.map(x => addPropertyDecorator(decs, x))
     let ctorProperties: PropertyReflection[] = []
     if (decorators.some(x => x.type === "AutoProperties")) {
-        ctorProperties = ctorParameters.filter(x => !x.decorators.some(x => x.type === "Private"))
+        ctorProperties = ctorParameters.filter(x => !x.decorators.some(x => x.kind === "Private"))
             .map(x => <PropertyReflection>{
-                decorators: x.decorators, typeAnnotation: x.typeAnnotation,
-                name: x.name, type: "Property", get: undefined, set: undefined
+                decorators: x.decorators, type: x.type,
+                name: x.name, kind: "Property", get: undefined, set: undefined
             })
     }
     return <ClassReflection>{
@@ -274,23 +274,23 @@ function getClassReflection(decs: Decorator[], reflection: ClassReflection): Cla
 }
 
 function reflectParameter(name: string, typeAnnotation?: any): ParameterReflection {
-    return { type: "Parameter", name, decorators: [], typeAnnotation }
+    return { kind: "Parameter", name, decorators: [], type: typeAnnotation }
 }
 
 function reflectFunction(fn: Function): FunctionReflection {
     const parameters = getParameterNames(fn).map(x => reflectParameter(x))
-    return { type: "Function", name: fn.name, parameters, decorators: [], returnType: undefined }
+    return { kind: "Function", name: fn.name, parameters, decorators: [], returnType: undefined }
 }
 
 function reflectMethod(clazz: Class, method: Function): FunctionReflection {
     const parType: any[] = Reflect.getMetadata(DESIGN_PARAMETER_TYPE, clazz.prototype, method.name) || []
     const returnType: any = Reflect.getMetadata(DESIGN_RETURN_TYPE, clazz.prototype, method.name)
     const parameters = getParameterNames(method).map((x, i) => reflectParameter(x, parType[i]))
-    return { type: "Function", name: method.name, parameters, decorators: [], returnType }
+    return { kind: "Function", name: method.name, parameters, decorators: [], returnType }
 }
 
 function reflectProperty(name: string, type: Class, get: any, set: any): PropertyReflection {
-    return { type: "Property", name, typeAnnotation: type, decorators: [], get, set }
+    return { kind: "Property", name, type: type, decorators: [], get, set }
 }
 
 function reflectMember(clazz: Class, name: string) {
@@ -322,20 +322,20 @@ function reflectClass(fn: Class): ClassReflection {
     const ctorParameters = reflectConstructorParameters(fn)
     const decorators = getDecorators(fn)
     const reflct: ClassReflection = {
-        type: "Class",
+        kind: "Class",
         ctorParameters,
         name: fn.name,
-        methods: members.filter((x): x is FunctionReflection => x.type === "Function"),
-        properties: members.filter((x): x is PropertyReflection => x.type === "Property"),
+        methods: members.filter((x): x is FunctionReflection => x.kind === "Function"),
+        properties: members.filter((x): x is PropertyReflection => x.kind === "Property"),
         decorators: [],
-        object: fn
+        type: fn
     }
     return getClassReflection(decorators, reflct)
 }
 
 function reflectObject(object: any, name: string = "module"): ObjectReflection {
     return {
-        type: "Object", name,
+        kind: "Object", name,
         members: Object.keys(object).map(x => traverse(object[x], x)).filter((x): x is Reflection => !!x)
     }
 }

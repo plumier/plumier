@@ -1026,7 +1026,7 @@ describe("Partial Validation", () => {
         expect(result).not.toBeNull()
     })
     it("Should skip required validation on partial type", async () => {
-        const result = await validate(new ClientModel(), [<TypeDecorator>{ type: "Override", object: ClientModel, info: "Partial" }], [], {} as any)
+        const result = await validate(new ClientModel(), [<TypeDecorator>{ kind: "Override", object: ClientModel, info: "Partial" }], [], {} as any)
         expect(result).toEqual([])
     })
 })
