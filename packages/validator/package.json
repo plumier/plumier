@@ -15,9 +15,9 @@
   "license": "MIT",
   "dependencies": {
     "@plumjs/core": "^0.1.0",
-    "@plumjs/reflect": "^1.4.1",
     "@types/validator": "^9.4.1",
     "chalk": "^2.4.1",
+    "tinspector": "^2.0.0-3",
     "validator": "^10.5.0"
   },
   "bugs": {

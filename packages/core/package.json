@@ -19,7 +19,7 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumjs/reflect": "^1.4.1",
+    "tinspector": "^2.0.0-3",
     "chalk": "^2.4.1",
     "tslib": "^1.9.2"
   },

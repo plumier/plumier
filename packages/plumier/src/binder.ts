@@ -10,7 +10,7 @@ import {
     DefaultConverter,
     safeToString,
 } from "@plumjs/core";
-import { FunctionReflection, ParameterReflection, reflect } from "@plumjs/reflect";
+import { FunctionReflection, ParameterReflection, reflect, MethodReflection } from "tinspector";
 import { Context } from "koa";
 
 function createConversionError(value: any, typ: Function, path: string[]) {
@@ -68,7 +68,7 @@ export function modelConverter(value: {}, path: string[], expectedType: Function
 
     //sanitize excess property to prevent object having properties that doesn't match with declaration
     //traverse through the object properties and convert to appropriate property's type
-    const sanitized = reflection.ctorParameters.map(x => ({
+    const sanitized = reflection.properties.map(x => ({
         name: x.name,
         value: convert((value as any)[x.name], path.concat(x.name), x.type, converters)
     })).reduce((a, b) => { a[b.name] = b.value; return a }, {} as any)
@@ -170,7 +170,7 @@ function chain(...binder: Binder[]) {
         .reduce((a, b) => a instanceof Next ? b(ctx, par) : a, new Next())
 }
 
-export function bindParameter(ctx: Context, action: FunctionReflection, converter?: TypeConverter[]) {
+export function bindParameter(ctx: Context, action: MethodReflection, converter?: TypeConverter[]) {
     const converters = flattenConverters(TypeConverters.concat(converter || []))
     return action.parameters.map(((x, i) => {
         const binder = chain(bindDecorator, bindByName, bindBody)

@@ -1,5 +1,5 @@
 import { collection } from '@plumjs/mongoose';
-import { array } from '@plumjs/reflect';
+import { reflect } from 'tinspector';
 import { domain } from '@plumjs/core';
 
 @collection()
@@ -16,7 +16,7 @@ export class DomainWithPrimitives {
 export class DomainWithArrays {
     constructor(
         public name: string,
-        @array(String)
+        @reflect.array(String)
         public children: string[]
     ) { }
 }
@@ -31,7 +31,7 @@ export class DomainWithDomain {
 @collection()
 export class DomainWithArrayOfDomain {
     constructor(
-        @array(DomainWithPrimitives)
+        @reflect.array(DomainWithPrimitives)
         public children: DomainWithPrimitives[]
     ) { }
 }

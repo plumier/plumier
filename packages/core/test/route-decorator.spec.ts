@@ -1,4 +1,4 @@
-import { getDecorators } from "@plumjs/reflect";
+import { getDecorators } from "tinspector";
 import { route } from '@plumjs/core';
 
 

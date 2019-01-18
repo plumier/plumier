@@ -4,7 +4,7 @@ import Mongoose from "mongoose";
 import { DomainWithArrayOfDomain, DomainWithArrays, DomainWithDomain, DomainWithPrimitives, NonDecoratedDomain } from "./model/my-domain";
 import { consoleLog, PlumierApplication, Class, route } from '@plumjs/core';
 import { join } from 'path';
-import Plumier, { WebApiFacility, array } from "@plumjs/plumier"
+import Plumier, { WebApiFacility, reflect } from "@plumjs/plumier"
 import supertest from "supertest"
 
 type Model<T> = Mongoose.Model<T & Mongoose.Document>
@@ -433,7 +433,7 @@ describe("Post Relational Data", () => {
         class Animal {
             constructor(
                 public name: string,
-                @array(Image)
+                @reflect.array(Image)
                 public images: Image[]
             ) { }
         }

@@ -1,1 +1,0 @@
-export function myFunction(id: number, name: string) { }

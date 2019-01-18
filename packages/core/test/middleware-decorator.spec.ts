@@ -1,5 +1,5 @@
 import { middleware, ActionResult } from "@plumjs/core";
-import { getDecorators } from '@plumjs/reflect';
+import { getDecorators } from 'tinspector';
 
 
 

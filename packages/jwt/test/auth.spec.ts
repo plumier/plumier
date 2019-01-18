@@ -1,6 +1,6 @@
 import { domain, route } from "@plumjs/core";
 import { authorize, checkParameters } from '@plumjs/jwt';
-import { reflect, array } from '@plumjs/reflect';
+import { reflect } from 'tinspector';
 
 describe("checkParameters", () => {
     describe("Simple Parameters", () => {
@@ -105,7 +105,7 @@ describe("checkParameters", () => {
             class Animal {
                 constructor(
                     public name?:string,
-                    @array(String)
+                    @reflect.array(String)
                     public images?:string[]
                 ) { }
             }
@@ -218,7 +218,7 @@ describe("checkParameters", () => {
 
         class AnimalController {
             @route.post()
-            save(@array(Animal) data: Animal[]) { }
+            save(@reflect.array(Animal) data: Animal[]) { }
         }
 
         it("Should return unauthorized path", () => {

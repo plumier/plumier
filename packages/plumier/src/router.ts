@@ -10,7 +10,7 @@ import {
     RouteDecorator,
     RouteInfo,
 } from "@plumjs/core";
-import { ClassReflection, FunctionReflection, ParameterReflection, reflect } from "@plumjs/reflect";
+import { ClassReflection, FunctionReflection, ParameterReflection, reflect, MethodReflection, PropertyReflection } from "tinspector";
 import chalk from "chalk";
 import * as Fs from "fs";
 import Glob from "glob";
@@ -25,6 +25,7 @@ import { bindParameter } from "./binder";
 /* ------------------------------------------------------------------------------- */
 
 type AnalyzerFunction = (route: RouteInfo, allRoutes: RouteInfo[]) => Issue
+type PropOrParamReflection = PropertyReflection | ParameterReflection
 interface Issue { type: "error" | "warning" | "success", message?: string }
 interface TestResult { route: RouteInfo, issues: Issue[] }
 export interface TransformOption { root?: string }
@@ -77,7 +78,7 @@ function transformDecorator(rootRoute: string, controllerRoute: string, actionNa
     }
 }
 
-function transformControllerWithDecorator(controller: ClassReflection, method: FunctionReflection, opt?: TransformOption): RouteInfo[] {
+function transformControllerWithDecorator(controller: ClassReflection, method: MethodReflection, opt?: TransformOption): RouteInfo[] {
     if (method.decorators.some((x: IgnoreDecorator) => x.name == "Ignore")) return []
     const ctlRoute = getControllerRoute(controller)
     const result = <RouteInfo>{ action: method, controller: controller }
@@ -90,7 +91,7 @@ function transformControllerWithDecorator(controller: ClassReflection, method: F
         }))
 }
 
-function transformRegularController(controller: ClassReflection, method: FunctionReflection, opt?: TransformOption): RouteInfo[] {
+function transformRegularController(controller: ClassReflection, method: MethodReflection, opt?: TransformOption): RouteInfo[] {
     return [{
         method: "get",
         url: createRoute(opt && opt.root || "", getControllerRoute(controller), method.name),
@@ -173,25 +174,25 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
 /* ------------------------------------------------------------------------------- */
 
 //------ Analyzer Helpers
-function getModelsInParameters(par: ParameterReflection[]) {
+function getModelsInParameters(par: PropOrParamReflection[]) {
     return par
         .map((x, i) => ({ type: x.type, index: i }))
         .filter(x => x.type && isCustomClass(x.type))
         .map(x => ({ meta: reflect((Array.isArray(x.type) ? x.type[0] : x.type) as Class), index: x.index }))
 }
 
-function traverseModel(par: ParameterReflection[]): ClassReflection[] {
+function traverseModel(par: PropOrParamReflection[]): ClassReflection[] {
     const models = getModelsInParameters(par).map(x => x.meta)
-    const child = models.map(x => traverseModel(x.ctorParameters))
+    const child = models.map(x => traverseModel(x.properties))
         .filter((x): x is ClassReflection[] => Boolean(x))
         .reduce((a, b) => a!.concat(b!), [] as ClassReflection[])
     return models.concat(child)
 }
 
-function traverseArray(parent: string, par: ParameterReflection[]): string[] {
+function traverseArray(parent: string, par: PropOrParamReflection[]): string[] {
     const models = getModelsInParameters(par)
     if (models.length > 0) {
-        return models.map((x, i) => traverseArray(x.meta.name, x.meta.ctorParameters))
+        return models.map((x, i) => traverseArray(x.meta.name, x.meta.properties))
             .flatten()
     }
     return par.filter(x => x.type === Array)
@@ -239,7 +240,7 @@ function duplicateRouteTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
 
 function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
     const classes = traverseModel(route.action.parameters)
-        .filter(x => x.ctorParameters.every(par => typeof par.type == "undefined"))
+        .filter(x => x.properties.every(par => typeof par.type == "undefined"))
         .map(x => x.type)
     //get only unique type
     const noTypeInfo = Array.from(new Set(classes))

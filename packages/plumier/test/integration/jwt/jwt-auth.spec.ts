@@ -4,7 +4,7 @@ import { JwtAuthFacility, authorize } from '@plumjs/jwt';
 import { sign } from 'jsonwebtoken';
 import Supertest from "supertest"
 import { val } from '@plumjs/validator';
-import { array } from '@plumjs/reflect';
+import { reflect } from 'tinspector';
 
 const SECRET = "super secret"
 const USER_TOKEN = sign({ email: "ketut@gmail.com", role: "user" }, SECRET)
@@ -526,7 +526,7 @@ describe("JwtAuth", () => {
 
         class AnimalController {
             @route.post()
-            save(@array(Animal) data: Animal[]) { return "Hello" }
+            save(@reflect.array(Animal) data: Animal[]) { return "Hello" }
         }
 
         it("Should be able to authorize parameter", async () => {
@@ -569,7 +569,7 @@ describe("JwtAuth", () => {
             class AnimalController {
                 @authorize.public()
                 @route.post()
-                save(@array(Animal) data: Animal[]) { return "Hello" }
+                save(@reflect.array(Animal) data: Animal[]) { return "Hello" }
             }
     
             const app = await fixture(AnimalController)
@@ -587,7 +587,7 @@ describe("JwtAuth", () => {
             @authorize.public()
             class AnimalController {
                 @route.post()
-                save(@array(Animal) data: Animal[]) { return "Hello" }
+                save(@reflect.array(Animal) data: Animal[]) { return "Hello" }
             }
     
             const app = await fixture(AnimalController)
@@ -604,7 +604,7 @@ describe("JwtAuth", () => {
         it("Should check for parameter authorization even if the controller access is public", async () => {
             class AnimalController {
                 @route.post()
-                save(@array(Animal) data: Animal[]) { return "Hello" }
+                save(@reflect.array(Animal) data: Animal[]) { return "Hello" }
             }
     
             const app = await fixture(AnimalController)

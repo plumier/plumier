@@ -10,7 +10,7 @@ import {
     safeToString,
     TypeConverter,
 } from "@plumjs/core";
-import { ClassReflection, decorateClass, decorateParameter, ParameterReflection, reflect } from "@plumjs/reflect";
+import { ClassReflection, decorateClass, decorateParameter, ParameterReflection, reflect, PropertyReflection, mergeDecorator } from "tinspector";
 import { val } from "@plumjs/validator";
 import Chalk from "chalk";
 import Mongoose, { Model } from "mongoose";
@@ -61,7 +61,7 @@ function loadModels(opt: Class[]) {
     return opt.map(x => reflect(x))
 }
 
-function getType(prop: ParameterReflection, registry: SchemaRegistry): Function | Function[] | SubSchema | SubSchema[] {
+function getType(prop: PropertyReflection, registry: SchemaRegistry): Function | Function[] | SubSchema | SubSchema[] {
     if (isCustomClass(prop.type)) {
         const schema = { type: Mongoose.Schema.Types.ObjectId, ref: "" }
         return Array.isArray(prop.type) ? [{ ...schema, ref: getName(prop.type[0]) }]
@@ -71,7 +71,7 @@ function getType(prop: ParameterReflection, registry: SchemaRegistry): Function 
 }
 
 function generateModel(model: ClassReflection, registry: SchemaRegistry, generator?: SchemaGenerator) {
-    const definition = model.ctorParameters
+    const definition = model.properties
         .reduce((a, b) => {
             a[b.name] = getType(b, registry)
             return a
@@ -88,7 +88,7 @@ function generateSchema(opt: Class[], registry: SchemaRegistry, generator?: Sche
 /* ------------------------------------------------------------------------------- */
 
 function noArrayTypeInfoTest(domain: ClassReflection): AnalysisResult[] {
-    return domain.ctorParameters
+    return domain.properties
         .map(x => (x.type === Array) ?
             <AnalysisResult>{ message: ArrayHasNoTypeInfo.format(domain.name, x.name), type: "error" } : undefined)
         .filter((x): x is AnalysisResult => Boolean(x))
@@ -128,7 +128,7 @@ function printAnalysis(analysis: DomainAnalysis[]) {
 
 async function isUnique(value: string, target: Class, index: number) {
     const meta = reflect(target)
-    const field = meta.ctorParameters[index].name
+    const field = meta.properties[index].name
     if (!meta.decorators.find((x: MongooseCollectionDecorator) => x.type === "MongooseCollectionDecorator"))
         throw new Error(CanNotValidateNonCollection.format(meta.name, field))
     const Model = model(target)
@@ -161,7 +161,8 @@ val.unique = () => {
 }
 
 export function collection(alias?: string) {
-    return decorateClass(<MongooseCollectionDecorator>{ type: "MongooseCollectionDecorator", alias })
+    return mergeDecorator(decorateClass(<MongooseCollectionDecorator>{ type: "MongooseCollectionDecorator", alias }),
+        reflect.parameterProperties());
 }
 
 export function getName(opt: ClassReflection | Class) {
@@ -215,7 +216,7 @@ export class MongooseFacility implements Facility {
 export function model<T extends object>(type: Constructor<T>) {
 
     function traversePropertyType(meta: ClassReflection): Class[] {
-        const properties = meta.ctorParameters
+        const properties = meta.properties
             .filter(x => isCustomClass(x.type))
             .map((x) => <Class>(Array.isArray(x.type) ? x.type[0] : x.type))
         return properties.length > 0 ?

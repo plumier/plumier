@@ -1,6 +1,6 @@
 
 import { authorize } from "@plumjs/jwt"
-import { reflect } from '@plumjs/reflect';
+import { reflect } from 'tinspector';
 import { inspect } from 'util';
 
 describe("JwtAuth Decorator", () => {

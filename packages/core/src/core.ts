@@ -1,11 +1,13 @@
-import {
+import reflect, {
     ClassReflection,
     decorateClass,
     decorateMethod,
     decorateParameter,
     FunctionReflection,
     ParameterReflection,
-} from "@plumjs/reflect";
+    MethodReflection,
+    decorate,
+} from "tinspector";
 import { IncomingHttpHeaders } from "http";
 import Koa, { Context, Request } from "koa";
 import { getChildValue } from './common';
@@ -40,12 +42,12 @@ export interface RootDecorator { name: "Root", url: string }
 
 export interface MiddlewareDecorator { name: "Middleware", value: Middleware[] }
 
-export interface DomainDecorator { name: "Domain" }
+//export interface DomainDecorator { name: "Domain" }
 
 export interface RouteInfo {
     url: string,
     method: HttpMethod
-    action: FunctionReflection
+    action: MethodReflection
     controller: ClassReflection
 }
 
@@ -591,18 +593,11 @@ export namespace middleware {
     export function use(...middleware: (Middleware | KoaMiddleware)[]) {
         const mdw = middleware.map(x => typeof x == "function" ? MiddlewareUtil.fromKoa(x) : x).reverse()
         const value: MiddlewareDecorator = { name: "Middleware", value: mdw }
-        return (...args: any[]) => {
-            if (args.length == 1) {
-                decorateClass(value)(args[0])
-            }
-            else {
-                decorateMethod(value)(args[0], args[1])
-            }
-        }
+        return decorate(value, ["Class", "Method"])
     }
 }
 
-export function domain() { return decorateClass(<DomainDecorator>{ name: "Domain" }) }
+export function domain() { return reflect.parameterProperties() }
 
 /* ------------------------------------------------------------------------------- */
 /* -------------------------------- CONSTANTS ------------------------------------ */

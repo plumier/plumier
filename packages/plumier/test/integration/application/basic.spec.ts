@@ -2,8 +2,9 @@ import { basename } from "path";
 import Supertest from "supertest";
 
 import Plumier, { route, WebApiFacility } from "../../../src";
-import { consoleLog } from '@plumjs/core';
+import { consoleLog, domain } from '@plumjs/core';
 
+@domain()
 export class AnimalModel {
     constructor(
         public id: number,

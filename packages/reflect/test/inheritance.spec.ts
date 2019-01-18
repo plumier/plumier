@@ -1,8 +1,0 @@
-
-
-
-
-
-describe("Inheritance", () => {
-    
-})

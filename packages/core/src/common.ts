@@ -1,4 +1,4 @@
-import { reflect, Reflection } from "@plumjs/reflect";
+import { reflect, Reflection } from "tinspector";
 import Chalk from "chalk";
 import { existsSync, lstatSync, readdirSync, mkdirSync, unlink } from "fs";
 import { extname, join, dirname } from "path";

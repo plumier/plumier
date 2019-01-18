@@ -1,4 +1,4 @@
-import { ActionResult, Class, Configuration, DefaultConfiguration, HttpStatusError, route } from "@plumjs/core";
+import { ActionResult, Class, Configuration, DefaultConfiguration, HttpStatusError, route, domain } from "@plumjs/core";
 import Koa, { Context } from "koa";
 import BodyParser from "koa-bodyparser";
 import Supertest from "supertest";
@@ -98,6 +98,7 @@ describe("Action Invocation", () => {
     })
 
     it("Should invoke action with model binding", async () => {
+        @domain()
         class AnimalModel {
             constructor(
                 public id: number,
@@ -121,6 +122,7 @@ describe("Action Invocation", () => {
     })
 
     it("Should invoke action with model binding and parameter binding", async () => {
+        @domain()
         class AnimalModel {
             constructor(
                 public id: number,

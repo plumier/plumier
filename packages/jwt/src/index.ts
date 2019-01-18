@@ -13,7 +13,7 @@ import {
     Configuration,
 
 } from "@plumjs/core";
-import { decorateClass, decorateMethod, decorateParameter, ParameterReflection, reflect } from "@plumjs/reflect";
+import { decorateClass, decorateMethod, decorateParameter, ParameterReflection, reflect, PropertyReflection, decorate, mergeDecorator } from "tinspector";
 import KoaJwt from "koa-jwt";
 
 /* ------------------------------------------------------------------------------- */
@@ -32,6 +32,7 @@ export interface AuthDecorator {
     value: string[]
 }
 
+/*
 function decorate(data: AuthDecorator) {
     return (...args: any[]) => {
         if (args.length === 1)
@@ -45,14 +46,24 @@ function decorate(data: AuthDecorator) {
         }
     }
 }
+*/
 
 export class AuthDecoratorImpl {
     public() {
-        return decorate({ type: "authorize:public", value: [] })
+        return decorate((...args: any[]) => {
+            if (args.length === 3 && typeof args[2] === "number")
+                throw new Error("JWT1000: @authorize.public() should not be applied on parameter")
+            return { type: "authorize:public", value: [] }
+        }, ["Class", "Parameter", "Method"])
     }
 
     role(...roles: string[]) {
-        return decorate({ type: "authorize:role", value: roles })
+        return mergeDecorator(
+            decorate({ type: "authorize:role", value: roles }, ["Class", "Parameter", "Method"]),
+            (...args: any[]) => {
+                if (args.length === 3 && typeof args[2] === "number")
+                    decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", name: "optional" })(args[0], args[1], args[2])
+            }) 
     }
 }
 
@@ -82,17 +93,17 @@ function getDecorator(info: RouteInfo, globalDecorator?: (...args: any[]) => voi
         getGlobalDecorator(globalDecorator)
 }
 
-export function checkParameter(path: string[], meta: ParameterReflection, value: any, userRole: string[]): string[] {
+export function checkParameter(path: string[], meta: PropertyReflection | ParameterReflection, value: any, userRole: string[]): string[] {
     if (typeof value === "undefined") return []
     else if (Array.isArray(meta.type)) {
-        const newMeta = { ...meta, typeAnnotation: meta.type[0] };
+        const newMeta = { ...meta, type: meta.type[0] };
         return (value as any[]).map((x, i) => checkParameter(path.concat(i.toString()), newMeta, x, userRole))
             .flatten()
     }
     else if (isCustomClass(meta.type)) {
         const classMeta = reflect(<Class>meta.type)
-        const values = classMeta.ctorParameters.map(x => value[x.name])
-        return checkParameters(path, classMeta.ctorParameters, values, userRole)
+        const values = classMeta.properties.map(x => value[x.name])
+        return checkParameters(path, classMeta.properties, values, userRole)
     }
     else {
         const requestRoles = meta.decorators.find((x): x is AuthDecorator => isAuthDecorator(x))
@@ -102,7 +113,7 @@ export function checkParameter(path: string[], meta: ParameterReflection, value:
     return []
 }
 
-export function checkParameters(path: string[], meta: ParameterReflection[], value: any[], userRole: string[]): string[] {
+export function checkParameters(path: string[], meta: (PropertyReflection | ParameterReflection)[], value: any[], userRole: string[]): string[] {
     return meta.map((x, i) => checkParameter(path.concat(x.name), x, value[i], userRole))
         .flatten()
 }

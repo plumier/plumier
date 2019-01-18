@@ -1,7 +1,7 @@
-import { reflect } from "@plumjs/reflect";
+import { reflect } from "tinspector";
 import { Request, Context } from "koa";
 
-import { array, bind, domain, route } from "../../../src";
+import { bind, domain, route } from "../../../src";
 import { bindParameter } from "../../../src/binder";
 
 function fromRequest(opt?: Partial<Request>): Context {
@@ -184,6 +184,7 @@ describe("Parameter Binder", () => {
         })
 
         it("Should bind model on put method", () => {
+            @domain()
             class AnimalModel {
                 constructor(
                     public id: string,
@@ -209,7 +210,7 @@ describe("Parameter Binder", () => {
         it("Should bind array of number", () => {
             class AnimalController {
                 @route.post()
-                saveAnimal(@array(Number) model: number[]) { }
+                saveAnimal(@reflect.array(Number) model: number[]) { }
             }
             const metadata = reflect(AnimalController)
             const result = bindParameter(fromRequest({ query: {}, body: ["1", "2", "3"] }), metadata.methods[0])
@@ -226,7 +227,7 @@ describe("Parameter Binder", () => {
 
             class AnimalController {
                 @route.post()
-                saveAnimal(@array(AnimalModel) model: AnimalModel[]) { }
+                saveAnimal(@reflect.array(AnimalModel) model: AnimalModel[]) { }
             }
 
             const metadata = reflect(AnimalController)

@@ -5,8 +5,10 @@ yarn-error.log
 lerna-debug.log
 *.js
 *.js.map
+*.js.snap
 .DS_Store
 !jest.config.js
 !jest.config.debug.js
 !test.js
 .docs
+

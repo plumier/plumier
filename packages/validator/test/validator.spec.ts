@@ -1,8 +1,8 @@
-import { decorateClass, TypeDecorator } from "@plumjs/reflect";
+import reflect, { decorateClass, TypeDecorator } from "tinspector";
 
 import { val, validate, validateArray, validateObject } from "../src";
 
-function domain() { return decorateClass({}) }
+function domain() { return reflect.parameterProperties() }
 
 describe("String Validation", () => {
 
@@ -881,6 +881,7 @@ describe("Object Validation", () => {
     })
 
     it("Should validate nested object", async () => {
+        @domain()
         class CreditCardModel {
             constructor(
                 @val.creditCard()
@@ -1026,7 +1027,7 @@ describe("Partial Validation", () => {
         expect(result).not.toBeNull()
     })
     it("Should skip required validation on partial type", async () => {
-        const result = await validate(new ClientModel(), [<TypeDecorator>{ kind: "Override", object: ClientModel, info: "Partial" }], [], {} as any)
+        const result = await validate(new ClientModel(), [<TypeDecorator>{ kind: "Override", type: ClientModel, info: "Partial" }], [], {} as any)
         expect(result).toEqual([])
     })
 })

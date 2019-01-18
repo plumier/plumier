@@ -33,7 +33,7 @@ export { WebApiFacility, RestfulApiFacility, response } from "./application"
 export { MultiPartFacility } from "./multipart"
 export { FileActionResult, ServeStaticFacility, ServeStaticMiddleware, ServeStaticOptions } from "./serve-static"
 export { val } from "@plumjs/validator"
-export { array } from "@plumjs/reflect"
+export { reflect } from "tinspector"
 export * from "@plumjs/jwt"
 
 export const converters = {

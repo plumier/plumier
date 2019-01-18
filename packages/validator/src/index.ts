@@ -1,7 +1,7 @@
 import "@plumjs/core";
 
 import { Class, ValidationIssue, ValidatorDecorator } from "@plumjs/core";
-import { decorateParameter, reflect, type, TypeDecorator } from "@plumjs/reflect";
+import { decorateParameter, reflect, TypeDecorator } from "tinspector";
 import Chalk from "chalk";
 import { inspect } from "util";
 import Validator from "validator";
@@ -232,7 +232,7 @@ export namespace val {
     }
 
     export function partial(typ: Class) {
-        return type(typ, "Partial")
+        return reflect.type(typ, "Partial")
     }
 }
 
@@ -256,7 +256,7 @@ export async function validateArray(value: any[], path: string[], ctx: Context):
 export async function validateObject(value: any, ctx: Context, partialType?: Class, path?: string[]): Promise<ValidationIssue[]> {
     try {
         const meta = reflect(partialType || getType(value))
-        const result = await Promise.all(meta.ctorParameters.map(p => validate(value[p.name],
+        const result = await Promise.all(meta.properties.map(p => validate(value[p.name],
             p.decorators.concat(partialType && { ...OptionalDecorator } || []), (path || []).concat(p.name), ctx)))
         return result.flatten()
     }
@@ -272,7 +272,7 @@ export async function validate(object: any, decs: any[], path: string[], ctx: Co
         return validateArray(object, path, ctx)
     else if (typeof object === "object" && object !== null && object.constructor !== Date) {
         const partial = decs.find((x: TypeDecorator): x is TypeDecorator => x.kind === "Override" && x.info === "Partial")
-        return validateObject(object, ctx, partial && partial.object, path)
+        return validateObject(object, ctx, partial && partial.type, path)
     }
     else {
         if (empty()) {

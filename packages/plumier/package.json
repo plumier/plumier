@@ -22,7 +22,6 @@
     "@koa/cors": "^2.2.1",
     "@plumjs/core": "^0.1.0",
     "@plumjs/jwt": "^0.1.1",
-    "@plumjs/reflect": "^1.4.1",
     "@plumjs/validator": "^0.1.1",
     "@types/busboy": "^0.2.3",
     "@types/glob": "^7.1.0",
@@ -38,6 +37,7 @@
     "koa-bodyparser": "^4.2.1",
     "koa-send": "^5.0.0",
     "path-to-regexp": "^2.2.1",
+    "tinspector": "^2.0.0-3",
     "tslib": "^1.9.2"
   },
   "devDependencies": {
