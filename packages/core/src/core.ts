@@ -1,16 +1,16 @@
+import { IncomingHttpHeaders } from "http"
+import Koa, { Context, Request } from "koa"
 import reflect, {
     ClassReflection,
+    decorate,
     decorateClass,
     decorateMethod,
     decorateParameter,
-    FunctionReflection,
-    ParameterReflection,
     MethodReflection,
-    decorate,
-} from "tinspector";
-import { IncomingHttpHeaders } from "http";
-import Koa, { Context, Request } from "koa";
-import { getChildValue } from './common';
+    ParameterReflection,
+} from "tinspector"
+
+import { getChildValue } from "./common"
 
 
 /* ------------------------------------------------------------------------------- */

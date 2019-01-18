@@ -1,10 +1,8 @@
-import { reflect, Reflection } from "tinspector";
-import Chalk from "chalk";
-import { existsSync, lstatSync, readdirSync, mkdirSync, unlink } from "fs";
-import { extname, join, dirname } from "path";
-import { inspect } from "util";
+import { existsSync, lstatSync, mkdirSync, readdirSync } from "fs"
+import { dirname, extname, join } from "path"
+import { reflect, Reflection } from "tinspector"
 
-import { Class } from "./core";
+import { Class } from "./core"
 
 declare global {
     interface String {

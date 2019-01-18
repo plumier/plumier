@@ -11,18 +11,18 @@
 	},
 	"author": "Ketut Sandiarsa",
 	"devDependencies": {
-		"@types/jest": "^23.1.0",
+		"@types/jest": "^23.3.12",
 		"babel-core": "^6.26.3",
-		"coveralls": "^3.0.1",
+		"coveralls": "^3.0.2",
 		"del": "^3.0.0",
-		"edit-json-file": "^1.1.0",
-		"jest": "^23.1.0",
-		"lerna": "2.11.0",
+		"edit-json-file": "^1.2.1",
+		"jest": "^23.6.0",
+		"lerna": "3.10.5",
 		"pre-push": "^0.1.1",
-		"reflect-metadata": "^0.1.12",
-		"ts-jest": "^23.0.0",
-		"tslint": "^5.10.0",
-		"typescript": "^3.2.2"
+		"reflect-metadata": "^0.1.13",
+		"ts-jest": "^23.10.5",
+		"tslint": "^5.12.1",
+		"typescript": "^3.2.4"
 	},
 	"workspaces": [
 		"packages/*"

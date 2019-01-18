@@ -20,8 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "tinspector": "^2.0.0-3",
-    "chalk": "^2.4.1",
-    "tslib": "^1.9.2"
+    "tslib": "^1.9.3"
   },
   "bugs": {
     "url": "https://github.com/ktutnik/plumier/issues"
