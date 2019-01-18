@@ -1,6 +1,6 @@
 {
   "name": "@plumjs/plumier",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Delightful NodeJS Web Api Framework powered by KoaJs and TypeScript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,9 +20,9 @@
   "license": "MIT",
   "dependencies": {
     "@koa/cors": "^2.2.3",
-    "@plumjs/core": "^0.1.0",
-    "@plumjs/jwt": "^0.1.1",
-    "@plumjs/validator": "^0.1.1",
+    "@plumjs/core": "^0.2.0",
+    "@plumjs/jwt": "^0.2.0",
+    "@plumjs/validator": "^0.2.0",
     "@types/busboy": "^0.2.3",
     "@types/glob": "^7.1.1",
     "@types/koa": "^2.0.48",
