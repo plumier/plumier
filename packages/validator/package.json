@@ -15,10 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "@plumjs/core": "^0.1.0",
-    "@types/validator": "^9.4.1",
-    "chalk": "^2.4.1",
+    "@types/validator": "^10.9.0",
+    "chalk": "^2.4.2",
     "tinspector": "^2.0.0-3",
-    "validator": "^10.5.0"
+    "validator": "^10.11.0"
   },
   "bugs": {
     "url": "https://github.com/ktutnik/plumier/issues"
