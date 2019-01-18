@@ -1,6 +1,6 @@
 {
 	"private": true,
-	"description": "Pleasant TypeScript Web Api Framework",
+	"description": "Delightful NodeJS Web Api Framework powered by KoaJs and TypeScript",
 	"scripts": {
 		"test": "jest --maxWorkers=4",
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish",

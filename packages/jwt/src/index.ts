@@ -32,22 +32,6 @@ export interface AuthDecorator {
     value: string[]
 }
 
-/*
-function decorate(data: AuthDecorator) {
-    return (...args: any[]) => {
-        if (args.length === 1)
-            decorateClass(data)(args[0])
-        else if (typeof args[2] === "object")
-            decorateMethod(data)(args[0], args[1])
-        else {
-            if (data.type === "authorize:public") throw new Error("JWT1000: @authorize.public() should not be applied on parameter")
-            decorateParameter(data)(args[0], args[1], args[2])
-            decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", name: "optional" })(args[0], args[1], args[2])
-        }
-    }
-}
-*/
-
 export class AuthDecoratorImpl {
     public() {
         return decorate((...args: any[]) => {
