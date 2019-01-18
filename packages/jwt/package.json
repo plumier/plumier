@@ -11,8 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "@plumjs/core": "^0.1.0",
-    "koa-jwt": "^3.3.2",
-    "tslib": "^1.9.2"
+    "koa-jwt": "^3.5.1",
+    "tslib": "^1.9.3"
   },
   "bugs": {
     "url": "https://github.com/ktutnik/plumier/issues"

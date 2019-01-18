@@ -4215,7 +4215,7 @@ koa-is-json@^1.0.0:
   resolved "https://registry.yarnpkg.com/koa-is-json/-/koa-is-json-1.0.0.tgz#273c07edcdcb8df6a2c1ab7d59ee76491451ec14"
   integrity sha1-JzwH7c3Ljfaiwat9We52SRRR7BQ=
 
-koa-jwt@^3.3.2:
+koa-jwt@^3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/koa-jwt/-/koa-jwt-3.5.1.tgz#0b20e45c3a0f93c9a8df42f1057b3ae004e0f849"
   integrity sha512-Wy1TZzyPdMw2X72HPhy9GPUy0BMxafS8Wq0JzvXCPi4pEBWQDtz1lzxYWpE2ghMuXWJ0vKKRrR5e+CyYGS8LBA==
