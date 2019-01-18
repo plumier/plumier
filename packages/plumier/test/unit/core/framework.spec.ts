@@ -8,7 +8,7 @@ import { pipe } from "../../../src/application";
 describe("ActionResult", () => {
     it("Should execute context properly", async () => {
         const app = new Koa()
-        app.use(async (ctx, next) => {
+        app.use(async (ctx:Koa.Context, next) => {
             const result = new ActionResult({ body: "The Body" })
             await result.execute(ctx)
         })
@@ -20,7 +20,7 @@ describe("ActionResult", () => {
 
     it("Should not set body if not provided", async () => {
         const app = new Koa()
-        app.use(async (ctx, next) => {
+        app.use(async (ctx:Koa.Context, next) => {
             const result = new ActionResult(undefined, 200)
             await result.execute(ctx)
         })
@@ -32,7 +32,7 @@ describe("ActionResult", () => {
 
     it("Should execute context with status", async () => {
         const app = new Koa()
-        app.use(async (ctx, next) => {
+        app.use(async (ctx:Koa.Context, next) => {
             const result = new ActionResult({ body: "The Body" }, 201)
             await result.execute(ctx)
         })
@@ -44,7 +44,7 @@ describe("ActionResult", () => {
 
     it("Should execute context with header information", async () => {
         const app = new Koa()
-        app.use(async (ctx, next) => {
+        app.use(async (ctx:Koa.Context, next) => {
             const result = new ActionResult({ body: "The Body" })
                 .setHeader("accept", "gzip")
             await result.execute(ctx)
