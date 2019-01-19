@@ -1,4 +1,4 @@
-import { route } from '../../../../src';
+import { route } from '@plumjs/core';
 
 export class DecoratedController {
     //without url override

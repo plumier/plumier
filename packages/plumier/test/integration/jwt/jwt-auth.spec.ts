@@ -1,10 +1,11 @@
-import { route, domain } from "@plumjs/core";
-import { fixture } from '../../helper';
-import { JwtAuthFacility, authorize } from '@plumjs/jwt';
-import { sign } from 'jsonwebtoken';
+import { authorize, domain, route } from "@plumjs/core"
+import { JwtAuthFacility } from "@plumjs/jwt"
+import { val } from "@plumjs/validator"
+import { sign } from "jsonwebtoken"
 import Supertest from "supertest"
-import { val } from '@plumjs/validator';
-import { reflect } from 'tinspector';
+import { reflect } from "tinspector"
+
+import { fixture } from "../../helper"
 
 const SECRET = "super secret"
 const USER_TOKEN = sign({ email: "ketut@gmail.com", role: "user" }, SECRET)

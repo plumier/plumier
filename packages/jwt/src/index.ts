@@ -11,6 +11,7 @@ import {
     ValidatorDecorator,
     PlumierConfiguration,
     Configuration,
+    AuthDecorator,
 
 } from "@plumjs/core";
 import { decorateClass, decorateMethod, decorateParameter, ParameterReflection, reflect, PropertyReflection, decorate, mergeDecorator } from "tinspector";
@@ -27,31 +28,6 @@ export interface JwtAuthFacilityOption { secret: string, roleField?: RoleField, 
 /* ----------------------------- DECORATORS -------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-export interface AuthDecorator {
-    type: "authorize:public" | "authorize:role",
-    value: string[]
-}
-
-export class AuthDecoratorImpl {
-    public() {
-        return decorate((...args: any[]) => {
-            if (args.length === 3 && typeof args[2] === "number")
-                throw new Error("JWT1000: @authorize.public() should not be applied on parameter")
-            return { type: "authorize:public", value: [] }
-        }, ["Class", "Parameter", "Method"])
-    }
-
-    role(...roles: string[]) {
-        return mergeDecorator(
-            decorate({ type: "authorize:role", value: roles }, ["Class", "Parameter", "Method"]),
-            (...args: any[]) => {
-                if (args.length === 3 && typeof args[2] === "number")
-                    decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", name: "optional" })(args[0], args[1], args[2])
-            }) 
-    }
-}
-
-export const authorize = new AuthDecoratorImpl()
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- HELPERS --------------------------------------- */

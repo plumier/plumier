@@ -1,6 +1,8 @@
-import { fixture } from "../../helper";
+import { ActionResult } from "@plumjs/core"
+import { response } from "@plumjs/plumier"
 import Supertest from "supertest"
-import { ActionResult, response } from '../../../src';
+
+import { fixture } from "../../helper"
 
 describe("Return value", () => {
     it("Should able to return string", async () => {

@@ -1,10 +1,11 @@
-import Cors from "@koa/cors";
+import Cors from "@koa/cors"
 import {
     ActionResult,
     Application,
     BodyParserOption,
     Class,
     Configuration,
+    ConversionError,
     DefaultConfiguration,
     errorMessage,
     Facility,
@@ -19,17 +20,15 @@ import {
     PlumierConfiguration,
     RouteInfo,
     ValidationError,
-    ConversionError,
-} from "@plumjs/core";
-import { validate } from "@plumjs/validator";
-import { existsSync } from "fs";
-import Koa, { Context } from "koa";
-import BodyParser from "koa-bodyparser";
-import send from "koa-send";
-import { dirname, extname, isAbsolute, join } from "path";
+} from "@plumjs/core"
+import { validate } from "@plumjs/validator"
+import { existsSync } from "fs"
+import Koa, { Context } from "koa"
+import BodyParser from "koa-bodyparser"
+import { dirname, isAbsolute, join } from "path"
 
-import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router";
-import { FileActionResult, ServeStaticOptions } from './serve-static';
+import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router"
+import { FileActionResult, ServeStaticOptions } from "./serve-static"
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------------- CORE -------------------------------------- */

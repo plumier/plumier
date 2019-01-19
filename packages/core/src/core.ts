@@ -8,6 +8,7 @@ import reflect, {
     decorateParameter,
     MethodReflection,
     ParameterReflection,
+    mergeDecorator,
 } from "tinspector"
 
 import { getChildValue } from "./common"
@@ -41,6 +42,11 @@ export interface IgnoreDecorator { name: "Ignore" }
 export interface RootDecorator { name: "Root", url: string }
 
 export interface MiddlewareDecorator { name: "Middleware", value: Middleware[] }
+
+export interface AuthDecorator {
+    type: "authorize:public" | "authorize:role",
+    value: string[]
+}
 
 //export interface DomainDecorator { name: "Domain" }
 
@@ -599,6 +605,34 @@ export namespace middleware {
 
 export function domain() { return reflect.parameterProperties() }
 
+export class AuthDecoratorImpl {
+    /**
+     * Authorize controller/action to public
+     */
+    public() {
+        return decorate((...args: any[]) => {
+            if (args.length === 3 && typeof args[2] === "number")
+                throw new Error(errorMessage.PublicNotInParameter)
+            return { type: "authorize:public", value: [] }
+        }, ["Class", "Parameter", "Method"])
+    }
+
+    /**
+     * Authorize controller/action accessible by sepecific role
+     * @param roles List of roles allowed
+     */
+    role(...roles: string[]) {
+        return mergeDecorator(
+            decorate({ type: "authorize:role", value: roles }, ["Class", "Parameter", "Method"]),
+            (...args: any[]) => {
+                if (args.length === 3 && typeof args[2] === "number")
+                    decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", name: "optional" })(args[0], args[1], args[2])
+            }) 
+    }
+}
+
+export const authorize = new AuthDecoratorImpl()
+
 /* ------------------------------------------------------------------------------- */
 /* -------------------------------- CONSTANTS ------------------------------------ */
 /* ------------------------------------------------------------------------------- */
@@ -615,16 +649,16 @@ export namespace errorMessage {
     //PLUM1XXX User configuration error
     export const RouteDoesNotHaveBackingParam = "PLUM1000: Route parameters ({0}) doesn't have appropriate backing parameter"
     export const ActionDoesNotHaveTypeInfo = "PLUM1001: Parameter binding skipped because action doesn't have @route decorator"
-    export const ModelWithoutTypeInformation = "PLUM1005: Parameter binding skipped because  {0} doesn't have @domain() decorator"
-    export const ArrayWithoutTypeInformation = "PLUM1006: Parameter binding skipped because array field without @array() decorator found in ({0})"
     export const DuplicateRouteFound = "PLUM1003: Duplicate route found in {0}"
     export const ControllerPathNotFound = "PLUM1004: Controller file or directory {0} not found"
+    export const ModelWithoutTypeInformation = "PLUM1005: Parameter binding skipped because  {0} doesn't have @domain() decorator"
+    export const ArrayWithoutTypeInformation = "PLUM1006: Parameter binding skipped because array field without @array() decorator found in ({0})"
     export const ModelNotFound = "PLUM1007: Domain model not found, no class decorated with @domain() on provided classes"
     export const ModelPathNotFound = "PLUM1007: Domain model not found, no class decorated with @domain() on path {0}"
+    export const PublicNotInParameter = "PLUM1008: @authorize.public() can not be applied to parameter"
 
     //PLUM2XXX internal app error
     export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate model {0}. Domain model should be instantiable using default constructor`
-
 
     //End user error (no error code)
     export const UnableToConvertValue = `Unable to convert "{0}" into {1}`

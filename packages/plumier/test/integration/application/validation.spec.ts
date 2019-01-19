@@ -1,6 +1,8 @@
-import { val, domain, route } from "../../../src";
-import { fixture } from '../../helper';
+import { domain, route } from "@plumjs/core"
+import { val } from "@plumjs/plumier"
 import Supertest from "supertest"
+
+import { fixture } from "../../helper"
 
 /*
 /Users/ketutsandiarsa/Documents/plum/plumier/packages/plumier/test/integration/application/assets/index.html

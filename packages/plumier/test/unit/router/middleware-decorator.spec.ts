@@ -1,6 +1,7 @@
-import { Middleware, Invocation, ActionResult, middleware } from '../../../src';
-import { transformController } from '../../../src/router';
-import { extractDecorators } from '../../../src/application';
+import { ActionResult, Invocation, Middleware, middleware } from "@plumjs/core"
+
+import { extractDecorators } from "../../../src/application"
+import { transformController } from "../../../src/router"
 
 
 class DummyMiddleware implements Middleware {

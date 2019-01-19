@@ -1,6 +1,6 @@
 import { Context } from "koa";
 
-import { ActionResult, Invocation } from "../../../src";
+import { ActionResult, Invocation } from "@plumjs/core";
 import { pipe } from '../../../src/application';
 
 

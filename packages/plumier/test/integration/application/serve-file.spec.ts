@@ -1,10 +1,10 @@
-import { response, route } from "@plumjs/plumier";
-import { join } from 'path';
-import { fixture } from '../../helper';
+import { route } from "@plumjs/core"
+import { response, ServeStaticFacility } from "@plumjs/plumier"
+import { readFileSync } from "fs"
+import { join } from "path"
 import Supertest from "supertest"
-import { readFileSync } from 'fs';
-import { ServeStaticFacility } from '../../../src';
-import send from "koa-send"
+
+import { fixture } from "../../helper"
 
 
 describe("Serve File From Controller", () => {

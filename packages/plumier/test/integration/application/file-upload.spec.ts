@@ -1,9 +1,9 @@
-import { bind, FileParser, FileUploadInfo, route, Class, Configuration } from "@plumjs/core";
-import { existsSync, rmdirSync, unlinkSync } from "fs";
-import { extname, join } from "path";
-import Supertest from "supertest";
+import { bind, Class, Configuration, FileParser, FileUploadInfo, route } from "@plumjs/core"
+import { existsSync, rmdirSync, unlinkSync } from "fs"
+import { extname, join } from "path"
+import Supertest from "supertest"
 
-import Plumier, { MultiPartFacility, WebApiFacility } from "../../../src";
+import Plumier, { MultiPartFacility, WebApiFacility } from "../../../src"
 
 export function fixture(controller: Class | Class[] | string, config?: Partial<Configuration>) {
     const mergedConfig = <Configuration>{ mode: "production", ...config }

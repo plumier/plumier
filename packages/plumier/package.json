@@ -1,6 +1,6 @@
 {
   "name": "@plumjs/plumier",
-  "version": "0.2.0",
+  "version": "0.1.2",
   "description": "Delightful NodeJS Web Api Framework powered by KoaJs and TypeScript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

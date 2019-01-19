@@ -1,9 +1,9 @@
-import { MiddlewareUtil } from "@plumjs/core";
-import Koa from "koa";
-import Supertest from "supertest";
+import { ActionResult, ConversionError, HttpStatusError, Middleware, MiddlewareUtil } from "@plumjs/core"
+import Plumier, { WebApiFacility } from "@plumjs/plumier"
+import Koa from "koa"
+import Supertest from "supertest"
 
-import Plumier, { ActionResult, ConversionError, HttpStatusError, Middleware, WebApiFacility } from "../../../src";
-import { pipe } from "../../../src/application";
+import { pipe } from "../../../src/application"
 
 describe("ActionResult", () => {
     it("Should execute context properly", async () => {

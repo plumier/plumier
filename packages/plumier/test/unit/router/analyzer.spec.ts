@@ -1,4 +1,4 @@
-import { bind, domain, route } from "../../../src";
+import { bind, domain, route } from "@plumjs/core";
 import { analyzeRoutes, printAnalysis, transformController } from "../../../src/router";
 import { consoleLog } from '@plumjs/core';
 import reflect from "tinspector"

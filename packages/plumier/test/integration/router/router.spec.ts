@@ -1,9 +1,10 @@
-import Plumier, { route, WebApiFacility, domain, bind } from "../../../src";
-import { fixture } from '../../helper';
-import Supertest from "supertest"
-import { join } from 'path';
+import { consoleLog, domain, route } from "@plumjs/core"
+import Plumier, { WebApiFacility } from "@plumjs/plumier"
+import { join } from "path"
 import Rimraf from "rimraf"
-import { consoleLog } from '@plumjs/core';
+import Supertest from "supertest"
+
+import { fixture } from "../../helper"
 
 describe("Router", () => {
     it("Should transform regular method to GET", async () => {

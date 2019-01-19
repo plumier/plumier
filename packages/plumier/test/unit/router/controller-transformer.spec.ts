@@ -1,5 +1,5 @@
 import { transformController } from "../../../src/router";
-import { route } from '../../../src';
+import { route } from '@plumjs/core';
 
 describe("Controller Transformer", () => {
     describe("Basic Transformation", () => {

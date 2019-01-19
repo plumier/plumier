@@ -1,11 +1,12 @@
-import { IncomingMessage, ServerResponse } from "http";
-import { Request, Context } from "koa";
-import Supertest from "supertest";
-
-import { bind, ConversionError, HttpStatusError, domain, route, val, JwtAuthFacility } from "../../../src";
-import { fixture } from "../../helper";
-import { sign } from 'jsonwebtoken';
+import { bind, domain, route } from "@plumjs/core"
+import { JwtAuthFacility, val } from "@plumjs/plumier"
+import { IncomingMessage, ServerResponse } from "http"
+import { sign } from "jsonwebtoken"
+import { Context, Request } from "koa"
+import Supertest from "supertest"
 import reflect from "tinspector"
+
+import { fixture } from "../../helper"
 
 export class AnimalModel {
     constructor(

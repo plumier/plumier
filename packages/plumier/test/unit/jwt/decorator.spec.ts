@@ -1,7 +1,6 @@
+import { authorize } from "@plumjs/core"
+import { reflect } from "tinspector"
 
-import { authorize } from "@plumjs/jwt"
-import { reflect } from 'tinspector';
-import { inspect } from 'util';
 
 describe("JwtAuth Decorator", () => {
     it("Should able to decorate controller", () => {
@@ -59,6 +58,6 @@ describe("JwtAuth Decorator", () => {
             class AnimalController {
                 method(@authorize.public() data: number) { }
             }
-        }).toThrow("JWT1000: @authorize.public() should not be applied on parameter")
+        }).toThrow("PLUM1008: @authorize.public() can not be applied to parameter")
     })
 })

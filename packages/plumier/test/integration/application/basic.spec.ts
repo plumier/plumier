@@ -1,8 +1,6 @@
-import { basename } from "path";
-import Supertest from "supertest";
-
-import Plumier, { route, WebApiFacility } from "../../../src";
-import { consoleLog, domain } from '@plumjs/core';
+import { consoleLog, domain, route } from "@plumjs/core"
+import Plumier, { WebApiFacility } from "@plumjs/plumier"
+import Supertest from "supertest"
 
 @domain()
 export class AnimalModel {

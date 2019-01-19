@@ -1,7 +1,6 @@
-import { basename } from "path";
-import Supertest from "supertest";
-
-import Plumier, { route, RestfulApiFacility, val } from "../../../src";
+import { route } from "@plumjs/core"
+import Plumier, { RestfulApiFacility, val } from "@plumjs/plumier"
+import Supertest from "supertest"
 
 function fixture() {
     return new Plumier()

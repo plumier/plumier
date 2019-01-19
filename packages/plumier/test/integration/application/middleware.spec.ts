@@ -1,8 +1,7 @@
-import { Class, ActionResult, route } from "@plumjs/core";
-import { Context } from "koa";
-import Supertest from "supertest";
-
-import Plumier, { Invocation, Middleware, middleware, WebApiFacility } from "../../../src";
+import { Class, Invocation, Middleware, middleware, route } from "@plumjs/core"
+import Plumier, { WebApiFacility } from "@plumjs/plumier"
+import { Context } from "koa"
+import Supertest from "supertest"
 
 class InterceptBody implements Middleware {
     constructor(private newBody: any) { }

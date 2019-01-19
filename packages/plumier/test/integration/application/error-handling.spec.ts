@@ -1,8 +1,8 @@
-import { join } from "path";
-import Supertest from "supertest";
+import { HttpStatusError, middleware } from "@plumjs/core"
+import { join } from "path"
+import Supertest from "supertest"
 
-import { HttpStatusError, middleware } from "../../../src";
-import { fixture } from "../../helper";
+import { fixture } from "../../helper"
 
 
 describe("Error Handling", () => {

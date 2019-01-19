@@ -1,9 +1,17 @@
-import Koa, { Middleware } from "koa";
-import Supertest from "supertest";
+import {
+    ActionResult,
+    Class,
+    Configuration,
+    DefaultDependencyResolver,
+    HttpStatusError,
+    Invocation,
+    route,
+} from "@plumjs/core"
+import Plumier from "@plumjs/plumier"
+import Koa from "koa"
+import Supertest from "supertest"
 
-import Plumier, { Configuration, route } from "../../../src";
-import { Class, DefaultDependencyResolver, Invocation, ActionResult, HttpStatusError } from "@plumjs/core";
-import { router, transformController } from "../../../src/router";
+import { router, transformController } from "../../../src/router"
 
 class DummyInvocation implements Invocation {
     constructor(public context: Readonly<Koa.Context>) { }
