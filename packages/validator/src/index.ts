@@ -218,7 +218,7 @@ export namespace val {
     }
 
     export function variableWidth(opt?: Opt) {
-        return validate(x => Validator.isVariable6Width(x), opt && opt.message || "Invalid variable width", "variableWidth")
+        return validate(x => Validator.isVariableWidth(x), opt && opt.message || "Invalid variable width", "variableWidth")
     }
 
     export function whiteListed(opt: Opt & { chars: string | string[] }) {
