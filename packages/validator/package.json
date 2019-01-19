@@ -1,6 +1,6 @@
 {
   "name": "@plumjs/validator",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "TypeScript object validator powered by Validator.JS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

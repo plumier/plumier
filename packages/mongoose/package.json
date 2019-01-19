@@ -1,6 +1,6 @@
 {
   "name": "@plumjs/mongoose",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "TypeScript Mongoose with decorator based configuration",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
