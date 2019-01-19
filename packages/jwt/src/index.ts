@@ -44,8 +44,8 @@ function getGlobalDecorator(globalDecorator?: (...args: any[]) => void) {
 }
 
 function getDecorator(info: RouteInfo, globalDecorator?: (...args: any[]) => void) {
-    return info.action.decorators.find((x): x is AuthDecorator => isAuthDecorator(x)) ||
-        info.controller.decorators.find((x): x is AuthDecorator => isAuthDecorator(x)) ||
+    return info.action.decorators.find((x:any): x is AuthDecorator => isAuthDecorator(x)) ||
+        info.controller.decorators.find((x:any): x is AuthDecorator => isAuthDecorator(x)) ||
         getGlobalDecorator(globalDecorator)
 }
 
