@@ -21,7 +21,7 @@
   "dependencies": {
     "@koa/cors": "^2.2.3",
     "@plumjs/core": "^0.2.0",
-    "@plumjs/jwt": "^0.1.2",
+    "@plumjs/jwt": "^0.2.0",
     "@plumjs/validator": "^0.2.0",
     "@types/busboy": "^0.2.3",
     "@types/glob": "^7.1.1",
