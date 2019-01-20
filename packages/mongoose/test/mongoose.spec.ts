@@ -4,8 +4,9 @@ import Mongoose from "mongoose";
 import { DomainWithArrayOfDomain, DomainWithArrays, DomainWithDomain, DomainWithPrimitives, NonDecoratedDomain } from "./model/my-domain";
 import { consoleLog, PlumierApplication, Class, route } from '@plumjs/core';
 import { join } from 'path';
-import Plumier, { WebApiFacility, reflect } from "@plumjs/plumier"
+import Plumier, { WebApiFacility } from "@plumjs/plumier"
 import supertest from "supertest"
+import reflect from 'tinspector';
 
 type Model<T> = Mongoose.Model<T & Mongoose.Document>
 
