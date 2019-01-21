@@ -39,12 +39,23 @@ export interface RouteContext extends Koa.Context {
     parameters: any[]
 }
 
+export class RedirectActionResult extends ActionResult {
+    constructor(public path:string){ super() }
+
+    async execute(ctx: Context): Promise<void> {
+        ctx.redirect(this.path)
+    }
+}
+
 export namespace response {
     export function json(body: any) {
         return new ActionResult(body)
     }
     export function file(path: string, opt?:ServeStaticOptions) {
         return new FileActionResult(path, opt)
+    }
+    export function redirect(path:string){
+        return new RedirectActionResult(path)
     }
 }
 
@@ -113,7 +124,7 @@ export function pipe(middleware: Middleware[], context: Context, invocation: Inv
 }
 
 /* ------------------------------------------------------------------------------- */
-/* -------------------------------- FACITLITIES ---------------------------------- */
+/* -------------------------------- FACILITIES ----------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
 /**
