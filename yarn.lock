@@ -719,9 +719,9 @@
   integrity sha512-TZDqvFW4nQwL9DVSNJIJu4lPLttKgzRF58COa7Vs42Ki/MrhIqUbeIw0MWn4kGLiZLXB7oCBibm7nkSjPkzfKQ==
 
 "@types/jest@^23.3.12":
-  version "23.3.12"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.3.12.tgz#7e0ced251fa94c3bc2d1023d4b84b2992fa06376"
-  integrity sha512-/kQvbVzdEpOq4tEWT79yAHSM4nH4xMlhJv2GrLVQt4Qmo8yYsPdioBM1QpN/2GX1wkfMnyXvdoftvLUr0LBj7Q==
+  version "23.3.13"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.3.13.tgz#c81484b6f4ca007bb09887ed15ecb3286d58f928"
+  integrity sha512-ePl4l+7dLLmCucIwgQHAgjiepY++qcI6nb8eAwGNkB6OxmTe3Z9rQU3rSpomqu42PCCnlThZbOoxsf+qylJsLA==
 
 "@types/jsonwebtoken@^8.3.0":
   version "8.3.0"
@@ -6699,10 +6699,10 @@ through@2, "through@>=2.2.7 <3", through@^2.3.4, through@^2.3.6:
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
   integrity sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU=
 
-tinspector@^2.0.0-3:
-  version "2.0.0-3"
-  resolved "https://registry.yarnpkg.com/tinspector/-/tinspector-2.0.0-3.tgz#2c9d570a6790de53c421f702e9a6dfd592b6cab4"
-  integrity sha512-IrTZlZ4oqN7IwKMGD91xDKiILZyunvuv+/BoI2DvoQX4LXOtbHRu5I5ikzobN53qCr1vwu6jLkE8aFZnOYgI8A==
+tinspector@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/tinspector/-/tinspector-2.0.0.tgz#65ea60668857723ce81b1f78977c4a5e31e6636a"
+  integrity sha512-oqV1vOKJxAZpf5qrDc5u8PDd5jhVrI527/BcPsPsh74XH3SMadnhBGSiOGb+kOSSxdWdsYW1/L32/lXkoCjwug==
   dependencies:
     reflect-metadata "^0.1.13"
 

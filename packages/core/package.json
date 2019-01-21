@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/koa": "^2.0.48",
-    "tinspector": "^2.0.0-3",
+    "tinspector": "^2.0.0",
     "tslib": "^1.9.3"
   },
   "bugs": {
