@@ -27,7 +27,7 @@ export type DefaultConverter = "Boolean" | "Number" | "Date" | "Object" | "Array
 export type Converters = { default: { [key in DefaultConverter]: ConverterFunction }, converters: Map<Function, ConverterFunction> }
 export type ConverterFunction = (value: any, path: string[], expectedType: Function | Function[], converters: Converters) => any
 export type TypeConverter = { type: Class, converter: ConverterFunction }
-export type ValidatorFunction = (value: string, ctx:Context) => Promise<string | undefined>
+export type ValidatorFunction = (value: string, ctx: Context) => Promise<string | undefined>
 
 
 export interface BindingDecorator {
@@ -147,7 +147,7 @@ export interface Configuration {
     /**
      * Set custom validator
      */
-    validator?: (value: any, metadata: ParameterReflection, context:Context) => Promise<ValidationIssue[]>
+    validator?: (value: any, metadata: ParameterReflection, context: Context) => Promise<ValidationIssue[]>
 
     /**
      * Route generator will search for this file extension on controller directory
@@ -433,6 +433,17 @@ export namespace bind {
             }
         })
     }
+
+    /**
+     * Bind custom part of Koa context into parameter
+     * example:
+     * 
+     *    method(@bind.custom(ctx => ctx.request.body) user:User){}
+     * @param process callback function to process the Koa context
+     */
+    export function custom(process: (ctx: Koa.Context) => any) {
+        return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", process })
+    }
 }
 
 export class RouteDecoratorImpl {
@@ -627,7 +638,7 @@ export class AuthDecoratorImpl {
             (...args: any[]) => {
                 if (args.length === 3 && typeof args[2] === "number")
                     decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", name: "optional" })(args[0], args[1], args[2])
-            }) 
+            })
     }
 }
 

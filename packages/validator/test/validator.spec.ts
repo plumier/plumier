@@ -740,7 +740,7 @@ describe("Custom Message", () => {
     test("matches", async () => {
         @domain()
         class Dummy {
-            constructor(@val.matches({ pattern: /^[a-z0-9 ]+$/i,  message: "Invalid" }) public property: string) { }
+            constructor(@val.matches({ pattern: /^[a-z0-9 ]+$/i, message: "Invalid" }) public property: string) { }
         }
         expect((await validateObject(new Dummy("the;name"), {} as any))[0].messages).toEqual(["Invalid"])
     })
@@ -1029,5 +1029,27 @@ describe("Partial Validation", () => {
     it("Should skip required validation on partial type", async () => {
         const result = await validate(new ClientModel(), [<TypeDecorator>{ kind: "Override", type: ClientModel, info: "Partial" }], [], {} as any)
         expect(result).toEqual([])
+    })
+})
+
+describe("Custom Validator", () => {
+    it("Should validate object", async () => {
+        @domain()
+        class ClientModel {
+            constructor(
+                public password: string,
+                @val.custom(async (val, ctx) => {
+                    const pwd = (ctx.request.body! as any).password
+                    return val !== pwd ? "Password doesn't match" : undefined
+                })
+                public confirmPassword: string
+            ) { }
+        }
+        const result = await validateObject(new ClientModel("kitty", "doggy"), { request: { body: { password: "kitty" } } } as any)
+        expect(result).toMatchObject([
+            { path: ["confirmPassword"], messages: ["Password doesn't match"] },
+        ])
+        const secondResult = await validateObject(new ClientModel("kitty", "kitty"), { request: { body: { password: "kitty" } } } as any)
+        expect(secondResult).toMatchObject([])
     })
 })

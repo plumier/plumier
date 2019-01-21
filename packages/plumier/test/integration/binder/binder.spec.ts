@@ -941,6 +941,25 @@ describe("Parameter Binding", () => {
         })
     })
 
+    describe("Custom parameter binding", () => {
+        it("Should bind request header", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.custom(ctx => ctx.request.header) b: any) {
+                    return b
+                }
+            }
+            const result = await Supertest((await fixture(AnimalController).initialize()).callback())
+                .post("/animal/save")
+                .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(200)
+            expect(result.body).toMatchObject({
+                'accept-encoding': 'gzip, deflate',
+                'content-type': 'application/json',
+                connection: 'close'
+            })
+        })
+    })
 })
 
 describe("Custom Converter", () => {

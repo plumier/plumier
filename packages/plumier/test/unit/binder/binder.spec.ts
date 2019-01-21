@@ -246,4 +246,15 @@ describe("Parameter Binder", () => {
 
         })
     })
+
+    describe("Custom Binder", () => {
+        it("Should be able to bind using custom binder", () => {
+            class AnimalController {
+                saveAnimal(@bind.custom(ctx => ctx.request.query) model: any) { }
+            }
+            const metadata = reflect(AnimalController)
+            const result = bindParameter(fromRequest({ query: { accept: "gzip" } }), metadata.methods[0])
+            expect(result).toEqual([{ accept: "gzip" }])
+        })
+    })
 })

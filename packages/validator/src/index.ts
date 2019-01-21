@@ -1,6 +1,6 @@
 import "@plumjs/core";
 
-import { Class, ValidationIssue, ValidatorDecorator } from "@plumjs/core";
+import { Class, ValidationIssue, ValidatorDecorator, ValidatorFunction } from "@plumjs/core";
 import { decorateParameter, reflect, TypeDecorator } from "tinspector";
 import Validator from "validator";
 import { Context } from 'koa';
@@ -231,6 +231,14 @@ export namespace val {
 
     export function partial(typ: Class) {
         return reflect.type(typ, "Partial")
+    }
+
+    export function custom(fn:ValidatorFunction){
+        return decorateParameter(<ValidatorDecorator>{
+            type: "ValidatorDecorator",
+            validator: fn,
+            name: "custom-validator"
+        })
     }
 }
 
