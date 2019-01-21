@@ -4,12 +4,6 @@ import Supertest from "supertest"
 
 import { fixture } from "../../helper"
 
-/*
-/Users/ketutsandiarsa/Documents/plum/plumier/packages/plumier/test/integration/application/assets/index.html
-/Users/ketutsandiarsa/Documents/plum/plumier/Users/ketutsandiarsa/Documents/plum/plumier/packages/plumier/test/integration/application/assets/index.html
-/Users/ketutsandiarsa/Documents/plum/plumier/packages/plumier/test/integration/application/serve-file.spec.ts
-*/
-
 describe("Required Is Mandatory", () => {
     it("Parameter should be mandatory by default", async () => {
         class AnimalController {

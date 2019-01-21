@@ -150,11 +150,6 @@ export interface Configuration {
     validator?: (value: any, metadata: ParameterReflection, context: Context) => Promise<ValidationIssue[]>
 
     /**
-     * Route generator will search for this file extension on controller directory
-     */
-    fileExtension?: ".js" | ".ts",
-
-    /**
      * Multi part form file parser implementation
      */
     fileParser?: (ctx: Context) => FileParser
@@ -652,8 +647,7 @@ export const authorize = new AuthDecoratorImpl()
 export const DefaultConfiguration: Configuration = {
     mode: "debug",
     controller: "./controller",
-    dependencyResolver: new DefaultDependencyResolver(),
-    fileExtension: ".js"
+    dependencyResolver: new DefaultDependencyResolver()
 }
 
 export namespace errorMessage {

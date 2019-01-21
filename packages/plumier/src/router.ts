@@ -9,6 +9,7 @@ import {
     RootDecorator,
     RouteDecorator,
     RouteInfo,
+    resolvePath,
 } from "@plumjs/core";
 import { ClassReflection, FunctionReflection, ParameterReflection, reflect, MethodReflection, PropertyReflection } from "tinspector";
 import chalk from "chalk";
@@ -16,6 +17,7 @@ import * as Fs from "fs";
 import Glob from "glob";
 import { Context } from "koa";
 import Ptr from "path-to-regexp";
+import pth, { parse } from "path"
 
 import { bindParameter } from "./binder";
 
@@ -45,13 +47,6 @@ export function getControllerRoute(controller: ClassReflection) {
 
 function getActionName(route: RouteInfo) {
     return `${route.controller.name}.${route.action.name}(${route.action.parameters.map(x => x.name).join(", ")})`
-}
-
-function resolveDir(path: string, ext: string[]): string[] {
-    if (Fs.lstatSync(path).isDirectory())
-        return Glob.sync(`${path}/**/*+(${ext.join("|")})`)
-    else
-        return [path]
 }
 
 function getRoot(rootPath: string, path: string) {
@@ -112,9 +107,9 @@ export function transformController(object: ClassReflection | Class, opt?: Trans
     }).flatten()
 }
 
-export function transformModule(path: string, extensions: string[]): RouteInfo[] {
+export function transformModule(path: string): RouteInfo[] {
     //read all files and get module reflection
-    return resolveDir(path, extensions)
+    return resolvePath(path)
         //reflect the file
         .map(x => ({
             root: getRoot(path, x),

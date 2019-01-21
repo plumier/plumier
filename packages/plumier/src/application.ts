@@ -227,7 +227,7 @@ export class Plumier implements PlumierApplication {
                 join(executionPath, this.config.controller)
             if (!existsSync(path))
                 throw new Error(errorMessage.ControllerPathNotFound.format(path))
-            routes = transformModule(path, [this.config.fileExtension!])
+            routes = transformModule(path)
         }
         else if (Array.isArray(this.config.controller)) {
             routes = this.config.controller.map(x => transformController(x))

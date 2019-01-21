@@ -1,6 +1,7 @@
 import { existsSync, lstatSync, mkdirSync, readdirSync } from "fs"
 import { dirname, extname, join } from "path"
 import { reflect, Reflection } from "tinspector"
+import glob from "glob"
 
 import { Class } from "./core"
 
@@ -48,12 +49,11 @@ export function resolvePath(path: string): string[] {
     else if (existsSync(`${path}.ts`)) return [removeExtension(path)]
     //resolve provided path directory or file
     else if (lstatSync(path).isDirectory()) {
-        const files = readdirSync(path)
+        const files = glob.sync(`${path}/**/*+(.js|.ts)`)
             //take only file in extension list
             .filter(x => [".js", ".ts"].some(ext => extname(x) == ext))
             //add root path + file name
             .map(x => removeExtension(x))
-            .map(x => join(path, x))
         return Array.from(new Set(files))
     }
     else return [path]

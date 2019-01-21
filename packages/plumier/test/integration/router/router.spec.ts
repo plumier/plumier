@@ -712,21 +712,11 @@ describe("Router", () => {
 })
 
 describe("Router with external controller", () => {
-    it("Should load .js file by default", async () => {
-        Rimraf.sync(join(__dirname, "./controller/*.js"))
-        consoleLog.startMock()
-        const app = new Plumier()
-            .set(new WebApiFacility())
-        await app.initialize()
-        expect((console.log as any).mock.calls[2][0]).toBe("No controller found")
-        consoleLog.clearMock()
-    })
-
+    
     it("Should load controllers", async () => {
         consoleLog.startMock()
         const app = await new Plumier()
             .set(new WebApiFacility())
-            .set({ fileExtension: ".ts" })
             .initialize()
         expect((console.log as any).mock.calls[2][0]).toContain("GET /animal/get")
         expect((console.log as any).mock.calls[3][0]).toContain("GET /beast/get")
@@ -738,7 +728,7 @@ describe("Router with external controller", () => {
         consoleLog.startMock()
         const app = await new Plumier()
             .set(new WebApiFacility())
-            .set({ controller: "controller/animal-controller.ts", fileExtension: ".ts" })
+            .set({ controller: "controller/animal-controller.ts" })
             .initialize()
         expect((console.log as any).mock.calls[2][0]).toContain("/animal/get")
         consoleLog.clearMock()
