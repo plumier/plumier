@@ -733,6 +733,15 @@ describe("Router with external controller", () => {
         expect((console.log as any).mock.calls[2][0]).toContain("/animal/get")
         consoleLog.clearMock()
     })
+
+    it("Should should not load non controller", async () => {
+        consoleLog.startMock()
+        const app = await new Plumier()
+            .set(new WebApiFacility({controller: "./no-controller"}))
+            .initialize()
+        expect((console.log as any).mock.calls[2][0]).toContain("No controller found")
+        consoleLog.clearMock()
+    })
 })
 
 describe("Analyzer", () => {
