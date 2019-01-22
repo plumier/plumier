@@ -54,5 +54,6 @@
   "homepage": "https://github.com/ktutnik/plumier",
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "8e3332c80ad9d667048b06239e1b1f1a3fe8418e"
 }

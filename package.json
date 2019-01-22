@@ -6,7 +6,7 @@
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish",
 		"clean": "node script/cleanup",
 		"compile": "npm run clean && jest && lerna run compile",
-		"canary": "npm run compile && lerna publish -c --exact --yes && npm run clean",
+		"canary": "npm run compile && lerna publish --exact --dist-tag next && npm run clean",
 		"publish": "npm run compile && lerna publish && npm run clean"
 	},
 	"author": "Ketut Sandiarsa",
