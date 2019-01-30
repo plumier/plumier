@@ -16,7 +16,7 @@
   "dependencies": {
     "@plumjs/core": "1.0.0-alpha.1",
     "@types/validator": "^10.9.0",
-    "tinspector": "^2.0.0",
+    "tinspector": "^2.1.0",
     "validator": "^10.11.0"
   },
   "bugs": {
