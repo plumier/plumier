@@ -895,6 +895,21 @@ describe("Object Validation", () => {
         ])
     })
 
+    it("Should validate object with getter property", async () => {
+        @domain()
+        class ClientModel {
+            @val.email()
+            get email(): string { return "kitty" }
+            @val.email()
+            get secondaryEmail(): string { return "doggy" }
+        }
+        const result = await validateObject(new ClientModel(), {} as any)
+        expect(result).toMatchObject([
+            { path: ["email"] },
+            { path: ["secondaryEmail"] }
+        ])
+    })
+
     it("Should validate nested object", async () => {
         @domain()
         class CreditCardModel {

@@ -126,8 +126,11 @@ function printAnalysis(analysis: DomainAnalysis[]) {
 /* --------------------------------- HELPERS ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-async function isUnique(value: string, target: Class, field:string) {
+async function isUnique(value: string, target: Class, field:string, index?:any) {
     const meta = reflect(target)
+    if(typeof index === "number") {
+        field = meta.ctor.parameters[index].name;
+    }
     if (!meta.decorators.find((x: MongooseCollectionDecorator) => x.type === "MongooseCollectionDecorator"))
         throw new Error(CanNotValidateNonCollection.format(meta.name, field))
     const Model = model(target)
@@ -144,17 +147,18 @@ async function isUnique(value: string, target: Class, field:string) {
 
 declare module "@plumjs/validator" {
     namespace val {
-        function unique(): (target: any, name: string, index: number) => void
+        function unique(): (target: any, name: string, index?: any) => void
     }
 }
 
 val.unique = () => {
-    return decorateProperty((target, name) => {
-        const createValidator = (target: Class, name: string) => (value: string) => isUnique(value, target, name)
+    return decorateProperty((target, name, index) => {
+        const createValidator = (target: Class, name: string, index?:any) => (value: string) => isUnique(value, target, name, index)
+        
         return <ValidatorDecorator>{
             type: "ValidatorDecorator",
             name: "mongoose:unique",
-            validator: createValidator(target, name)
+            validator: createValidator(target, name, index)
         }
     })
 }

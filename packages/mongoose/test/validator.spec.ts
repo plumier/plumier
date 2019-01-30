@@ -3,6 +3,7 @@ import { val, validateObject } from "@plumjs/validator";
 import Mongoose from 'mongoose';
 import { domain, PlumierApplication } from '@plumjs/core';
 import Plumier from "@plumjs/plumier"
+import { decorate } from 'tinspector';
 
 describe("unique validator", () => {
     it("Should return invalid if data already exist", async () => {
@@ -18,7 +19,33 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({mode: "production"}))
+        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        const UserModel = model(User)
+        await UserModel.remove({})
+        await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
+        const result = await validateObject(new User("Ketut", "ketut@gmail.com"), {} as any)
+        expect(result).toEqual([{ messages: ['ketut@gmail.com already exists'], path: ['email'] }])
+        Mongoose.disconnect()
+    })
+
+    it("Should return invalid if data already exist", async () => {
+        @collection()
+        class User {
+            @decorate({})
+            name: string
+            @val.unique()
+            email: string
+
+            constructor(name:string, email:string){
+                this.name = name;
+                this.email = email;
+            }
+        }
+        const facility = new MongooseFacility({
+            model: [User],
+            uri: "mongodb://localhost:27017/test-data"
+        })
+        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.remove({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
@@ -40,7 +67,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({mode: "production"}))
+        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.remove({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
@@ -62,7 +89,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({mode: "production"}))
+        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.remove({})
         const result = await validateObject(new User("Ketut", "ketut@gmail.com"), {} as any)
@@ -70,7 +97,7 @@ describe("unique validator", () => {
         Mongoose.disconnect()
     })
 
-    it.only("Should return valid if data not exist but other data exists", async () => {
+    it("Should return valid if data not exist but other data exists", async () => {
         @collection()
         class User {
             constructor(
@@ -83,7 +110,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({mode: "production"}))
+        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.remove({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
@@ -106,7 +133,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({mode: "production"}))
+        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.remove({})
         const result = await validateObject(new User("Ketut", undefined), {} as any)
