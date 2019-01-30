@@ -16,15 +16,15 @@
   "dependencies": {
     "@plumjs/core": "1.0.0-alpha.1",
     "@plumjs/validator": "1.0.0-alpha.1",
-    "@types/mongoose": "^5.3.8",
+    "@types/mongoose": "^5.3.10",
     "chalk": "^2.4.2",
-    "mongoose": "^5.4.5",
-    "tinspector": "^2.0.0"
+    "mongoose": "^5.4.7",
+    "tinspector": "^2.1.0"
   },
   "devDependencies": {
     "@plumjs/plumier": "1.0.0-alpha.1",
     "@types/supertest": "^2.0.7",
-    "supertest": "^3.4.1"
+    "supertest": "^3.4.2"
   },
   "bugs": {
     "url": "https://github.com/ktutnik/plumier/issues"
