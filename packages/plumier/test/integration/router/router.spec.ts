@@ -827,7 +827,7 @@ describe("Analyzer", () => {
         consoleLog.clearMock()
     })
 
-    it("Should identify if model doesn't have type information for parameter binding", async () => {
+    it.only("Should identify if model doesn't have type information for parameter binding", async () => {
         class AnimalModel {
             constructor(
                 public id: number,

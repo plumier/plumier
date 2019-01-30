@@ -863,7 +863,7 @@ describe("Custom Message", () => {
 
 describe("Object Validation", () => {
 
-    it("Should validate object", async () => {
+    it("Should validate object with parameter properties", async () => {
         @domain()
         class ClientModel {
             constructor(
@@ -874,6 +874,21 @@ describe("Object Validation", () => {
             ) { }
         }
         const result = await validateObject(new ClientModel("kitty", "doggy"), {} as any)
+        expect(result).toMatchObject([
+            { path: ["email"] },
+            { path: ["secondaryEmail"] }
+        ])
+    })
+
+    it("Should validate object with common property", async () => {
+        @domain()
+        class ClientModel {
+            @val.email()
+            public email: string = "kitty"
+            @val.email()
+            public secondaryEmail: string = "doggy"
+        }
+        const result = await validateObject(new ClientModel(), {} as any)
         expect(result).toMatchObject([
             { path: ["email"] },
             { path: ["secondaryEmail"] }

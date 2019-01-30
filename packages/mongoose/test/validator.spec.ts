@@ -70,7 +70,7 @@ describe("unique validator", () => {
         Mongoose.disconnect()
     })
 
-    it("Should return valid if data not exist but other data exists", async () => {
+    it.only("Should return valid if data not exist but other data exists", async () => {
         @collection()
         class User {
             constructor(

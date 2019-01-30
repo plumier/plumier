@@ -1,7 +1,7 @@
 import "@plumjs/core";
 
 import { Class, ValidationIssue, ValidatorDecorator, ValidatorFunction } from "@plumjs/core";
-import { decorateParameter, reflect, TypeDecorator } from "tinspector";
+import { decorateProperty, reflect, TypeDecorator } from "tinspector";
 import Validator from "validator";
 import { Context } from 'koa';
 
@@ -26,7 +26,7 @@ export namespace val {
             validator: async x => !validator(x) ? message : undefined,
             name
         }
-        return decorateParameter(decorator)
+        return decorateProperty(decorator)
     }
 
     export function after(opt?: Opt & { date?: string }) {
@@ -226,7 +226,7 @@ export namespace val {
     }
 
     export function optional() {
-        return decorateParameter({ ...OptionalDecorator })
+        return decorateProperty({ ...OptionalDecorator })
     }
 
     export function partial(typ: Class) {
@@ -234,7 +234,7 @@ export namespace val {
     }
 
     export function custom(fn:ValidatorFunction){
-        return decorateParameter(<ValidatorDecorator>{
+        return decorateProperty(<ValidatorDecorator>{
             type: "ValidatorDecorator",
             validator: fn,
             name: "custom-validator"

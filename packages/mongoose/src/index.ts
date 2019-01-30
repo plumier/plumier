@@ -10,7 +10,7 @@ import {
     safeToString,
     TypeConverter,
 } from "@plumjs/core";
-import { ClassReflection, decorateClass, decorateParameter, ParameterReflection, reflect, PropertyReflection, mergeDecorator } from "tinspector";
+import { ClassReflection, decorateClass, decorateParameter, ParameterReflection, reflect, PropertyReflection, mergeDecorator, decorateProperty } from "tinspector";
 import { val } from "@plumjs/validator";
 import Chalk from "chalk";
 import Mongoose, { Model } from "mongoose";
@@ -126,9 +126,8 @@ function printAnalysis(analysis: DomainAnalysis[]) {
 /* --------------------------------- HELPERS ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-async function isUnique(value: string, target: Class, index: number) {
+async function isUnique(value: string, target: Class, field:string) {
     const meta = reflect(target)
-    const field = meta.properties[index].name
     if (!meta.decorators.find((x: MongooseCollectionDecorator) => x.type === "MongooseCollectionDecorator"))
         throw new Error(CanNotValidateNonCollection.format(meta.name, field))
     const Model = model(target)
@@ -150,12 +149,12 @@ declare module "@plumjs/validator" {
 }
 
 val.unique = () => {
-    return decorateParameter((target, name, index) => {
-        const createValidator = (target: Class, index: number) => (value: string) => isUnique(value, target, index)
+    return decorateProperty((target, name) => {
+        const createValidator = (target: Class, name: string) => (value: string) => isUnique(value, target, name)
         return <ValidatorDecorator>{
             type: "ValidatorDecorator",
             name: "mongoose:unique",
-            validator: createValidator(target, index)
+            validator: createValidator(target, name)
         }
     })
 }
