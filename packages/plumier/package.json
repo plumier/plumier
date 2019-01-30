@@ -36,7 +36,7 @@
     "koa-bodyparser": "^4.2.1",
     "koa-send": "^5.0.0",
     "path-to-regexp": "^3.0.0",
-    "tinspector": "^2.1.0",
+    "tinspector": "^2.1.1",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
@@ -55,5 +55,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "5646db8fac996ab0c04b18dcee76875c3a828811"
+  "gitHead": "f23ec9c973646250cfaa68d64c25c2123faa06d5"
 }

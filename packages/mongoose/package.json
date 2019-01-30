@@ -19,7 +19,7 @@
     "@types/mongoose": "^5.3.10",
     "chalk": "^2.4.2",
     "mongoose": "^5.4.7",
-    "tinspector": "^2.1.0"
+    "tinspector": "^2.1.1"
   },
   "devDependencies": {
     "@plumjs/plumier": "^1.0.0-alpha.2",
@@ -33,5 +33,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "5646db8fac996ab0c04b18dcee76875c3a828811"
+  "gitHead": "f23ec9c973646250cfaa68d64c25c2123faa06d5"
 }
