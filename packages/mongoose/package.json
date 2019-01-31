@@ -1,6 +1,6 @@
 {
   "name": "@plumjs/mongoose",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "description": "TypeScript Mongoose with decorator based configuration",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,15 +14,15 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumjs/core": "^1.0.0-alpha.2",
-    "@plumjs/validator": "^1.0.0-alpha.2",
+    "@plumjs/core": "^1.0.0-alpha.3",
+    "@plumjs/validator": "^1.0.0-alpha.3",
     "@types/mongoose": "^5.3.10",
     "chalk": "^2.4.2",
     "mongoose": "^5.4.7",
     "tinspector": "^2.1.1"
   },
   "devDependencies": {
-    "@plumjs/plumier": "^1.0.0-alpha.2",
+    "@plumjs/plumier": "^1.0.0-alpha.3",
     "@types/supertest": "^2.0.7",
     "supertest": "^3.4.2"
   },
