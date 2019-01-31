@@ -2,6 +2,7 @@ import "@plumjs/core"
 import { resolvePath, getChildValue, createRoute } from '@plumjs/core';
 import { join } from 'path';
 import { unlinkSync, existsSync } from 'fs';
+import {normalize} from "upath"
 
 describe("StringUtil.format", () => {
     it("Should assigned value properly", () => {
@@ -24,7 +25,7 @@ describe("StringUtil.format", () => {
 describe("resolvePath", () => {
     it("Should resolve directory", () => {
         const result = resolvePath(join(__dirname, "./resolve-path"))
-        expect(result[0]).toBe(join(__dirname, "./resolve-path/my-module"))
+        expect(normalize(result[0])).toBe(join(__dirname, "./resolve-path/my-module"))
     })
 
     it("Should resolve file if extension not specified", () => {
