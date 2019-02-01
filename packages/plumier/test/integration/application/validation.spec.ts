@@ -1,5 +1,5 @@
-import { domain, route } from "@plumjs/core"
-import { val } from "@plumjs/plumier"
+import { domain, route, ValidatorStore } from "@plumjs/core"
+import Plumier, { val, WebApiFacility, RestfulApiFacility } from "@plumjs/plumier"
 import Supertest from "supertest"
 
 import { fixture } from "../../helper"
@@ -90,26 +90,58 @@ describe("Validation", () => {
 })
 
 describe("Decouple Validation Logic", () => {
-    it("Should validate using decouple logic", async () => {
-        function only18Plus() {
-            return val.custom("18+only")
-        }
-        @domain()
-        class Person {
-            constructor(
-                @only18Plus()
-                public age: number
-            ) { }
-        }
-        class PersonController {
-            @route.post()
-            save(data: Person) { }
-        }
-        const koa = await fixture(PersonController, {
-            validators: {
-                "18+only": async val => parseInt(val) > 18 ? undefined : "Only 18+ allowed"
-            }
-        }).initialize()
+    function only18Plus() {
+        return val.custom("18+only")
+    }
+    @domain()
+    class Person {
+        constructor(
+            @only18Plus()
+            public age: number
+        ) { }
+    }
+    class PersonController {
+        @route.post()
+        save(data: Person) { }
+    }
+    const validators: ValidatorStore = {
+        "18+only": async val => parseInt(val) > 18 ? undefined : "Only 18+ allowed"
+    }
+
+    it("Should validate using decouple logic from setting", async () => {
+        const koa = await fixture(PersonController, { validators }).initialize()
+        const result = await Supertest(koa.callback())
+            .post("/person/save")
+            .send({ age: 9 })
+            .expect(422)
+        expect(result.body).toMatchObject([
+            {
+                messages: ["Only 18+ allowed"],
+                path: ["data", "age"]
+            }])
+    })
+
+    it("Should validate using decouple logic from WebApiFacility", async () => {
+        const koa = await new Plumier()
+            .set(new WebApiFacility({ validators, controller: PersonController }))
+            .set({ mode: "production" })
+            .initialize()
+        const result = await Supertest(koa.callback())
+            .post("/person/save")
+            .send({ age: 9 })
+            .expect(422)
+        expect(result.body).toMatchObject([
+            {
+                messages: ["Only 18+ allowed"],
+                path: ["data", "age"]
+            }])
+    })
+
+    it("Should validate using decouple logic from RestfulApiFacility", async () => {
+        const koa = await new Plumier()
+            .set(new RestfulApiFacility({ validators, controller: PersonController }))
+            .set({ mode: "production" })
+            .initialize()
         const result = await Supertest(koa.callback())
             .post("/person/save")
             .send({ age: 9 })
