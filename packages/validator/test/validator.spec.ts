@@ -1083,3 +1083,24 @@ describe("Custom Validator", () => {
         expect(secondResult).toMatchObject([])
     })
 })
+
+describe("Decouple Validation Logic", () => {
+    it("Should validate using decouple logic", async () => {
+        function only18Plus() {
+            return val.custom("18+only")
+        }
+        @reflect.parameterProperties()
+        class EmailOnly {
+            constructor(
+                @only18Plus()
+                public age: number
+            ) { }
+        }
+        const result = await validate(new EmailOnly(9), [], [], {} as any,
+            { "18+only": async val => parseInt(val) > 18 ? undefined : "Only 18+ allowed" })
+        expect(result).toEqual([{
+            messages: ["Only 18+ allowed"],
+            path: ["age"]
+        }])
+    })
+})

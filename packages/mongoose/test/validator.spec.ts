@@ -142,16 +142,4 @@ describe("unique validator", () => {
     })
 
 
-    it("Should throw error when used on class that is not mapped to collection", async () => {
-        @domain()
-        class User {
-            constructor(
-                public name: string,
-                @val.unique()
-                public email: string
-            ) { }
-        }
-        expect(validateObject(new User("Ketut", "ketut@gmail.com"), {} as any))
-            .rejects.toEqual(new Error("MONG1002: @val.unique()  only can be applied to a class that mapped to mongodb collection, in class User.email"))
-    })
 })

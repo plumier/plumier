@@ -20,8 +20,9 @@ import {
     PlumierConfiguration,
     RouteInfo,
     ValidationError,
+    ValidatorFunction,
 } from "@plumjs/core"
-import { validate } from "@plumjs/validator"
+import { validate as validateString } from "@plumjs/validator"
 import { existsSync } from "fs"
 import Koa, { Context } from "koa"
 import BodyParser from "koa-bodyparser"
@@ -101,7 +102,7 @@ export class ActionInvocation implements Invocation {
         //check validation
         if (config.validator) {
             const param = (i: number) => route.action.parameters[i]
-            const validate = (value: any, i: number) => config.validator!(value, param(i), this.context)
+            const validate = (value: any, i: number) => config.validator!(value, param(i), this.context, this.context.config.validators)
             const result = await Promise.all(this.context.parameters.map((value, index) => validate(value, index)))
             const issues = result.flatten()
             if (issues.length > 0) throw new ValidationError(issues)
@@ -135,7 +136,7 @@ export function pipe(middleware: Middleware[], context: Context, invocation: Inv
  * cors: @koa/cors
  */
 export class WebApiFacility implements Facility {
-    constructor(private opt?: { controller?: string | Class | Class[], bodyParser?: BodyParserOption, cors?: Cors.Options }) { }
+    constructor(private opt?: { controller?: string | Class | Class[], bodyParser?: BodyParserOption, cors?: Cors.Options, validators?: { [key: string]: ValidatorFunction } }) { }
 
     async setup(app: Readonly<PlumierApplication>) {
         app.koa.use(async (ctx, next) => {
@@ -162,7 +163,7 @@ export class WebApiFacility implements Facility {
         if (this.opt && this.opt.controller)
             app.set({ controller: this.opt.controller })
         app.set({
-            validator: (value, meta, ctx) => validate(value, meta.decorators, [meta.name], ctx)
+            validator: (value, meta, ctx, validators) => validateString(value, meta.decorators, [meta.name], ctx, validators)
         })
     }
 }

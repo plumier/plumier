@@ -50,7 +50,7 @@ describe("JwtAuth Decorator", () => {
         const meta = reflect(AnimalController)
         expect(meta.methods[0].parameters[0].decorators).toEqual([
             { type: 'authorize:role', value: ['admin'] },
-            { name: "optional", type: "ValidatorDecorator" }])
+            { validator: "optional", type: "ValidatorDecorator" }])
     })
 
     it("Should throw error if @authorize.public() applied on parameter", () => {

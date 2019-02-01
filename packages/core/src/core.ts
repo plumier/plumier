@@ -28,7 +28,7 @@ export type Converters = { default: { [key in DefaultConverter]: ConverterFuncti
 export type ConverterFunction = (value: any, path: string[], expectedType: Function | Function[], converters: Converters) => any
 export type TypeConverter = { type: Class, converter: ConverterFunction }
 export type ValidatorFunction = (value: string, ctx: Context) => Promise<string | undefined>
-
+export type ValidatorStore = { [key: string]: ValidatorFunction }
 
 export interface BindingDecorator {
     type: "ParameterBinding",
@@ -59,8 +59,7 @@ export interface RouteInfo {
 
 export interface ValidatorDecorator {
     type: "ValidatorDecorator",
-    validator: ValidatorFunction,
-    name: string
+    validator: ValidatorFunction | string,
 }
 
 export interface Invocation {
@@ -147,12 +146,17 @@ export interface Configuration {
     /**
      * Set custom validator
      */
-    validator?: (value: any, metadata: ParameterReflection, context: Context) => Promise<ValidationIssue[]>
+    validator?: (value: any, metadata: ParameterReflection, context: Context, validators?: { [key: string]: ValidatorFunction }) => Promise<ValidationIssue[]>
 
     /**
      * Multi part form file parser implementation
      */
-    fileParser?: (ctx: Context) => FileParser
+    fileParser?: (ctx: Context) => FileParser,
+
+    /**
+     * Key-value pair to store validator logic
+     */
+    validators?: ValidatorStore
 }
 
 
@@ -632,7 +636,7 @@ export class AuthDecoratorImpl {
             decorate({ type: "authorize:role", value: roles }, ["Class", "Parameter", "Method"]),
             (...args: any[]) => {
                 if (args.length === 3 && typeof args[2] === "number")
-                    decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", name: "optional" })(args[0], args[1], args[2])
+                    decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: "optional" })(args[0], args[1], args[2])
             })
     }
 }

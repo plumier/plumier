@@ -50,7 +50,7 @@ interface MongooseCollectionDecorator {
 const GlobalMongooseSchema: SchemaRegistry = {}
 const ArrayHasNoTypeInfo = `MONG1000: Array property {0}.{1} require @array(<Type>) decorator to be able to generated into mongoose schema`
 const NoClassFound = `MONG1001: No class decorated with @collection() found`
-const CanNotValidateNonCollection = `MONG1002: @val.unique()  only can be applied to a class that mapped to mongodb collection, in class {0}.{1}`
+const CanNotValidateNonCollection = `MONG1002: @val.unique() only can be applied to a class that mapped to mongodb collection, in class {0}.{1}`
 const ModelNotDecoratedWithCollection = `MONG1003: {0} not decorated with @collection()`
 
 /* ------------------------------------------------------------------------------- */
@@ -126,13 +126,9 @@ function printAnalysis(analysis: DomainAnalysis[]) {
 /* --------------------------------- HELPERS ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-async function isUnique(value: string, target: Class, field:string, index?:any) {
+async function isUnique(value: string, target: Class, name: string, index?: any) {
     const meta = reflect(target)
-    if(typeof index === "number") {
-        field = meta.ctor.parameters[index].name;
-    }
-    if (!meta.decorators.find((x: MongooseCollectionDecorator) => x.type === "MongooseCollectionDecorator"))
-        throw new Error(CanNotValidateNonCollection.format(meta.name, field))
+    const field = (typeof index === "number") ? meta.ctor.parameters[index].name : name
     const Model = model(target)
     const condition: { [key: string]: object } = {}
     //case insensitive comparison
@@ -153,8 +149,7 @@ declare module "@plumjs/validator" {
 
 val.unique = () => {
     return decorateProperty((target, name, index) => {
-        const createValidator = (target: Class, name: string, index?:any) => (value: string) => isUnique(value, target, name, index)
-        
+        const createValidator = (target: Class, name: string, index?: any) => (value: string) => isUnique(value, target, name, index)
         return <ValidatorDecorator>{
             type: "ValidatorDecorator",
             name: "mongoose:unique",

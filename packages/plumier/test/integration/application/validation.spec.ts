@@ -88,3 +88,36 @@ describe("Validation", () => {
             }])
     })
 })
+
+describe("Decouple Validation Logic", () => {
+    it("Should validate using decouple logic", async () => {
+        function only18Plus() {
+            return val.custom("18+only")
+        }
+        @domain()
+        class Person {
+            constructor(
+                @only18Plus()
+                public age: number
+            ) { }
+        }
+        class PersonController {
+            @route.post()
+            save(data: Person) { }
+        }
+        const koa = await fixture(PersonController, {
+            validators: {
+                "18+only": async val => parseInt(val) > 18 ? undefined : "Only 18+ allowed"
+            }
+        }).initialize()
+        const result = await Supertest(koa.callback())
+            .post("/person/save")
+            .send({ age: 9 })
+            .expect(422)
+        expect(result.body).toMatchObject([
+            {
+                messages: ["Only 18+ allowed"],
+                path: ["data", "age"]
+            }])
+    })
+})
