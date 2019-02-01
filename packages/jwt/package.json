@@ -1,6 +1,6 @@
 {
   "name": "@plumjs/jwt",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.5",
   "description": "Plumier authorization module using JWT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -10,7 +10,7 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumjs/core": "^1.0.0-alpha.4",
+    "@plumjs/core": "^1.0.0-alpha.5",
     "koa-jwt": "^3.5.1",
     "tslib": "^1.9.3"
   },

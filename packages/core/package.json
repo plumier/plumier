@@ -1,6 +1,6 @@
 {
   "name": "@plumjs/core",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.5",
   "description": "Pleasant TypeScript Web Api Framework",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
