@@ -162,7 +162,7 @@ export class WebApiFacility implements Facility {
         app.koa.use(Cors(this.opt && this.opt.cors))
         if (this.opt && this.opt.controller)
             app.set({ controller: this.opt.controller })
-        app.set({ validators: this.opt!.validators })
+        app.set({ validators: this.opt && this.opt.validators })
         app.set({
             validator: (value, meta, ctx, validators) => validateString(value, meta.decorators, [meta.name], ctx, validators)
         })
