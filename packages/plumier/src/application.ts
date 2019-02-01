@@ -41,7 +41,7 @@ export interface RouteContext extends Koa.Context {
 }
 
 export class RedirectActionResult extends ActionResult {
-    constructor(public path:string){ super() }
+    constructor(public path: string) { super() }
 
     async execute(ctx: Context): Promise<void> {
         ctx.redirect(this.path)
@@ -52,10 +52,10 @@ export namespace response {
     export function json(body: any) {
         return new ActionResult(body)
     }
-    export function file(path: string, opt?:ServeStaticOptions) {
+    export function file(path: string, opt?: ServeStaticOptions) {
         return new FileActionResult(path, opt)
     }
-    export function redirect(path:string){
+    export function redirect(path: string) {
         return new RedirectActionResult(path)
     }
 }
@@ -144,11 +144,11 @@ export class WebApiFacility implements Facility {
                 await next()
             }
             catch (e) {
-                if(e instanceof ValidationError){
+                if (e instanceof ValidationError) {
                     ctx.body = e.issues
                     ctx.status = e.status
                 }
-                else if(e instanceof ConversionError){
+                else if (e instanceof ConversionError) {
                     ctx.body = [e.issues]
                     ctx.status = e.status
                 }
@@ -162,6 +162,7 @@ export class WebApiFacility implements Facility {
         app.koa.use(Cors(this.opt && this.opt.cors))
         if (this.opt && this.opt.controller)
             app.set({ controller: this.opt.controller })
+        app.set({ validators: this.opt!.validators })
         app.set({
             validator: (value, meta, ctx, validators) => validateString(value, meta.decorators, [meta.name], ctx, validators)
         })
