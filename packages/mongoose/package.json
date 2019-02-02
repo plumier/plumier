@@ -19,7 +19,7 @@
     "@types/mongoose": "^5.3.10",
     "chalk": "^2.4.2",
     "mongoose": "^5.4.7",
-    "tinspector": "^2.1.1"
+    "tinspector": "^2.1.2"
   },
   "devDependencies": {
     "@plumjs/plumier": "^1.0.0-alpha.5",

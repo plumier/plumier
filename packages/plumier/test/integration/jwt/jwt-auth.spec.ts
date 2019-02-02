@@ -228,10 +228,12 @@ describe("JwtAuth", () => {
             const fn = jest.fn()
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({ secret: SECRET }))
-                .use({execute: async i => {
-                    fn()
-                    return i.proceed()
-                }})
+                .use({
+                    execute: async i => {
+                        fn()
+                        return i.proceed()
+                    }
+                })
                 .initialize()
 
             await Supertest(app.callback())
@@ -572,7 +574,7 @@ describe("JwtAuth", () => {
                 @route.post()
                 save(@reflect.array(Animal) data: Animal[]) { return "Hello" }
             }
-    
+
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({ secret: SECRET }))
                 .initialize()
@@ -590,7 +592,7 @@ describe("JwtAuth", () => {
                 @route.post()
                 save(@reflect.array(Animal) data: Animal[]) { return "Hello" }
             }
-    
+
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({ secret: SECRET }))
                 .initialize()
@@ -607,9 +609,9 @@ describe("JwtAuth", () => {
                 @route.post()
                 save(@reflect.array(Animal) data: Animal[]) { return "Hello" }
             }
-    
+
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, global:  authorize.public()}))
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -620,5 +622,61 @@ describe("JwtAuth", () => {
         })
     })
 
+    describe("Inheritance Parameter Authorization", () => {
+        @domain()
+        class DomainBase {
+            constructor(
+                @authorize.role("Machine")
+                @val.optional()
+                public id: number = 0,
+
+                @authorize.role("Machine")
+                @val.optional()
+                public createdAt: Date = new Date(),
+
+                @authorize.role("Machine")
+                @val.optional()
+                public deleted: boolean = false
+            ) { }
+        }
+
+        @domain()
+        class Animal extends DomainBase {
+            constructor(
+                name: string,
+                deceased: boolean
+            ) { super() }
+        }
+
+        class AnimalController {
+            @route.post()
+            save(data: Animal) { return "Hello" }
+        }
+
+        it("Should able to set non secured property", async () => {
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .send({ name: "Mimi", deceased: "Yes" })
+                .expect(200, "Hello")
+        })
+
+        it("Should not able to set secured property", async () => {
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .send({ id:20, createdAt: "2018-1-1", deleted: "YES", name: "Mimi", deceased: "Yes" })
+                .expect(401, "Unauthorized to populate parameter paths (data.id, data.createdAt, data.deleted)")
+        })
+
+    })
 
 })
