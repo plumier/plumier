@@ -57,7 +57,7 @@ describe("Middleware", () => {
                     return "Body"
                 }
             }
-            const fn = jest.fn(() => { })
+            const fn = jest.fn((a, b) => { })
             const app = await fixture(AnimalController)
                 .use({
                     execute: async x => {
@@ -92,7 +92,7 @@ describe("Middleware", () => {
                     return "Body"
                 }
             }
-            const spy = jest.fn(() => { })
+            const spy = jest.fn((a) => { })
             const app = await fixture(AnimalController)
                 .use(async (ctx, next) => {
                     spy(1)
@@ -169,7 +169,7 @@ describe("Middleware", () => {
         })
 
         it("Should execute middleware in proper order", async () => {
-            const spy = jest.fn(() => { })
+            const spy = jest.fn((a) => { })
             @middleware.use(async (ctx, next) => {
                 spy(1)
                 await next()
@@ -251,7 +251,7 @@ describe("Middleware", () => {
         })
 
         it("Should execute middleware in proper order", async () => {
-            const spy = jest.fn(() => { })
+            const spy = jest.fn((a) => { })
             class AnimalController {
                 @middleware.use(async (ctx, next) => {
                     spy(1)

@@ -89,6 +89,27 @@ describe("Validation", () => {
     })
 })
 
+function customValidator() {
+    return val.custom(x => { throw new Error("ERROR") })
+}
+
+describe("Error handling", () => {
+    it("Should provide correct information when error inside custom validator", async () => {
+        const hook = jest.fn()
+        class AnimalController {
+            get(@customValidator() email: string) { }
+        }
+        const koa = await fixture(AnimalController).initialize()
+        koa.on("error", e => {
+            hook(e)
+        })
+        const result = await Supertest(koa.callback())
+            .get("/animal/get?email=hello")
+            .expect(500)
+        expect(hook.mock.calls[0][0].stack).toContain("/integration/application/validation.spec")
+    })
+})
+
 describe("Decouple Validation Logic", () => {
     function only18Plus() {
         return val.custom("18+only")

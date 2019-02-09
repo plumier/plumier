@@ -1,6 +1,6 @@
 import "@plumjs/core";
 
-import { Class, ValidationIssue, ValidatorDecorator, ValidatorFunction, ValidatorStore } from "@plumjs/core";
+import { Class, ValidationIssue, ValidatorDecorator, ValidatorFunction, ValidatorStore, ValidatorId } from "@plumjs/core";
 import { decorateProperty, reflect, TypeDecorator } from "tinspector";
 import Validator from "validator";
 import { Context } from 'koa';
@@ -12,7 +12,8 @@ import { Context } from 'koa';
 
 export interface Opt { message?: string }
 
-const OptionalDecorator = <ValidatorDecorator>{ type: "ValidatorDecorator", validator: "optional" }
+
+const OptionalDecorator = <ValidatorDecorator>{ type: "ValidatorDecorator", validator: ValidatorId.optional }
 
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- DECORATORS --------------------------------- */
@@ -196,10 +197,6 @@ export namespace val {
         return validate(x => Validator.isPostalCode(x, opt.locale), opt && opt.message || "Invalid postal code")
     }
 
-    // export function required(opt?: Opt) {
-    //     return validate(x => x !== undefined && x !== null && x !== "", opt && opt.message || "Required")
-    // }
-
     export function surrogatePair(opt?: Opt) {
         return validate(x => Validator.isSurrogatePair(x), opt && opt.message || "Invalid surrogate pair")
     }
@@ -232,6 +229,10 @@ export namespace val {
         return reflect.type(typ, "Partial")
     }
 
+    export function skip() {
+        return custom(ValidatorId.skip)
+    }
+
     export function custom(fn: ValidatorFunction | string) {
         return decorateProperty(<ValidatorDecorator>{
             type: "ValidatorDecorator",
@@ -257,39 +258,47 @@ export async function validateArray(value: any[], path: string[], ctx: Context, 
     return result.flatten()
 }
 
-export async function validateObject(value: any, ctx: Context, partialType?: Class, path?: string[], validators?: ValidatorStore): Promise<ValidationIssue[]> {
-    try {
-        const meta = reflect(partialType || getType(value))
-        const result = await Promise.all(meta.properties.map(p => validate(value[p.name],
-            p.decorators.concat(partialType && { ...OptionalDecorator } || []), (path || []).concat(p.name), ctx, validators)))
-        return result.flatten()
+export async function validateObject(value: any, decs: any[], path: string[], ctx: Context, validators?: ValidatorStore): Promise<ValidationIssue[]> {
+    const partial = decs.find((x: TypeDecorator): x is TypeDecorator => x.kind === "Override" && x.info === "Partial")
+    const partialType = partial && partial.type
+    const meta = reflect(partialType || getType(value))
+    const promised: Promise<ValidationIssue[]>[] = []
+    for (const prop of meta.properties) {
+        const decors = prop.decorators.concat(partialType ? OptionalDecorator : [])
+        const newPath = path.concat(prop.name)
+        const result = validate(value[prop.name], decors, newPath, ctx, validators)
+        promised.push(result)
     }
-    catch (e) {
-        return []
+    const result = await Promise.all(promised)
+    return result.flatten()
+}
+
+export async function validateValue(object: any, decorators: any[], path: string[], ctx: Context, validators: ValidatorStore) {
+    if (object === undefined || object === null || object === "") {
+        return decorators.some((x: ValidatorDecorator) => x.validator === ValidatorId.optional) ? [] : [{ messages: ["Required"], path }]
+    }
+    else {
+        const value = "" + object
+        const promised: Promise<string | undefined>[] = []
+        for (let dec of (decorators as ValidatorDecorator[])) {
+            if (dec.type === "ValidatorDecorator" && dec.validator !== ValidatorId.optional) {
+                const result = typeof dec.validator === "string" ? validators[dec.validator](value, ctx) : dec.validator(value, ctx)
+                promised.push(result)
+            }
+        }
+        const result = await Promise.all(promised)
+        const messages = result.filter((x): x is string => Boolean(x))
+        return messages.length > 0 ? [{ messages, path }] : []
     }
 }
 
 export async function validate(object: any, decs: any[], path: string[], ctx: Context, validators: ValidatorStore = {}): Promise<ValidationIssue[]> {
-    const decorators = decs.filter((x: ValidatorDecorator): x is ValidatorDecorator => x.type === "ValidatorDecorator")
-    const empty = () => (object === undefined || object === null || object === "")
+    if (decs.some((x: ValidatorDecorator) => typeof x.validator === "string" && x.validator === ValidatorId.skip)) return []
     if (Array.isArray(object))
         return validateArray(object, path, ctx, validators)
-    else if (typeof object === "object" && object !== null && object.constructor !== Date) {
-        const partial = decs.find((x: TypeDecorator): x is TypeDecorator => x.kind === "Override" && x.info === "Partial")
-        return validateObject(object, ctx, partial && partial.type, path, validators)
-    }
-    else {
-        if (empty()) {
-            return decorators.some(x => x.validator == "optional") ? [] : [{ messages: ["Required"], path }]
-        }
-        else {
-            const value = "" + object
-            const promisedResults = decorators
-                .filter(x => x.validator !== "optional")
-                .map(x => typeof x.validator === "string" ? validators[x.validator](value, ctx) : x.validator(value, ctx))
-            const result = await Promise.all(promisedResults)
-            const messages = result.filter((x): x is string => Boolean(x))
-            return messages.length > 0 ? [{ messages, path }] : []
-        }
-    }
+    else if (typeof object === "object" && object !== null && object.constructor !== Date)
+        return validateObject(object, decs, path, ctx, validators)
+    else
+        return validateValue(object, decs, path, ctx, validators)
 }
+

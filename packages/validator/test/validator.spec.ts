@@ -1,8 +1,11 @@
 import reflect, { decorateClass, TypeDecorator } from "tinspector";
 
 import { val, validate, validateArray, validateObject } from "../src";
+import { Context } from 'koa';
 
 function domain() { return reflect.parameterProperties() }
+
+const validateMe = (value:any, ctx?:Context) => validateObject(value, [], [], ctx || {} as any)
 
 describe("String Validation", () => {
 
@@ -11,15 +14,15 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.after({ date: "2018-1-1" }) public property: Date) { }
         }
-        expect((await validateObject(new Dummy(new Date("2017-1-1")), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy(new Date("2019-1-1")), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy(new Date("2017-1-1")))).length).toBe(1)
+        expect((await validateMe(new Dummy(new Date("2019-1-1"))))).toEqual([])
 
         @domain()
         class DummyString {
             constructor(@val.after({ date: "2018-1-1" }) public property: string) { }
         }
-        expect((await validateObject(new DummyString("2017-1-1"), {} as any)).length).toBe(1)
-        expect((await validateObject(new DummyString("2019-1-1"), {} as any))).toEqual([])
+        expect((await validateMe(new DummyString("2017-1-1"))).length).toBe(1)
+        expect((await validateMe(new DummyString("2019-1-1")))).toEqual([])
     })
 
     test("after()", async () => {
@@ -27,7 +30,7 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.after() public property: Date) { }
         }
-        expect((await validateObject(new Dummy(new Date("2017-1-1")), {} as any))[0].messages[0]).toContain("today")
+        expect((await validateMe(new Dummy(new Date("2017-1-1"))))[0].messages[0]).toContain("today")
     })
 
     test("alpha", async () => {
@@ -35,8 +38,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.alpha() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("qwqwertyuioasdfghjklcvbnm"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("qwqwertyuioasdfghjklcvbnm")))).toEqual([])
     })
 
     test("alphanumeric", async () => {
@@ -44,8 +47,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.alphanumeric() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-()234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("sdfghjxcv12345678cvb"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-()234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("sdfghjxcv12345678cvb")))).toEqual([])
     })
 
     test("ascii", async () => {
@@ -53,8 +56,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.ascii() public property: string) { }
         }
-        expect((await validateObject(new Dummy("∂®abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("ghdfgty345678(&^%$-{';"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("∂®abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("ghdfgty345678(&^%$-{';")))).toEqual([])
     })
 
     test("base64", async () => {
@@ -62,8 +65,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.base64() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("Zm9vYg=="), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("Zm9vYg==")))).toEqual([])
     })
 
     test("before", async () => {
@@ -71,15 +74,15 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.before({ date: "2018-1-1" }) public property: Date) { }
         }
-        expect((await validateObject(new Dummy(new Date("2019-1-1")), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy(new Date("2017-1-1")), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy(new Date("2019-1-1")))).length).toBe(1)
+        expect((await validateMe(new Dummy(new Date("2017-1-1"))))).toEqual([])
 
         @domain()
         class DummyString {
             constructor(@val.before({ date: "2018-1-1" }) public property: string) { }
         }
-        expect((await validateObject(new DummyString("2019-1-1"), {} as any)).length).toBe(1)
-        expect((await validateObject(new DummyString("2017-1-1"), {} as any))).toEqual([])
+        expect((await validateMe(new DummyString("2019-1-1"))).length).toBe(1)
+        expect((await validateMe(new DummyString("2017-1-1")))).toEqual([])
     })
 
     test("before()", async () => {
@@ -87,7 +90,7 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.before() public property: Date) { }
         }
-        expect((await validateObject(new Dummy(new Date("2025-1-1")), {} as any))[0].messages[0]).toContain("today")
+        expect((await validateMe(new Dummy(new Date("2025-1-1"))))[0].messages[0]).toContain("today")
     })
 
     test("byteLength", async () => {
@@ -95,8 +98,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.byteLength({ max: 5 }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("123"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("123")))).toEqual([])
     })
 
     test("creditCard", async () => {
@@ -104,8 +107,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.creditCard() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("4716-2210-5188-5662"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("4716-2210-5188-5662")))).toEqual([])
     })
 
     test("currency", async () => {
@@ -113,8 +116,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.currency() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("12345.78"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("12345.78")))).toEqual([])
     })
 
     test("dataURI", async () => {
@@ -122,8 +125,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.dataURI() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E")))).toEqual([])
     })
 
     test("decimal", async () => {
@@ -131,8 +134,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.decimal() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("1234.6788"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("1234.6788")))).toEqual([])
     })
 
     test("divisibleBy", async () => {
@@ -140,7 +143,7 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.divisibleBy({ num: 4 }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("25"), {} as any)).length).toBe(1)
+        expect((await validateMe(new Dummy("25"))).length).toBe(1)
         //expect(validate(new Dummy(""))).toEqual([])
     })
 
@@ -149,8 +152,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.email() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("support@gmail.com"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("support@gmail.com")))).toEqual([])
     })
 
     test("fQDN", async () => {
@@ -158,8 +161,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.fqdn() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("domain.com"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("domain.com")))).toEqual([])
     })
 
     test("float", async () => {
@@ -167,8 +170,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.float() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("12345.99"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("12345.99")))).toEqual([])
     })
 
     test("fullWidth", async () => {
@@ -176,8 +179,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.fullWidth() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("ひらがな・カタカナ、．漢字"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("ひらがな・カタカナ、．漢字")))).toEqual([])
     })
 
     test("halfWidth", async () => {
@@ -185,8 +188,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.halfWidth() public property: string) { }
         }
-        expect((await validateObject(new Dummy("あいうえお"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy('!"#$%&()<>/+=-_? ~^|.,@`{}[]'), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("あいうえお"))).length).toBe(1)
+        expect((await validateMe(new Dummy('!"#$%&()<>/+=-_? ~^|.,@`{}[]')))).toEqual([])
     })
 
     test("hash", async () => {
@@ -194,8 +197,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.hash({ algorithm: "md5" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("d94f3f016ae679c3008de268209132f2"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("d94f3f016ae679c3008de268209132f2")))).toEqual([])
     })
 
     test("hexColor", async () => {
@@ -203,8 +206,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.hexColor() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("#ffcc33"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("#ffcc33")))).toEqual([])
     })
 
     test("hexadecimal", async () => {
@@ -212,8 +215,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.hexadecimal() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("123abf"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("123abf")))).toEqual([])
     })
 
     test("iP", async () => {
@@ -221,8 +224,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.ip() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("127.0.0.1"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("127.0.0.1")))).toEqual([])
     })
 
     test("iSBN", async () => {
@@ -230,8 +233,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.isbn() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("3-8362-2119-5"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("3-8362-2119-5")))).toEqual([])
     })
 
     test("iSIN", async () => {
@@ -239,8 +242,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.isin() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("AU0000XVGZA3"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("AU0000XVGZA3")))).toEqual([])
     })
 
     test("iSO31661Alpha2", async () => {
@@ -248,8 +251,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.iso31661Alpha2() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("FR"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("FR")))).toEqual([])
     })
 
     test("iSO8601", async () => {
@@ -257,8 +260,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.iso8601() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("2009-12T12:34"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("2009-12T12:34")))).toEqual([])
     })
 
     test("iSRC", async () => {
@@ -266,8 +269,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.isrc() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("USAT29900609"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("USAT29900609")))).toEqual([])
     })
 
     test("iSSN", async () => {
@@ -275,8 +278,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.issn() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("0378-5955"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("0378-5955")))).toEqual([])
     })
 
     test("int", async () => {
@@ -284,8 +287,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.int() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("1234"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("1234")))).toEqual([])
     })
 
     test("jSON", async () => {
@@ -293,8 +296,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.json() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy('{ "key": "value" }'), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy('{ "key": "value" }')))).toEqual([])
     })
 
     test("latLong", async () => {
@@ -302,8 +305,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.latLong() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("(-17.738223, 85.605469)"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("(-17.738223, 85.605469)")))).toEqual([])
     })
 
     test("length", async () => {
@@ -311,8 +314,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.length({ max: 10 }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234fds"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("abc123"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234fds"))).length).toBe(1)
+        expect((await validateMe(new Dummy("abc123")))).toEqual([])
     })
 
     test("lowercase", async () => {
@@ -320,8 +323,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.lowerCase() public property: string) { }
         }
-        expect((await validateObject(new Dummy("DSsafdsa"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("fdsafsa"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("DSsafdsa"))).length).toBe(1)
+        expect((await validateMe(new Dummy("fdsafsa")))).toEqual([])
     })
 
     test("mACAddress", async () => {
@@ -329,8 +332,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.macAddress() public property: string) { }
         }
-        expect((await validateObject(new Dummy("01:02:03:04:05"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("FF:FF:FF:FF:FF:FF"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("01:02:03:04:05"))).length).toBe(1)
+        expect((await validateMe(new Dummy("FF:FF:FF:FF:FF:FF")))).toEqual([])
     })
 
     test("matches", async () => {
@@ -338,8 +341,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.matches({ pattern: /^[a-z0-9 ]+$/i }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("the;hero"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("the hero"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("the;hero"))).length).toBe(1)
+        expect((await validateMe(new Dummy("the hero")))).toEqual([])
     })
 
     test("mD5", async () => {
@@ -347,8 +350,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.md5() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("751adbc511ccbe8edf23d486fa4581cd"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("751adbc511ccbe8edf23d486fa4581cd")))).toEqual([])
     })
 
     test("mimeType", async () => {
@@ -356,8 +359,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.mimeType() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("application/json"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("application/json")))).toEqual([])
     })
 
     test("mobilePhone", async () => {
@@ -365,8 +368,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.mobilePhone({ locale: "id-ID" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("082276758899"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("082276758899")))).toEqual([])
     })
 
     test("mongoId", async () => {
@@ -374,8 +377,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.mongoId() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("507f1f77bcf86cd799439011"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("507f1f77bcf86cd799439011")))).toEqual([])
     })
 
     test("multibyte", async () => {
@@ -383,8 +386,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.multibyte() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("ひらがな・カタカナ、．漢字"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("ひらがな・カタカナ、．漢字")))).toEqual([])
     })
 
     test("numeric", async () => {
@@ -392,8 +395,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.numeric() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("12345776"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("12345776")))).toEqual([])
     })
 
     test("port", async () => {
@@ -401,8 +404,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.port() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("8080"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("8080")))).toEqual([])
     })
 
     test("postalCode", async () => {
@@ -410,7 +413,7 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.postalCode({ locale: "any" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
         //expect(validate(new Dummy(""))).toEqual([])
     })
 
@@ -419,8 +422,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.surrogatePair() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("ABC千𥧄1-2-3"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("ABC千𥧄1-2-3")))).toEqual([])
     })
 
     test("uRL", async () => {
@@ -428,8 +431,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.url() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("http://www.foobar.com/"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("http://www.foobar.com/")))).toEqual([])
     })
 
     test("uUID", async () => {
@@ -437,8 +440,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.UUID() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("A987FBC9-4BED-3078-CF07-9141BA07C9F3"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("A987FBC9-4BED-3078-CF07-9141BA07C9F3")))).toEqual([])
     })
 
     test("uppercase", async () => {
@@ -446,8 +449,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.uppercase() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("HDDJFBVJKDNDD"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("HDDJFBVJKDNDD")))).toEqual([])
     })
 
     test("variableWidth", async () => {
@@ -455,8 +458,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.variableWidth() public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("ひらがなカタカナ漢字ABCDE"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123-234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("ひらがなカタカナ漢字ABCDE")))).toEqual([])
     })
 
     test("whitelisted", async () => {
@@ -464,8 +467,8 @@ describe("String Validation", () => {
         class Dummy {
             constructor(@val.whiteListed({ chars: 'abcdefghijklmnopqrstuvwxyz-' }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123.234"), {} as any)).length).toBe(1)
-        expect((await validateObject(new Dummy("foobar-"), {} as any))).toEqual([])
+        expect((await validateMe(new Dummy("abc123.234"))).length).toBe(1)
+        expect((await validateMe(new Dummy("foobar-")))).toEqual([])
     })
 
 
@@ -478,7 +481,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.after({ message: "Invalid", date: "2018-1-1" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("2017-1-1"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("2017-1-1")))[0].messages).toEqual(["Invalid"])
     })
 
     test("alpha", async () => {
@@ -486,7 +489,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.alpha({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("alphanumeric", async () => {
@@ -494,7 +497,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.alphanumeric({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-()234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-()234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("ascii", async () => {
@@ -502,7 +505,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.ascii({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("∂®abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("∂®abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("base64", async () => {
@@ -510,7 +513,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.base64({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("before", async () => {
@@ -518,7 +521,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.before({ message: "Invalid", date: "2018-1-1" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("2019-1-1"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("2019-1-1")))[0].messages).toEqual(["Invalid"])
     })
 
     test("byteLength", async () => {
@@ -526,7 +529,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.byteLength({ message: "Invalid", max: 5 }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("creditCard", async () => {
@@ -534,7 +537,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.creditCard({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("currency", async () => {
@@ -542,7 +545,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.currency({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("dataURI", async () => {
@@ -550,7 +553,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.dataURI({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("decimal", async () => {
@@ -558,7 +561,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.decimal({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("divisibleBy", async () => {
@@ -566,7 +569,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.divisibleBy({ message: "Invalid", num: 4 }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("25"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("25")))[0].messages).toEqual(["Invalid"])
     })
 
     test("email", async () => {
@@ -574,7 +577,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.email({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("fQDN", async () => {
@@ -582,7 +585,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.fqdn({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("float", async () => {
@@ -590,7 +593,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.float({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("fullWidth", async () => {
@@ -598,7 +601,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.fullWidth({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("halfWidth", async () => {
@@ -606,7 +609,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.halfWidth({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("あいうえお"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("あいうえお")))[0].messages).toEqual(["Invalid"])
     })
 
     test("hash", async () => {
@@ -614,7 +617,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.hash({ message: "Invalid", algorithm: "md5" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("hexColor", async () => {
@@ -622,7 +625,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.hexColor({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("hexadecimal", async () => {
@@ -630,7 +633,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.hexadecimal({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("iP", async () => {
@@ -638,7 +641,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.ip({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("iSBN", async () => {
@@ -646,7 +649,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.isbn({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("iSIN", async () => {
@@ -654,7 +657,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.isin({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("iSO31661Alpha2", async () => {
@@ -662,7 +665,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.iso31661Alpha2({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("iSO8601", async () => {
@@ -670,7 +673,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.iso8601({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("iSRC", async () => {
@@ -678,7 +681,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.isrc({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("iSSN", async () => {
@@ -686,7 +689,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.issn({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("int", async () => {
@@ -694,7 +697,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.int({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("jSON", async () => {
@@ -702,7 +705,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.json({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("latLong", async () => {
@@ -710,7 +713,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.latLong({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("length", async () => {
@@ -718,7 +721,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.length({ message: "Invalid", max: 10 }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234fds"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234fds")))[0].messages).toEqual(["Invalid"])
     })
 
     test("lowercase", async () => {
@@ -726,7 +729,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.lowerCase({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("DSsafdsa"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("DSsafdsa")))[0].messages).toEqual(["Invalid"])
     })
 
     test("mACAddress", async () => {
@@ -734,7 +737,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.macAddress({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("01:02:03:04:05"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("01:02:03:04:05")))[0].messages).toEqual(["Invalid"])
     })
 
     test("matches", async () => {
@@ -742,7 +745,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.matches({ pattern: /^[a-z0-9 ]+$/i, message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("the;name"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("the;name")))[0].messages).toEqual(["Invalid"])
     })
 
     test("mD5", async () => {
@@ -750,7 +753,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.md5({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("mimeType", async () => {
@@ -758,7 +761,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.mimeType({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("mobilePhone", async () => {
@@ -766,7 +769,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.mobilePhone({ message: "Invalid", locale: "id-ID" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("mongoId", async () => {
@@ -774,7 +777,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.mongoId({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("multibyte", async () => {
@@ -782,7 +785,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.multibyte({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("numeric", async () => {
@@ -790,7 +793,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.numeric({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("port", async () => {
@@ -798,7 +801,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.port({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("postalCode", async () => {
@@ -806,7 +809,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.postalCode({ message: "Invalid", locale: "any" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("surrogatePair", async () => {
@@ -814,7 +817,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.surrogatePair({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("uRL", async () => {
@@ -822,7 +825,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.url({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("uUID", async () => {
@@ -830,7 +833,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.UUID({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("uppercase", async () => {
@@ -838,7 +841,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.uppercase({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("variableWidth", async () => {
@@ -846,7 +849,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.variableWidth({ message: "Invalid" }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123-234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123-234")))[0].messages).toEqual(["Invalid"])
     })
 
     test("whitelisted", async () => {
@@ -854,7 +857,7 @@ describe("Custom Message", () => {
         class Dummy {
             constructor(@val.whiteListed({ message: "Invalid", chars: 'abcdefghijklmnopqrstuvwxyz-' }) public property: string) { }
         }
-        expect((await validateObject(new Dummy("abc123.234"), {} as any))[0].messages).toEqual(["Invalid"])
+        expect((await validateMe(new Dummy("abc123.234")))[0].messages).toEqual(["Invalid"])
     })
 
 
@@ -873,7 +876,7 @@ describe("Object Validation", () => {
                 public secondaryEmail: string
             ) { }
         }
-        const result = await validateObject(new ClientModel("kitty", "doggy"), {} as any)
+        const result = await validateMe(new ClientModel("kitty", "doggy"))
         expect(result).toMatchObject([
             { path: ["email"] },
             { path: ["secondaryEmail"] }
@@ -888,7 +891,7 @@ describe("Object Validation", () => {
             @val.email()
             public secondaryEmail: string = "doggy"
         }
-        const result = await validateObject(new ClientModel(), {} as any)
+        const result = await validateMe(new ClientModel())
         expect(result).toMatchObject([
             { path: ["email"] },
             { path: ["secondaryEmail"] }
@@ -903,7 +906,7 @@ describe("Object Validation", () => {
             @val.email()
             get secondaryEmail(): string { return "doggy" }
         }
-        const result = await validateObject(new ClientModel(), {} as any)
+        const result = await validateMe(new ClientModel())
         expect(result).toMatchObject([
             { path: ["email"] },
             { path: ["secondaryEmail"] }
@@ -928,7 +931,7 @@ describe("Object Validation", () => {
                 public spouse: CreditCardModel
             ) { }
         }
-        const result = await validateObject(new ClientModel("kitty", "doggy", new CreditCardModel("kitty")), {} as any)
+        const result = await validateMe(new ClientModel("kitty", "doggy", new CreditCardModel("kitty")))
         expect(result).toMatchObject([
             { path: ["email"] },
             { path: ["secondaryEmail"] },
@@ -982,10 +985,10 @@ describe("Durability", () => {
                 public email?: string | null | undefined,
             ) { }
         }
-        expect((await validateObject(new ClientModel(), {} as any))).toMatchObject([{ "messages": ["Required"] }])
-        expect((await validateObject(new ClientModel(""), {} as any))).toMatchObject([{ "messages": ["Required"] }])
-        expect((await validateObject(new ClientModel("abc"), {} as any))).toMatchObject([{ "messages": ["Invalid email address"] }])
-        expect((await validateObject(new ClientModel("support@gmail.com"), {} as any))).toEqual([])
+        expect((await validateMe(new ClientModel()))).toMatchObject([{ "messages": ["Required"] }])
+        expect((await validateMe(new ClientModel("")))).toMatchObject([{ "messages": ["Required"] }])
+        expect((await validateMe(new ClientModel("abc")))).toMatchObject([{ "messages": ["Invalid email address"] }])
+        expect((await validateMe(new ClientModel("support@gmail.com")))).toEqual([])
     })
 
     it("Should skip required if @option() is provided", async () => {
@@ -997,10 +1000,10 @@ describe("Durability", () => {
                 public email?: string | null | undefined,
             ) { }
         }
-        expect((await validateObject(new ClientModel(), {} as any)).length).toBe(0)
-        expect((await validateObject(new ClientModel(""), {} as any)).length).toBe(0)
-        expect((await validateObject(new ClientModel(null), {} as any)).length).toBe(0)
-        expect((await validateObject(new ClientModel("abc"), {} as any))).toMatchObject([{ "messages": ["Invalid email address"] }])
+        expect((await validateMe(new ClientModel())).length).toBe(0)
+        expect((await validateMe(new ClientModel(""))).length).toBe(0)
+        expect((await validateMe(new ClientModel(null))).length).toBe(0)
+        expect((await validateMe(new ClientModel("abc")))).toMatchObject([{ "messages": ["Invalid email address"] }])
     })
 
     it("Should not error if provided boolean", async () => {
@@ -1011,7 +1014,7 @@ describe("Durability", () => {
                 public hasEmail: boolean,
             ) { }
         }
-        const result = await validateObject(new ClientModel(false), {} as any)
+        const result = await validateMe(new ClientModel(false))
         expect(result).toMatchObject([{
             path: ["hasEmail"]
         }])
@@ -1024,7 +1027,7 @@ describe("Durability", () => {
                 public age: number,
             ) { }
         }
-        const result = await validateObject(new ClientModel(50), {} as any)
+        const result = await validateMe(new ClientModel(50))
         expect(result).toMatchObject([{
             path: ["age"]
         }])
@@ -1037,11 +1040,12 @@ describe("Durability", () => {
                 public fn: () => void,
             ) { }
         }
-        const result = await validateObject(new ClientModel(() => { }), {} as any)
+        const result = await validateMe(new ClientModel(() => { }))
         expect(result).toMatchObject([{
             path: ["fn"]
         }])
     })
+
 })
 
 describe("Partial Validation", () => {
@@ -1062,6 +1066,21 @@ describe("Partial Validation", () => {
     })
 })
 
+describe("Skip validation", () => {
+    it("Should able to skip validation", async () => {
+        @domain()
+        class ClientModel {
+            constructor(
+                @val.skip()
+                @val.email()
+                public hasEmail: string,
+            ) { }
+        }
+        const result = await validateMe(new ClientModel("Hello"))
+        expect(result).toEqual([])
+    })
+})
+
 describe("Custom Validator", () => {
     it("Should validate object", async () => {
         @domain()
@@ -1075,13 +1094,14 @@ describe("Custom Validator", () => {
                 public confirmPassword: string
             ) { }
         }
-        const result = await validateObject(new ClientModel("kitty", "doggy"), { request: { body: { password: "kitty" } } } as any)
+        const result = await validateMe(new ClientModel("kitty", "doggy"), { request: { body: { password: "kitty" } } } as any)
         expect(result).toMatchObject([
             { path: ["confirmPassword"], messages: ["Password doesn't match"] },
         ])
-        const secondResult = await validateObject(new ClientModel("kitty", "kitty"), { request: { body: { password: "kitty" } } } as any)
+        const secondResult = await validateMe(new ClientModel("kitty", "kitty"), { request: { body: { password: "kitty" } } } as any)
         expect(secondResult).toMatchObject([])
     })
+
 })
 
 describe("Decouple Validation Logic", () => {

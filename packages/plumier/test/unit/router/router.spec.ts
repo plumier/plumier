@@ -119,7 +119,7 @@ describe("Router", () => {
         }
 
         it("Should able to get controller metadata from middleware context", async () => {
-            const fn = jest.fn(() => { })
+            const fn = jest.fn((a) => { })
             const app = await fixture(async x => {
                 fn(x.context.route)
                 return x.proceed()
@@ -136,7 +136,7 @@ describe("Router", () => {
         })
 
         it("Should able to get passed parameter from middleware context", async () => {
-            const fn = jest.fn(() => { })
+            const fn = jest.fn((a) => { })
             const app = await fixture(async x => {
                 fn(x.context.parameters)
                 return x.proceed()
@@ -148,7 +148,7 @@ describe("Router", () => {
         })
 
         it("Should execute global middleware on 404", async () => {
-            const fn = jest.fn(() => { })
+            const fn = jest.fn((a) => { })
             const app = await fixture(async x => {
                 fn(x.context.route)
                 return x.proceed()

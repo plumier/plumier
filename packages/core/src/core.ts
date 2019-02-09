@@ -9,6 +9,7 @@ import reflect, {
     MethodReflection,
     ParameterReflection,
     mergeDecorator,
+    decorateProperty,
 } from "tinspector"
 
 import { getChildValue } from "./common"
@@ -55,6 +56,12 @@ export interface RouteInfo {
     method: HttpMethod
     action: MethodReflection
     controller: ClassReflection
+}
+
+
+export enum ValidatorId {
+    optional = "internal:optional",
+    skip = "internal:skip"
 }
 
 export interface ValidatorDecorator {
@@ -154,11 +161,10 @@ export interface Configuration {
     fileParser?: (ctx: Context) => FileParser,
 
     /**
-     * Key-value pair to store validator logic
+     * Key-value pair to store validator logic. Separate decorator and validation logic
      */
     validators?: ValidatorStore
 }
-
 
 export interface PlumierConfiguration extends Configuration {
     middleware: Middleware[]
@@ -327,6 +333,16 @@ export class DefaultDependencyResolver implements DependencyResolver {
 /* ------------------------------------------------------------------------------- */
 
 export namespace bind {
+
+    function ctxDecorator(skip: boolean, part?: string) {
+        const decorator = custom(ctx => part ? getChildValue(ctx, part) : ctx)
+        if (skip) {
+            const skipDecorator = decorateProperty(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: ValidatorId.skip })
+            return mergeDecorator(skipDecorator, decorator)
+        }
+        return decorator
+    }
+
     /**
      * Bind Koa Context
      * 
@@ -341,10 +357,7 @@ export namespace bind {
      * @param part part of context, use dot separator to access child property
      */
     export function ctx(part?: string) {
-        return decorateParameter(<BindingDecorator>{
-            type: "ParameterBinding",
-            process: ctx => part ? getChildValue(ctx, part) : ctx
-        })
+        return ctxDecorator(true, part)
     }
 
     /**
@@ -360,7 +373,7 @@ export namespace bind {
      * @param part part of request ex: body, method, query etc
      */
     export function request(part?: RequestPart) {
-        return ctx(["request", part].join("."))
+        return ctxDecorator(true, ["request", part].join("."))
     }
 
     /**
@@ -374,7 +387,7 @@ export namespace bind {
      *     method(@bind.body("age") age:number){}
      */
     export function body(part?: string) {
-        return ctx(["request", "body", part].join("."))
+        return ctxDecorator(false, ["request", "body", part].join("."))
     }
 
     /**
@@ -388,7 +401,7 @@ export namespace bind {
      *     method(@bind.header("cookie") age:any){}
      */
     export function header(key?: HeaderPart) {
-        return ctx(["request", "headers", key].join("."))
+        return ctxDecorator(false, ["request", "headers", key].join("."))
     }
 
     /**
@@ -402,7 +415,7 @@ export namespace bind {
      *     method(@bind.query("type") type:string){}
      */
     export function query(name?: string) {
-        return ctx(["request", "query", name].join("."))
+        return ctxDecorator(false, ["request", "query", name].join("."))
     }
 
     /**
@@ -411,7 +424,7 @@ export namespace bind {
      *     method(@bind.user() user:User){}
      */
     export function user() {
-        return ctx("state.user")
+        return ctxDecorator(false, "state.user")
     }
 
     /**
@@ -437,7 +450,19 @@ export namespace bind {
      * Bind custom part of Koa context into parameter
      * example:
      * 
-     *    method(@bind.custom(ctx => ctx.request.body) user:User){}
+     *    method(@bind.custom(ctx => ctx.request.body) data:Item){}
+     * 
+     * Can be used to create custom parameter binding
+     * example: 
+     * 
+     *    function body(){ 
+     *      return bind.custom(ctx => ctx.request.body)
+     *    }
+     * 
+     * To use it: 
+     * 
+     *    method(@body() data:Item){}
+     * 
      * @param process callback function to process the Koa context
      */
     export function custom(process: (ctx: Koa.Context) => any) {
@@ -636,7 +661,7 @@ export class AuthDecoratorImpl {
             decorate({ type: "authorize:role", value: roles }, ["Class", "Parameter", "Method"]),
             (...args: any[]) => {
                 if (args.length === 3 && typeof args[2] === "number")
-                    decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: "optional" })(args[0], args[1], args[2])
+                    decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: ValidatorId.optional })(args[0], args[1], args[2])
             })
     }
 }
@@ -667,7 +692,7 @@ export namespace errorMessage {
     export const PublicNotInParameter = "PLUM1008: @authorize.public() can not be applied to parameter"
 
     //PLUM2XXX internal app error
-    export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate model {0}. Domain model should be instantiable using default constructor`
+    export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate {0}. Domain model should not throw error inside constructor`
 
     //End user error (no error code)
     export const UnableToConvertValue = `Unable to convert "{0}" into {1}`

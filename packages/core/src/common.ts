@@ -1,9 +1,56 @@
 import { existsSync, lstatSync, mkdirSync } from "fs"
 import glob from "glob"
 import { dirname, extname } from "path"
-import { reflect, Reflection } from "tinspector"
+import { reflect, Reflection, ClassReflection, PropertyReflection, ParameterReflection } from "tinspector"
 
 import { Class } from "./core"
+
+
+// ##################################################################### //
+// ############################## TESTING ############################## //
+// ##################################################################### //
+
+const log = console.log;
+
+export namespace consoleLog {
+    export function startMock() {
+        console.log = jest.fn(message => { })
+    }
+    export function clearMock() {
+        console.log = log
+    }
+}
+
+// ##################################################################### //
+// ######################## OBJECT MANIPULATION ######################## //
+// ##################################################################### //
+
+export function getChildValue(object: any, path: string, defaultValue?: any) {
+    return path
+        .split(/[\.\[\]\'\"]/)
+        .filter(p => p)
+        .reduce((o, p) => o ? o[p] : defaultValue, object)
+}
+
+
+//some object can't simply convertible to string https://github.com/emberjs/ember.js/issues/14922#issuecomment-278986178
+export function safeToString(value: any) {
+    try {
+        return value.toString()
+    } catch (e) {
+        return "[object Object]"
+    }
+}
+
+export function createRoute(...args: string[]): string {
+    return "/" + args
+        .filter(x => !!x)
+        .map(x => x.toLowerCase())
+        .map(x => x.startsWith("/") ? x.slice(1) : x)
+        .filter(x => !!x)
+        .join("/")
+}
+
 
 declare global {
     interface String {
@@ -42,6 +89,40 @@ export function isCustomClass(type: Function | Function[]) {
     }
 }
 
+// export type DecoratorPath = { index: string | number, type: "Object" | "Array" }
+
+// export function getDecorators(props: (PropertyReflection | ParameterReflection)[], callback: (x: any) => boolean, path: DecoratorPath[] = []) {
+//     const result:{path:DecoratorPath[], decorators:any[]}[] = []
+//     for (let i = 0; i < props.length; i++) {
+//         const prop = props[i];
+//         const decorators = getPropertyDecorators(prop, callback, path.concat([{ index: i, type: "Array" }]))
+//         result.push(...decorators)
+//     }
+//     return result;
+// }
+
+// function getPropertyDecorators(prop: PropertyReflection | ParameterReflection, callback: (x: any) => boolean, path: DecoratorPath[]) {
+//     const decorators = prop.decorators.filter(callback)
+//     const result = [{ path, decorators }]
+//     if (isCustomClass(prop.type)) {
+//         const meta = reflect(prop.type as Class)
+//         const decorators = getDecorators(meta.properties, callback, path.concat([{ index: prop.name, type: "Object" }]))
+//         result.push(...decorators)
+//     }
+//     return result;
+// }
+
+// ##################################################################### //
+// ############################ FILE SYSTEM ############################ //
+// ##################################################################### //
+
+export function mkdirp(path: string) {
+    var dir = dirname(path);
+    if (!existsSync(dir)) {
+        mkdirp(dir);
+    }
+    mkdirSync(path);
+}
 
 export function resolvePath(path: string): string[] {
     const removeExtension = (x: string) => x.replace(/\.[^/.]+$/, "")
@@ -69,49 +150,4 @@ export function reflectPath(path: string | Class | Class[]): Reflection[] {
             .flatten()
     else
         return [reflect(path)]
-}
-
-
-const log = console.log;
-
-export namespace consoleLog {
-    export function startMock() {
-        console.log = jest.fn(message => { })
-    }
-    export function clearMock() {
-        console.log = log
-    }
-}
-
-export function getChildValue(object: any, path: string, defaultValue?: any) {
-    return path
-        .split(/[\.\[\]\'\"]/)
-        .filter(p => p)
-        .reduce((o, p) => o ? o[p] : defaultValue, object)
-}
-
-export function createRoute(...args: string[]): string {
-    return "/" + args
-        .filter(x => !!x)
-        .map(x => x.toLowerCase())
-        .map(x => x.startsWith("/") ? x.slice(1) : x)
-        .filter(x => !!x)
-        .join("/")
-}
-
-export function mkdirp(path: string) {
-    var dir = dirname(path);
-    if (!existsSync(dir)) {
-        mkdirp(dir);
-    }
-    mkdirSync(path);
-}
-
-//some object can't simply convertible to string https://github.com/emberjs/ember.js/issues/14922#issuecomment-278986178
-export function safeToString(value: any) {
-    try {
-        return value.toString()
-    } catch (e) {
-        return "[object Object]"
-    }
 }

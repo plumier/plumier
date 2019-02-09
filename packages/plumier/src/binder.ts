@@ -2,16 +2,16 @@ import {
     BindingDecorator,
     Class,
     ConversionError,
-    errorMessage,
-    isCustomClass,
-    TypeConverter,
     ConverterFunction,
     Converters,
     DefaultConverter,
+    errorMessage,
+    isCustomClass,
     safeToString,
-} from "@plumjs/core";
-import { FunctionReflection, ParameterReflection, reflect, MethodReflection } from "tinspector";
-import { Context } from "koa";
+    TypeConverter,
+} from "@plumjs/core"
+import { Context } from "koa"
+import { MethodReflection, ParameterReflection, reflect } from "tinspector"
 
 function createConversionError(value: any, typ: Function, path: string[]) {
     const type = (typ as Class).name
@@ -56,11 +56,7 @@ export function modelConverter(value: {}, path: string[], expectedType: Function
     //---
     if (Array.isArray(expectedType)) throw createConversionError(value, expectedType[0], path)
     const TheType = expectedType as Class
-
-    //if the value already instance of the type then return immediately
-    //this is possible when using decorator binding such as @bind.request("req")
-    if (value instanceof TheType) return value
-
+    
     //get reflection metadata of the class
     const reflection = reflect(TheType)
     //check if the value is possible to convert to model
@@ -68,19 +64,9 @@ export function modelConverter(value: {}, path: string[], expectedType: Function
 
     //sanitize excess property to prevent object having properties that doesn't match with declaration
     //traverse through the object properties and convert to appropriate property's type
-    const sanitized = reflection.properties.map(x => ({
-        name: x.name,
-        value: convert((value as any)[x.name], path.concat(x.name), x.type, converters)
-    })).reduce((a, b) => { a[b.name] = b.value; return a }, {} as any)
-
-    //crete new instance of the type and assigned the sanitized values
+    let result: any;
     try {
-        const result = Object.assign(new TheType(), sanitized)
-        //remove property that is not defined in value
-        //because new TheType() will create property with undefined value
-        const trim = Object.keys(result).filter(x => Object.keys(value).indexOf(x) === -1)
-        trim.forEach(x => delete result[x])
-        return result
+        result = new TheType()
     }
     catch (e) {
         const message = errorMessage.UnableToInstantiateModel.format(TheType.name)
@@ -90,6 +76,16 @@ export function modelConverter(value: {}, path: string[], expectedType: Function
         }
         else throw new Error(message)
     }
+    for (let x of reflection.properties) {
+        const val = convert((value as any)[x.name], path.concat(x.name), x.type, converters)
+        if (val === undefined) {
+            delete result[x.name]
+        }
+        else {
+            result[x.name] = val
+        }
+    }
+    return result;
 }
 
 export function arrayConverter(value: {}[], path: string[], expectedType: Function | Function[], converters: Converters): any {
@@ -102,6 +98,7 @@ export function arrayConverter(value: {}[], path: string[], expectedType: Functi
 export function convert(value: any, path: string[], expectedType: Function | Function[] | undefined, conf: Converters) {
     if (value === null || value === undefined) return undefined
     if (!expectedType) return value
+    if (value.constructor === expectedType) return value;
     //check if the parameter contains @array()
     if (Array.isArray(expectedType))
         return arrayConverter(value, path, expectedType, conf)

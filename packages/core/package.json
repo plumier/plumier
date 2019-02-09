@@ -6,7 +6,7 @@
   "types": "lib/index.d.ts",
   "keywords": [
     "MVC",
-    "Express",
+    "Koa",
     "IoC",
     "Dependency Injection",
     "Web API",

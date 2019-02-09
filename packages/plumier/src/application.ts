@@ -110,7 +110,8 @@ export class ActionInvocation implements Invocation {
         const result = (<Function>controller[route.action.name]).apply(controller, this.context.parameters)
         const awaitedResult = await Promise.resolve(result)
         const status = config.responseStatus && config.responseStatus[route.method] || 200
-        if (awaitedResult instanceof ActionResult) {
+        //if instance of action result, return immediately
+        if (awaitedResult && awaitedResult.execute) {
             awaitedResult.status = awaitedResult.status || status
             return awaitedResult;
         }

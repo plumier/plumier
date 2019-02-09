@@ -9,6 +9,7 @@ const list = [
     "packages/*/test/*.js.map",
     "packages/*/test/*.d.ts",
     "packages/*/test/*.d.ts.map",
-    "!resolve-path/my-module.js"
+    "!resolve-path/my-module.js",
+    "!packages/testing/src/autocannon.d.ts"
 ];
 del.sync(list);

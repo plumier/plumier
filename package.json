@@ -5,9 +5,11 @@
 		"test": "jest --maxWorkers=4",
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish",
 		"clean": "node script/cleanup",
+		"compile:only": "lerna run compile",
 		"compile": "npm run clean && jest && lerna run compile",
 		"canary": "npm run compile && lerna publish --exact --dist-tag next && npm run clean",
-		"production": "npm run compile && lerna publish && npm run clean"
+		"production": "npm run compile && lerna publish && npm run clean",
+		"benchmark": "yarn workspace @plumjs/plumier benchmark"
 	},
 	"author": "Ketut Sandiarsa",
 	"devDependencies": {
@@ -22,7 +24,7 @@
 		"reflect-metadata": "^0.1.13",
 		"ts-jest": "^23.10.5",
 		"tslint": "^5.12.1",
-		"typescript": "^3.2.4"
+		"typescript": "^3.3.3"
 	},
 	"workspaces": [
 		"packages/*"

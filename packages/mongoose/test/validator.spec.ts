@@ -23,7 +23,7 @@ describe("unique validator", () => {
         const UserModel = model(User)
         await UserModel.remove({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
-        const result = await validateObject(new User("Ketut", "ketut@gmail.com"), {} as any)
+        const result = await validateObject(new User("Ketut", "ketut@gmail.com"), [], [], {} as any)
         expect(result).toEqual([{ messages: ['ketut@gmail.com already exists'], path: ['email'] }])
         Mongoose.disconnect()
     })
@@ -36,7 +36,7 @@ describe("unique validator", () => {
             @val.unique()
             email: string
 
-            constructor(name:string, email:string){
+            constructor(name: string, email: string) {
                 this.name = name;
                 this.email = email;
             }
@@ -49,7 +49,7 @@ describe("unique validator", () => {
         const UserModel = model(User)
         await UserModel.remove({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
-        const result = await validateObject(new User("Ketut", "ketut@gmail.com"), {} as any)
+        const result = await validateObject(new User("Ketut", "ketut@gmail.com"), [], [], {} as any)
         expect(result).toEqual([{ messages: ['ketut@gmail.com already exists'], path: ['email'] }])
         Mongoose.disconnect()
     })
@@ -71,7 +71,7 @@ describe("unique validator", () => {
         const UserModel = model(User)
         await UserModel.remove({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
-        const result = await validateObject(new User("Ketut", "KETUT@gmail.com"), {} as any)
+        const result = await validateObject(new User("Ketut", "KETUT@gmail.com"), [], [], {} as any)
         expect(result).toEqual([{ messages: ['KETUT@gmail.com already exists'], path: ['email'] }])
         Mongoose.disconnect()
     })
@@ -92,7 +92,7 @@ describe("unique validator", () => {
         await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.remove({})
-        const result = await validateObject(new User("Ketut", "ketut@gmail.com"), {} as any)
+        const result = await validateObject(new User("Ketut", "ketut@gmail.com"), [], [], {} as any)
         expect(result).toEqual([])
         Mongoose.disconnect()
     })
@@ -114,7 +114,7 @@ describe("unique validator", () => {
         const UserModel = model(User)
         await UserModel.remove({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
-        const result = await validateObject(new User("Ketut", "m.ketut@gmail.com"), {} as any)
+        const result = await validateObject(new User("Ketut", "m.ketut@gmail.com"), [], [], {} as any)
         expect(result).toEqual([])
         Mongoose.disconnect()
     })
@@ -136,7 +136,7 @@ describe("unique validator", () => {
         await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.remove({})
-        const result = await validateObject(new User("Ketut", undefined), {} as any)
+        const result = await validateObject(new User("Ketut", undefined), [], [], {} as any)
         expect(result).toEqual([])
         Mongoose.disconnect()
     })

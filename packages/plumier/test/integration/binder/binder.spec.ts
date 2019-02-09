@@ -1,4 +1,4 @@
-import { bind, domain, route } from "@plumjs/core"
+import { bind, domain, route, ValidatorDecorator, ValidatorId } from "@plumjs/core"
 import { JwtAuthFacility, val } from "@plumjs/plumier"
 import { IncomingMessage, ServerResponse } from "http"
 import { sign } from "jsonwebtoken"
@@ -14,6 +14,10 @@ export class AnimalModel {
         public name: string,
         public age: number
     ) { }
+}
+
+function skipValidation(decs:any[]){
+    return decs.some((x:ValidatorDecorator): x is ValidatorDecorator => x.type === "ValidatorDecorator" && x.validator === ValidatorId.skip)
 }
 
 describe("Parameter Binding", () => {
@@ -589,6 +593,16 @@ describe("Parameter Binding", () => {
                 .get("/animal/get")
                 .expect(400, [{ "path": ["b"], "messages": [`Unable to convert "[object Object]" into Number`] }])
         })
+
+        it("Should add skip validation decorator", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.request() b: Request) {
+                }
+            }
+            const meta = reflect(AnimalController)
+            expect(skipValidation(meta.methods[0].parameters[0].decorators)).toBe(true)
+        })
     })
 
     describe("Request body parameter binding", () => {
@@ -654,6 +668,17 @@ describe("Parameter Binding", () => {
                 .post("/animal/save")
                 .send({ id: "747474", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
                 .expect(400, [{ "path": ["b"], "messages": [`Unable to convert "[object Object]" into Boolean`] }])
+        })
+
+        it("Should not skip validation", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.body() b: AnimalModel) {
+                    
+                }
+            }
+            const meta = reflect(AnimalController)
+            expect(skipValidation(meta.methods[0].parameters[0].decorators)).toBe(false)
         })
     })
 
@@ -890,7 +915,7 @@ describe("Parameter Binding", () => {
         })
     })
 
-    describe("Binding body to parameters", () => {
+    describe("Binding body to parameters (Named binding)", () => {
         it("Should able to bind body to parameters to limit usage of domain model", async () => {
             class AnimalController {
                 @route.post()

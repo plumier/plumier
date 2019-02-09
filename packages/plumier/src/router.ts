@@ -6,20 +6,18 @@ import {
     IgnoreDecorator,
     Invocation,
     isCustomClass,
+    resolvePath,
     RootDecorator,
     RouteDecorator,
     RouteInfo,
-    resolvePath,
-} from "@plumjs/core";
-import { ClassReflection, FunctionReflection, ParameterReflection, reflect, MethodReflection, PropertyReflection } from "tinspector";
-import chalk from "chalk";
-import * as Fs from "fs";
-import Glob from "glob";
-import { Context } from "koa";
-import Ptr from "path-to-regexp";
-import pth, { parse } from "path"
+} from "@plumjs/core"
+import chalk from "chalk"
+import { Context } from "koa"
+import Ptr from "path-to-regexp"
+import { ClassReflection, MethodReflection, ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
-import { bindParameter } from "./binder";
+import { bindParameter } from "./binder"
+
 
 //import * as Path from "path";
 /* ------------------------------------------------------------------------------- */
@@ -152,11 +150,12 @@ export function router(infos: RouteInfo[], config: Configuration, handler: (ctx:
     return async (ctx: Context, next: () => Promise<void>) => {
         const key = `${ctx.method}${ctx.path}`
         const match = matchers[key] || (matchers[key] = getMatcher(ctx.path, ctx.method))
-        Object.assign(ctx, { config })
+        ctx.config = config;
         if (match) {
             Object.assign(ctx.request.query, match.query)
             const parameters = bindParameter(ctx, match.route.action, config.converters)
-            Object.assign(ctx, { route: match.route, parameters })
+            ctx.route = match.route;
+            ctx.parameters = parameters
         }
         const invocation = handler(ctx)
         const result = await invocation.proceed()
@@ -274,8 +273,8 @@ function analyzeRoute(route: RouteInfo, tests: AnalyzerFunction[], allRoutes: Ro
 
 export function analyzeRoutes(routes: RouteInfo[]) {
     const tests: AnalyzerFunction[] = [
-        backingParameterTest, metadataTypeTest, 
-        duplicateRouteTest, modelTypeInfoTest, 
+        backingParameterTest, metadataTypeTest,
+        duplicateRouteTest, modelTypeInfoTest,
         arrayTypeInfoTest
     ]
     return routes.map(x => analyzeRoute(x, tests, routes))
