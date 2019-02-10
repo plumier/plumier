@@ -1,4 +1,4 @@
-import { authorize } from "@plumjs/core"
+import { authorize } from "@plumier/core"
 import { reflect } from "tinspector"
 
 

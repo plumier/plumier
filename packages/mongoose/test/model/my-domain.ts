@@ -1,6 +1,6 @@
-import { collection } from '@plumjs/mongoose';
+import { collection } from '@plumier/mongoose';
 import { reflect } from 'tinspector';
-import { domain } from '@plumjs/core';
+import { domain } from '@plumier/core';
 
 @collection()
 export class DomainWithPrimitives {

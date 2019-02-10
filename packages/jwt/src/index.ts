@@ -9,7 +9,7 @@ import {
     Middleware,
     PlumierApplication,
     RouteInfo,
-} from "@plumjs/core"
+} from "@plumier/core"
 import KoaJwt from "koa-jwt"
 import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
 

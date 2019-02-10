@@ -1,4 +1,4 @@
-import { middleware, ActionResult } from "@plumjs/core";
+import { middleware, ActionResult } from "@plumier/core";
 import { getDecorators } from 'tinspector';
 
 

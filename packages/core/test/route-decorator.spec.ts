@@ -1,5 +1,5 @@
 import { getDecorators } from "tinspector";
-import { route } from '@plumjs/core';
+import { route } from '@plumier/core';
 
 
 describe("Route Decorator", () => {

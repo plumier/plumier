@@ -21,8 +21,8 @@ import {
     RouteInfo,
     ValidationError,
     ValidatorFunction,
-} from "@plumjs/core"
-import { validate as validateString } from "@plumjs/validator"
+} from "@plumier/core"
+import { validate as validateString } from "@plumier/validator"
 import { existsSync } from "fs"
 import Koa, { Context } from "koa"
 import BodyParser from "koa-bodyparser"

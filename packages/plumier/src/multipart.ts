@@ -6,7 +6,7 @@ import {
     HttpStatusError,
     mkdirp,
     PlumierApplication,
-} from "@plumjs/core";
+} from "@plumier/core";
 import Busboy from "busboy";
 import crypto from "crypto";
 import { createWriteStream, existsSync, unlink } from "fs";

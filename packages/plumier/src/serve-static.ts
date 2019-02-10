@@ -1,4 +1,4 @@
-import { ActionResult, Facility, Invocation, Middleware, PlumierApplication, HttpStatusError } from "@plumjs/core";
+import { ActionResult, Facility, Invocation, Middleware, PlumierApplication, HttpStatusError } from "@plumier/core";
 import { Context } from "koa";
 import send from "koa-send";
 import { extname } from "path";

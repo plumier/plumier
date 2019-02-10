@@ -1,5 +1,5 @@
 {
-  "name": "@plumjs/plumier",
+  "name": "plumier",
   "version": "1.0.0-alpha.6",
   "description": "Delightful NodeJS Web Api Framework powered by KoaJs and TypeScript",
   "main": "lib/index.js",
@@ -21,9 +21,9 @@
   "license": "MIT",
   "dependencies": {
     "@koa/cors": "^2.2.3",
-    "@plumjs/core": "^1.0.0-alpha.6",
-    "@plumjs/jwt": "^1.0.0-alpha.6",
-    "@plumjs/validator": "^1.0.0-alpha.6",
+    "@plumier/core": "^1.0.0-alpha.6",
+    "@plumier/jwt": "^1.0.0-alpha.6",
+    "@plumier/validator": "^1.0.0-alpha.6",
     "@types/busboy": "^0.2.3",
     "@types/glob": "^7.1.1",
     "@types/koa": "^2.0.48",

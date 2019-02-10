@@ -1,4 +1,4 @@
-import { bind, Class, Configuration, FileParser, FileUploadInfo, route } from "@plumjs/core"
+import { bind, Class, Configuration, FileParser, FileUploadInfo, route } from "@plumier/core"
 import { existsSync, rmdirSync, unlinkSync } from "fs"
 import { extname, join } from "path"
 import Supertest from "supertest"

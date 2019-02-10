@@ -1,4 +1,4 @@
-import { Class, Configuration } from '@plumjs/core';
+import { Class, Configuration } from '@plumier/core';
 import Plumier, { WebApiFacility } from '../src';
 
 

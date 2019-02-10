@@ -28,12 +28,12 @@ export {
     ValidationError,
     ValidationIssue,
     ConverterFunction
-} from "@plumjs/core"
+} from "@plumier/core"
 export { WebApiFacility, RestfulApiFacility, response } from "./application"
 export { MultiPartFacility } from "./multipart"
 export { FileActionResult, ServeStaticFacility, ServeStaticMiddleware, ServeStaticOptions } from "./serve-static"
-export { val } from "@plumjs/validator"
-export * from "@plumjs/jwt"
+export { val } from "@plumier/validator"
+export * from "@plumier/jwt"
 
 export const converters = {
     arrayConverter,

@@ -1,8 +1,8 @@
-import { collection, model, MongooseFacility } from "@plumjs/mongoose";
-import { val, validateObject } from "@plumjs/validator";
+import { collection, model, MongooseFacility } from "@plumier/mongoose";
+import { val, validateObject } from "@plumier/validator";
 import Mongoose from 'mongoose';
-import { domain, PlumierApplication } from '@plumjs/core';
-import Plumier from "@plumjs/plumier"
+import { domain, PlumierApplication } from '@plumier/core';
+import Plumier from "plumier"
 import { decorate } from 'tinspector';
 
 describe("unique validator", () => {

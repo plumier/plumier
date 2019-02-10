@@ -4,7 +4,8 @@
     "inlineSourceMap": true,
     "baseUrl": "./packages",
     "paths": {
-      "@plumjs/*": ["*/src"]
+      "@plumier/*": ["*/src"],
+      "plumier": ["plumier/src/index"]
     }
   }
 }

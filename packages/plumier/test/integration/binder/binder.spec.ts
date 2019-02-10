@@ -1,5 +1,5 @@
-import { bind, domain, route, ValidatorDecorator, ValidatorId } from "@plumjs/core"
-import { JwtAuthFacility, val } from "@plumjs/plumier"
+import { bind, domain, route, ValidatorDecorator, ValidatorId } from "@plumier/core"
+import { JwtAuthFacility, val } from "../../../src"
 import { IncomingMessage, ServerResponse } from "http"
 import { sign } from "jsonwebtoken"
 import { Context, Request } from "koa"

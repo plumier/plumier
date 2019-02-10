@@ -9,7 +9,7 @@
 		"compile": "npm run clean && jest && lerna run compile",
 		"canary": "npm run compile && lerna publish --exact --dist-tag next && npm run clean",
 		"production": "npm run compile && lerna publish && npm run clean",
-		"benchmark": "yarn workspace @plumjs/plumier benchmark"
+		"benchmark": "yarn workspace plumier benchmark"
 	},
 	"author": "Ketut Sandiarsa",
 	"devDependencies": {

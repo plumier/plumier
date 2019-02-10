@@ -1,10 +1,10 @@
-import { Constructor, model, MongooseFacility, collection } from "@plumjs/mongoose";
+import { Constructor, model, MongooseFacility, collection } from "@plumier/mongoose";
 import Mongoose from "mongoose";
 
 import { DomainWithArrayOfDomain, DomainWithArrays, DomainWithDomain, DomainWithPrimitives, NonDecoratedDomain } from "./model/my-domain";
-import { consoleLog, PlumierApplication, Class, route } from '@plumjs/core';
+import { consoleLog, PlumierApplication, Class, route } from '@plumier/core';
 import { join } from 'path';
-import Plumier, { WebApiFacility, val } from "@plumjs/plumier"
+import Plumier, { WebApiFacility, val } from "plumier"
 import supertest from "supertest"
 import reflect from 'tinspector';
 

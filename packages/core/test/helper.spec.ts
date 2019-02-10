@@ -1,5 +1,5 @@
-import "@plumjs/core"
-import { resolvePath, getChildValue, createRoute } from '@plumjs/core';
+import "@plumier/core"
+import { resolvePath, getChildValue, createRoute } from '@plumier/core';
 import { join } from 'path';
 import { unlinkSync, existsSync } from 'fs';
 import {normalize} from "upath"

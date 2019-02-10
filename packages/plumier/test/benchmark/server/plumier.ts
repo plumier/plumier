@@ -1,5 +1,5 @@
-import { domain } from "@plumjs/core"
-import Plumier, { route, WebApiFacility } from "@plumjs/plumier"
+import { domain } from "@plumier/core"
+import Plumier, { route, WebApiFacility } from "plumier"
 
 @domain()
 class User {

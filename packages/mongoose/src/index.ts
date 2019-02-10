@@ -9,9 +9,9 @@ import {
     Converters,
     safeToString,
     TypeConverter,
-} from "@plumjs/core";
+} from "@plumier/core";
 import { ClassReflection, decorateClass, decorateParameter, ParameterReflection, reflect, PropertyReflection, mergeDecorator, decorateProperty } from "tinspector";
-import { val } from "@plumjs/validator";
+import { val } from "@plumier/validator";
 import Chalk from "chalk";
 import Mongoose, { Model } from "mongoose";
 import { dirname, isAbsolute, join } from "path";
@@ -141,7 +141,7 @@ async function isUnique(value: string, target: Class, name: string, index?: any)
 /* ------------------------------- MAIN FUNCTIONS -------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-declare module "@plumjs/validator" {
+declare module "@plumier/validator" {
     namespace val {
         function unique(): (target: any, name: string, index?: any) => void
     }

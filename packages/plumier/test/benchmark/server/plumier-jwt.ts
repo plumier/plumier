@@ -1,5 +1,5 @@
-import { domain, authorize } from "@plumjs/core"
-import Plumier, { route, WebApiFacility, JwtAuthFacility } from "@plumjs/plumier"
+import { domain, authorize } from "@plumier/core"
+import Plumier, { route, WebApiFacility, JwtAuthFacility } from "plumier"
 import { secret } from '../options';
 
 

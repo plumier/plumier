@@ -1,4 +1,4 @@
-import { ActionResult, Class, Configuration, DefaultConfiguration, HttpStatusError, route, domain } from "@plumjs/core";
+import { ActionResult, Class, Configuration, DefaultConfiguration, HttpStatusError, route, domain } from "@plumier/core";
 import Koa, { Context } from "koa";
 import BodyParser from "koa-bodyparser";
 import Supertest from "supertest";

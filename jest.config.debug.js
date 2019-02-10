@@ -15,6 +15,7 @@ module.exports = {
     },
     rootDir: ".",
     moduleNameMapper: {
-        "@plumjs/(.*)": "<rootDir>packages/$1/src"
+        "@plumier/(.*)": "<rootDir>packages/$1/src",
+        "^plumier$": "<rootDir>packages/plumier/src/index.ts",
     }
 };

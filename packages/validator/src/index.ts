@@ -1,6 +1,6 @@
-import "@plumjs/core";
+import "@plumier/core";
 
-import { Class, ValidationIssue, ValidatorDecorator, ValidatorFunction, ValidatorStore, ValidatorId } from "@plumjs/core";
+import { Class, ValidationIssue, ValidatorDecorator, ValidatorFunction, ValidatorStore, ValidatorId } from "@plumier/core";
 import { decorateProperty, reflect, TypeDecorator } from "tinspector";
 import Validator from "validator";
 import { Context } from 'koa';

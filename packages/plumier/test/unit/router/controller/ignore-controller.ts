@@ -1,4 +1,4 @@
-import { route } from '@plumjs/core';
+import { route } from '@plumier/core';
 
 export class IgnoreController {
     @route.ignore()

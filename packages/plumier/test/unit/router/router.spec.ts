@@ -6,8 +6,8 @@ import {
     HttpStatusError,
     Invocation,
     route,
-} from "@plumjs/core"
-import Plumier from "@plumjs/plumier"
+} from "@plumier/core"
+import Plumier from "../../../src"
 import Koa from "koa"
 import Supertest from "supertest"
 

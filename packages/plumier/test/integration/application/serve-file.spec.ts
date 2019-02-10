@@ -1,5 +1,5 @@
-import { route } from "@plumjs/core"
-import { response, ServeStaticFacility } from "@plumjs/plumier"
+import { route } from "@plumier/core"
+import { response, ServeStaticFacility } from "../../../src"
 import { readFileSync } from "fs"
 import { join } from "path"
 import Supertest from "supertest"

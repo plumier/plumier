@@ -1,5 +1,5 @@
-import { Class, Invocation, Middleware, middleware, route } from "@plumjs/core"
-import Plumier, { WebApiFacility } from "@plumjs/plumier"
+import { Class, Invocation, Middleware, middleware, route } from "@plumier/core"
+import Plumier, { WebApiFacility } from "../../../src"
 import { Context } from "koa"
 import Supertest from "supertest"
 

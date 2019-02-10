@@ -1,5 +1,5 @@
-import { route } from "@plumjs/core"
-import Plumier, { RestfulApiFacility, val } from "@plumjs/plumier"
+import { route } from "@plumier/core"
+import Plumier, { RestfulApiFacility, val } from "../../../src"
 import Supertest from "supertest"
 
 function fixture() {

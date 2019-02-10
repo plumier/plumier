@@ -1,6 +1,6 @@
-import { bind, domain, route } from "@plumjs/core";
+import { bind, domain, route } from "@plumier/core";
 import { analyzeRoutes, printAnalysis, transformController } from "../../../src/router";
-import { consoleLog } from '@plumjs/core';
+import { consoleLog } from '@plumier/core';
 import reflect from "tinspector"
 
 describe("Analyzer", () => {

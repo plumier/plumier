@@ -1,5 +1,5 @@
-import { domain, route, authorize } from "@plumjs/core";
-import { checkParameters } from '@plumjs/jwt';
+import { domain, route, authorize } from "@plumier/core";
+import { checkParameters } from '@plumier/jwt';
 import { reflect } from 'tinspector';
 
 describe("checkParameters", () => {

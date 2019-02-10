@@ -1,5 +1,5 @@
-import { ActionResult, ConversionError, HttpStatusError, Middleware, MiddlewareUtil } from "@plumjs/core"
-import Plumier, { WebApiFacility } from "@plumjs/plumier"
+import { ActionResult, ConversionError, HttpStatusError, Middleware, MiddlewareUtil } from "@plumier/core"
+import Plumier, { WebApiFacility } from "../../../src"
 import Koa from "koa"
 import Supertest from "supertest"
 

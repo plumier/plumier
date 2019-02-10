@@ -1,5 +1,5 @@
-import { ActionResult } from "@plumjs/core"
-import { response } from "@plumjs/plumier"
+import { ActionResult } from "@plumier/core"
+import { response } from "../../../src"
 import Supertest from "supertest"
 
 import { fixture } from "../../helper"

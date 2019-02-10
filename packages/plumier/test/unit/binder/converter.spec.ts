@@ -1,7 +1,7 @@
-import { ConversionError, Converters } from "@plumjs/core";
+import { ConversionError, Converters } from "@plumier/core";
 import { decorateClass, reflect } from "tinspector";
 
-import { domain, TypeConverter } from "@plumjs/core";
+import { domain, TypeConverter } from "@plumier/core";
 import { convert, DefaultConverters, flattenConverters, TypeConverters, modelConverter, arrayConverter } from "../../../src/binder";
 
 const CONVERTERS: Converters = {

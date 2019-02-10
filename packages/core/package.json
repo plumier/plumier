@@ -1,5 +1,5 @@
 {
-  "name": "@plumjs/core",
+  "name": "@plumier/core",
   "version": "1.0.0-alpha.6",
   "description": "Pleasant TypeScript Web Api Framework",
   "main": "lib/index.js",

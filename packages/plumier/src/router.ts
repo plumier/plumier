@@ -10,7 +10,7 @@ import {
     RootDecorator,
     RouteDecorator,
     RouteInfo,
-} from "@plumjs/core"
+} from "@plumier/core"
 import chalk from "chalk"
 import { Context } from "koa"
 import Ptr from "path-to-regexp"

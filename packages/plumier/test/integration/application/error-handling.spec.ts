@@ -1,4 +1,4 @@
-import { HttpStatusError, middleware } from "@plumjs/core"
+import { HttpStatusError, middleware } from "@plumier/core"
 import { join } from "path"
 import Supertest from "supertest"
 

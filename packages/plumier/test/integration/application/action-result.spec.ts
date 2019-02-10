@@ -1,4 +1,4 @@
-import Plumier, { response, WebApiFacility, route } from "@plumjs/plumier"
+import Plumier, { response, WebApiFacility, route } from "../../../src"
 import supertest from "supertest"
 
 

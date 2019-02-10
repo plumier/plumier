@@ -1,4 +1,4 @@
-import { ActionResult, Invocation, Middleware, middleware } from "@plumjs/core"
+import { ActionResult, Invocation, Middleware, middleware } from "@plumier/core"
 
 import { extractDecorators } from "../../../src/application"
 import { transformController } from "../../../src/router"

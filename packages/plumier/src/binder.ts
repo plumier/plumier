@@ -9,7 +9,7 @@ import {
     isCustomClass,
     safeToString,
     TypeConverter,
-} from "@plumjs/core"
+} from "@plumier/core"
 import { Context } from "koa"
 import { MethodReflection, ParameterReflection, reflect } from "tinspector"
 

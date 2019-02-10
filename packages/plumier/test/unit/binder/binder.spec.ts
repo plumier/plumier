@@ -1,7 +1,7 @@
 import { reflect } from "tinspector";
 import { Request, Context } from "koa";
 
-import { bind, domain, route } from "@plumjs/core";
+import { bind, domain, route } from "@plumier/core";
 import { bindParameter } from "../../../src/binder";
 
 function fromRequest(opt?: Partial<Request>): Context {

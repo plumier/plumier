@@ -1,5 +1,5 @@
 import Plumier from "../../../src";
-import { consoleLog } from '@plumjs/core';
+import { consoleLog } from '@plumier/core';
 
 
 describe("Plumier", () => {
