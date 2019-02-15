@@ -1,6 +1,7 @@
 import { arrayConverter, modelConverter, numberConverter, dateConverter, booleanConverter } from "./binder"
 
 export {
+    authorize,
     ActionResult,
     Application,
     bind,
@@ -27,6 +28,9 @@ export {
     ConversionError,
     ValidationError,
     ValidationIssue,
+    ValidatorStore,
+    ValidatorFunction,
+    ValidatorId,
     ConverterFunction
 } from "@plumier/core"
 export { WebApiFacility, RestfulApiFacility, response } from "./application"

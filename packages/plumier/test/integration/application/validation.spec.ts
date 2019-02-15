@@ -106,7 +106,7 @@ describe("Error handling", () => {
         const result = await Supertest(koa.callback())
             .get("/animal/get?email=hello")
             .expect(500)
-        expect(hook.mock.calls[0][0].stack).toContain("/integration/application/validation.spec")
+        expect(hook.mock.calls[0][0].stack).toContain("validation.spec")
     })
 })
 
