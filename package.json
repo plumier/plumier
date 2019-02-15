@@ -7,7 +7,7 @@
 		"clean": "node script/cleanup",
 		"compile:only": "lerna run compile",
 		"compile": "npm run clean && jest && lerna run compile",
-		"canary": "npm run compile && lerna publish --exact --dist-tag next && npm run clean",
+		"pre": "npm run compile && lerna publish prerelease --exact --preid beta --force-publish",
 		"production": "npm run compile && lerna publish && npm run clean",
 		"benchmark": "yarn workspace plumier benchmark"
 	},
