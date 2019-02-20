@@ -17,30 +17,52 @@ Plumier relatively has small code base which make it light and fast. It uses Koa
 
 The benchmark project forked from Fastify benchmark project, you can test it your self [here](https://github.com/ktutnik/benchmarks).
 
-### Flexible Route
+### Flexible
+Almost every part of framework is fully configurable and easy to override. For example plumier route generation system provided flexibility using convention and also configuration.
+
 Plumier traverse through the controller directories and generate routes based on directory name, controller name, method name and parameter names. This behavior make you easily separate your controllers based on version etc.
 
+```typescript
+// path: controller/api/v1/users-controller.ts
+export class UsersController {
+
+    @route.put(":id")
+    modify(id:number, data:User){
+        //implementation
+    }
+}
 ```
-/api/v1/users/:id
+
+Above class generated into
+
+```
+PUT /api/v1/users/:id
 ```
 
 * `api` is a directory
 * `v1` is a directory
-* `user` is a class (controller) named `UsersController`
+* `user` is a controller `UsersController`
 * `:id` is method parameter, the method name is ignored
 
-Plumier has a flexible routing configuration using decorator, it makes you easily create clean restful api routes and nested restful api with separate controller. 
+Plumier has a flexible decorator based routing configuration, it makes you easily create clean restful api routes and nested restful api with separate controller. 
 
 Check the [route cheat sheet](https://github.com/plumier/plumier/wiki/route-generation-cheat-sheet) for detail information
 
-### Parameter Binding
+### Testing Friendly
+Plumier controller is a plain TypeScript class it doesn't need to inherit from any base class, thats make it easily instantiated outside the framework. 
+
+Plumier [parameter binding](https://github.com/plumier/plumier/wiki/parameter-binding) make it possible to bind specific part value of request into method's parameter which make the code more readable and easy to unit test. 
+
+Controller doesn't need to interact with http response. It returns object or promised object that will automatically rendered as JSON with status response 200. To return an error response done by throwing `HttpStatusError`, its useful because you can throw error from nested helper function and it will caught by Plumier properly.
 
 
-### Type Converter and Validation
 
-### Authorization
+### Secure
+- Type converter & Validator
+- Token based auth
+- Authorization
+- Parameter Authorization
 
-### Parameter Authorization
 
 ## Requirements
 * TypeScript
