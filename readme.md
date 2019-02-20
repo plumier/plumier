@@ -51,18 +51,100 @@ Check the [route cheat sheet](https://github.com/plumier/plumier/wiki/route-gene
 ### Testing Friendly
 Plumier controller is a plain TypeScript class it doesn't need to inherit from any base class, thats make it easily instantiated outside the framework. 
 
-Plumier [parameter binding](https://github.com/plumier/plumier/wiki/parameter-binding) make it possible to bind specific part value of request into method's parameter which make the code more readable and easy to unit test. 
+Plumier provided powerful [parameter binding](https://github.com/plumier/plumier/wiki/parameter-binding) to bound specific value of request object into method's parameter which eliminate usage of Request stub. Controller returned object or promised object or throw `HttpStatusError` and translated into http response which eliminate usage of Response mock.
 
-Controller doesn't need to interact with http response. It returns object or promised object that will automatically rendered as JSON with status response 200. To return an error response done by throwing `HttpStatusError`, its useful because you can throw error from nested helper function and it will caught by Plumier properly.
+```typescript
+export class AuthController {
+    @route.post()
+    login(userName:string, password:string){
+        const user = await userDb.findByEmail(email)
+        if (user && await bcrypt.compare(password, user.password)) {
+            return { token: sign({ userId: user.id, role: user.role }, config.jwtSecret) }
+        }
+        else
+            throw new HttpStatusError(403, "Invalid username or password")
+    }
+}
+```
 
+Controller above uses [name binding](https://github.com/plumier/plumier/wiki/parameter-binding#name-binding), `userName` and `password` parameter will automatically bound with request request body `{ "userName": "abcd", "password": "12345" }` or url encoded form `userName=abcd&password=12345`.
 
+Testing above controller is as simple as testing plain object:
+
+```typescript
+it("Should validate user by username and password", async () => {
+    const controller = new AuthController()
+    const result = await controller.login("abcd", "12345")
+    expect(result).toBe(<signed token>)
+})
+
+it("Should reject if provided invalid username or password", async () => {
+    const controller = new AuthController()
+    expect(controller.login("abcd", "1234578"))
+        .rejects.toEqual(new HttpStatusError(403, "Invalid username or password"))
+})
+```
 
 ### Secure
-- Type converter & Validator
-- Token based auth
-- Authorization
-- Parameter Authorization
+Plumier provided built-in type converter, validator, token based authentication, declarative authorization and parameter authorization which make creating secure API trivial.
 
+```typescript
+@domain()
+export class User  {
+    constructor(
+        @val.email()
+        public email: string,
+        public displayName: string,
+        public birthDate: Date,
+        @authorize.role("Admin")
+        public role: "Admin" | "User"
+    ) { }
+}
+```
+
+Above is `User` domain that will be used as controller parameter type.  Its a plain TypeScript class using [parameter properties](https://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) decorated with some validation and parameter authorization. 
+
+Plumier aware of TypeScript type annotation and will make sure user provided the correct data type, `@val.email()` will validate the email, `@authorize.role("Admin")` will make sure only Admin can set the role field.
+
+```typescript
+export class UsersController {
+    private readonly repo = new Repository<User>("User")
+
+    @authorize.role("Admin")
+    @route.get("")
+    all(offset: number, @val.optional() limit: number = 50) {
+        return this.repo.find(offset, limit)
+    }
+
+    @authorize.public()
+    @route.post("")
+    save(data: User) {
+        return this.repo.add(data)
+    }
+}
+```
+
+Above controller will generate routes below
+
+```
+POST /users
+GET  /users?offset=0&limit=<optional>
+```
+
+Even if above controller implementation look so naive and vulnerable, but Plumier already done some security check before user input touching database. Get users route only accessible by Admin other user try accessing it will got 401 or 403 status. Save user is public so everyone can register to the service. 
+
+Plumier done some data conversion and security check, example below is list of user input and their appropriate status
+
+| User Input                                                                                                                    | Description                                      |
+| ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `{ "email": "john.doe@gmail.com", "displayName": "John Doe", "birthDate": "1988-1-1" }`                                       | Valid, `birthDate` converted to `Date`           |
+| `{ "birthDate": "1988-1-1" }`                                                                                                 | Invalid, `email` and `displayName` is required   |
+| `{ "email": "abc", "displayName": "John Doe", "birthDate": "1988-1-1" }`                                                      | Invalid email                                    |
+| `{ "email": "john.doe@gmail.com", "displayName": "John Doe", "birthDate": "1988-1-1", "hack": "lorem ipsum dolor sit amet" }` | Valid, `hack` field removed                      |
+| `{ "email": "john.doe@gmail.com", "displayName": "John Doe", "birthDate": "1988-1-1", "role" : "Admin" }`                     | Setting `role` only valid if login user is Admin |
+
+## Documentation
+Go to Plumier [wiki](https://github.com/plumier/plumier/wiki) for complete documentation and tutorial
 
 ## Requirements
 * TypeScript
