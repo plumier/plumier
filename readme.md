@@ -133,13 +133,14 @@ GET  /users?offset=0&limit=<optional>
 
 Even if above controller implementation look so naive and vulnerable, but Plumier already done some security check before user input touching database. Get users route only accessible by Admin other user try accessing it will got 401 or 403 status. Save user is public so everyone can register to the service. 
 
-Plumier done some data conversion and security check, example below is list of user input and their appropriate status
+Plumier done some data conversion and security check, example below is list of user input and their appropriate status returned.
 
 | User Input                                                                                                                    | Description                                      |
 | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
 | `{ "email": "john.doe@gmail.com", "displayName": "John Doe", "birthDate": "1988-1-1" }`                                       | Valid, `birthDate` converted to `Date`           |
 | `{ "birthDate": "1988-1-1" }`                                                                                                 | Invalid, `email` and `displayName` is required   |
 | `{ "email": "abc", "displayName": "John Doe", "birthDate": "1988-1-1" }`                                                      | Invalid email                                    |
+| `{ "email": "john.doe@gmail.com", "displayName": "John Doe", "birthDate": "abc" }`                                            | Invalid `birthDate`                              |
 | `{ "email": "john.doe@gmail.com", "displayName": "John Doe", "birthDate": "1988-1-1", "hack": "lorem ipsum dolor sit amet" }` | Valid, `hack` field removed                      |
 | `{ "email": "john.doe@gmail.com", "displayName": "John Doe", "birthDate": "1988-1-1", "role" : "Admin" }`                     | Setting `role` only valid if login user is Admin |
 
