@@ -48,7 +48,7 @@ Plumier has a flexible decorator based routing configuration, it makes you easil
 
 Check the [route cheat sheet](https://github.com/plumier/plumier/wiki/route-generation-cheat-sheet) for detail information
 
-### Testing Friendly
+### Testable
 Plumier controller is a plain TypeScript class it doesn't need to inherit from any base class, thats make it easily instantiated outside the framework. 
 
 Plumier provided powerful [parameter binding](https://github.com/plumier/plumier/wiki/parameter-binding) to bound specific value of request object into method's parameter which eliminate usage of Request stub. Controller returned object or promised object or throw `HttpStatusError` and translated into http response which eliminate usage of Response mock.
