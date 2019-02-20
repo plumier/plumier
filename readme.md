@@ -13,7 +13,7 @@ Plumier primarily created for full stack developer who spend more time working o
 ### Lightweight
 Plumier relatively has small code base which make it light and fast. It uses Koa as its core http handler which is quite fast, below is comparison result of Koa, Plumier and Express.
 
-![Benchmarks](benchmarks.png)
+![Benchmarks](images/benchmarks.png)
 
 The benchmark project forked from Fastify benchmark project, you can test it your self [here](https://github.com/ktutnik/benchmarks).
 
@@ -67,12 +67,12 @@ export class AuthController {
 }
 ```
 
-Controller above uses [name binding](https://github.com/plumier/plumier/wiki/parameter-binding#name-binding), `userName` and `password` parameter will automatically bound with request request body `{ "userName": "abcd", "password": "12345" }` or url encoded form `userName=abcd&password=12345`.
+Controller above uses [name binding](https://github.com/plumier/plumier/wiki/parameter-binding#name-binding), `userName` and `password` parameter will automatically bound with request body `{ "userName": "abcd", "password": "12345" }` or url encoded form `userName=abcd&password=12345`.
 
 Testing above controller is as simple as testing plain object:
 
 ```typescript
-it("Should validate user by username and password", async () => {
+it("Should return signed token if login successfully", async () => {
     const controller = new AuthController()
     const result = await controller.login("abcd", "12345")
     expect(result).toBe(<signed token>)
@@ -86,7 +86,7 @@ it("Should reject if provided invalid username or password", async () => {
 ```
 
 ### Secure
-Plumier provided built-in type converter, validator, token based authentication, declarative authorization and parameter authorization which make creating secure API trivial.
+Plumier provided built-in [type converter](https://github.com/plumier/plumier/wiki/converters), [validator](https://github.com/plumier/plumier/wiki/validation), [token based authentication](https://github.com/plumier/plumier/wiki/authorization), [declarative authorization](https://github.com/plumier/plumier/wiki/authorization#role-authorization) and [parameter authorization](https://github.com/plumier/plumier/wiki/authorization#parameter-authorization) which make creating secure JSON API trivial.
 
 ```typescript
 @domain()
@@ -142,6 +142,11 @@ Plumier done some data conversion and security check, example below is list of u
 | `{ "email": "abc", "displayName": "John Doe", "birthDate": "1988-1-1" }`                                                      | Invalid email                                    |
 | `{ "email": "john.doe@gmail.com", "displayName": "John Doe", "birthDate": "1988-1-1", "hack": "lorem ipsum dolor sit amet" }` | Valid, `hack` field removed                      |
 | `{ "email": "john.doe@gmail.com", "displayName": "John Doe", "birthDate": "1988-1-1", "role" : "Admin" }`                     | Setting `role` only valid if login user is Admin |
+
+### Friendly
+Plumier enhanced with static route analysis which will print friendly message if you misconfigure controller or forgot some decorator.
+
+![static analysis](images/static-analysis.png)
 
 ## Documentation
 Go to Plumier [wiki](https://github.com/plumier/plumier/wiki) for complete documentation and tutorial
