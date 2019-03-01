@@ -1,0 +1,58 @@
+/* your custom css */
+
+blockquote {
+    background-color: rgba(100, 255, 126, 0.3);
+    border-left: 8px solid #008c25;
+}
+
+article a {
+    color: rgb(0, 121, 37);
+}
+article a:hover{
+    text-decoration: underline;
+}
+
+.fixedHeaderContainer {
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+.fixedHeaderContainer a {
+    color: #848484;
+}
+
+.navigationSlider .slidingNav ul,
+.navigationSlider .slidingNav ul li a,
+.navigationSlider .slidingNav ul li.siteNavGroupActive a {
+    background: #fff;
+    color: #848484;
+}
+
+.docsNavContainer .toc .navBreadcrumb {
+    border-bottom: 1px solid #eee;
+    background: #fff;
+}
+
+input#search_input_react {
+    background: #fff;
+    border: 1px solid #eee;
+}
+
+@media only screen and (min-device-width: 360px) and (max-device-width: 736px) {
+}
+
+@media only screen and (min-width: 1024px) {
+}
+
+@media only screen and (max-width: 1023px) {
+    .reactNavSearchWrapper input#search_input_react{
+        background: #fff;
+        border: 1px solid #eee;
+    }
+}
+
+@media only screen and (min-width: 1400px) {
+}
+
+@media only screen and (min-width: 1500px) {
+}

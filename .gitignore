@@ -3,13 +3,17 @@ coverage
 packages/*/lib
 yarn-error.log
 lerna-debug.log
-*.js
-*.js.map
-*.js.snap
+packages/**/*.js
+packages/**/*.js.map
+packages/**/*.js.snap
 .DS_Store
 !jest.config.js
 !jest.config.debug.js
 !test.js
 .docs
 
-
+website/translated_docs
+website/build/
+website/yarn.lock
+website/node_modules
+website/i18n/*
