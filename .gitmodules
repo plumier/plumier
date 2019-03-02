@@ -1,3 +1,0 @@
-[submodule "website/build/plumier"]
-	path = website/build/plumier
-	url = git@github.com:plumier/plumier.github.io.git

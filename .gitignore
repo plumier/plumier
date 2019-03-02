@@ -13,6 +13,7 @@ packages/**/*.js.snap
 .docs
 !packages/core/test/resolve-path/my-module.js
 website/translated_docs
+website/build/
 website/yarn.lock
 website/node_modules
 website/i18n/*
