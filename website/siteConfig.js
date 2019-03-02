@@ -23,15 +23,15 @@ const users = [
 const siteConfig = {
   title: 'Plumier', // Title for your website.
   tagline: 'Delightful rest api framework powered by Koa and TypeScript',
-  url: 'https://your-docusaurus-test-site.com', // Your website URL
+  url: 'https://plumierjs.com', // Your website URL
   baseUrl: '/', // Base URL for your project */
   // For github.io type URLs, you would set the url and baseUrl like:
   //   url: 'https://facebook.github.io',
   //   baseUrl: '/test-site/',
 
   // Used for publishing and more
-  projectName: 'test-site',
-  organizationName: 'facebook',
+  projectName: 'plumier',
+  organizationName: 'plumier',
   // For top-level user or org sites, the organization is still the same.
   // e.g., for the https://JoelMarcey.github.io site, it would be set like...
   //   organizationName: 'JoelMarcey'
@@ -46,7 +46,7 @@ const siteConfig = {
   ],
 
   // If you have users set above, you add it here:
-  users,
+  // users,
 
   /* path to images for header/footer */
   headerIcon: 'img/plumier.svg',

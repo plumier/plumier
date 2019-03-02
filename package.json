@@ -9,7 +9,9 @@
 		"compile": "npm run clean && jest && lerna run compile",
 		"pre": "npm run compile && lerna publish prerelease --exact --preid beta --force-publish",
 		"production": "npm run compile && lerna publish && npm run clean",
-		"benchmark": "yarn workspace plumier benchmark"
+		"benchmark": "yarn workspace plumier benchmark",
+		"start:doc": "cd website && yarn start",
+		"build:doc": "cd website && yarn build"
 	},
 	"author": "Ketut Sandiarsa",
 	"devDependencies": {

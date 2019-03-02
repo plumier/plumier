@@ -33,9 +33,25 @@ article a:hover{
     background: #fff;
 }
 
+
+
+/* search */
 input#search_input_react {
     background: #fff;
     border: 1px solid #eee;
+    color: #888;
+}
+input#search_input_react::placeholder {
+    color: #aaa;
+}
+input#search_input_react:focus, input#search_input_react:active{
+    color: #888;
+}
+.navSearchWrapper:before {
+    border: 3px solid #aaa;
+}
+.navSearchWrapper:after {
+    background: #aaa;
 }
 
 @media only screen and (min-device-width: 360px) and (max-device-width: 736px) {

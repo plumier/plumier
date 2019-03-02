@@ -7,6 +7,15 @@
       "middleware",
       "facility"
     ],
+    "Tutorials": [
+      {
+        "type": "subcategory",
+        "label": "Basic Starter",
+        "ids": [
+          "tutorials/basic/get-started"
+        ]
+      }
+    ],
     "References": [
       "refs/route",
       "refs/parameter-binding",
@@ -24,9 +33,9 @@
       "extends/custom-converter",
       "extends/custom-validator"
     ],
-    "Advanced Topic": ["doc5"]
+    "Advanced Topic": [
+      "doc5"
+    ]
   },
-  "docs-other": {
-    
-  }
+  "docs-other": {}
 }
