@@ -5,6 +5,8 @@ title: Route Cheat Sheet
 
 Plumier generate routes directly from controllers. By default it will looks into the `./controller` directory. Except other directory or controller classes specified on the configuration.
 
+> [Parameter destructuring](https://www.typescriptlang.org/docs/handbook/variable-declarations.html#function-declarations) is not supported on current route generator, consider to avoid them.
+
 ## Without Decorator
 
 If no `@route` decorator provided, generated route will be of type GET. 

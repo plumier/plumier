@@ -19,7 +19,7 @@ import { getChildValue } from "./common"
 /* ----------------------------------- TYPES ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-export type HttpMethod = "post" | "get" | "put" | "delete"
+export type HttpMethod = "post" | "get" | "put" | "delete" | "patch" | "head" | "trace" | "options" 
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>
 export type RequestPart = keyof Request
 export type HeaderPart = keyof IncomingHttpHeaders
@@ -587,6 +587,122 @@ export class RouteDecoratorImpl {
      * @param url url override
      */
     delete(url?: string) { return this.decorateRoute("delete", url) }
+
+    /**
+     * Mark method as PATCH method http handler
+     ```
+     class AnimalController{
+        @route.patch()
+        method(id:number){}
+     }
+     //result: PATCH /animal/method?id=<number>
+     ```
+     * Override method name with absolute url
+     ```
+     class AnimalController{
+        @route.patch("/beast/:id")
+        method(id:number){}
+     }
+     //result: PATCH /beast/:id
+     ```
+     * Override method name with relative url
+     ```
+     class AnimalController{
+        @route.patch("get")
+        method(id:number){}
+     }
+     //result: PATCH /animal/get?id=<number>
+     ```
+     * @param url url override
+     */
+    patch(url?: string) { return this.decorateRoute("patch", url) }
+
+    /**
+     * Mark method as HEAD method http handler
+     ```
+     class AnimalController{
+        @route.head()
+        method(id:number){}
+     }
+     //result: HEAD /animal/method?id=<number>
+     ```
+     * Override method name with absolute url
+     ```
+     class AnimalController{
+        @route.head("/beast/:id")
+        method(id:number){}
+     }
+     //result: HEAD /beast/:id
+     ```
+     * Override method name with relative url
+     ```
+     class AnimalController{
+        @route.head("get")
+        method(id:number){}
+     }
+     //result: HEAD /animal/get?id=<number>
+     ```
+     * @param url url override
+     */
+    head(url?: string) { return this.decorateRoute("head", url) }
+
+    /**
+     * Mark method as TRACE method http handler
+     ```
+     class AnimalController{
+        @route.trace()
+        method(id:number){}
+     }
+     //result: TRACE /animal/method?id=<number>
+     ```
+     * Override method name with absolute url
+     ```
+     class AnimalController{
+        @route.trace("/beast/:id")
+        method(id:number){}
+     }
+     //result: TRACE /beast/:id
+     ```
+     * Override method name with relative url
+     ```
+     class AnimalController{
+        @route.trace("get")
+        method(id:number){}
+     }
+     //result: TRACE /animal/get?id=<number>
+     ```
+     * @param url url override
+     */
+    trace(url?: string) { return this.decorateRoute("trace", url) }
+
+    /**
+     * Mark method as OPTIONS method http handler
+     ```
+     class AnimalController{
+        @route.options()
+        method(id:number){}
+     }
+     //result: OPTIONS /animal/method?id=<number>
+     ```
+     * Override method name with absolute url
+     ```
+     class AnimalController{
+        @route.options("/beast/:id")
+        method(id:number){}
+     }
+     //result: OPTIONS /beast/:id
+     ```
+     * Override method name with relative url
+     ```
+     class AnimalController{
+        @route.options("get")
+        method(id:number){}
+     }
+     //result: OPTIONS /animal/get?id=<number>
+     ```
+     * @param url url override
+     */
+    options(url?: string) { return this.decorateRoute("options", url) }
 
     /**
      * Override controller name on route generation

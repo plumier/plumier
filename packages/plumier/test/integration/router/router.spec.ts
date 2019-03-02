@@ -75,7 +75,7 @@ describe("Router", () => {
         @route.root("/beast/:beastId/animal")
         class AnimalController {
             @route.get(":animalid")
-            method(BeastId:string, AnimalId: string) {
+            method(BeastId: string, AnimalId: string) {
                 return { BeastId, AnimalId }
             }
         }
@@ -709,10 +709,634 @@ describe("Router", () => {
                 .expect(404)
         })
     })
+
+    describe("PATCH route", () => {
+        it("Should route simple path", async () => {
+            class AnimalController {
+                @route.patch()
+                method() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .patch("/animal/method")
+                .expect(200)
+        })
+
+        it("Should route path with query", async () => {
+            class AnimalController {
+                @route.patch()
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .patch("/animal/method?a=100&b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to relative override method", async () => {
+            class AnimalController {
+                @route.patch("get")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .patch("/animal/get?a=100&b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to absolute override method", async () => {
+            class AnimalController {
+                @route.patch("/get")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .patch("/get?a=100&b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to exclude method name", async () => {
+            class AnimalController {
+                @route.patch("")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .patch("/animal?a=100&b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to ignore method", async () => {
+            class AnimalController {
+                @route.patch("")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+                @route.ignore()
+                other() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .patch("/animal/other")
+                .expect(404)
+        })
+
+        it("Should route path with parameters", async () => {
+            class AnimalController {
+                @route.patch("a/:a/b/:b")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .patch("/animal/a/100/b/hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to combine path and query", async () => {
+            class AnimalController {
+                @route.patch("a/:a")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .patch("/animal/a/100?b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should work with root", async () => {
+            @route.root("/beast")
+            class AnimalController {
+                @route.patch("a/:a")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .patch("/beast/a/100?b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should work with parameterized root", async () => {
+            @route.root("/beast/:type")
+            class AnimalController {
+                @route.patch("a/:a")
+                method(type: string, a: number, b: string) {
+                    return { type, a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .patch("/beast/wolf/a/100?b=hello")
+                .expect(200, { type: "wolf", a: 100, b: "hello" })
+        })
+
+        it("Should return 404 if not found", async () => {
+            class AnimalController {
+                @route.patch()
+                method() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .patch("/beast/a")
+                .expect(404)
+        })
+    })
+
+    describe("HEAD route", () => {
+        it("Should route simple path", async () => {
+            class AnimalController {
+                @route.head()
+                method() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .head("/animal/method")
+                .expect(200)
+        })
+
+        it("Should route path with query", async () => {
+            class AnimalController {
+                @route.head()
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .head("/animal/method?a=100&b=hello")
+                .expect(200, {})
+        })
+
+        it("Should able to relative override method", async () => {
+            class AnimalController {
+                @route.head("get")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .head("/animal/get?a=100&b=hello")
+                .expect(200, {})
+        })
+
+        it("Should able to absolute override method", async () => {
+            class AnimalController {
+                @route.head("/get")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .head("/get?a=100&b=hello")
+                .expect(200, {})
+        })
+
+        it("Should able to exclude method name", async () => {
+            class AnimalController {
+                @route.head("")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .head("/animal?a=100&b=hello")
+                .expect(200, {})
+        })
+
+        it("Should able to ignore method", async () => {
+            class AnimalController {
+                @route.head("")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+                @route.ignore()
+                other() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .head("/animal/other")
+                .expect(404)
+        })
+
+        it("Should route path with parameters", async () => {
+            class AnimalController {
+                @route.head("a/:a/b/:b")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .head("/animal/a/100/b/hello")
+                .expect(200, {})
+        })
+
+        it("Should able to combine path and query", async () => {
+            class AnimalController {
+                @route.head("a/:a")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .head("/animal/a/100?b=hello")
+                .expect(200, {})
+        })
+
+        it("Should work with root", async () => {
+            @route.root("/beast")
+            class AnimalController {
+                @route.head("a/:a")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .head("/beast/a/100?b=hello")
+                .expect(200, {})
+        })
+
+        it("Should work with parameterized root", async () => {
+            @route.root("/beast/:type")
+            class AnimalController {
+                @route.head("a/:a")
+                method(type: string, a: number, b: string) {
+                    return { type, a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .head("/beast/wolf/a/100?b=hello")
+                .expect(200, {})
+        })
+
+        it("Should return 404 if not found", async () => {
+            class AnimalController {
+                @route.head()
+                method() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .head("/beast/a")
+                .expect(404)
+        })
+    })
+
+    describe("OPTIONS route", () => {
+        it("Should route simple path", async () => {
+            class AnimalController {
+                @route.options()
+                method() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .options("/animal/method")
+                .expect(200)
+        })
+
+        it("Should route path with query", async () => {
+            class AnimalController {
+                @route.options()
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .options("/animal/method?a=100&b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to relative override method", async () => {
+            class AnimalController {
+                @route.options("get")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .options("/animal/get?a=100&b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to absolute override method", async () => {
+            class AnimalController {
+                @route.options("/get")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .options("/get?a=100&b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to exclude method name", async () => {
+            class AnimalController {
+                @route.options("")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .options("/animal?a=100&b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to ignore method", async () => {
+            class AnimalController {
+                @route.options("")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+                @route.ignore()
+                other() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .options("/animal/other")
+                .expect(404)
+        })
+
+        it("Should route path with parameters", async () => {
+            class AnimalController {
+                @route.options("a/:a/b/:b")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .options("/animal/a/100/b/hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to combine path and query", async () => {
+            class AnimalController {
+                @route.options("a/:a")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .options("/animal/a/100?b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should work with root", async () => {
+            @route.root("/beast")
+            class AnimalController {
+                @route.options("a/:a")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .options("/beast/a/100?b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should work with parameterized root", async () => {
+            @route.root("/beast/:type")
+            class AnimalController {
+                @route.options("a/:a")
+                method(type: string, a: number, b: string) {
+                    return { type, a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .options("/beast/wolf/a/100?b=hello")
+                .expect(200, { type: "wolf", a: 100, b: "hello" })
+        })
+
+        it("Should return 404 if not found", async () => {
+            class AnimalController {
+                @route.options()
+                method() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .options("/beast/a")
+                .expect(404)
+        })
+    })
+
+    describe("TRACE route", () => {
+        it("Should route simple path", async () => {
+            class AnimalController {
+                @route.trace()
+                method() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .trace("/animal/method")
+                .expect(200)
+        })
+
+        it("Should route path with query", async () => {
+            class AnimalController {
+                @route.trace()
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .trace("/animal/method?a=100&b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to relative override method", async () => {
+            class AnimalController {
+                @route.trace("get")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .trace("/animal/get?a=100&b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to absolute override method", async () => {
+            class AnimalController {
+                @route.trace("/get")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .trace("/get?a=100&b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to exclude method name", async () => {
+            class AnimalController {
+                @route.trace("")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .trace("/animal?a=100&b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to ignore method", async () => {
+            class AnimalController {
+                @route.trace("")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+                @route.ignore()
+                other() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .trace("/animal/other")
+                .expect(404)
+        })
+
+        it("Should route path with parameters", async () => {
+            class AnimalController {
+                @route.trace("a/:a/b/:b")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .trace("/animal/a/100/b/hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should able to combine path and query", async () => {
+            class AnimalController {
+                @route.trace("a/:a")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .trace("/animal/a/100?b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should work with root", async () => {
+            @route.root("/beast")
+            class AnimalController {
+                @route.trace("a/:a")
+                method(a: number, b: string) {
+                    return { a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .trace("/beast/a/100?b=hello")
+                .expect(200, { a: 100, b: "hello" })
+        })
+
+        it("Should work with parameterized root", async () => {
+            @route.root("/beast/:type")
+            class AnimalController {
+                @route.trace("a/:a")
+                method(type: string, a: number, b: string) {
+                    return { type, a, b }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .trace("/beast/wolf/a/100?b=hello")
+                .expect(200, { type: "wolf", a: 100, b: "hello" })
+        })
+
+        it("Should return 404 if not found", async () => {
+            class AnimalController {
+                @route.trace()
+                method() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .trace("/beast/a")
+                .expect(404)
+        })
+    })
 })
 
 describe("Router with external controller", () => {
-    
+
     it("Should load controllers", async () => {
         consoleLog.startMock()
         const app = await new Plumier()
@@ -737,7 +1361,7 @@ describe("Router with external controller", () => {
     it("Should should not load non controller", async () => {
         consoleLog.startMock()
         const app = await new Plumier()
-            .set(new WebApiFacility({controller: "./no-controller"}))
+            .set(new WebApiFacility({ controller: "./no-controller" }))
             .initialize()
         expect((console.log as any).mock.calls[2][0]).toContain("No controller found")
         consoleLog.clearMock()
