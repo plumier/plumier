@@ -1,2 +1,0 @@
-# Plumier Mongoose Helper
-
