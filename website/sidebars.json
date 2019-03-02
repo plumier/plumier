@@ -1,0 +1,41 @@
+{
+  "docs": {
+    "Fundamentals": [
+      "overview",
+      "entry-point",
+      "controller",
+      "middleware",
+      "facility"
+    ],
+    "Tutorials": [
+      {
+        "type": "subcategory",
+        "label": "Basic Starter",
+        "ids": [
+          "tutorials/basic/get-started"
+        ]
+      }
+    ],
+    "References": [
+      "refs/route",
+      "refs/parameter-binding",
+      "refs/validation",
+      "refs/converters",
+      "refs/authorization",
+      "refs/serve-static",
+      "refs/file-upload",
+      "refs/mongoose-helper",
+      "refs/static-analysis",
+      "refs/testing-tips"
+    ],
+    "Extending": [
+      "extends/custom-parameter-binding",
+      "extends/custom-converter",
+      "extends/custom-validator"
+    ],
+    "Advanced Topic": [
+      "doc5"
+    ]
+  },
+  "docs-other": {}
+}

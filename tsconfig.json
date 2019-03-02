@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "inlineSourceMap": true,
+    "baseUrl": "./packages",
+    "paths": {
+      "@plumier/*": ["*/src"],
+      "plumier": ["plumier/src/index"]
+    }
+  }
+}
