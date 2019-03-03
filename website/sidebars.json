@@ -8,11 +8,25 @@
       "facility"
     ],
     "Tutorials": [
+      "tutorials/overview",
       {
         "type": "subcategory",
-        "label": "Basic Starter",
+        "label": "Basic SQL Starter",
         "ids": [
-          "tutorials/basic/get-started"
+          "tutorials/basic/get-started",
+          "tutorials/basic/create-basic-functions",
+          "tutorials/basic/securing-restful-api",
+          "tutorials/basic/deployment"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Basic MongoDB Starter",
+        "ids": [
+          "tutorials/basic/get-started",
+          "tutorials/basic/create-basic-functions",
+          "tutorials/basic/securing-restful-api",
+          "tutorials/basic/deployment"
         ]
       }
     ],
