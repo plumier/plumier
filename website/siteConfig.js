@@ -30,7 +30,7 @@ const siteConfig = {
   //   baseUrl: '/test-site/',
 
   // Used for publishing and more
-  projectName: 'plumier',
+  projectName: 'documentation',
   organizationName: 'plumier',
   // For top-level user or org sites, the organization is still the same.
   // e.g., for the https://JoelMarcey.github.io site, it would be set like...
@@ -42,6 +42,7 @@ const siteConfig = {
     // {doc: 'doc4', label: 'API'},
     // {page: 'help', label: 'Help'},
     // {blog: true, label: 'Blog'},
+    { href: 'https://github.com/plumier/plumier', label: 'GitHub' },
     {search:true}
   ],
 
