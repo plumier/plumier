@@ -1,6 +1,6 @@
 ---
 id: create-basic-functions
-title: Creating Basic Function
+title: Creating Restful API
 ---
 
 

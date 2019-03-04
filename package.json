@@ -1,6 +1,6 @@
 {
 	"private": true,
-	"description": "Delightful NodeJS Web Api Framework powered by KoaJs and TypeScript",
+	"description": "Delightful Node.js Rest API Framework powered by Koa and TypeScript",
 	"scripts": {
 		"test": "jest --maxWorkers=4",
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish",
@@ -10,8 +10,8 @@
 		"pre": "npm run compile && lerna publish prerelease --exact --preid beta --force-publish",
 		"production": "npm run compile && lerna publish && npm run clean",
 		"benchmark": "yarn workspace plumier benchmark",
-		"start:doc": "cd website && yarn start",
-		"build:doc": "cd website && yarn build"
+		"doc:start": "cd website && yarn start",
+		"doc:build": "cd website && yarn build"
 	},
 	"author": "Ketut Sandiarsa",
 	"devDependencies": {

@@ -8,25 +8,14 @@
       "facility"
     ],
     "Tutorials": [
-      "tutorials/overview",
       {
         "type": "subcategory",
-        "label": "SQL Backend",
+        "label": "SQL Restful API",
         "ids": [
           "tutorials/basic-sql/get-started",
           "tutorials/basic-sql/create-basic-functions",
           "tutorials/basic-sql/securing-restful-api",
           "tutorials/basic-sql/deployment"
-        ]
-      },
-      {
-        "type": "subcategory",
-        "label": "MongoDB Backend",
-        "ids": [
-          "tutorials/basic-mongodb/get-started",
-          "tutorials/basic-mongodb/create-basic-functions",
-          "tutorials/basic-mongodb/securing-restful-api",
-          "tutorials/basic-mongodb/deployment"
         ]
       }
     ],
