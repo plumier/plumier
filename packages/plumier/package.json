@@ -20,7 +20,7 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@koa/cors": "^2.2.3",
+    "@koa/cors": "^3.0.0",
     "@plumier/core": "1.0.0-beta.2",
     "@plumier/jwt": "1.0.0-beta.2",
     "@plumier/validator": "1.0.0-beta.2",
