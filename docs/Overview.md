@@ -3,7 +3,7 @@ id: overview
 title: Overview
 ---
 
-Plumier is a NodeJS REST API framework which created on top of [Koa](https://koajs.com/) and uses TypeScript language. Plumier is battery included framework designed to be fast, flexible and unopinonated.
+Plumier is a Node.js Rest API framework which created on top of [Koa](https://koajs.com/) and uses TypeScript language. Plumier is battery included framework designed to be fast, flexible and short learning curve.
 
 ## Framework
 Simplest Plumier application consists of two parts: controller and entry point. Entry point is the Plumier startup application that will host the REST API and controller is the handler of http request.
@@ -37,7 +37,7 @@ Plumier provided flexible routing by using decorator. It also uses directory str
 // file: controller/api/v1/animal-controller.ts
 export class AnimalsController {
     @route.get()
-    list(offset:number, limit:number=50){
+    list(offset:number, @val.optional() limit:number=50){
         // implementation
     }
 }

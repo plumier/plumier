@@ -30,7 +30,7 @@ const siteConfig = {
   //   baseUrl: '/test-site/',
 
   // Used for publishing and more
-  projectName: 'plumier',
+  projectName: 'documentation',
   organizationName: 'plumier',
   // For top-level user or org sites, the organization is still the same.
   // e.g., for the https://JoelMarcey.github.io site, it would be set like...
@@ -38,11 +38,12 @@ const siteConfig = {
 
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
-    // {doc: 'overview', label: 'Docs'},
-    // {doc: 'doc4', label: 'API'},
+    { doc: 'refs/route', label: 'References' },
+    { doc: 'tutorials/basic-sql/get-started', label: 'Tutorials' },
     // {page: 'help', label: 'Help'},
     // {blog: true, label: 'Blog'},
-    {search:true}
+    { href: 'https://github.com/plumier/plumier', label: 'GitHub' },
+    { search: true }
   ],
 
   // If you have users set above, you add it here:
@@ -104,9 +105,9 @@ const siteConfig = {
   //   repoUrl: 'https://github.com/facebook/test-site',
   docsSideNavCollapsible: true,
   algolia: {
-    apiKey: 'my-api-key',
-    indexName: 'my-index-name',
-    algoliaOptions: {} 
+    apiKey: 'cc5032f20c325b27c07de03fe7078651',
+    indexName: 'plumierjs',
+    algoliaOptions: {}
   },
 };
 

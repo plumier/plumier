@@ -6,7 +6,7 @@ title: File Upload
 
 Plumier added support for file upload using multi part form data using [busboy](https://github.com/mscdex/busboy), Saved file name randomly generated using [sortid](https://github.com/dylang/shortid).
 
-Plumier file upload doesn't scan through all of incoming request instead it only parse request on controller code.
+Plumier file upload doesn't scan through all of incoming request instead it only parse request on controller code make request more efficient. File parser directly pipe request stream into file stream which is good memory usage and overall performance.
 
 ## Enable The Functionality
 By default file upload is not enabled, use `FileUploadFacility` to enable it.

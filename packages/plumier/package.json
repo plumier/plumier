@@ -1,7 +1,7 @@
 {
   "name": "plumier",
   "version": "1.0.0-beta.2",
-  "description": "Delightful NodeJS Web Api Framework powered by KoaJs and TypeScript",
+  "description": "Delightful Node.js Rest API Framework powered by Koa and TypeScript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "keywords": [
@@ -20,7 +20,7 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@koa/cors": "^2.2.3",
+    "@koa/cors": "^3.0.0",
     "@plumier/core": "1.0.0-beta.2",
     "@plumier/jwt": "1.0.0-beta.2",
     "@plumier/validator": "1.0.0-beta.2",
@@ -63,7 +63,7 @@
     "rimraf": "^2.6.3",
     "supertest": "^3.4.2",
     "ts-node": "^8.0.2",
-    "typescript": "^3.3.3"
+    "typescript": "^3.3.3333"
   },
   "bugs": {
     "url": "https://github.com/ktutnik/plumier/issues"
