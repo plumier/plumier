@@ -10,15 +10,17 @@ Before we start creating routes we need to configure Knex.js that will manage th
 
 ```typescript
 import knex from "knex"
-import { configuration } from "../../knexfile";
 
-export const db = knex(configuration)
+export const db = knex({
+    client: "mysql2",
+    connection: process.env.DB_URI
+})
 ```
 
-Above code we created `db` function that already configured with database connection described on the `knexfile.ts`. Knex.js will manage the connection pool and the creation of the connection automatically
+Above code we created `db` function with preconfigured knex instance. Knex.js will manage the connection pool and the creation of the connection automatically
 
 ## Create Controller for Restful API
-We are ready to program controllers now, based on list of routes above we will create two controllers to handle users related routes and todos related routes.
+We are ready to program controllers now, we will create two controllers to handle users related routes and todos related routes.
 
 We will put all controllers inside `controller/api/v1` directory to get extra `/api/v1` path before each of generated routes, read more about [Directory Convention](/docs/refs/route#directory-convention). 
 
@@ -38,8 +40,8 @@ export class TodosController {
     
     // POST /api/v1/todos
     @route.post("")
-    save(user: Todo) {
-        return db("Todo").insert(user)
+    save(data: Todo) {
+        return db("Todo").insert(data)
     }
 
     // GET /api/v1/todos?offset=<number>&limit=<number>
@@ -58,8 +60,8 @@ export class TodosController {
 
     // PUT /api/v1/todos/:id
     @route.put(":id")
-    modify(id: number, user: Todo) {
-        return db("Todo").update(user).where({ id })
+    modify(id: number, data: Todo) {
+        return db("Todo").update(data).where({ id })
     }
 
     // DELETE /api/v1/todos/:id
@@ -88,9 +90,9 @@ export class UsersController {
     
     // POST /api/v1/users
     @route.post("")
-    async save(user: User) {
-        const password = await bcrypt.hash(user.password, 10)
-        return db("User").insert({ ...user, password, role: "User" })
+    async save(data: User) {
+        const password = await bcrypt.hash(data.password, 10)
+        return db("User").insert({ ...data, password, role: "User" })
     }
 
     // GET /api/v1/users?offset=<number>&limit=<number>
@@ -109,9 +111,9 @@ export class UsersController {
 
     // PUT /api/v1/users/:id
     @route.put(":id")
-    async modify(id: number, user: User) {
-        const password = await bcrypt.hash(user.password, 10)
-        return db("User").update({...user, password}).where({ id })
+    async modify(id: number, data: User) {
+        const password = await bcrypt.hash(data.password, 10)
+        return db("User").update({...data, password}).where({ id })
     }
 
     // DELETE /api/v1/users/:id
@@ -130,7 +132,7 @@ Our todo restful api backend is ready for testing, we will use [HTTPie](https://
 Open Visual Studio Code integrated terminal and execute commands below:
 
 ```bash
-$ http POST :8000/api/v1/users email=john.doe@gmail.com password=123456 name="John Doe" role="User"
+$ http POST :8000/api/v1/users email=john.doe@gmail.com password=123456 name="John Doe"
 ```
 
 Above command will add a new user to the database. Code above will return the id of the new added user. Use the returned id to test the other routes.
@@ -143,7 +145,7 @@ $ http :8000/api/v1/users/1
 $ http ":8000/api/v1/users?offset=0&limit=50"
 
 # modify user by id
-$ http PUT :8000/api/1 name="John Unknown Doe" email=john.doe@gmail.com password=123456 role="User"
+$ http PUT :8000/api/1 name="John Unknown Doe" email=john.doe@gmail.com password=123456 role="Admin"
 
 # delete user by id
 $ http DELETE :8000/api/v1/users/1
@@ -174,9 +176,9 @@ We tested our API using good user input, lets test our application using bad use
 
 ```bash
 # test add user without email (email is required)
-$ http POST :8000/api/v1/users password=123456 name="John Doe" role="User"
+$ http POST :8000/api/v1/users password=123456 name="John Doe"
 # test using invalid email
-$ http POST :8000/api/v1/users email="invalid email" password=123456 name="John Doe" role="User"
+$ http POST :8000/api/v1/users email="invalid email" password=123456 name="John Doe"
 # test using invalid data type
 $ http POST :8000/api/v1/todos todo="Buy some milks" userId="invalid user" 
 ```

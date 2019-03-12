@@ -47,9 +47,7 @@ export function createApp(config?: Partial<Configuration>): Promise<Koa> {
     return new Plumier()
         .set(config || {})
         .set(new WebApiFacility())
-        //---- add this line
-        .set(new JwtAuthFacility({ secret: process.env.JWT_SECRET }))
-        //---- 
+        .set(new JwtAuthFacility({ secret: process.env.JWT_SECRET })) // <--- add this line
         .initialize()
 }
 ```
@@ -98,6 +96,67 @@ export class AuthController {
 }
 ```
 
-Controller above will generated into `POST /auth/login` route
+Controller above will generated into `POST /auth/login` route. By default when authorization enabled all route will become secured, means only authenticated user can access routes. `@authorize.public()` above the `login` method will make `/auth/login` accessible by public.
+
+The logic is quite simple, if the provided password match with the saved hash password then a JWT token without token expiration will be returned. If the password doesn't match then it will return Forbidden error with http status 403.
+
 
 ## Testing Login Function
+Our authentication route is ready to test, execute command below from Visual Studio Code integrated terminal
+
+```bash
+$ http :8000/auth/login email=admin@todo.app password=123456
+```
+
+Note that `admin@todo.app` is user that we add during migration using Knex.js seeds. Above command will response jwt token like below
+
+```bash
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Length: 152
+Content-Type: application/json; charset=utf-8
+Date: Sun, 10 Mar 2019 03:48:54 GMT
+Vary: Origin
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJBZG1pbiIsImlhdCI6MTU1MjE4OTczNH0.7kzqgsi1ywRzGCQTTn9vYKGS5sYvPGlqF78YUcUbmMY"
+}
+```
+
+
+## Add Todo Based On Login User 
+Previously when adding todos we specify `userId` manually. Now we have current login user operating the application, we will modify the logic that adding todo will automatically associated with the login user.
+
+Navigate to `todos-controller.ts` and modify `save` method like below
+
+```typescript
+@route.post("")
+save(data: Todo, @bind.user() user: LoginUser) {
+    return db("Todo").insert(<Todo>{ ...data, userId: user.userId })
+}
+```
+
+Above code showing that we doing decorator binding `@bind.user()` to the `user` parameter, using this snippet `user` parameter will automatically populated with current login domain during request.
+
+`userId` property now should be optional to prevent required validation error thrown by Plumier system. Navigate to `domain.ts` and modify the `Todo` domain like below
+
+```typescript
+@domain()
+export class Todo extends Domain {
+    constructor(
+        public todo: string,
+        @val.optional() // <--- add this line
+        public userId:number,
+        @val.optional()
+        public completed: boolean = false
+    ) { super() }
+}
+```
+
+Test above modification by executing command below in Visual Studio Code integrated terminal
+
+```bash
+$ http POST :8000/api/v1/todos Authorization:"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJBZG1pbiIsImlhdCI6MTU1MjE4OTczNH0.7kzqgsi1ywRzGCQTTn9vYKGS5sYvPGlqF78YUcUbmMY" todo="Buy some other milks"
+```
+
+Command above showing that we don't need to specify `userId` anymore. We also specify `Bearer` token that we got from last login into the `Authorization` header on the request.

@@ -37,7 +37,7 @@ Plumier provided flexible routing by using decorator. It also uses directory str
 // file: controller/api/v1/animal-controller.ts
 export class AnimalsController {
     @route.get()
-    list(offset:number, limit:number=50){
+    list(offset:number, @val.optional() limit:number=50){
         // implementation
     }
 }

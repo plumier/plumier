@@ -11,16 +11,15 @@ This tutorial will teaches about Plumier features and best practices on developi
 * Securing routes and parameters based on user role
 * Build and deploying to Heroku
 
+> **Source Code**: Complete source code of this tutorial can be found in [this repository](https://github.com/plumier/tutorial-todo-sql-backend)
+
 ## Requirement
 To be able to follow this tutorial you will need software below installed in your machine.
 * [Node.js](https://nodejs.org/en/download/) version 8 or newer version 
-* [npx](https://www.npmjs.com/package/npx)
 * [Visual Studio Code](https://code.visualstudio.com/download) 
 * [HTTPie](https://httpie.org/#installation) 
 * [Yarn](https://yarnpkg.com/lang/en/docs/install) 
   
-> You may not need to install `npx` because its will be installed if you install Node.js 8 or newer version
-
 > Yarn is required, Plumier Starter cli app use Yarn internally to initiate the starter project.
 
 Test the following code in your terminal application (Terminal, Cmd, Powershell, Git Bash) to make sure everything installed properly.
@@ -48,10 +47,8 @@ $ npx plumier-starter
 
 Command above will download the Plumier Starter package from npm registry and execute its command immediately after finished download.
 
-
-Plumier Starter will ask for project name, enter `todo-sql-backend` and press enter.
-
-Next Plumier Starter will ask for what starter will you use. Select `basic-rest-api` using arrow key on your keyboard and enter to confirm your selection.
+* Plumier Starter will ask for project name, enter `todo-sql-backend` and press enter.
+* Next Plumier Starter will ask for what starter will you use. Select `basic-rest-api` using arrow key on your keyboard and enter to confirm your selection.
 
 Wait a few seconds until Plumier Starter finish downloading the starter and install dependencies for you.
 

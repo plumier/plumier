@@ -36,7 +36,8 @@
       "tutorials/basic-sql/debugging",
       "tutorials/basic-sql/create-custom-validation",
       "tutorials/basic-sql/create-local-authentication",
-      "tutorials/basic-sql/securing-restful-api",
+      "tutorials/basic-sql/securing-routes",
+      "tutorials/basic-sql/securing-domain",
       "tutorials/basic-sql/deployment"
     ]
   }
