@@ -2,6 +2,7 @@
 	"private": true,
 	"description": "Delightful Node.js Rest API Framework powered by Koa and TypeScript",
 	"scripts": {
+		"postinstall": "cd website && yarn install",
 		"test": "jest --maxWorkers=4",
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish",
 		"clean": "node script/cleanup",

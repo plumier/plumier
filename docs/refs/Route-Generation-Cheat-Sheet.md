@@ -114,6 +114,8 @@ GET /beast/:id
 GET /beast/list?last=<number>&limit=<number>
 ```
 
+> Route by directory convention will kept intact in absolute route override, due to directory convention usually used for API versioning.
+
 ## Relative Route Override
 
 Relative route override will only rename the name of the action and keep using controller name.
@@ -147,7 +149,7 @@ GET /animal?id=<number>
 
 ## Example Restful Api
 
-Sum up of above rule you can create Restful API route like below:
+Sum up of above rules you can construct clean Restful API routes like below:
 
 ```typescript
 export class AnimalController {
@@ -195,8 +197,7 @@ Root route can be parameterized and provided backing parameter on all of the act
 @route.root("/beast/:beastId")
 export class AnimalController {
     get(beastId:number, id:number){}
-    //absolute route doesn't need to provided backing parameter
-    //fpr beastId
+    //absolute route doesn't need to provided backing parameter for beastId
     @route.get("/list")
     list(last:number, limit:number)
 }

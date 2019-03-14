@@ -47,6 +47,7 @@ export function createRoute(...args: string[]): string {
         .filter(x => !!x)
         .map(x => x.toLowerCase())
         .map(x => x.startsWith("/") ? x.slice(1) : x)
+        .map(x => x.endsWith("/") ? x.slice(0, -1) : x)
         .filter(x => !!x)
         .join("/")
 }
@@ -89,28 +90,6 @@ export function isCustomClass(type: Function | Function[]) {
     }
 }
 
-// export type DecoratorPath = { index: string | number, type: "Object" | "Array" }
-
-// export function getDecorators(props: (PropertyReflection | ParameterReflection)[], callback: (x: any) => boolean, path: DecoratorPath[] = []) {
-//     const result:{path:DecoratorPath[], decorators:any[]}[] = []
-//     for (let i = 0; i < props.length; i++) {
-//         const prop = props[i];
-//         const decorators = getPropertyDecorators(prop, callback, path.concat([{ index: i, type: "Array" }]))
-//         result.push(...decorators)
-//     }
-//     return result;
-// }
-
-// function getPropertyDecorators(prop: PropertyReflection | ParameterReflection, callback: (x: any) => boolean, path: DecoratorPath[]) {
-//     const decorators = prop.decorators.filter(callback)
-//     const result = [{ path, decorators }]
-//     if (isCustomClass(prop.type)) {
-//         const meta = reflect(prop.type as Class)
-//         const decorators = getDecorators(meta.properties, callback, path.concat([{ index: prop.name, type: "Object" }]))
-//         result.push(...decorators)
-//     }
-//     return result;
-// }
 
 // ##################################################################### //
 // ############################ FILE SYSTEM ############################ //

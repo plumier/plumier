@@ -6,9 +6,7 @@
       "controller",
       "middleware",
       "facility"
-    ]
-  },
-  "reference": {
+    ],
     "References": [
       "refs/route",
       "refs/parameter-binding",

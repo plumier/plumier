@@ -13,8 +13,6 @@ const plum = new Plumier()
 plum.set(new MongooseFacility({uri: "mongodb://localhost:27017/test-data"}))
 ```
 
-> It is required to use [parameter properties](https://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) to be able to make auto schema generate work properly. Common common decorated property is not supported, because its best practice to use parameter properties with null safety enabled.
-
 Mongoose facility will automatically connect to the MongoDB database and make sure it ready before application started.
 
 ## Mark Domain Model For Schema Generated

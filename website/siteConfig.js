@@ -38,7 +38,7 @@ const siteConfig = {
 
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
-    { doc: 'refs/route', label: 'References' },
+    { doc: 'overview', label: 'Docs' },
     { doc: 'tutorials/basic-sql/get-started', label: 'Tutorials' },
     // {page: 'help', label: 'Help'},
     // {blog: true, label: 'Blog'},

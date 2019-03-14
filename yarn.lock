@@ -1208,9 +1208,9 @@
     "@types/node" "*"
 
 "@types/node@*":
-  version "11.11.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.11.2.tgz#873d2c3f3824212cc16130074699e1bcb38c0231"
-  integrity sha512-iEaHiDNkHv4Jrm9O5T37OYEUwjJesiyt6ZlhLFK0sbo4CLD0jyCOB4Pc2F9iD3MbW2397SLNxZKdDGntGaBjQQ==
+  version "11.11.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.11.3.tgz#7c6b0f8eaf16ae530795de2ad1b85d34bf2f5c58"
+  integrity sha512-wp6IOGu1lxsfnrD+5mX6qwSwWuqsdkKKxTN4aQc4wByHAKZJf9/D4KXPQ1POUjEbnCP5LMggB0OEFNY9OTsMqg==
 
 "@types/range-parser@*":
   version "1.2.3"
@@ -6641,7 +6641,6 @@ retry@^0.10.0:
   version "0.10.1"
   resolved "https://registry.yarnpkg.com/retry/-/retry-0.10.1.tgz#e76388d217992c252750241d3d3956fed98d8ff4"
   integrity sha1-52OI0heZLCUnUCQdPTlW/tmNj/Q=
-
 
 rimraf@2, rimraf@^2.5.4, rimraf@^2.6.2, rimraf@^2.6.3:
   version "2.6.3"

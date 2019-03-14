@@ -1,9 +1,9 @@
 ---
 id: overview
-title: Overview
+title: Plumier In Five Minutes
 ---
 
-Plumier is a Node.js Rest API framework which created on top of [Koa](https://koajs.com/) and uses TypeScript language. Plumier is battery included framework designed to be fast, flexible and short learning curve.
+Plumier is a Node.js Rest API framework created on top of [Koa](https://koajs.com/) and uses TypeScript language. Plumier is battery included framework designed to be readable, testable and fast with short learning curve.
 
 ## Framework
 Simplest Plumier application consists of two parts: controller and entry point. Entry point is the Plumier startup application that will host the REST API and controller is the handler of http request.
@@ -31,7 +31,7 @@ Example above showing that Controller manually registered on `WebApiFacility`, b
 > Its recommended to start Plumier project using `plumier-starter` which provided some ready to use starter with some best practices. 
 
 ## Routing 
-Plumier provided flexible routing by using decorator. It also uses directory structure to generate routes to provided better code separation.
+Plumier provided flexible routing that combine between decorator, metadata reflection and directory structure to generate routes.
 
 ```typescript
 // file: controller/api/v1/animal-controller.ts
@@ -43,7 +43,7 @@ export class AnimalsController {
 }
 ```
 
-Controller above will generate into route below
+Controller above will generated into route below
 
 ```
 GET /api/v1/animals/list?offset=0&limit=<optional>
@@ -100,7 +100,7 @@ Take a look at the complete [cheat sheet](refs/route) on how to configure routes
 
 
 ## Type Converter
-Plumier has its own [dedicated reflection library](https://github.com/plumier/tinspector), that make it aware about TypeScript type annotation and reflection. By using those reflection library Plumier can provide data conversion from request data into proper data type implicitly without further configuration.
+Plumier has its own [dedicated reflection library](https://github.com/plumier/tinspector), that make it aware about TypeScript type annotation and reflection. By using that reflection library Plumier able to convert user request into proper data type implicitly without further configuration.
 
 ```typescript
 export class AnimalsController {
@@ -171,7 +171,7 @@ Type of isDeceased: boolean
 Refer to [converter documentation](refs/converters) for more information about Plumier type conversion.
 
 ## Parameter Binding
-Plumier provided parameter binding to bind request data into method parameters, and provided convention that is easy to read and testable.
+Plumier provided parameter binding to bind request data into method parameters, and provided convention that is readable and testable.
 
 Plumier supported various type of parameter binding: [decorator binding](refs/parameter-binding#decorator-binding), [name binding](refs/parameter-binding#name-binding), [model binding](refs/parameter-binding#model-binding). 
 

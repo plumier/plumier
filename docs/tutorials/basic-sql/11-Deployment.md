@@ -23,7 +23,7 @@ There are some step need to do before we can deploy our todo application to Hero
 
 ![jawsdb](../../assets/tutorial/heroku-jawsdb-mysql.png)
 
-* Click the JawsDB MySQL hyperlink it will open in a new tab, and copy database connection string there.
+* Click the JawsDB MySQL hyperlink it will open in a new tab, than copy database connection string there.
 
 ![connection-string](../../assets/tutorial/jaswdb-connection-string.png)
 
