@@ -68,9 +68,9 @@
     "typescript": "^3.3.3333"
   },
   "bugs": {
-    "url": "https://github.com/ktutnik/plumier/issues"
+    "url": "https://github.com/plumier/plumier/issues"
   },
-  "homepage": "https://github.com/ktutnik/plumier",
+  "homepage": "https://plumierjs.com",
   "publishConfig": {
     "access": "public"
   },

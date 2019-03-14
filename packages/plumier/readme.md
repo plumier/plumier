@@ -149,7 +149,7 @@ Plumier enhanced with static route analysis which will print friendly message if
 ![static analysis](images/static-analysis.png)
 
 ## Documentation
-Go to Plumier [wiki](https://plumierjs.com/docs/refs) for complete documentation and tutorial
+Go to Plumier [documentation](https://plumierjs.com) for complete documentation and tutorial
 
 ## Requirements
 * TypeScript
