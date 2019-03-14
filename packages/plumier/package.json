@@ -1,6 +1,6 @@
 {
   "name": "plumier",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "description": "Delightful Node.js Rest API Framework powered by Koa and TypeScript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -21,9 +21,9 @@
   "license": "MIT",
   "dependencies": {
     "@koa/cors": "^3.0.0",
-    "@plumier/core": "1.0.0-beta.2",
-    "@plumier/jwt": "1.0.0-beta.2",
-    "@plumier/validator": "1.0.0-beta.2",
+    "@plumier/core": "1.0.0-beta.3",
+    "@plumier/jwt": "1.0.0-beta.3",
+    "@plumier/validator": "1.0.0-beta.3",
     "@types/busboy": "^0.2.3",
     "@types/glob": "^7.1.1",
     "@types/koa": "^2.0.48",
