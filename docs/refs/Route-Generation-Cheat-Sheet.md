@@ -256,5 +256,23 @@ GET /about-us
 GET /cart
 ```
 
+## Multiple Root Route 
+Multiple root routes can also be applied into a controller and resulting create multiple routes for each methods.
 
 
+```typescript
+@route.root("/home")
+@route.root("/dashboard")
+export class HomeController {
+    index(id:number){
+        return response.file("<file path>")
+    }
+}
+```
+
+```
+GET /home/index
+GET /dashboard/index
+```
+
+> Absolute route when combined with multiple root route will cause conflict, consider to avoid them.
