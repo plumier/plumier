@@ -1,7 +1,7 @@
 {
   "name": "plumier",
-  "version": "1.0.0-beta.2",
-  "description": "Delightful NodeJS Web Api Framework powered by KoaJs and TypeScript",
+  "version": "1.0.0-beta.3",
+  "description": "Delightful Node.js Rest API Framework powered by Koa and TypeScript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "keywords": [
@@ -20,10 +20,10 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@koa/cors": "^2.2.3",
-    "@plumier/core": "1.0.0-beta.2",
-    "@plumier/jwt": "1.0.0-beta.2",
-    "@plumier/validator": "1.0.0-beta.2",
+    "@koa/cors": "^3.0.0",
+    "@plumier/core": "1.0.0-beta.3",
+    "@plumier/jwt": "1.0.0-beta.3",
+    "@plumier/validator": "1.0.0-beta.3",
     "@types/busboy": "^0.2.3",
     "@types/glob": "^7.1.1",
     "@types/koa": "^2.0.48",
@@ -46,6 +46,7 @@
     "@types/cors": "^2.8.4",
     "@types/express": "^4.16.1",
     "@types/express-jwt": "^0.0.41",
+    "@types/fs-extra": "^5.0.5",
     "@types/joi": "^14.3.1",
     "@types/jsonwebtoken": "^8.3.0",
     "@types/koa-router": "^7.0.39",
@@ -57,18 +58,19 @@
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "express-jwt": "^5.3.1",
+    "fs-extra": "^7.0.1",
     "joi": "^14.3.1",
     "jsonwebtoken": "^8.4.0",
     "koa-router": "^7.4.0",
     "rimraf": "^2.6.3",
     "supertest": "^4.0.0",
     "ts-node": "^8.0.2",
-    "typescript": "^3.3.3"
+    "typescript": "^3.3.3333"
   },
   "bugs": {
-    "url": "https://github.com/ktutnik/plumier/issues"
+    "url": "https://github.com/plumier/plumier/issues"
   },
-  "homepage": "https://github.com/ktutnik/plumier",
+  "homepage": "https://plumierjs.com",
   "publishConfig": {
     "access": "public"
   },

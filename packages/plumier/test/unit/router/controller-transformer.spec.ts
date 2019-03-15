@@ -141,6 +141,7 @@ describe("Controller Transformer", () => {
                 otherMethod() { }
             }
             const result = transformController(AnimalController)
+            expect(result.length).toBe(1)
             expect(result).toMatchObject([{ method: "get", url: "/animal/themethod" }])
         })
     })
@@ -192,5 +193,56 @@ describe("Controller Transformer", () => {
                 { method: "get", url: "/beast/othermethod" }
             ])
         })
+
+        it("Should transform multiple root decorators", () => {
+            @route.root("/animal")
+            @route.root("/beast")
+            class AnimalController {
+                theMethod(id: string) { }
+            }
+            const result = transformController(AnimalController)
+            expect(result).toMatchObject([
+                { method: "get", url: "/animal/themethod" },
+                { method: "get", url: "/beast/themethod" },
+            ])
+        })
+
+        it("Should transform multiple root decorators with multiple routes", () => {
+            @route.root("/animal")
+            @route.root("/beast")
+            class AnimalController {
+                @route.get("home")
+                @route.get("about")
+                theMethod(id: string) { }
+            }
+            const result = transformController(AnimalController)
+            expect(result).toMatchObject([
+                { method: "get", url: "/animal/home" },
+                { method: "get", url: "/animal/about" },
+                { method: "get", url: "/beast/home" },
+                { method: "get", url: "/beast/about" },
+            ])
+        })
+
+        it("Should add preceding slash if not provided", () => {
+            @route.root("beast")
+            class AnimalController {
+                @route.get("get")
+                theMethod(id: string) { }
+            }
+            const result = transformController(AnimalController)
+            expect(result).toMatchObject([{ method: "get", url: "/beast/get" }])
+        })
+
+        it("Should not double slash if trailing slash added", () => {
+            @route.root("/beast/")
+            class AnimalController {
+                @route.get("get")
+                theMethod(id: string) { }
+            }
+            const result = transformController(AnimalController)
+            expect(result).toMatchObject([{ method: "get", url: "/beast/get" }])
+        })
     })
 })
+

@@ -1,5 +1,6 @@
 import { bind, Class, Configuration, FileParser, FileUploadInfo, route } from "@plumier/core"
-import { existsSync, rmdirSync, unlinkSync } from "fs"
+import { existsSync, unlinkSync } from "fs"
+import { removeSync } from "fs-extra"
 import { extname, join } from "path"
 import Supertest from "supertest"
 
@@ -62,10 +63,7 @@ describe("File Upload", () => {
         expect(info.size).toBeGreaterThan(100)
         expect(info.field).toBe("file")
         expect(existsSync(filePath)).toBe(true)
-        unlinkSync(filePath)
-        rmdirSync(join(__dirname, "./upload/path/of/file"))
-        rmdirSync(join(__dirname, "./upload/path/of"))
-        rmdirSync(join(__dirname, "./upload/path/"))
+        removeSync(join(__dirname, "./upload/path/"))
     })
 
     it("Should return error 500 if no file parser provided", async () => {

@@ -7,15 +7,6 @@
       "middleware",
       "facility"
     ],
-    "Tutorials": [
-      {
-        "type": "subcategory",
-        "label": "Basic Starter",
-        "ids": [
-          "tutorials/basic/get-started"
-        ]
-      }
-    ],
     "References": [
       "refs/route",
       "refs/parameter-binding",
@@ -32,10 +23,20 @@
       "extends/custom-parameter-binding",
       "extends/custom-converter",
       "extends/custom-validator"
-    ],
-    "Advanced Topic": [
-      "doc5"
     ]
   },
-  "docs-other": {}
+  "tutorials": {
+    "SQL Restful API": [
+      "tutorials/basic-sql/get-started",
+      "tutorials/basic-sql/create-domain",
+      "tutorials/basic-sql/create-migration",
+      "tutorials/basic-sql/create-restful-api",
+      "tutorials/basic-sql/debugging",
+      "tutorials/basic-sql/create-custom-validation",
+      "tutorials/basic-sql/create-local-authentication",
+      "tutorials/basic-sql/securing-routes",
+      "tutorials/basic-sql/securing-domain",
+      "tutorials/basic-sql/deployment"
+    ]
+  }
 }

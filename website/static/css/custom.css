@@ -12,6 +12,10 @@ article a:hover{
     text-decoration: underline;
 }
 
+.mainContainer{
+    padding: 35px 0;
+}
+
 .fixedHeaderContainer {
     background: #fff;
     border-bottom: 1px solid #eee;
@@ -21,19 +25,22 @@ article a:hover{
     color: #848484;
 }
 
-.navigationSlider .slidingNav ul,
-.navigationSlider .slidingNav ul li a,
-.navigationSlider .slidingNav ul li.siteNavGroupActive a {
-    background: #fff;
-    color: #848484;
-}
-
 .docsNavContainer .toc .navBreadcrumb {
     border-bottom: 1px solid #eee;
     background: #fff;
 }
 
-
+/* menus */
+.navigationSlider .slidingNav ul{
+    background: #fff;
+    color: #848484;
+}
+.navigationSlider .slidingNav ul li a:focus, 
+.navigationSlider .slidingNav ul li a:hover, 
+.navigationSlider .slidingNav ul li.siteNavItemActive a, 
+.navigationSlider .slidingNav ul li.siteNavGroupActive a {
+    background: #efefef;
+}
 
 /* search */
 input#search_input_react {
@@ -58,6 +65,23 @@ input#search_input_react:focus, input#search_input_react:active{
 }
 
 @media only screen and (min-width: 1024px) {
+    /* menus */
+    .navigationSlider .slidingNav ul li a {
+        color: #848484;
+    }
+    .navigationSlider .slidingNav ul li a:hover, 
+    .navigationSlider .slidingNav ul li.siteNavItemActive a, 
+    .navigationSlider .slidingNav ul li.siteNavGroupActive a{
+        background: #fff;
+        color: #848484;
+        font-weight: 500;
+    }
+
+    /* search */
+    .reactNavSearchWrapper input#search_input_react:focus, 
+    .reactNavSearchWrapper input#search_input_react:active {
+        background: #fff;
+    }
 }
 
 @media only screen and (max-width: 1023px) {

@@ -1,5 +1,5 @@
 # Plumier
-Delightful NodeJS Web Api Framework powered by KoaJs and TypeScript
+Delightful Node.js Rest API Framework powered by Koa and TypeScript
 
 [![Build Status](https://travis-ci.org/plumier/plumier.svg?branch=master)](https://travis-ci.org/plumier/plumier)
 [![Build status](https://ci.appveyor.com/api/projects/status/6carp7h4q50v4pj6?svg=true)](https://ci.appveyor.com/project/ktutnik/plumier-isghw)
@@ -12,7 +12,7 @@ Plumier primarily created for full stack developer who spend more time working o
 ### Lightweight
 Plumier relatively has small code base which make it light and fast. It uses Koa as its core http handler which is quite fast, below is comparison result of Koa, Plumier and Express.
 
-![Benchmarks](images/benchmarks.png)
+![Benchmarks](https://plumierjs.com/docs/assets/benchmarks.png)
 
 The benchmark project forked from Fastify benchmark project, you can test it your self [here](https://github.com/ktutnik/benchmarks).
 
@@ -45,12 +45,12 @@ PUT /api/v1/users/:id
 
 Plumier has a flexible decorator based routing configuration, it makes you easily create clean restful api routes and nested restful api with separate controller. 
 
-Check the [route cheat sheet](https://github.com/plumier/plumier/wiki/route-generation-cheat-sheet) for detail information
+Check the [route cheat sheet](https://plumierjs.com/docs/refs/route) for detail information
 
 ### Testable
 Plumier controller is a plain TypeScript class it doesn't need to inherit from any base class, thats make it easily instantiated outside the framework. 
 
-Plumier provided powerful [parameter binding](https://github.com/plumier/plumier/wiki/parameter-binding) to bound specific value of request object into method's parameter which eliminate usage of Request stub. Controller returned object or promised object or throw `HttpStatusError` and translated into http response which eliminate usage of Response mock.
+Plumier provided powerful [parameter binding](https://plumierjs.com/docs/refs/parameter-binding) to bound specific value of request object into method's parameter which eliminate usage of Request stub. Controller returned object or promised object or throw `HttpStatusError` and translated into http response which eliminate usage of Response mock.
 
 ```typescript
 export class AuthController {
@@ -66,7 +66,7 @@ export class AuthController {
 }
 ```
 
-Controller above uses [name binding](https://github.com/plumier/plumier/wiki/parameter-binding#name-binding), `userName` and `password` parameter will automatically bound with request body `{ "userName": "abcd", "password": "12345" }` or url encoded form `userName=abcd&password=12345`.
+Controller above uses [name binding](https://plumierjs.com/docs/refs/parameter-binding#name-binding), `userName` and `password` parameter will automatically bound with request body `{ "userName": "abcd", "password": "12345" }` or url encoded form `userName=abcd&password=12345`.
 
 Testing above controller is as simple as testing plain object:
 
@@ -85,7 +85,7 @@ it("Should reject if provided invalid username or password", async () => {
 ```
 
 ### Secure
-Plumier provided built-in [type converter](https://github.com/plumier/plumier/wiki/converters), [validator](https://github.com/plumier/plumier/wiki/validation), [token based authentication](https://github.com/plumier/plumier/wiki/authorization), [declarative authorization](https://github.com/plumier/plumier/wiki/authorization#role-authorization) and [parameter authorization](https://github.com/plumier/plumier/wiki/authorization#parameter-authorization) which make creating secure JSON API trivial.
+Plumier provided built-in [type converter](https://plumierjs.com/docs/refs/converters), [validator](https://plumierjs.com/docs/refs/validation), [token based authentication](https://plumierjs.com/docs/refs/authorization), [declarative authorization](https://plumierjs.com/docs/refs/authorization#role-authorization) and [parameter authorization](https://plumierjs.com/docs/refs/authorization#parameter-authorization) which make creating secure JSON API trivial.
 
 ```typescript
 @domain()
@@ -149,7 +149,7 @@ Plumier enhanced with static route analysis which will print friendly message if
 ![static analysis](images/static-analysis.png)
 
 ## Documentation
-Go to Plumier [wiki](https://github.com/plumier/plumier/wiki) for complete documentation and tutorial
+Go to Plumier [documentation](https://plumierjs.com) for complete documentation and tutorial
 
 ## Requirements
 * TypeScript
