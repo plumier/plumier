@@ -13,13 +13,14 @@ import reflect, {
 } from "tinspector"
 
 import { getChildValue } from "./common"
+import { HttpStatus } from './http-status';
 
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------------- TYPES ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-export type HttpMethod = "post" | "get" | "put" | "delete" | "patch" | "head" | "trace" | "options" 
+export type HttpMethod = "post" | "get" | "put" | "delete" | "patch" | "head" | "trace" | "options"
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>
 export type RequestPart = keyof Request
 export type HeaderPart = keyof IncomingHttpHeaders
@@ -44,12 +45,20 @@ export interface RootDecorator { name: "Root", url: string }
 
 export interface MiddlewareDecorator { name: "Middleware", value: Middleware[] }
 
-export interface AuthDecorator {
-    type: "authorize:public" | "authorize:role",
-    value: string[]
+export interface AuthorizeMetadataInfo {
+    role: string[]
+    user: any
+    ctx: Koa.Context
+    route: RouteInfo
+    parameters: any[]
+    value?: any
 }
 
-//export interface DomainDecorator { name: "Domain" }
+export interface AuthorizeDecorator {
+    type: "plumier-meta:authorize",
+    authorize: (info: AuthorizeMetadataInfo) => Promise<boolean>,
+    tag: string
+}
 
 export interface RouteInfo {
     url: string,
@@ -57,7 +66,6 @@ export interface RouteInfo {
     action: MethodReflection
     controller: ClassReflection
 }
-
 
 export enum ValidatorId {
     optional = "internal:optional",
@@ -302,7 +310,7 @@ export class ActionResult {
 
 
 export class HttpStatusError extends Error {
-    constructor(public status: number, message?: string) {
+    constructor(public status: HttpStatus, message?: string) {
         super(message)
         Object.setPrototypeOf(this, HttpStatusError.prototype);
     }
@@ -757,6 +765,17 @@ export namespace middleware {
 export function domain() { return reflect.parameterProperties() }
 
 export class AuthDecoratorImpl {
+
+    custom(authorize: (info: AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method") => Promise<boolean>, tag: string = "Custom") {
+        return decorate((...args: any[]) => {
+            const type = args.length === 1 ? "Class" : args.length === 2 ? "Method" : "Parameter"
+            return <AuthorizeDecorator>{
+                type: "plumier-meta:authorize", tag,
+                authorize: (info: AuthorizeMetadataInfo) => authorize(info, type),
+            }
+        }, ["Class", "Parameter", "Method", "Property"])
+    }
+
     /**
      * Authorize controller/action to public
      */
@@ -764,21 +783,25 @@ export class AuthDecoratorImpl {
         return decorate((...args: any[]) => {
             if (args.length === 3 && typeof args[2] === "number")
                 throw new Error(errorMessage.PublicNotInParameter)
-            return { type: "authorize:public", value: [] }
-        }, ["Class", "Parameter", "Method"])
+            return <AuthorizeDecorator>{ type: "plumier-meta:authorize", tag: "Public" }
+        }, ["Class", "Parameter", "Method", "Property"])
     }
 
     /**
-     * Authorize controller/action accessible by sepecific role
+     * Authorize controller/action accessible by specific role
      * @param roles List of roles allowed
      */
     role(...roles: string[]) {
-        return mergeDecorator(
-            decorate({ type: "authorize:role", value: roles }, ["Class", "Parameter", "Method"]),
-            (...args: any[]) => {
-                if (args.length === 3 && typeof args[2] === "number")
-                    decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: ValidatorId.optional })(args[0], args[1], args[2])
-            })
+        const roleDecorator = this.custom(async (info, location) => {
+            const { role, value } = info
+            const isAuthorized = roles.some(x => role.some(y => x === y))
+            return location === "Parameter" ? !!value && isAuthorized : isAuthorized
+        }, roles.join(", "))
+        const optionalDecorator = (...args: any[]) => {
+            if (args.length === 3 && typeof args[2] === "number")
+                decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: ValidatorId.optional })(args[0], args[1], args[2])
+        }
+        return mergeDecorator(roleDecorator, optionalDecorator)
     }
 }
 

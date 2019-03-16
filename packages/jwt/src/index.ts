@@ -1,8 +1,10 @@
 import {
     ActionResult,
-    AuthDecorator,
+    AuthorizeDecorator,
+    AuthorizeMetadataInfo,
     Class,
     Facility,
+    HttpStatus,
     HttpStatusError,
     Invocation,
     isCustomClass,
@@ -24,51 +26,60 @@ export interface JwtAuthFacilityOption { secret: string, roleField?: RoleField, 
 /* ------------------------------- HELPERS --------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function isAuthDecorator(decorator: any) {
-    return decorator.type === "authorize:role" || decorator.type === "authorize:public"
+function isAuthDecorator(decorator: AuthorizeDecorator) {
+    return decorator.type === "plumier-meta:authorize"
 }
 
-function getGlobalDecorator(globalDecorator?: (...args: any[]) => void) {
+function getGlobalDecorators(globalDecorator?: (...args: any[]) => void) {
     if (globalDecorator) {
         @globalDecorator
         class DummyClass { }
         const meta = reflect(DummyClass)
-        const auth = meta.decorators.find((x): x is AuthDecorator => isAuthDecorator(x))
-        return auth
+        return meta.decorators.filter((x): x is AuthorizeDecorator => isAuthDecorator(x))
     }
+    else return []
 }
 
-function getDecorator(info: RouteInfo, globalDecorator?: (...args: any[]) => void) {
-    return info.action.decorators.find((x: any): x is AuthDecorator => isAuthDecorator(x)) ||
-        info.controller.decorators.find((x: any): x is AuthDecorator => isAuthDecorator(x)) ||
-        getGlobalDecorator(globalDecorator)
+function getAuthorizeDecorators(info: RouteInfo, globalDecorator?: (...args: any[]) => void) {
+    const actionDecs = info.action.decorators.filter((x: any): x is AuthorizeDecorator => isAuthDecorator(x))
+    if (actionDecs.length > 0) return actionDecs
+    const controllerDecs = info.controller.decorators.filter((x: any): x is AuthorizeDecorator => isAuthDecorator(x))
+    if (controllerDecs.length > 0) return controllerDecs
+    return getGlobalDecorators(globalDecorator)
 }
 
-export function checkParameter(path: string[], meta: PropertyReflection | ParameterReflection, value: any, userRole: string[]): string[] {
+export async function checkParameter(path: string[], meta: PropertyReflection | ParameterReflection, value: any, info: AuthorizeMetadataInfo) {
     if (value === undefined) return []
     else if (Array.isArray(meta.type)) {
         const newMeta = { ...meta, type: meta.type[0] };
-        return (value as any[]).map((x, i) => checkParameter(path.concat(i.toString()), newMeta, x, userRole))
-            .flatten()
+        const result: string[] = []
+        for (let i = 0; i < value.length; i++) {
+            const val = value[i];
+            result.push(...await checkParameter(path.concat(i.toString()), newMeta, val, info))
+        }
+        return result
     }
     else if (isCustomClass(meta.type)) {
         const classMeta = reflect(<Class>meta.type)
         const values = classMeta.properties.map(x => value[x.name])
-        return checkParameters(path, classMeta.properties, values, userRole)
+        return checkParameters(path, classMeta.properties, values, info)
     }
     else {
-        const requestRoles = meta.decorators.find((x): x is AuthDecorator => isAuthDecorator(x))
-        if (requestRoles && !userRole.some(x => requestRoles.value.some(y => y === x)))
-            return [path.join(".")]
+        const decorators = meta.decorators.filter((x): x is AuthorizeDecorator => isAuthDecorator(x))
+        const result: string[] = []
+        for (const dec of decorators) {
+            if (!await dec.authorize({ ...info, value }))
+                result.push(path.join("."))
+        }
+        return result
     }
-    return []
 }
 
-export function checkParameters(path: string[], meta: (PropertyReflection | ParameterReflection)[], value: any[], userRole: string[]): string[] {
+export async function checkParameters(path: string[], meta: (PropertyReflection | ParameterReflection)[], value: any[], info: AuthorizeMetadataInfo) {
     const result: string[] = []
     for (let i = 0; i < meta.length; i++) {
         const prop = meta[i];
-        const issues = checkParameter(path.concat(prop.name), prop, value[i], userRole)
+        const issues = await checkParameter(path.concat(prop.name), prop, value[i], info)
         result.push(...issues)
     }
     return result
@@ -101,34 +112,32 @@ export class AuthorizeMiddleware implements Middleware {
         }
     }
 
-    private checkUserAccessToRoute(userRoles: string[], decorator: AuthDecorator | undefined) {
-        //if the access is public
-        if (decorator && decorator.type === "authorize:public")
-            return
-        //if user not login (all user must have role)
-        else if (userRoles.length === 0)
-            throw new HttpStatusError(403, "Forbidden")
-        //if no decorator specific (secured) or decorator match with user role
-        else if (!decorator || userRoles.some(x => decorator.value.some(y => x === y)))
-            return
-        else
-            throw new HttpStatusError(401, "Unauthorized")
+    private async checkUserAccessToRoute(decorators: AuthorizeDecorator[], info: AuthorizeMetadataInfo) {
+        if (decorators.some(x => x.tag === "Public")) return
+        if (info.role.length === 0) throw new HttpStatusError(HttpStatus.Forbidden, "Forbidden")
+        const conditions = await Promise.all(decorators.map(x => x.authorize(info)))
+        //use OR condition
+        //if ALL condition doesn't authorize user then throw
+        if (conditions.length > 0 && conditions.every(x => x === false))
+            throw new HttpStatusError(HttpStatus.Unauthorized, "Lorem ipsum dolor")
     }
 
-    private checkUserAccessToParameters(meta: ParameterReflection[], values: any[], roles: string[]) {
-        const unauthorizedPaths = checkParameters([], meta, values, roles)
+    private async checkUserAccessToParameters(meta: ParameterReflection[], values: any[], info: AuthorizeMetadataInfo) {
+        const unauthorizedPaths = await checkParameters([], meta, values, info)
         if (unauthorizedPaths.length > 0)
             throw new HttpStatusError(401, `Unauthorized to populate parameter paths (${unauthorizedPaths.join(", ")})`)
     }
 
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
         if (!invocation.context.route) return invocation.proceed()
-        const decorator = getDecorator(invocation.context.route, this.global)
+        const { route, parameters, state } = invocation.context
+        const decorator = getAuthorizeDecorators(invocation.context.route, this.global)
         const userRoles = await this.getRole(invocation.context.state.user)
+        const info = <AuthorizeMetadataInfo>{ role: userRoles, parameters, user: state.user, route, ctx: invocation.context }
         //check user access
-        this.checkUserAccessToRoute(userRoles, decorator)
+        await this.checkUserAccessToRoute(decorator, info)
         //if ok check parameter access
-        this.checkUserAccessToParameters(invocation.context.route.action.parameters, invocation.context.parameters!, userRoles)
+        await this.checkUserAccessToParameters(invocation.context.route.action.parameters, invocation.context.parameters!, info)
         //if all above passed then proceed
         return invocation.proceed()
     }

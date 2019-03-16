@@ -241,6 +241,77 @@ describe("JwtAuth", () => {
                 .expect(404)
             expect(fn).toBeCalled()
         })
+
+        it("Should allow using multiple @authorize.role() decorators", async () => {
+            class AnimalController {
+                @authorize.role("superadmin")
+                @authorize.role("admin")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
+                .expect(200)
+        })
+
+        it("Should allow authorize using @authorize.public() and @authorize.role() in the same action", async () => {
+            class AnimalController {
+                @authorize.public()
+                @authorize.role("admin")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
+                .expect(200)
+        })
+
+        it("Should able to use @authorize.custom()", async () => {
+            class AnimalController {
+                @authorize.custom(async i => i.role.some(x => x === "admin"))
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
+                .expect(401)
+        })
     })
 
     describe("Global Authorization", () => {

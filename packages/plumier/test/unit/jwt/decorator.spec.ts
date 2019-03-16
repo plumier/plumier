@@ -10,7 +10,7 @@ describe("JwtAuth Decorator", () => {
         }
 
         const meta = reflect(AnimalController)
-        expect(meta.decorators).toEqual([{ type: 'authorize:role', value: ['admin'] }])
+        expect(meta.decorators).toMatchObject([{ type: 'plumier-meta:authorize', tag: 'admin' }])
     })
 
     it("Should able to decorate method", () => {
@@ -20,7 +20,7 @@ describe("JwtAuth Decorator", () => {
         }
 
         const meta = reflect(AnimalController)
-        expect(meta.methods[0].decorators).toEqual([{ type: 'authorize:role', value: ['admin'] }])
+        expect(meta.methods[0].decorators).toMatchObject([{ type: 'plumier-meta:authorize', tag: 'admin' }])
     })
 
     it("Should able to decorate controller", () => {
@@ -30,7 +30,7 @@ describe("JwtAuth Decorator", () => {
         }
 
         const meta = reflect(AnimalController)
-        expect(meta.decorators).toEqual([{ type: 'authorize:public', value: [] }])
+        expect(meta.decorators).toMatchObject([{ type: 'plumier-meta:authorize', tag: 'Public' }])
     })
 
     it("Should able to decorate method", () => {
@@ -40,7 +40,7 @@ describe("JwtAuth Decorator", () => {
         }
 
         const meta = reflect(AnimalController)
-        expect(meta.methods[0].decorators).toEqual([{ type: 'authorize:public', value: [] }])
+        expect(meta.methods[0].decorators).toMatchObject([{ type: 'plumier-meta:authorize', tag: 'Public' }])
     })
 
     it("Should able to decorate parameter", () => {
@@ -48,8 +48,8 @@ describe("JwtAuth Decorator", () => {
             method(@authorize.role("admin") data: number) { }
         }
         const meta = reflect(AnimalController)
-        expect(meta.methods[0].parameters[0].decorators).toEqual([
-            { type: 'authorize:role', value: ['admin'] },
+        expect(meta.methods[0].parameters[0].decorators).toMatchObject([
+            { type: 'plumier-meta:authorize', tag: 'admin' },
             { validator: "internal:optional", type: "ValidatorDecorator" }])
     })
 

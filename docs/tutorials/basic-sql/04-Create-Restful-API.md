@@ -124,7 +124,31 @@ export class UsersController {
 }
 ```
 
-Above controller look the same as the previous todos controller, except we add logic to hash user password before saved to database.
+Above controller look the same as the previous todos controller, except we add logic to hash user password before saved to database. Save both file and check Visual Studio Code integrated terminal where you execute the start script, If no compile error it will print messages below
+
+```bash
+[INFO] 14:52:01 Restarting: /Users/ktutnik/Documents/todo-sql-backend/src/controller/auth-controller.ts has been modified
+Using ts-node version 8.0.2, typescript version 3.3.3333
+Debugger listening on ws://127.0.0.1:9229/51d0e0f9-7589-4376-bb07-f0cde4a0bea4
+For help, see: https://nodejs.org/en/docs/inspector
+
+Route Analysis Report
+ 1. TodosController.save(data, user)    -> POST   /api/v1/todos
+ 2. TodosController.list(offset, limit) -> GET    /api/v1/todos
+ 3. TodosController.get(id)             -> GET    /api/v1/todos/:id
+ 4. TodosController.modify(id, data)    -> PUT    /api/v1/todos/:id
+ 5. TodosController.delete(id)          -> DELETE /api/v1/todos/:id
+ 6. UsersController.save(data)          -> POST   /api/v1/users
+ 7. UsersController.list(offset, limit) -> GET    /api/v1/users
+ 8. UsersController.get(id)             -> GET    /api/v1/users/:id
+ 9. UsersController.modify(id, data)    -> PUT    /api/v1/users/:id
+10. UsersController.delete(id)          -> DELETE /api/v1/users/:id
+11. HomeController.index()              -> GET    /
+
+Server running http://localhost:8000/
+```
+
+Above message showing that Plumier generates 11 routes and 10 of them is the API we created using two controllers above.
 
 ## Testing
 Our todo restful api backend is ready for testing, we will use [HTTPie](https://httpie.org/#installation) to test from command line.
