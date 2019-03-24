@@ -31,6 +31,8 @@ export type ConverterFunction = (value: any, path: string[], expectedType: Funct
 export type TypeConverter = { type: Class, converter: ConverterFunction }
 export type ValidatorFunction = (value: string, ctx: Context) => Promise<string | undefined>
 export type ValidatorStore = { [key: string]: ValidatorFunction }
+export type AuthorizeCallback = (info: AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method") => Promise<boolean>
+export type AuthorizeStore = { [key: string]: (info: AuthorizeMetadataInfo) => Promise<boolean> }
 
 export interface BindingDecorator {
     type: "ParameterBinding",
@@ -56,7 +58,7 @@ export interface AuthorizeMetadataInfo {
 
 export interface AuthorizeDecorator {
     type: "plumier-meta:authorize",
-    authorize: (info: AuthorizeMetadataInfo) => Promise<boolean>,
+    authorize: string | ((info: AuthorizeMetadataInfo) => Promise<boolean>),
     tag: string
 }
 
@@ -172,6 +174,11 @@ export interface Configuration {
      * Key-value pair to store validator logic. Separate decorator and validation logic
      */
     validators?: ValidatorStore
+
+    /**
+     * Key-value pair to store authorization logic. Separate decorator and authorization logic
+     */
+    authorizer?: AuthorizeStore
 }
 
 export interface PlumierConfiguration extends Configuration {
@@ -766,12 +773,12 @@ export function domain() { return reflect.parameterProperties() }
 
 export class AuthDecoratorImpl {
 
-    custom(authorize: (info: AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method") => Promise<boolean>, tag: string = "Custom") {
+    custom(authorize: string | AuthorizeCallback, tag: string = "Custom") {
         return decorate((...args: any[]) => {
             const type = args.length === 1 ? "Class" : args.length === 2 ? "Method" : "Parameter"
             return <AuthorizeDecorator>{
                 type: "plumier-meta:authorize", tag,
-                authorize: (info: AuthorizeMetadataInfo) => authorize(info, type),
+                authorize: typeof authorize === "string" ? authorize : (info: AuthorizeMetadataInfo) => authorize(info, type),
             }
         }, ["Class", "Parameter", "Method", "Property"])
     }

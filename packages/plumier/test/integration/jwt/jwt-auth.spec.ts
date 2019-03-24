@@ -744,10 +744,45 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .post("/animal/save")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .send({ id:20, createdAt: "2018-1-1", deleted: "YES", name: "Mimi", deceased: "Yes" })
+                .send({ id: 20, createdAt: "2018-1-1", deleted: "YES", name: "Mimi", deceased: "Yes" })
                 .expect(401, "Unauthorized to populate parameter paths (data.id, data.createdAt, data.deleted)")
         })
 
+    })
+
+    describe("Separate Decorator And Implementation", () => {
+        const OTHER_USER_TOKEN = sign({ email: "other-ketut@gmail.com", role: "user" }, SECRET)
+
+        function isOwner() {
+            return authorize.custom("isOwner")
+        }
+
+        it.only("Should able to use separate implementation", async () => {
+            class AnimalController {
+                @isOwner()
+                @route.get()
+                save(email: string) { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authorizer: {
+                        "isOwner": async i => {
+                            return i.parameters[0] === i.user.email
+                        }
+                    }
+                }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/save?email=ketut@gmail.com")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .get("/animal/save?email=ketut@gmail.com")
+                .set("Authorization", `Bearer ${OTHER_USER_TOKEN}`)
+                .expect(401, "Unauthorized")
+        })
     })
 
 })

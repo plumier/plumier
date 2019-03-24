@@ -43,40 +43,32 @@ export class HomeController {
 ```
 
 ## Authorize Todos Controller
-From specification, default authorization for `TodosController` is for authenticated user its mean we don't need to add extra authorization except for `PUT` and `DELETE` which authorized for Admin and Owner. Plumier doesn't provided handy authorization for such complex authorization but we can create custom authorization decorator using middleware.
+From specification, default authorization for `TodosController` is for authenticated user its mean we don't need to add extra authorization except for `PUT` and `DELETE` which authorized for Admin and Owner. We will create custom authorization decorator .
 
 ### Create Custom Authorization Decorator
 
 Navigate to `todo-controller.ts` file and add the following code before `TodosController` declaration. 
 
 ```typescript
-import { HttpStatusError, middleware, route } from "plumier"
+import { authorize } from "plumier"
 
 import { db } from "../../../model/db"
-import { LoginUser, Todo } from "../../../model/domain"
+import { Todo } from "../../../model/domain"
 
 function ownerOrAdmin() {
-    return middleware.use({
-        execute: async invocation => {
-            const { state, parameters } = invocation.context
-            const user: LoginUser = state.user;
-            //parameters is requested method parameter values
-            const id: number = parameters![0];
-            const todo: Todo = await db("Todo").where({ id }).first()
-            if (user.role === "Admin" || todo && todo.userId === user.userId)
-                return invocation.proceed()
-            else
-                throw new HttpStatusError(401, "Unauthorized")
-        }
+    return authorize.custom(async info => {
+        const {role, parameters, user} = info;
+        const todo: Todo = await db("Todo").where({ id: parameters[0] }).first()
+        return role.some(x => x === "Admin") || todo && todo.userId === user.userId
     })
 }
 ```
 
-Middleware above is specific to Todo data so we put it in the same file with the todos controller. It returns `middleware.use` so it can be applied declaratively as decorator. 
+Code above is specific to Todo data so we put it in the same file with the todos controller. It uses `authorize.custom` so it can be applied declaratively as decorator. When applied into class, method or parameter `authorize.custom` will be evaluated before process touching controller, if it return true request is allowed otherwise rejected with http status code 401 or 403.
 
-The logic of the middleware is quite simple, we query the database based on provided `id` and check if current user role is `Admin` or the requested todo owner match with current login user id, if not match then throw `HttpStatusError`. 
+The logic is quite simple, we query the database based on provided `id` and check if current user role is `Admin` or the requested todo owner match with current login user id. 
 
-Note that this middleware uses `parameters[0]` as `id` so basically this middleware only can be applied to a method with signature `method(id:number, ...)` like `modify(id, data)` and `delete(id)`
+Note that it uses `parameters[0]` as `id` so basically it only can be applied to a method with signature `method(id:number, ...)` like `modify(id, data)` and `delete(id)`
 
 ### Apply Authorization Decorator
 Now we ready to apply our custom authorization to the `PUT` and `DELETE` handler by putting `@ownerOrAdmin()` above the `delete` and `modify` method like below
@@ -109,32 +101,17 @@ Users controller mostly have the same authorization with todos controller but we
 Navigate to `users-controller.ts` file and add the following code before `UsersController` declaration.
 
 ```typescript
-import { HttpStatusError, middleware } from "plumier"
-
-import { db } from "../../../model/db"
-import { LoginUser, User } from "../../../model/domain"
-
+import { authorize } from "plumier"
 
 function ownerOrAdmin() {
-    return middleware.use({
-        execute: async invocation => {
-            const { state, parameters } = invocation.context
-            //if no user then proceed. 
-            //this condition applied to public route POST /api/v1/users
-            if(!state.user) return invocation.proceed()
-            const loginUser: LoginUser = state.user;
-            const id: number = parameters![0];
-            const reqUser: User = await db("User").where({ id }).first()
-            if (loginUser.role === "Admin" || reqUser && reqUser.id === loginUser.userId)
-                return invocation.proceed()
-            else
-                throw new HttpStatusError(401, "Unauthorized")
-        }
+    return authorize.custom(async info => {
+        const { role, user, parameters } = info
+        return role.some(x => x === "Admin") || parameters[0] === user.userId
     })
 }
 ```
 
-Middleware above relatively has the same logic with the previous one, except it check to existence of `user`. This logic will be used when we access `POST /api/v1/users` which will be set to accessible for public.
+Code above is simpler than previous implementation, it doesn't do some check to the database but only test if the first parameter of the method is the same with the login user or the current role is `Admin`
 
 ### Apply Authorization Decorator
 Next we ready to apply our custom authorization decorator into users controller. Go to `UserController` file and do modification like below

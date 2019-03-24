@@ -106,3 +106,37 @@ export class UsersController {
     }
 }
 ```
+
+### Separate Decorator and Implementation
+Authorization decorator that is applied for parameter authorization, sometime need to be free from server specific dependency because will be shared with UI. To do so Plumier provided separation between logic and decorator by providing `ID` of the validator logic inside configuration, example:
+
+```typescript
+import { authorize } from "@plumier/core";
+
+export function isAdminOrOwner(){
+    return authorize.custom("auth:isAdminOrOwner") 
+}
+```
+
+Define logic of the validation by providing key-value pair of authorize id and authorize logic like below
+
+```typescript
+//here is separate logic (can be place in different file)
+export const authorizeStore:AuthorizeStore = {
+    "auth:isAdminOrOwner": async (info, position) => {
+        const {role, user, parameters} = info
+        const id = parameters[0]
+        return role.some(x => x === "Admin") || user.id === id
+    }
+}
+```
+
+To use it, register the authorize logic on the configuration, can be from `JwtAuthFacility` or from `Plumier.set({authorizer: {}})`
+
+```typescript
+
+const plumier = new Plumier()
+plumier.set(new JwtAuthFacility({ authorizer: authorizeStore }))
+//or
+plumier.set({ authorizer: authorizeStore })
+```

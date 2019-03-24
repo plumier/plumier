@@ -2,6 +2,7 @@ import {
     ActionResult,
     AuthorizeDecorator,
     AuthorizeMetadataInfo,
+    AuthorizeStore,
     Class,
     Facility,
     HttpStatus,
@@ -20,11 +21,23 @@ import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
 /* ------------------------------------------------------------------------------- */
 
 export type RoleField = string | ((value: any) => Promise<string[]>)
-export interface JwtAuthFacilityOption { secret: string, roleField?: RoleField, global?: (...args: any[]) => void }
+
+export interface JwtAuthFacilityOption {
+    secret: string,
+    roleField?: RoleField,
+    global?: (...args: any[]) => void,
+    authorizer?: AuthorizeStore
+}
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- HELPERS --------------------------------------- */
 /* ------------------------------------------------------------------------------- */
+
+function executeDecorator(decorator: AuthorizeDecorator, info: AuthorizeMetadataInfo) {
+    const authorize = decorator.authorize
+    const impl = typeof authorize === "string" ? info.ctx.config.authorizer![authorize] : authorize
+    return impl(info)
+}
 
 function isAuthDecorator(decorator: AuthorizeDecorator) {
     return decorator.type === "plumier-meta:authorize"
@@ -68,7 +81,7 @@ export async function checkParameter(path: string[], meta: PropertyReflection | 
         const decorators = meta.decorators.filter((x): x is AuthorizeDecorator => isAuthDecorator(x))
         const result: string[] = []
         for (const dec of decorators) {
-            if (!await dec.authorize({ ...info, value }))
+            if (!await executeDecorator(dec, { ...info, value }))
                 result.push(path.join("."))
         }
         return result
@@ -94,6 +107,7 @@ export class JwtAuthFacility implements Facility {
     constructor(private option: JwtAuthFacilityOption) { }
 
     async setup(app: Readonly<PlumierApplication>): Promise<void> {
+        app.set({ authorizer: this.option.authorizer })
         app.koa.use(KoaJwt({ secret: this.option.secret, passthrough: true }))
         app.use(new AuthorizeMiddleware(this.option.roleField || "role", this.option.global))
     }
@@ -115,11 +129,11 @@ export class AuthorizeMiddleware implements Middleware {
     private async checkUserAccessToRoute(decorators: AuthorizeDecorator[], info: AuthorizeMetadataInfo) {
         if (decorators.some(x => x.tag === "Public")) return
         if (info.role.length === 0) throw new HttpStatusError(HttpStatus.Forbidden, "Forbidden")
-        const conditions = await Promise.all(decorators.map(x => x.authorize(info)))
+        const conditions = await Promise.all(decorators.map(x => executeDecorator(x, info)))
         //use OR condition
         //if ALL condition doesn't authorize user then throw
         if (conditions.length > 0 && conditions.every(x => x === false))
-            throw new HttpStatusError(HttpStatus.Unauthorized, "Lorem ipsum dolor")
+            throw new HttpStatusError(HttpStatus.Unauthorized, "Unauthorized")
     }
 
     private async checkUserAccessToParameters(meta: ParameterReflection[], values: any[], info: AuthorizeMetadataInfo) {
