@@ -6,6 +6,7 @@ import {
     HttpStatusError,
     mkdirp,
     PlumierApplication,
+    DefaultFacility,
 } from "@plumier/core";
 import Busboy from "busboy";
 import crypto from "crypto";
@@ -95,10 +96,10 @@ class BusboyParser implements FileParser {
 /**
  * Add multi part file upload facility
  */
-export class MultiPartFacility implements Facility {
-    constructor(private option: FileUploadOption) { }
+export class MultiPartFacility extends DefaultFacility {
+    constructor(private option: FileUploadOption) { super() }
 
-    async setup(app: Readonly<PlumierApplication>): Promise<void> {
+    setup(app: Readonly<PlumierApplication>) {
         Object.assign(app.config, { fileParser: (ctx: Context) => new BusboyParser(ctx, this.option) })
     }
 }

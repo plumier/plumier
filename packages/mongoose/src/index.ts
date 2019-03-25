@@ -9,6 +9,7 @@ import {
     Converters,
     safeToString,
     TypeConverter,
+    DefaultFacility,
 } from "@plumier/core";
 import { ClassReflection, decorateClass, decorateParameter, ParameterReflection, reflect, PropertyReflection, mergeDecorator, decorateProperty } from "tinspector";
 import { val } from "@plumier/validator";
@@ -182,16 +183,17 @@ export function customModelConverter(value: any, path: string[], expectedType: F
     }
 }
 
-export class MongooseFacility implements Facility {
+export class MongooseFacility extends DefaultFacility {
     option: MongooseFacilityOption
     constructor(opts: MongooseFacilityOption) {
+        super()
         const model = opts.model || "./model"
         const domain = typeof model === "string" ? isAbsolute(model) ?
             model! : join(dirname(module.parent!.filename), model) : model
         this.option = { ...opts, model: domain }
     }
 
-    async setup(app: Readonly<PlumierApplication>) {
+    async initialize(app: Readonly<PlumierApplication>) {
         //generate schemas
         const collections = reflectPath(this.option.model!)
             .filter((x): x is ClassReflection => x.kind === "Class")

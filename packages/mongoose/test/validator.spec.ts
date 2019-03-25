@@ -19,7 +19,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.remove({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
@@ -45,7 +45,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.remove({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
@@ -67,7 +67,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.remove({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
@@ -89,7 +89,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.remove({})
         const result = await validateObject(new User("Ketut", "ketut@gmail.com"), [], [], {} as any)
@@ -110,7 +110,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.remove({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
@@ -133,7 +133,7 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.remove({})
         const result = await validateObject(new User("Ketut", undefined), [], [], {} as any)

@@ -107,7 +107,7 @@ export class UsersController {
 }
 ```
 
-### Separate Decorator and Implementation
+## Separate Decorator and Implementation
 Authorization decorator that is applied for parameter authorization, sometime need to be free from server specific dependency because will be shared with UI. To do so Plumier provided separation between logic and decorator by providing `ID` of the validator logic inside configuration, example:
 
 ```typescript

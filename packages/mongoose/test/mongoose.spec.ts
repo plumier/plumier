@@ -30,7 +30,7 @@ describe("Mongoose Reference Domain Directly", () => {
         const facility = new MongooseFacility({
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>app)
+        await facility.initialize(<PlumierApplication>app)
     })
 
     afterAll(async () => await Mongoose.disconnect())
@@ -82,7 +82,7 @@ describe("Model Load", () => {
             uri: "mongodb://localhost:27017/test-data"
         })
         consoleLog.startMock()
-        await facility.setup(<PlumierApplication>new Plumier())
+        await facility.initialize(<PlumierApplication>new Plumier())
         expect((console.log as jest.Mock).mock.calls[2][0]).toContain("DomainWithPrimitives")
         expect((console.log as jest.Mock).mock.calls[3][0]).toContain("DomainWithArrays")
         expect((console.log as jest.Mock).mock.calls[4][0]).toContain("DomainWithDomain")
@@ -108,7 +108,7 @@ describe("Model Load", () => {
             uri: "mongodb://localhost:27017/test-data"
         })
         consoleLog.startMock()
-        await facility.setup(<PlumierApplication>new Plumier())
+        await facility.initialize(<PlumierApplication>new Plumier())
         expect((console.log as jest.Mock).mock.calls[2][0]).toContain("DomainA")
         expect((console.log as jest.Mock).mock.calls[3][0]).toContain("DomainB")
         consoleLog.clearMock()
@@ -125,7 +125,7 @@ describe("Model Load", () => {
             model: DomainA,
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const mdl = model(DomainA)
         expect(new mdl({})).toBeInstanceOf(Mongoose.Model)
         expect(Mongoose.connection.models["MyOtherDomain"]).not.toBeUndefined()
@@ -150,7 +150,7 @@ describe("Model Load", () => {
             model: [DomainA, DomainB],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const Parent = model(DomainA)
         const Child = model(DomainB)
         await Parent.remove({})
@@ -183,7 +183,7 @@ describe("Model Load", () => {
             model: [DomainA, DomainB],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
 
         //setup db
         const childId = new Mongoose.Types.ObjectId()
@@ -218,7 +218,7 @@ describe("Model Load", () => {
             model: [Human, Animal, Tag],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const humanId = new Mongoose.Types.ObjectId()
         const animalId = new Mongoose.Types.ObjectId()
         const tagId = new Mongoose.Types.ObjectId()
@@ -256,7 +256,7 @@ describe("Model Load", () => {
             model: [Human, Animal],
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const humanId = new Mongoose.Types.ObjectId()
         const mimiId = new Mongoose.Types.ObjectId()
         const bubId = new Mongoose.Types.ObjectId()
@@ -299,7 +299,7 @@ describe("Custom Schema Generator", () => {
                 return new Mongoose.Schema(a)
             }
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         expect(fn.mock.calls[0][0]).toMatchObject({ name: String })
         expect(fn.mock.calls[0][1]).toMatchObject({ name: 'DomainA' })
         expect(fn.mock.calls[1][0]).toMatchObject({ name: String })
@@ -322,7 +322,7 @@ describe("Custom Schema Generator", () => {
                 return new Mongoose.Schema(a, { timestamps: true })
             }
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const result = await new Model({ name: "Hello" }).save()
         const props = Object.keys(result.toObject())
         expect(props.some(x => x === "createdAt")).toBe(true)
@@ -339,7 +339,7 @@ describe("Error Handling", () => {
             model: join(__dirname, "./model/my-domain"),
             uri: "mongodb://localhost:27017/test-data"
         })
-        await facility.setup(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const Model = model(NonDecoratedDomain)
         try {
             await new Model({ name: "hello" }).save()
@@ -383,7 +383,7 @@ describe("Analysis", () => {
             uri: "mongodb://localhost:27017/test-data"
         })
         consoleLog.startMock()
-        await facility.setup(<PlumierApplication>new Plumier())
+        await facility.initialize(<PlumierApplication>new Plumier())
         expect((console.log as jest.Mock).mock.calls[2][0]).toContain("1. DomainWithArrays -> DomainWithArrays")
         expect((console.log as jest.Mock).mock.calls[3][0]).toContain("MONG1000")
         consoleLog.clearMock()
@@ -401,7 +401,7 @@ describe("Analysis", () => {
             uri: "mongodb://localhost:27017/test-data"
         })
         consoleLog.startMock()
-        await facility.setup(<PlumierApplication>new Plumier())
+        await facility.initialize(<PlumierApplication>new Plumier())
         expect((console.log as jest.Mock).mock.calls[2][0]).toContain("MONG1001")
         consoleLog.clearMock()
     })

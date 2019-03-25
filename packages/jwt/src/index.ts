@@ -12,6 +12,7 @@ import {
     Middleware,
     PlumierApplication,
     RouteInfo,
+    DefaultFacility,
 } from "@plumier/core"
 import KoaJwt from "koa-jwt"
 import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
@@ -103,13 +104,23 @@ export async function checkParameters(path: string[], meta: (PropertyReflection 
 /* ------------------------------------------------------------------------------- */
 
 
-export class JwtAuthFacility implements Facility {
-    constructor(private option: JwtAuthFacilityOption) { }
+export class JwtAuthFacility extends DefaultFacility {
+    constructor(private option: JwtAuthFacilityOption) { super() }
 
-    async setup(app: Readonly<PlumierApplication>): Promise<void> {
+    setup(app: Readonly<PlumierApplication>) {
         app.set({ authorizer: this.option.authorizer })
         app.koa.use(KoaJwt({ secret: this.option.secret, passthrough: true }))
         app.use(new AuthorizeMiddleware(this.option.roleField || "role", this.option.global))
+    }
+
+    async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[]) {
+        routes.forEach(x => {
+            const decorators = getAuthorizeDecorators(x, this.option.global)
+            if (decorators.length > 0)
+                x.access = decorators.map(x => x.tag).join("|")
+            else 
+                x.access = "Authenticated"
+        })
     }
 }
 

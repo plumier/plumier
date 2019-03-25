@@ -1,4 +1,4 @@
-import { authorize, domain, route } from "@plumier/core"
+import { authorize, domain, route, consoleLog } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { val } from "@plumier/validator"
 import { sign } from "jsonwebtoken"
@@ -757,7 +757,7 @@ describe("JwtAuth", () => {
             return authorize.custom("isOwner")
         }
 
-        it.only("Should able to use separate implementation", async () => {
+        it("Should able to use separate implementation", async () => {
             class AnimalController {
                 @isOwner()
                 @route.get()
@@ -782,6 +782,174 @@ describe("JwtAuth", () => {
                 .get("/animal/save?email=ketut@gmail.com")
                 .set("Authorization", `Bearer ${OTHER_USER_TOKEN}`)
                 .expect(401, "Unauthorized")
+        })
+    })
+
+    describe("Analyzer Message", () => {
+        it("Should print Authenticated if no decorator applied", async () => {
+            class AnimalController {
+                get() { }
+            }
+            consoleLog.startMock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            const mock = (console.log as jest.Mock)
+            expect(mock.mock.calls[2][0]).toContain("Authenticated")
+            consoleLog.clearMock()
+        })
+
+        it("Should print Admin if specified in method", async () => {
+            class AnimalController {
+                @authorize.role("Admin")
+                get() { }
+            }
+            consoleLog.startMock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            const mock = (console.log as jest.Mock)
+            expect(mock.mock.calls[2][0]).toContain("Admin")
+            consoleLog.clearMock()
+        })
+
+        it("Should print Admin if specified in class", async () => {
+            @authorize.role("Admin")
+            class AnimalController {
+                get() { }
+            }
+            consoleLog.startMock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            const mock = (console.log as jest.Mock)
+            expect(mock.mock.calls[2][0]).toContain("Admin")
+            consoleLog.clearMock()
+        })
+
+        it("Should print Custom if provided @authorize.custom", async () => {
+            class AnimalController {
+                @authorize.custom(async i => true)
+                get() { }
+            }
+            consoleLog.startMock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            const mock = (console.log as jest.Mock)
+            expect(mock.mock.calls[2][0]).toContain("Custom")
+            consoleLog.clearMock()
+        })
+
+        it("Should print Public if provided in global", async () => {
+            class AnimalController {
+                get() { }
+            }
+            consoleLog.startMock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .initialize()
+            const mock = (console.log as jest.Mock)
+            expect(mock.mock.calls[2][0]).toContain("Public")
+            consoleLog.clearMock()
+        })
+
+        it("Should print Admin even if provided in global", async () => {
+            class AnimalController {
+                @authorize.role("Admin")
+                get() { }
+            }
+            consoleLog.startMock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .initialize()
+            const mock = (console.log as jest.Mock)
+            expect(mock.mock.calls[2][0]).toContain("Admin")
+            consoleLog.clearMock()
+        })
+
+        it("Should print All if provided multiple", async () => {
+            class AnimalController {
+                @authorize.role("Admin")
+                @authorize.role("User")
+                get() { }
+            }
+            consoleLog.startMock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .initialize()
+            const mock = (console.log as jest.Mock)
+            expect(mock.mock.calls[2][0]).toContain("User|Admin")
+            consoleLog.clearMock()
+        })
+
+        it("Should print All if provided by comma", async () => {
+            class AnimalController {
+                @authorize.role("Admin", "User")
+                get() { }
+            }
+            consoleLog.startMock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .initialize()
+            const mock = (console.log as jest.Mock)
+            expect(mock.mock.calls[2][0]).toContain("Admin|User")
+            consoleLog.clearMock()
+        })
+
+        it("Should print nicely", async () => {
+            class AnimalController {
+                authenticated() { }
+                @authorize.public()
+                public() { }
+                @authorize.role("Admin")
+                admin() { }
+                @authorize.role("User")
+                user() { }
+                @authorize.role("Admin", "User")
+                mix() { }
+            }
+            consoleLog.startMock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            const mock = (console.log as jest.Mock)
+            const [, ...calls] = mock.mock.calls.map(x => x[0]).filter(x => !!x)
+            expect(calls).toEqual([
+                '1. AnimalController.authenticated() -> Authenticated GET /animal/authenticated',
+                '2. AnimalController.public()        -> Public        GET /animal/public',
+                '3. AnimalController.admin()         -> Admin         GET /animal/admin',
+                '4. AnimalController.user()          -> User          GET /animal/user',
+                '5. AnimalController.mix()           -> Admin|User    GET /animal/mix',
+            ])
+            consoleLog.clearMock()
+        })
+
+        it("Should not print if JwtAuthFacility not installed", async () => {
+            class AnimalController {
+                authenticated() { }
+                @authorize.public()
+                public() { }
+                @authorize.role("Admin")
+                admin() { }
+                @authorize.role("User")
+                user() { }
+                @authorize.role("Admin", "User")
+                mix() { }
+            }
+            consoleLog.startMock()
+            await fixture(AnimalController, { mode: "debug" })
+                .initialize()
+            const mock = (console.log as jest.Mock)
+            const [, ...calls] = mock.mock.calls.map(x => x[0]).filter(x => !!x)
+            expect(calls).toEqual([
+                '1. AnimalController.authenticated() -> GET /animal/authenticated',
+                '2. AnimalController.public()        -> GET /animal/public',
+                '3. AnimalController.admin()         -> GET /animal/admin',
+                '4. AnimalController.user()          -> GET /animal/user',
+                '5. AnimalController.mix()           -> GET /animal/mix'
+            ])
+            consoleLog.clearMock()
         })
     })
 

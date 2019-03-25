@@ -21,6 +21,8 @@ import {
     RouteInfo,
     ValidationError,
     ValidatorFunction,
+    DefaultFacility,
+    route,
 } from "@plumier/core"
 import { validate as validateString } from "@plumier/validator"
 import { existsSync } from "fs"
@@ -136,10 +138,14 @@ export function pipe(middleware: Middleware[], context: Context, invocation: Inv
  * 
  * cors: @koa/cors
  */
-export class WebApiFacility implements Facility {
-    constructor(private opt?: { controller?: string | Class | Class[], bodyParser?: BodyParserOption, cors?: Cors.Options, validators?: { [key: string]: ValidatorFunction } }) { }
+export class WebApiFacility extends DefaultFacility {
+    constructor(private opt?: {
+        controller?: string | Class | Class[],
+        bodyParser?: BodyParserOption, cors?: Cors.Options,
+        validators?: { [key: string]: ValidatorFunction }
+    }) { super() }
 
-    async setup(app: Readonly<PlumierApplication>) {
+    setup(app: Readonly<PlumierApplication>) {
         app.koa.use(async (ctx, next) => {
             try {
                 await next()
@@ -181,7 +187,7 @@ export class WebApiFacility implements Facility {
  * default response status: { get: 200, post: 201, put: 204, delete: 204 }
  */
 export class RestfulApiFacility extends WebApiFacility {
-    async setup(app: Readonly<PlumierApplication>) {
+    setup(app: Readonly<PlumierApplication>) {
         super.setup(app)
         app.set({ responseStatus: { post: 201, put: 204, delete: 204 } })
     }
@@ -217,8 +223,10 @@ export class Plumier implements PlumierApplication {
     set(facility: Facility): Application
     set(config: Partial<Configuration>): Application
     set(config: Partial<Configuration> | Facility): Application {
-        if (hasKeyOf<Facility>(config, "setup"))
+        if (hasKeyOf<Facility>(config, "setup")) {
+            config.setup(this)
             this.config.facilities.push(config)
+        }
         else
             Object.assign(this.config, config)
         return this;
@@ -247,9 +255,12 @@ export class Plumier implements PlumierApplication {
         try {
             if (process.env["NODE_ENV"] === "production")
                 Object.assign(this.config, { mode: "production" })
-            await Promise.all(this.config.facilities.map(x => x.setup(this)))
+            //get file location of script who initialized the application to calculate the controller path
             //module.parent.parent.filename -> because Plumier app also exported in plumier/src/index.ts
             let routes: RouteInfo[] = this.createRoutes(dirname(module.parent!.parent!.filename))
+            for (const facility of this.config.facilities) {
+                await facility.initialize(this, routes)
+            }
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
             const decorators: { [key: string]: Middleware[] } = {}
             this.koa.use(router(routes, this.config, ctx => {

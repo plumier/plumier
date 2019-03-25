@@ -67,6 +67,7 @@ export interface RouteInfo {
     method: HttpMethod
     action: MethodReflection
     controller: ClassReflection
+    access?: string
 }
 
 export enum ValidatorId {
@@ -89,7 +90,8 @@ export interface Middleware {
 }
 
 export interface Facility {
-    setup(app: Readonly<PlumierApplication>): Promise<void>
+    setup(app: Readonly<PlumierApplication>): void
+    initialize(app: Readonly<PlumierApplication>, routes:RouteInfo[]): Promise<void>
 }
 
 export interface DependencyResolver {
@@ -128,6 +130,7 @@ export interface FileUploadInfo {
 export interface FileParser {
     save(subDirectory?: string): Promise<FileUploadInfo[]>
 }
+
 
 export interface Configuration {
     mode: "debug" | "production"
@@ -341,6 +344,11 @@ export class DefaultDependencyResolver implements DependencyResolver {
     resolve(type: new (...args: any[]) => any) {
         return new type()
     }
+}
+
+export class DefaultFacility implements Facility {
+    setup(app: Readonly<PlumierApplication>) { }
+    async initialize(app: Readonly<PlumierApplication>, routes:RouteInfo[]) { }
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -803,7 +811,7 @@ export class AuthDecoratorImpl {
             const { role, value } = info
             const isAuthorized = roles.some(x => role.some(y => x === y))
             return location === "Parameter" ? !!value && isAuthorized : isAuthorized
-        }, roles.join(", "))
+        }, roles.join("|"))
         const optionalDecorator = (...args: any[]) => {
             if (args.length === 3 && typeof args[2] === "number")
                 decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: ValidatorId.optional })(args[0], args[1], args[2])

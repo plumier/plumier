@@ -289,20 +289,27 @@ export function printAnalysis(results: TestResult[]) {
         const method = x.route.method.toUpperCase()
         const action = getActionName(x.route)
         const issues = x.issues.map(issue => ` - ${issue.type} ${issue!.message}`)
-        return { method, url: x.route.url, action, issues }
+        return { method, url: x.route.url, action, issues, access: x.route.access }
     })
     console.log()
     console.log(chalk.bold("Route Analysis Report"))
     if (data.length == 0) console.log("No controller found")
+    const paddings = {
+        number: data.length.toString().length,
+        action: Math.max(...data.map(x => x.action.length)),
+        method: Math.max(...data.map(x => x.method.length)),
+        access: Math.max(...data.map(x => x.access && x.access.length || 0)),
+    }
     data.forEach((x, i) => {
-        const num = (i + 1).toString().padStart(data.length.toString().length)
-        const action = x.action.padEnd(Math.max(...data.map(x => x.action.length)))
-        const method = x.method.padEnd(Math.max(...data.map(x => x.method.length)))
+        const num = (i + 1).toString().padStart(paddings.number)
+        const action = x.action.padEnd(paddings.action)
+        const method = x.method.padEnd(paddings.method)
+        const access = x.access && (" " + x.access.padEnd(paddings.access)) || ""
         //const url = x.url.padEnd(Math.max(...data.map(x => x.url.length)))
         const issueColor = (issue: string) => issue.startsWith(" - warning") ? chalk.yellow(issue) : chalk.red(issue)
         const color = x.issues.length == 0 ? (x: string) => x :
             x.issues.some(x => x.startsWith(" - warning")) ? chalk.yellow : chalk.red
-        console.log(color(`${num}. ${action} -> ${method} ${x.url}`))
+        console.log(color(`${num}. ${action} ->${access} ${method} ${x.url}`))
         x.issues.forEach(issue => console.log(issueColor(issue)))
     })
     if (data.length > 0) console.log()

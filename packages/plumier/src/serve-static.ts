@@ -1,4 +1,4 @@
-import { ActionResult, Facility, Invocation, Middleware, PlumierApplication, HttpStatusError } from "@plumier/core";
+import { ActionResult, Facility, Invocation, Middleware, PlumierApplication, HttpStatusError, DefaultFacility } from "@plumier/core";
 import { Context } from "koa";
 import send from "koa-send";
 import { extname } from "path";
@@ -59,7 +59,7 @@ export class ServeStaticMiddleware implements Middleware {
             catch (e) {
                 if (e.status && e.status === 404)
                     return invocation.proceed()
-                else 
+                else
                     throw e
             }
         }
@@ -69,10 +69,10 @@ export class ServeStaticMiddleware implements Middleware {
 }
 
 
-export class ServeStaticFacility implements Facility {
-    constructor(public option: ServeStaticOptions) { }
+export class ServeStaticFacility extends DefaultFacility {
+    constructor(public option: ServeStaticOptions) { super() }
 
-    async setup(app: Readonly<PlumierApplication>): Promise<void> {
+    setup(app: Readonly<PlumierApplication>) {
         app.use(new ServeStaticMiddleware(this.option))
     }
 }
