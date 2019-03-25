@@ -8,8 +8,9 @@
 		"clean": "node script/cleanup",
 		"compile:only": "lerna run compile",
 		"compile": "npm run clean && jest && lerna run compile",
-		"pre": "npm run compile && lerna publish prerelease --exact --preid beta --force-publish",
-		"production": "npm run compile && lerna publish && npm run clean",
+		"build:pre": "npm run compile && lerna publish prerelease --exact --preid beta --force-publish",
+		"build:canary": "npm run compile && lerna publish prerelease --exact --canary --force-publish",
+		"build:prod": "npm run compile && lerna publish && npm run clean",
 		"benchmark": "yarn workspace plumier benchmark",
 		"doc:start": "cd website && yarn start",
 		"doc:build": "cd website && yarn build"

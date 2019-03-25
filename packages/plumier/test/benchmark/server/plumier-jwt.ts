@@ -1,7 +1,8 @@
-import { domain, authorize } from "@plumier/core"
-import Plumier, { route, WebApiFacility, JwtAuthFacility } from "plumier"
-import { secret } from '../options';
+import { authorize, domain } from "@plumier/core"
+import { JwtAuthFacility } from "@plumier/jwt"
+import Plumier, { route, WebApiFacility } from "plumier"
 
+import { secret } from "../options"
 
 @domain()
 class Domain {

@@ -1,12 +1,13 @@
-import { Constructor, model, MongooseFacility, collection } from "@plumier/mongoose";
-import Mongoose from "mongoose";
-
-import { DomainWithArrayOfDomain, DomainWithArrays, DomainWithDomain, DomainWithPrimitives, NonDecoratedDomain } from "./model/my-domain";
-import { consoleLog, PlumierApplication, Class, route } from '@plumier/core';
-import { join } from 'path';
-import Plumier, { WebApiFacility, val } from "plumier"
+import { Class, PlumierApplication, route } from "@plumier/core"
+import { consoleLog } from "@plumier/kernel"
+import { collection, Constructor, model, MongooseFacility } from "@plumier/mongoose"
+import Mongoose from "mongoose"
+import { join } from "path"
+import Plumier, { val, WebApiFacility } from "plumier"
 import supertest from "supertest"
-import reflect from 'tinspector';
+import reflect from "tinspector"
+
+import { DomainWithArrayOfDomain, DomainWithDomain, DomainWithPrimitives, NonDecoratedDomain, DomainWithArrays } from "./model/my-domain"
 
 type Model<T> = Mongoose.Model<T & Mongoose.Document>
 

@@ -1,89 +1,87 @@
-import { ConversionError, Converters } from "@plumier/core";
-import { decorateClass, reflect } from "tinspector";
-
-import { domain, TypeConverter } from "@plumier/core";
-import { convert, DefaultConverters, flattenConverters, TypeConverters, modelConverter, arrayConverter } from "../../../src/binder";
+import { ConversionError, Converters, domain, TypeConverter } from "@plumier/core"
+import {Binder, Converter} from "@plumier/kernel"
+import { reflect } from "tinspector"
 
 const CONVERTERS: Converters = {
-    default: DefaultConverters,
-    converters: flattenConverters(TypeConverters)
+    default: Binder.DefaultConverters,
+    converters: Binder.flattenConverters(Binder.TypeConverters)
 }
 
 describe("Converter", () => {
     describe("Number Converter", () => {
         it("Should convert number", () => {
-            const result = convert("123", ["id"], Number, CONVERTERS)
+            const result = Converter.convert("123", ["id"], Number, CONVERTERS)
             expect(result).toBe(123)
         })
         it("Should convert float", () => {
-            const result = convert("123.123", ["id"], Number, CONVERTERS)
+            const result = Converter.convert("123.123", ["id"], Number, CONVERTERS)
             expect(result).toBe(123.123)
         })
         it("Should convert negative", () => {
-            const result = convert("-123", ["id"], Number, CONVERTERS)
+            const result = Converter.convert("-123", ["id"], Number, CONVERTERS)
             expect(result).toBe(-123)
         })
         it("Should convert negative float", () => {
-            const result = convert("-123.123", ["id"], Number, CONVERTERS)
+            const result = Converter.convert("-123.123", ["id"], Number, CONVERTERS)
             expect(result).toBe(-123.123)
         })
         it("Should return undefined if provided null", () => {
-            const result = convert(null, ["id"], Number, CONVERTERS)
+            const result = Converter.convert(null, ["id"], Number, CONVERTERS)
             expect(result).toBeUndefined()
         })
         it("Should return undefined if provided undefined", () => {
-            const result = convert(undefined, ["id"], Number, CONVERTERS)
+            const result = Converter.convert(undefined, ["id"], Number, CONVERTERS)
             expect(result).toBeUndefined()
         })
         it("Should not convert string", () => {
-            expect(() => convert("hello", ["id"], Number, CONVERTERS)).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "hello" into Number in parameter id`] }))
+            expect(() => Converter.convert("hello", ["id"], Number, CONVERTERS)).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "hello" into Number in parameter id`] }))
         })
     })
 
     describe("Boolean Converter", () => {
         it("Should convert Trusty string to true", () => {
-            const result = ["ON", "TRUE", "1", "YES", 1].map(x => convert(x, ["id"], Boolean, CONVERTERS))
+            const result = ["ON", "TRUE", "1", "YES", 1].map(x => Converter.convert(x, ["id"], Boolean, CONVERTERS))
             expect(result.every(x => x == true)).toEqual(true)
         })
         it("Should convert Falsy into false", () => {
-            const result = ["OFF", "FALSE", "0", "NO", 0].map(x => convert(x, ["id"], Boolean, CONVERTERS))
+            const result = ["OFF", "FALSE", "0", "NO", 0].map(x => Converter.convert(x, ["id"], Boolean, CONVERTERS))
             expect(result.every(x => x == false)).toEqual(true)
         })
         it("Should return undefined if provided null", () => {
-            const result = convert(null, ["id"], Boolean, CONVERTERS)
+            const result = Converter.convert(null, ["id"], Boolean, CONVERTERS)
             expect(result).toBeUndefined()
         })
         it("Should return undefined if provided undefined", () => {
-            const result = convert(undefined, ["id"], Boolean, CONVERTERS)
+            const result = Converter.convert(undefined, ["id"], Boolean, CONVERTERS)
             expect(result).toBeUndefined()
         })
         it("Should throw error when provided non convertible string", () => {
-            expect(() => convert("Hello", ["id"], Boolean, CONVERTERS)).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "Hello" into Boolean`] }))
+            expect(() => Converter.convert("Hello", ["id"], Boolean, CONVERTERS)).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "Hello" into Boolean`] }))
         })
         it("Should throw error when provided non convertible number", () => {
-            expect(() => convert(200, ["id"], Boolean, CONVERTERS)).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "200" into Boolean`] }))
+            expect(() => Converter.convert(200, ["id"], Boolean, CONVERTERS)).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "200" into Boolean`] }))
         })
     })
 
     describe("Date Converter", () => {
         it("Should convert date", () => {
-            const result = convert("2018-12-22", ["id"], Date, CONVERTERS)
+            const result = Converter.convert("2018-12-22", ["id"], Date, CONVERTERS)
             expect(result.getTime()).toEqual(new Date("2018-12-22").getTime())
         })
         it("Should convert date", () => {
-            const result = convert("12/22/2018", ["id"], Date, CONVERTERS)
+            const result = Converter.convert("12/22/2018", ["id"], Date, CONVERTERS)
             expect(result.getTime()).toEqual(new Date("12/22/2018").getTime())
         })
         it("Should return undefined if provided null", () => {
-            const result = convert(null, ["id"], Date, CONVERTERS)
+            const result = Converter.convert(null, ["id"], Date, CONVERTERS)
             expect(result).toBeUndefined()
         })
         it("Should return undefined if provided undefined", () => {
-            const result = convert(undefined, ["id"], Date, CONVERTERS)
+            const result = Converter.convert(undefined, ["id"], Date, CONVERTERS)
             expect(result).toBeUndefined()
         })
         it("Should throw error when provided non convertible string", () => {
-            expect(() => convert("Hello", ["id"], Date, CONVERTERS)).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "Hello" into Date `] }))
+            expect(() => Converter.convert("Hello", ["id"], Date, CONVERTERS)).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "Hello" into Date `] }))
         })
     })
 
@@ -99,7 +97,7 @@ describe("Converter", () => {
                 ) { }
             }
 
-            const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, ["id"], AnimalClass, CONVERTERS)
+            const result = Converter.convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, ["id"], AnimalClass, CONVERTERS)
             expect(result).toBeInstanceOf(AnimalClass)
             expect(result).toEqual({ birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi" })
         })
@@ -113,7 +111,7 @@ describe("Converter", () => {
                 ) { }
             }
 
-            const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", }, ["id"], AnimalClass, CONVERTERS)
+            const result = Converter.convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", }, ["id"], AnimalClass, CONVERTERS)
             expect(result).toBeInstanceOf(AnimalClass)
             expect(result).toEqual({ id: 200, name: "Mimi" })
         })
@@ -129,7 +127,7 @@ describe("Converter", () => {
                 ) { }
             }
 
-            const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, ["id"], AnimalClass, CONVERTERS)
+            const result = Converter.convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, ["id"], AnimalClass, CONVERTERS)
             expect(result).toBeInstanceOf(AnimalClass)
             expect(result).toEqual({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
         })
@@ -146,7 +144,7 @@ describe("Converter", () => {
                 ) { }
             }
 
-            const result = convert({}, ["id"], AnimalClass, CONVERTERS)
+            const result = Converter.convert({}, ["id"], AnimalClass, CONVERTERS)
             expect(result).toBeInstanceOf(AnimalClass)
             expect(result).toEqual({})
         })
@@ -163,7 +161,7 @@ describe("Converter", () => {
             }
 
             expect(() => {
-                convert({ id: "200", name: "Mimi", deceased: "Hello", birthday: "2018-1-1" }, ["id"], AnimalClass, CONVERTERS)
+                Converter.convert({ id: "200", name: "Mimi", deceased: "Hello", birthday: "2018-1-1" }, ["id"], AnimalClass, CONVERTERS)
             }).toThrow(new ConversionError({ path: ["id", "deceased"], messages: [`Unable to convert "Hello" into Boolean`] }))
         })
 
@@ -179,7 +177,7 @@ describe("Converter", () => {
             }
 
             expect(() => {
-                convert("Hello", ["id"], AnimalClass, CONVERTERS)
+                Converter.convert("Hello", ["id"], AnimalClass, CONVERTERS)
             }).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "Hello" into AnimalClass`] }))
         })
 
@@ -194,7 +192,7 @@ describe("Converter", () => {
                 ) { }
             }
 
-            const result = convert({ id: "200", name: "Mimi", excess: "Hola" }, ["id"], AnimalClass, CONVERTERS)
+            const result = Converter.convert({ id: "200", name: "Mimi", excess: "Hola" }, ["id"], AnimalClass, CONVERTERS)
             expect(result).toBeInstanceOf(AnimalClass)
             expect(Object.keys(result)).toEqual(["id", "name"])
             expect(result).toEqual({ id: 200, name: "Mimi" })
@@ -210,7 +208,7 @@ describe("Converter", () => {
                     public birthday: Date
                 ) { }
             }
-            expect(() => modelConverter({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, ["id"], [AnimalClass], CONVERTERS))
+            expect(() => Converter.modelConverter({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, ["id"], [AnimalClass], CONVERTERS))
                 .toThrow(ConversionError)
         })
     })
@@ -237,7 +235,7 @@ describe("Converter", () => {
         }
 
         it("Should convert nested model", () => {
-            const result: AnimalClass = convert({
+            const result: AnimalClass = Converter.convert({
                 id: "200",
                 name: "Mimi",
                 deceased: "ON",
@@ -256,7 +254,7 @@ describe("Converter", () => {
         })
 
         it("Should sanitize excess data", () => {
-            const result: AnimalClass = convert({
+            const result: AnimalClass = Converter.convert({
                 id: "200",
                 name: "Mimi",
                 deceased: "ON",
@@ -276,7 +274,7 @@ describe("Converter", () => {
         })
 
         it("Should allow undefined values", () => {
-            const result: AnimalClass = convert({
+            const result: AnimalClass = Converter.convert({
                 id: "200",
                 name: "Mimi",
                 owner: { id: "400", name: "John Doe" }
@@ -291,7 +289,7 @@ describe("Converter", () => {
         })
 
         it("Should throw if non convertible value provided", () => {
-            expect(() => convert({
+            expect(() => Converter.convert({
                 id: "200",
                 name: "Mimi",
                 deceased: "ON",
@@ -301,7 +299,7 @@ describe("Converter", () => {
         })
 
         it("Should throw if non convertible model provided", () => {
-            expect(() => convert({
+            expect(() => Converter.convert({
                 id: "200",
                 name: "Mimi",
                 deceased: "ON",
@@ -313,7 +311,7 @@ describe("Converter", () => {
 
     describe("Array Converter", () => {
         it("Should convert array of number", () => {
-            const result = convert(["123", "123", "123"], ["id"], [Number], CONVERTERS)
+            const result = Converter.convert(["123", "123", "123"], ["id"], [Number], CONVERTERS)
             expect(result).toEqual([123, 123, 123])
         })
 
@@ -327,7 +325,7 @@ describe("Converter", () => {
                     public birthday: Date
                 ) { }
             }
-            const result = convert([
+            const result = Converter.convert([
                 { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" },
                 { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" },
                 { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }
@@ -358,7 +356,7 @@ describe("Converter", () => {
                     public tags: TagModel[]
                 ) { }
             }
-            const result = convert([
+            const result = Converter.convert([
                 { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] },
                 { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] },
                 { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] }
@@ -371,7 +369,7 @@ describe("Converter", () => {
         })
 
         it("Should throw error if provided non array on expectedType", () => {
-            expect(() => arrayConverter(["123", "123", "123"], ["id"], Number, CONVERTERS)).toThrow(ConversionError)
+            expect(() => Converter.arrayConverter(["123", "123", "123"], ["id"], Number, CONVERTERS)).toThrow(ConversionError)
         })
     })
 
@@ -379,9 +377,9 @@ describe("Converter", () => {
         it("Should able to use custom converter", () => {
             const converters: TypeConverter[] = [{ type: Boolean, converter: x => "Custom Boolean" }]
 
-            const result = convert("TRUE", [], Boolean, {
-                default: DefaultConverters,
-                converters: flattenConverters(TypeConverters.concat(converters))
+            const result = Converter.convert("TRUE", [], Boolean, {
+                default: Binder.DefaultConverters,
+                converters: Binder.flattenConverters(Binder.TypeConverters.concat(converters))
             })
             expect(result).toBe("Custom Boolean")
         })

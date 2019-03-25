@@ -1,8 +1,6 @@
 import { middleware, ActionResult } from "@plumier/core";
 import { getDecorators } from 'tinspector';
 
-
-
 describe("Middleware Decorator", () => {
     it("Should decorate class middleware", async () => {
         @middleware.use({ execute: async () => new ActionResult() })

@@ -1,6 +1,5 @@
-import { bind, domain, route } from "@plumier/core";
-import { analyzeRoutes, printAnalysis, transformController } from "../../../src/router";
-import { consoleLog } from '@plumier/core';
+import { domain, route } from "@plumier/core"
+import { consoleLog, RouteGenerator } from "@plumier/kernel"
 import reflect from "tinspector"
 
 describe("Analyzer", () => {
@@ -9,8 +8,8 @@ describe("Analyzer", () => {
             @route.get("/animal/get/:id/:name")
             getAnimal(a: string, b: string) { }
         }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
         expect(analysis[0].issues[0].message).toContain("PLUM1000")
         expect(analysis[0].issues[0].message).toContain("id, name")
@@ -24,8 +23,8 @@ describe("Analyzer", () => {
             @route.get(":id/:name")
             getAnimal(id: string, name: string) { }
         }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
         expect(analysis[0].issues[0].message).toContain("PLUM1000")
         expect(analysis[0].issues[0].message).toContain("type")
@@ -38,8 +37,8 @@ describe("Analyzer", () => {
             @route.get(":name")
             getAnimal(TYPE: string, NAME: string) { }
         }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(0)
     })
 
@@ -47,8 +46,8 @@ describe("Analyzer", () => {
         class AnimalController {
             getAnimal(a: string, b: string) { }
         }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
         expect(analysis[0].issues[0].message).toContain("PLUM1001")
         expect(analysis[0].issues[0].type).toBe("warning")
@@ -58,8 +57,8 @@ describe("Analyzer", () => {
         class AnimalController {
             getAnimal() { }
         }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(0)
     })
 
@@ -75,9 +74,9 @@ describe("Analyzer", () => {
             getBeast(a: string, b: string) { }
         }
 
-        const routeInfo = transformController(AnimalController)
-            .concat(transformController(BeastController))
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+            .concat(RouteGenerator.transformController(BeastController))
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
         expect(analysis[0].issues[0].message).toContain("PLUM1003")
         expect(analysis[0].issues[0].type).toBe("error")
@@ -98,9 +97,9 @@ describe("Analyzer", () => {
             getBeast(a: string, b: string) { }
         }
 
-        const routeInfo = transformController(AnimalController)
-            .concat(transformController(BeastController))
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+            .concat(RouteGenerator.transformController(BeastController))
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(0)
     })
 
@@ -111,10 +110,10 @@ describe("Analyzer", () => {
             getAnimal(id: string, name: string) { }
         }
 
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         consoleLog.startMock()
-        printAnalysis(analysis)
+        RouteGenerator.printAnalysis(analysis)
         expect(console.log).toBeCalled()
         consoleLog.clearMock()
     })
@@ -124,10 +123,10 @@ describe("Analyzer", () => {
             @route.get(":id/:name")
             getAnimal(id: string, name: string) { }
         }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         consoleLog.startMock()
-        printAnalysis(analysis)
+        RouteGenerator.printAnalysis(analysis)
         expect(console.log).toBeCalled()
         consoleLog.clearMock()
     })
@@ -141,8 +140,8 @@ describe("Analyzer", () => {
             @route.post()
             getAnimal(id: number, model: AnimalModel, @reflect.array(AnimalModel) models: AnimalModel[]) { }
         }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(0)
     })
 
@@ -154,8 +153,8 @@ describe("Analyzer", () => {
             @route.post()
             getAnimal(id: number, model: AnimalModel) { }
         }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
         expect(analysis[0].issues[0].message).toContain("PLUM1005")
     })
@@ -177,8 +176,8 @@ describe("Analyzer", () => {
             @route.post()
             getAnimal(id: number, model: AnimalModel) { }
         }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
         expect(analysis[0].issues[0].message).toContain("PLUM1005")
     })
@@ -202,8 +201,8 @@ describe("Analyzer", () => {
             @route.post()
             getAnimal(id: number, model: AnimalModel) { }
         }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
         expect(analysis[0].issues[0].message).toContain("PLUM1005")
     })
@@ -217,8 +216,8 @@ describe("Analyzer", () => {
             @route.post()
             getAnimal(id: number, models: AnimalModel[], otherModels: number[]) { }
         }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
         expect(analysis[0].issues[0].message).toContain("PLUM1006")
         expect(analysis[0].issues[0].message).toContain("AnimalController.getAnimal.models, AnimalController.getAnimal.otherModels")
@@ -237,8 +236,8 @@ describe("Analyzer", () => {
             @route.post()
             getAnimal(id: number, model: AnimalModel) { }
         }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
         expect(analysis[0].issues[0].message).toContain("PLUM1006")
         expect(analysis[0].issues[0].message).toContain("(AnimalModel.tags)")
@@ -257,8 +256,8 @@ describe("Analyzer", () => {
             @route.post()
             getAnimal(id: number, @reflect.array(AnimalModel) models: AnimalModel[]) { }
         }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
         expect(analysis[0].issues[0].message).toContain("PLUM1006")
         expect(analysis[0].issues[0].message).toContain("(AnimalModel.tags)")
@@ -277,8 +276,8 @@ describe("Analyzer", () => {
             @route.post()
             getAnimal(id: number, @reflect.array(AnimalModel) models: AnimalModel[], @reflect.array(AnimalModel) otherModels: AnimalModel[]) { }
         }
-        const routeInfo = transformController(AnimalController)
-        const analysis = analyzeRoutes(routeInfo)
+        const routeInfo = RouteGenerator.transformController(AnimalController)
+        const analysis = RouteGenerator.analyzeRoutes(routeInfo)
         expect(analysis[0].issues.length).toBe(1)
         expect(analysis[0].issues[0].message).toContain("PLUM1006")
         expect(analysis[0].issues[0].message).toContain("(AnimalModel.tags)")

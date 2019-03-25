@@ -1,11 +1,12 @@
 import { bind, domain, route, ValidatorDecorator, ValidatorId } from "@plumier/core"
-import { JwtAuthFacility, val } from "../../../src"
+import { JwtAuthFacility } from "@plumier/jwt"
 import { IncomingMessage, ServerResponse } from "http"
 import { sign } from "jsonwebtoken"
 import { Context, Request } from "koa"
 import Supertest from "supertest"
 import reflect from "tinspector"
 
+import { val } from "../../../src"
 import { fixture } from "../../helper"
 
 export class AnimalModel {

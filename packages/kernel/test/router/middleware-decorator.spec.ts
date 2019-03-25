@@ -1,8 +1,5 @@
 import { ActionResult, Invocation, Middleware, middleware } from "@plumier/core"
-
-import { extractDecorators } from "../../../src/application"
-import { transformController } from "../../../src/router"
-
+import { RouteGenerator } from "@plumier/kernel"
 
 class DummyMiddleware implements Middleware {
     constructor(public id: number) {  }
@@ -19,8 +16,8 @@ describe("Middleware Decorator Extraction", () => {
             getData() { }
         }
 
-        const route = transformController(AnimalController)
-        const mdw = <DummyMiddleware[]>extractDecorators(route[0])
+        const route = RouteGenerator.transformController(AnimalController)
+        const mdw = <DummyMiddleware[]>middleware.extractDecorators(route[0])
         expect(mdw.map(x => x.id).join("")).toBe("1234")
     })
 
@@ -31,8 +28,8 @@ describe("Middleware Decorator Extraction", () => {
             getData() { }
         }
 
-        const route = transformController(AnimalController)
-        const mdw = <DummyMiddleware[]>extractDecorators(route[0])
+        const route = RouteGenerator.transformController(AnimalController)
+        const mdw = <DummyMiddleware[]>middleware.extractDecorators(route[0])
         expect(mdw.map(x => x.id).join("")).toBe("1234")
     })
 
@@ -45,8 +42,8 @@ describe("Middleware Decorator Extraction", () => {
             getData() { }
         }
 
-        const route = transformController(AnimalController)
-        const mdw = <DummyMiddleware[]>extractDecorators(route[0])
+        const route = RouteGenerator.transformController(AnimalController)
+        const mdw = <DummyMiddleware[]>middleware.extractDecorators(route[0])
         expect(mdw.map(x => x.id).join("")).toBe("12345678")
     })
 })

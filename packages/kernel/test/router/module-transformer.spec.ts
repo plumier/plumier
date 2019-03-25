@@ -1,10 +1,9 @@
-import { join } from "path";
-
-import { transformModule } from "../../../src/router";
+import { RouteGenerator as gen } from "@plumier/kernel"
+import { join } from "path"
 
 describe("Module Transformer Tests", () => {
     it("Should parse basic controller", async () => {
-        const route = await transformModule(join(__dirname, "./controller/basic-controller.ts"))
+        const route = await gen.transformModule(join(__dirname, "./controller/basic-controller.ts"))
         expect(route).toMatchObject([
             { method: 'get', url: '/basic/getanimal' },
             { method: 'get', url: '/basic/getanimallist' },
@@ -12,7 +11,7 @@ describe("Module Transformer Tests", () => {
     })
 
     it("Should parse decorated controller", async () => {
-        const route = await transformModule(join(__dirname, "./controller/decorated-controller.ts"))
+        const route = await gen.transformModule(join(__dirname, "./controller/decorated-controller.ts"))
         expect(route).toMatchObject([
             { method: 'post', url: '/decorated/saveanimal' },
             { method: 'get', url: '/decorated/:id' },
@@ -25,7 +24,7 @@ describe("Module Transformer Tests", () => {
     })
 
     it("Should parse all controllers inside directory", async () => {
-        const route = await transformModule(join(__dirname, "./controller"))
+        const route = await gen.transformModule(join(__dirname, "./controller"))
         expect(route).toMatchObject([
             { method: 'get', url: '/basic/getanimal' },
             { method: 'get', url: '/basic/getanimallist' },
@@ -41,7 +40,7 @@ describe("Module Transformer Tests", () => {
     })
 
     it("Should parse controllers with nested directory", async () => {
-        const route = await transformModule(join(__dirname, "./nested"))
+        const route = await gen.transformModule(join(__dirname, "./nested"))
         expect(route).toMatchObject([
             { method: 'get', url: '/api/v1/basic/getanimal' },
             { method: 'get', url: '/api/v1/basic/getanimallist' },
@@ -51,7 +50,7 @@ describe("Module Transformer Tests", () => {
     })
 
     it("Should not parse ignored action properly", async () => {
-        const route = await transformModule(join(__dirname, "./controller/ignore-controller.ts"))
+        const route = await gen.transformModule(join(__dirname, "./controller/ignore-controller.ts"))
         expect(route).toMatchObject([
             { method: 'get', url: '/ignore/getanimallist' },
         ])

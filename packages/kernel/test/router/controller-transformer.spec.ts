@@ -1,5 +1,6 @@
-import { transformController } from "../../../src/router";
-import { route } from '@plumier/core';
+import { route } from "@plumier/core"
+import { RouteGenerator } from "@plumier/kernel"
+
 
 describe("Controller Transformer", () => {
     describe("Basic Transformation", () => {
@@ -8,7 +9,7 @@ describe("Controller Transformer", () => {
                 getData(id: string) { }
                 otherMethod() { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([
                 { method: "get", url: "/animal/getdata" },
                 { method: "get", url: "/animal/othermethod" }
@@ -19,7 +20,7 @@ describe("Controller Transformer", () => {
             class AnimalClass {
                 getData(id: string) { }
             }
-            const result = transformController(AnimalClass)
+            const result = RouteGenerator.transformController(AnimalClass)
             expect(result).toMatchObject([])
         })
     })
@@ -30,7 +31,7 @@ describe("Controller Transformer", () => {
                 @route.get()
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([{ method: "get", url: "/animal/themethod" }])
         })
 
@@ -39,7 +40,7 @@ describe("Controller Transformer", () => {
                 @route.get("/beast/get")
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([{ method: "get", url: "/beast/get" }])
         })
 
@@ -48,7 +49,7 @@ describe("Controller Transformer", () => {
                 @route.post()
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([{ method: "post", url: "/animal/themethod" }])
         })
 
@@ -57,7 +58,7 @@ describe("Controller Transformer", () => {
                 @route.post("/beast/get")
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([{ method: "post", url: "/beast/get" }])
         })
 
@@ -66,7 +67,7 @@ describe("Controller Transformer", () => {
                 @route.put()
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([{ method: "put", url: "/animal/themethod" }])
         })
 
@@ -75,7 +76,7 @@ describe("Controller Transformer", () => {
                 @route.put("/beast/get")
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([{ method: "put", url: "/beast/get" }])
         })
 
@@ -84,7 +85,7 @@ describe("Controller Transformer", () => {
                 @route.delete()
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([{ method: "delete", url: "/animal/themethod" }])
         })
 
@@ -93,7 +94,7 @@ describe("Controller Transformer", () => {
                 @route.delete("/beast/get")
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([{ method: "delete", url: "/beast/get" }])
         })
 
@@ -102,7 +103,7 @@ describe("Controller Transformer", () => {
                 @route.get("get")
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([{ method: "get", url: "/animal/get" }])
         })
 
@@ -111,7 +112,7 @@ describe("Controller Transformer", () => {
                 @route.get("")
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([{ method: "get", url: "/animal" }])
         })
 
@@ -123,7 +124,7 @@ describe("Controller Transformer", () => {
                 @route.get("/transaction")
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([
                 { method: "get", url: "/home" },
                 { method: "get", url: "/about" },
@@ -140,7 +141,7 @@ describe("Controller Transformer", () => {
                 @route.ignore()
                 otherMethod() { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result.length).toBe(1)
             expect(result).toMatchObject([{ method: "get", url: "/animal/themethod" }])
         })
@@ -153,7 +154,7 @@ describe("Controller Transformer", () => {
                 theMethod(id: string) { }
                 otherMethod() { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([
                 { method: "get", url: "/beast/themethod" },
                 { method: "get", url: "/beast/othermethod" }
@@ -166,7 +167,7 @@ describe("Controller Transformer", () => {
                 @route.get("get")
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([{ method: "get", url: "/beast/get" }])
         })
 
@@ -176,7 +177,7 @@ describe("Controller Transformer", () => {
                 @route.get("get")
                 theMethod(beastId:string, id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([{ method: "get", url: "/beast/:beastid/animal/get" }])
         })
 
@@ -187,7 +188,7 @@ describe("Controller Transformer", () => {
                 theMethod(id: string) { }
                 otherMethod() { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([
                 { method: "get", url: "/absolute/method" },
                 { method: "get", url: "/beast/othermethod" }
@@ -200,7 +201,7 @@ describe("Controller Transformer", () => {
             class AnimalController {
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([
                 { method: "get", url: "/animal/themethod" },
                 { method: "get", url: "/beast/themethod" },
@@ -215,7 +216,7 @@ describe("Controller Transformer", () => {
                 @route.get("about")
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([
                 { method: "get", url: "/animal/home" },
                 { method: "get", url: "/animal/about" },
@@ -230,7 +231,7 @@ describe("Controller Transformer", () => {
                 @route.get("get")
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([{ method: "get", url: "/beast/get" }])
         })
 
@@ -240,7 +241,7 @@ describe("Controller Transformer", () => {
                 @route.get("get")
                 theMethod(id: string) { }
             }
-            const result = transformController(AnimalController)
+            const result = RouteGenerator.transformController(AnimalController)
             expect(result).toMatchObject([{ method: "get", url: "/beast/get" }])
         })
     })

@@ -4,7 +4,8 @@ import { removeSync } from "fs-extra"
 import { extname, join } from "path"
 import Supertest from "supertest"
 
-import Plumier, { MultiPartFacility, WebApiFacility } from "../../../src"
+import Plumier, { WebApiFacility } from "plumier/src"
+import {MultiPartFacility} from "@plumier/multipart"
 
 export function fixture(controller: Class | Class[] | string, config?: Partial<Configuration>) {
     const mergedConfig = <Configuration>{ mode: "production", ...config }

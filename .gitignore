@@ -11,7 +11,7 @@ packages/**/*.js.snap
 !jest.config.debug.js
 !test.js
 .docs
-!packages/core/test/resolve-path/my-module.js
+!packages/kernel/test/resolve-path/my-module.js
 website/translated_docs
 website/build/
 website/yarn.lock

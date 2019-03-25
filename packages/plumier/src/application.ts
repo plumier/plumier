@@ -2,36 +2,33 @@ import Cors from "@koa/cors"
 import {
     ActionResult,
     Application,
-    BodyParserOption,
     Class,
     Configuration,
     ConversionError,
     DefaultConfiguration,
+    DefaultFacility,
     errorMessage,
     Facility,
-    hasKeyOf,
     HttpStatusError,
     Invocation,
     KoaMiddleware,
     Middleware,
-    MiddlewareDecorator,
+    middleware as mdw,
     MiddlewareUtil,
     PlumierApplication,
     PlumierConfiguration,
     RouteInfo,
     ValidationError,
     ValidatorFunction,
-    DefaultFacility,
-    route,
 } from "@plumier/core"
+import { hasKeyOf, RouteGenerator } from "@plumier/kernel"
 import { validate as validateString } from "@plumier/validator"
 import { existsSync } from "fs"
 import Koa, { Context } from "koa"
 import BodyParser from "koa-bodyparser"
 import { dirname, isAbsolute, join } from "path"
 
-import { analyzeRoutes, printAnalysis, router, transformController, transformModule } from "./router"
-import { FileActionResult, ServeStaticOptions } from "./serve-static"
+import { router } from "./router"
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------------- CORE -------------------------------------- */
@@ -42,40 +39,20 @@ export interface RouteContext extends Koa.Context {
     parameters: any[]
 }
 
-export class RedirectActionResult extends ActionResult {
-    constructor(public path: string) { super() }
-
-    async execute(ctx: Context): Promise<void> {
-        ctx.redirect(this.path)
+export interface BodyParserOption {
+    enableTypes?: string[];
+    encode?: string;
+    formLimit?: string;
+    jsonLimit?: string;
+    strict?: boolean;
+    detectJSON?: (ctx: Koa.Context) => boolean;
+    extendTypes?: {
+        json?: string[];
+        form?: string[];
+        text?: string[];
     }
+    onerror?: (err: Error, ctx: Koa.Context) => void;
 }
-
-export namespace response {
-    export function json(body: any) {
-        return new ActionResult(body)
-    }
-    export function file(path: string, opt?: ServeStaticOptions) {
-        return new FileActionResult(path, opt)
-    }
-    export function redirect(path: string) {
-        return new RedirectActionResult(path)
-    }
-}
-
-/* ------------------------------------------------------------------------------- */
-/* ----------------------------------- HELPERS ----------------------------------- */
-/* ------------------------------------------------------------------------------- */
-
-
-export function extractDecorators(route: RouteInfo): Middleware[] {
-    const classDecorator: MiddlewareDecorator[] = route.controller.decorators.filter(x => x.name == "Middleware")
-    const methodDecorator: MiddlewareDecorator[] = route.action.decorators.filter(x => x.name == "Middleware")
-    const extract = (d: MiddlewareDecorator[]) => d.map(x => x.value).flatten()
-    return extract(classDecorator)
-        .concat(extract(methodDecorator))
-        .reverse()
-}
-
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- INVOCATIONS ----------------------------------- */
@@ -239,14 +216,14 @@ export class Plumier implements PlumierApplication {
                 join(executionPath, this.config.controller)
             if (!existsSync(path))
                 throw new Error(errorMessage.ControllerPathNotFound.format(path))
-            routes = transformModule(path)
+            routes = RouteGenerator.transformModule(path)
         }
         else if (Array.isArray(this.config.controller)) {
-            routes = this.config.controller.map(x => transformController(x))
+            routes = this.config.controller.map(x => RouteGenerator.transformController(x))
                 .flatten()
         }
         else {
-            routes = transformController(this.config.controller)
+            routes = RouteGenerator.transformController(this.config.controller)
         }
         return routes
     }
@@ -261,12 +238,12 @@ export class Plumier implements PlumierApplication {
             for (const facility of this.config.facilities) {
                 await facility.initialize(this, routes)
             }
-            if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
+            if (this.config.mode === "debug") RouteGenerator.printAnalysis(RouteGenerator.analyzeRoutes(routes))
             const decorators: { [key: string]: Middleware[] } = {}
             this.koa.use(router(routes, this.config, ctx => {
                 if (ctx.route && ctx.parameters) {
                     //execute global middleware and controller
-                    const middleware = decorators[ctx.route.url] || (decorators[ctx.route.url] = this.globalMiddleware.concat(extractDecorators(ctx.route)))
+                    const middleware = decorators[ctx.route.url] || (decorators[ctx.route.url] = this.globalMiddleware.concat(mdw.extractDecorators(ctx.route)))
                     return pipe(middleware, ctx, new ActionInvocation(<RouteContext>ctx))
                 }
                 else {

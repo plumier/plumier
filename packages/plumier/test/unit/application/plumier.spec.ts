@@ -1,5 +1,6 @@
-import Plumier from "../../../src";
-import { consoleLog } from '@plumier/core';
+import { consoleLog } from "@plumier/kernel"
+
+import Plumier from "../../../src"
 
 
 describe("Plumier", () => {

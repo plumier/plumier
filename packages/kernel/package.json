@@ -1,18 +1,27 @@
 {
-  "name": "@plumier/jwt",
+  "name": "@plumier/kernel",
   "version": "1.0.0-beta.4",
-  "description": "Plumier authorization module using JWT",
+  "description": "Plumier kernel",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "keywords": [
+    "MVC",
+    "Koa",
+    "IoC",
+    "Dependency Injection",
+    "Web API",
+    "JSON Service",
+    "TDD"
+  ],
   "scripts": {
     "compile": "tsc -p tsconfig.build.json"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumier/kernel": "1.0.0-beta.4",
-    "koa-jwt": "^3.5.1",
-    "tslib": "^1.9.3"
+    "@plumier/core": "^1.0.0-beta.4",
+    "@types/glob":"^7.1.1",
+    "glob": "^7.1.3"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"
@@ -24,5 +33,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "9d69b5621b7e2e777818e5e36c13ecba0c8d8204"
+  "gitHead": "9d69b5621b7e2e777818e5e36c13ecba0c8d8204",
+  "devDependencies": {
+    "upath": "^1.1.0"
+  }
 }

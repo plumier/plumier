@@ -1,12 +1,12 @@
 {
-  "name": "@plumier/mongoose",
+  "name": "@plumier/serve-static",
   "version": "1.0.0-beta.4",
-  "description": "TypeScript Mongoose with decorator based configuration",
+  "description": "Serve static file for Plumier",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "keywords": [
-    "reflection",
-    "introspection"
+    "serve-static",
+    "plumier"
   ],
   "scripts": {
     "compile": "tsc -p tsconfig.build.json"
@@ -15,17 +15,8 @@
   "license": "MIT",
   "dependencies": {
     "@plumier/core": "1.0.0-beta.4",
-    "@plumier/validator": "1.0.0-beta.4",
-    "@types/mongoose": "^5.3.10",
-    "chalk": "^2.4.2",
-    "mongoose": "^5.4.15",
-    "tinspector": "^2.2.0"
-  },
-  "devDependencies": {
-    "@types/supertest": "^2.0.7",
-    "@plumier/kernel": "1.0.0-beta.4",
-    "@plumier/validator": "1.0.0-beta.4",
-    "supertest": "^4.0.0"
+    "@types/koa-send": "^4.1.1",
+    "koa-send": "^5.0.0"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"

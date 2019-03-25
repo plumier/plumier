@@ -1,9 +1,10 @@
 import { route } from "@plumier/core"
-import { response, ServeStaticFacility } from "../../../src"
+import { ServeStaticFacility } from "@plumier/serve-static"
 import { readFileSync } from "fs"
 import { join } from "path"
 import Supertest from "supertest"
 
+import { response } from "plumier/src"
 import { fixture } from "../../helper"
 
 
@@ -171,7 +172,7 @@ describe("Serve Files", () => {
     it("Should handle error properly", async () => {
         jest.resetModules()
         jest.doMock("koa-send", () => function() { throw new Error() })
-        const serve = require("../../../src/serve-static")
+        const serve = require("@plumier/serve-static")
         const root = join(__dirname, "./assets");
         class HomeController {
             @route.get("/")

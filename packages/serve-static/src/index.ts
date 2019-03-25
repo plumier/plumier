@@ -1,7 +1,7 @@
-import { ActionResult, Facility, Invocation, Middleware, PlumierApplication, HttpStatusError, DefaultFacility } from "@plumier/core";
-import { Context } from "koa";
-import send from "koa-send";
-import { extname } from "path";
+import { ActionResult, DefaultFacility, Invocation, Middleware, PlumierApplication, response } from "@plumier/core"
+import { Context } from "koa"
+import send from "koa-send"
+import { extname } from "path"
 
 export interface ServeStaticOptions {
     /** 
@@ -68,7 +68,6 @@ export class ServeStaticMiddleware implements Middleware {
     }
 }
 
-
 export class ServeStaticFacility extends DefaultFacility {
     constructor(public option: ServeStaticOptions) { super() }
 
@@ -76,3 +75,11 @@ export class ServeStaticFacility extends DefaultFacility {
         app.use(new ServeStaticMiddleware(this.option))
     }
 }
+
+declare module "@plumier/core" {
+    namespace response {
+        function file (path: string, opt?: ServeStaticOptions) :ActionResult
+    }
+}
+
+response.file = (path: string, opt?: ServeStaticOptions) => new FileActionResult(path, opt)

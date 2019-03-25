@@ -1,5 +1,6 @@
-import { authorize, domain, route, consoleLog } from "@plumier/core"
+import { authorize, domain, route } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
+import { consoleLog } from "@plumier/kernel"
 import { val } from "@plumier/validator"
 import { sign } from "jsonwebtoken"
 import Supertest from "supertest"

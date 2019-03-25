@@ -1,19 +1,17 @@
-import { ActionResult, Class, Configuration, DefaultConfiguration, HttpStatusError, route, domain } from "@plumier/core";
-import Koa, { Context } from "koa";
-import BodyParser from "koa-bodyparser";
-import Supertest from "supertest";
-
-import { ActionInvocation, RouteContext } from "../../../src/application";
-import { bindParameter } from "../../../src/binder";
-import { transformController } from "../../../src/router";
+import { ActionResult, Class, Configuration, DefaultConfiguration, domain, HttpStatusError, route } from "@plumier/core"
+import { Binder, RouteGenerator } from "@plumier/kernel"
+import Koa, { Context } from "koa"
+import BodyParser from "koa-bodyparser"
+import { ActionInvocation, RouteContext } from "plumier/src/application"
+import Supertest from "supertest"
 
 
 function fixture(controller: Class, config?: Partial<Configuration>) {
     return async (ctx: Context) => {
-        const ctlRoute = transformController(controller)
+        const ctlRoute = RouteGenerator.transformController(controller)
         ctx.route = ctlRoute[0]
         ctx.config = Object.assign(DefaultConfiguration, config)
-        ctx.parameters = bindParameter(ctx, ctlRoute[0].action, ctx.config.converters)
+        ctx.parameters = Binder.bindParameter(ctx, ctlRoute[0].action, ctx.config.converters)
         const invocation = new ActionInvocation(<RouteContext>ctx)
         const result = await invocation.proceed()
         await result.execute(ctx)

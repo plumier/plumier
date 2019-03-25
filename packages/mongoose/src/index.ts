@@ -1,22 +1,18 @@
+import { Class, DefaultFacility, domain, PlumierApplication, ValidatorDecorator, Converters, TypeConverter } from "@plumier/core"
+import { val } from "@plumier/validator"
+import Chalk from "chalk"
+import Mongoose, { Model } from "mongoose"
+import { dirname, isAbsolute, join } from "path"
 import {
-    Class,
-    domain,
-    Facility,
-    isCustomClass,
-    PlumierApplication,
-    reflectPath,
-    ValidatorDecorator,
-    Converters,
-    safeToString,
-    TypeConverter,
-    DefaultFacility,
-} from "@plumier/core";
-import { ClassReflection, decorateClass, decorateParameter, ParameterReflection, reflect, PropertyReflection, mergeDecorator, decorateProperty } from "tinspector";
-import { val } from "@plumier/validator";
-import Chalk from "chalk";
-import Mongoose, { Model } from "mongoose";
-import { dirname, isAbsolute, join } from "path";
-
+    ClassReflection,
+    decorateClass,
+    decorateProperty,
+    mergeDecorator,
+    PropertyReflection,
+    reflect,
+    Reflection,
+} from "tinspector"
+import {isCustomClass, findFilesRecursive, Converter, safeToString} from "@plumier/kernel"
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------------ TYPES ------------------------------------ */
@@ -157,6 +153,18 @@ val.unique = () => {
             validator: createValidator(target, name, index)
         }
     })
+}
+
+export function reflectPath(path: string | Class | Class[]): Reflection[] {
+    if (Array.isArray(path))
+        return path.map(x => reflect(x))
+    else if (typeof path === "string")
+        return findFilesRecursive(path)
+            .map(x => reflect(x))
+            .map(x => x.members)
+            .flatten()
+    else
+        return [reflect(path)]
 }
 
 export function collection(alias?: string) {
