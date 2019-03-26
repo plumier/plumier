@@ -60,7 +60,7 @@ function ownerOrAdmin() {
         const {role, parameters, user} = info;
         const todo: Todo = await db("Todo").where({ id: parameters[0] }).first()
         return role.some(x => x === "Admin") || todo && todo.userId === user.userId
-    })
+    }, "Admin|Owner")
 }
 ```
 
@@ -69,6 +69,8 @@ Code above is specific to Todo data so we put it in the same file with the todos
 The logic is quite simple, we query the database based on provided `id` and check if current user role is `Admin` or the requested todo owner match with current login user id. 
 
 Note that it uses `parameters[0]` as `id` so basically it only can be applied to a method with signature `method(id:number, ...)` like `modify(id, data)` and `delete(id)`
+
+The last parameter of `@authorize.custom` populated with `"Admin|Owner"` is value that will be populated into the route analysis.
 
 ### Apply Authorization Decorator
 Now we ready to apply our custom authorization to the `PUT` and `DELETE` handler by putting `@ownerOrAdmin()` above the `delete` and `modify` method like below
@@ -152,3 +154,29 @@ export class UsersController {
 }
 ```
 
+Above controller showing that we applied authorization above each methods. Save all files and Visual Studio Code integrated terminal used to run the app will print message below
+
+```bash
+[INFO] 20:05:25 Restarting: users-controller.ts has been modified
+Using ts-node version 8.0.2, typescript version 3.3.3333
+Debugger listening on ws://127.0.0.1:9229/59611f7b-add0-4c7c-8236-b268910a38b5
+For help, see: https://nodejs.org/en/docs/inspector
+
+Route Analysis Report
+ 1. TodosController.save(data, user)      -> Authenticated POST   /api/v1/todos
+ 2. TodosController.list(offset, limit)   -> Authenticated GET    /api/v1/todos
+ 3. TodosController.get(id)               -> Authenticated GET    /api/v1/todos/:id
+ 4. TodosController.modify(id, data)      -> Admin|Owner   PUT    /api/v1/todos/:id
+ 5. TodosController.delete(id)            -> Admin|Owner   DELETE /api/v1/todos/:id
+ 6. UsersController.save(data)            -> Public        POST   /api/v1/users
+ 7. UsersController.list(offset, limit)   -> Admin         GET    /api/v1/users
+ 8. UsersController.get(id)               -> Admin|Owner   GET    /api/v1/users/:id
+ 9. UsersController.modify(id, data)      -> Admin|Owner   PUT    /api/v1/users/:id
+10. UsersController.delete(id)            -> Admin|Owner   DELETE /api/v1/users/:id
+11. AuthController.login(email, password) -> Public        POST   /auth/login
+12. HomeController.index()                -> Public        GET    /
+
+Server running http://localhost:8000/
+```
+
+Above showing that now authorization set properly for each route like our requirement.

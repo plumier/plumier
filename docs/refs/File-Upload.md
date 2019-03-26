@@ -9,11 +9,12 @@ Plumier added support for file upload using multi part form data using [busboy](
 Plumier file upload doesn't scan through all of incoming request instead it only parse request on controller code make request more efficient. File parser directly pipe request stream into file stream which is good memory usage and overall performance.
 
 ## Enable The Functionality
-By default file upload is not enabled, use `FileUploadFacility` to enable it.
+By default file upload is not enabled, you need to use `@plumier/multipart` package use `FileUploadFacility` to enable it.
 
 ```typescript
 import Plumier from "plumier"
 import { join } from "path"
+import { FileUploadFacility } from "@plumier/multipart"
 
 const plum = new Plumier()
 plum.set(new FileUploadFacility({ uploadPath: join(__dirname, "./upload") }))
