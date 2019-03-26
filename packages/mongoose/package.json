@@ -1,6 +1,6 @@
 {
   "name": "@plumier/mongoose",
-  "version": "1.0.0-beta.4",
+  "version": "1.0.0-beta.5",
   "description": "TypeScript Mongoose with decorator based configuration",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,17 +14,17 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumier/core": "1.0.0-beta.4",
-    "@plumier/validator": "1.0.0-beta.4",
+    "@plumier/core": "1.0.0-beta.5",
+    "@plumier/validator": "1.0.0-beta.5",
     "@types/mongoose": "^5.3.10",
     "chalk": "^2.4.2",
     "mongoose": "^5.4.15",
     "tinspector": "^2.2.0"
   },
   "devDependencies": {
-    "@types/supertest": "^2.0.7",
-    "@plumier/kernel": "1.0.0-beta.4",
+    "@plumier/kernel": "1.0.0-beta.5",
     "@plumier/validator": "1.0.0-beta.4",
+    "@types/supertest": "^2.0.7",
     "supertest": "^4.0.0"
   },
   "bugs": {
