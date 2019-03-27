@@ -59,11 +59,9 @@ describe("File Upload", () => {
             .attach("file", join(__dirname, "./assets/index.html"))
             .expect(200)
         const info: FileUploadInfo = fn.mock.calls[0][0][0]
-        const filePath = join(__dirname, "upload", info.fileName)
         expect(extname(info.fileName)).toEqual(".html")
         expect(info.size).toBeGreaterThan(100)
         expect(info.field).toBe("file")
-        expect(existsSync(filePath)).toBe(true)
         removeSync(join(__dirname, "./upload/path/"))
     })
 
