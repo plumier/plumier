@@ -1,8 +1,8 @@
 import "@plumier/core"
 import { join } from 'path';
 import { unlinkSync, existsSync } from 'fs';
-import {normalize} from "upath"
-import { findFilesRecursive, createRoute } from '@plumier/kernel';
+import { normalize } from "upath"
+import { findFilesRecursive, RouteGenerator, useCache, CacheStore } from '@plumier/kernel';
 
 
 describe("StringUtil.format", () => {
@@ -50,32 +50,53 @@ describe("resolvePath", () => {
 
 describe("createRoute", () => {
     it("Should join path properly", () => {
-        const result = createRoute("a", "b", "c")
+        const result = RouteGenerator.createRoute("a", "b", "c")
         expect(result).toBe("/a/b/c")
     })
 
     it("Should transform to lowercase", () => {
-        const result = createRoute("a", "B", "c")
+        const result = RouteGenerator.createRoute("a", "B", "c")
         expect(result).toBe("/a/b/c")
     })
 
     it("Should ignore undefined", () => {
-        const result = createRoute("a", <any>undefined, "B", "c")
+        const result = RouteGenerator.createRoute("a", <any>undefined, "B", "c")
         expect(result).toBe("/a/b/c")
     })
 
     it("Should ignore empty string", () => {
-        const result = createRoute("a", "", "B", "c")
+        const result = RouteGenerator.createRoute("a", "", "B", "c")
         expect(result).toBe("/a/b/c")
     })
 
     it("Should ignore slash", () => {
-        const result = createRoute("/a", "/", "B", "/c")
+        const result = RouteGenerator.createRoute("/a", "/", "B", "/c")
         expect(result).toBe("/a/b/c")
     })
 
     it("Should keep route", () => {
-        const result = createRoute("/a", "/B/c", "d")
+        const result = RouteGenerator.createRoute("/a", "/B/c", "d")
         expect(result).toBe("/a/b/c/d")
+    })
+})
+
+describe("useCache", () => {
+    function getData(a: number, b: string) {
+        return { a, b }
+    }
+
+    const dataCache: CacheStore<{ a: number, b: string }> = {}
+
+    it("Should cache function properly", () => {
+        const getDataMock = jest.fn(getData)
+        const getDataCached = useCache(dataCache, getDataMock, (a, b) => `${a}${b}`)
+        getDataMock.mockReturnValue({ a: 1, b: "2" })
+        getDataCached(1, "2")
+        getDataCached(1, "2")
+        getDataCached(1, "2")
+        getDataCached(1, "2")
+        getDataCached(1, "2")
+        getDataCached(1, "3")
+        expect(getDataMock.mock.calls.length).toBe(2)
     })
 })

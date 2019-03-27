@@ -1,7 +1,9 @@
 import { Class, Invocation, Middleware, middleware, route } from "@plumier/core"
-import Plumier, { WebApiFacility } from "../../../src"
+import Plumier from "../../../src"
 import { Context } from "koa"
 import Supertest from "supertest"
+import {RestfulApiFacility} from "plumier/src/facility"
+
 
 class InterceptBody implements Middleware {
     constructor(private newBody: any) { }
@@ -29,7 +31,7 @@ function KoaInterceptBody(body: any) {
 
 function fixture(controller: Class) {
     return new Plumier()
-        .set(new WebApiFacility())
+        .set(new RestfulApiFacility())
         .set({ mode: "production" })
         .set({ controller: [controller] })
 }

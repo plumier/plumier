@@ -1,6 +1,7 @@
 import { authorize, domain } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import Plumier, { route, WebApiFacility } from "plumier"
+import Plumier, { route } from "plumier"
+import {RestfulApiFacility} from "plumier/src/facility"
 
 import { secret } from "../options"
 
@@ -33,7 +34,7 @@ class MainController {
 }
 
 new Plumier()
-    .set(new WebApiFacility({ controller: MainController }))
+    .set(new RestfulApiFacility({ controller: MainController }))
     .set(new JwtAuthFacility({ secret }))
     .initialize()
     .then(x => x.listen(5555))

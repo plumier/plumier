@@ -1,9 +1,10 @@
 import { Class, PlumierApplication, route } from "@plumier/core"
 import { consoleLog } from "@plumier/kernel"
 import { collection, Constructor, model, MongooseFacility } from "@plumier/mongoose"
+import { WebApiFacility } from "plumier/src/facility"
 import Mongoose from "mongoose"
 import { join } from "path"
-import Plumier, { val, WebApiFacility } from "plumier"
+import Plumier, { val } from "plumier"
 import supertest from "supertest"
 import reflect from "tinspector"
 
@@ -15,7 +16,6 @@ function clearCache(){
     Object.keys(Mongoose.connection.models)
         .forEach(name => delete Mongoose.connection.models[name])
 }
-
 
 async function save<T extends object>(cls: Constructor<T>, value: T) {
     const Model = model(cls)

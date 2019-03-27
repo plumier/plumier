@@ -1,10 +1,8 @@
-import { ActionResult, Class, Configuration, DefaultConfiguration, domain, HttpStatusError, route } from "@plumier/core"
-import { Binder, RouteGenerator } from "@plumier/kernel"
+import { ActionResult, Class, Configuration, DefaultConfiguration, domain, HttpStatusError, route, RouteContext } from "@plumier/core"
+import { Binder, RouteGenerator, ActionInvocation } from "../src"
 import Koa, { Context } from "koa"
 import BodyParser from "koa-bodyparser"
-import { ActionInvocation, RouteContext } from "plumier/src/application"
 import Supertest from "supertest"
-
 
 function fixture(controller: Class, config?: Partial<Configuration>) {
     return async (ctx: Context) => {

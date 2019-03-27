@@ -5,6 +5,7 @@
         "package.json",
         "packages/core/package.json",
         "packages/jwt/package.json",
+        "packages/kernel/package.json",
         "packages/mongoose/package.json",
         "packages/multipart/package.json",
         "packages/plumier/package.json",

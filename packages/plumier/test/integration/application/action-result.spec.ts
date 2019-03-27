@@ -1,4 +1,5 @@
-import Plumier, { response, WebApiFacility, route } from "../../../src"
+import Plumier, { response, route } from "../../../src"
+import {RestfulApiFacility} from "plumier/src/facility"
 import supertest from "supertest"
 
 
@@ -15,7 +16,7 @@ describe("Redirect Action Result", () => {
             }
         }
         const plumier = await new Plumier()
-            .set(new WebApiFacility())
+            .set(new RestfulApiFacility())
             .set({ controller: AnimalController })
             .set({ mode: "production" })
             .initialize()

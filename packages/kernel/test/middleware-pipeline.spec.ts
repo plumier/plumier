@@ -1,7 +1,7 @@
 import { Context } from "koa";
 
 import { ActionResult, Invocation } from "@plumier/core";
-import { pipe } from '../../../src/application';
+import { pipe } from '../src';
 
 
 describe("Middleware Pipeline", () => {

@@ -1,8 +1,8 @@
-import { Context } from 'koa';
-import { ActionResult } from './action-result';
-import { RouteInfo } from './route-generator';
-import { decorate } from 'tinspector';
-import { Configuration } from './configuration';
+import { Context } from "koa"
+import { decorate } from "tinspector"
+
+import { ActionResult } from "./action-result"
+import { RouteInfo } from "./route-generator"
 
 
 // --------------------------------------------------------------------- //
@@ -21,13 +21,6 @@ export interface Middleware {
     execute(invocation: Readonly<Invocation>): Promise<ActionResult>
 }
 
-declare module "koa" {
-    interface Context {
-        route?: Readonly<RouteInfo>,
-        config: Readonly<Configuration>,
-        parameters?: any[]
-    }
-}
 
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //
@@ -45,6 +38,14 @@ export namespace MiddlewareUtil {
             }
         }
     }
+    export function extractDecorators(route: RouteInfo): Middleware[] {
+        const classDecorator: MiddlewareDecorator[] = route.controller.decorators.filter(x => x.name == "Middleware")
+        const methodDecorator: MiddlewareDecorator[] = route.action.decorators.filter(x => x.name == "Middleware")
+        const extract = (d: MiddlewareDecorator[]) => d.map(x => x.value).flatten()
+        return extract(classDecorator)
+            .concat(extract(methodDecorator))
+            .reverse()
+    }
 }
 
 
@@ -59,12 +60,4 @@ export namespace middleware {
         return decorate(value, ["Class", "Method"])
     }
 
-    export function extractDecorators(route: RouteInfo): Middleware[] {
-        const classDecorator: MiddlewareDecorator[] = route.controller.decorators.filter(x => x.name == "Middleware")
-        const methodDecorator: MiddlewareDecorator[] = route.action.decorators.filter(x => x.name == "Middleware")
-        const extract = (d: MiddlewareDecorator[]) => d.map(x => x.value).flatten()
-        return extract(classDecorator)
-            .concat(extract(methodDecorator))
-            .reverse()
-    }
 }

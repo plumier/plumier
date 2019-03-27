@@ -1,4 +1,4 @@
-import { ActionResult, Invocation, Middleware, middleware } from "@plumier/core"
+import { ActionResult, Invocation, Middleware, middleware, MiddlewareUtil } from "@plumier/core"
 import { RouteGenerator } from "@plumier/kernel"
 
 class DummyMiddleware implements Middleware {
@@ -17,7 +17,7 @@ describe("Middleware Decorator Extraction", () => {
         }
 
         const route = RouteGenerator.transformController(AnimalController)
-        const mdw = <DummyMiddleware[]>middleware.extractDecorators(route[0])
+        const mdw = <DummyMiddleware[]>MiddlewareUtil.extractDecorators(route[0])
         expect(mdw.map(x => x.id).join("")).toBe("1234")
     })
 
@@ -29,7 +29,7 @@ describe("Middleware Decorator Extraction", () => {
         }
 
         const route = RouteGenerator.transformController(AnimalController)
-        const mdw = <DummyMiddleware[]>middleware.extractDecorators(route[0])
+        const mdw = <DummyMiddleware[]>MiddlewareUtil.extractDecorators(route[0])
         expect(mdw.map(x => x.id).join("")).toBe("1234")
     })
 
@@ -43,7 +43,7 @@ describe("Middleware Decorator Extraction", () => {
         }
 
         const route = RouteGenerator.transformController(AnimalController)
-        const mdw = <DummyMiddleware[]>middleware.extractDecorators(route[0])
+        const mdw = <DummyMiddleware[]>MiddlewareUtil.extractDecorators(route[0])
         expect(mdw.map(x => x.id).join("")).toBe("12345678")
     })
 })

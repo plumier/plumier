@@ -1,5 +1,6 @@
 import { domain } from "@plumier/core"
-import Plumier, { route, WebApiFacility } from "plumier"
+import Plumier, { route } from "plumier"
+import {RestfulApiFacility} from "plumier/src/facility"
 
 @domain()
 class User {
@@ -22,6 +23,6 @@ class MainController {
 }
 
 new Plumier()
-    .set(new WebApiFacility({ controller: MainController }))
+    .set(new RestfulApiFacility({ controller: MainController }))
     .initialize()
     .then(x => x.listen(5555))

@@ -1,11 +1,11 @@
 import { bind, Class, Configuration, FileParser, FileUploadInfo, route } from "@plumier/core"
+import { MultiPartFacility } from "@plumier/multipart"
+import { WebApiFacility } from "plumier/src/facility"
 import { existsSync, unlinkSync } from "fs"
 import { removeSync } from "fs-extra"
 import { extname, join } from "path"
+import Plumier from "plumier/src"
 import Supertest from "supertest"
-
-import Plumier, { WebApiFacility } from "plumier/src"
-import {MultiPartFacility} from "@plumier/multipart"
 
 export function fixture(controller: Class | Class[] | string, config?: Partial<Configuration>) {
     const mergedConfig = <Configuration>{ mode: "production", ...config }

@@ -1,8 +1,9 @@
 import {  domain, route } from "@plumier/core"
-import Plumier, { WebApiFacility } from "../../../src"
+import Plumier from "../../../src"
 import { join } from "path"
 import Rimraf from "rimraf"
 import Supertest from "supertest"
+import {RestfulApiFacility} from "plumier/src/facility"
 
 import { fixture } from "../../helper"
 import { consoleLog } from '@plumier/kernel';
@@ -1341,7 +1342,7 @@ describe("Router with external controller", () => {
     it("Should load controllers", async () => {
         consoleLog.startMock()
         const app = await new Plumier()
-            .set(new WebApiFacility())
+            .set(new RestfulApiFacility())
             .initialize()
         expect((console.log as any).mock.calls[2][0]).toContain("GET /animal/get")
         expect((console.log as any).mock.calls[3][0]).toContain("GET /beast/get")
@@ -1352,7 +1353,7 @@ describe("Router with external controller", () => {
     it("Should able to specify file instead of folder", async () => {
         consoleLog.startMock()
         const app = await new Plumier()
-            .set(new WebApiFacility())
+            .set(new RestfulApiFacility())
             .set({ controller: "controller/animal-controller.ts" })
             .initialize()
         expect((console.log as any).mock.calls[2][0]).toContain("/animal/get")
@@ -1362,7 +1363,7 @@ describe("Router with external controller", () => {
     it("Should should not load non controller", async () => {
         consoleLog.startMock()
         const app = await new Plumier()
-            .set(new WebApiFacility({ controller: "./no-controller" }))
+            .set(new RestfulApiFacility({ controller: "./no-controller" }))
             .initialize()
         expect((console.log as any).mock.calls[2][0]).toContain("No controller found")
         consoleLog.clearMock()
@@ -1377,7 +1378,7 @@ describe("Analyzer", () => {
         }
         consoleLog.startMock()
         const app = await new Plumier()
-            .set(new WebApiFacility())
+            .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect((console.log as any).mock.calls[3][0]).toContain("PLUM1000")
@@ -1394,7 +1395,7 @@ describe("Analyzer", () => {
         }
         consoleLog.startMock()
         const app = await new Plumier()
-            .set(new WebApiFacility())
+            .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect((console.log as any).mock.calls[3][0]).toContain("PLUM1000")
@@ -1409,7 +1410,7 @@ describe("Analyzer", () => {
         }
         consoleLog.startMock()
         const app = await new Plumier()
-            .set(new WebApiFacility())
+            .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect((console.log as any).mock.calls[3][0]).toContain("PLUM1001")
@@ -1423,7 +1424,7 @@ describe("Analyzer", () => {
         }
         consoleLog.startMock()
         const app = await new Plumier()
-            .set(new WebApiFacility())
+            .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect((console.log as any).mock.calls.length).toBe(4)
@@ -1442,7 +1443,7 @@ describe("Analyzer", () => {
         }
         consoleLog.startMock()
         const app = await new Plumier()
-            .set(new WebApiFacility())
+            .set(new RestfulApiFacility())
             .set({ controller: [AnimalController, BeastController] })
             .initialize()
         expect((console.log as any).mock.calls[3][0]).toContain("PLUM1003")
@@ -1465,7 +1466,7 @@ describe("Analyzer", () => {
         }
         consoleLog.startMock()
         const app = await new Plumier()
-            .set(new WebApiFacility())
+            .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect((console.log as any).mock.calls[3][0]).toContain("PLUM1005")
@@ -1495,7 +1496,7 @@ describe("Analyzer", () => {
         }
         consoleLog.startMock()
         const app = await new Plumier()
-            .set(new WebApiFacility())
+            .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect((console.log as any).mock.calls[3][0]).toContain("PLUM1005")
@@ -1518,7 +1519,7 @@ describe("Analyzer", () => {
         }
         consoleLog.startMock()
         const app = await new Plumier()
-            .set(new WebApiFacility())
+            .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect((console.log as any).mock.calls[3][0]).toContain("PLUM1006")

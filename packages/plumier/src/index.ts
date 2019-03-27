@@ -37,8 +37,8 @@ export {
     RouteGenerator,
     Security
 } from "@plumier/kernel"
-export { WebApiFacility, RestfulApiFacility } from "./application"
 export { val } from "@plumier/validator"
+export * from "./facility"
 
 import { Plumier } from "./application"
 export default Plumier

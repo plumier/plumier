@@ -1,6 +1,6 @@
 import { decorate, decorateParameter, mergeDecorator } from "tinspector"
-import { Context } from "vm"
 
+import { RouteContext } from "./application"
 import { Converters } from "./converter"
 import { errorMessage } from "./error-message"
 import { RouteInfo } from "./route-generator"
@@ -23,7 +23,7 @@ export interface AuthorizeDecorator {
 export interface AuthorizeMetadataInfo {
     role: string[]
     user: any
-    ctx: Context
+    ctx: RouteContext
     route: RouteInfo
     parameters: any[]
     value?: any

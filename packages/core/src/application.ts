@@ -1,9 +1,39 @@
-import Koa from "koa"
+import Koa, { Context } from "koa"
 
 import { HttpStatus } from "./http-status"
 import { KoaMiddleware, Middleware } from './middleware';
 import { Facility } from './facility';
 import { Configuration, PlumierConfiguration } from './configuration';
+import { RouteInfo } from './route-generator';
+import reflect from 'tinspector';
+
+// --------------------------------------------------------------------- //
+// ------------------------------- TYPES ------------------------------- //
+// --------------------------------------------------------------------- //
+
+declare module "koa" {
+    interface Context {
+        route?: Readonly<RouteInfo>,
+        config: Readonly<Configuration>,
+        parameters?: any[]
+    }
+}
+
+export interface RouteContext extends Context {
+    route: Readonly<RouteInfo>,
+    parameters: any[]
+}
+
+export interface DependencyResolver {
+    resolve(type: (new (...args: any[]) => any)): any
+}
+
+
+export class DefaultDependencyResolver implements DependencyResolver {
+    resolve(type: new (...args: any[]) => any) {
+        return new type()
+    }
+}
 
 export interface Application {
     /**
@@ -73,9 +103,20 @@ export interface PlumierApplication extends Application {
     readonly config: Readonly<PlumierConfiguration>
 }
 
+// --------------------------------------------------------------------- //
+// ------------------------------- ERROR ------------------------------- //
+// --------------------------------------------------------------------- //
+
 export class HttpStatusError extends Error {
     constructor(public status: HttpStatus, message?: string) {
         super(message)
         Object.setPrototypeOf(this, HttpStatusError.prototype);
     }
 }
+
+
+// --------------------------------------------------------------------- //
+// ----------------------------- DECORATORS ---------------------------- //
+// --------------------------------------------------------------------- // 
+
+export function domain() { return reflect.parameterProperties() }

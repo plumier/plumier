@@ -33,15 +33,6 @@ export function safeToString(value: any) {
     }
 }
 
-export function createRoute(...args: string[]): string {
-    return "/" + args
-        .filter(x => !!x)
-        .map(x => x.toLowerCase())
-        .map(x => x.startsWith("/") ? x.slice(1) : x)
-        .map(x => x.endsWith("/") ? x.slice(0, -1) : x)
-        .filter(x => !!x)
-        .join("/")
-}
 
 export function hasKeyOf<T>(opt: any, key: string): opt is T {
     return key in opt;
@@ -82,4 +73,19 @@ export function findFilesRecursive(path: string): string[] {
         return Array.from(new Set(files))
     }
     else return [path]
+}
+
+
+// --------------------------------------------------------------------- //
+// ------------------------------- CACHE ------------------------------- //
+// --------------------------------------------------------------------- // 
+
+export type TFun<A extends any[], B> = (...args:A) => B
+export type CacheStore<T> = {[key:string]: T}
+
+export function useCache<P extends any[], R>(cache: CacheStore<R>, fn: TFun<P, R>, getKey: TFun<P, string>) {
+    return (...args: P) => {
+        const key = getKey(...args)
+        return cache[key] || (cache[key] = fn(...args))
+    } 
 }

@@ -1,6 +1,7 @@
 import { domain, route, ValidatorStore } from "@plumier/core"
-import Plumier, { val, WebApiFacility, RestfulApiFacility } from "../../../src"
+import Plumier, { val } from "../../../src"
 import Supertest from "supertest"
+import {WebApiFacility, RestfulApiFacility} from "plumier/src/facility"
 
 import { fixture } from "../../helper"
 
@@ -144,7 +145,7 @@ describe("Decouple Validation Logic", () => {
 
     it("Should validate using decouple logic from WebApiFacility", async () => {
         const koa = await new Plumier()
-            .set(new WebApiFacility({ validators, controller: PersonController }))
+            .set(new RestfulApiFacility({ validators, controller: PersonController }))
             .set({ mode: "production" })
             .initialize()
         const result = await Supertest(koa.callback())

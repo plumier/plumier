@@ -1,9 +1,10 @@
 import { ActionResult, ConversionError, HttpStatusError, Middleware, MiddlewareUtil } from "@plumier/core"
-import Plumier, { WebApiFacility } from "../../../src"
+import { pipe } from "@plumier/kernel"
 import Koa from "koa"
+import { RestfulApiFacility } from "plumier/src/facility"
 import Supertest from "supertest"
 
-import { pipe } from "../../../src/application"
+import Plumier from "../../../src"
 
 describe("ActionResult", () => {
     it("Should execute context properly", async () => {
@@ -61,7 +62,7 @@ describe("WebApiFacility", () => {
     it("Should able to configure body parser", async () => {
         const app = new Plumier()
         app.set({ controller: [AnimalController], mode: "production" })
-        app.set(new WebApiFacility({ bodyParser: { strict: false } }))
+        app.set(new RestfulApiFacility({ bodyParser: { strict: false } }))
         await app.initialize()
         expect(app).not.toBeNull()
     })
@@ -69,7 +70,7 @@ describe("WebApiFacility", () => {
     it("Should able to configure cors", async () => {
         const app = new Plumier()
         app.set({ controller: [AnimalController], mode: "production" })
-        app.set(new WebApiFacility({ cors: { maxAge: 50 } }))
+        app.set(new RestfulApiFacility({ cors: { maxAge: 50 } }))
         await app.initialize()
         expect(app).not.toBeNull()
     })

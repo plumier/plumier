@@ -146,7 +146,7 @@ Plumier done some data conversion and security check, example below is list of u
 ### Friendly
 Plumier enhanced with static route analysis which will print friendly message if you misconfigure controller or forgot some decorator.
 
-![static analysis](images/static-analysis.png)
+![static analysis](https://plumierjs.com/docs/assets/static-analysis.png)
 
 ## Documentation
 Go to Plumier [documentation](https://plumierjs.com) for complete documentation and tutorial

@@ -1,6 +1,7 @@
 import { route } from "@plumier/core"
-import Plumier, { RestfulApiFacility, val } from "../../../src"
+import Plumier, { val } from "../../../src"
 import Supertest from "supertest"
+import {RestfulApiFacility} from "plumier/src/facility"
 
 function fixture() {
     return new Plumier()

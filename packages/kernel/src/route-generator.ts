@@ -1,7 +1,10 @@
 import { Class, errorMessage, IgnoreDecorator, RootDecorator, RouteDecorator, RouteInfo } from "@plumier/core"
 import { ClassReflection, MethodReflection, ParameterReflection, PropertyReflection, reflect } from "tinspector"
+import chalk from "chalk"
 
-import { createRoute, findFilesRecursive, isCustomClass } from "./common"
+import { findFilesRecursive, isCustomClass } from "./common"
+import { isAbsolute, join } from 'path';
+import { existsSync } from 'fs';
 
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- TYPES -------------------------------------- */
@@ -14,11 +17,19 @@ interface TestResult { route: RouteInfo, issues: Issue[] }
 
 export interface TransformOption { root?: string }
 
-
-
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- HELPERS --------------------------------------- */
 /* ------------------------------------------------------------------------------- */
+
+export function createRoute(...args: string[]): string {
+    return "/" + args
+        .filter(x => !!x)
+        .map(x => x.toLowerCase())
+        .map(x => x.startsWith("/") ? x.slice(1) : x)
+        .map(x => x.endsWith("/") ? x.slice(0, -1) : x)
+        .filter(x => !!x)
+        .join("/")
+}
 
 export function striveController(name: string) {
     return name.substring(0, name.lastIndexOf("Controller")).toLowerCase()
@@ -110,6 +121,25 @@ export function transformModule(path: string): RouteInfo[] {
         }
     }
     return infos
+}
+
+export function generateRoutes(executionPath: string, controller:string | Class[] | Class) {
+    let routes: RouteInfo[] = []
+    if (typeof controller === "string") {
+        const path = isAbsolute(controller) ? controller :
+            join(executionPath, controller)
+        if (!existsSync(path))
+            throw new Error(errorMessage.ControllerPathNotFound.format(path))
+        routes = transformModule(path)
+    }
+    else if (Array.isArray(controller)) {
+        routes = controller.map(x => transformController(x))
+            .flatten()
+    }
+    else {
+        routes = transformController(controller)
+    }
+    return routes
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -250,8 +280,12 @@ export function printAnalysis(results: TestResult[]) {
         const action = x.action.padEnd(paddings.action)
         const method = x.method.padEnd(paddings.method)
         const access = x.access && (" " + x.access.padEnd(paddings.access)) || ""
-        console.log(`${num}. ${action} ->${access} ${method} ${x.url}`)
-        x.issues.forEach(issue => console.log(issue))
+        const color = x.issues.length === 0 ? (x:string) => x : x.issues.some(x => x.startsWith(" - error")) ? chalk.red : chalk.yellow
+        console.log(color(`${num}. ${action} ->${access} ${method} ${x.url}`))
+        x.issues.forEach(x => {
+            const color = x.startsWith(" - warning") ? chalk.yellow : chalk.red
+            console.log(color(x))
+        })
     })
     if (data.length > 0) console.log()
 }
