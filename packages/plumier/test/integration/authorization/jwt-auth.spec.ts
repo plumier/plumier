@@ -1,6 +1,5 @@
-import { authorize, domain, route } from "@plumier/core"
+import { authorize, consoleLog, domain, route } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import { consoleLog } from "@plumier/kernel"
 import { val } from "@plumier/validator"
 import { sign } from "jsonwebtoken"
 import Supertest from "supertest"
@@ -511,6 +510,21 @@ describe("JwtAuth", () => {
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
                 .send({ id: "123", name: "Mimi", deceased: "Yes" })
                 .expect(200)
+        })
+
+        it("Should throw error if @authorize.public() used for parameter authorization", () => {
+            try{
+                class AnimalController {
+                    @route.post()
+                    save(name: string,
+                        @authorize.public()
+                        id: number | undefined,
+                        deceased: boolean | undefined) { return "Hello" }
+                }
+            }
+            catch(e){
+                expect(e.message).toContain("PLUM1008")
+            }
         })
     })
 

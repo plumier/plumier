@@ -4,7 +4,7 @@ import { Context } from 'koa';
 // --------------------------- ACTION RESULT --------------------------- //
 // --------------------------------------------------------------------- //
 
-export class ActionResult {
+class ActionResult {
     static fromContext(ctx: Context) {
         return new ActionResult(ctx.body, ctx.status)
     }
@@ -33,7 +33,7 @@ export class ActionResult {
 }
 
 
-export class RedirectActionResult extends ActionResult {
+class RedirectActionResult extends ActionResult {
     constructor(public path: string) { super() }
 
     async execute(ctx: Context): Promise<void> {
@@ -45,7 +45,7 @@ export class RedirectActionResult extends ActionResult {
 // ------------------------------ RESPONSE ----------------------------- //
 // --------------------------------------------------------------------- //
 
-export namespace response {
+namespace response {
     export function json(body: any) {
         return new ActionResult(body)
     }
@@ -53,3 +53,5 @@ export namespace response {
         return new RedirectActionResult(path)
     }
 }
+
+export { response, RedirectActionResult, ActionResult }

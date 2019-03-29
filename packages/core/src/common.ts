@@ -1,4 +1,16 @@
-export type Class = new (...args: any[]) => any
+import { existsSync, lstatSync } from "fs"
+import glob from "glob"
+import { extname } from 'path';
+
+// --------------------------------------------------------------------- //
+// ------------------------------- TYPES ------------------------------- //
+// --------------------------------------------------------------------- //
+
+type Class = new (...args: any[]) => any
+
+// --------------------------------------------------------------------- //
+// ------------------------------ HELPERS ------------------------------ //
+// --------------------------------------------------------------------- //
 
 declare global {
     interface String {
@@ -11,17 +23,87 @@ declare global {
 }
 
 String.prototype.format = function (this: string, ...args: any[]) {
-    return this.replace(/{(\d+)}/g, (m, i) => typeof args[i] != 'undefined' ? args[i] : m)
+    return this.replace(/{(\d+)}/g, (m, i) => args[i])
 }
 
 Array.prototype.flatten = function <T>(this: Array<T>) {
     return this.reduce((a, b) => a.concat(b), <T[]>[])
 }
 
-export function getChildValue(object: any, path: string, defaultValue?: any) {
+function getChildValue(object: any, path: string) {
     return path
         .split(/[\.\[\]\'\"]/)
         .filter(p => p)
-        .reduce((o, p) => o ? o[p] : defaultValue, object)
+        .reduce((o, p) => o[p], object)
 }
 
+function hasKeyOf<T>(opt: any, key: string): opt is T {
+    return key in opt;
+}
+
+function isCustomClass(type: Function | Function[]) {
+    switch (Array.isArray(type) ? type[0] : type) {
+        case undefined:
+        case Boolean:
+        case String:
+        case Array:
+        case Number:
+        case Object:
+        case Date:
+            return false
+        default:
+            return true
+    }
+}
+
+
+// --------------------------------------------------------------------- //
+// ------------------------------ TESTING ------------------------------ //
+// --------------------------------------------------------------------- //
+
+const log = console.log;
+
+namespace consoleLog {
+    export function startMock() {
+        console.log = jest.fn(message => { })
+    }
+    export function clearMock() {
+        console.log = log
+    }
+}
+
+// --------------------------------------------------------------------- //
+// ---------------------------- FILE SYSTEM ---------------------------- //
+// --------------------------------------------------------------------- //
+
+function findFilesRecursive(path: string): string[] {
+    const removeExtension = (x: string) => x.replace(/\.[^/.]+$/, "")
+    if (existsSync(`${path}.js`)) return [removeExtension(path)]
+    else if (existsSync(`${path}.ts`)) return [removeExtension(path)]
+    //resolve provided path directory or file
+    else if (lstatSync(path).isDirectory()) {
+        const files = glob.sync(`${path}/**/*+(.js|.ts)`)
+            //take only file in extension list
+            .filter(x => [".js", ".ts"].some(ext => extname(x) == ext))
+            //add root path + file name
+            .map(x => removeExtension(x))
+        return Array.from(new Set(files))
+    }
+    else return [path]
+}
+
+// --------------------------------------------------------------------- //
+// ------------------------------- CACHE ------------------------------- //
+// --------------------------------------------------------------------- // 
+
+type TFun<A extends any[], B> = (...args: A) => B
+type CacheStore<T> = { [key: string]: T }
+
+function useCache<P extends any[], R>(cache: CacheStore<R>, fn: TFun<P, R>, getKey: TFun<P, string>) {
+    return (...args: P) => {
+        const key = getKey(...args)
+        return cache[key] || (cache[key] = fn(...args))
+    }
+}
+
+export { getChildValue, useCache, CacheStore, TFun, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, }

@@ -1,19 +1,18 @@
 import { Context } from "koa"
-import reflect, { ParameterReflection } from "tinspector"
+import { ParameterReflection } from "tinspector"
+import { Converter, ConverterMap } from "typedconverter"
 
+import { DependencyResolver } from "./application"
 import { Class } from "./common"
-import { TypeConverter } from "./converter"
 import { Facility } from "./facility"
 import { Middleware } from "./middleware"
 import { FileParser } from "./multipart"
 import { HttpMethod } from "./route-generator"
-import { AuthorizeStore } from "./security"
+import { AuthorizeStore } from "./authorization"
 import { ValidationIssue, ValidatorFunction, ValidatorStore } from "./validator"
-import { DependencyResolver, DefaultDependencyResolver } from './application';
 
 
-
-export interface Configuration {
+ interface Configuration {
     mode: "debug" | "production"
 
     /**
@@ -37,12 +36,12 @@ export interface Configuration {
     /**
      * Set custom converters for parameter binding
     ```
-    converters: {
-        AnimalDto: (value:any, type:Function) => new AnimalDto(value)
-    }
+    converters: [{
+        { key: AnimalDto, converter: value => new AnimalDto(value) }
+    }]
     ```
      */
-    converters?: TypeConverter[],
+    converters?: ConverterMap[],
 
     /**
      * Set custom validator
@@ -65,14 +64,23 @@ export interface Configuration {
     authorizer?: AuthorizeStore
 }
 
-export interface PlumierConfiguration extends Configuration {
+ interface PlumierConfiguration extends Configuration {
     middleware: Middleware[]
     facilities: Facility[]
 }
 
-export const DefaultConfiguration: Configuration = {
+
+
+class DefaultDependencyResolver implements DependencyResolver {
+    resolve(type: new (...args: any[]) => any) {
+        return new type()
+    }
+}
+
+ const DefaultConfiguration: Configuration = {
     mode: "debug",
     controller: "./controller",
     dependencyResolver: new DefaultDependencyResolver()
 }
 
+export {Configuration, DefaultConfiguration, PlumierConfiguration}

@@ -1,16 +1,20 @@
 import {
+    analyzeRoutes,
     Application,
     Configuration,
     DefaultConfiguration,
     Facility,
+    generateRoutes,
+    hasKeyOf,
     KoaMiddleware,
     Middleware,
     MiddlewareUtil,
     PlumierApplication,
     PlumierConfiguration,
+    printAnalysis,
     RouteInfo,
+    router,
 } from "@plumier/core"
-import { hasKeyOf, RouteGenerator,router } from "@plumier/kernel"
 import Koa from "koa"
 import { dirname } from "path"
 
@@ -54,11 +58,11 @@ export class Plumier implements PlumierApplication {
                 Object.assign(this.config, { mode: "production" })
             //get file location of script who initialized the application to calculate the controller path
             //module.parent.parent.filename -> because Plumier app also exported in plumier/src/index.ts
-            let routes: RouteInfo[] = RouteGenerator.generateRoutes(dirname(module.parent!.parent!.filename), this.config.controller)
+            let routes: RouteInfo[] = generateRoutes(dirname(module.parent!.parent!.filename), this.config.controller)
             for (const facility of this.config.facilities) {
                 await facility.initialize(this, routes)
             }
-            if (this.config.mode === "debug") RouteGenerator.printAnalysis(RouteGenerator.analyzeRoutes(routes))
+            if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
             this.koa.use(router(routes, this.config, this.globalMiddleware))
             return this.koa
         }

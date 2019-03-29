@@ -2,7 +2,8 @@ import { Context } from "koa"
 import { decorate } from "tinspector"
 
 import { ActionResult } from "./action-result"
-import { RouteInfo } from "./route-generator"
+import { Invocation } from './invocation';
+import { RouteInfo } from './route-generator';
 
 
 // --------------------------------------------------------------------- //
@@ -12,15 +13,9 @@ import { RouteInfo } from "./route-generator"
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>
 export interface MiddlewareDecorator { name: "Middleware", value: Middleware[] }
 
-export interface Invocation {
-    context: Readonly<Context>
-    proceed(): Promise<ActionResult>
-}
-
 export interface Middleware {
     execute(invocation: Readonly<Invocation>): Promise<ActionResult>
 }
-
 
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //

@@ -19,7 +19,6 @@
   "license": "MIT",
   "dependencies": {
     "@plumier/core": "1.0.0-beta.5",
-    "@plumier/kernel": "1.0.0-beta.5",
     "@types/koa": "^2.0.48",
     "koa": "^2.7.0",
     "tslib": "^1.9.3",

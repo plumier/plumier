@@ -19,23 +19,17 @@ declare module "koa" {
     }
 }
 
-export interface RouteContext extends Context {
+interface RouteContext extends Context {
     route: Readonly<RouteInfo>,
     parameters: any[]
 }
 
-export interface DependencyResolver {
+interface DependencyResolver {
     resolve(type: (new (...args: any[]) => any)): any
 }
 
 
-export class DefaultDependencyResolver implements DependencyResolver {
-    resolve(type: new (...args: any[]) => any) {
-        return new type()
-    }
-}
-
-export interface Application {
+interface Application {
     /**
      * Use Koa middleware
     ```
@@ -98,7 +92,7 @@ export interface Application {
     initialize(): Promise<Koa>
 }
 
-export interface PlumierApplication extends Application {
+interface PlumierApplication extends Application {
     readonly koa: Koa,
     readonly config: Readonly<PlumierConfiguration>
 }
@@ -107,16 +101,17 @@ export interface PlumierApplication extends Application {
 // ------------------------------- ERROR ------------------------------- //
 // --------------------------------------------------------------------- //
 
-export class HttpStatusError extends Error {
+class HttpStatusError extends Error {
     constructor(public status: HttpStatus, message?: string) {
         super(message)
         Object.setPrototypeOf(this, HttpStatusError.prototype);
     }
 }
 
-
 // --------------------------------------------------------------------- //
 // ----------------------------- DECORATORS ---------------------------- //
 // --------------------------------------------------------------------- // 
 
-export function domain() { return reflect.parameterProperties() }
+function domain() { return reflect.parameterProperties() }
+
+export { domain, HttpStatusError, PlumierApplication, Application, DependencyResolver, RouteContext }

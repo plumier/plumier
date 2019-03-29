@@ -1,12 +1,11 @@
-import {  domain, route } from "@plumier/core"
-import Plumier from "../../../src"
-import { join } from "path"
-import Rimraf from "rimraf"
+import { consoleLog, domain, route } from "@plumier/core"
+import { RestfulApiFacility } from "plumier/src/facility"
 import Supertest from "supertest"
-import {RestfulApiFacility} from "plumier/src/facility"
 
+import Plumier from "../../../src"
 import { fixture } from "../../helper"
-import { consoleLog } from '@plumier/kernel';
+import { join } from 'path';
+import reflect from 'tinspector';
 
 describe("Router", () => {
     it("Should transform regular method to GET", async () => {
@@ -86,6 +85,17 @@ describe("Router", () => {
         await Supertest(app.callback())
             .get("/beast/123/animal/123")
             .expect(200, { BeastId: "123", AnimalId: "123" })
+    })
+
+    it("Should transform nested controller", async () => {
+        const app = await fixture(join(__dirname, "nested"))
+            .initialize()
+        await Supertest(app.callback())
+            .get("/api/v1/animal/get")
+            .expect(200)
+        await Supertest(app.callback())
+            .get("/api/v2/animal/get")
+            .expect(200)
     })
 
     describe("GET route", () => {
@@ -1335,6 +1345,57 @@ describe("Router", () => {
                 .expect(404)
         })
     })
+
+    describe("Root route", () => {
+        it("Should able to override class name", async () => {
+            @route.root("/beast")
+            class AnimalController {
+                method() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+                await Supertest(app.callback())
+                .get("/beast/method")
+                .expect(200)
+        })
+
+        it("Should ok without preceding slash", async () => {
+            @route.root("beast")
+            class AnimalController {
+                method() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+                await Supertest(app.callback())
+                .get("/beast/method")
+                .expect(200)
+        })
+
+        it("Should ok with trailing slash", async () => {
+            @route.root("beast/")
+            class AnimalController {
+                method() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+                await Supertest(app.callback())
+                .get("/beast/method")
+                .expect(200)
+        })
+
+        it("Should ok with trailing slash with route override", async () => {
+            @route.root("beast/")
+            class AnimalController {
+                @route.get("no-method")
+                method() { }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+                await Supertest(app.callback())
+                .get("/beast/no-method")
+                .expect(200)
+        })
+    })
 })
 
 describe("Router with external controller", () => {
@@ -1372,9 +1433,13 @@ describe("Router with external controller", () => {
 
 describe("Analyzer", () => {
     it("Should identify missing backing parameter", async () => {
+        @domain()
+        class Domain {
+            constructor(public name:string){}
+        }
         class AnimalController {
             @route.get(":c")
-            method(a: number, b: number) { }
+            method(@reflect.array(Domain) a: Domain[], b: number) { }
         }
         consoleLog.startMock()
         const app = await new Plumier()

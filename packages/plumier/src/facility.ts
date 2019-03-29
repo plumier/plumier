@@ -1,7 +1,6 @@
 import Cors from "@koa/cors"
 import {
     Class,
-    ConversionError,
     DefaultFacility,
     HttpStatusError,
     PlumierApplication,
@@ -11,6 +10,7 @@ import {
 import Koa from "koa"
 import BodyParser from "koa-bodyparser"
 import {validate} from "@plumier/validator"
+import { ConversionError } from 'typedconverter';
 
 export interface BodyParserOption {
     enableTypes?: string[];

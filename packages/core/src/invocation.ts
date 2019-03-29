@@ -1,15 +1,23 @@
-import { ActionResult, HttpStatusError, Invocation, Middleware, RouteContext, ValidationError } from "@plumier/core"
 import { Context } from "koa"
+import { ActionResult } from './action-result';
+import { Middleware } from './middleware';
+import { HttpStatusError, RouteContext } from './application';
+import { ValidationError } from './validator';
 
 
-export class MiddlewareInvocation implements Invocation {
+interface Invocation {
+    context: Readonly<Context>
+    proceed(): Promise<ActionResult>
+}
+
+class MiddlewareInvocation implements Invocation {
     constructor(private middleware: Middleware, public context: Context, private next: Invocation) { }
     proceed(): Promise<ActionResult> {
         return this.middleware.execute(this.next)
     }
 }
 
-export class NotFoundActionInvocation implements Invocation {
+class NotFoundActionInvocation implements Invocation {
     constructor(public context: Context) { }
 
     proceed(): Promise<ActionResult> {
@@ -17,7 +25,7 @@ export class NotFoundActionInvocation implements Invocation {
     }
 }
 
-export class ActionInvocation implements Invocation {
+class ActionInvocation implements Invocation {
     constructor(public context: RouteContext) { }
     async proceed(): Promise<ActionResult> {
         const { route, config } = this.context
@@ -44,11 +52,13 @@ export class ActionInvocation implements Invocation {
     }
 }
 
-export function pipe(middleware: Middleware[], context: Context, invocation: Invocation) {
+function pipe(middleware: Middleware[], context: Context, invocation: Invocation) {
     return middleware.reverse().reduce((prev: Invocation, cur) => new MiddlewareInvocation(cur, context, prev), invocation)
 }
 
-export async function execute(middlewares:Middleware[], context:Context, invocation:Invocation){
+async function execute(middlewares: Middleware[], context: Context, invocation: Invocation) {
     const result = await pipe(middlewares, context, invocation).proceed()
     await result.execute(context)
 }
+
+export { execute, Invocation, ActionInvocation, NotFoundActionInvocation, pipe }

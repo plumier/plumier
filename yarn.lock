@@ -7506,6 +7506,14 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
+typedconverter@^1.0.0-alpha.3:
+  version "1.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/typedconverter/-/typedconverter-1.0.0-alpha.3.tgz#77025c6a660f507b9305fe3cfcfad88ef9da8d2e"
+  integrity sha512-EZ1qZHCLTLha6mFTpJDVT3A0qAopaTObcG/QE1lX1uMnMLmH6aH/7HIbTVX6NmHijMEOsliQ+9ZKzM01gvJ44A==
+  dependencies:
+    tinspector "^2.2.0"
+    tslib "^1.9.3"
+
 typescript@^3.3.3, typescript@^3.3.3333:
   version "3.3.3333"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.3.3333.tgz#171b2c5af66c59e9431199117a3bcadc66fdcfd6"

@@ -1,18 +1,18 @@
-import { Class, PlumierApplication, route } from "@plumier/core"
-import { consoleLog } from "@plumier/kernel"
+import { Class, consoleLog, PlumierApplication, route } from "@plumier/core"
 import { collection, Constructor, model, MongooseFacility } from "@plumier/mongoose"
-import { WebApiFacility } from "plumier/src/facility"
 import Mongoose from "mongoose"
 import { join } from "path"
 import Plumier, { val } from "plumier"
+import { WebApiFacility } from "plumier/src/facility"
 import supertest from "supertest"
 import reflect from "tinspector"
 
 import { DomainWithArrayOfDomain, DomainWithDomain, DomainWithPrimitives, NonDecoratedDomain, DomainWithArrays } from "./model/my-domain"
+import { unlinkSync, existsSync } from 'fs';
 
 type Model<T> = Mongoose.Model<T & Mongoose.Document>
 
-function clearCache(){
+function clearCache() {
     Object.keys(Mongoose.connection.models)
         .forEach(name => delete Mongoose.connection.models[name])
 }
@@ -77,7 +77,8 @@ describe("Model Load", () => {
     beforeEach(() => clearCache())
     afterEach(async () => Mongoose.disconnect())
 
-    it("Should be able to provide absolute path", async () => {
+
+    it("Should be able to fill with absolute path", async () => {
         const facility = new MongooseFacility({
             model: join(__dirname, "./model/my-domain"),
             uri: "mongodb://localhost:27017/test-data"
@@ -91,7 +92,32 @@ describe("Model Load", () => {
         consoleLog.clearMock()
     })
 
-    it("Should be able to provide absolute path", async () => {
+    it("Should be able to fill with file name .js", async () => {
+        const facility = new MongooseFacility({
+            model: join(__dirname, "./model/jsonly-domain"),
+            uri: "mongodb://localhost:27017/test-data"
+        })
+        consoleLog.startMock()
+        await facility.initialize(<PlumierApplication>new Plumier())
+        expect((console.log as jest.Mock).mock.calls[2][0]).toContain("DomainWithPrimitives")
+        consoleLog.clearMock()
+    })
+
+    it("Should be able to fill with file name .ts", async () => {
+        const jsFile = join(__dirname, "./model/tsonly-domain.js")
+        if (existsSync(jsFile))
+            unlinkSync(jsFile)
+        const facility = new MongooseFacility({
+            model: join(__dirname, "./model/tsonly-domain"),
+            uri: "mongodb://localhost:27017/test-data"
+        })
+        consoleLog.startMock()
+        await facility.initialize(<PlumierApplication>new Plumier())
+        expect((console.log as jest.Mock).mock.calls[2][0]).toContain("DomainWithPrimitives")
+        consoleLog.clearMock()
+    })
+
+    it("Should be able to fill with domain", async () => {
         @collection()
         class DomainA {
             constructor(

@@ -1,37 +1,88 @@
-import {
-    ActionResult,
-    AuthorizeDecorator,
-    AuthorizeMetadataInfo,
-    AuthorizeStore,
-    Class,
-    HttpStatus,
-    HttpStatusError,
-    Invocation,
-    Middleware,
-    RouteInfo,
-} from "@plumier/core"
-import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
+import { decorate, decorateParameter, mergeDecorator, ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
-import { isCustomClass } from "./common"
-
-/* ------------------------------------------------------------------------------- */
-/* ------------------------------- TYPES ----------------------------------------- */
-/* ------------------------------------------------------------------------------- */
-
-export type RoleField = string | ((value: any) => Promise<string[]>)
+import { ActionResult } from "./action-result"
+import { HttpStatusError, RouteContext } from "./application"
+import { Class, isCustomClass } from "./common"
+import { errorMessage } from "./error-message"
+import { HttpStatus } from "./http-status"
+import { Invocation } from "./invocation"
+import { Middleware } from "./middleware"
+import { RouteInfo } from "./route-generator"
+import { ValidatorDecorator, ValidatorId } from "./validator"
 
 
-export interface JwtAuthFacilityOption {
-    secret: string,
-    roleField?: RoleField,
-    global?: (...args: any[]) => void,
-    authorizer?: AuthorizeStore
+// --------------------------------------------------------------------- //
+// ------------------------------- TYPES ------------------------------- //
+// --------------------------------------------------------------------- //
+
+type AuthorizeStore = { [key: string]: (info: AuthorizeMetadataInfo) => Promise<boolean> }
+type AuthorizeCallback = (info: AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method") => Promise<boolean>
+
+interface AuthorizeDecorator {
+    type: "plumier-meta:authorize",
+    authorize: string | ((info: AuthorizeMetadataInfo) => Promise<boolean>),
+    tag: string
+}
+
+interface AuthorizeMetadataInfo {
+    role: string[]
+    user: any
+    ctx: RouteContext
+    route: RouteInfo
+    parameters: any[]
+    value?: any
 }
 
 
+type RoleField = string | ((value: any) => Promise<string[]>)
 
 
+// --------------------------------------------------------------------- //
+// ----------------------------- DECORATOR ----------------------------- //
+// --------------------------------------------------------------------- //
 
+class AuthDecoratorImpl {
+
+    custom(authorize: string | AuthorizeCallback, tag: string = "Custom") {
+        return decorate((...args: any[]) => {
+            const type = args.length === 1 ? "Class" : args.length === 2 ? "Method" : "Parameter"
+            return <AuthorizeDecorator>{
+                type: "plumier-meta:authorize", tag,
+                authorize: typeof authorize === "string" ? authorize : (info: AuthorizeMetadataInfo) => authorize(info, type),
+            }
+        }, ["Class", "Parameter", "Method", "Property"])
+    }
+
+    /**
+     * Authorize controller/action to public
+     */
+    public() {
+        return decorate((...args: any[]) => {
+            if (args.length === 3 && typeof args[2] === "number")
+                throw new Error(errorMessage.PublicNotInParameter)
+            return <AuthorizeDecorator>{ type: "plumier-meta:authorize", tag: "Public" }
+        }, ["Class", "Parameter", "Method", "Property"])
+    }
+
+    /**
+     * Authorize controller/action accessible by specific role
+     * @param roles List of roles allowed
+     */
+    role(...roles: string[]) {
+        const roleDecorator = this.custom(async (info, location) => {
+            const { role, value } = info
+            const isAuthorized = roles.some(x => role.some(y => x === y))
+            return location === "Parameter" ? !!value && isAuthorized : isAuthorized
+        }, roles.join("|"))
+        const optionalDecorator = (...args: any[]) => {
+            if (args.length === 3 && typeof args[2] === "number")
+                decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: ValidatorId.optional })(args[0], args[1], args[2])
+        }
+        return mergeDecorator(roleDecorator, optionalDecorator)
+    }
+}
+
+const authorize = new AuthDecoratorImpl()
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- HELPERS --------------------------------------- */
@@ -65,7 +116,7 @@ function getAuthorizeDecorators(info: RouteInfo, globalDecorator?: (...args: any
     return getGlobalDecorators(globalDecorator)
 }
 
-export async function checkParameter(path: string[], meta: PropertyReflection | ParameterReflection, value: any, info: AuthorizeMetadataInfo) {
+async function checkParameter(path: string[], meta: PropertyReflection | ParameterReflection, value: any, info: AuthorizeMetadataInfo) {
     if (value === undefined) return []
     else if (Array.isArray(meta.type)) {
         const newMeta = { ...meta, type: meta.type[0] };
@@ -92,7 +143,7 @@ export async function checkParameter(path: string[], meta: PropertyReflection | 
     }
 }
 
-export async function checkParameters(path: string[], meta: (PropertyReflection | ParameterReflection)[], value: any[], info: AuthorizeMetadataInfo) {
+async function checkParameters(path: string[], meta: (PropertyReflection | ParameterReflection)[], value: any[], info: AuthorizeMetadataInfo) {
     const result: string[] = []
     for (let i = 0; i < meta.length; i++) {
         const prop = meta[i];
@@ -106,7 +157,7 @@ export async function checkParameters(path: string[], meta: (PropertyReflection 
 /* --------------------------- MAIN IMPLEMENTATION ------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-export function updateRouteAccess(routes: RouteInfo[], globals?: (...args:any[]) => void) {
+function updateRouteAccess(routes: RouteInfo[], globals?: (...args: any[]) => void) {
     routes.forEach(x => {
         const decorators = getAuthorizeDecorators(x, globals)
         if (decorators.length > 0)
@@ -116,7 +167,7 @@ export function updateRouteAccess(routes: RouteInfo[], globals?: (...args:any[])
     })
 }
 
-export class AuthorizeMiddleware implements Middleware {
+class AuthorizeMiddleware implements Middleware {
     constructor(private roleField: RoleField, private global?: (...args: any[]) => void) {
 
     }
@@ -160,4 +211,9 @@ export class AuthorizeMiddleware implements Middleware {
         //if all above passed then proceed
         return invocation.proceed()
     }
+}
+
+export { 
+    AuthorizeStore, AuthorizeCallback, AuthorizeMetadataInfo, RoleField, 
+    updateRouteAccess, AuthorizeMiddleware, authorize, AuthDecoratorImpl 
 }

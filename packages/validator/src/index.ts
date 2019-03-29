@@ -1,4 +1,3 @@
-import "@plumier/kernel"
 import { Class, ValidationIssue, ValidatorDecorator, ValidatorFunction, ValidatorStore, ValidatorId } from "@plumier/core";
 import { decorateProperty, reflect, TypeDecorator } from "tinspector";
 import Validator from "validator";

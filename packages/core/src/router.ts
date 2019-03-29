@@ -1,10 +1,13 @@
-import { Configuration, Middleware, MiddlewareUtil, RouteContext, RouteInfo } from "@plumier/core"
 import { Context } from "koa"
 import ptr from "path-to-regexp"
 
-import * as Binder from "./binder"
+import { RouteContext } from "./application"
+import { bindParameter } from "./binder"
 import { CacheStore, useCache } from "./common"
+import { Configuration } from "./configuration"
 import { ActionInvocation, execute, NotFoundActionInvocation } from "./invocation"
+import { Middleware, MiddlewareUtil } from "./middleware"
+import { RouteInfo } from "./route-generator"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -45,7 +48,7 @@ function getMiddleware(global: Middleware[], route: RouteInfo) {
 /* ------------------------------- ROUTER ---------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-export function router(infos: RouteInfo[], config: Configuration, globalMiddleware: Middleware[]) {
+ function router(infos: RouteInfo[], config: Configuration, globalMiddleware: Middleware[]) {
     const matchCache: CacheStore<RouteMatcher | undefined> = {}
     const middlewareCache: CacheStore<Middleware[]> = {}
     return async (ctx: Context) => {
@@ -55,7 +58,7 @@ export function router(infos: RouteInfo[], config: Configuration, globalMiddlewa
         if (match) {
             Object.assign(ctx.request.query, match.query)
             ctx.route = match.route;
-            ctx.parameters = Binder.bindParameter(ctx, match.route.action, config.converters)
+            ctx.parameters = bindParameter(ctx, config.converters)
             const getMiddlewareCached = useCache(middlewareCache, getMiddleware, (global, route) => route.url)
             const middlewares = getMiddlewareCached(globalMiddleware, match.route)
             await execute(middlewares, ctx, new ActionInvocation(<RouteContext>ctx))
@@ -66,3 +69,4 @@ export function router(infos: RouteInfo[], config: Configuration, globalMiddlewa
     }
 }
 
+export {router}

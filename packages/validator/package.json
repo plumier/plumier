@@ -14,7 +14,7 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumier/kernel": "1.0.0-beta.5",
+    "@plumier/core": "1.0.0-beta.5",
     "@types/validator": "^10.9.0",
     "tinspector": "^2.2.0",
     "validator": "^10.11.0"

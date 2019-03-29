@@ -1,5 +1,4 @@
-import { domain, route } from "@plumier/core"
-import { consoleLog } from "@plumier/kernel"
+import { consoleLog, domain, route } from "@plumier/core"
 import { WebApiFacility } from "plumier/src/facility"
 import Supertest from "supertest"
 

@@ -225,7 +225,7 @@ describe("Parameter Binding", () => {
             const koa = await fixture(AnimalController).initialize()
             let error = false
             koa.on("error", (e) => {
-                expect(e.message).toContain("PLUM2000")
+                expect(e.message).toContain("Unable to instantiate AnimalModel")
                 error = true
             })
             await Supertest(koa.callback())
@@ -252,7 +252,7 @@ describe("Parameter Binding", () => {
             const koa = await fixture(AnimalController).initialize()
             let error = false
             koa.on("error", (e) => {
-                expect(e.message).toContain("PLUM2000")
+                expect(e.message).toContain("Unable to instantiate AnimalModel")
                 error = true
             })
             await Supertest(koa.callback())
@@ -377,6 +377,19 @@ describe("Parameter Binding", () => {
                 .post("/animal/save")
                 .send("b=1")
                 .expect(200, [1])
+        })
+
+        it("Should not detect as array on url encoded if parameter type is not array", async () => {
+            class AnimalController {
+                @route.post()
+                save(b: number) {
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .post("/animal/save")
+                .send("b=1")
+                .expect(200, "1")
         })
 
         it("Should bind array of boolean", async () => {
@@ -515,7 +528,7 @@ describe("Parameter Binding", () => {
                     id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
                     tags: "Hello"
                 }])
-                .expect(400, [{ "path": ["b", "0", "tags", "0"], "messages": [`Unable to convert "Hello" into TagModel`] }])
+                .expect(400, [{ "path": ["b", "0", "tags"], "messages": [`Unable to convert "Hello" into Array<TagModel>`] }])
         })
 
         it("Should return 400 if provided unconvertible value", async () => {
@@ -1011,7 +1024,7 @@ describe("Custom Converter", () => {
             }
         }
         const koa = await fixture(AnimalController)
-            .set({ converters: [{ type: AnimalModel, converter: (value) => new AnimalModel(value) }] })
+            .set({ converters: [{ key: AnimalModel, converter: (value) => new AnimalModel(value) }] })
             .initialize()
         await Supertest(koa.callback())
             .post("/animal/save")
