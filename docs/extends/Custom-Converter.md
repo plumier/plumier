@@ -9,7 +9,7 @@ To provide your own custom converter you need to register your own converter int
 
 ```typescript
 const app = new Plumier()
-app.set({ converters: [{ type: Boolean, converter: yourConverter }] })
+app.set({ converters: [{ key: Boolean, converter: yourConverter }] })
 ```
 
 `type:Boolean` mean you will be override the behavior of `Boolean` converter. `yourConverter` is a function with signature:
