@@ -4,9 +4,11 @@ title: Authorization
 ---
 
 ## Enable Facility
-Authorization can be enabled by plugging `JwtAuthFacility` into Plumier application
+Authorization can be enabled by using `@plumier/jwt` package and plugging `JwtAuthFacility` into Plumier application 
 
 ```typescript
+import { JwtAuthFacility } from "@plumier/jwt"
+
 const app = new Plumier()
 app.set(new JwtAuthFacility({ secret: "<your secret key>" }))
 ```

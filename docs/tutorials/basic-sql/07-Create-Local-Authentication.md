@@ -9,10 +9,10 @@ Our API now run as expected, we will add token based authentication and authoriz
 Start by installing required packages used to create token based authentication. Open Visual Studio Code integrated terminal and execute command below
 
 ```bash
-$ yarn add jsonwebtoken @types/jsonwebtoken
+$ yarn add @plumier/jwt jsonwebtoken @types/jsonwebtoken
 ```
 
-Above command will install `jsonwebtoken` package and its typing that will be used to sign JWT token.
+Above command will install `@plumier/jwt` that required for JWT authorization and `jsonwebtoken` package and its typing that will be used to sign JWT token.
 
 
 ## Add JWT Secret Configuration
@@ -37,11 +37,12 @@ declare namespace NodeJS {
 ```
 
 ## Enable Facility
-By default authorization functionalities is not enabled, we need to setup `JwtAuthFacility` on the Plumier application startup. Navigate to `src/app.ts` file and set `JwtAuthFacility` like below
+By default authorization functionalities is not enabled, we need to setup `JwtAuthFacility` from `@plumier/jwt` package into the Plumier application startup. Navigate to `src/app.ts` file and set `JwtAuthFacility` like below
 
 ```typescript
 import Koa from "koa";
 import Plumier, { Configuration, WebApiFacility, JwtAuthFacility } from "plumier";
+import { JwtAuthFacility } from "@plumier/jwt"
 
 export function createApp(config?: Partial<Configuration>): Promise<Koa> {
     return new Plumier()
