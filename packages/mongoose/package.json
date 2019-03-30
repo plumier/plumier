@@ -22,7 +22,7 @@
     "tinspector": "^2.2.0"
   },
   "devDependencies": {
-    "@plumier/core": "1.0.0-beta.5",
+    "@plumier/core": "1.0.0-beta.6",
     "@plumier/validator": "1.0.0-beta.4",
     "@types/supertest": "^2.0.7",
     "plumier": "1.0.0-beta.6",
