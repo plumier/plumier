@@ -109,7 +109,7 @@ function ownerOrAdmin() {
     return authorize.custom(async info => {
         const { role, user, parameters } = info
         return role.some(x => x === "Admin") || parameters[0] === user.userId
-    })
+    }, "Admin|Owner")
 }
 ```
 
