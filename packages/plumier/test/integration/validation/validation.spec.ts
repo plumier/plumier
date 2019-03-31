@@ -1,7 +1,5 @@
-import { domain, route, ValidatorStore } from "@plumier/core"
-import Plumier, { val } from "../../../src"
+import Plumier, { domain, RestfulApiFacility, route, val, ValidatorStore } from "plumier"
 import Supertest from "supertest"
-import {WebApiFacility, RestfulApiFacility} from "plumier/src/facility"
 
 import { fixture } from "../../helper"
 

@@ -53,7 +53,7 @@ export class WebApiFacility extends DefaultFacility {
                     ctx.status = e.status
                 }
                 else if (e instanceof ConversionError) {
-                    ctx.body = [e.issues]
+                    ctx.body = e.issues
                     ctx.status = e.status
                 }
                 else if (e instanceof HttpStatusError)

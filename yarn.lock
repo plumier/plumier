@@ -1260,6 +1260,11 @@
   dependencies:
     "@types/superagent" "*"
 
+"@types/validator@^10.11.0":
+  version "10.11.0"
+  resolved "https://registry.yarnpkg.com/@types/validator/-/validator-10.11.0.tgz#aae9009ce28cc4f878e32c34d3900a81193c98d5"
+  integrity sha512-i1aY7RKb6HmQIEnK0cBmUZUp1URx0riIHw/GYNoZ46Su0GWfLiDmMI8zMRmaauMnOTg2bQag0qfwcyUFC9Tn+A==
+
 "@types/validator@^10.9.0":
   version "10.9.0"
   resolved "https://registry.yarnpkg.com/@types/validator/-/validator-10.9.0.tgz#747f36c7ad281da769458ab4c3b8837aee1578b6"
@@ -7315,6 +7320,13 @@ tinspector@^2.2.0:
   dependencies:
     reflect-metadata "^0.1.13"
 
+tinspector@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/tinspector/-/tinspector-2.2.1.tgz#9ea41ab5e42d40267fa98a0f0e9a76c2ed79bd35"
+  integrity sha512-K2BIQKbnW8qJK6PzBuWBrlob3gXbf5V8dgK7g1yHTodTJtQsc7ly1Yz9K52oilzGJ7OLVs71/ulIoyxAU9vkRw==
+  dependencies:
+    reflect-metadata "^0.1.13"
+
 tmp@^0.0.33:
   version "0.0.33"
   resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.0.33.tgz#6d34335889768d21b2bcda0aa277ced3b1bfadf9"
@@ -7506,13 +7518,15 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typedconverter@^1.0.0-alpha.3:
-  version "1.0.0-alpha.3"
-  resolved "https://registry.yarnpkg.com/typedconverter/-/typedconverter-1.0.0-alpha.3.tgz#77025c6a660f507b9305fe3cfcfad88ef9da8d2e"
-  integrity sha512-EZ1qZHCLTLha6mFTpJDVT3A0qAopaTObcG/QE1lX1uMnMLmH6aH/7HIbTVX6NmHijMEOsliQ+9ZKzM01gvJ44A==
+typedconverter@^1.0.0-alpha.6:
+  version "1.0.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/typedconverter/-/typedconverter-1.0.0-alpha.6.tgz#4e41669c824dce738dc5ea6d9e0e0bbe67df67d9"
+  integrity sha512-zSeiBopu+GX5on1h7JHIaKBHEmmxIEWv6VEClUMjaUyYQeaLkLOZJ3EFxSClYaEo3vGuXXhUciisHOzKyidB5Q==
   dependencies:
-    tinspector "^2.2.0"
+    "@types/validator" "^10.11.0"
+    tinspector "^2.2.1"
     tslib "^1.9.3"
+    validator "^10.11.0"
 
 typescript@^3.3.3, typescript@^3.3.3333:
   version "3.3.3333"

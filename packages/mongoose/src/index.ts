@@ -20,7 +20,7 @@ import {
     reflect,
     Reflection,
 } from "tinspector"
-import { Converter, DefaultConverters } from 'typedconverter';
+import { ConversionResult, DefaultConverters, ObjectInfo } from "typedconverter"
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------------ TYPES ------------------------------------ */
@@ -50,7 +50,6 @@ interface MongooseCollectionDecorator {
     type: "MongooseCollectionDecorator",
     alias?: string
 }
-
 
 const GlobalMongooseSchema: SchemaRegistry = {}
 const ArrayHasNoTypeInfo = `MONG1000: Array property {0}.{1} require @array(<Type>) decorator to be able to generated into mongoose schema`
@@ -189,12 +188,12 @@ export function getName(opt: ClassReflection | Class) {
 /**
  * Custom model converter to allow relational data using mongoose ObjectId
  */
-export function customModelConverter(value: any, path: string[], expectedType: Function | Function[], converters: Map<Function|string, Converter>) {
+export async function customModelConverter(value: any, info:ObjectInfo<Function|Function[]>): Promise<ConversionResult> {
     if (Mongoose.Types.ObjectId.isValid(value)) {
-        return Mongoose.Types.ObjectId(value)
+        return new ConversionResult(Mongoose.Types.ObjectId(value))
     }
     else {
-        return DefaultConverters.modelConverter(value, path, expectedType, converters)
+        return DefaultConverters.classConverter(value, info)
     }
 }
 
@@ -219,9 +218,8 @@ export class MongooseFacility extends DefaultFacility {
         }
         generateSchema(collections.map(x => x.type), GlobalMongooseSchema, this.option.schemaGenerator)
         //register custom converter
-        const converters = app.config.converters || []
         app.set({
-            converters: collections.map(x => ({ key: x.type , converter: customModelConverter }))
+            converters: collections.map(x => ({type: x.type , converter: customModelConverter }))
         })
         await Mongoose.connect(this.option.uri, { useNewUrlParser: true })
     }

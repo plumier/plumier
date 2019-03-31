@@ -108,10 +108,5 @@ class HttpStatusError extends Error {
     }
 }
 
-// --------------------------------------------------------------------- //
-// ----------------------------- DECORATORS ---------------------------- //
-// --------------------------------------------------------------------- // 
 
-function domain() { return reflect.parameterProperties() }
-
-export { domain, HttpStatusError, PlumierApplication, Application, DependencyResolver, RouteContext }
+export { HttpStatusError, PlumierApplication, Application, DependencyResolver, RouteContext }

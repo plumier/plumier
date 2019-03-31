@@ -1,7 +1,5 @@
-import { authorize, domain } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import Plumier, { route } from "plumier"
-import {RestfulApiFacility} from "plumier/src/facility"
+import Plumier, { authorize, domain, RestfulApiFacility, route } from "plumier"
 
 import { secret } from "../options"
 

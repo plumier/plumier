@@ -1,10 +1,8 @@
-import { bind, Class, Configuration, FileParser, FileUploadInfo, route } from "@plumier/core"
 import { MultiPartFacility } from "@plumier/multipart"
-import { WebApiFacility } from "plumier/src/facility"
 import { existsSync, unlinkSync } from "fs"
 import { removeSync } from "fs-extra"
 import { extname, join } from "path"
-import Plumier from "plumier/src"
+import Plumier, { bind, Class, Configuration, FileParser, FileUploadInfo, route, WebApiFacility } from "plumier"
 import Supertest from "supertest"
 
 export function fixture(controller: Class | Class[] | string, config?: Partial<Configuration>) {

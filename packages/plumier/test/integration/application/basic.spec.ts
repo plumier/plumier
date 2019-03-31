@@ -1,8 +1,6 @@
 import { consoleLog, domain, route } from "@plumier/core"
-import { WebApiFacility } from "plumier/src/facility"
+import Plumier, { WebApiFacility } from "plumier"
 import Supertest from "supertest"
-
-import Plumier from "../../../src"
 
 @domain()
 export class AnimalModel {

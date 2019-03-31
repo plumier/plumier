@@ -1,8 +1,6 @@
-import { Class, Invocation, Middleware, middleware, route } from "@plumier/core"
-import Plumier from "../../../src"
 import { Context } from "koa"
+import Plumier, { Class, Invocation, Middleware, middleware, RestfulApiFacility, route } from "plumier"
 import Supertest from "supertest"
-import {RestfulApiFacility} from "plumier/src/facility"
 
 
 class InterceptBody implements Middleware {

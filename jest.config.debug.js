@@ -1,10 +1,7 @@
 module.exports = {
+    preset: 'ts-jest',
     silent: false,
     verbose: false,
-    collectCoverage: true,
-    collectCoverageFrom: [
-        "packages/*/src/**/*.{js}"
-    ],
     coverageThreshold: {
         global: {
             branches: 100,

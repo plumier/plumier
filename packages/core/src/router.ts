@@ -58,7 +58,7 @@ function getMiddleware(global: Middleware[], route: RouteInfo) {
         if (match) {
             Object.assign(ctx.request.query, match.query)
             ctx.route = match.route;
-            ctx.parameters = bindParameter(ctx, config.converters)
+            ctx.parameters = await bindParameter(ctx, config.converters)
             const getMiddlewareCached = useCache(middlewareCache, getMiddleware, (global, route) => route.url)
             const middlewares = getMiddlewareCached(globalMiddleware, match.route)
             await execute(middlewares, ctx, new ActionInvocation(<RouteContext>ctx))

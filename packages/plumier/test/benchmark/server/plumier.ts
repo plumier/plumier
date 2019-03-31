@@ -1,6 +1,4 @@
-import { domain } from "@plumier/core"
-import Plumier, { route } from "plumier"
-import {RestfulApiFacility} from "plumier/src/facility"
+import Plumier, { domain, RestfulApiFacility, route } from "plumier"
 
 @domain()
 class User {

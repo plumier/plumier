@@ -1,10 +1,9 @@
-import { route } from "@plumier/core"
 import { ServeStaticFacility } from "@plumier/serve-static"
 import { readFileSync } from "fs"
 import { join } from "path"
+import { response, route } from "plumier"
 import Supertest from "supertest"
 
-import { response } from "plumier/src"
 import { fixture } from "../../helper"
 
 

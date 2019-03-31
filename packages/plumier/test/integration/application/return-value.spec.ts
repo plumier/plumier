@@ -1,5 +1,4 @@
-import { ActionResult } from "@plumier/core"
-import { response } from "../../../src"
+import { ActionResult, response } from "plumier"
 import Supertest from "supertest"
 
 import { fixture } from "../../helper"

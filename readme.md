@@ -5,6 +5,7 @@ Delightful Node.js Rest API Framework powered by Koa and TypeScript
 [![Build status](https://ci.appveyor.com/api/projects/status/6carp7h4q50v4pj6?svg=true)](https://ci.appveyor.com/project/ktutnik/plumier-isghw)
 [![Coverage Status](https://coveralls.io/repos/github/plumier/plumier/badge.svg?branch=master)](https://coveralls.io/github/plumier/plumier?branch=master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/plumier/plumier.svg)](https://greenkeeper.io/)
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
 
 ## Motivation
 Plumier primarily created for full stack developer who spend more time working on the UI side and focus on creating a good user experience. Plumier comes with some built-in production-ready features that make creating secure JSON Api fun and easy.
@@ -174,6 +175,5 @@ Plumier already provided vscode `task` and `launch` setting. To start debugging 
 * Build the project 
 * Locate the test file and narrow the test runs by using `.only`
 * Put breakpoint on any location you need on `.ts` file 
-* Locate the `.js` version of the test file that will be run **(important)**
 * On start/debug configuration select `Jest Current File` and start debugging
 * Process will halt properly on the `.ts` file.

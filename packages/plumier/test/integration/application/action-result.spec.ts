@@ -1,5 +1,4 @@
-import Plumier, { response, route } from "../../../src"
-import {RestfulApiFacility} from "plumier/src/facility"
+import Plumier, { response, route, RestfulApiFacility } from "plumier"
 import supertest from "supertest"
 
 

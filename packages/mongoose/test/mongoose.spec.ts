@@ -1,14 +1,13 @@
-import { Class, consoleLog, PlumierApplication, route } from "@plumier/core"
+import { consoleLog } from "@plumier/core"
 import { collection, Constructor, model, MongooseFacility } from "@plumier/mongoose"
+import { existsSync, unlinkSync } from "fs"
 import Mongoose from "mongoose"
 import { join } from "path"
-import Plumier, { val } from "plumier"
-import { WebApiFacility } from "plumier/src/facility"
+import Plumier, { Class, PlumierApplication, route, val, WebApiFacility } from "plumier"
 import supertest from "supertest"
 import reflect from "tinspector"
 
 import { DomainWithArrayOfDomain, DomainWithDomain, DomainWithPrimitives, NonDecoratedDomain, DomainWithArrays } from "./model/my-domain"
-import { unlinkSync, existsSync } from 'fs';
 
 type Model<T> = Mongoose.Model<T & Mongoose.Document>
 
@@ -19,7 +18,7 @@ function clearCache() {
 
 async function save<T extends object>(cls: Constructor<T>, value: T) {
     const Model = model(cls)
-    await Model.remove({})
+    await Model.deleteMany({})
     const result = await new Model(value).save()
     return { model: Model, result }
 }
@@ -42,7 +41,7 @@ describe("Mongoose Reference Domain Directly", () => {
         const { model, result } = await save(DomainWithPrimitives, value)
         const savedValue = await model.findById(result._id)
         expect(savedValue!.toObject()).toMatchObject(value)
-        await model.remove({})
+        await model.deleteMany({})
     })
 
     it("Should generate domain with array type", async () => {
@@ -50,7 +49,7 @@ describe("Mongoose Reference Domain Directly", () => {
         const { model, result } = await save(DomainWithArrays, value)
         const savedValue = await model.findById(result._id)
         expect(savedValue!.toObject()).toMatchObject(value)
-        await model.remove({})
+        await model.deleteMany({})
     })
 
     it("Should generate domain with domain", async () => {
@@ -58,8 +57,8 @@ describe("Mongoose Reference Domain Directly", () => {
         const parent = await save(DomainWithDomain, new DomainWithDomain(child.result._id))
         const saved = await parent.model.findById(parent.result._id).populate("child")
         expect(saved!.toObject()).toMatchObject(new DomainWithDomain(new DomainWithPrimitives("Mimi", false, 5, new Date("2018-1-1"))))
-        await child.model.remove({})
-        await parent.model.remove({})
+        await child.model.deleteMany({})
+        await parent.model.deleteMany({})
     })
 
     it("Should generate domain with array of domain", async () => {
@@ -68,8 +67,8 @@ describe("Mongoose Reference Domain Directly", () => {
         const parent = await save(DomainWithArrayOfDomain, new DomainWithArrayOfDomain([child.result._id]))
         const saved = await parent.model.findById(parent.result._id).populate("children")
         expect(saved!.toObject()).toMatchObject(new DomainWithArrayOfDomain([childValue]))
-        await child.model.remove({})
-        await parent.model.remove({})
+        await child.model.deleteMany({})
+        await parent.model.deleteMany({})
     })
 })
 
@@ -180,8 +179,8 @@ describe("Model Load", () => {
         await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const Parent = model(DomainA)
         const Child = model(DomainB)
-        await Parent.remove({})
-        await Child.remove({})
+        await Parent.deleteMany({})
+        await Child.deleteMany({})
         const child = new DomainB("Kima")
         const savedChild = await new Child(child).save()
         const data = new DomainA("Ketut", savedChild)
@@ -389,7 +388,7 @@ describe("Proxy", () => {
         }
         const Model = model(OtherDomain)
         expect(Model.toString()).toBe("[Function]")
-        expect(() => Model.remove({})).toThrow("this.Query is not a constructor")
+        expect(() => Model.deleteMany({})).toThrow("this.Query is not a constructor")
     })
 })
 

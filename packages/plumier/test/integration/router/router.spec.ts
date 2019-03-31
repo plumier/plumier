@@ -1,13 +1,12 @@
-import { consoleLog, domain, route } from "@plumier/core"
-import { RestfulApiFacility } from "plumier/src/facility"
+import { consoleLog } from "@plumier/core"
+import { join } from "path"
+import Plumier, { domain, RestfulApiFacility, route } from "plumier"
 import Supertest from "supertest"
+import reflect from "tinspector"
 
-import Plumier from "../../../src"
 import { fixture } from "../../helper"
-import { join } from 'path';
-import reflect from 'tinspector';
 
-describe("Router", () => {
+describe("Route Generator", () => {
     it("Should transform regular method to GET", async () => {
         class AnimalController {
             method() { }

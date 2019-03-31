@@ -42,17 +42,3 @@ export namespace MiddlewareUtil {
             .reverse()
     }
 }
-
-
-// --------------------------------------------------------------------- //
-// ----------------------------- DECORATOR ----------------------------- //
-// --------------------------------------------------------------------- //
-
-export namespace middleware {
-    export function use(...middleware: (Middleware | KoaMiddleware)[]) {
-        const mdw = middleware.map(x => typeof x == "function" ? MiddlewareUtil.fromKoa(x) : x).reverse()
-        const value: MiddlewareDecorator = { name: "Middleware", value: mdw }
-        return decorate(value, ["Class", "Method"])
-    }
-
-}

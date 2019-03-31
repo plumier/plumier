@@ -1,13 +1,14 @@
-import { bind, domain, route, ValidatorDecorator, ValidatorId } from "@plumier/core"
+import { ValidatorDecorator } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { IncomingMessage, ServerResponse } from "http"
 import { sign } from "jsonwebtoken"
 import { Context, Request } from "koa"
+import { bind, domain, route, val, ValidatorId } from "plumier"
 import Supertest from "supertest"
 import reflect from "tinspector"
 
-import { val } from "../../../src"
 import { fixture } from "../../helper"
+import { Converter, ConversionResult } from 'typedconverter';
 
 export class AnimalModel {
     constructor(
@@ -17,8 +18,8 @@ export class AnimalModel {
     ) { }
 }
 
-function skipValidation(decs:any[]){
-    return decs.some((x:ValidatorDecorator): x is ValidatorDecorator => x.type === "ValidatorDecorator" && x.validator === ValidatorId.skip)
+function skipValidation(decs: any[]) {
+    return decs.some((x: ValidatorDecorator): x is ValidatorDecorator => x.type === "ValidatorDecorator" && x.validator === ValidatorId.skip)
 }
 
 describe("Parameter Binding", () => {
@@ -688,7 +689,7 @@ describe("Parameter Binding", () => {
             class AnimalController {
                 @route.post()
                 save(@bind.body() b: AnimalModel) {
-                    
+
                 }
             }
             const meta = reflect(AnimalController)
@@ -1024,7 +1025,7 @@ describe("Custom Converter", () => {
             }
         }
         const koa = await fixture(AnimalController)
-            .set({ converters: [{ key: AnimalModel, converter: (value) => new AnimalModel(value) }] })
+            .set({ converters: [{ type: AnimalModel, converter: async (value) => new ConversionResult(new AnimalModel(value)) }] })
             .initialize()
         await Supertest(koa.callback())
             .post("/animal/save")
