@@ -7313,13 +7313,6 @@ timestring@^5.0.1:
   resolved "https://registry.yarnpkg.com/timestring/-/timestring-5.0.1.tgz#065bd9dda1bcaf7c08ec9a4841569d3bbbb6cf87"
   integrity sha512-0VfOVpaTYqBMTEpjwcY5mB+72YYjFI44Z5F2q80ZiIyDn5pRJm+rEV1OEM8xfnf5/FdtckcrTERTp9TbrlMMHw==
 
-tinspector@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/tinspector/-/tinspector-2.2.0.tgz#f981c3ab93fefb089035e985faa8925bed9a605a"
-  integrity sha512-CiQIrNt1k3TZn1V3pwvPy01sK4Poz8FjMOmfy3lUKQwHghgnDAp/5M185+2w8/5Mk7JN1d4U5+J/0EUD1bplXA==
-  dependencies:
-    reflect-metadata "^0.1.13"
-
 tinspector@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/tinspector/-/tinspector-2.2.1.tgz#9ea41ab5e42d40267fa98a0f0e9a76c2ed79bd35"

@@ -52,13 +52,9 @@ class ActionInvocation implements Invocation {
     }
 }
 
-function pipe(middleware: Middleware[], context: Context, invocation: Invocation) {
-    return middleware.reverse().reduce((prev: Invocation, cur) => new MiddlewareInvocation(cur, context, prev), invocation)
-}
-
-async function execute(middlewares: Middleware[], context: Context, invocation: Invocation) {
-    const result = await pipe(middlewares, context, invocation).proceed()
+async function pipe(middlewares: Middleware[], context: Context, invocation: Invocation) {
+    const result = await middlewares.reverse().reduce((prev: Invocation, cur) => new MiddlewareInvocation(cur, context, prev), invocation).proceed()
     await result.execute(context)
 }
 
-export { execute, Invocation, ActionInvocation, NotFoundActionInvocation, pipe }
+export { pipe, Invocation, ActionInvocation, NotFoundActionInvocation }

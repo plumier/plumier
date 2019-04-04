@@ -1,11 +1,11 @@
 import { Context } from "koa"
 import ptr from "path-to-regexp"
+import { useCache } from "tinspector"
 
 import { RouteContext } from "./application"
 import { bindParameter } from "./binder"
-import { CacheStore, useCache } from "./common"
 import { Configuration } from "./configuration"
-import { ActionInvocation, execute, NotFoundActionInvocation } from "./invocation"
+import { ActionInvocation, pipe, NotFoundActionInvocation } from "./invocation"
 import { Middleware, MiddlewareUtil } from "./middleware"
 import { RouteInfo } from "./route-generator"
 
@@ -49,8 +49,8 @@ function getMiddleware(global: Middleware[], route: RouteInfo) {
 /* ------------------------------------------------------------------------------- */
 
  function router(infos: RouteInfo[], config: Configuration, globalMiddleware: Middleware[]) {
-    const matchCache: CacheStore<RouteMatcher | undefined> = {}
-    const middlewareCache: CacheStore<Middleware[]> = {}
+    const matchCache = new  Map<string, RouteMatcher | undefined>  ()
+    const middlewareCache = new Map<string, Middleware[]>()
     return async (ctx: Context) => {
         const getMatcherCached = useCache(matchCache, getMatcher, (info, ctx) => `${ctx.method}${ctx.path}`)
         const match = getMatcherCached(infos, ctx)
@@ -61,10 +61,10 @@ function getMiddleware(global: Middleware[], route: RouteInfo) {
             ctx.parameters = await bindParameter(ctx, config.converters)
             const getMiddlewareCached = useCache(middlewareCache, getMiddleware, (global, route) => route.url)
             const middlewares = getMiddlewareCached(globalMiddleware, match.route)
-            await execute(middlewares, ctx, new ActionInvocation(<RouteContext>ctx))
+            await pipe(middlewares, ctx, new ActionInvocation(<RouteContext>ctx))
         }
         else {
-            await execute(globalMiddleware.slice(0), ctx, new NotFoundActionInvocation(ctx))
+            await pipe(globalMiddleware.slice(0), ctx, new NotFoundActionInvocation(ctx))
         }
     }
 }
