@@ -1,15 +1,5 @@
 module.exports = {
     preset: 'ts-jest',
-    silent: false,
-    verbose: false,
-    coverageThreshold: {
-        global: {
-            branches: 100,
-            functions: 100,
-            lines: 100,
-            statements: 100
-        }
-    },
     rootDir: ".",
     moduleNameMapper: {
         "@plumier/(.*)": "<rootDir>packages/$1/src",
