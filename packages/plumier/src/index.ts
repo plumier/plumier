@@ -22,15 +22,14 @@ export {
     RequestPart,
     route,
     RouteInfo,
-    ValidationError,
     ValidationIssue,
     ValidatorStore,
     ValidatorFunction,
     ValidatorId,
     DefaultFacility,
-    response, 
+    response,
+    val
 } from "@plumier/core"
-export { val } from "@plumier/validator"
 export * from "./facility"
 
 import { Plumier } from "./application"

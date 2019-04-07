@@ -1,8 +1,8 @@
 import { Context } from "koa"
-import { ActionResult } from './action-result';
-import { Middleware } from './middleware';
-import { HttpStatusError, RouteContext } from './application';
-import { ValidationError } from './validator';
+
+import { ActionResult } from "./action-result"
+import { HttpStatusError, RouteContext } from "./application"
+import { Middleware } from "./middleware"
 
 
 interface Invocation {
@@ -30,14 +30,6 @@ class ActionInvocation implements Invocation {
     async proceed(): Promise<ActionResult> {
         const { route, config } = this.context
         const controller: any = config.dependencyResolver.resolve(route.controller.type)
-        //check validation
-        if (config.validator) {
-            const param = (i: number) => route.action.parameters[i]
-            const validate = (value: any, i: number) => config.validator!(value, param(i), this.context, this.context.config.validators)
-            const result = await Promise.all(this.context.parameters.map((value, index) => validate(value, index)))
-            const issues = result.flatten()
-            if (issues.length > 0) throw new ValidationError(issues)
-        }
         const result = (<Function>controller[route.action.name]).apply(controller, this.context.parameters)
         const awaitedResult = await Promise.resolve(result)
         const status = config.responseStatus && config.responseStatus[route.method] || 200

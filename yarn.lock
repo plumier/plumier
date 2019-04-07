@@ -7511,10 +7511,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typedconverter@^1.0.0-alpha.6:
-  version "1.0.0-alpha.6"
-  resolved "https://registry.yarnpkg.com/typedconverter/-/typedconverter-1.0.0-alpha.6.tgz#4e41669c824dce738dc5ea6d9e0e0bbe67df67d9"
-  integrity sha512-zSeiBopu+GX5on1h7JHIaKBHEmmxIEWv6VEClUMjaUyYQeaLkLOZJ3EFxSClYaEo3vGuXXhUciisHOzKyidB5Q==
+typedconverter@^1.0.0-alpha.8:
+  version "1.0.0-alpha.8"
+  resolved "https://registry.yarnpkg.com/typedconverter/-/typedconverter-1.0.0-alpha.8.tgz#d9ffd663b5133987933616a75ceab7f9ab1c8a5d"
+  integrity sha512-j4reXU0gjugwQDa0FiUgoGIuaxnppiB64BDC4DuvShQllcSu2VflN2ICAiJoAr610Yu8r6PqELWMRW7/j5MwmA==
   dependencies:
     "@types/validator" "^10.11.0"
     tinspector "^2.2.1"

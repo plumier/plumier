@@ -20,12 +20,14 @@
   "license": "MIT",
   "dependencies": {
     "@types/glob": "^7.1.1",
+    "@types/validator":"^10.11.0",
     "@types/koa": "^2.0.48",
     "glob": "^7.1.3",
     "path-to-regexp": "^3.0.0",
     "tinspector": "^2.2.1",
     "tslib": "^1.9.3",
-    "typedconverter": "^1.0.0-alpha.6"
+    "typedconverter": "^1.0.0-alpha.8",
+    "validator": "^10.11.0"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"

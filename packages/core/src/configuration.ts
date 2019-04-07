@@ -1,6 +1,6 @@
 import { Context } from "koa"
 import { ParameterReflection } from "tinspector"
-import { Converter, ConverterMap } from "typedconverter"
+import { Converter, ConverterMap, Visitor } from "typedconverter"
 
 import { DependencyResolver } from "./application"
 import { Class } from "./common"
@@ -44,9 +44,9 @@ import { ValidationIssue, ValidatorFunction, ValidatorStore } from "./validator"
     converters?: ConverterMap[],
 
     /**
-     * Set custom validator
+     * Set type converter visitor provided by typedconverter
      */
-    validator?: (value: any, metadata: ParameterReflection, context: Context, validators?: { [key: string]: ValidatorFunction }) => Promise<ValidationIssue[]>
+    typeConverterVisitors?: Visitor[],
 
     /**
      * Multi part form file parser implementation

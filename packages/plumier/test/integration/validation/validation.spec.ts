@@ -3,7 +3,7 @@ import Supertest from "supertest"
 
 import { fixture } from "../../helper"
 
-describe("Required Is Mandatory", () => {
+describe("All field is required", () => {
     it("Parameter should be mandatory by default", async () => {
         class AnimalController {
             get(email: string) { }
@@ -13,7 +13,7 @@ describe("Required Is Mandatory", () => {
             .get("/animal/get")
             .expect(422, [
                 {
-                    "messages": ["Required"],
+                    "messages": ["email is required"],
                     "path": ["email"]
                 }])
     })
@@ -37,7 +37,7 @@ describe("Required Is Mandatory", () => {
             .send({ id: "123", name: "Mimi" })
             .expect(422, [
                 {
-                    "messages": ["Required"],
+                    "messages": ["model.deceased is required"],
                     "path": ["model", "deceased"]
                 }])
     })
@@ -65,7 +65,7 @@ describe("Required Is Mandatory", () => {
             .send({ id: "123", name: "Mimi", tag: { name: "The Tag" } })
             .expect(422, [
                 {
-                    "messages": ["Required"],
+                    "messages": ["model.tag.id is required"],
                     "path": ["model", "tag", "id"]
                 }])
     })

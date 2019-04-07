@@ -4,6 +4,7 @@ import { ParameterReflection } from "tinspector"
 import createConverter, { ConverterMap } from "typedconverter"
 
 import { isCustomClass } from "./common"
+import { HttpStatus } from './http-status';
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -19,7 +20,6 @@ type HeaderPart = keyof IncomingHttpHeaders
 
 type Binder = (ctx: Context, par: ParameterReflection) => any
 class Next { }
-
 
 function getProperty(obj: any, key: string) {
     const realKey = Object.keys(obj).find(x => x.toLowerCase() === key.toLowerCase())
@@ -51,12 +51,19 @@ function chain(...binder: Binder[]) {
 }
 
 function bindParameter(ctx: Context, converters?: ConverterMap[]) {
-    const convert = createConverter({ converters, guessArrayElement: !!ctx.is("urlencoded") })
-    return Promise.all(ctx.route!.action.parameters.map(((x, i) => {
+    const convert = createConverter({
+        converters, guessArrayElement: !!ctx.is("urlencoded"),
+        visitors: ctx.config.typeConverterVisitors
+    })
+    return Promise.all(ctx.route!.action.parameters.map(x => {
         const binder = chain(bindDecorator, bindByName, bindBody)
         const result = binder(ctx, x)
-        return convert(result, { type: x.type, path: [x.name] })
-    })))
+        return convert(result, {
+            type: x.type, path: [x.name], ctx,
+            errorStatus: HttpStatus.UnprocessableEntity,
+            decorators: x.decorators
+        })
+    }))
 }
 
 export { bindParameter, RequestPart, HeaderPart, BindingDecorator }

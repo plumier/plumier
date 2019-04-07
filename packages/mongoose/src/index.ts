@@ -6,8 +6,8 @@ import {
     isCustomClass,
     PlumierApplication,
     ValidatorDecorator,
+    val
 } from "@plumier/core"
-import { val } from "@plumier/validator"
 import Chalk from "chalk"
 import Mongoose, { Model } from "mongoose"
 import { dirname, isAbsolute, join } from "path"
@@ -145,7 +145,7 @@ async function isUnique(value: string, target: Class, name: string, index?: any)
 /* ------------------------------- MAIN FUNCTIONS -------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-declare module "@plumier/validator" {
+declare module "@plumier/core" {
     namespace val {
         function unique(): (target: any, name: string, index?: any) => void
     }

@@ -1,9 +1,21 @@
 import { collection, model, MongooseFacility } from "@plumier/mongoose";
-import { val, validateObject } from "@plumier/validator";
+import { val, validatorVisitor } from "@plumier/core";
 import Mongoose from 'mongoose';
 import { domain, PlumierApplication } from '@plumier/core';
 import Plumier from "plumier"
 import { decorate } from 'tinspector';
+import createConverter, { ConversionError } from "typedconverter"
+
+const convert = createConverter({ visitors: [validatorVisitor] })
+
+async function validateObject(val: any, type:Function) {
+    try{
+        await convert(val, type)
+        return []
+    } catch(e){
+        return e.issues
+    }
+}
 
 describe("unique validator", () => {
     it("Should return invalid if data already exist", async () => {
@@ -19,11 +31,12 @@ describe("unique validator", () => {
             model: [User],
             uri: "mongodb://localhost:27017/test-data"
         })
+
         await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.deleteMany({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
-        const result = await validateObject(new User("Ketut", "ketut@gmail.com"), [], [], {} as any)
+        const result = await validateObject({ name: "Ketut", email: "ketut@gmail.com" }, User)
         expect(result).toEqual([{ messages: ['ketut@gmail.com already exists'], path: ['email'] }])
         Mongoose.disconnect()
     })
@@ -49,7 +62,7 @@ describe("unique validator", () => {
         const UserModel = model(User)
         await UserModel.deleteMany({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
-        const result = await validateObject(new User("Ketut", "ketut@gmail.com"), [], [], {} as any)
+        const result = await validateObject({ name: "Ketut", email: "ketut@gmail.com" }, User)
         expect(result).toEqual([{ messages: ['ketut@gmail.com already exists'], path: ['email'] }])
         Mongoose.disconnect()
     })
@@ -71,7 +84,7 @@ describe("unique validator", () => {
         const UserModel = model(User)
         await UserModel.deleteMany({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
-        const result = await validateObject(new User("Ketut", "KETUT@gmail.com"), [], [], {} as any)
+        const result = await validateObject({ name: "Ketut", email: "KETUT@gmail.com" }, User)
         expect(result).toEqual([{ messages: ['KETUT@gmail.com already exists'], path: ['email'] }])
         Mongoose.disconnect()
     })
@@ -92,7 +105,7 @@ describe("unique validator", () => {
         await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.deleteMany({})
-        const result = await validateObject(new User("Ketut", "ketut@gmail.com"), [], [], {} as any)
+        const result = await validateObject({ name: "Ketut", email: "ketut@gmail.com" }, User)
         expect(result).toEqual([])
         Mongoose.disconnect()
     })
@@ -114,12 +127,12 @@ describe("unique validator", () => {
         const UserModel = model(User)
         await UserModel.deleteMany({})
         await new UserModel({ name: "Ketut", email: "ketut@gmail.com" }).save()
-        const result = await validateObject(new User("Ketut", "m.ketut@gmail.com"), [], [], {} as any)
+        const result = await validateObject({ name: "Ketut", email: "m.ketut@gmail.com" }, User)
         expect(result).toEqual([])
         Mongoose.disconnect()
     })
 
-    it("Should return valid if data is undefined", async () => {
+    it.only("Should return valid if data is optional and provided undefined", async () => {
         @collection()
         class User {
             constructor(
@@ -136,10 +149,8 @@ describe("unique validator", () => {
         await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
         const UserModel = model(User)
         await UserModel.deleteMany({})
-        const result = await validateObject(new User("Ketut", undefined), [], [], {} as any)
+        const result = await validateObject({ name: "Ketut", email: undefined }, User)
         expect(result).toEqual([])
         Mongoose.disconnect()
     })
-
-
 })

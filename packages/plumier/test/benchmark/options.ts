@@ -19,21 +19,21 @@ const plumierJwt: BenchmarkOption = { ...defaultOption, path: join(__dirname, "s
 const express: BenchmarkOption = { ...defaultOption, path: join(__dirname, "server/express") }
 const expressJwt: BenchmarkOption = { ...defaultOption, path: join(__dirname, "server/express-jwt") }
 export const options: BenchmarkOption[] = [
-    {
-        ...koa,
-        method: "GET",
-        title: "Simple GET",
-    },
-    {
-        ...plumier,
-        method: "GET",
-        title: "Simple GET",
-    },
-    {
-        ...express,
-        method: "GET",
-        title: "Simple GET",
-    },
+    // {
+    //     ...koa,
+    //     method: "GET",
+    //     title: "Simple GET",
+    // },
+    // {
+    //     ...plumier,
+    //     method: "GET",
+    //     title: "Simple GET",
+    // },
+    // {
+    //     ...express,
+    //     method: "GET",
+    //     title: "Simple GET",
+    // },
     {
         ...koa,
         title: "Joi Validation",
@@ -52,43 +52,43 @@ export const options: BenchmarkOption[] = [
         },
         body: JSON.stringify(simplePostBody)
     },
-    {
-        ...express,
-        title: "Joi Validation",
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(simplePostBody)
-    },
-    {
-        ...koaJwt,
-        title: "JWT Authorization",
-        method: "POST",
-        body: JSON.stringify({ ...simplePostBody, role: "Admin" }),
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${adminToken}`
-        }
-    },
-    {
-        ...plumierJwt,
-        title: "JWT Parameter Authorization",
-        method: "POST",
-        body: JSON.stringify({ ...simplePostBody, role: "Admin" }),
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${adminToken}`
-        }
-    },
-    {
-        ...expressJwt,
-        title: "JWT Authorization",
-        method: "POST",
-        body: JSON.stringify({ ...simplePostBody, role: "Admin" }),
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${adminToken}`
-        }
-    }
+    // {
+    //     ...express,
+    //     title: "Joi Validation",
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json"
+    //     },
+    //     body: JSON.stringify(simplePostBody)
+    // },
+    // {
+    //     ...koaJwt,
+    //     title: "JWT Authorization",
+    //     method: "POST",
+    //     body: JSON.stringify({ ...simplePostBody, role: "Admin" }),
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${adminToken}`
+    //     }
+    // },
+    // {
+    //     ...plumierJwt,
+    //     title: "JWT Parameter Authorization",
+    //     method: "POST",
+    //     body: JSON.stringify({ ...simplePostBody, role: "Admin" }),
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${adminToken}`
+    //     }
+    // },
+    // {
+    //     ...expressJwt,
+    //     title: "JWT Authorization",
+    //     method: "POST",
+    //     body: JSON.stringify({ ...simplePostBody, role: "Admin" }),
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${adminToken}`
+    //     }
+    // }
 ];
