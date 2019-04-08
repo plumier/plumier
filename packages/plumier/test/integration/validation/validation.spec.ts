@@ -5,7 +5,7 @@ import { fixture } from "../../helper"
 import reflect from 'tinspector';
 import supertest = require('supertest');
 
-describe("All field is required", () => {
+describe("Validation", () => {
     it("Parameter should be mandatory by default", async () => {
         class AnimalController {
             get(email: string) { }
@@ -71,9 +71,7 @@ describe("All field is required", () => {
                     "path": ["model", "tag", "id"]
                 }])
     })
-})
 
-describe("Validation", () => {
     it("Should validate parameter", async () => {
         class AnimalController {
             get(@val.email() email: string) { }
@@ -88,13 +86,33 @@ describe("Validation", () => {
                 "path": ["email"]
             }])
     })
+
+    it("Should skip optional validation if provided undefined", async () => {
+        class AnimalController {
+            get(@val.optional() @val.email() email: string) { }
+        }
+        const koa = await fixture(AnimalController).initialize()
+        const result = await Supertest(koa.callback())
+            .get("/animal/get")
+            .expect(200)
+    })
+
+    it("Should validate parameter properly", async () => {
+        class AnimalController {
+            get(@val.email() email: string) { }
+        }
+        const koa = await fixture(AnimalController).initialize()
+        const result = await Supertest(koa.callback())
+            .get("/animal/get?email=m.ketut@gmail.com")
+            .expect(200)
+    })
 })
 
-function customValidator() {
-    return val.custom(x => { throw new Error("ERROR") })
-}
 
 describe("Error handling", () => {
+    function customValidator() {
+        return val.custom(x => { throw new Error("ERROR") })
+    }
     it("Should provide correct information when error inside custom validator", async () => {
         const hook = jest.fn()
         class AnimalController {
