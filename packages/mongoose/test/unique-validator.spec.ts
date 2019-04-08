@@ -132,7 +132,7 @@ describe("unique validator", () => {
         Mongoose.disconnect()
     })
 
-    it.only("Should return valid if data is optional and provided undefined", async () => {
+    it("Should return valid if data is optional and provided undefined", async () => {
         @collection()
         class User {
             constructor(

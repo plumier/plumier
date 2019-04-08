@@ -2,6 +2,8 @@ import Plumier, { domain, RestfulApiFacility, route, val, ValidatorStore } from 
 import Supertest from "supertest"
 
 import { fixture } from "../../helper"
+import reflect from 'tinspector';
+import supertest = require('supertest');
 
 describe("All field is required", () => {
     it("Parameter should be mandatory by default", async () => {
@@ -171,5 +173,302 @@ describe("Decouple Validation Logic", () => {
                 messages: ["Only 18+ allowed"],
                 path: ["data", "age"]
             }])
+    })
+})
+
+
+
+// describe("Object Validation", () => {
+
+//     it("Should validate object with parameter properties", async () => {
+//         @domain()
+//         class ClientModel {
+//             constructor(
+//                 @val.email()
+//                 public email: string,
+//                 @val.email()
+//                 public secondaryEmail: string
+//             ) { }
+//         }
+//         const result = await validateMe(new ClientModel("kitty", "doggy"))
+//         expect(result).toMatchObject([
+//             { path: ["email"] },
+//             { path: ["secondaryEmail"] }
+//         ])
+//     })
+
+//     it("Should validate object with common property", async () => {
+//         @domain()
+//         class ClientModel {
+//             @val.email()
+//             public email: string = "kitty"
+//             @val.email()
+//             public secondaryEmail: string = "doggy"
+//         }
+//         const result = await validateMe(new ClientModel())
+//         expect(result).toMatchObject([
+//             { path: ["email"] },
+//             { path: ["secondaryEmail"] }
+//         ])
+//     })
+
+//     it("Should validate object with getter property", async () => {
+//         @domain()
+//         class ClientModel {
+//             @val.email()
+//             get email(): string { return "kitty" }
+//             @val.email()
+//             get secondaryEmail(): string { return "doggy" }
+//         }
+//         const result = await validateMe(new ClientModel())
+//         expect(result).toMatchObject([
+//             { path: ["email"] },
+//             { path: ["secondaryEmail"] }
+//         ])
+//     })
+
+//     it("Should validate nested object", async () => {
+//         @domain()
+//         class CreditCardModel {
+//             constructor(
+//                 @val.creditCard()
+//                 public creditCard: string,
+//             ) { }
+//         }
+//         @domain()
+//         class ClientModel {
+//             constructor(
+//                 @val.email()
+//                 public email: string,
+//                 @val.email()
+//                 public secondaryEmail: string,
+//                 public spouse: CreditCardModel
+//             ) { }
+//         }
+//         const result = await validateMe(new ClientModel("kitty", "doggy", new CreditCardModel("kitty")))
+//         expect(result).toMatchObject([
+//             { path: ["email"] },
+//             { path: ["secondaryEmail"] },
+//             { path: ["spouse", "creditCard"] }
+//         ])
+//     })
+// })
+
+// describe("Array Validation", () => {
+//     it("Should validate object inside array", async () => {
+//         @domain()
+//         class Dummy {
+//             constructor(
+//                 @val.email()
+//                 public email: string,
+//             ) { }
+//         }
+//         const result = await validateArray([new Dummy("support@gmail.com"), new Dummy("noreply@gmail.com"), new Dummy("kitty")], [], {} as any)
+//         expect(result).toMatchObject([
+//             { path: ["2", "email"] }
+//         ])
+//     })
+//     it("Should validate nested array inside object", async () => {
+//         @domain()
+//         class Empty {
+//             constructor(
+//                 public dummies: Dummy[],
+//             ) { }
+//         }
+//         @domain()
+//         class Dummy {
+//             constructor(
+//                 @val.email()
+//                 public email: string,
+//             ) { }
+//         }
+//         const dummies = [new Dummy("support@gmail.com"), new Dummy("noreply@gmail.com"), new Dummy("kitty")]
+//         const result = await validateArray([new Empty(dummies)], [], {} as any)
+//         expect(result).toMatchObject([
+//             { path: ["0", "dummies", "2", "email"] }
+//         ])
+//     })
+// })
+
+// describe("Durability", () => {
+//     it("Should treat property as required except @optional() defined", async () => {
+//         @domain()
+//         class ClientModel {
+//             constructor(
+//                 @val.email()
+//                 public email?: string | null | undefined,
+//             ) { }
+//         }
+//         expect((await validateMe(new ClientModel()))).toMatchObject([{ "messages": ["Required"] }])
+//         expect((await validateMe(new ClientModel("")))).toMatchObject([{ "messages": ["Required"] }])
+//         expect((await validateMe(new ClientModel("abc")))).toMatchObject([{ "messages": ["Invalid email address"] }])
+//         expect((await validateMe(new ClientModel("support@gmail.com")))).toEqual([])
+//     })
+
+//     it("Should skip required if @option() is provided", async () => {
+//         @domain()
+//         class ClientModel {
+//             constructor(
+//                 @val.optional()
+//                 @val.email()
+//                 public email?: string | null | undefined,
+//             ) { }
+//         }
+//         expect((await validateMe(new ClientModel())).length).toBe(0)
+//         expect((await validateMe(new ClientModel(""))).length).toBe(0)
+//         expect((await validateMe(new ClientModel(null))).length).toBe(0)
+//         expect((await validateMe(new ClientModel("abc")))).toMatchObject([{ "messages": ["Invalid email address"] }])
+//     })
+
+//     it("Should not error if provided boolean", async () => {
+//         @domain()
+//         class ClientModel {
+//             constructor(
+//                 @val.email()
+//                 public hasEmail: boolean,
+//             ) { }
+//         }
+//         const result = await validateMe(new ClientModel(false))
+//         expect(result).toMatchObject([{
+//             path: ["hasEmail"]
+//         }])
+//     })
+//     it("Should not error if provided number", async () => {
+//         @domain()
+//         class ClientModel {
+//             constructor(
+//                 @val.email()
+//                 public age: number,
+//             ) { }
+//         }
+//         const result = await validateMe(new ClientModel(50))
+//         expect(result).toMatchObject([{
+//             path: ["age"]
+//         }])
+//     })
+//     it("Should not error if provided function", async () => {
+//         @domain()
+//         class ClientModel {
+//             constructor(
+//                 @val.email()
+//                 public fn: () => void,
+//             ) { }
+//         }
+//         const result = await validateMe(new ClientModel(() => { }))
+//         expect(result).toMatchObject([{
+//             path: ["fn"]
+//         }])
+//     })
+
+// })
+
+// describe("Partial Validation", () => {
+//     class ClientModel {
+//         constructor(
+//             public name?: string,
+//             @val.email()
+//             public email?: string,
+//         ) { }
+//     }
+//     it("Should called without error", () => {
+//         const result = val.partial(ClientModel)
+//         expect(result).not.toBeNull()
+//     })
+//     it("Should skip required validation on partial type", async () => {
+//         const result = await validate(new ClientModel(), [<TypeDecorator>{ kind: "Override", type: ClientModel, info: "Partial" }], [], {} as any)
+//         expect(result).toEqual([])
+//     })
+// })
+
+// describe("Skip validation", () => {
+//     it("Should able to skip validation", async () => {
+//         @domain()
+//         class ClientModel {
+//             constructor(
+//                 @val.skip()
+//                 @val.email()
+//                 public hasEmail: string,
+//             ) { }
+//         }
+//         const result = await validateMe(new ClientModel("Hello"))
+//         expect(result).toEqual([])
+//     })
+// })
+
+// describe("Custom Validator", () => {
+
+// })
+
+describe("Custom Validation", () => {
+
+
+    it("Should validate using decouple logic", async () => {
+        function only18Plus() {
+            return val.custom("18+only")
+        }
+        @reflect.parameterProperties()
+        class EmailOnly {
+            constructor(
+                @only18Plus()
+                public age: number
+            ) { }
+        }
+        class UserController {
+            @route.post()
+            save(data: EmailOnly) { }
+        }
+
+        const koa = await fixture(UserController, {
+            validators: { "18+only": async val => parseInt(val) > 18 ? undefined : "Only 18+ allowed" }
+        }).initialize()
+        await supertest(koa.callback())
+            .post("/user/save")
+            .send({ age: "12" })
+            .expect(422, [{ path: ["data", "age"], messages: ["Only 18+ allowed"] }])
+    })
+
+    it("Should validate using custom validation", async () => {
+        @domain()
+        class ClientModel {
+            constructor(
+                public password: string,
+                @val.custom(async (val, ctx) => {
+                    const pwd = (ctx.request.body as ClientModel).password
+                    return val !== pwd ? "Password doesn't match" : undefined
+                })
+                public confirmPassword: string
+            ) { }
+        }
+        class UserController {
+            @route.post()
+            save(data: ClientModel) { }
+        }
+
+        const koa = await fixture(UserController).initialize()
+        await supertest(koa.callback())
+            .post("/user/save")
+            .send({ password: "abcde", confirmPassword: "efghi" })
+            .expect(422, [{ path: ["data", "confirmPassword"], messages: ["Password doesn't match"] }])
+    })
+
+    it("Should able to skip validation", async () => {
+        @domain()
+        class ClientModel {
+            constructor(
+                @val.skip()
+                @val.email()
+                public email: string,
+            ) { }
+        }
+        class UserController {
+            @route.post()
+            save(data: ClientModel) { }
+        }
+
+        const koa = await fixture(UserController).initialize()
+        await supertest(koa.callback())
+            .post("/user/save")
+            .send({ email: "lorem ipsum" })
+            .expect(200)
     })
 })

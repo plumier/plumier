@@ -1,9 +1,5 @@
 import { Context } from "koa"
-import { decorateProperty, reflect } from "tinspector"
 import { ConversionMessage, ConversionResult, ConverterInvocation } from "typedconverter"
-import Validator from "validator"
-
-import { Class } from "./common"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -66,11 +62,12 @@ async function validate(value: any, { decorators, ctx }: ConverterInvocation, va
 }
 
 export async function validatorVisitor(value: {} | undefined, invocation: ConverterInvocation): Promise<ConversionResult> {
+    if (isOptional(invocation) && (value === undefined || value === null))
+        return new ConversionResult(undefined)
     const nextResult = await invocation.proceed()
     if (isSkip(invocation)) return nextResult
-    if (!isOptional(invocation) && (value === undefined || value === null)) {
+    if (value === undefined || value === null)
         return nextResult.merge(new ConversionMessage(invocation.path, `${invocation.path.join(".")} is required`))
-    }
     const messages = await validate(value, invocation, invocation.ctx && invocation.ctx.config.validators!)
     return messages.reduce((a, b) => a.merge(new ConversionMessage(invocation.path, b)), nextResult)
 }
