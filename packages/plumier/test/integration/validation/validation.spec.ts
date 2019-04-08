@@ -380,24 +380,6 @@ describe("Decouple Validation Logic", () => {
 //     })
 // })
 
-// describe("Skip validation", () => {
-//     it("Should able to skip validation", async () => {
-//         @domain()
-//         class ClientModel {
-//             constructor(
-//                 @val.skip()
-//                 @val.email()
-//                 public hasEmail: string,
-//             ) { }
-//         }
-//         const result = await validateMe(new ClientModel("Hello"))
-//         expect(result).toEqual([])
-//     })
-// })
-
-// describe("Custom Validator", () => {
-
-// })
 
 describe("Custom Validation", () => {
 
