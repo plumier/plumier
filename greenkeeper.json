@@ -8,8 +8,7 @@
         "packages/mongoose/package.json",
         "packages/multipart/package.json",
         "packages/plumier/package.json",
-        "packages/serve-static/package.json",
-        "packages/validator/package.json"
+        "packages/serve-static/package.json"
       ]
     }
   }

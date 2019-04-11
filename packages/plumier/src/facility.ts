@@ -4,12 +4,11 @@ import {
     DefaultFacility,
     HttpStatusError,
     PlumierApplication,
-    ValidationError,
     ValidatorFunction,
+    validatorVisitor
 } from "@plumier/core"
 import Koa from "koa"
 import BodyParser from "koa-bodyparser"
-import {validate} from "@plumier/validator"
 import { ConversionError } from 'typedconverter';
 
 export interface BodyParserOption {
@@ -48,11 +47,7 @@ export class WebApiFacility extends DefaultFacility {
                 await next()
             }
             catch (e) {
-                if (e instanceof ValidationError) {
-                    ctx.body = e.issues
-                    ctx.status = e.status
-                }
-                else if (e instanceof ConversionError) {
+                if (e instanceof ConversionError) {
                     ctx.body = e.issues
                     ctx.status = e.status
                 }
@@ -68,9 +63,7 @@ export class WebApiFacility extends DefaultFacility {
             app.set({ controller: this.opt.controller })
         if (this.opt && this.opt.validators)
             app.set({ validators: this.opt.validators })
-        app.set({
-            validator: (value, meta, ctx, validators) => validate(value, meta.decorators, [meta.name], ctx, validators)
-        })
+        app.set({typeConverterVisitors: [validatorVisitor]})
     }
 }
 

@@ -96,14 +96,4 @@ function findFilesRecursive(path: string): string[] {
 // ------------------------------- CACHE ------------------------------- //
 // --------------------------------------------------------------------- // 
 
-type TFun<A extends any[], B> = (...args: A) => B
-type CacheStore<T> = { [key: string]: T }
-
-function useCache<P extends any[], R>(cache: CacheStore<R>, fn: TFun<P, R>, getKey: TFun<P, string>) {
-    return (...args: P) => {
-        const key = getKey(...args)
-        return cache[key] || (cache[key] = fn(...args))
-    }
-}
-
-export { getChildValue, useCache, CacheStore, TFun, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, }
+export { getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, }

@@ -9,7 +9,7 @@ const list = [
     "packages/*/test/**/*.js.map",
     "packages/*/test/**/*.d.ts",
     "packages/*/test/**/*.d.ts.map",
-    "!packages/mongoose/test/model/jsonly-domain.js",
+    "!packages/plumier/test/integration/mongoose/model/jsonly-domain.js",
     "!packages/plumier/test/benchmark/autocannon.d.ts"
 ];
 del.sync(list);

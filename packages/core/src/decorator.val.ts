@@ -1,32 +1,18 @@
-import { Class, ValidationIssue, ValidatorDecorator, ValidatorFunction, ValidatorStore, ValidatorId } from "@plumier/core";
-import { decorateProperty, reflect, TypeDecorator } from "tinspector";
-import Validator from "validator";
-import { Context } from 'koa';
+import reflect, { decorateProperty } from "tinspector"
+import Validator from "validator"
 
+import { Class } from "./common"
+import { Opt, ValidatorDecorator, ValidatorFunction, ValidatorId } from "./validator"
 
-/* ------------------------------------------------------------------------------- */
-/* ---------------------------------- TYPES -------------------------------------- */
-/* ------------------------------------------------------------------------------- */
-
-export interface Opt { message?: string }
 const OptionalDecorator = <ValidatorDecorator>{ type: "ValidatorDecorator", validator: ValidatorId.optional }
-
-/* ------------------------------------------------------------------------------- */
-/* ---------------------------------- DECORATORS --------------------------------- */
-/* ------------------------------------------------------------------------------- */
 
 export namespace val {
     function validate(validator: (x: string) => boolean, message: string) {
-        //log(`[Validator] Name: ${b(name)}`)
-        const decorator: ValidatorDecorator = {
-            type: "ValidatorDecorator",
-            validator: async x => !validator(x) ? message : undefined,
-        }
-        return decorateProperty(decorator)
+        return custom(async x => !validator(x) ? message : undefined)
     }
 
     export function after(opt?: Opt & { date?: string }) {
-        return validate(x => Validator.isAfter(x, opt && opt.date), opt && opt.message || `Date must after ${opt && opt.date || "today"}`)
+        return validate(x => Validator.isAfter(x, opt && opt.date), opt && opt.message || `Date must be greater than ${opt && opt.date || "today"}`)
     }
 
     export function alpha(opt?: Opt & { locale?: ValidatorJS.AlphaLocale }) {
@@ -46,7 +32,7 @@ export namespace val {
     }
 
     export function before(opt?: Opt & { date?: string }) {
-        return validate(x => Validator.isBefore(x, opt && opt.date), opt && opt.message || `Date must before ${opt && opt.date || "today"}`)
+        return validate(x => Validator.isBefore(x, opt && opt.date), opt && opt.message || `Date must be less than ${opt && opt.date || "today"}`)
     }
 
     export function byteLength(opt: Opt & ValidatorJS.IsByteLengthOptions) {
@@ -236,65 +222,3 @@ export namespace val {
         })
     }
 }
-
-/* ------------------------------------------------------------------------------- */
-/* ---------------------------------- HELPERS ------------------------------------ */
-/* ------------------------------------------------------------------------------- */
-
-function getType(value: any) {
-    return value.constructor as Class
-}
-
-/* ------------------------------------------------------------------------------- */
-/* ---------------------------------- VALIDATORS --------------------------------- */
-/* ------------------------------------------------------------------------------- */
-
-export async function validateArray(value: any[], path: string[], ctx: Context, validators?: ValidatorStore): Promise<ValidationIssue[]> {
-    const result = await Promise.all(value.map((x, i) => validate(x, [], path.concat(i.toString()), ctx, validators)))
-    return result.flatten()
-}
-
-export async function validateObject(value: any, decs: any[], path: string[], ctx: Context, validators?: ValidatorStore): Promise<ValidationIssue[]> {
-    const partial = decs.find((x: TypeDecorator): x is TypeDecorator => x.kind === "Override" && x.info === "Partial")
-    const partialType = partial && partial.type
-    const meta = reflect(partialType || getType(value))
-    const promised: Promise<ValidationIssue[]>[] = []
-    for (const prop of meta.properties) {
-        const decors = prop.decorators.concat(partialType ? OptionalDecorator : [])
-        const newPath = path.concat(prop.name)
-        const result = validate(value[prop.name], decors, newPath, ctx, validators)
-        promised.push(result)
-    }
-    const result = await Promise.all(promised)
-    return result.flatten()
-}
-
-export async function validateValue(object: any, decorators: any[], path: string[], ctx: Context, validators: ValidatorStore) {
-    if (object === undefined || object === null || object === "") {
-        return decorators.some((x: ValidatorDecorator) => x.validator === ValidatorId.optional) ? [] : [{ messages: ["Required"], path }]
-    }
-    else {
-        const value = "" + object
-        const promised: Promise<string | undefined>[] = []
-        for (let dec of (decorators as ValidatorDecorator[])) {
-            if (dec.type === "ValidatorDecorator" && dec.validator !== ValidatorId.optional) {
-                const result = typeof dec.validator === "string" ? validators[dec.validator](value, ctx) : dec.validator(value, ctx)
-                promised.push(result)
-            }
-        }
-        const result = await Promise.all(promised)
-        const messages = result.filter((x): x is string => Boolean(x))
-        return messages.length > 0 ? [{ messages, path }] : []
-    }
-}
-
-export async function validate(object: any, decs: any[], path: string[], ctx: Context, validators: ValidatorStore = {}): Promise<ValidationIssue[]> {
-    if (decs.some((x: ValidatorDecorator) => typeof x.validator === "string" && x.validator === ValidatorId.skip)) return []
-    if (Array.isArray(object))
-        return validateArray(object, path, ctx, validators)
-    else if (typeof object === "object" && object !== null && object.constructor !== Date)
-        return validateObject(object, decs, path, ctx, validators)
-    else
-        return validateValue(object, decs, path, ctx, validators)
-}
-
