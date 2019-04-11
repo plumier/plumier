@@ -11,7 +11,7 @@ packages/**/*.js.snap
 !jest.config.debug.js
 !test.js
 .docs
-!packages/mongoose/test/model/jsonly-domain.js
+!packages/plumier/test/integration/mongoose/model/jsonly-domain.js
 website/translated_docs
 website/build/
 website/yarn.lock
