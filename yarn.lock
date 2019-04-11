@@ -958,6 +958,16 @@
     universal-user-agent "^2.0.0"
     url-template "^2.0.8"
 
+"@plumier/validator@1.0.0-beta.6":
+  version "1.0.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@plumier/validator/-/validator-1.0.0-beta.6.tgz#c37a74bac0b7e178071fef37d27832c6874e8029"
+  integrity sha512-jVsOGvNniF1iwrtJYSIEd6/rzyh8wUJSw02EneGLOOxxxJTun6d7uI3G6n6G9NKDVN34d2G9d57FhC2ELUPYdg==
+  dependencies:
+    "@plumier/core" "1.0.0-beta.6"
+    "@types/validator" "^10.9.0"
+    tinspector "^2.2.0"
+    validator "^10.11.0"
+
 "@types/accepts@*":
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/@types/accepts/-/accepts-1.3.5.tgz#c34bec115cfc746e04fe5a059df4ce7e7b391575"
@@ -7313,7 +7323,7 @@ timestring@^5.0.1:
   resolved "https://registry.yarnpkg.com/timestring/-/timestring-5.0.1.tgz#065bd9dda1bcaf7c08ec9a4841569d3bbbb6cf87"
   integrity sha512-0VfOVpaTYqBMTEpjwcY5mB+72YYjFI44Z5F2q80ZiIyDn5pRJm+rEV1OEM8xfnf5/FdtckcrTERTp9TbrlMMHw==
 
-tinspector@^2.2.1:
+tinspector@^2.2.0, tinspector@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/tinspector/-/tinspector-2.2.1.tgz#9ea41ab5e42d40267fa98a0f0e9a76c2ed79bd35"
   integrity sha512-K2BIQKbnW8qJK6PzBuWBrlob3gXbf5V8dgK7g1yHTodTJtQsc7ly1Yz9K52oilzGJ7OLVs71/ulIoyxAU9vkRw==
@@ -7511,10 +7521,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typedconverter@^1.0.0-alpha.8:
-  version "1.0.0-alpha.8"
-  resolved "https://registry.yarnpkg.com/typedconverter/-/typedconverter-1.0.0-alpha.8.tgz#d9ffd663b5133987933616a75ceab7f9ab1c8a5d"
-  integrity sha512-j4reXU0gjugwQDa0FiUgoGIuaxnppiB64BDC4DuvShQllcSu2VflN2ICAiJoAr610Yu8r6PqELWMRW7/j5MwmA==
+typedconverter@^1.0.0-beta.1:
+  version "1.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/typedconverter/-/typedconverter-1.0.0-beta.1.tgz#b3a9896f71b3ab2c246aff4933c2a497470f8d76"
+  integrity sha512-O91j59EDyiJrEwLZnQLU64NywqN3IlPlGA5ge6dYSOO45MMrhWvFUm2n5x90SrVrsz/BFRa4+wqqNRAdHu1SkA==
   dependencies:
     "@types/validator" "^10.11.0"
     tinspector "^2.2.1"

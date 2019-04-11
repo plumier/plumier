@@ -4,6 +4,7 @@ import Supertest from "supertest"
 import { fixture } from "../../helper"
 import reflect from 'tinspector';
 import supertest = require('supertest');
+import { ValidatorInfo } from 'core/src/validator';
 
 describe("Validation", () => {
     it("Parameter should be mandatory by default", async () => {
@@ -104,6 +105,29 @@ describe("Validation", () => {
         const koa = await fixture(AnimalController).initialize()
         const result = await Supertest(koa.callback())
             .get("/animal/get?email=m.ketut@gmail.com")
+            .expect(200)
+    })
+
+    it("Should optionally check on partial validation", async () => {
+        @domain()
+        class AnimalModel {
+            constructor(
+                public id: number,
+                public name: string,
+                public deceased: boolean
+            ) { }
+        }
+        class AnimalController {
+            @route.post()
+            get(@val.partial(AnimalModel) model: Partial<AnimalModel>) {
+                expect(typeof model.id).toBe("number")
+                expect(typeof model.deceased).toBe("boolean")
+            }
+        }
+        const koa = await fixture(AnimalController).initialize()
+        let result = await Supertest(koa.callback())
+            .post("/animal/get")
+            .send({ id: "123", deceased: "True" })
             .expect(200)
     })
 })
@@ -401,6 +425,24 @@ describe("Decouple Validation Logic", () => {
 
 describe("Custom Validation", () => {
 
+    it("Should provided correct information for custom validation", async () => {
+        async function customValidator(val:any, info:ValidatorInfo){
+            expect(info.name).toBe("data")
+            expect(info.parent).toBeUndefined()
+            expect(info.route).toMatchSnapshot()
+            return undefined
+        }
+        class UserController {
+            @route.post()
+            save(@val.custom(customValidator) data: string) { }
+        }
+        const koa = await fixture(UserController).initialize()
+        await supertest(koa.callback())
+            .post("/user/save")
+            .send({data: "abc"})
+            .expect(200)
+    })
+
 
     it("Should validate using decouple logic", async () => {
         function only18Plus() {
@@ -432,8 +474,8 @@ describe("Custom Validation", () => {
         class ClientModel {
             constructor(
                 public password: string,
-                @val.custom(async (val, ctx) => {
-                    const pwd = (ctx.request.body as ClientModel).password
+                @val.custom(async (val, info) => {
+                    const pwd = (info.ctx.request.body as ClientModel).password
                     return val !== pwd ? "Password doesn't match" : undefined
                 })
                 public confirmPassword: string

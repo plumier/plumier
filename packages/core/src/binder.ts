@@ -59,9 +59,9 @@ function bindParameter(ctx: Context, converters?: ConverterMap[]) {
         const binder = chain(bindDecorator, bindByName, bindBody)
         const result = binder(ctx, x)
         return convert(result, {
-            type: x.type, path: [x.name], ctx,
+            type: x.type, path: [x.name], ctx, name: x.name,
             errorStatus: HttpStatus.UnprocessableEntity,
-            decorators: x.decorators
+            decorators: x.decorators, route: ctx.route!
         })
     }))
 }

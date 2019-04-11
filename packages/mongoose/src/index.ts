@@ -54,7 +54,7 @@ interface MongooseCollectionDecorator {
 const GlobalMongooseSchema: SchemaRegistry = {}
 const ArrayHasNoTypeInfo = `MONG1000: Array property {0}.{1} require @array(<Type>) decorator to be able to generated into mongoose schema`
 const NoClassFound = `MONG1001: No class decorated with @collection() found`
-const CanNotValidateNonCollection = `MONG1002: @val.unique() only can be applied to a class that mapped to mongodb collection, in class {0}.{1}`
+const CanNotValidateNonProperty = `MONG1002: @val.unique() only can be applied on property`
 const ModelNotDecoratedWithCollection = `MONG1003: {0} not decorated with @collection()`
 
 /* ------------------------------------------------------------------------------- */
@@ -130,9 +130,8 @@ function printAnalysis(analysis: DomainAnalysis[]) {
 /* --------------------------------- HELPERS ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-async function isUnique(value: string, target: Class, name: string, index?: any) {
-    const meta = reflect(target)
-    const field = (typeof index === "number") ? meta.ctor.parameters[index].name : name
+async function isUnique(value: string, target: Class | undefined, field: string) {
+    if(!target) throw new Error(CanNotValidateNonProperty)
     const Model = model(target)
     const condition: { [key: string]: object } = {}
     //case insensitive comparison
@@ -151,16 +150,7 @@ declare module "@plumier/core" {
     }
 }
 
-val.unique = () => {
-    return decorateProperty((target, name, index) => {
-        const createValidator = (target: Class, name: string, index?: any) => (value: string) => isUnique(value, target, name, index)
-        return <ValidatorDecorator>{
-            type: "ValidatorDecorator",
-            name: "mongoose:unique",
-            validator: createValidator(target, name, index)
-        }
-    })
-}
+val.unique = () => val.custom((value, info) => isUnique(value, info.parent && info.parent.type, info.name))
 
 export function reflectPath(path: string | Class | Class[]): Reflection[] {
     if (Array.isArray(path))
@@ -193,7 +183,7 @@ export async function customModelConverter(value: any, info:ObjectInfo<Function|
         return new ConversionResult(Mongoose.Types.ObjectId(value))
     }
     else {
-        return DefaultConverters.classConverter(value, info)
+        return DefaultConverters.classConverter(value, {...info, parent: {type: info.type as Class, decorators: info.decorators}})
     }
 }
 
@@ -225,7 +215,7 @@ export class MongooseFacility extends DefaultFacility {
     }
 }
 
-export function model<T extends object>(type: Constructor<T>) {
+export function model<T>(type: Constructor<T>) {
 
     function traversePropertyType(meta: ClassReflection): Class[] {
         const properties = meta.properties
@@ -237,7 +227,7 @@ export function model<T extends object>(type: Constructor<T>) {
                 .flatten()) : []
     }
 
-    class ModelProxyHandler<T extends object> implements ProxyHandler<Mongoose.Model<T & Mongoose.Document>> {
+    class ModelProxyHandler<T> implements ProxyHandler<Mongoose.Model<T & Mongoose.Document>> {
         private isLoaded = false
         modelName: string;
         metaData: ClassReflection

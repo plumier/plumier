@@ -48,8 +48,8 @@ function getMiddleware(global: Middleware[], route: RouteInfo) {
 /* ------------------------------- ROUTER ---------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
- function router(infos: RouteInfo[], config: Configuration, globalMiddleware: Middleware[]) {
-    const matchCache = new  Map<string, RouteMatcher | undefined>  ()
+function router(infos: RouteInfo[], config: Configuration, globalMiddleware: Middleware[]) {
+    const matchCache = new Map<string, RouteMatcher | undefined>()
     const middlewareCache = new Map<string, Middleware[]>()
     return async (ctx: Context) => {
         const getMatcherCached = useCache(matchCache, getMatcher, (info, ctx) => `${ctx.method}${ctx.path}`)
@@ -69,4 +69,4 @@ function getMiddleware(global: Middleware[], route: RouteInfo) {
     }
 }
 
-export {router}
+export { router }

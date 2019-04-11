@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Custom Validation Should provided correct information for custom validation 1`] = `
+Object {
+  "action": Object {
+    "decorators": Array [
+      Object {
+        "method": "post",
+        "name": "Route",
+        "url": undefined,
+      },
+    ],
+    "kind": "Method",
+    "name": "save",
+    "parameters": Array [
+      Object {
+        "decorators": Array [
+          Object {
+            "type": "ValidatorDecorator",
+            "validator": customValidator,
+          },
+        ],
+        "kind": "Parameter",
+        "name": "data",
+        "type": String,
+        "typeClassification": "Primitive",
+      },
+    ],
+    "returnType": undefined,
+    "typeClassification": undefined,
+  },
+  "controller": Object {
+    "ctor": Object {
+      "kind": "Constructor",
+      "name": "constructor",
+      "parameters": Array [],
+    },
+    "decorators": Array [],
+    "kind": "Class",
+    "methods": Array [
+      Object {
+        "decorators": Array [
+          Object {
+            "method": "post",
+            "name": "Route",
+            "url": undefined,
+          },
+        ],
+        "kind": "Method",
+        "name": "save",
+        "parameters": Array [
+          Object {
+            "decorators": Array [
+              Object {
+                "type": "ValidatorDecorator",
+                "validator": customValidator,
+              },
+            ],
+            "kind": "Parameter",
+            "name": "data",
+            "type": String,
+            "typeClassification": "Primitive",
+          },
+        ],
+        "returnType": undefined,
+        "typeClassification": undefined,
+      },
+    ],
+    "name": "UserController",
+    "properties": Array [],
+    "type": UserController,
+    "typeClassification": "Class",
+  },
+  "method": "post",
+  "url": "/user/save",
+}
+`;
