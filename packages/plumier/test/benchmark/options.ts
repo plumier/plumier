@@ -52,15 +52,15 @@ export const options: BenchmarkOption[] = [
         },
         body: JSON.stringify(simplePostBody)
     },
-    // {
-    //     ...express,
-    //     title: "Joi Validation",
-    //     method: "POST",
-    //     headers: {
-    //         "Content-Type": "application/json"
-    //     },
-    //     body: JSON.stringify(simplePostBody)
-    // },
+    {
+        ...express,
+        title: "Joi Validation",
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(simplePostBody)
+    },
     // {
     //     ...koaJwt,
     //     title: "JWT Authorization",

@@ -26,7 +26,7 @@
     "path-to-regexp": "^3.0.0",
     "tinspector": "^2.2.1",
     "tslib": "^1.9.3",
-    "typedconverter": "^1.0.0-beta.1",
+    "typedconverter": "^1.0.0-beta.2",
     "validator": "^10.11.0"
   },
   "bugs": {

@@ -19,11 +19,13 @@ type HeaderPart = keyof IncomingHttpHeaders
 /* ------------------------------------------------------------------------------- */
 
 type Binder = (ctx: Context, par: ParameterReflection) => any
-class Next { }
+const NEXT = Symbol("__NEXT")
 
-function getProperty(obj: any, key: string) {
-    const realKey = Object.keys(obj).find(x => x.toLowerCase() === key.toLowerCase())
-    return realKey && obj[realKey]
+function getProperty(obj: any, parKey: string) {
+    for (const key in obj) {
+        if (key.toLowerCase() === parKey.toLowerCase())
+            return obj[key]
+    }
 }
 
 function bindBody(ctx: Context, par: ParameterReflection): any {
@@ -32,31 +34,32 @@ function bindBody(ctx: Context, par: ParameterReflection): any {
 
 function bindDecorator(ctx: Context, par: ParameterReflection): any {
     const decorator: BindingDecorator = par.decorators.find((x: BindingDecorator) => x.type == "ParameterBinding")
-    if (!decorator) return new Next()
+    if (!decorator) return NEXT
     return decorator.process(ctx)
 }
 
 function bindByName(ctx: Context, par: ParameterReflection): any {
     const { body, query } = ctx.request;
-    const keys = Object.keys(query).concat(Object.keys(body!)).map(x => x.toLowerCase())
-    if (keys.some(x => x === par.name.toLowerCase())) {
-        return getProperty(query, par.name) || getProperty(body, par.name)
-    }
-    else return new Next()
+    return getProperty(query, par.name) || getProperty(body, par.name) || NEXT
 }
 
 function chain(...binder: Binder[]) {
     return (ctx: Context, par: ParameterReflection) => binder
-        .reduce((a, b) => a instanceof Next ? b(ctx, par) : a, new Next())
+        .reduce((a, b) => a === NEXT ? b(ctx, par) : a, NEXT)
 }
 
 function bindParameter(ctx: Context, converters?: ConverterMap[]) {
     const convert = createConverter({
         converters, guessArrayElement: !!ctx.is("urlencoded"),
-        visitors: ctx.config.typeConverterVisitors
+        visitors: ctx.config.typeConverterVisitors,
+        interceptor: visitor => (value, invocation) => {
+            invocation.ctx = ctx
+            invocation.route = ctx.route!
+            return visitor(value, invocation)
+        }
     })
+    const binder = chain(bindDecorator, bindByName, bindBody)
     return Promise.all(ctx.route!.action.parameters.map(x => {
-        const binder = chain(bindDecorator, bindByName, bindBody)
         const result = binder(ctx, x)
         return convert(result, {
             type: x.type, path: [x.name], ctx, name: x.name,
