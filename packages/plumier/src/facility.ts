@@ -5,39 +5,23 @@ import {
     HttpStatusError,
     PlumierApplication,
     ValidatorFunction,
-    validatorVisitor
+    validatorVisitor,
 } from "@plumier/core"
-import Koa from "koa"
-import BodyParser from "koa-bodyparser"
-import { ConversionError } from 'typedconverter';
-
-export interface BodyParserOption {
-    enableTypes?: string[];
-    encode?: string;
-    formLimit?: string;
-    jsonLimit?: string;
-    strict?: boolean;
-    detectJSON?: (ctx: Koa.Context) => boolean;
-    extendTypes?: {
-        json?: string[];
-        form?: string[];
-        text?: string[];
-    }
-    onerror?: (err: Error, ctx: Koa.Context) => void;
-}
+import BodyParser from "koa-body"
+import { ConversionError } from "typedconverter"
 
 
 /**
  * Preset configuration for building rest. This facility contains:
  * 
- * body parser: koa-bodyparser
+ * body parser: koa-body
  * 
  * cors: @koa/cors
  */
 export class WebApiFacility extends DefaultFacility {
     constructor(private opt?: {
         controller?: string | Class | Class[],
-        bodyParser?: BodyParserOption, cors?: Cors.Options,
+        bodyParser?: BodyParser.IKoaBodyOptions, cors?: Cors.Options,
         validators?: { [key: string]: ValidatorFunction }
     }) { super() }
 
@@ -70,7 +54,7 @@ export class WebApiFacility extends DefaultFacility {
 /**
  * Preset configuration for building restful style api. This facility contains:
  * 
- * body parser: koa-bodyparser
+ * body parser: koa-body
  * 
  * cors: @koa/cors
  * 

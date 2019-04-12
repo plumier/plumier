@@ -169,7 +169,7 @@ $ http :8000/api/v1/users/1
 $ http ":8000/api/v1/users?offset=0&limit=50"
 
 # modify user by id
-$ http PUT :8000/api/1 name="John Unknown Doe" email=john.doe@gmail.com password=123456 role="Admin"
+$ http PUT :8000/api/users/1 name="John Unknown Doe" email=john.doe@gmail.com password=123456 role="Admin"
 
 # delete user by id
 $ http DELETE :8000/api/v1/users/1
@@ -189,7 +189,7 @@ $ http :8000/api/v1/todos/1
 $ http ":8000/api/v1/todos?offset=0&limit=50"
 
 # modify todo by id
-$ http PUT :8000/api/1 todo="Buy some papers" userId=2
+$ http PUT :8000/api/todos/1 todo="Buy some papers" userId=2
 
 # delete todo by id
 $ http DELETE :8000/api/v1/todos/1

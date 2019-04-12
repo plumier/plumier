@@ -1,7 +1,7 @@
 import Cors from "@koa/cors"
 import Joi from "joi"
 import Koa from "koa"
-import bodyParser from "koa-bodyparser"
+import bodyParser from "koa-body"
 import Router from "koa-router"
 import KoaJwt from "koa-jwt"
 import { secret } from '../options';

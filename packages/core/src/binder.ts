@@ -14,6 +14,12 @@ interface BindingDecorator { type: "ParameterBinding", process: (ctx: Context) =
 type RequestPart = keyof Request
 type HeaderPart = keyof IncomingHttpHeaders
 
+declare module "koa" {
+    interface Request {
+        body?: any;
+    }
+}
+
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------- BINDER FUNCTIONS -------------------------------- */
 /* ------------------------------------------------------------------------------- */
@@ -45,7 +51,7 @@ function bindByName(ctx: Context, par: ParameterReflection): any {
 
 function chain(...binder: Binder[]) {
     return (ctx: Context, par: ParameterReflection) => binder
-        .reduce((a, b) => a === NEXT ? b(ctx, par) : a, NEXT)
+        .reduce((a: any, b) => a === NEXT ? b(ctx, par) : a, NEXT)
 }
 
 function bindParameter(ctx: Context, converters?: ConverterMap[]) {

@@ -19,21 +19,21 @@ const plumierJwt: BenchmarkOption = { ...defaultOption, path: join(__dirname, "s
 const express: BenchmarkOption = { ...defaultOption, path: join(__dirname, "server/express") }
 const expressJwt: BenchmarkOption = { ...defaultOption, path: join(__dirname, "server/express-jwt") }
 export const options: BenchmarkOption[] = [
-    // {
-    //     ...koa,
-    //     method: "GET",
-    //     title: "Simple GET",
-    // },
-    // {
-    //     ...plumier,
-    //     method: "GET",
-    //     title: "Simple GET",
-    // },
-    // {
-    //     ...express,
-    //     method: "GET",
-    //     title: "Simple GET",
-    // },
+    {
+        ...koa,
+        method: "GET",
+        title: "Simple GET",
+    },
+    {
+        ...plumier,
+        method: "GET",
+        title: "Simple GET",
+    },
+    {
+        ...express,
+        method: "GET",
+        title: "Simple GET",
+    },
     {
         ...koa,
         title: "Joi Validation",
