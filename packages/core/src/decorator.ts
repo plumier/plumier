@@ -18,7 +18,6 @@ namespace middleware {
         const value: MiddlewareDecorator = { name: "Middleware", value: mdw }
         return decorate(value, ["Class", "Method"])
     }
-
 }
 
 export { middleware, domain }

@@ -903,17 +903,17 @@ describe("Parameter Binding", () => {
     })
 
     describe("User parameter binding", () => {
-        it("Should able to bind user", async () => {
-            const SECRET = "Lorem Ipsum Dolor"
-            const TOKEN = sign({ email: "ketut@gmail.com", role: "Admin" }, SECRET)
-            @domain()
-            class User {
-                constructor(
-                    public email: string,
-                    public role: "Admin" | "User"
-                ) { }
-            }
+        const SECRET = "Lorem Ipsum Dolor"
+        const TOKEN = sign({ email: "ketut@gmail.com", role: "Admin" }, SECRET)
+        @domain()
+        class User {
+            constructor(
+                public email: string,
+                public role: "Admin" | "User"
+            ) { }
+        }
 
+        it("Should able to bind user", async () => {
             class AnimalController {
                 @route.get()
                 get(@bind.user() b: User) {
@@ -928,6 +928,37 @@ describe("Parameter Binding", () => {
                 .set("Authorization", `Bearer ${TOKEN}`)
                 .expect(200)
             expect(result.body).toMatchObject({ email: "ketut@gmail.com", role: "Admin" })
+        })
+
+        it("Should provide datatype properly", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.user() b: User) {
+                    expect(b instanceof User).toBe(true)
+                    return { message: "OK" }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${TOKEN}`)
+                .expect(200, { message: "OK" })
+        })
+
+
+        it("Should skip required validation", async () => {
+            class AnimalController {
+                get(@bind.user() user: User) { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(403)
         })
     })
 

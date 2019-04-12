@@ -1,4 +1,4 @@
-import { consoleLog } from "@plumier/core"
+import { consoleLog, bind } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { sign } from "jsonwebtoken"
 import { authorize, domain, route, val } from "plumier"
@@ -312,6 +312,7 @@ describe("JwtAuth", () => {
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
                 .expect(401)
         })
+
     })
 
     describe("Global Authorization", () => {

@@ -97,7 +97,7 @@ export namespace bind {
      *     method(@bind.user() user:User){}
      */
     export function user() {
-        return ctxDecorator(false, "state.user")
+        return ctxDecorator(true, "state.user")
     }
 
     /**
