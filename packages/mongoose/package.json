@@ -21,7 +21,7 @@
     "mongoose": "^5.4.15"
   },
   "devDependencies": {
-    "@plumier/core": "1.0.0-beta.6",
+    "@plumier/core": "1.0.0-beta.7",
     "@plumier/validator": "1.0.0-beta.6",
     "@types/supertest": "^2.0.7",
     "supertest": "^4.0.0"
