@@ -171,8 +171,11 @@ $ http ":8000/api/v1/users?offset=0&limit=50"
 # modify user by id
 $ http PUT :8000/api/users/1 name="John Unknown Doe" email=john.doe@gmail.com password=123456 role="Admin"
 
-# delete user by id
-$ http DELETE :8000/api/v1/users/1
+# create one more user to delete 
+$ http POST :8000/api/v1/users email=john.doe@gmail.com password=123456 name="John Doe"
+
+# delete user by id, use id from result of above command
+$ http DELETE :8000/api/v1/users/<last added id>
 ```
 
 Try experimenting using above commands to remove and modify users. 

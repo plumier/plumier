@@ -40,8 +40,8 @@ declare namespace NodeJS {
 By default authorization functionalities is not enabled, we need to setup `JwtAuthFacility` from `@plumier/jwt` package into the Plumier application startup. Navigate to `src/app.ts` file and set `JwtAuthFacility` like below
 
 ```typescript
-import Koa from "koa";
-import Plumier, { Configuration, WebApiFacility, JwtAuthFacility } from "plumier";
+import Koa from "koa"
+import Plumier, { Configuration, WebApiFacility } from "plumier"
 import { JwtAuthFacility } from "@plumier/jwt"
 
 export function createApp(config?: Partial<Configuration>): Promise<Koa> {
@@ -131,6 +131,9 @@ Previously when adding todos we specify `userId` manually. Now we have current l
 Navigate to `todos-controller.ts` and modify `save` method like below
 
 ```typescript
+//add this import above your controller
+//import { bind } from "plumier"
+
 @route.post("")
 save(data: Todo, @bind.user() user: LoginUser) {
     return db("Todo").insert(<Todo>{ ...data, userId: user.userId })
