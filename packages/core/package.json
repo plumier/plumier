@@ -1,7 +1,7 @@
 {
   "name": "@plumier/core",
   "version": "1.0.0-beta.7",
-  "description": "Pleasant TypeScript Web Api Framework",
+  "description": "Delightful Node.js Rest API Framework powered by Koa and TypeScript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "keywords": [
