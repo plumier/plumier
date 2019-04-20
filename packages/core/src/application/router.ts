@@ -2,12 +2,9 @@ import { Context } from "koa"
 import ptr from "path-to-regexp"
 import { useCache } from "tinspector"
 
-import { RouteContext } from "./application"
+import { Configuration, Middleware, MiddlewareUtil, RouteContext, RouteInfo } from "../types"
 import { bindParameter } from "./binder"
-import { Configuration } from "./configuration"
-import { ActionInvocation, pipe, NotFoundActionInvocation } from "./invocation"
-import { Middleware, MiddlewareUtil } from "./middleware"
-import { RouteInfo } from "./route-generator"
+import { ActionInvocation, NotFoundActionInvocation, pipe } from "./middleware-pipeline"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //

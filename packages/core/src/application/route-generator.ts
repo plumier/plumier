@@ -3,14 +3,14 @@ import { existsSync } from "fs"
 import { isAbsolute, join } from "path"
 import { ClassReflection, MethodReflection, ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
-import { Class, findFilesRecursive, isCustomClass } from "./common"
-import { errorMessage } from "./error-message"
+import { Class, findFilesRecursive, isCustomClass } from "../common"
+import { errorMessage, HttpMethod, RouteInfo } from "../types"
+
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-type HttpMethod = "post" | "get" | "put" | "delete" | "patch" | "head" | "trace" | "options"
 interface RouteDecorator { name: "Route", method: HttpMethod, url?: string }
 interface IgnoreDecorator { name: "Ignore" }
 interface RootDecorator { name: "Root", url: string }
@@ -23,14 +23,6 @@ interface TestResult { route: RouteInfo, issues: Issue[] }
 
 interface TransformOption { root?: string }
 
-
-interface RouteInfo {
-   url: string,
-   method: HttpMethod
-   action: MethodReflection
-   controller: ClassReflection
-   access?: string
-}
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- HELPERS --------------------------------------- */
@@ -187,8 +179,6 @@ function traverseArray(parent: string, par: PropOrParamReflection[]): string[] {
       .map(x => `${parent}.${x.name}`)
 }
 
-//----- 
-
 function backingParameterTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
    const ids = route.url.split("/")
       .filter(x => x.startsWith(":"))
@@ -305,4 +295,4 @@ function printAnalysis(results: TestResult[]) {
    if (data.length > 0) console.log()
 }
 
-export { analyzeRoutes, generateRoutes, printAnalysis, RouteInfo, HttpMethod, RouteDecorator, IgnoreDecorator, RootDecorator }
+export { analyzeRoutes, generateRoutes, printAnalysis, RouteDecorator, IgnoreDecorator, RootDecorator };

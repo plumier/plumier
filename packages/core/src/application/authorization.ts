@@ -1,19 +1,13 @@
 import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
-import { ActionResult } from "./action-result"
-import { HttpStatusError, RouteContext } from "./application"
-import { Class, isCustomClass } from "./common"
-import { HttpStatus } from "./http-status"
-import { Invocation } from "./invocation"
-import { Middleware } from "./middleware"
-import { RouteInfo } from "./route-generator"
-
+import { Class, isCustomClass } from "../common"
+import { HttpStatus } from "../http-status"
+import { ActionResult, HttpStatusError, Invocation, Middleware, RouteInfo, AuthorizeMetadataInfo } from "../types"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-type AuthorizeStore = { [key: string]: (info: AuthorizeMetadataInfo) => Promise<boolean> }
 type AuthorizeCallback = (info: AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method") => Promise<boolean>
 
 interface AuthorizeDecorator {
@@ -22,19 +16,7 @@ interface AuthorizeDecorator {
     tag: string
 }
 
-interface AuthorizeMetadataInfo {
-    role: string[]
-    user: any
-    ctx: RouteContext
-    route: RouteInfo
-    parameters: any[]
-    value?: any
-}
-
-
 type RoleField = string | ((value: any) => Promise<string[]>)
-
-
 
 
 /* ------------------------------------------------------------------------------- */
@@ -167,6 +149,6 @@ class AuthorizeMiddleware implements Middleware {
 }
 
 export { 
-    AuthorizeStore, AuthorizeCallback, AuthorizeMetadataInfo, RoleField, 
+    AuthorizeCallback,  RoleField, 
     updateRouteAccess, AuthorizeMiddleware, AuthorizeDecorator 
 }

@@ -1,14 +1,6 @@
 import { Context } from "koa"
 
-import { ActionResult } from "./action-result"
-import { HttpStatusError, RouteContext } from "./application"
-import { Middleware } from "./middleware"
-
-
-interface Invocation {
-    context: Readonly<Context>
-    proceed(): Promise<ActionResult>
-}
+import { ActionResult, HttpStatusError, Invocation, Middleware, RouteContext } from "../types"
 
 class MiddlewareInvocation implements Invocation {
     constructor(private middleware: Middleware, public context: Context, private next: Invocation) { }
@@ -49,4 +41,4 @@ async function pipe(middlewares: Middleware[], context: Context, invocation: Inv
     await result.execute(context)
 }
 
-export { pipe, Invocation, ActionInvocation, NotFoundActionInvocation }
+export { pipe, ActionInvocation, NotFoundActionInvocation }

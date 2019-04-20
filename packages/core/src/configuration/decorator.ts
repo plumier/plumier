@@ -1,6 +1,6 @@
 import reflect, { decorate } from "tinspector"
 
-import { KoaMiddleware, Middleware, MiddlewareDecorator, MiddlewareUtil } from "./middleware"
+import { KoaMiddleware, Middleware, MiddlewareDecorator, MiddlewareUtil } from "../types"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- DOMAIN ------------------------------ //

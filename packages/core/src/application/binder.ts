@@ -3,8 +3,8 @@ import { Context, Request } from "koa"
 import { ParameterReflection } from "tinspector"
 import createConverter, { ConverterMap } from "typedconverter"
 
-import { isCustomClass } from "./common"
-import { HttpStatus } from './http-status';
+import { isCustomClass } from "../common"
+import { HttpStatus } from '../http-status';
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //

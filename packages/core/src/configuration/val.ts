@@ -1,8 +1,9 @@
 import reflect, { decorateProperty } from "tinspector"
 import Validator from "validator"
 
-import { Class } from "./common"
-import { Opt, ValidatorDecorator, ValidatorFunction, ValidatorId } from "./validator"
+import { Opt, ValidatorDecorator, ValidatorId } from "../application/validator"
+import { Class } from "../common"
+import { ValidatorFunction } from "../types"
 
 const OptionalDecorator = <ValidatorDecorator>{ type: "ValidatorDecorator", validator: ValidatorId.optional }
 

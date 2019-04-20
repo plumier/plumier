@@ -2,7 +2,7 @@ import {
     analyzeRoutes,
     Application,
     Configuration,
-    DefaultConfiguration,
+    DependencyResolver,
     Facility,
     generateRoutes,
     hasKeyOf,
@@ -17,6 +17,20 @@ import {
 } from "@plumier/core"
 import Koa from "koa"
 import { dirname } from "path"
+
+
+class DefaultDependencyResolver implements DependencyResolver {
+    resolve(type: new (...args: any[]) => any) {
+        return new type()
+    }
+}
+
+const DefaultConfiguration: Configuration = {
+    mode: "debug",
+    controller: "./controller",
+    dependencyResolver: new DefaultDependencyResolver()
+}
+
 
 export class Plumier implements PlumierApplication {
     readonly config: Readonly<PlumierConfiguration>;

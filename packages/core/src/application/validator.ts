@@ -1,23 +1,13 @@
 import { Context } from "koa"
+import { TypeDecorator } from "tinspector"
 import { ConversionMessage, ConversionResult, ConverterInvocation } from "typedconverter"
 
-import { Class } from "./common"
-import { RouteInfo } from "./route-generator"
-import { TypeDecorator } from 'tinspector';
+import { RouteInfo, ValidatorFunction, ValidatorInfo, ValidatorStore } from "../types"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-export interface ValidatorInfo {
-    name: string,
-    route: RouteInfo,
-    ctx: Context,
-    parent?: { type: Class, decorators: any[] }
-}
-
-export type ValidatorFunction = (value: string, info: ValidatorInfo) => Promise<string | undefined>
-export type ValidatorStore = { [key: string]: ValidatorFunction }
 export interface Opt { message?: string }
 
 export enum ValidatorId {

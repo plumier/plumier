@@ -1,11 +1,10 @@
 import { decorate, decorateParameter, mergeDecorator } from "tinspector"
 
-import { AuthorizeCallback, AuthorizeDecorator, AuthorizeMetadataInfo } from "./authorization"
-import { errorMessage } from "./error-message"
-import { ValidatorDecorator, ValidatorId } from "./validator"
+import { AuthorizeCallback, AuthorizeDecorator } from "../application/authorization"
+import { ValidatorDecorator, ValidatorId } from "../application/validator"
+import { AuthorizeMetadataInfo, errorMessage } from "../types"
 
 class AuthDecoratorImpl {
-
     custom(authorize: string | AuthorizeCallback, tag: string = "Custom") {
         return decorate((...args: any[]) => {
             const type = args.length === 1 ? "Class" : args.length === 2 ? "Method" : "Parameter"
