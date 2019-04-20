@@ -1,10 +1,9 @@
-import Plumier, { domain, RestfulApiFacility, route, val, ValidatorStore } from "plumier"
+import Plumier, { domain, RestfulApiFacility, route, val, ValidatorInfo, ValidatorStore } from "plumier"
 import Supertest from "supertest"
+import supertest = require("supertest")
+import reflect from "tinspector"
 
 import { fixture } from "../../helper"
-import reflect from 'tinspector';
-import supertest = require('supertest');
-import { ValidatorInfo } from 'core/src/validator';
 
 describe("Validation", () => {
     it("Parameter should be mandatory by default", async () => {

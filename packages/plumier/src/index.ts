@@ -26,6 +26,7 @@ export {
     ValidatorStore,
     ValidatorFunction,
     ValidatorId,
+    ValidatorInfo,
     DefaultFacility,
     response,
     val
