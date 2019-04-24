@@ -28,7 +28,7 @@ new Plumier()
 Above snippet will host a simple REST API service `GET /hello/index` and listen to port 8000. It uses simple routing by convention which by default will generate controller method into `GET` route. When requested using http client it simply returned JSON `{ "message", "Hello world!" }`. 
 Example above showing that Controller manually registered on `WebApiFacility`, by default Plumier will look into `controller/` directory and traverse through all classes that is named end with `Controller`.
 
-> Its recommended to start Plumier project using `plumier-starter` which provided some ready to use starter with some best practices. Go to [Plumier Basic Tutorial](/tutorials/basic-sql/get-started) for more information
+> Its recommended to start Plumier project using `plumier-starter` which provided some ready to use starter with some best practices. Go to [Plumier Basic Tutorial](tutorials/basic-sql/get-started) for more information
 
 ## Routing 
 Plumier provided flexible routing that combine between decorator, metadata reflection and directory structure to generate routes.
