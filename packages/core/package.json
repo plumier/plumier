@@ -1,6 +1,6 @@
 {
   "name": "@plumier/core",
-  "version": "1.0.0-beta.7",
+  "version": "1.0.0-beta.8",
   "description": "Delightful Node.js Rest API Framework powered by Koa and TypeScript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -22,13 +22,13 @@
     "@types/glob": "^7.1.1",
     "@types/koa": "^2.0.48",
     "@types/validator": "^10.11.0",
+    "chalk": "^2.4.2",
     "glob": "^7.1.3",
     "path-to-regexp": "^3.0.0",
     "tinspector": "^2.2.1",
     "tslib": "^1.9.3",
     "typedconverter": "^1.0.0-beta.2",
-    "validator": "^10.11.0",
-    "chalk": "^2.4.2"
+    "validator": "^10.11.0"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"
