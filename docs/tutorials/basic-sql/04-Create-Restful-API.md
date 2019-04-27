@@ -3,6 +3,9 @@ id: create-restful-api
 title: Create Restful API
 ---
 
+> **Info**  
+> This is the forth part of 10 steps tutorial on creating basic SQL restful API. Check navigation to navigate to other steps.
+
 Plumier provided flexible routing that make creating restful route easy. In this section we will create several routes that follow restful api best practice. We will keep all the routes accessible by public for now, in next tutorial we will add authentication and authorization for them.
 
 ## Configure Knex

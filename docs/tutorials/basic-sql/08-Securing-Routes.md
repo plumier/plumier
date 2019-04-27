@@ -3,9 +3,13 @@ id: securing-routes
 title: Securing Routes
 ---
 
-Like previously mentioned, after authorization applied on the Plumier application all route will be private, we need to define authorization for some route to only accessible to some users.
+> **Info**  
+> This is the eight part of 10 steps tutorial on creating basic SQL restful API. Check navigation to navigate to other steps.
 
-In this section we will set authorization to some route with specification below.
+
+Like previously mentioned, after authorization applied into the application all routes will be private, we need to define authorization to control its access.
+
+In this section we will set authorization to some routes with specification below.
 
 | Method           | Route                        | Authorize To   |
 | ---------------- | ---------------------------- | -------------- |
@@ -172,9 +176,9 @@ Route Analysis Report
  7. UsersController.list(offset, limit)   -> Admin         GET    /api/v1/users
  8. UsersController.get(id)               -> Admin|Owner   GET    /api/v1/users/:id
  9. UsersController.modify(id, data)      -> Admin|Owner   PUT    /api/v1/users/:id
-10. UsersController.delete(id)            -> Admin|Owner   DELETE /api/v1/users/:id
-11. AuthController.login(email, password) -> Public        POST   /auth/login
-12. HomeController.index()                -> Public        GET    /
+1.  UsersController.delete(id)            -> Admin|Owner   DELETE /api/v1/users/:id
+2.  AuthController.login(email, password) -> Public        POST   /auth/login
+3.  HomeController.index()                -> Public        GET    /
 
 Server running http://localhost:8000/
 ```

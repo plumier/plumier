@@ -3,11 +3,14 @@ id: create-domain
 title: Create Domain Model
 ---
 
+> **Info**  
+> This is the second part of 10 steps tutorial on creating basic SQL restful API. Check navigation to navigate to other steps.
+
 Next we will define some domain for our application that commonly used for controller parameter data type.
 
 In Plumier, domain represent data structure that will be saved to database and used as data transfer object. In this section we will define two domains: User and Todo domain.
 
-> If you are an experienced programmer you might notice some security issue when using the same object for DTO and Domain model that will be saved to database. You can check [Securing Domain Model](securing-domain) section on how we secure domain using parameter authorization.
+If you are an experienced programmer you might wonder some security issue when using the same object for DTO and Domain model that will be saved to database. You can check [Securing Domain Model](securing-domain) section on how we secure domain using parameter authorization.
 
 ## Define Domain
 Expand `src` directory then create new directory named `model` and add new file inside `model` directory named `domain.ts` and write script below

@@ -3,6 +3,10 @@ id: create-custom-validation
 title: Create Custom Validation
 ---
 
+> **Info**  
+> This is the sixth part of 10 steps tutorial on creating basic SQL restful API. Check navigation to navigate to other steps.
+
+
 Previously we applied `@val.email()` validation on our `User` domain. In this section we will create a custom validation to validate uniqueness of user email. We will check through the database if the email already used we will return validation error message.
 
 ## Create Validation Decorator

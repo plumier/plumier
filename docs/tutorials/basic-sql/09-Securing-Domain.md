@@ -3,6 +3,9 @@ id: securing-domain
 title: Securing Domain Models
 ---
 
+> **Info**  
+> This is the ninth part of 10 steps tutorial on creating basic SQL restful API. Check navigation to navigate to other steps.
+
 This section will teach about securing domain model by applying `@authorize` decorator into the domain properties.
 
 ## Issue 

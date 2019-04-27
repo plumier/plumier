@@ -3,6 +3,9 @@ id: create-local-authentication
 title: Create Local Authentication
 ---
 
+> **Info**  
+> This is the seventh part of 10 steps tutorial on creating basic SQL restful API. Check navigation to navigate to other steps.
+
 Our API now run as expected, we will add token based authentication and authorization function to secure routes to restrict access to some users. 
 
 ## Install Packages

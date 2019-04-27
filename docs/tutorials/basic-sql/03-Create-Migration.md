@@ -2,6 +2,10 @@
 id: create-migration
 title: Create DB Migration
 ---
+
+> **Info**  
+> This is the third part of 10 steps tutorial on creating basic SQL restful API. Check navigation to navigate to other steps.
+
 Database migration is a good solution to version control our database schema, its a part of continuous delivery to help deployment run smoothly. 
 
 In this section We will use MySQL database and connect to database using [Knex.js](https://knexjs.org/) migration tools.

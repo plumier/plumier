@@ -3,6 +3,10 @@ id: debugging
 title: Debugging
 ---
 
+> **Info**  
+> This is the fifth part of 10 steps tutorial on creating basic SQL restful API. Check navigation to navigate to other steps.
+
+
 Project starter provided Visual Studio Code launch configuration for debugging the project. In this section we will try to debug the `GET :8000/api/v1/users?offset=0&limit=50` route.
 
 ## Add Breakpoint

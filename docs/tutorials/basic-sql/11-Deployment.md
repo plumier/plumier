@@ -3,6 +3,9 @@ id: deployment
 title: Deployment
 ---
 
+> **Info**  
+> This is the last part of 10 steps tutorial on creating basic SQL restful API. Check navigation to navigate to other steps.
+
 In this section we will build and deploy our todo application into [Heroku](www.heroku.com). Deploying to other host may take the different task.
 
 ## Build Project

@@ -5,7 +5,7 @@ title: Converters
 
 Converters will automatically convert bound value (provided by Parameter Binding) into parameter type specified.
 
-> To be able to make converters work properly Plumier need TypeScript design type information, by providing any decorator on the appropriate action. Use `@route` decorator is best practice to make data binding work properly
+> To be able to make converters work properly Plumier need TypeScript design type information, by providing any decorator on the appropriate action. Use `@route` decorator is best practice to make converter and parameter work properly.
 
 ### Number Converter
 
