@@ -14,7 +14,7 @@ This tutorial will teaches about Plumier features and best practices on developi
 
 > This tutorial separated into 10 steps, each step explain specifically about Plumier feature
 > * Step 01. Get started (this part) 
-> * [Step 02. Create domain model](get-started)  
+> * [Step 02. Create domain model](create-domain)  
 > * [Step 03. Create database migration](create-migration)  
 > * [Step 04. Create restful API](create-restful-api)  
 > * [Step 05. Debugging](debugging)  
