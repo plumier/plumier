@@ -47,7 +47,7 @@
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "express-jwt": "^5.3.1",
-    "fs-extra": "^7.0.1",
+    "fs-extra": "^8.0.0",
     "joi": "^14.3.1",
     "jsonwebtoken": "^8.4.0",
     "koa-better-body": "^3.0.4",
