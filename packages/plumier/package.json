@@ -41,7 +41,7 @@
     "@types/koa-router": "^7.0.39",
     "@types/rimraf": "^2.0.2",
     "@types/supertest": "^2.0.7",
-    "autocannon": "^3.2.0",
+    "autocannon": "^4.0.0",
     "benalu": "^2.0.0-beta-1",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
