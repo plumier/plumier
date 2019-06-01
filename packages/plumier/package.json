@@ -1,7 +1,7 @@
 {
   "name": "plumier",
   "version": "1.0.0-beta.8",
-  "description": "Delightful Node.js Rest API Framework powered by Koa and TypeScript",
+  "description": "Delightful Node.js Rest Framework",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "keywords": [

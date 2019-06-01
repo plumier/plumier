@@ -1,7 +1,7 @@
 {
   "name": "@plumier/core",
   "version": "1.0.0-beta.8",
-  "description": "Delightful Node.js Rest API Framework powered by Koa and TypeScript",
+  "description": "Delightful Node.js Rest Framework",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "keywords": [
@@ -14,7 +14,8 @@
     "TDD"
   ],
   "scripts": {
-    "compile": "tsc -p tsconfig.build.json"
+    "compile": "tsc -p tsconfig.build.json",
+    "doc:gen": "typedoc --mode file  --readme none --mdHideSources --exclude src/application  --out ../../docs/api/core"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
@@ -42,6 +43,8 @@
   },
   "gitHead": "9d69b5621b7e2e777818e5e36c13ecba0c8d8204",
   "devDependencies": {
-    "upath": "^1.1.0"
+    "upath": "^1.1.0",
+		"typedoc": "^0.14.2",
+		"typedoc-plugin-markdown": "^1.2.0"
   }
 }

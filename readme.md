@@ -1,5 +1,5 @@
 # Plumier
-Delightful Node.js Rest API Framework powered by Koa and TypeScript
+Delightful Node.js Rest Framework
 
 [![Build Status](https://travis-ci.org/plumier/plumier.svg?branch=master)](https://travis-ci.org/plumier/plumier)
 [![Build status](https://ci.appveyor.com/api/projects/status/6carp7h4q50v4pj6?svg=true)](https://ci.appveyor.com/project/ktutnik/plumier-isghw)
@@ -7,7 +7,11 @@ Delightful Node.js Rest API Framework powered by Koa and TypeScript
 [![Greenkeeper badge](https://badges.greenkeeper.io/plumier/plumier.svg)](https://greenkeeper.io/)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
 
+
 ## Motivation
+
+> Read the full story on [Hacker Noon](https://hackernoon.com/i-spent-a-year-to-reinvent-a-node-js-framework-b3b0b1602ad5) about motivation and design behind it created
+
 Plumier primarily created for full stack developer who spend more time working on the UI side and focus on creating a good user experience. Plumier comes with some built-in production-ready features that make creating secure JSON Api fun and easy.
 
 ### Lightweight

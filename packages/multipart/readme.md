@@ -1,5 +1,5 @@
 # Plumier
-Delightful Node.js Rest API Framework powered by Koa and TypeScript
+Delightful Node.js Rest Framework
 
 [![Build Status](https://travis-ci.org/plumier/plumier.svg?branch=master)](https://travis-ci.org/plumier/plumier)
 [![Build status](https://ci.appveyor.com/api/projects/status/6carp7h4q50v4pj6?svg=true)](https://ci.appveyor.com/project/ktutnik/plumier-isghw)

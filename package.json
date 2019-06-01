@@ -1,6 +1,6 @@
 {
 	"private": true,
-	"description": "Delightful Node.js Rest API Framework powered by Koa and TypeScript",
+	"description": "Delightful Node.js Rest Framework",
 	"scripts": {
 		"postinstall": "cd website && yarn install",
 		"test": "jest --maxWorkers=4",
@@ -28,9 +28,7 @@
 		"reflect-metadata": "^0.1.13",
 		"ts-jest": "^24.0.2",
 		"tslint": "^5.13.1",
-		"typescript": "^3.3.3",
-		"typedoc": "^0.14.2",
-		"typedoc-plugin-markdown": "^1.2.0"
+		"typescript": "^3.3.3"
 	},
 	"workspaces": [
 		"packages/*"

@@ -34,7 +34,7 @@ inside of middleware, the default error handler will handle it properly.
 To create a plumier middleware is as easy as Koa middleware, The idea is the same but simpler. The most basic middleware that does nothing is like below:
 
 ```typescript
-class BasicMiddleware extends Middleware {
+class BasicMiddleware implements Middleware {
     execute(next: Readonly<Invocation>): Promise<ActionResult> {
         return next.proceed()
     }
@@ -47,7 +47,7 @@ More real world example is creating a error handler middleware, For example we n
 into database for auditing process.
 
 ```typescript
-class BasicMiddleware extends Middleware {
+class BasicMiddleware implements Middleware {
     async execute(next: Readonly<Invocation>): Promise<ActionResult> {
         try{
             return await next.proceed()
