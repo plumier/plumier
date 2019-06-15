@@ -2,6 +2,18 @@ import { ActionResult, DefaultFacility, Invocation, Middleware, PlumierApplicati
 import { Context } from "koa"
 import send from "koa-send"
 import { extname } from "path"
+import { string } from 'joi';
+
+
+declare module "@plumier/core" {
+    namespace response {
+        function file (path: string, opt?: ServeStaticOptions) :ActionResult
+    }
+
+    export interface Configuration {
+        sendFile: (path:string, opt?:ServeStaticOptions) => Promise<string>
+    }
+}
 
 export interface ServeStaticOptions {
     /** 
@@ -40,7 +52,8 @@ export class FileActionResult extends ActionResult {
     async execute(ctx: Context) {
         await super.execute(ctx)
         ctx.type = extname(this.body)
-        await send(ctx, this.body, this.opt)
+        const sendFile = ctx.config.sendFile || ((path:string, opt?:ServeStaticOptions) => send(ctx, path, opt))
+        await sendFile(this.body, this.opt)
     }
 }
 
@@ -76,10 +89,5 @@ export class ServeStaticFacility extends DefaultFacility {
     }
 }
 
-declare module "@plumier/core" {
-    namespace response {
-        function file (path: string, opt?: ServeStaticOptions) :ActionResult
-    }
-}
 
 response.file = (path: string, opt?: ServeStaticOptions) => new FileActionResult(path, opt)

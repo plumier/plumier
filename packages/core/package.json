@@ -14,8 +14,7 @@
     "TDD"
   ],
   "scripts": {
-    "compile": "tsc -p tsconfig.build.json",
-    "doc:gen": "typedoc --mode file  --readme none --mdHideSources --exclude src/application  --out ../../docs/api/core"
+    "compile": "tsc -p tsconfig.build.json"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
@@ -43,8 +42,6 @@
   },
   "gitHead": "9d69b5621b7e2e777818e5e36c13ecba0c8d8204",
   "devDependencies": {
-    "upath": "^1.1.0",
-		"typedoc": "^0.14.2",
-		"typedoc-plugin-markdown": "^1.2.0"
+    "upath": "^1.1.0"
   }
 }

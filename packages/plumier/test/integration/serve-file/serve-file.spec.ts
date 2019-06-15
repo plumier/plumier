@@ -169,9 +169,6 @@ describe("Serve Files", () => {
     })
 
     it("Should handle error properly", async () => {
-        jest.resetModules()
-        jest.doMock("koa-send", () => function() { throw new Error() })
-        const serve = require("@plumier/serve-static")
         const root = join(__dirname, "./assets");
         class HomeController {
             @route.get("/")
@@ -180,13 +177,12 @@ describe("Serve Files", () => {
             }
         }
         const app = fixture(HomeController)
-        app.set(new serve.ServeStaticFacility({ root }))
+        app.set({ sendFile: async (a, b) => { throw new Error() } })
+        app.set(new ServeStaticFacility({ root }))
         const koa = await app.initialize()
-        koa.on("error", () => {})
+        koa.on("error", () => { })
         await Supertest(koa.callback())
             .get("/clock.jpeg")
             .expect(500)
-        jest.dontMock("koa-send")
-        jest.resetModules()
     })
 })

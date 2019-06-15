@@ -22,13 +22,13 @@
 		"coveralls": "^3.0.3",
 		"del": "^4.0.0",
 		"edit-json-file": "^1.2.1",
-		"jest": "^24.5.0",
-		"lerna": "3.14.2",
+		"jest": "^24.8.0",
+		"lerna": "3.14.0",
 		"pre-push": "^0.1.1",
 		"reflect-metadata": "^0.1.13",
 		"ts-jest": "^24.0.2",
-		"tslint": "^5.13.1",
-		"typescript": "^3.3.3"
+		"tslint": "^5.17.0",
+		"typescript": "^3.5.2"
 	},
 	"workspaces": [
 		"packages/*"

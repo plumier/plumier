@@ -1,7 +1,7 @@
 {
   "name": "@plumier/mongoose",
   "version": "1.0.0-beta.8",
-  "description": "TypeScript Mongoose with decorator based configuration",
+  "description": "Mongoose with decorator based configuration",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "keywords": [
@@ -15,16 +15,9 @@
   "license": "MIT",
   "dependencies": {
     "@plumier/core": "1.0.0-beta.8",
-    "@plumier/validator": "1.0.0-beta.6",
-    "@types/mongoose": "^5.3.10",
+    "@types/mongoose": "^5.5.3",
     "chalk": "^2.4.2",
     "mongoose": "^5.5.5"
-  },
-  "devDependencies": {
-    "@plumier/core": "1.0.0-beta.6",
-    "@plumier/validator": "1.0.0-beta.6",
-    "@types/supertest": "^2.0.7",
-    "supertest": "^4.0.0"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"

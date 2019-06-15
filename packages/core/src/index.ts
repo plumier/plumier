@@ -12,4 +12,9 @@ export { domain, middleware } from "./configuration/decorator";
 export { route, RouteDecoratorImpl } from "./configuration/route";
 export { val } from "./configuration/val";
 export { HttpStatus } from "./http-status";
-export * from "./types";
+export {
+    ActionResult, Application, AuthorizeMetadataInfo, AuthorizeStore, Configuration, DefaultFacility,
+    DependencyResolver, Facility, FileParser, FileUploadInfo, HttpMethod, HttpStatusError, Invocation, KoaMiddleware,
+    Middleware, MiddlewareDecorator, MiddlewareUtil, PlumierApplication, PlumierConfiguration, RedirectActionResult,
+    RouteContext, RouteInfo, ValidatorFunction, ValidatorInfo, ValidatorStore, errorMessage
+} from "./types";
