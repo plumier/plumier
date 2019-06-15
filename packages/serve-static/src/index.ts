@@ -11,7 +11,7 @@ declare module "@plumier/core" {
     }
 
     export interface Configuration {
-        sendFile: (path:string, opt?:ServeStaticOptions) => Promise<string>
+        sendFile?: (path:string, opt?:ServeStaticOptions) => Promise<string>
     }
 }
 
