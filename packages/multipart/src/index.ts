@@ -64,6 +64,7 @@ class BusboyParser implements FileParser {
                 this.context.req.unpipe()
                 try{
                     //when file not finish downloaded (caused by transport error) deleting it my cause error
+                    //this just temporary solution to fix error on windows until #109 implemented
                     await deleteAll()
                 }
                 catch(e){}
