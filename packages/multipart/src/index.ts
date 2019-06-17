@@ -62,7 +62,11 @@ class BusboyParser implements FileParser {
                 .map(x => unlinkAsync(join(this.option.uploadPath, x.fileName))))
             const rollback = async () => {
                 this.context.req.unpipe()
-                await deleteAll()
+                try{
+                    //when file not finish downloaded (caused by transport error) deleting it my cause error
+                    await deleteAll()
+                }
+                catch(e){}
             }
             this.busboy
                 .on("file", (field, stream, originalName, encoding, mime) => {
