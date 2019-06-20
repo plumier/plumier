@@ -8,9 +8,10 @@ import {
 } from "@plumier/core"
 import Busboy from "busboy"
 import crypto from "crypto"
-import { createWriteStream, existsSync, mkdirSync, unlink } from "fs"
+import { createReadStream, createWriteStream, exists, mkdir } from "fs"
 import { Context } from "koa"
-import { dirname, extname, join } from "path"
+import os from "os"
+import { basename, dirname, extname, join } from "path"
 import { promisify } from "util"
 
 interface FileUploadOption {
@@ -31,72 +32,92 @@ interface FileUploadOption {
     maxFiles?: number;
 }
 
+interface TempFile extends FileUploadInfo { validSize: boolean }
 
-export function mkdirp(path: string) {
+const mkdirAsync = promisify(mkdir)
+const existsAsync = promisify(exists)
+
+async function mkdirpAsync(path: string) {
     var dir = dirname(path);
-    if (!existsSync(dir)) {
-        mkdirp(dir);
+    if (!await existsAsync(dir)) {
+        await mkdirpAsync(dir);
     }
-    mkdirSync(path);
+    await mkdirAsync(path);
+}
+
+async function checkDirectory(dir: string) {
+    if (!await existsAsync(dir))
+        await mkdirpAsync(dir)
+}
+
+function randomFileName(original: string) {
+    return crypto.randomBytes(12).toString("hex") + extname(original)
+}
+
+function saveFileToTemp(field: string, stream: NodeJS.ReadableStream, originalName: string, encoding: string, mime: string) {
+    let size = 0;
+    let validSize = true;
+    const fileName = join(os.tmpdir(), randomFileName(originalName))
+    return new Promise<TempFile>((resolve, reject) => {
+        stream.on("data", (data: Buffer) => { size += data.length })
+            .on("limit", () => validSize = false)
+            .pipe(createWriteStream(fileName))
+            .on("error", reject)
+            .on("close", () => resolve({ size, fileName, validSize, encoding, mime, field, originalName }))
+    })
+}
+
+function copy(source: string, dest: string) {
+    return new Promise((resolve, reject) => {
+        createReadStream(source)
+            .pipe(createWriteStream(dest))
+            .on("error", reject)
+            .on("close", resolve)
+    })
+}
+
+function asyncBusboy(ctx: Context, option: FileUploadOption) {
+    const files: Promise<TempFile>[] = []
+    return new Promise<TempFile[]>((resolve, reject) => {
+        const busboy = new Busboy({
+            headers: ctx.request.headers,
+            limits: {
+                fileSize: option.maxFileSize,
+                files: option.maxFiles
+            }
+        })
+        busboy
+            .on("file", (field, stream, fileName, encoding, mime) => {
+                files.push(saveFileToTemp(field, stream, fileName, encoding, mime))
+            })
+            .on("filesLimit", () => reject(new HttpStatusError(422, errorMessage.NumberOfFilesExceeded)))
+            .on("finish", async () => {
+                const temps = await Promise.all(files)
+                resolve(temps)
+            })
+        ctx.req.pipe(busboy)
+    })
 }
 
 class BusboyParser implements FileParser {
-    busboy: busboy.Busboy
-    nameGenerator: (original:string) => string
-    constructor(private context: Context, private option: FileUploadOption) {
-        this.busboy = new Busboy({
-            headers: this.context.request.headers,
-            limits: {
-                fileSize: this.option.maxFileSize,
-                files: this.option.maxFiles
-            }
-        })
-        this.nameGenerator = (original:string) => crypto.randomBytes(12).toString("hex") + extname(original)
-    }
+    constructor(private context: Context, private option: FileUploadOption) {}
 
-    save(subDirectory?: string): Promise<FileUploadInfo[]> {
-        return new Promise<FileUploadInfo[]>((resolve, reject) => {
-            const result: FileUploadInfo[] = []
-            const unlinkAsync = promisify(unlink)
-            const deleteAll = async () => await Promise.all(result
-                .map(x => unlinkAsync(join(this.option.uploadPath, x.fileName))))
-            const rollback = async () => {
-                this.context.req.unpipe()
-                await deleteAll()
-            }
-            this.busboy
-                .on("file", (field, stream, originalName, encoding, mime) => {
-                    try {
-                        const fileName = join(subDirectory || "", this.nameGenerator(originalName))
-                        if (subDirectory && !existsSync(join(this.option.uploadPath, subDirectory)))
-                            mkdirp(join(this.option.uploadPath, subDirectory))
-                        const fullPath = join(this.option.uploadPath, fileName)
-                        const info = { field, encoding, fileName, mime, originalName, size: 0 }
-                        result.push(info)
-                        stream
-                            .on("data", (data: Buffer) => { info.size += data.length })
-                            .on("limit", async () => {
-                                await rollback()
-                                reject(new HttpStatusError(422, errorMessage.FileSizeExceeded.format(originalName)))
-                            })
-                            .pipe(createWriteStream(fullPath))
-                    }
-                    catch (e) {
-                        reject(new Error(e.stack))
-                    }
-                })
-                .on("filesLimit", async () => {
-                    await rollback()
-                    reject(new HttpStatusError(422, errorMessage.NumberOfFilesExceeded))
-                })
-                .on("finish", () => {
-                    resolve(result)
-                })
-                .on("error", (e: any) => {
-                    reject(e)
-                })
-            this.context.req.pipe(this.busboy)
-        })
+    async save(subDirectory?: string): Promise<FileUploadInfo[]> {
+        const result: FileUploadInfo[] = []
+        const temps = await asyncBusboy(this.context, this.option)
+        const invalid = temps.filter(x => !x.validSize)
+        if (invalid.length > 0)
+            throw new HttpStatusError(422, errorMessage.FileSizeExceeded.format(invalid.map(x => x.originalName).join(",")))
+        for (const temp of temps) {
+            const baseName = basename(temp.fileName)
+            const dir = join(this.option.uploadPath, subDirectory || "")
+            const destFile = join(dir, baseName)
+            await checkDirectory(dir)
+            await copy(temp.fileName, destFile)
+            const { validSize, fileName, ...info } = temp;
+            result.push({ ...info, fileName: join(subDirectory || "", baseName) })
+        }
+        return result;
     }
 }
 

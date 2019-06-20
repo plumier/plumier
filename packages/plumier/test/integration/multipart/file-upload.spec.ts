@@ -212,23 +212,23 @@ describe("File Upload", () => {
 
     })
 
-    it("Should reject promise if error occur", async () => {
-        class ImageController {
-            @route.post()
-            async upload(@bind.file() parser: any) {
-                parser.nameGenerator = (a: string) => { throw new Error() }
-                const files = await parser.save()
-            }
-        }
-        const app = fixture(ImageController)
-        app.set(new MultiPartFacility({ uploadPath: join(__dirname, "./upload") }))
-        const koa = await app.initialize()
-        koa.on("error", () => { })
-        await Supertest(koa.callback())
-            .post("/image/upload")
-            .attach("file", join(__dirname, "./assets/index.html"))
-            .expect(500)
-    })
+    // it("Should reject promise if error occur", async () => {
+    //     class ImageController {
+    //         @route.post()
+    //         async upload(@bind.file() parser: any) {
+    //             parser.nameGenerator = (a: string) => { throw new Error() }
+    //             const files = await parser.save()
+    //         }
+    //     }
+    //     const app = fixture(ImageController)
+    //     app.set(new MultiPartFacility({ uploadPath: join(__dirname, "./upload") }))
+    //     const koa = await app.initialize()
+    //     koa.on("error", () => { })
+    //     await Supertest(koa.callback())
+    //         .post("/image/upload")
+    //         .attach("file", join(__dirname, "./assets/index.html"))
+    //         .expect(500)
+    // })
 
     it("Should reject promise on busboy error", async () => {
         class ImageController {
