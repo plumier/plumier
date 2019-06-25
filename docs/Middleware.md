@@ -72,7 +72,7 @@ Interception occurs before the next execution proceeded. For example the authori
 where the interception occur before proceeded. 
 
 ```typescript
-class AdminOnlyMiddleware extends Middleware {
+class AdminOnlyMiddleware implements Middleware {
     execute(next: Readonly<Invocation>): Promise<ActionResult> {
         if(next.context.state.user.role !== "Admin")
             throw new HttpStatusError(401)
@@ -90,7 +90,7 @@ Interception occurs after the next execution proceeded. For example we need to m
 based on http status.
 
 ```typescript
-class ModifyResponseMiddleware extends Middleware {
+class ModifyResponseMiddleware implements Middleware {
     async execute(next: Readonly<Invocation>): Promise<ActionResult> {
         const result = await next.proceed()
         if(result.status === 500){
@@ -107,7 +107,7 @@ Interception occurs before and after the next execution. For example we need to 
 
 ```typescript 
 
-class ResponseTimeMiddleware extends Middleware {
+class ResponseTimeMiddleware implements Middleware {
     async execute(next: Readonly<Invocation>): Promise<ActionResult> {
         console.time("Response Time")
         const result = await next.execute()
