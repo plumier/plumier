@@ -20,7 +20,8 @@ class NotFoundActionInvocation implements Invocation {
 class ActionInvocation implements Invocation {
     constructor(public context: RouteContext) { }
     async proceed(): Promise<ActionResult> {
-        const { route, config } = this.context
+        const route = this.context.route;
+        const config = this.context.config
         const controller: any = config.dependencyResolver.resolve(route.controller.type)
         const result = (<Function>controller[route.action.name]).apply(controller, this.context.parameters)
         const awaitedResult = await Promise.resolve(result)
@@ -37,7 +38,12 @@ class ActionInvocation implements Invocation {
 }
 
 async function pipe(middlewares: Middleware[], context: Context, invocation: Invocation) {
-    const result = await middlewares.reverse().reduce((prev: Invocation, cur) => new MiddlewareInvocation(cur, context, prev), invocation).proceed()
+    let invocationStack: Invocation = invocation;
+    for (let i = middlewares.length; i--;) {
+        const mdw = middlewares[i];
+        invocationStack = new MiddlewareInvocation(mdw, context, invocationStack)
+    }
+    const result = await invocationStack.proceed()
     await result.execute(context)
 }
 

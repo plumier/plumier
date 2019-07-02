@@ -21,7 +21,6 @@
     ],
     "Extending": [
       "extends/custom-parameter-binding",
-      "extends/custom-converter",
       "extends/custom-validator",
       "extends/custom-authorization"
     ]

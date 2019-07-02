@@ -1,19 +1,14 @@
 import { Context } from "koa"
-import { decorateParameter, decorateProperty, mergeDecorator } from "tinspector"
+import { decorateParameter, mergeDecorator } from "tinspector"
 
 import { BindingDecorator, HeaderPart, RequestPart } from "../application/binder"
 import { getChildValue } from "../common"
-import { ValidatorDecorator, ValidatorId } from "../application/validator"
+import { val } from '..';
 
 export namespace bind {
 
-    function ctxDecorator(skip: boolean, part?: string) {
-        const decorator = custom(ctx => part ? getChildValue(ctx, part) : ctx)
-        if (skip) {
-            const skipDecorator = decorateProperty(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: ValidatorId.skip })
-            return mergeDecorator(skipDecorator, decorator)
-        }
-        return decorator
+    function ctxDecorator(part?: string) {
+        return custom(ctx => part ? getChildValue(ctx, part) : ctx)
     }
 
     /**
@@ -30,7 +25,7 @@ export namespace bind {
      * @param part part of context, use dot separator to access child property
      */
     export function ctx(part?: string) {
-        return ctxDecorator(true, part)
+        return ctxDecorator(part)
     }
 
     /**
@@ -46,7 +41,7 @@ export namespace bind {
      * @param part part of request ex: body, method, query etc
      */
     export function request(part?: RequestPart) {
-        return ctxDecorator(true, ["request", part].join("."))
+        return ctxDecorator(["request", part].join("."))
     }
 
     /**
@@ -60,7 +55,7 @@ export namespace bind {
      *     method(@bind.body("age") age:number){}
      */
     export function body(part?: string) {
-        return ctxDecorator(false, ["request", "body", part].join("."))
+        return ctxDecorator(["request", "body", part].join("."))
     }
 
     /**
@@ -74,7 +69,7 @@ export namespace bind {
      *     method(@bind.header("cookie") age:any){}
      */
     export function header(key?: HeaderPart) {
-        return ctxDecorator(false, ["request", "headers", key].join("."))
+        return ctxDecorator(["request", "headers", key].join("."))
     }
 
     /**
@@ -88,7 +83,7 @@ export namespace bind {
      *     method(@bind.query("type") type:string){}
      */
     export function query(name?: string) {
-        return ctxDecorator(false, ["request", "query", name].join("."))
+        return ctxDecorator(["request", "query", name].join("."))
     }
 
     /**
@@ -97,7 +92,7 @@ export namespace bind {
      *     method(@bind.user() user:User){}
      */
     export function user() {
-        return ctxDecorator(true, "state.user")
+        return mergeDecorator(val.optional(), ctxDecorator("state.user"))
     }
 
     /**

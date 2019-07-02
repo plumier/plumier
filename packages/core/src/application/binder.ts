@@ -1,10 +1,8 @@
 import { IncomingHttpHeaders } from "http"
 import { Context, Request } from "koa"
 import { ParameterReflection } from "tinspector"
-import createConverter, { ConverterMap } from "typedconverter"
 
 import { isCustomClass } from "../common"
-import { HttpStatus } from '../http-status';
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -45,8 +43,7 @@ function bindDecorator(ctx: Context, par: ParameterReflection): any {
 }
 
 function bindByName(ctx: Context, par: ParameterReflection): any {
-    const { body, query } = ctx.request;
-    return getProperty(query, par.name) || getProperty(body, par.name) || NEXT
+    return getProperty(ctx.request.query, par.name) || getProperty(ctx.request.body, par.name) || NEXT
 }
 
 function chain(...binder: Binder[]) {
@@ -54,25 +51,6 @@ function chain(...binder: Binder[]) {
         .reduce((a: any, b) => a === NEXT ? b(ctx, par) : a, NEXT)
 }
 
-function bindParameter(ctx: Context, converters?: ConverterMap[]) {
-    const convert = createConverter({
-        converters, guessArrayElement: !!ctx.is("urlencoded"),
-        visitors: ctx.config.typeConverterVisitors,
-        interceptor: visitor => (value, invocation) => {
-            invocation.ctx = ctx
-            invocation.route = ctx.route!
-            return visitor(value, invocation)
-        }
-    })
-    const binder = chain(bindDecorator, bindByName, bindBody)
-    return Promise.all(ctx.route!.action.parameters.map(x => {
-        const result = binder(ctx, x)
-        return convert(result, {
-            type: x.type, path: [x.name], ctx, name: x.name,
-            errorStatus: HttpStatus.UnprocessableEntity,
-            decorators: x.decorators, route: ctx.route!
-        })
-    }))
-}
+const binder = chain(bindDecorator, bindByName, bindBody)
 
-export { bindParameter, RequestPart, HeaderPart, BindingDecorator }
+export { RequestPart, HeaderPart, BindingDecorator, binder }

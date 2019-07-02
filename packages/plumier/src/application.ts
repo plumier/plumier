@@ -77,7 +77,7 @@ export class Plumier implements PlumierApplication {
                 await facility.initialize(this, routes)
             }
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
-            this.koa.use(router(routes, this.config, this.globalMiddleware))
+            this.koa.use(router(routes, this.globalMiddleware))
             return this.koa
         }
         catch (e) {

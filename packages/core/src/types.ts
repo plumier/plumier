@@ -1,6 +1,6 @@
 import Koa, { Context } from "koa"
 import { ClassReflection, MethodReflection } from "tinspector"
-import { ConverterMap, Visitor } from "typedconverter"
+import { VisitorExtension } from "typedconverter"
 
 import { Class } from "./common"
 import { HttpStatus } from "./http-status"
@@ -125,12 +125,18 @@ export namespace MiddlewareUtil {
         }
     }
     export function extractDecorators(route: RouteInfo): Middleware[] {
-        const classDecorator: MiddlewareDecorator[] = route.controller.decorators.filter(x => x.name == "Middleware")
-        const methodDecorator: MiddlewareDecorator[] = route.action.decorators.filter(x => x.name == "Middleware")
-        const extract = (d: MiddlewareDecorator[]) => d.map(x => x.value).flatten()
-        return extract(classDecorator)
-            .concat(extract(methodDecorator))
-            .reverse()
+        const middlewares: Middleware[] = []
+        for (let i = route.controller.decorators.length; i--;) {
+            const dec: MiddlewareDecorator = route.controller.decorators[i];
+            if (dec.name === "Middleware")
+                middlewares.push(...dec.value)
+        }
+        for (let i = route.action.decorators.length; i--;) {
+            const dec: MiddlewareDecorator = route.action.decorators[i];
+            if (dec.name === "Middleware")
+                middlewares.push(...dec.value)
+        }
+        return middlewares
     }
 }
 
@@ -223,6 +229,11 @@ export interface PlumierApplication extends Application {
 // --------------------------------------------------------------------- //
 
 
+export interface ValidatorDecorator {
+    type: "ValidatorDecorator",
+    validator: ValidatorFunction,
+}
+
 export interface ValidatorInfo {
     name: string,
     route: RouteInfo,
@@ -295,19 +306,9 @@ export interface Configuration {
     responseStatus?: Partial<{ [key in HttpMethod]: number }>
 
     /**
-     * Set custom converters for parameter binding
-    ```
-    converters: [{
-        { key: AnimalDto, converter: value => new AnimalDto(value) }
-    }]
-    ```
-     */
-    converters?: ConverterMap[],
-
-    /**
      * Set type converter visitor provided by typedconverter
      */
-    typeConverterVisitors?: Visitor[],
+    typeConverterVisitors?: VisitorExtension[],
 
     /**
      * Multi part form file parser implementation
@@ -333,6 +334,7 @@ export interface PlumierConfiguration extends Configuration {
 // --------------------------------------------------------------------- //
 // ------------------------------- ERROR ------------------------------- //
 // --------------------------------------------------------------------- // 
+
 
 export class HttpStatusError extends Error {
     constructor(public status: HttpStatus, message?: string) {

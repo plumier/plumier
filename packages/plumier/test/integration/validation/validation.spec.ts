@@ -15,7 +15,7 @@ describe("Validation", () => {
             .get("/animal/get")
             .expect(422, [
                 {
-                    "messages": ["email is required"],
+                    "messages": ["Required"],
                     "path": ["email"]
                 }])
     })
@@ -39,7 +39,7 @@ describe("Validation", () => {
             .send({ id: "123", name: "Mimi" })
             .expect(422, [
                 {
-                    "messages": ["model.deceased is required"],
+                    "messages": ["Required"],
                     "path": ["model", "deceased"]
                 }])
     })
@@ -67,7 +67,7 @@ describe("Validation", () => {
             .send({ id: "123", name: "Mimi", tag: { name: "The Tag" } })
             .expect(422, [
                 {
-                    "messages": ["model.tag.id is required"],
+                    "messages": ["Required"],
                     "path": ["model", "tag", "id"]
                 }])
     })
@@ -492,24 +492,24 @@ describe("Custom Validation", () => {
             .expect(422, [{ path: ["data", "confirmPassword"], messages: ["Password doesn't match"] }])
     })
 
-    it("Should able to skip validation", async () => {
-        @domain()
-        class ClientModel {
-            constructor(
-                @val.skip()
-                @val.email()
-                public email: string,
-            ) { }
-        }
-        class UserController {
-            @route.post()
-            save(data: ClientModel) { }
-        }
+    // it("Should able to skip validation", async () => {
+    //     @domain()
+    //     class ClientModel {
+    //         constructor(
+    //             @val.skip()
+    //             @val.email()
+    //             public email: string,
+    //         ) { }
+    //     }
+    //     class UserController {
+    //         @route.post()
+    //         save(data: ClientModel) { }
+    //     }
 
-        const koa = await fixture(UserController).initialize()
-        await supertest(koa.callback())
-            .post("/user/save")
-            .send({ email: "lorem ipsum" })
-            .expect(200)
-    })
+    //     const koa = await fixture(UserController).initialize()
+    //     await supertest(koa.callback())
+    //         .post("/user/save")
+    //         .send({ email: "lorem ipsum" })
+    //         .expect(200)
+    // })
 })

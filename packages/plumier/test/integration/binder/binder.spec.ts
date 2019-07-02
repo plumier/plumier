@@ -3,12 +3,12 @@ import { JwtAuthFacility } from "@plumier/jwt"
 import { IncomingMessage, ServerResponse } from "http"
 import { sign } from "jsonwebtoken"
 import { Context, Request } from "koa"
-import { bind, domain, route, val, ValidatorId } from "plumier"
+import { bind, domain, route, val } from "plumier"
 import Supertest from "supertest"
 import reflect from "tinspector"
-import { ConversionResult } from "typedconverter"
 
 import { fixture } from "../../helper"
+import { Result } from 'typedconverter';
 
 export class AnimalModel {
     constructor(
@@ -18,9 +18,9 @@ export class AnimalModel {
     ) { }
 }
 
-function skipValidation(decs: any[]) {
-    return decs.some((x: ValidatorDecorator): x is ValidatorDecorator => x.type === "ValidatorDecorator" && x.validator === ValidatorId.skip)
-}
+// function skipValidation(decs: any[]) {
+//     return decs.some((x: ValidatorDecorator): x is ValidatorDecorator => x.type === "ValidatorDecorator" && x.validator === ValidatorId.skip)
+// }
 
 describe("Parameter Binding", () => {
     describe("Boolean parameter binding", () => {
@@ -43,12 +43,12 @@ describe("Parameter Binding", () => {
         it("Should return 422 if value not provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
-                .expect(422, [{ messages: ['b is required'], path: ['b'] }])
+                .expect(422, [{ messages: ['Required'], path: ['b'] }])
         })
         it("Should return 422 if empty string provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=")
-                .expect(422, [{ "messages": ["b is required"], "path": ["b"] }])
+                .expect(422, [{ "messages": ["Required"], "path": ["b"] }])
         })
         it("Should return 422 if any other value provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
@@ -101,12 +101,12 @@ describe("Parameter Binding", () => {
         it("Should return 422 if value not provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=")
-                .expect(422, [{ "messages": ["b is required"], "path": ["b"] }])
+                .expect(422, [{ "messages": ["Required"], "path": ["b"] }])
         })
         it("Should return 422 if value not specified", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
-                .expect(422, [{ messages: ["b is required"], path: ["b"] }])
+                .expect(422, [{ messages: ["Required"], path: ["b"] }])
         })
         it("Should return string if no decorator provided", async () => {
             class AnimalController {
@@ -153,12 +153,12 @@ describe("Parameter Binding", () => {
         it("Should return 422 if value not provided", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?b=")
-                .expect(422, [{ "messages": ["b is required"], "path": ["b"] }])
+                .expect(422, [{ "messages": ["Required"], "path": ["b"] }])
         })
         it("Should return 422 if value not specified", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get")
-                .expect(422, [{ messages: ["b is required"], path: ["b"] }])
+                .expect(422, [{ messages: ["Required"], path: ["b"] }])
         })
         it("Should return string if no decorator provided", async () => {
             class AnimalController {
@@ -207,60 +207,6 @@ describe("Parameter Binding", () => {
                 .post("/animal/save")
                 .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "Hello" })
                 .expect(422, [{ "path": ["b", "birthday"], "messages": [`Unable to convert "Hello" into Date`] }])
-        })
-
-        it("Should provide informative error when model instantiation failed", async () => {
-            @domain()
-            class AnimalModel {
-                constructor() {
-                    throw new Error("ERROR")
-                }
-            }
-            class AnimalController {
-                @route.post()
-                save(b: AnimalModel) {
-                    expect(b).toBeInstanceOf(AnimalModel)
-                    return b
-                }
-            }
-            const koa = await fixture(AnimalController).initialize()
-            let error = false
-            koa.on("error", (e) => {
-                expect(e.message).toContain("Unable to instantiate AnimalModel")
-                error = true
-            })
-            await Supertest(koa.callback())
-                .post("/animal/save")
-                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "Hello" })
-                .expect(500, `Internal Server Error`)
-            expect(error).toBe(true)
-        })
-
-        it("Should provide informative error when model instantiation failed and throws non Error instance", async () => {
-            @domain()
-            class AnimalModel {
-                constructor() {
-                    throw "Other error"
-                }
-            }
-            class AnimalController {
-                @route.post()
-                save(b: AnimalModel) {
-                    expect(b).toBeInstanceOf(AnimalModel)
-                    return b
-                }
-            }
-            const koa = await fixture(AnimalController).initialize()
-            let error = false
-            koa.on("error", (e) => {
-                expect(e.message).toContain("Unable to instantiate AnimalModel")
-                error = true
-            })
-            await Supertest(koa.callback())
-                .post("/animal/save")
-                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "Hello" })
-                .expect(500, `Internal Server Error`)
-            expect(error).toBe(true)
         })
     })
 
@@ -610,15 +556,15 @@ describe("Parameter Binding", () => {
                 .expect(422, [{ "path": ["b"], "messages": [`Unable to convert "[object Object]" into Number`] }])
         })
 
-        it("Should add skip validation decorator", async () => {
-            class AnimalController {
-                @route.get()
-                get(@bind.request() b: Request) {
-                }
-            }
-            const meta = reflect(AnimalController)
-            expect(skipValidation(meta.methods[0].parameters[0].decorators)).toBe(true)
-        })
+        // it("Should add skip validation decorator", async () => {
+        //     class AnimalController {
+        //         @route.get()
+        //         get(@bind.request() b: Request) {
+        //         }
+        //     }
+        //     const meta = reflect(AnimalController)
+        //     expect(skipValidation(meta.methods[0].parameters[0].decorators)).toBe(true)
+        // })
     })
 
     describe("Request body parameter binding", () => {
@@ -686,16 +632,16 @@ describe("Parameter Binding", () => {
                 .expect(422, [{ "path": ["b"], "messages": [`Unable to convert "[object Object]" into Boolean`] }])
         })
 
-        it("Should not skip validation", async () => {
-            class AnimalController {
-                @route.post()
-                save(@bind.body() b: AnimalModel) {
+        // it("Should not skip validation", async () => {
+        //     class AnimalController {
+        //         @route.post()
+        //         save(@bind.body() b: AnimalModel) {
 
-                }
-            }
-            const meta = reflect(AnimalController)
-            expect(skipValidation(meta.methods[0].parameters[0].decorators)).toBe(false)
-        })
+        //         }
+        //     }
+        //     const meta = reflect(AnimalController)
+        //     expect(skipValidation(meta.methods[0].parameters[0].decorators)).toBe(false)
+        // })
     })
 
     describe("Request header parameter binding", () => {
@@ -948,7 +894,7 @@ describe("Parameter Binding", () => {
         })
 
 
-        it("Should skip required validation", async () => {
+        it("Should skip user validation", async () => {
             class AnimalController {
                 get(@bind.user() user: User) { return "Hello" }
             }
@@ -1056,8 +1002,9 @@ describe("Custom Converter", () => {
                 return b
             }
         }
+
         const koa = await fixture(AnimalController)
-            .set({ converters: [{ type: AnimalModel, converter: async (value) => new ConversionResult(new AnimalModel(value)) }] })
+            .set({ typeConverterVisitors: [i => i.type === AnimalModel ? Result.create(new AnimalModel(i.value)) : i.proceed()] })
             .initialize()
         await Supertest(koa.callback())
             .post("/animal/save")

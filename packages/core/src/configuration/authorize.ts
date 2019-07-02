@@ -1,7 +1,7 @@
-import { decorate, decorateParameter, mergeDecorator } from "tinspector"
+import { decorate, mergeDecorator } from "tinspector"
+import { val, ValidatorDecorator, OptionalValidator } from "typedconverter"
 
 import { AuthorizeCallback, AuthorizeDecorator } from "../application/authorization"
-import { ValidatorDecorator, ValidatorId } from "../application/validator"
 import { AuthorizeMetadataInfo, errorMessage } from "../types"
 
 class AuthDecoratorImpl {
@@ -36,14 +36,10 @@ class AuthDecoratorImpl {
             const isAuthorized = roles.some(x => role.some(y => x === y))
             return location === "Parameter" ? !!value && isAuthorized : isAuthorized
         }, roles.join("|"))
-        const optionalDecorator = (...args: any[]) => {
-            if (args.length === 3 && typeof args[2] === "number")
-                decorateParameter(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: ValidatorId.optional })(args[0], args[1], args[2])
-        }
-        return mergeDecorator(roleDecorator, optionalDecorator)
+        return mergeDecorator(roleDecorator, decorate(<ValidatorDecorator>{ type: "tc:validator", validator: OptionalValidator }))
     }
 }
 
 const authorize = new AuthDecoratorImpl()
 
-export {authorize, AuthDecoratorImpl}
+export { authorize, AuthDecoratorImpl }
