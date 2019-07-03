@@ -6,13 +6,18 @@ import {
     HttpStatusError,
     PlumierApplication,
 } from "@plumier/core"
-import Busboy from "busboy"
 import crypto from "crypto"
 import { createReadStream, createWriteStream, exists, mkdir } from "fs"
 import { Context } from "koa"
-import os from "os"
 import { basename, dirname, extname, join } from "path"
 import { promisify } from "util"
+import { IncomingForm, File } from "formidable"
+import { IncomingMessage } from 'http';
+
+
+// --------------------------------------------------------------------- //
+// ------------------------------- TYPES ------------------------------- //
+// --------------------------------------------------------------------- //
 
 interface FileUploadOption {
 
@@ -22,17 +27,21 @@ interface FileUploadOption {
     uploadPath: string,
 
     /**
-     * Maximum file size (in bytes) allowed, default: infinity
+     * Maximum file size (in bytes) allowed, default: 20 MB
      */
     maxFileSize?: number;
 
     /**
-     * Maximum number of files uploaded, default; infinity
+     * Maximum number of files uploaded, default; 20
      */
     maxFiles?: number;
 }
 
-interface TempFile extends FileUploadInfo { validSize: boolean }
+
+// --------------------------------------------------------------------- //
+// ------------------------------ HELPERS ------------------------------ //
+// --------------------------------------------------------------------- //
+
 
 const mkdirAsync = promisify(mkdir)
 const existsAsync = promisify(exists)
@@ -54,19 +63,6 @@ function randomFileName(original: string) {
     return crypto.randomBytes(12).toString("hex") + extname(original)
 }
 
-function saveFileToTemp(field: string, stream: NodeJS.ReadableStream, originalName: string, encoding: string, mime: string) {
-    let size = 0;
-    let validSize = true;
-    const fileName = join(os.tmpdir(), randomFileName(originalName))
-    return new Promise<TempFile>((resolve, reject) => {
-        stream.on("data", (data: Buffer) => { size += data.length })
-            .on("limit", () => validSize = false)
-            .pipe(createWriteStream(fileName))
-            .on("error", reject)
-            .on("close", () => resolve({ size, fileName, validSize, encoding, mime, field, originalName }))
-    })
-}
-
 function copy(source: string, dest: string) {
     return new Promise((resolve, reject) => {
         createReadStream(source)
@@ -76,48 +72,59 @@ function copy(source: string, dest: string) {
     })
 }
 
-function asyncBusboy(ctx: Context, option: FileUploadOption) {
-    const files: Promise<TempFile>[] = []
-    return new Promise<TempFile[]>((resolve, reject) => {
-        const busboy = new Busboy({
-            headers: ctx.request.headers,
-            limits: {
-                fileSize: option.maxFileSize,
-                files: option.maxFiles
+
+async function formidableAsync(req: IncomingMessage, maxSize: number) {
+    return new Promise<[string, File][]>((resolve, reject) => {
+        const form = new IncomingForm()
+        form.multiples = true;
+        form.maxFileSize = maxSize
+        form.parse(req, (err, fields, files) => {
+            if (err) reject(err)
+            const result: [string, File][] = []
+            for (const key in files) {
+                const file = files[key]
+                if (Array.isArray(file)) {
+                    for (const f of file)
+                        result.push([key, f])
+                }
+                else
+                    result.push([key, file])
             }
+            resolve(result)
         })
-        busboy
-            .on("file", (field, stream, fileName, encoding, mime) => {
-                files.push(saveFileToTemp(field, stream, fileName, encoding, mime))
-            })
-            .on("filesLimit", () => reject(new HttpStatusError(422, errorMessage.NumberOfFilesExceeded)))
-            .on("finish", async () => {
-                const temps = await Promise.all(files)
-                resolve(temps)
-            })
-        ctx.req.pipe(busboy)
     })
 }
 
+// --------------------------------------------------------------------- //
+// ---------------------------- FILE PARSER ---------------------------- //
+// --------------------------------------------------------------------- //
+
 class BusboyParser implements FileParser {
-    constructor(private context: Context, private option: FileUploadOption) {}
+    constructor(private context: Context, private option: FileUploadOption) { }
 
     async save(subDirectory?: string): Promise<FileUploadInfo[]> {
-        const result: FileUploadInfo[] = []
-        const temps = await asyncBusboy(this.context, this.option)
-        const invalid = temps.filter(x => !x.validSize)
-        if (invalid.length > 0)
-            throw new HttpStatusError(422, errorMessage.FileSizeExceeded.format(invalid.map(x => x.originalName).join(",")))
-        for (const temp of temps) {
-            const baseName = basename(temp.fileName)
-            const dir = join(this.option.uploadPath, subDirectory || "")
-            const destFile = join(dir, baseName)
-            await checkDirectory(dir)
-            await copy(temp.fileName, destFile)
-            const { validSize, fileName, ...info } = temp;
-            result.push({ ...info, fileName: join(subDirectory || "", baseName) })
+        const maxFile = this.option.maxFiles || 20
+        const maxSize = this.option.maxFileSize || 20 * 1024 * 1024
+        const subDir = join(this.option.uploadPath, subDirectory || "")
+        await checkDirectory(subDir)
+        try {
+            const files = await formidableAsync(this.context.req, maxSize)
+            if (files.length > maxFile) throw new HttpStatusError(422, "Number of files exceeded the maximum allowed")
+            return Promise.all(files.map(async ([field, x]) => {
+                const fileName = randomFileName(x.name)
+                await copy(x.path, join(subDir, fileName))
+                return <FileUploadInfo>{
+                    mime: x.type,
+                    fileName: join(subDirectory || "", fileName),
+                    originalName: x.name, size: x.size, field
+                }
+            }))
         }
-        return result;
+        catch (e) {
+            if (e instanceof Error && e.message.indexOf("maxFileSize") > -1)
+                throw new HttpStatusError(422, `File size exceeded the maximum size`)
+            throw e
+        }
     }
 }
 
