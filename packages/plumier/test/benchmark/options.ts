@@ -22,17 +22,17 @@ export const options: BenchmarkOption[] = [
     {
         ...koa,
         method: "GET",
-        title: "Simple GET",
+        title: "Koa + Koa Router",
     },
     {
         ...plumier,
         method: "GET",
-        title: "Simple GET",
+        title: "Built-in Router",
     },
     {
         ...express,
         method: "GET",
-        title: "Simple GET",
+        title: "Built-in router",
     },
     {
         ...koa,

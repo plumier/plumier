@@ -3,7 +3,6 @@ import ptr from "path-to-regexp"
 import { useCache } from "tinspector"
 
 import { Configuration, Middleware, MiddlewareUtil, RouteContext, RouteInfo } from "../types"
-import { bindParameter } from "./binder"
 import { ActionInvocation, NotFoundActionInvocation, pipe } from "./middleware-pipeline"
 
 // --------------------------------------------------------------------- //
@@ -37,26 +36,34 @@ function getMatcher(infos: RouteInfo[], ctx: Context) {
 }
 
 function getMiddleware(global: Middleware[], route: RouteInfo) {
-    return global.concat(MiddlewareUtil.extractDecorators(route))
+    const conMdws = MiddlewareUtil.extractDecorators(route)
+    const result: Middleware[] = []
+    for (const mdw of global) {
+        result.push(mdw)
+    }
+    for (const mdw of conMdws) {
+        result.push(mdw)
+    }
+    return result
 }
-
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- ROUTER ---------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function router(infos: RouteInfo[], config: Configuration, globalMiddleware: Middleware[]) {
+function router(infos: RouteInfo[], globalMiddleware: Middleware[]) {
     const matchCache = new Map<string, RouteMatcher | undefined>()
     const middlewareCache = new Map<string, Middleware[]>()
+    const getMatcherCached = useCache(matchCache, getMatcher, (info, ctx) => `${ctx.method}${ctx.path}`)
+    const getMiddlewareCached = useCache(middlewareCache, getMiddleware, (global, route) => route.url)
     return async (ctx: Context) => {
-        const getMatcherCached = useCache(matchCache, getMatcher, (info, ctx) => `${ctx.method}${ctx.path}`)
         const match = getMatcherCached(infos, ctx)
-        ctx.config = config;
         if (match) {
-            Object.assign(ctx.request.query, match.query)
-            ctx.route = match.route;
-            ctx.parameters = await bindParameter(ctx, config.converters)
-            const getMiddlewareCached = useCache(middlewareCache, getMiddleware, (global, route) => route.url)
+            for (const key in match.query) {
+                const element = match.query[key];
+                ctx.request.query[key] = element
+            }
+            ctx.route = match.route
             const middlewares = getMiddlewareCached(globalMiddleware, match.route)
             await pipe(middlewares, ctx, new ActionInvocation(<RouteContext>ctx))
         }

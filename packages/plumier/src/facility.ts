@@ -4,15 +4,17 @@ import {
     DefaultFacility,
     HttpStatusError,
     PlumierApplication,
-    ValidatorFunction,
-    validatorVisitor,
+    ValidationMiddleware,
+    ValidatorStore
 } from "@plumier/core"
 import BodyParser from "koa-body"
-import { ConversionError } from "typedconverter"
+import { VisitorExtension } from 'typedconverter';
 
 
 /**
  * Preset configuration for building rest. This facility contains:
+ * 
+ * parameter binder
  * 
  * body parser: koa-body
  * 
@@ -21,8 +23,9 @@ import { ConversionError } from "typedconverter"
 export class WebApiFacility extends DefaultFacility {
     constructor(private opt?: {
         controller?: string | Class | Class[],
-        bodyParser?: BodyParser.IKoaBodyOptions, cors?: Cors.Options,
-        validators?: { [key: string]: ValidatorFunction }
+        bodyParser?: BodyParser.IKoaBodyOptions, 
+        cors?: Cors.Options,
+        validators?: ValidatorStore
     }) { super() }
 
     setup(app: Readonly<PlumierApplication>) {
@@ -31,11 +34,7 @@ export class WebApiFacility extends DefaultFacility {
                 await next()
             }
             catch (e) {
-                if (e instanceof ConversionError) {
-                    ctx.body = e.issues
-                    ctx.status = e.status
-                }
-                else if (e instanceof HttpStatusError)
+                if (e instanceof HttpStatusError)
                     ctx.throw(e.status, e)
                 else
                     ctx.throw(500, e)
@@ -47,12 +46,14 @@ export class WebApiFacility extends DefaultFacility {
             app.set({ controller: this.opt.controller })
         if (this.opt && this.opt.validators)
             app.set({ validators: this.opt.validators })
-        app.set({typeConverterVisitors: [validatorVisitor]})
+        app.use(new ValidationMiddleware(app.config))
     }
 }
 
 /**
  * Preset configuration for building restful style api. This facility contains:
+ * 
+ * parameter binder
  * 
  * body parser: koa-body
  * 

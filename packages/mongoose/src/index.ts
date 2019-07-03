@@ -20,7 +20,7 @@ import {
     reflect,
     Reflection,
 } from "tinspector"
-import { ConversionResult, DefaultConverters, ObjectInfo } from "typedconverter"
+import {} from "typedconverter"
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------------ TYPES ------------------------------------ */
@@ -144,7 +144,7 @@ async function isUnique(value: string, target: Class | undefined, field: string)
 /* ------------------------------- MAIN FUNCTIONS -------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-declare module "@plumier/core" {
+declare module "typedconverter" {
     namespace val {
         function unique(): (target: any, name: string, index?: any) => void
     }
@@ -178,14 +178,14 @@ export function getName(opt: ClassReflection | Class) {
 /**
  * Custom model converter to allow relational data using mongoose ObjectId
  */
-export async function customModelConverter(value: any, info:ObjectInfo<Function|Function[]>): Promise<ConversionResult> {
-    if (Mongoose.Types.ObjectId.isValid(value)) {
-        return new ConversionResult(Mongoose.Types.ObjectId(value))
-    }
-    else {
-        return DefaultConverters.classConverter(value, {...info, parent: {type: info.type as Class, decorators: info.decorators}})
-    }
-}
+// export async function customModelConverter(): Promise<ConversionResult> {
+//     if (Mongoose.Types.ObjectId.isValid(value)) {
+//         return new ConversionResult(Mongoose.Types.ObjectId(value))
+//     }
+//     else {
+//         return DefaultConverters.classConverter(value, {...info, parent: {type: info.type as Class, decorators: info.decorators}})
+//     }
+// }
 
 export class MongooseFacility extends DefaultFacility {
     option: MongooseFacilityOption
@@ -209,7 +209,7 @@ export class MongooseFacility extends DefaultFacility {
         generateSchema(collections.map(x => x.type), GlobalMongooseSchema, this.option.schemaGenerator)
         //register custom converter
         app.set({
-            converters: collections.map(x => ({type: x.type , converter: customModelConverter }))
+            //converters: collections.map(x => ({type: x.type , converter: customModelConverter }))
         })
         await Mongoose.connect(this.option.uri, { useNewUrlParser: true })
     }

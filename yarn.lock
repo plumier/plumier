@@ -1350,7 +1350,7 @@
   dependencies:
     "@types/superagent" "*"
 
-"@types/validator@^10.11.0":
+"@types/validator@^10.11.1":
   version "10.11.1"
   resolved "https://registry.yarnpkg.com/@types/validator/-/validator-10.11.1.tgz#76e983ce155261838463b73728856cf8bc628d53"
   integrity sha512-bVhLqvb+5xUNWRFnuuecRVISTvsG6AdhrB2kb/tChgtuTTqARqlQ3rLhOPy8cINZEUB8PkR+goyWF6fWxg4iSw==
@@ -3266,7 +3266,7 @@ form-data@^2.3.1, form-data@~2.3.2:
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
 
-formidable@^1.0.17, formidable@^1.1.1, formidable@^1.2.0:
+formidable@^1.0.17, formidable@^1.1.1, formidable@^1.2.0, formidable@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/formidable/-/formidable-1.2.1.tgz#70fb7ca0290ee6ff961090415f4b3df3d2082659"
   integrity sha512-Fs9VRguL0gqGHkXS5GQiMCr1VhZBxz0JnJs4JmMp/2jL18Fmbzvv7vOFRU+U8TBkHEE/CX1qDXzJplVULgsLeg==
@@ -7467,10 +7467,10 @@ timestring@^6.0.0:
   resolved "https://registry.yarnpkg.com/timestring/-/timestring-6.0.0.tgz#b0c7c331981ecf2066ce88bcfb8ee3ae32e7a0f6"
   integrity sha512-wMctrWD2HZZLuIlchlkE2dfXJh7J2KDI9Dwl+2abPYg0mswQHfOAyQW3jJg1pY5VfttSINZuKcXoB3FGypVklA==
 
-tinspector@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/tinspector/-/tinspector-2.2.1.tgz#9ea41ab5e42d40267fa98a0f0e9a76c2ed79bd35"
-  integrity sha512-K2BIQKbnW8qJK6PzBuWBrlob3gXbf5V8dgK7g1yHTodTJtQsc7ly1Yz9K52oilzGJ7OLVs71/ulIoyxAU9vkRw==
+tinspector@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/tinspector/-/tinspector-2.2.2.tgz#656483d8fc8414ab7c8ef8d0a8c371f1de6a63c8"
+  integrity sha512-FiHNS6Xhnu5mpT+8W5BseAEAGfkUb3f9u1GbRqCoyuj6ysKDIQRUjRScnVRPpQCJDfM0tqpOuLIAvSxl1LLLMQ==
   dependencies:
     reflect-metadata "^0.1.13"
 
@@ -7602,7 +7602,7 @@ ts-node@^8.3.0:
     source-map-support "^0.5.6"
     yn "^3.0.0"
 
-tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
+tslib@^1.10.0, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
@@ -7665,15 +7665,15 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typedconverter@^1.0.0-beta.2:
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/typedconverter/-/typedconverter-1.0.0-beta.2.tgz#88323a5b9943e739335e7ca2f740139886ab1d6e"
-  integrity sha512-7MyfLMf4gnB+JAnJt9Kv68aRuLcIdUVZPvn6V7BlRkCQ+Otc1plfl5hXcRZrEvpIeAuS1HRCNsmvGUOG72qx9w==
+typedconverter@^1.0.0-beta.6:
+  version "1.0.0-beta.6"
+  resolved "https://registry.yarnpkg.com/typedconverter/-/typedconverter-1.0.0-beta.6.tgz#2fef7d8abedd38d8bbc202173ed82813e7b3e41c"
+  integrity sha512-p5YsIJZ9Mrqf2tema/PB+MnFkm2GbQ64wFJWhI+EuF6i0oJf95MyZi8O3mq5nDSAFn4MMMWg4CDyXM4TL0tRnw==
   dependencies:
-    "@types/validator" "^10.11.0"
-    tinspector "^2.2.1"
-    tslib "^1.9.3"
-    validator "^10.11.0"
+    "@types/validator" "^10.11.1"
+    tinspector "^2.2.2"
+    tslib "^1.10.0"
+    validator "^11.0.0"
 
 typescript@^3.5.2:
   version "3.5.2"
@@ -7821,11 +7821,6 @@ validate-npm-package-name@^3.0.0:
   integrity sha1-X6kS2B630MdK/BQN5zF/DKffQ34=
   dependencies:
     builtins "^1.0.3"
-
-validator@^10.11.0:
-  version "10.11.0"
-  resolved "https://registry.yarnpkg.com/validator/-/validator-10.11.0.tgz#003108ea6e9a9874d31ccc9e5006856ccd76b228"
-  integrity sha512-X/p3UZerAIsbBfN/IwahhYaBbY68EN/UQBWHtsbXGT5bfrH/p4NQzUCG1kF/rtKaNpnJ7jAu6NGTdSNtyNIXMw==
 
 validator@^11.0.0:
   version "11.0.0"

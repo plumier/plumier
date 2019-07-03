@@ -90,7 +90,7 @@ describe("File Upload", () => {
         await Supertest(koa.callback())
             .post("/image/upload")
             .attach("file", join(__dirname, "./assets/index.html"))
-            .expect(422, "File index.html size exceeded the maximum size")
+            .expect(422, "File size exceeded the maximum size")
     })
 
     it("Should able to upload array of files", async () => {
@@ -203,9 +203,9 @@ describe("File Upload", () => {
         const koa = await app.initialize()
         await Supertest(koa.callback())
             .post("/image/upload")
-            .attach("file", join(__dirname, "./assets/clock.jpeg"))
-            .attach("file", join(__dirname, "./assets/dice.png"))
-            .attach("file", join(__dirname, "./assets/index.html"))
+            .attach("file1", join(__dirname, "./assets/clock.jpeg"))
+            .attach("file2", join(__dirname, "./assets/dice.png"))
+            .attach("file3", join(__dirname, "./assets/index.html"))
             .expect(422, "Number of files exceeded the maximum allowed")
 
     })

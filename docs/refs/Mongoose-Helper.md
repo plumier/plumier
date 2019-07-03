@@ -137,6 +137,8 @@ Note that the schema generator callback will be called multiple time on each mod
 Example, we will added [timestamp](https://mongoosejs.com/docs/guide.html#timestamps) on each of our models like example below
 
 ```typescript
+import Mongoose from "mongoose" 
+
 new MongooseFacility({
     uri: "mongodb://localhost:27017/test-data",
     schemaGenerator: (def, meta) => {
@@ -148,6 +150,8 @@ new MongooseFacility({
 Above code will apply timestamp to all models. If you want to apply to specific model, you can filter them by using metadata information.
 
 ```typescript
+import Mongoose from "mongoose" 
+
 new MongooseFacility({
     uri: "mongodb://localhost:27017/test-data",
     schemaGenerator: (def, meta) => {
@@ -184,7 +188,7 @@ export class User {
 }
 ```
 
-## POST Form With Relational Data
+<!-- ## POST Form With Relational Data
 Mongoose helper provided custom object converter, so it possible to post relational data from HTML Form by providing the ObjectId of the child model.
 
 ```typescript
@@ -223,4 +227,4 @@ POST /animal/save
 payload:
 {name: "Mimi", images: ["507f191e810c19729de860ea", "507f191e810c19729de239ca"]}
 ```
-
+ -->
