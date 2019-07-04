@@ -1,6 +1,6 @@
 {
   "name": "@plumier/serve-static",
-  "version": "1.0.0-beta.8",
+  "version": "1.0.0-beta.9",
   "description": "Serve static file for Plumier",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,7 +14,7 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumier/core": "1.0.0-beta.8",
+    "@plumier/core": "1.0.0-beta.9",
     "@types/koa-send": "^4.1.1",
     "koa-send": "^5.0.0"
   },
