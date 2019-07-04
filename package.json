@@ -22,7 +22,7 @@
 		"coveralls": "^3.0.3",
 		"del": "^4.0.0",
 		"edit-json-file": "^1.2.1",
-		"jest": "^24.8.0",
+		"jest": "24.5.0",
 		"lerna": "3.14.0",
 		"pre-push": "^0.1.1",
 		"reflect-metadata": "^0.1.13",
