@@ -112,7 +112,7 @@ describe("File Upload", () => {
             .attach("file", join(__dirname, "./assets/index.html"))
             .expect(200)
         const info: FileUploadInfo[] = fn.mock.calls[0][0]
-        expect(info).toMatchObject([{
+        expect(info.sort((a,b) => a.originalName.localeCompare(b.originalName))).toMatchObject([{
             field: 'file',
             mime: 'image/jpeg',
             originalName: 'clock.jpeg',
