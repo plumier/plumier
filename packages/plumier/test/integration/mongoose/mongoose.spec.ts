@@ -448,44 +448,43 @@ describe("Post Relational Data", () => {
     beforeEach(() => clearCache())
     afterEach(async () => await Mongoose.disconnect())
 
-    // it("Should able to send MongoDbId for relational model", async () => {
-
-    //     @collection()
-    //     class Image {
-    //         constructor(
-    //             public name: string
-    //         ) { }
-    //     }
-    //     @collection()
-    //     class Animal {
-    //         constructor(
-    //             public name: string,
-    //             @reflect.array(Image)
-    //             @val.optional()
-    //             public images: Image[]
-    //         ) { }
-    //     }
-    //     const ImageModel = model(Image)
-    //     const AnimalModel = model(Animal)
-    //     class AnimalController {
-    //         @route.post()
-    //         async save(data: Animal) {
-    //             const newly = await new AnimalModel(data).save()
-    //             return newly._id
-    //         }
-    //     }
-    //     const koa = await fixture(AnimalController, [Image, Animal])
-    //     const [image1, image2] = await Promise.all([
-    //         await new ImageModel({ name: "Image1.jpg" }).save(),
-    //         await new ImageModel({ name: "Image2.jpg" }).save()
-    //     ]);
-    //     const response = await supertest(koa.callback())
-    //         .post("/animal/save")
-    //         .send({ name: "Mimi", images: [image1._id, image2._id] })
-    //         .expect(200)
-    //     const result = await AnimalModel.findById(response.body)
-    //         .populate("images")
-    //     expect(result!.images[0].name).toBe("Image1.jpg")
-    //     expect(result!.images[1].name).toBe("Image2.jpg")
-    // })
+    it("Should able to send MongoDbId for relational model", async () => {
+        @collection()
+        class Image {
+            constructor(
+                public name: string
+            ) { }
+        }
+        @collection()
+        class Animal {
+            constructor(
+                public name: string,
+                @reflect.array(Image)
+                @val.optional()
+                public images: Image[]
+            ) { }
+        }
+        const ImageModel = model(Image)
+        const AnimalModel = model(Animal)
+        class AnimalController {
+            @route.post()
+            async save(data: Animal) {
+                const newly = await new AnimalModel(data).save()
+                return newly._id
+            }
+        }
+        const koa = await fixture(AnimalController, [Image, Animal])
+        const [image1, image2] = await Promise.all([
+            await new ImageModel({ name: "Image1.jpg" }).save(),
+            await new ImageModel({ name: "Image2.jpg" }).save()
+        ]);
+        const response = await supertest(koa.callback())
+            .post("/animal/save")
+            .send({ name: "Mimi", images: [image1._id, image2._id] })
+            .expect(200)
+        const result = await AnimalModel.findById(response.body)
+            .populate("images")
+        expect(result!.images[0].name).toBe("Image1.jpg")
+        expect(result!.images[1].name).toBe("Image2.jpg")
+    })
 })

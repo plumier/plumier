@@ -188,7 +188,7 @@ export class User {
 }
 ```
 
-<!-- ## POST Form With Relational Data
+## POST Form With Relational Data
 Mongoose helper provided custom object converter, so it possible to post relational data from HTML Form by providing the ObjectId of the child model.
 
 ```typescript
@@ -227,4 +227,3 @@ POST /animal/save
 payload:
 {name: "Mimi", images: ["507f191e810c19729de860ea", "507f191e810c19729de239ca"]}
 ```
- -->

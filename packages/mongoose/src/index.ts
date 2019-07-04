@@ -20,7 +20,8 @@ import {
     reflect,
     Reflection,
 } from "tinspector"
-import {} from "typedconverter"
+import { VisitorInvocation, Result } from "typedconverter"
+import { safeToString } from 'typedconverter/lib/converter';
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------------ TYPES ------------------------------------ */
@@ -131,7 +132,7 @@ function printAnalysis(analysis: DomainAnalysis[]) {
 /* ------------------------------------------------------------------------------- */
 
 async function isUnique(value: string, target: Class | undefined, field: string) {
-    if(!target) throw new Error(CanNotValidateNonProperty)
+    if (!target) throw new Error(CanNotValidateNonProperty)
     const Model = model(target)
     const condition: { [key: string]: object } = {}
     //case insensitive comparison
@@ -187,6 +188,14 @@ export function getName(opt: ClassReflection | Class) {
 //     }
 // }
 
+function relationToObjectIdVisitor(i: VisitorInvocation): Result {
+    const id = safeToString(i.value)
+    if (Mongoose.Types.ObjectId.isValid(id))
+        return Result.create(Mongoose.Types.ObjectId(id))
+    else
+        return i.proceed()
+}
+
 export class MongooseFacility extends DefaultFacility {
     option: MongooseFacilityOption
     constructor(opts: MongooseFacilityOption) {
@@ -208,9 +217,7 @@ export class MongooseFacility extends DefaultFacility {
         }
         generateSchema(collections.map(x => x.type), GlobalMongooseSchema, this.option.schemaGenerator)
         //register custom converter
-        app.set({
-            //converters: collections.map(x => ({type: x.type , converter: customModelConverter }))
-        })
+        app.set({ typeConverterVisitors: [relationToObjectIdVisitor] })
         await Mongoose.connect(this.option.uri, { useNewUrlParser: true })
     }
 }

@@ -27,6 +27,11 @@ interface AsyncValidatorItem {
     validator: ValidatorFunction
 }
 
+interface AsyncValidatorResult {
+    path: string,
+    messages: string[]
+}
+
 function createVisitor(items: AsyncValidatorItem[]) {
     return (i: tc.VisitorInvocation) => {
         const result = i.proceed();
@@ -50,9 +55,25 @@ tc.val.custom = (val: ValidatorFunction | string) => {
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //
 // --------------------------------------------------------------------- //
+const getName = (path: string) => path.indexOf(".") > -1 ? path.substring(path.lastIndexOf(".") + 1) : path
+
+async function validateAsync(x: AsyncValidatorItem, ctx: Context): Promise<AsyncValidatorResult | undefined> {
+    const name = getName(x.path)
+    const info: ValidatorInfo = { ctx, name, parent: x.parent, route: ctx.route! }
+    if (x.value === undefined || x.value === null) return
+    if (typeof x.validator === "function") {
+        const messages = await x.validator(x.value, info)
+        if (messages) return { path: x.path, messages: [messages] }
+    }
+    else {
+        if (!ctx.config.validators) throw new Error("No validator store found in configuration")
+        if (!ctx.config.validators[x.validator]) throw new Error(`No validation implementation found for ${x.validator}`)
+        const messages = await ctx.config.validators[x.validator](x.value, info)
+        if (messages) return { path: x.path, messages: [messages] }
+    }
+}
 
 async function validate(ctx: Context): Promise<tc.Result> {
-    const getName = (path: string) => path.indexOf(".") > -1 ? path.substring(path.lastIndexOf(".") + 1) : path
     const decsAsync: AsyncValidatorItem[] = []
     const visitors = [createVisitor(decsAsync), ...(ctx.config.typeConverterVisitors || [])]
     const result: any[] = []
@@ -70,21 +91,7 @@ async function validate(ctx: Context): Promise<tc.Result> {
     }
     //async validations
     if (decsAsync.length > 0) {
-        const invalids = await Promise.all(decsAsync.map(async x => {
-            const name = getName(x.path)
-            const info: ValidatorInfo = { ctx, name, parent: x.parent, route: ctx.route! }
-            if(x.value === undefined || x.value === null) return
-            if (typeof x.validator === "function") {
-                const messages = await x.validator(x.value, info)
-                if (messages) return { path: x.path, messages: [messages] }
-            }
-            else {
-                if (!ctx.config.validators) throw new Error("No validator store found in configuration")
-                if (!ctx.config.validators[x.validator]) throw new Error(`No validation implementation found for ${x.validator}`)
-                const messages = await ctx.config.validators[x.validator](x.value, info)
-                if (messages) return { path: x.path, messages: [messages] }
-            }
-        }))
+        const invalids = await Promise.all(decsAsync.map(async x => validateAsync(x, ctx)))
         for (const invalid of invalids) {
             if (invalid) {
                 const msg = issues.find(x => x.path === invalid.path)
