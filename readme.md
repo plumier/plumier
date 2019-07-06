@@ -7,6 +7,11 @@ Delightful Node.js Rest Framework
 [![Greenkeeper badge](https://badges.greenkeeper.io/plumier/plumier.svg)](https://greenkeeper.io/)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
 
+## Blog Posts and Publications
+
+* [Hacker Noon story](https://hackernoon.com/i-spent-a-year-to-reinvent-a-node-js-framework-b3b0b1602ad5) about idea and reasons and how Plumier designed.
+* [Hacker Noon story](https://hackernoon.com/adding-an-auditing-system-into-a-rest-api-4fbb522240ea) about advanced usage of Plumier middleware to perform AOP and metaprogramming
+
 
 ## Motivation
 
@@ -17,9 +22,11 @@ Plumier primarily created for full stack developer who spend more time working o
 ### Lightweight
 Plumier relatively has small code base which make it light and fast. It uses Koa as its core http handler which is quite fast, below is comparison result of Koa, Plumier and Express.
 
-![Benchmarks](https://plumierjs.com/docs/assets/benchmarks.png)
+![image](https://user-images.githubusercontent.com/1106884/60648648-eb245d00-9e72-11e9-96be-292dba18ce25.png)
 
-The benchmark project forked from Fastify benchmark project, you can test it your self [here](https://github.com/ktutnik/benchmarks).
+Version 1.0.0-beta.9 successfully reduce the framework cost, its mean using Plumier is the same as using Koa + Koa Router + Joi stack with all of Plumier features. 
+
+The benchmark script can be found on the [test directory](https://github.com/plumier/plumier/tree/master/packages/plumier/test/benchmark) of this repository. Use `$ lerna run compile && yarn benchmark` to compile and run the benchmark.
 
 ### Flexible
 Almost every part of framework is fully configurable and easy to override. For example plumier route generation system provided flexibility using convention and also configuration.
