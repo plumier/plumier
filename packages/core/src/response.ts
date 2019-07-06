@@ -1,4 +1,4 @@
-import { ActionResult, RedirectActionResult } from '../types';
+import { ActionResult, RedirectActionResult } from './types';
 
 export namespace response {
     export function json(body: any) {

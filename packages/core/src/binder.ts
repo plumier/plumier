@@ -2,7 +2,7 @@ import { IncomingHttpHeaders } from "http"
 import { Context, Request } from "koa"
 import { ParameterReflection } from "tinspector"
 
-import { isCustomClass } from "../common"
+import { isCustomClass } from "./common"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //

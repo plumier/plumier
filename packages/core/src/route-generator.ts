@@ -3,8 +3,8 @@ import { existsSync } from "fs"
 import { isAbsolute, join } from "path"
 import { ClassReflection, MethodReflection, ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
-import { Class, findFilesRecursive, isCustomClass } from "../common"
-import { errorMessage, HttpMethod, RouteInfo } from "../types"
+import { Class, findFilesRecursive, isCustomClass } from "./common"
+import { errorMessage, HttpMethod, RouteInfo } from "./types"
 
 
 // --------------------------------------------------------------------- //

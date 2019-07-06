@@ -1,9 +1,9 @@
 import { Context } from "koa"
 import { decorateParameter, mergeDecorator } from "tinspector"
 
-import { BindingDecorator, HeaderPart, RequestPart } from "../application/binder"
-import { getChildValue } from "../common"
-import { val } from '..';
+import { BindingDecorator, HeaderPart, RequestPart } from "./binder"
+import { getChildValue } from "./common"
+import { val } from '.';
 
 export namespace bind {
 
@@ -93,25 +93,6 @@ export namespace bind {
      */
     export function user() {
         return mergeDecorator(val.optional(), ctxDecorator("state.user"))
-    }
-
-    /**
-     * Bind file parser for multi part file upload. This function required `FileUploadFacility`
-    ```
-    @route.post()
-    async method(@bind.file() file:FileParser){
-        const info = await file.parse()
-    }
-    ```
-     */
-    export function file() {
-        return decorateParameter(<BindingDecorator>{
-            type: "ParameterBinding",
-            process: ctx => {
-                if (!ctx.config.fileParser) throw new Error("No file parser found in configuration")
-                return ctx.config.fileParser(ctx)
-            }
-        })
     }
 
     /**

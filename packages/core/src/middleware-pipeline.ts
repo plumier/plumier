@@ -1,6 +1,6 @@
 import { Context } from "koa"
 
-import { ActionResult, HttpStatusError, Invocation, Middleware, RouteContext } from "../types"
+import { ActionResult, HttpStatusError, Invocation, Middleware, RouteContext } from "./types"
 
 class MiddlewareInvocation implements Invocation {
     constructor(private middleware: Middleware, public context: Context, private next: Invocation) { }

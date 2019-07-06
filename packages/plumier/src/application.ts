@@ -31,7 +31,6 @@ const DefaultConfiguration: Configuration = {
     dependencyResolver: new DefaultDependencyResolver()
 }
 
-
 export class Plumier implements PlumierApplication {
     readonly config: Readonly<PlumierConfiguration>;
     readonly koa: Koa

@@ -1,8 +1,8 @@
 import { decorate, mergeDecorator } from "tinspector"
 import { val, ValidatorDecorator, OptionalValidator } from "typedconverter"
 
-import { AuthorizeCallback, AuthorizeDecorator } from "../application/authorization"
-import { AuthorizeMetadataInfo, errorMessage } from "../types"
+import { AuthorizeCallback, AuthorizeDecorator } from "./authorization"
+import { AuthorizeMetadataInfo, errorMessage } from "./types"
 
 class AuthDecoratorImpl {
     custom(authorize: string | AuthorizeCallback, tag: string = "Custom") {
