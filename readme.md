@@ -15,8 +15,6 @@ Delightful Node.js Rest Framework
 
 ## Motivation
 
-> Read the full story on [Hacker Noon](https://hackernoon.com/i-spent-a-year-to-reinvent-a-node-js-framework-b3b0b1602ad5) about motivation and design behind it created
-
 Plumier primarily created for full stack developer who spend more time working on the UI side and focus on creating a good user experience. Plumier comes with some built-in production-ready features that make creating secure JSON Api fun and easy.
 
 ### Lightweight

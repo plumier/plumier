@@ -66,8 +66,8 @@ async function validateAsync(x: AsyncValidatorItem, ctx: Context): Promise<Async
         if (messages) return { path: x.path, messages: [messages] }
     }
     else {
-        if (!ctx.config.validators) throw new Error("No validator store found in configuration")
-        if (!ctx.config.validators[x.validator]) throw new Error(`No validation implementation found for ${x.validator}`)
+        if (!ctx.config.validators || !ctx.config.validators[x.validator])
+            throw new Error(`No validation implementation found for ${x.validator}`)
         const messages = await ctx.config.validators[x.validator](x.value, info)
         if (messages) return { path: x.path, messages: [messages] }
     }

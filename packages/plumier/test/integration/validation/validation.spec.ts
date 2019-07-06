@@ -425,7 +425,7 @@ describe("Decouple Validation Logic", () => {
 describe("Custom Validation", () => {
 
     it("Should provided correct information for custom validation", async () => {
-        async function customValidator(val:any, info:ValidatorInfo){
+        async function customValidator(val: any, info: ValidatorInfo) {
             expect(info.name).toBe("data")
             expect(info.parent).toBeUndefined()
             expect(info.route).toMatchSnapshot()
@@ -438,8 +438,32 @@ describe("Custom Validation", () => {
         const koa = await fixture(UserController).initialize()
         await supertest(koa.callback())
             .post("/user/save")
-            .send({data: "abc"})
+            .send({ data: "abc" })
             .expect(200)
+    })
+
+    it("Should able to combine TypedConverter validator and custom validator", async () => {
+        function longerThanTwenty() {
+            return val.custom(async x => x.length > 20 ? undefined : "String must be longer than 20")
+        }
+        @reflect.parameterProperties()
+        class EmailOnly {
+            constructor(
+                @val.email()
+                @longerThanTwenty()
+                public email: string
+            ) { }
+        }
+        class UserController {
+            @route.post()
+            save(data: EmailOnly) { }
+        }
+
+        const koa = await fixture(UserController).initialize()
+        await supertest(koa.callback())
+            .post("/user/save")
+            .send({ email: "lorem ipsum" })
+            .expect(422, [{ path: ["data", "email"], messages: ['Invalid email address', 'String must be longer than 20'] }])
     })
 
 
@@ -466,6 +490,34 @@ describe("Custom Validation", () => {
             .post("/user/save")
             .send({ age: "12" })
             .expect(422, [{ path: ["data", "age"], messages: ["Only 18+ allowed"] }])
+        await supertest(koa.callback())
+            .post("/user/save")
+            .send({ age: "20" })
+            .expect(200)
+    })
+
+    it("Should throw proper error if no validator store provided", async () => {
+        function only18Plus() {
+            return val.custom("18+only")
+        }
+        @reflect.parameterProperties()
+        class EmailOnly {
+            constructor(
+                @only18Plus()
+                public age: number
+            ) { }
+        }
+        class UserController {
+            @route.post()
+            save(data: EmailOnly) { }
+        }
+
+        const koa = await fixture(UserController).initialize()
+        koa.on("error", () => {})
+        await supertest(koa.callback())
+            .post("/user/save")
+            .send({ age: "12" })
+            .expect(500)
     })
 
     it("Should validate using custom validation", async () => {
@@ -491,25 +543,4 @@ describe("Custom Validation", () => {
             .send({ password: "abcde", confirmPassword: "efghi" })
             .expect(422, [{ path: ["data", "confirmPassword"], messages: ["Password doesn't match"] }])
     })
-
-    // it("Should able to skip validation", async () => {
-    //     @domain()
-    //     class ClientModel {
-    //         constructor(
-    //             @val.skip()
-    //             @val.email()
-    //             public email: string,
-    //         ) { }
-    //     }
-    //     class UserController {
-    //         @route.post()
-    //         save(data: ClientModel) { }
-    //     }
-
-    //     const koa = await fixture(UserController).initialize()
-    //     await supertest(koa.callback())
-    //         .post("/user/save")
-    //         .send({ email: "lorem ipsum" })
-    //         .expect(200)
-    // })
 })
