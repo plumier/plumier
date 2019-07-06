@@ -57,7 +57,7 @@ declare module "@plumier/core" {
     }
 
     interface Configuration {
-        fileParser: (ctx:Context) => FileParser
+        fileParser?: (ctx:Context) => FileParser
     }
 }
 
