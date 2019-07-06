@@ -91,7 +91,8 @@ async function validate(ctx: Context): Promise<tc.Result> {
     }
     //async validations
     if (decsAsync.length > 0) {
-        for await (const invalid of decsAsync.map(async x => validateAsync(x, ctx))) {
+        const results = await Promise.all(decsAsync.map(async x => validateAsync(x, ctx)))
+        for (const invalid of results) {
             if (invalid) {
                 const msg = issues.find(x => x.path === invalid.path)
                 if (msg) msg.messages.push(...invalid.messages)
