@@ -1,8 +1,8 @@
 import { Context } from "koa"
 import * as tc from "typedconverter"
 
-import { Class } from "../common"
-import { HttpStatus } from "../http-status"
+import { Class } from "./common"
+import { HttpStatus } from "./http-status"
 import {
     ActionResult,
     Configuration,
@@ -11,7 +11,7 @@ import {
     ValidatorDecorator,
     ValidatorFunction,
     ValidatorInfo,
-} from "../types"
+} from "./types"
 import { binder } from "./binder"
 import { decorateProperty } from 'tinspector';
 
@@ -91,8 +91,7 @@ async function validate(ctx: Context): Promise<tc.Result> {
     }
     //async validations
     if (decsAsync.length > 0) {
-        const invalids = await Promise.all(decsAsync.map(async x => validateAsync(x, ctx)))
-        for (const invalid of invalids) {
+        for await (const invalid of decsAsync.map(async x => validateAsync(x, ctx))) {
             if (invalid) {
                 const msg = issues.find(x => x.path === invalid.path)
                 if (msg) msg.messages.push(...invalid.messages)

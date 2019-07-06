@@ -1,8 +1,8 @@
 import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
-import { Class, isCustomClass } from "../common"
-import { HttpStatus } from "../http-status"
-import { ActionResult, HttpStatusError, Invocation, Middleware, RouteInfo, AuthorizeMetadataInfo } from "../types"
+import { Class, isCustomClass } from "./common"
+import { HttpStatus } from "./http-status"
+import { ActionResult, HttpStatusError, Invocation, Middleware, RouteInfo, AuthorizeMetadataInfo } from "./types"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //

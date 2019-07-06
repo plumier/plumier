@@ -1,17 +1,17 @@
 import { val } from "typedconverter"
 export { val }
-export { AuthorizeCallback, AuthorizeMiddleware, RoleField, updateRouteAccess } from "./application/authorization";
-export { HeaderPart, RequestPart } from "./application/binder";
-export { pipe } from "./application/middleware-pipeline";
-export { response } from "./application/response";
-export { analyzeRoutes, generateRoutes, printAnalysis } from "./application/route-generator";
-export { router } from "./application/router";
-export {  ValidationMiddleware } from "./application/validator";
+export { AuthorizeCallback, AuthorizeMiddleware, RoleField, updateRouteAccess } from "./authorization";
+export { HeaderPart, RequestPart, BindingDecorator } from "./binder";
+export { pipe } from "./middleware-pipeline";
+export { response } from "./response";
+export { analyzeRoutes, generateRoutes, printAnalysis } from "./route-generator";
+export { router } from "./router";
+export {  ValidationMiddleware } from "./validator";
 export { Class, consoleLog, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass } from "./common";
-export { AuthDecoratorImpl, authorize } from "./configuration/authorize";
-export { bind } from "./configuration/bind";
-export { domain, middleware } from "./configuration/decorator";
-export { route, RouteDecoratorImpl } from "./configuration/route";
+export { AuthDecoratorImpl, authorize } from "./decorator.authorize";
+export { bind } from "./decorator.bind";
+export { domain, middleware } from "./decorator";
+export { route, RouteDecoratorImpl } from "./decorator.route";
 export { HttpStatus } from "./http-status";
 export {
     ActionResult, Application, AuthorizeMetadataInfo, AuthorizeStore, Configuration, DefaultFacility,

@@ -311,11 +311,6 @@ export interface Configuration {
     typeConverterVisitors?: VisitorExtension[],
 
     /**
-     * Multi part form file parser implementation
-     */
-    fileParser?: (ctx: Context) => FileParser,
-
-    /**
      * Key-value pair to store validator logic. Separate decorator and validation logic
      */
     validators?: ValidatorStore

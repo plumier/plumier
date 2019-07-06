@@ -1,7 +1,7 @@
 import { decorateClass, decorateMethod } from "tinspector"
 
-import { HttpMethod } from "../types"
-import { IgnoreDecorator, RootDecorator, RouteDecorator } from "../application/route-generator"
+import { HttpMethod } from "./types"
+import { IgnoreDecorator, RootDecorator, RouteDecorator } from "./route-generator"
 
 
 class RouteDecoratorImpl {

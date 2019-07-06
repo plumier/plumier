@@ -2,7 +2,7 @@ import { Context } from "koa"
 import ptr from "path-to-regexp"
 import { useCache } from "tinspector"
 
-import { Configuration, Middleware, MiddlewareUtil, RouteContext, RouteInfo } from "../types"
+import { Configuration, Middleware, MiddlewareUtil, RouteContext, RouteInfo } from "./types"
 import { ActionInvocation, NotFoundActionInvocation, pipe } from "./middleware-pipeline"
 
 // --------------------------------------------------------------------- //

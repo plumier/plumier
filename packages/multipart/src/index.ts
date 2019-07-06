@@ -1,5 +1,7 @@
 import {
+    bind,
     DefaultFacility,
+    BindingDecorator,
     errorMessage,
     FileParser,
     FileUploadInfo,
@@ -13,6 +15,7 @@ import { basename, dirname, extname, join } from "path"
 import { promisify } from "util"
 import { IncomingForm, File } from "formidable"
 import { IncomingMessage } from 'http';
+import { decorateParameter } from 'tinspector';
 
 
 // --------------------------------------------------------------------- //
@@ -37,6 +40,36 @@ interface FileUploadOption {
     maxFiles?: number;
 }
 
+
+declare module "@plumier/core" {
+    namespace bind {
+
+        /**
+         * Bind file parser for multi part file upload. This function required `FileUploadFacility`
+        ```
+        @route.post()
+        async method(@bind.file() file:FileParser){
+            const info = await file.parse()
+        }
+        ```
+         */
+        export function file(): (...args: any[]) => void
+    }
+
+    interface Configuration {
+        fileParser: (ctx:Context) => FileParser
+    }
+}
+
+bind.file = () => {
+    return decorateParameter(<BindingDecorator>{
+        type: "ParameterBinding",
+        process: ctx => {
+            if (!ctx.config.fileParser) throw new Error("No file parser found in configuration")
+            return ctx.config.fileParser(ctx)
+        }
+    })
+}
 
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
@@ -99,7 +132,7 @@ async function formidableAsync(req: IncomingMessage, maxSize: number) {
 // ---------------------------- FILE PARSER ---------------------------- //
 // --------------------------------------------------------------------- //
 
-class BusboyParser implements FileParser {
+class FormidableParser implements FileParser {
     constructor(private context: Context, private option: FileUploadOption) { }
 
     async save(subDirectory?: string): Promise<FileUploadInfo[]> {
@@ -129,12 +162,12 @@ class BusboyParser implements FileParser {
 }
 
 /**
- * Add multi part file upload facility
+ * Add multipart file upload facility
  */
 export class MultiPartFacility extends DefaultFacility {
     constructor(private option: FileUploadOption) { super() }
 
     setup(app: Readonly<PlumierApplication>) {
-        Object.assign(app.config, { fileParser: (ctx: Context) => new BusboyParser(ctx, this.option) })
+        Object.assign(app.config, { fileParser: (ctx: Context) => new FormidableParser(ctx, this.option) })
     }
 }

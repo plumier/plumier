@@ -61,21 +61,21 @@ describe("File Upload", () => {
         removeSync(join(__dirname, "./upload/path/"))
     })
 
-    // it("Should return error 500 if no file parser provided", async () => {
-    //     class ImageController {
-    //         @route.post()
-    //         async upload(@bind.file() parser: FileParser) {
-    //             const files = await parser.save()
-    //         }
-    //     }
-    //     const app = fixture(ImageController)
-    //     const koa = await app.initialize()
-    //     koa.on("error", () => { })
-    //     await Supertest(koa.callback())
-    //         .post("/image/upload")
-    //         .attach("file", join(__dirname, "./assets/index.html"))
-    //         .expect(500)
-    // })
+    it("Should return error 500 if no file parser provided", async () => {
+        class ImageController {
+            @route.post()
+            async upload(@bind.file() parser: FileParser) {
+                const files = await parser.save()
+            }
+        }
+        const app = fixture(ImageController)
+        const koa = await app.initialize()
+        koa.on("error", () => { })
+        await Supertest(koa.callback())
+            .post("/image/upload")
+            .attach("file", join(__dirname, "./assets/index.html"))
+            .expect(500)
+    })
 
     it("Should able to limit file size", async () => {
         class ImageController {
@@ -210,22 +210,4 @@ describe("File Upload", () => {
 
     })
 
-    // it("Should reject promise on busboy error", async () => {
-    //     class ImageController {
-    //         @route.post()
-    //         async upload(@bind.file() parser: any) {
-    //             const files = parser.save()
-    //             parser.busboy.emit("error", new Error())
-    //             await files
-    //         }
-    //     }
-    //     const app = fixture(ImageController)
-    //     app.set(new MultiPartFacility({ uploadPath: join(__dirname, "./upload") }))
-    //     const koa = await app.initialize()
-    //     koa.on("error", () => { })
-    //     await Supertest(koa.callback())
-    //         .post("/image/upload")
-    //         .attach("file", join(__dirname, "./assets/index.html"))
-    //         .expect(500)
-    // })
 })
