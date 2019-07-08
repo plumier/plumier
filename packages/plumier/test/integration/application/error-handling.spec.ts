@@ -28,7 +28,7 @@ describe("Error Handling", () => {
         const koa = await fixture(AnimalController).initialize()
         await Supertest(koa.callback())
             .get("/animal/get")
-            .expect(400, "Invalid data")
+            .expect(400, { status: 400, message: "Invalid data" })
     })
 
     it("Should able to throw general Error from inside global middleware", async () => {

@@ -27,10 +27,10 @@ describe("JwtAuth", () => {
 
             await Supertest(app.callback())
                 .get("/animal/get")
-                .expect(403, "Forbidden")
+                .expect(403, { status: 403, message: "Forbidden" })
             await Supertest(app.callback())
                 .post("/animal/save")
-                .expect(403, "Forbidden")
+                .expect(403, { status: 403, message: "Forbidden" })
         })
 
         it("Should able to access route decorated with @authorize.public()", async () => {
@@ -486,7 +486,7 @@ describe("JwtAuth", () => {
                 .post("/animal/save")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .send({ id: "123", name: "Mimi", deceased: "Yes" })
-                .expect(401, "Unauthorized to populate parameter paths (id, deceased)")
+                .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (id, deceased)" })
         })
 
         it("Should be able to pass authorization by provided undefined", async () => {
@@ -514,7 +514,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should throw error if @authorize.public() used for parameter authorization", () => {
-            try{
+            try {
                 class AnimalController {
                     @route.post()
                     save(name: string,
@@ -523,7 +523,7 @@ describe("JwtAuth", () => {
                         deceased: boolean | undefined) { return "Hello" }
                 }
             }
-            catch(e){
+            catch (e) {
                 expect(e.message).toContain("PLUM1008")
             }
         })
@@ -553,7 +553,7 @@ describe("JwtAuth", () => {
                 .post("/animal/save")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .send({ id: "123", name: "Mimi", deceased: "Yes" })
-                .expect(401, "Unauthorized to populate parameter paths (data.id, data.deceased)")
+                .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id, data.deceased)" })
         })
 
         it("Should be able to pass authorization by provided undefined", async () => {
@@ -594,7 +594,7 @@ describe("JwtAuth", () => {
                 .post("/animal/save")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .send({ id: "123", name: "Mimi", deceased: "Yes" })
-                .expect(401, "Unauthorized to populate parameter paths (data.id, data.deceased)")
+                .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id, data.deceased)" })
 
             await Supertest(app.callback())
                 .post("/animal/save")
@@ -628,7 +628,7 @@ describe("JwtAuth", () => {
                 .post("/animal/save")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .send([{ id: "123", name: "Mimi", deceased: "Yes" }])
-                .expect(401, "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)")
+                .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)" })
         })
 
         it("Should be able to pass authorization by provided undefined", async () => {
@@ -670,7 +670,7 @@ describe("JwtAuth", () => {
                 .post("/animal/save")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .send([{ id: "123", name: "Mimi", deceased: "Yes" }])
-                .expect(401, "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)")
+                .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)" })
         })
 
         it("Should check for parameter authorization even if the controller access is public", async () => {
@@ -688,7 +688,7 @@ describe("JwtAuth", () => {
                 .post("/animal/save")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .send([{ id: "123", name: "Mimi", deceased: "Yes" }])
-                .expect(401, "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)")
+                .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)" })
         })
 
         it("Should check for parameter authorization even if the controller access is public", async () => {
@@ -705,7 +705,7 @@ describe("JwtAuth", () => {
                 .post("/animal/save")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .send([{ id: "123", name: "Mimi", deceased: "Yes" }])
-                .expect(401, "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)")
+                .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)" })
         })
     })
 
@@ -761,7 +761,7 @@ describe("JwtAuth", () => {
                 .post("/animal/save")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .send({ id: 20, createdAt: "2018-1-1", deleted: "YES", name: "Mimi", deceased: "Yes" })
-                .expect(401, "Unauthorized to populate parameter paths (data.id, data.createdAt, data.deleted)")
+                .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id, data.createdAt, data.deleted)" })
         })
 
     })
@@ -797,7 +797,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/save?email=ketut@gmail.com")
                 .set("Authorization", `Bearer ${OTHER_USER_TOKEN}`)
-                .expect(401, "Unauthorized")
+                .expect(401, { status: 401, message: "Unauthorized" })
         })
     })
 

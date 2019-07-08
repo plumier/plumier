@@ -2,7 +2,7 @@ import { Context } from "koa"
 import ptr from "path-to-regexp"
 import { useCache } from "tinspector"
 
-import { Configuration, Middleware, MiddlewareUtil, RouteContext, RouteInfo } from "./types"
+import { Configuration, Middleware, MiddlewareUtil, RouteContext, RouteInfo, ValidationError, HttpStatusError } from "./types"
 import { ActionInvocation, NotFoundActionInvocation, pipe } from "./middleware-pipeline"
 
 // --------------------------------------------------------------------- //
@@ -47,6 +47,11 @@ function getMiddleware(global: Middleware[], route: RouteInfo) {
     return result
 }
 
+function sendError(ctx: Context, status: number, message: any) {
+    ctx.status = status
+    ctx.body = { status, message }
+}
+
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- ROUTER ---------------------------------------- */
 /* ------------------------------------------------------------------------------- */
@@ -57,18 +62,28 @@ function router(infos: RouteInfo[], globalMiddleware: Middleware[]) {
     const getMatcherCached = useCache(matchCache, getMatcher, (info, ctx) => `${ctx.method}${ctx.path}`)
     const getMiddlewareCached = useCache(middlewareCache, getMiddleware, (global, route) => route.url)
     return async (ctx: Context) => {
-        const match = getMatcherCached(infos, ctx)
-        if (match) {
-            for (const key in match.query) {
-                const element = match.query[key];
-                ctx.request.query[key] = element
+        try {
+            const match = getMatcherCached(infos, ctx)
+            if (match) {
+                for (const key in match.query) {
+                    const element = match.query[key];
+                    ctx.request.query[key] = element
+                }
+                ctx.route = match.route
+                const middlewares = getMiddlewareCached(globalMiddleware, match.route)
+                await pipe(middlewares, ctx, new ActionInvocation(<RouteContext>ctx))
             }
-            ctx.route = match.route
-            const middlewares = getMiddlewareCached(globalMiddleware, match.route)
-            await pipe(middlewares, ctx, new ActionInvocation(<RouteContext>ctx))
+            else {
+                await pipe(globalMiddleware.slice(0), ctx, new NotFoundActionInvocation(ctx))
+            }
         }
-        else {
-            await pipe(globalMiddleware.slice(0), ctx, new NotFoundActionInvocation(ctx))
+        catch (e) {
+            if (e instanceof ValidationError) 
+                sendError(ctx, e.status, e.issues)
+            else if (e instanceof HttpStatusError) 
+                sendError(ctx, e.status, e.message)
+            else
+                ctx.throw(e)
         }
     }
 }

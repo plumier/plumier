@@ -1,5 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Custom Validation Should able to combine TypedConverter validator and custom validator 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Invalid email address",
+        "String must be longer than 20",
+      ],
+      "path": Array [
+        "data",
+        "email",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
 exports[`Custom Validation Should provided correct information for custom validation 1`] = `
 Object {
   "action": Object {
@@ -73,5 +91,157 @@ Object {
   },
   "method": "post",
   "url": "/user/save",
+}
+`;
+
+exports[`Custom Validation Should validate using custom validation 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Password doesn't match",
+      ],
+      "path": Array [
+        "data",
+        "confirmPassword",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Custom Validation Should validate using decouple logic 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Only 18+ allowed",
+      ],
+      "path": Array [
+        "data",
+        "age",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Decouple Validation Logic Should validate using decouple logic from RestfulApiFacility 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Only 18+ allowed",
+      ],
+      "path": Array [
+        "data",
+        "age",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Decouple Validation Logic Should validate using decouple logic from WebApiFacility 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Only 18+ allowed",
+      ],
+      "path": Array [
+        "data",
+        "age",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Decouple Validation Logic Should validate using decouple logic from setting 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Only 18+ allowed",
+      ],
+      "path": Array [
+        "data",
+        "age",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Validation Parameter should be mandatory by default 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": Array [
+        "email",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Validation Should validate model with correct path 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": Array [
+        "model",
+        "deceased",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Validation Should validate nested model with correct path 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": Array [
+        "model",
+        "tag",
+        "id",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Validation Should validate parameter 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Invalid email address",
+      ],
+      "path": Array [
+        "email",
+      ],
+    },
+  ],
+  "status": 422,
 }
 `;

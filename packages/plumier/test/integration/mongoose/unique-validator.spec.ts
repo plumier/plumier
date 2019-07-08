@@ -11,7 +11,7 @@ async function setup<T extends object>({ controller, domain, initUser, testUser 
             model: [domain],
             uri: "mongodb://localhost:27017/test-data"
         })).initialize()
-    koa.on("error", () => {})
+    koa.on("error", () => { })
     //setup user
     const UserModel = model(domain)
     await UserModel.deleteMany({})
@@ -43,7 +43,7 @@ describe("unique validator", () => {
         const user = { name: "Ketut", email: "ketut@gmail.com" }
         const res = await setup({ controller: UserController, domain: User, initUser: user, testUser: user })
         expect(res.status).toBe(422)
-        expect(res.body).toEqual([{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }])
+        expect(res.body).toEqual({ status: 422, message: [{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }] })
     })
 
     it("Should return invalid if data already exist", async () => {
@@ -66,7 +66,7 @@ describe("unique validator", () => {
         const user = { name: "Ketut", email: "ketut@gmail.com" }
         const res = await setup({ controller: UserController, domain: User, initUser: user, testUser: user })
         expect(res.status).toBe(422)
-        expect(res.body).toEqual([{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }])
+        expect(res.body).toEqual({ status: 422, message: [{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }] })
     })
 
     it("Should check data with case insensitive", async () => {
@@ -88,7 +88,7 @@ describe("unique validator", () => {
             testUser: { name: "Ketut", email: "KETUT@gmail.com" }
         })
         expect(res.status).toBe(422)
-        expect(res.body).toEqual([{ messages: ["KETUT@gmail.com already exists"], path: ["user", "email"] }])
+        expect(res.body).toEqual({ status: 422, message: [{ messages: ["KETUT@gmail.com already exists"], path: ["user", "email"] }] })
     })
 
     it("Should return valid if data not exist", async () => {
@@ -164,7 +164,7 @@ describe("unique validator", () => {
         }
         class UserController {
             @route.post()
-            save(@val.unique() email:string) { }
+            save(@val.unique() email: string) { }
         }
         const res = await setup({
             controller: UserController, domain: User,

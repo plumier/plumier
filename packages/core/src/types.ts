@@ -245,6 +245,7 @@ export type ValidatorFunction = (value: string, info: ValidatorInfo) => Promise<
 export type ValidatorStore = { [key: string]: ValidatorFunction }
 
 
+
 // --------------------------------------------------------------------- //
 // --------------------------- AUTHORIZATION --------------------------- //
 // --------------------------------------------------------------------- // 
@@ -335,6 +336,13 @@ export class HttpStatusError extends Error {
     constructor(public status: HttpStatus, message?: string) {
         super(message)
         Object.setPrototypeOf(this, HttpStatusError.prototype);
+    }
+}
+
+export class ValidationError extends HttpStatusError {
+    constructor(public issues: {path:string[], messages: string[]}[]) {
+        super(HttpStatus.UnprocessableEntity, JSON.stringify(issues))
+        Object.setPrototypeOf(this, ValidationError.prototype);
     }
 }
 

@@ -90,7 +90,7 @@ describe("File Upload", () => {
         await Supertest(koa.callback())
             .post("/image/upload")
             .attach("file", join(__dirname, "./assets/index.html"))
-            .expect(422, "File size exceeded the maximum size")
+            .expect(422, { status: 422, message: "File size exceeded the maximum size" })
     })
 
     it("Should able to upload array of files", async () => {
@@ -112,7 +112,7 @@ describe("File Upload", () => {
             .attach("file", join(__dirname, "./assets/index.html"))
             .expect(200)
         const info: FileUploadInfo[] = fn.mock.calls[0][0]
-        expect(info.sort((a,b) => a.originalName.localeCompare(b.originalName))).toMatchObject([{
+        expect(info.sort((a, b) => a.originalName.localeCompare(b.originalName))).toMatchObject([{
             field: 'file',
             mime: 'image/jpeg',
             originalName: 'clock.jpeg',
@@ -150,7 +150,7 @@ describe("File Upload", () => {
             .attach("file3", join(__dirname, "./assets/index.html"))
             .expect(200)
         const info: FileUploadInfo[] = fn.mock.calls[0][0]
-        expect(info.sort((a,b) => a.originalName.localeCompare(b.originalName))).toMatchObject([{
+        expect(info.sort((a, b) => a.originalName.localeCompare(b.originalName))).toMatchObject([{
             field: 'file1',
             mime: 'image/jpeg',
             originalName: 'clock.jpeg',
@@ -186,7 +186,7 @@ describe("File Upload", () => {
             .attach("file", join(__dirname, "./assets/clock.jpeg"))
             .attach("file", join(__dirname, "./assets/dice.png"))
             .attach("file", join(__dirname, "./assets/index.html"))
-            .expect(422, "Number of files exceeded the maximum allowed")
+            .expect(422, { status: 422, message: "Number of files exceeded the maximum allowed" })
     })
 
     it("Should able to limit number of files", async () => {
@@ -206,7 +206,7 @@ describe("File Upload", () => {
             .attach("file1", join(__dirname, "./assets/clock.jpeg"))
             .attach("file2", join(__dirname, "./assets/dice.png"))
             .attach("file3", join(__dirname, "./assets/index.html"))
-            .expect(422, "Number of files exceeded the maximum allowed")
+            .expect(422, { status: 422, message: "Number of files exceeded the maximum allowed" })
 
     })
 

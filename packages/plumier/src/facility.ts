@@ -29,17 +29,6 @@ export class WebApiFacility extends DefaultFacility {
     }) { super() }
 
     setup(app: Readonly<PlumierApplication>) {
-        app.koa.use(async (ctx, next) => {
-            try {
-                await next()
-            }
-            catch (e) {
-                if (e instanceof HttpStatusError)
-                    ctx.throw(e.status, e)
-                else
-                    ctx.throw(500, e)
-            }
-        })
         app.koa.use(BodyParser(this.opt && this.opt.bodyParser))
         app.koa.use(Cors(this.opt && this.opt.cors))
         if (this.opt && this.opt.controller)
