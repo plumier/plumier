@@ -65,8 +65,7 @@ bind.file = () => {
     return decorateParameter(<BindingDecorator>{
         type: "ParameterBinding",
         process: ctx => {
-            if (!ctx.config.fileParser) throw new Error("No file parser found in configuration")
-            return ctx.config.fileParser(ctx)
+            return ctx.config.fileParser!(ctx)
         }
     })
 }

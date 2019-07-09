@@ -61,21 +61,21 @@ describe("File Upload", () => {
         removeSync(join(__dirname, "./upload/path/"))
     })
 
-    it("Should return error 500 if no file parser provided", async () => {
-        class ImageController {
-            @route.post()
-            async upload(@bind.file() parser: FileParser) {
-                const files = await parser.save()
-            }
-        }
-        const app = fixture(ImageController)
-        const koa = await app.initialize()
-        koa.on("error", () => { })
-        await Supertest(koa.callback())
-            .post("/image/upload")
-            .attach("file", join(__dirname, "./assets/index.html"))
-            .expect(500)
-    })
+    // it.skip("Should return error 500 if no file parser provided", async () => {
+    //     class ImageController {
+    //         @route.post()
+    //         async upload(@bind.file() parser: FileParser) {
+    //             const files = await parser.save()
+    //         }
+    //     }
+    //     const app = fixture(ImageController)
+    //     const koa = await app.initialize()
+    //     koa.on("error", () => { })
+    //     await Supertest(koa.callback())
+    //         .post("/image/upload")
+    //         .attach("file", join(__dirname, "./assets/index.html"))
+    //         .expect(500)
+    // })
 
     it("Should able to limit file size", async () => {
         class ImageController {
