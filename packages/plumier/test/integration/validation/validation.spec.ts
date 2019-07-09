@@ -13,11 +13,8 @@ describe("Validation", () => {
         const koa = await fixture(AnimalController).initialize()
         const result = await Supertest(koa.callback())
             .get("/animal/get")
-            .expect(422, [
-                {
-                    "messages": ["Required"],
-                    "path": ["email"]
-                }])
+            .expect(422)
+        expect(result.body).toMatchSnapshot()
     })
 
     it("Should validate model with correct path", async () => {
@@ -37,11 +34,8 @@ describe("Validation", () => {
         let result = await Supertest(koa.callback())
             .post("/animal/get")
             .send({ id: "123", name: "Mimi" })
-            .expect(422, [
-                {
-                    "messages": ["Required"],
-                    "path": ["model", "deceased"]
-                }])
+            .expect(422)
+        expect(result.body).toMatchSnapshot()
     })
 
     it("Should validate nested model with correct path", async () => {
@@ -65,11 +59,8 @@ describe("Validation", () => {
         let result = await Supertest(koa.callback())
             .post("/animal/get")
             .send({ id: "123", name: "Mimi", tag: { name: "The Tag" } })
-            .expect(422, [
-                {
-                    "messages": ["Required"],
-                    "path": ["model", "tag", "id"]
-                }])
+            .expect(422)
+        expect(result.body).toMatchSnapshot()
     })
 
     it("Should validate parameter", async () => {
@@ -80,11 +71,7 @@ describe("Validation", () => {
         const result = await Supertest(koa.callback())
             .get("/animal/get?email=hello")
             .expect(422)
-        expect(result.body).toMatchObject([
-            {
-                "messages": ["Invalid email address"],
-                "path": ["email"]
-            }])
+        expect(result.body).toMatchSnapshot()
     })
 
     it("Should skip optional validation if provided undefined", async () => {
@@ -177,11 +164,7 @@ describe("Decouple Validation Logic", () => {
             .post("/person/save")
             .send({ age: 9 })
             .expect(422)
-        expect(result.body).toMatchObject([
-            {
-                messages: ["Only 18+ allowed"],
-                path: ["data", "age"]
-            }])
+        expect(result.body).toMatchSnapshot()
     })
 
     it("Should validate using decouple logic from WebApiFacility", async () => {
@@ -193,11 +176,7 @@ describe("Decouple Validation Logic", () => {
             .post("/person/save")
             .send({ age: 9 })
             .expect(422)
-        expect(result.body).toMatchObject([
-            {
-                messages: ["Only 18+ allowed"],
-                path: ["data", "age"]
-            }])
+        expect(result.body).toMatchSnapshot()
     })
 
     it("Should validate using decouple logic from RestfulApiFacility", async () => {
@@ -209,11 +188,7 @@ describe("Decouple Validation Logic", () => {
             .post("/person/save")
             .send({ age: 9 })
             .expect(422)
-        expect(result.body).toMatchObject([
-            {
-                messages: ["Only 18+ allowed"],
-                path: ["data", "age"]
-            }])
+        expect(result.body).toMatchSnapshot()
     })
 })
 
@@ -460,10 +435,11 @@ describe("Custom Validation", () => {
         }
 
         const koa = await fixture(UserController).initialize()
-        await supertest(koa.callback())
+        const result = await supertest(koa.callback())
             .post("/user/save")
             .send({ email: "lorem ipsum" })
-            .expect(422, [{ path: ["data", "email"], messages: ['Invalid email address', 'String must be longer than 20'] }])
+            .expect(422)
+        expect(result.body).toMatchSnapshot()
     })
 
 
@@ -486,14 +462,15 @@ describe("Custom Validation", () => {
         const koa = await fixture(UserController, {
             validators: { "18+only": async val => parseInt(val) > 18 ? undefined : "Only 18+ allowed" }
         }).initialize()
-        await supertest(koa.callback())
+        const result = await supertest(koa.callback())
             .post("/user/save")
             .send({ age: "12" })
-            .expect(422, [{ path: ["data", "age"], messages: ["Only 18+ allowed"] }])
+            .expect(422)
         await supertest(koa.callback())
             .post("/user/save")
             .send({ age: "20" })
             .expect(200)
+        expect(result.body).toMatchSnapshot()
     })
 
     it("Should throw proper error if no validator store provided", async () => {
@@ -538,9 +515,10 @@ describe("Custom Validation", () => {
         }
 
         const koa = await fixture(UserController).initialize()
-        await supertest(koa.callback())
+        const result = await supertest(koa.callback())
             .post("/user/save")
             .send({ password: "abcde", confirmPassword: "efghi" })
-            .expect(422, [{ path: ["data", "confirmPassword"], messages: ["Password doesn't match"] }])
+            .expect(422)
+        expect(result.body).toMatchSnapshot()
     })
 })

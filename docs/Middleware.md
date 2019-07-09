@@ -72,6 +72,8 @@ Interception occurs before the next execution proceeded. For example the authori
 where the interception occur before proceeded. 
 
 ```typescript
+import { Middleware, Invocation, ActionResult, HttpStatusError } from "plumier"
+
 class AdminOnlyMiddleware implements Middleware {
     execute(next: Readonly<Invocation>): Promise<ActionResult> {
         if(next.context.state.user.role !== "Admin")
@@ -90,6 +92,8 @@ Interception occurs after the next execution proceeded. For example we need to m
 based on http status.
 
 ```typescript
+import { Middleware, Invocation, ActionResult } from "plumier"
+
 class ModifyResponseMiddleware implements Middleware {
     async execute(next: Readonly<Invocation>): Promise<ActionResult> {
         const result = await next.proceed()
@@ -106,6 +110,7 @@ class ModifyResponseMiddleware implements Middleware {
 Interception occurs before and after the next execution. For example we need to log the response time of every request.
 
 ```typescript 
+import { Middleware, Invocation, ActionResult } from "plumier"
 
 class ResponseTimeMiddleware implements Middleware {
     async execute(next: Readonly<Invocation>): Promise<ActionResult> {

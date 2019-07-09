@@ -11,6 +11,7 @@ import {
     ValidatorDecorator,
     ValidatorFunction,
     ValidatorInfo,
+    ValidationError,
 } from "./types"
 import { binder } from "./binder"
 import { decorateProperty } from 'tinspector';
@@ -117,9 +118,8 @@ class ValidationMiddleware implements Middleware {
         if (!ctx.route) return invocation.proceed();
         const result = await validate(invocation.context);
         if (result.issues)
-            return new ActionResult(result.issues
-                .map(x => ({ path: x.path.split("."), messages: x.messages })),
-                HttpStatus.UnprocessableEntity);
+            throw new ValidationError(result.issues
+                .map(x => ({ path: x.path.split("."), messages: x.messages })));
         (ctx as any).parameters = result.value
         return invocation.proceed()
     }

@@ -4,6 +4,7 @@
       "overview",
       "entry-point",
       "controller",
+      "action-result",
       "middleware",
       "facility"
     ],
@@ -13,6 +14,7 @@
       "refs/validation",
       "refs/converters",
       "refs/authorization",
+      "refs/error-handling",
       "refs/serve-static",
       "refs/file-upload",
       "refs/mongoose-helper",

@@ -17,5 +17,6 @@ export {
     ActionResult, Application, AuthorizeMetadataInfo, AuthorizeStore, Configuration, DefaultFacility,
     DependencyResolver, Facility, FileParser, FileUploadInfo, HttpMethod, HttpStatusError, Invocation, KoaMiddleware,
     Middleware, MiddlewareDecorator, MiddlewareUtil, PlumierApplication, PlumierConfiguration, RedirectActionResult,
-    RouteContext, RouteInfo, ValidatorDecorator, ValidatorFunction, ValidatorInfo, ValidatorStore, errorMessage
+    RouteContext, RouteInfo, ValidatorDecorator, ValidatorFunction, ValidatorInfo, ValidatorStore, ValidationError, 
+    errorMessage
 } from "./types";

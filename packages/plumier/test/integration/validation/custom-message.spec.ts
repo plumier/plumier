@@ -27,7 +27,8 @@ async function harness({ validator, type, testValue }: { validator: (...args: an
         .post("/dummy/save")
         .send({ property: testValue })
         .expect(422)
-    return result.body
+    expect(result.body.status).toBe(422)
+    return result.body.message
 }
 
 describe("Validator Decorator Tests", () => {

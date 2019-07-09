@@ -8,6 +8,15 @@ Controller is a group of similar functionalities, for example `UserController` c
 ## Controller Naming
 Plumier doesn't strictly limit the controller name, but controller must has name that end with `Controller`. This is useful when you have a non controller class inside `controller/` directory. Controller naming best practice is using plural word, such as `AnimalsController`, `UsersController` 
 
+## Parameters
+Controller parameter can be bound into some Http Request part automatically by using [Parameter Binding](./refs/parameter-binding). Plumier provided automatic type conversion based on parameter data type and can do some validation to sanitize http request part populated into controller parameters.
+
+## Return Value
+Controller can return JavaScript object that will be formatted into JSON result. For more advance result that require setting http status or response header can be done using [`ActionResult`](./action-result).
+
+## Throwing Errors
+Any uncaught error will automatically handled by Plumier and translated into http response with status 500. You can throw `HttpStatusError` to provide custom error message with some http status that will be rendered into proper JSON response with appropriate status.
+
 ## Registration
 By default controller registration done by traverse through all files contains Controller class inside `controller/` directory.
 
@@ -24,7 +33,7 @@ Registration above will search for controllers classes inside `controller/` dire
 
 Registration can be specified from `WebApiFacility` or `RestfulApiFacility` by providing one of below:
 
-### Absolute directory
+#### Absolute directory
 
 ```typescript
 new Plumier()
@@ -33,7 +42,7 @@ new Plumier()
     .then(koa => koa.listen(8000))
 ```
 
-### Relative directory
+#### Relative directory
 
 ```typescript
 new Plumier()
@@ -42,7 +51,7 @@ new Plumier()
     .then(koa => koa.listen(8000))
 ```
 
-### Controller class
+#### Controller class
 
 ```typescript
 new Plumier()
@@ -51,7 +60,7 @@ new Plumier()
     .then(koa => koa.listen(8000))
 ```
 
-### Array of controller class 
+#### Array of controller class 
 
 ```typescript
 new Plumier()
