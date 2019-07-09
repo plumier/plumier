@@ -1,8 +1,9 @@
-import { HttpStatusError, middleware } from "@plumier/core"
+import { HttpStatusError, middleware, Class, ActionResult, route } from "@plumier/core"
 import { join } from "path"
 import Supertest from "supertest"
 
 import { fixture } from "../../helper"
+import Plumier, { WebApiFacility } from '@plumier/plumier';
 
 
 describe("Error Handling", () => {
@@ -139,5 +140,53 @@ describe("Error Handling", () => {
     it("Should show correct error if provided controller file not found", async () => {
         const koa = fixture(join(__dirname, "controller/animal-controller.ts"))
         expect(koa.initialize()).rejects.toThrow("PLUM1004")
+    })
+})
+
+
+function errorFixture(controller: Class) {
+    return new Plumier()
+        .use({
+            execute: async i => {
+                try {
+                    return await i.proceed()
+                } catch (e) {
+                    return new ActionResult({
+                        customError: {
+                            status: e.status,
+                            message: e.message
+                        }
+                    }, e.status)
+                }
+            }
+        })
+        .set({ mode: "production" })
+        .set(new WebApiFacility({ controller }))
+        .initialize()
+}
+
+describe("Global Error Handling", () => {
+    it("Should able handle HttpStatusError properly", async () => {
+        class AnimalController {
+            @route.get()
+            index() { throw new HttpStatusError(400, "Unable to convert") }
+        }
+        const koa = await errorFixture(AnimalController)
+        const result = await Supertest(koa.callback())
+            .get("/animal/index")
+            .expect(400)
+        expect(result.body).toMatchSnapshot()
+    })
+
+    it("Should able handle Validation Error properly", async () => {
+        class AnimalController {
+            @route.get()
+            index(page: number) { return { page } }
+        }
+        const koa = await errorFixture(AnimalController)
+        const result = await Supertest(koa.callback())
+            .get("/animal/index?page=aloha")
+            .expect(422)
+        expect(result.body).toMatchSnapshot()
     })
 })

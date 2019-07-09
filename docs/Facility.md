@@ -29,7 +29,7 @@ For example the `WebApiFacility` facility is like below:
 ```typescript 
 import Cors from "@koa/cors"
 import BodyParser from "koa-bodyparser"
-import {DefaultFacility} from "plumier"
+import { DefaultFacility, PlumierApplication } from "plumier"
 
 export class WebApiFacility extends DefaultFacility {
     setup(app: Readonly<PlumierApplication>) {
@@ -56,11 +56,12 @@ In some case if you want to configure Koa, you can do it in facility.
 ```typescript 
 import Cors from "@koa/cors"
 import BodyParser from "koa-bodyparser"
+import { DefaultFacility, PlumierApplication } from "plumier"
 
-export class WebApiFacility extends Facility {
-    async setup(app: Readonly<PlumierApplication>) {
-        const koa = app.koa 
+export class WebApiFacility extends DefaultFacility {
+    async setup({ koa }: Readonly<PlumierApplication>) {
         //do something with the Koa instance
+        koa.use(<koa middleware>)
     }
 }
 ```

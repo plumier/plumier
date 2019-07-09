@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Global Error Handling Should able handle HttpStatusError properly 1`] = `
+Object {
+  "customError": Object {
+    "message": "Unable to convert",
+    "status": 400,
+  },
+}
+`;
+
+exports[`Global Error Handling Should able handle Validation Error properly 1`] = `
+Object {
+  "customError": Object {
+    "message": "[{\\"path\\":[\\"page\\"],\\"messages\\":[\\"Unable to convert \\\\\\"aloha\\\\\\" into Number\\"]}]",
+    "status": 422,
+  },
+}
+`;
