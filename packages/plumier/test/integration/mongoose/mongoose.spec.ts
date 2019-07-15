@@ -434,7 +434,7 @@ describe("Analysis", () => {
 
 })
 
-describe("Post Relational Data", () => {
+describe("Automatically replace mongodb id into ObjectId on populate data", () => {
     function fixture(controller: Class, model: Class[]) {
         const app = new Plumier()
         app.set(new WebApiFacility({ controller }))
@@ -448,7 +448,7 @@ describe("Post Relational Data", () => {
     beforeEach(() => clearCache())
     afterEach(async () => await Mongoose.disconnect())
 
-    it("Should able to send MongoDbId for relational model", async () => {
+    it("Should work properly on Array", async () => {
         @collection()
         class Image {
             constructor(
@@ -486,5 +486,63 @@ describe("Post Relational Data", () => {
             .populate("images")
         expect(result!.images[0].name).toBe("Image1.jpg")
         expect(result!.images[1].name).toBe("Image2.jpg")
+    })
+
+    it("Should work properly on nested object", async () => {
+        @collection()
+        class Image {
+            constructor(
+                public name: string
+            ) { }
+        }
+        @collection()
+        class Animal {
+            constructor(
+                public name: string,
+                public image: Image
+            ) { }
+        }
+        const ImageModel = model(Image)
+        const AnimalModel = model(Animal)
+        class AnimalController {
+            @route.post()
+            async save(data: Animal) {
+                const newly = await new AnimalModel(data).save()
+                return newly._id
+            }
+        }
+        const koa = await fixture(AnimalController, [Image, Animal])
+        const image1 = await new ImageModel({ name: "Image1.jpg" }).save()
+
+        const response = await supertest(koa.callback())
+            .post("/animal/save")
+            .send({ name: "Mimi", image: image1._id })
+            .expect(200)
+        const result = await AnimalModel.findById(response.body)
+            .populate("image")
+        expect(result!.image.name).toBe("Image1.jpg")
+    })
+
+    it("Should not convert non relational data", async () => {
+        @collection()
+        class Image {
+            constructor(
+                public name: string
+            ) { }
+        }
+        const ImageModel = model(Image)
+        const fn = jest.fn()
+        class AnimalController {
+            @route.get(":id")
+            async get(id:string) {
+                fn(typeof id)
+            }
+        }
+        const koa = await fixture(AnimalController, [Image])
+        
+        await supertest(koa.callback())
+            .get("/animal/" + Mongoose.Types.ObjectId())
+            .expect(200)
+        expect(fn.mock.calls[0][0]).toBe("string")
     })
 })
