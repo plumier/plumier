@@ -176,21 +176,9 @@ export function getName(opt: ClassReflection | Class) {
     return decorator && decorator.alias || meta.name
 }
 
-/**
- * Custom model converter to allow relational data using mongoose ObjectId
- */
-// export async function customModelConverter(): Promise<ConversionResult> {
-//     if (Mongoose.Types.ObjectId.isValid(value)) {
-//         return new ConversionResult(Mongoose.Types.ObjectId(value))
-//     }
-//     else {
-//         return DefaultConverters.classConverter(value, {...info, parent: {type: info.type as Class, decorators: info.decorators}})
-//     }
-// }
-
 function relationToObjectIdVisitor(i: VisitorInvocation): Result {
     const id = safeToString(i.value)
-    if (Mongoose.Types.ObjectId.isValid(id))
+    if (Mongoose.Types.ObjectId.isValid(id) && isCustomClass(i.type))
         return Result.create(Mongoose.Types.ObjectId(id))
     else
         return i.proceed()
