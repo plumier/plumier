@@ -20,7 +20,25 @@ Plumier primarily created for full stack developer who spend more time working o
 ### Lightweight
 Plumier relatively has small code base which make it light and fast. It uses Koa as its core http handler which is quite fast, below is comparison result of Koa, Plumier and Express.
 
-![image](https://user-images.githubusercontent.com/1106884/61584400-8d358c00-ab79-11e9-87fa-c4fe9a988b6d.png)
+```
+GET method benchmark starting...
+
+Server       Base         Method         Req/s  Cost (%)
+plumier      koa          GET         33624.00     -0.06
+koa                       GET         33602.19      0.00
+express                   GET         17688.37      0.00
+nest         express      GET         16932.91      4.27
+loopback     express      GET          5174.61     70.75
+
+POST method benchmark starting...
+
+Server       Base         Method         Req/s  Cost (%)
+koa                       POST        12218.37      0.00
+plumier      koa          POST        11196.55      8.36
+express                   POST         9543.46      0.00
+nest         express      POST         6814.64     28.59
+loopback     express      POST         3108.91     67.42
+```
 
 Version 1.0.0-beta.9 successfully reduce the framework cost, its mean using Plumier is the same as using Koa + Koa Router + Joi stack with all of Plumier features. 
 
