@@ -20,11 +20,11 @@ Plumier primarily created for full stack developer who spend more time working o
 ### Lightweight
 Plumier relatively has small code base which make it light and fast. It uses Koa as its core http handler which is quite fast, below is comparison result of Koa, Plumier and Express.
 
-![image](https://user-images.githubusercontent.com/1106884/60648648-eb245d00-9e72-11e9-96be-292dba18ce25.png)
+![image](https://user-images.githubusercontent.com/1106884/61584400-8d358c00-ab79-11e9-87fa-c4fe9a988b6d.png)
 
 Version 1.0.0-beta.9 successfully reduce the framework cost, its mean using Plumier is the same as using Koa + Koa Router + Joi stack with all of Plumier features. 
 
-The benchmark script can be found on the [test directory](https://github.com/plumier/plumier/tree/master/packages/plumier/test/benchmark) of this repository. Use `$ lerna run compile && yarn benchmark` to compile and run the benchmark.
+The benchmark script can be found [here](https://github.com/ktutnik/full-stack-benchmarks).
 
 ### Flexible
 Almost every part of framework is fully configurable and easy to override. For example plumier route generation system provided flexibility using convention and also configuration.
