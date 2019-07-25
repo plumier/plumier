@@ -1,7 +1,7 @@
+import { sign } from "jsonwebtoken"
 import { join } from "path"
 
-import { benchmark, BenchmarkOption } from "./lib"
-import { sign } from 'jsonwebtoken';
+import { BenchmarkOption } from "./lib"
 
 export const secret = "lorem ipsum dolor sit amet"
 export const simplePostBody = { email: "ketut.s@gmail.com", displayName: "Ketut Susrama", age: "41" }
@@ -12,83 +12,31 @@ const defaultOption = {
     silent: true,
     env: { NODE_ENV: "production" }
 }
-const koa: BenchmarkOption = { ...defaultOption, path: join(__dirname, "server/koa") }
-const koaJwt: BenchmarkOption = { ...defaultOption, path: join(__dirname, "server/koa-jwt") }
-const plumier: BenchmarkOption = { ...defaultOption, path: join(__dirname, "server/plumier") }
-const plumierJwt: BenchmarkOption = { ...defaultOption, path: join(__dirname, "server/plumier-jwt") }
-const express: BenchmarkOption = { ...defaultOption, path: join(__dirname, "server/express") }
-const expressJwt: BenchmarkOption = { ...defaultOption, path: join(__dirname, "server/express-jwt") }
-export const options: BenchmarkOption[] = [
-    {
-        ...koa,
-        method: "GET",
-        title: "Koa + Koa Router",
-    },
-    {
-        ...plumier,
-        method: "GET",
-        title: "Built-in Router",
-    },
-    {
-        ...express,
-        method: "GET",
-        title: "Built-in router",
-    },
-    {
-        ...koa,
-        title: "Joi Validation",
-        method: "POST",
-        body: JSON.stringify(simplePostBody),
-        headers: {
-            "Content-Type": "application/json",
-        }
-    },
-    {
-        ...plumier,
-        title: "Built-in Validation",
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(simplePostBody)
-    },
-    {
-        ...express,
-        title: "Joi Validation",
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(simplePostBody)
-    },
-    // {
-    //     ...koaJwt,
-    //     title: "JWT Authorization",
-    //     method: "POST",
-    //     body: JSON.stringify({ ...simplePostBody, role: "Admin" }),
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //         Authorization: `Bearer ${adminToken}`
-    //     }
-    // },
-    // {
-    //     ...plumierJwt,
-    //     title: "JWT Parameter Authorization",
-    //     method: "POST",
-    //     body: JSON.stringify({ ...simplePostBody, role: "Admin" }),
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //         Authorization: `Bearer ${adminToken}`
-    //     }
-    // },
-    // {
-    //     ...expressJwt,
-    //     title: "JWT Authorization",
-    //     method: "POST",
-    //     body: JSON.stringify({ ...simplePostBody, role: "Admin" }),
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //         Authorization: `Bearer ${adminToken}`
-    //     }
-    // }
-];
+const getOption = <BenchmarkOption>{ ...defaultOption, method: "GET" }
+const postOption = <BenchmarkOption>{
+    ...defaultOption, method: "POST",
+    body: JSON.stringify(simplePostBody),
+    headers: {
+        "Content-Type": "application/json",
+    }
+}
+const jwtOption = <BenchmarkOption>{
+    ...defaultOption, method: "POST",
+    body: JSON.stringify({ ...simplePostBody, role: "Admin" }),
+    headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${adminToken}`
+    }
+}
+
+const servers = [
+    "express",
+    "koa",
+    "plumier",
+]
+
+export const options = [
+    ...servers.map(x => ({...getOption, path: join(__dirname, "server", x)})),
+    ...servers.map(x => ({...postOption, path: join(__dirname, "server", x)})),
+    ...servers.map(x => ({...jwtOption, path: join(__dirname, "server", `${x}-jwt`)})),
+]
