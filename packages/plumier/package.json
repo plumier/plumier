@@ -52,7 +52,7 @@
     "jsonwebtoken": "^8.5.1",
     "koa-better-body": "^3.0.4",
     "koa-router": "^7.4.0",
-    "rimraf": "^2.6.3",
+    "rimraf": "^3.0.0",
     "supertest": "^4.0.2",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.3"
