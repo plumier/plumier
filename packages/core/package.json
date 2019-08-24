@@ -40,6 +40,6 @@
   },
   "gitHead": "9d69b5621b7e2e777818e5e36c13ecba0c8d8204",
   "devDependencies": {
-    "upath": "^1.1.0"
+    "upath": "^1.1.2"
   }
 }
