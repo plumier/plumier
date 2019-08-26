@@ -23,6 +23,5 @@
   "homepage": "https://plumierjs.com",
   "publishConfig": {
     "access": "public"
-  },
-  "gitHead": "9d69b5621b7e2e777818e5e36c13ecba0c8d8204"
+  }
 }
