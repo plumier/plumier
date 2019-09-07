@@ -1,7 +1,7 @@
 import { val } from "typedconverter"
 export { val }
 export { AuthorizeCallback, AuthorizeMiddleware, RoleField, updateRouteAccess } from "./authorization";
-export { HeaderPart, RequestPart, BindingDecorator } from "./binder";
+export { HeaderPart, RequestPart, BindingDecorator, binder } from "./binder";
 export { pipe } from "./middleware-pipeline";
 export { response } from "./response";
 export { analyzeRoutes, generateRoutes, printAnalysis } from "./route-generator";
