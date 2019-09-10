@@ -10,7 +10,7 @@ import {
     ValidationError,
     middleware,
 } from "@plumier/core"
-import Axios, {AxiosError} from "axios"
+import Axios, { AxiosError } from "axios"
 import { Context } from "koa"
 import { decorateProperty, mergeDecorator } from "tinspector"
 import * as tc from "typedconverter"
@@ -62,14 +62,18 @@ export class SocialAuthMiddleware implements Middleware {
     }
 
     protected async exchange(code: string, redirectUri: string): Promise<string> {
-        const response = await Axios.post<{ access_token: string }>(this.option.tokenEndPoint, 
+        const response = await Axios.post<{ access_token: string }>(this.option.tokenEndPoint,
             {
                 client_id: this.option.clientId, redirect_uri: redirectUri,
-                client_secret: this.option.clientSecret, 
+                client_secret: this.option.clientSecret,
                 //required by google
                 grant_type: "authorization_code",
                 code
-            })
+            }, {
+            headers: {
+                Accept: 'application/json',
+            },
+        })
         return response.data.access_token;
     }
 
@@ -86,12 +90,12 @@ export class SocialAuthMiddleware implements Middleware {
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
         const req = invocation.context.request;
         if (req.query.code) {
-            try{
+            try {
                 const token = await this.exchange(req.query.code, req.origin + req.path)
                 const profile = await this.getProfile(token)
                 this.bindProfile(profile, invocation.context)
             }
-            catch(e){
+            catch (e) {
                 throw new HttpStatusError(500, JSON.stringify(e.response.data))
             }
         }

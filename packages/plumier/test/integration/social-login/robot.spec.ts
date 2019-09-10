@@ -1,9 +1,9 @@
-import { FacebookProfile } from "@plumier/social-login"
+import { FacebookProfile, GithubProfile, GitLabProfile } from "@plumier/social-login"
 import { Server } from "http"
 import Plumier, { WebApiFacility } from "plumier"
 import puppeteer, { Browser } from "puppeteer"
 
-import { fb, google } from "./config"
+import { fb, google, github, gitlab } from "./config"
 
 describe("Social Login Using Robot", () => {
     let server: Server;
@@ -45,6 +45,29 @@ describe("Social Login Using Robot", () => {
         await page.waitForNavigation({waitUntil: "networkidle0"})
         const json: FacebookProfile = await page.evaluate(() => JSON.parse(document.querySelector("body")!.innerText))
         expect(json.id).toBe("115265112982540663763")
+        expect(json.name).toBe("Plumier Tester")
+    }, 20000)
+
+    it("Should able to login with github", async () => {
+        const page = (await browser.pages())[0]
+        await page.goto("http://localhost:8000/github/login")
+        await page.type("input[name=login]", github.email)
+        await page.type("input[name=password]", github.password)
+        await page.click("input[name=commit]")
+        await page.waitForNavigation({waitUntil: "networkidle0"})
+        const json: GithubProfile = await page.evaluate(() => JSON.parse(document.querySelector("body")!.innerText))
+        expect(json.id).toBe(55014506)
+        expect(json.name).toBe("Plumier Tester")
+    }, 20000)
+
+    it("Should able to login with gitlab", async () => {
+        const page = (await browser.pages())[0]
+        await page.goto("http://localhost:8000/gitlab/login")
+        await page.type("#user_login", gitlab.email)
+        await page.type("#user_password", gitlab.password)
+        await page.click("input[name=commit]")
+        const json: GitLabProfile = await page.evaluate(() => JSON.parse(document.querySelector("body")!.innerText))
+        expect(json.id).toBe(4580019)
         expect(json.name).toBe("Plumier Tester")
     }, 20000)
 })

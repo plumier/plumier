@@ -8,5 +8,7 @@ export function oAuthCallback(option: SocialAuthProvider) {
 
 export { GoogleProvider, GoogleProfile } from "./provider/google"
 export { FacebookProvider, FacebookProfile } from "./provider/facebook"
+export { GithubProvider, GithubProfile } from "./provider/github"
+export { GitLabProvider, GitLabProfile } from "./provider/gitlab"
 export { SocialAuthMiddleware, SocialAuthProvider } from "./middleware"
 
