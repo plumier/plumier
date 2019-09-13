@@ -6,9 +6,8 @@ export function oAuthCallback(option: SocialAuthProvider) {
     return middleware.use(new SocialAuthMiddleware(option))
 }
 
-export { GoogleProvider, GoogleProfile } from "./provider/google"
-export { FacebookProvider, FacebookProfile } from "./provider/facebook"
-export { GithubProvider, GithubProfile } from "./provider/github"
-export { GitLabProvider, GitLabProfile } from "./provider/gitlab"
-export { SocialAuthMiddleware, SocialAuthProvider } from "./middleware"
-
+export { GoogleProvider, GoogleLoginStatus, GoogleProfile } from "./provider/google"
+export { FacebookProvider, FacebookLoginStatus, FacebookProfile } from "./provider/facebook"
+export { GitHubProvider, GitHubLoginStatus, GitHubProfile } from "./provider/github"
+export { GitLabProvider, GitLabLoginStatus, GitLabProfile } from "./provider/gitlab"
+export { SocialAuthMiddleware, SocialLoginStatus, SocialAuthProvider } from "./middleware"

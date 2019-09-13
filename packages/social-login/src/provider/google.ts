@@ -1,5 +1,5 @@
-import { SocialAuthProvider } from "../middleware"
-import { domain } from '@plumier/core';
+import { SocialAuthProvider, SocialLoginStatus } from "../middleware"
+import { domain, val } from '@plumier/core';
 
 /*
 Dialog: 
@@ -35,6 +35,17 @@ export class GoogleProfile {
         public name: string,
         public picture: string,
     ) { }
+}
+
+@domain() 
+export class GoogleLoginStatus implements SocialLoginStatus<GoogleProfile> {
+    constructor(
+        public status: "Success" | "Error",
+        @val.optional()
+        public error?: any,
+        @val.optional()
+        public data?: GoogleProfile 
+    ){}
 }
 
 export class GoogleProvider implements SocialAuthProvider {

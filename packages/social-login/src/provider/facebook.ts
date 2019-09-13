@@ -1,5 +1,5 @@
-import { SocialAuthProvider } from "../middleware"
-import { domain } from '@plumier/core';
+import { SocialAuthProvider, SocialLoginStatus } from "../middleware"
+import { domain, val } from '@plumier/core';
 
 /*
 OAUTH DIALOG
@@ -24,6 +24,17 @@ export class FacebookProfile {
             }
         }
     ) { }
+}
+
+@domain() 
+export class FacebookLoginStatus implements SocialLoginStatus<FacebookProfile> {
+    constructor(
+        public status: "Success" | "Error",
+        @val.optional()
+        public error?: any,
+        @val.optional()
+        public data?: FacebookProfile 
+    ){}
 }
 
 export class FacebookProvider implements SocialAuthProvider {

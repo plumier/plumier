@@ -1,22 +1,17 @@
-import {
-    ActionResult,
-    bind,
-    BindingDecorator,
-    HttpStatus,
-    HttpStatusError,
-    Invocation,
-    Middleware,
-    val,
-    ValidationError,
-    middleware,
-} from "@plumier/core"
-import Axios, { AxiosError } from "axios"
+import { ActionResult, bind, BindingDecorator, Invocation, Middleware, val, ValidationError } from "@plumier/core"
+import Axios from "axios"
 import { Context } from "koa"
 import { decorateProperty, mergeDecorator } from "tinspector"
 import * as tc from "typedconverter"
 
 
-const ProfileParameterBinding = "ProfileParameterBinding"
+const LoginStatusParameterBinding = "LoginStatusParameterBinding"
+
+export interface SocialLoginStatus<T = any> {
+    status: "Success" | "Error",
+    error?: any,
+    data?: T
+}
 
 export interface SocialAuthProvider {
     tokenEndPoint: string
@@ -28,29 +23,29 @@ export interface SocialAuthProvider {
 
 declare module "@plumier/core" {
     namespace bind {
-        export function profile(): (target: any, name: string, index: number) => void
+        export function loginStatus(): (target: any, name: string, index: number) => void
     }
 }
 
-bind.profile = () => {
+bind.loginStatus = () => {
     return mergeDecorator(decorateProperty(<BindingDecorator>{
         type: "ParameterBinding", process: () => undefined,
-        name: ProfileParameterBinding
+        name: LoginStatusParameterBinding
     }), val.optional())
 }
 
 export class SocialAuthMiddleware implements Middleware {
     constructor(private option: SocialAuthProvider) { }
 
-    private bindProfile(value: any, ctx: Context) {
+    private bindProfile(value: SocialLoginStatus<any>, ctx: Context) {
         /**
          * parameter binding occur in the higher middleware so its must be 
          * injected manually
          */
         for (const [idx, paramMeta] of ctx.route!.action.parameters.entries()) {
             for (const decorator of paramMeta.decorators) {
-                if (decorator.type === "ParameterBinding" && decorator.name === ProfileParameterBinding) {
-                    const result = tc.convert(value, { type: paramMeta.type, path: paramMeta.name })
+                if (decorator.type === "ParameterBinding" && decorator.name === LoginStatusParameterBinding) {
+                    const result = tc.validate(value, { type: paramMeta.type, path: paramMeta.name })
                     if (!result.issues)
                         ctx.parameters![idx] = result.value
                     else
@@ -92,15 +87,20 @@ export class SocialAuthMiddleware implements Middleware {
         if (req.query.code) {
             try {
                 const token = await this.exchange(req.query.code, req.origin + req.path)
-                const profile = await this.getProfile(token)
-                this.bindProfile(profile, invocation.context)
+                const data = await this.getProfile(token)
+                this.bindProfile({ status: "Success", data }, invocation.context)
             }
             catch (e) {
-                throw new HttpStatusError(500, JSON.stringify(e.response.data))
+                if (e.response)
+                    this.bindProfile({ status: "Error", error: e.response.data }, invocation.context)
+                else if (e instanceof ValidationError)
+                    this.bindProfile({ status: "Error", error: e.issues }, invocation.context)
+                else
+                    this.bindProfile({ status: "Error", error: { message: e.message } }, invocation.context)
             }
         }
         else {
-            throw new HttpStatusError(HttpStatus.UnprocessableEntity, "Invalid OAuth parameters")
+            this.bindProfile({ status: "Error", error: { message: "Authorization code is required" } }, invocation.context)
         }
         return invocation.proceed()
     }

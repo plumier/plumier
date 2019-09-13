@@ -1,5 +1,5 @@
-import { SocialAuthProvider } from "../middleware"
-import { domain } from '@plumier/core';
+import { SocialAuthProvider, SocialLoginStatus } from "../middleware"
+import { domain, val } from '@plumier/core';
 
 /*
 Dialog: 
@@ -39,6 +39,18 @@ export class GitLabProfile {
         public external: boolean,
         public private_profile: boolean
     ) { }
+}
+
+
+@domain() 
+export class GitLabLoginStatus implements SocialLoginStatus<GitLabProfile> {
+    constructor(
+        public status: "Success" | "Error",
+        @val.optional()
+        public error?: any,
+        @val.optional()
+        public data?: GitLabProfile 
+    ){}
 }
 
 export class GitLabProvider implements SocialAuthProvider {

@@ -1,4 +1,4 @@
-import { FacebookProfile, FacebookProvider, oAuthCallback } from "@plumier/social-login"
+import { FacebookLoginStatus, FacebookProvider, oAuthCallback } from "@plumier/social-login"
 import { bind, response, route } from "plumier"
 import qs from "querystring"
 
@@ -18,7 +18,7 @@ export class FacebookController {
     }
 
     @oAuthCallback(new FacebookProvider(fb.appId, fb.appSecret))
-    callback(@bind.profile() profile: FacebookProfile) {
+    callback(@bind.loginStatus() profile: FacebookLoginStatus) {
         return profile
     }
 }

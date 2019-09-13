@@ -1,4 +1,4 @@
-import { GitLabProfile, GitLabProvider, oAuthCallback } from "@plumier/social-login"
+import { GitLabProfile, GitLabProvider, oAuthCallback, GitLabLoginStatus } from "@plumier/social-login"
 import { bind, response, route } from "plumier"
 import qs from "querystring"
 
@@ -19,7 +19,7 @@ export class GitLabController {
     }
 
     @oAuthCallback(new GitLabProvider(gitlab.appId, gitlab.appSecret))
-    callback(@bind.profile() profile: GitLabProfile) {
+    callback(@bind.loginStatus() profile: GitLabLoginStatus) {
         return profile
     }
 }

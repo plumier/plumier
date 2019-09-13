@@ -1,4 +1,4 @@
-import { GoogleProfile, GoogleProvider, oAuthCallback } from "@plumier/social-login"
+import { GoogleProfile, GoogleProvider, oAuthCallback, GitLabLoginStatus, GoogleLoginStatus } from "@plumier/social-login"
 import { bind, response, route } from "plumier"
 import qs from "querystring"
 
@@ -22,7 +22,7 @@ export class GoogleController {
     }
 
     @oAuthCallback(new GoogleProvider(google.appId, google.appSecret))
-    callback(@bind.profile() profile: GoogleProfile) {
+    callback(@bind.loginStatus() profile: GoogleLoginStatus) {
         return profile
     }
 }

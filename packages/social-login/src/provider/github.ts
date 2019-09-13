@@ -1,5 +1,5 @@
-import { SocialAuthProvider } from "../middleware"
-import { domain } from '@plumier/core';
+import { SocialAuthProvider, SocialLoginStatus } from "../middleware"
+import { domain, val } from '@plumier/core';
 
 /*
 Dialog: 
@@ -8,12 +8,10 @@ https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#1-
 
 SETUP APPLICATION:
 https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/
-
-
 */
 
 @domain()
-export class GithubProfile {
+export class GitHubProfile {
     constructor(
         public html_url: string,
         public id: number,
@@ -35,7 +33,19 @@ export class GithubProfile {
     ) { }
 }
 
-export class GithubProvider implements SocialAuthProvider {
+
+@domain() 
+export class GitHubLoginStatus implements SocialLoginStatus<GitHubProfile> {
+    constructor(
+        public status: "Success" | "Error",
+        @val.optional()
+        public error?: any,
+        @val.optional()
+        public data?: GitHubProfile 
+    ){}
+}
+
+export class GitHubProvider implements SocialAuthProvider {
     tokenEndPoint = "https://github.com/login/oauth/access_token"
     profileEndPoint = "https://api.github.com/user"
 

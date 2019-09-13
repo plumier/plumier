@@ -1,4 +1,4 @@
-import { GithubProfile, GithubProvider, oAuthCallback } from "@plumier/social-login"
+import { GitHubLoginStatus, GitHubProvider, oAuthCallback } from "@plumier/social-login"
 import { bind, response, route } from "plumier"
 import qs from "querystring"
 
@@ -17,8 +17,8 @@ export class GithubController {
         return response.redirect(dialog)
     }
 
-    @oAuthCallback(new GithubProvider(github.appId, github.appSecret))
-    callback(@bind.profile() profile: GithubProfile) {
+    @oAuthCallback(new GitHubProvider(github.appId, github.appSecret))
+    callback(@bind.loginStatus() profile: GitHubLoginStatus) {
         return profile
     }
 }
