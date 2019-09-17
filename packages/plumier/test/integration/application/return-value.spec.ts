@@ -69,7 +69,7 @@ describe("Return value", () => {
         class AnimalController {
             method() {
                 return new ActionResult("Hello world!")
-                    .setHeader("x-api-key", ["YOUR_SECRETE_API_KEY"])
+                    .setHeader("x-api-key", "YOUR_SECRETE_API_KEY")
             }
         }
         const app = await fixture(AnimalController).initialize()

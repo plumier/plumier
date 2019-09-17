@@ -13,10 +13,10 @@ export class ActionResult {
     static fromContext(ctx: Context) {
         return new ActionResult(ctx.body, ctx.status)
     }
-    private readonly headers: { [key: string]: string[] } = {}
+    private readonly headers: { [key: string]: string | string[] } = {}
     constructor(public body?: any, public status?: number) { }
 
-    setHeader(key: string, value: string[]) {
+    setHeader(key: string, value: string | string[]) {
         this.headers[key] = value;
         return this
     }

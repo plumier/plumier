@@ -26,4 +26,26 @@ describe("Redirect Action Result", () => {
                 expect(resp.header.location).toBe("/animal/hello")
             })
     })
+
+    it("Should be able to set array value on setHeader", async () => {
+        class AnimalController {
+            @route.get()
+            index() {
+                return response
+                .json({foo: "bar"})
+                .setHeader('set-cookie',["foo=bar;","message=hello;"])
+            }
+        }
+        const plumier = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set({ controller: AnimalController })
+            .set({ mode: "production" })
+            .initialize()
+        await supertest(plumier.callback())
+            .get("/animal/index")
+            .expect(200)
+            .expect((resp:supertest.Response) => {
+                expect(resp.header['set-cookie'].length).toBe(2)
+            })
+    })
 })
