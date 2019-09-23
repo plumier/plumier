@@ -67,13 +67,13 @@ declare namespace NodeJS {
 By adding above property, TypeScript will be able to provide intellisense for the `DB_URI` on the `process.env.DB_URI`
 
 ## Create Database Migration
-Start configuring migration by adding `knexfile.ts` in the  root project directory, and type code below:
+Start configuring migration by adding `knexfile.ts` in the root project directory, and type code below:
 
 ```typescript
 import { Config } from "knex";
 import dotenv from "dotenv"
 
-dotenv.load()
+dotenv.config()
 
 export const configuration: Config = {
     client: 'mysql2',
