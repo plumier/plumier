@@ -206,7 +206,8 @@ export class MongooseFacility extends DefaultFacility {
         generateSchema(collections.map(x => x.type), GlobalMongooseSchema, this.option.schemaGenerator)
         //register custom converter
         app.set({ typeConverterVisitors: [relationToObjectIdVisitor] })
-        await Mongoose.connect(this.option.uri, { useNewUrlParser: true })
+        Mongoose.set("useUnifiedTopology", true)
+        await Mongoose.connect(this.option.uri, { useNewUrlParser: true  })
     }
 }
 
