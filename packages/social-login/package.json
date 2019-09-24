@@ -1,11 +1,10 @@
 {
   "name": "@plumier/social-login",
   "version": "1.0.0-beta.9",
-  "description": "Plumier OAuth module for Facebook",
+  "description": "Plumier OAuth module for Plumier",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "debug": "node --inspect -r ts-node/register /Volumes/Data/plumier/plumier/packages/social-login/test/integration.ts",
     "compile": "tsc -p tsconfig.build.json"
   },
   "author": "Ketut Sandiarsa",
