@@ -35,5 +35,9 @@
 	],
 	"pre-push": [
 		"test"
-	]
+	],
+	"dependencies": {
+		"@types/puppeteer": "^1.19.1",
+		"puppeteer": "^1.19.0"
+	}
 }

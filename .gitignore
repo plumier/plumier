@@ -11,6 +11,7 @@ packages/**/*.js.snap
 !jest.config.debug.js
 !test.js
 .docs
+.env
 !packages/plumier/test/integration/mongoose/model/jsonly-domain.js
 website/translated_docs
 website/build/
