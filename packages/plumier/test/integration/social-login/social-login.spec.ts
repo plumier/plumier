@@ -71,3 +71,13 @@ describe("Social Login Mock Test", () => {
         expect(body.error).toMatchObject([{ messages: ["Required"], path: ["profile", "data", "family_name"] }])
     })
 })
+
+describe("Callback View", () => {
+    it("Should able to provide callback view", async () => {
+        const app = await createApp()
+        const { text } = await supertest(app.callback())
+            .get("/view/popup")
+            .expect(200)
+        expect(text).toMatchSnapshot()
+    })
+})

@@ -4,6 +4,7 @@ import Plumier, { WebApiFacility } from "plumier"
 import puppeteer, { Browser } from "puppeteer"
 
 import { fb, github, gitlab, google } from "./config"
+import supertest from 'supertest'
 
 describe("Social Login Using Robot", () => {
     let server: Server;
@@ -19,11 +20,17 @@ describe("Social Login Using Robot", () => {
     })
 
     afterAll(async () => {
-        server.close()
-        await browser.close()
+        // server.close()
+        // await browser.close()
     })
 
-    it.only("Should able to login with google", async () => {
+    it.only("Should able to pass message to callback view", async () => {
+        const page = (await browser.pages())[0]
+        await page.goto("http://localhost:8000/view/index", { waitUntil: "networkidle0" })
+        console.log(100)
+    }, 2000000000000)
+
+    it("Should able to login with google", async () => {
         const page = (await browser.pages())[0]
         await page.goto("http://localhost:8000/google/login", { waitUntil: "networkidle0" })
         await page.type("input[name=identifier]", google.email)

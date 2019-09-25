@@ -3,7 +3,7 @@ import { Context } from 'koa';
 
 
 
-function content(message: any, origin:string = "plumier:event") {
+function content(message: any) {
     return `
     <!DOCTYPE html>
     <html>
@@ -11,9 +11,9 @@ function content(message: any, origin:string = "plumier:event") {
         <body><div class="container"></div></body>
         <script type="text/javascript">
             var message = '${JSON.stringify(message)}';
-            window.onload(function(e) {
-                window.postMessage(JSON.parse(message), "${origin}")
-            })
+            (function(){
+                window.opener.onLogin(message)
+            })()
         </script>
     </html>
     `

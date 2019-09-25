@@ -1,16 +1,17 @@
-import {response, bind} from "@plumier/core"
 import "@plumier/social-login"
-import { oAuthCallback, GoogleProvider, GoogleLoginStatus } from '@plumier/social-login'
-import { google } from '../config'
+import "@plumier/serve-static"
+
+import { response } from "@plumier/core"
+import { join } from "path"
 
 
-export class CallbackViewController {
-
-    index(){
-        return 
-    }
+export class ViewController {
 
     popup(){
-        return response.callbackView({ message: "Lorem ipsum dolor" })
+        return response.callbackView({type: "auth", lorem:"ipsum"})
+    }
+
+    index(){
+        return response.file(join(__dirname, "./callback-opener.html"))
     }
 }

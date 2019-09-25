@@ -13,7 +13,8 @@
   ],
   "scripts": {
     "compile": "tsc -p tsconfig.build.json",
-    "benchmark": "ts-node test/benchmark/run"
+    "benchmark": "ts-node test/benchmark/run",
+    "exe": "ts-node"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
