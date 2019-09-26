@@ -11,6 +11,7 @@ export {
     FileParser,
     HeaderPart,
     HttpMethod,
+    HttpStatus,
     HttpStatusError,
     Invocation,
     KoaMiddleware,
