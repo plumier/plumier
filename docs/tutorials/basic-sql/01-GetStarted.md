@@ -85,7 +85,7 @@ If Visual Studio Code not opened you can manually open the directory from Visual
 Lets run the project starter to see if its downloaded and installed properly. Open [Visual Studio Code integrated terminal](https://code.visualstudio.com/docs/editor/integrated-terminal) and enter command below to start the project
 
 ```bash
-$ yarn start
+$ yarn debug
 ```
 
 Code above will host the starter project on port 8000, it will print route analysis report showing two routes generated like below

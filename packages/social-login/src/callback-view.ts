@@ -8,13 +8,16 @@ function content(message: any) {
     <!DOCTYPE html>
     <html>
         <title></title>
-        <body><div class="container"></div></body>
-        <script type="text/javascript">
-            var message = '${JSON.stringify(message)}';
-            (function(){
-                window.opener.onLogin(message)
-            })()
-        </script>
+        <body>
+            <div class="container"></div>
+            <script type="text/javascript">
+                var message = '${JSON.stringify(message)}';
+                (function(){
+                    window.opener.onLogin(JSON.parse(message));
+                })()
+            </script>
+        </body>
+        
     </html>
     `
 }
