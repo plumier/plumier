@@ -5,13 +5,16 @@ exports[`Callback View Should able to provide callback view 1`] = `
     <!DOCTYPE html>
     <html>
         <title></title>
-        <body><div class=\\"container\\"></div></body>
-        <script type=\\"text/javascript\\">
-            var message = '{\\"type\\":\\"auth\\",\\"lorem\\":\\"ipsum\\"}';
-            (function(){
-                window.opener.onLogin(message)
-            })()
-        </script>
+        <body>
+            <div class=\\"container\\"></div>
+            <script type=\\"text/javascript\\">
+                var message = '{\\"type\\":\\"auth\\",\\"lorem\\":\\"ipsum\\"}';
+                (function(){
+                    window.opener.onLogin(JSON.parse(message));
+                })()
+            </script>
+        </body>
+        
     </html>
     "
 `;

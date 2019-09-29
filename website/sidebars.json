@@ -18,6 +18,7 @@
       "refs/serve-static",
       "refs/file-upload",
       "refs/mongoose-helper",
+      "refs/social-login",
       "refs/static-analysis",
       "refs/testing-tips"
     ],
