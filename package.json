@@ -9,7 +9,7 @@
 		"compile:only": "lerna run compile",
 		"compile": "yarn clean && jest && lerna run compile",
 		"build:pre": "yarn compile && lerna publish prerelease --exact --preid beta --force-publish",
-		"build:canary": "lerna run compile && lerna publish prerelease --exact --canary --preid canary --force-publish",
+		"build:canary": "lerna run compile && lerna publish prerelease --exact --canary --preid canary --force-publish --yes",
 		"build:prod": "yarn compile && lerna publish && yarn clean",
 		"benchmark": "yarn workspace plumier benchmark",
 		"doc:start": "cd website && yarn start",
