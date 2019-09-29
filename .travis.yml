@@ -5,9 +5,11 @@ node_js:
   - 8
 after_script: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 deploy:
+  skip_cleanup: true
   provider: script
   script: yarn build:canary
   on:
+    node: stable
     branch: master
 services: mongodb
 git:
