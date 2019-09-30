@@ -29,7 +29,7 @@ export class FacebookProfile {
 @domain() 
 export class FacebookLoginStatus implements SocialLoginStatus<FacebookProfile> {
     constructor(
-        public status: "Success" | "Error",
+        public status: "Success" | "Failed",
         @val.optional()
         public error?: any,
         @val.optional()

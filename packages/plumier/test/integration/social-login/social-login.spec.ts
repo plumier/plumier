@@ -34,7 +34,7 @@ describe("Social Login Mock Test", () => {
         const { body } = await supertest(app.callback())
             .get("/google/callback?code=lorem")
             .expect(200)
-        expect(body.status).toBe("Error")
+        expect(body.status).toBe("Failed")
         expect(body.error).toMatchObject({ error: "invalid auth code" })
     })
 
@@ -45,7 +45,7 @@ describe("Social Login Mock Test", () => {
         const { body } = await supertest(app.callback())
             .get("/google/callback?code=lorem")
             .expect(200)
-        expect(body.status).toBe("Error")
+        expect(body.status).toBe("Failed")
         expect(body.error).toMatchObject({ message: "lorem ipsum" })
     })
 
@@ -56,7 +56,7 @@ describe("Social Login Mock Test", () => {
         const { body } = await supertest(app.callback())
             .get("/google/callback")
             .expect(200)
-        expect(body.status).toBe("Error")
+        expect(body.status).toBe("Failed")
         expect(body.error).toMatchObject({ message: "Authorization code is required" })
     })
 
@@ -67,7 +67,7 @@ describe("Social Login Mock Test", () => {
         const { body } = await supertest(app.callback())
             .get("/google/callback?code=lorem")
             .expect(200)
-        expect(body.status).toBe("Error")
+        expect(body.status).toBe("Failed")
         expect(body.error).toMatchObject([{ messages: ["Required"], path: ["profile", "data", "family_name"] }])
     })
 })

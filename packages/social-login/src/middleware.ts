@@ -8,7 +8,7 @@ import * as tc from "typedconverter"
 const LoginStatusParameterBinding = "LoginStatusParameterBinding"
 
 export interface SocialLoginStatus<T = any> {
-    status: "Success" | "Error",
+    status: "Success" | "Failed",
     error?: any,
     data?: T
 }
@@ -92,15 +92,15 @@ export class SocialAuthMiddleware implements Middleware {
             }
             catch (e) {
                 if (e.response)
-                    this.bindProfile({ status: "Error", error: e.response.data }, invocation.context)
+                    this.bindProfile({ status: "Failed", error: e.response.data }, invocation.context)
                 else if (e instanceof ValidationError)
-                    this.bindProfile({ status: "Error", error: e.issues }, invocation.context)
+                    this.bindProfile({ status: "Failed", error: e.issues }, invocation.context)
                 else
-                    this.bindProfile({ status: "Error", error: { message: e.message } }, invocation.context)
+                    this.bindProfile({ status: "Failed", error: { message: e.message } }, invocation.context)
             }
         }
         else {
-            this.bindProfile({ status: "Error", error: { message: "Authorization code is required" } }, invocation.context)
+            this.bindProfile({ status: "Failed", error: { message: "Authorization code is required" } }, invocation.context)
         }
         return invocation.proceed()
     }

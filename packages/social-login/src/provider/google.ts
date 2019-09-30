@@ -40,7 +40,7 @@ export class GoogleProfile {
 @domain() 
 export class GoogleLoginStatus implements SocialLoginStatus<GoogleProfile> {
     constructor(
-        public status: "Success" | "Error",
+        public status: "Success" | "Failed",
         @val.optional()
         public error?: any,
         @val.optional()

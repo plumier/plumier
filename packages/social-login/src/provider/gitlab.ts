@@ -45,7 +45,7 @@ export class GitLabProfile {
 @domain() 
 export class GitLabLoginStatus implements SocialLoginStatus<GitLabProfile> {
     constructor(
-        public status: "Success" | "Error",
+        public status: "Success" | "Failed",
         @val.optional()
         public error?: any,
         @val.optional()
