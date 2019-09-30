@@ -1,7 +1,7 @@
 import { middleware, ActionResult, response } from "@plumier/core"
 
 import { SocialAuthMiddleware, SocialAuthProvider } from "./middleware"
-import { CallbackView } from './callback-view'
+import { content } from './callback-view'
 
 export function oAuthCallback(option: SocialAuthProvider) {
     return middleware.use(new SocialAuthMiddleware(option))
@@ -21,5 +21,6 @@ declare module "@plumier/core" {
 }
 
 response.callbackView = (message: any) => {
-    return new CallbackView(message)
+    return new ActionResult(content(message))
+        .setHeader("Content-Type", "text/html")
 }

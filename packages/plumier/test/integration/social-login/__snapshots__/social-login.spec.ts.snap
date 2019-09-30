@@ -14,7 +14,6 @@ exports[`Callback View Should able to provide callback view 1`] = `
                 })()
             </script>
         </body>
-        
     </html>
     "
 `;

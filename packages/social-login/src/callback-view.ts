@@ -1,9 +1,6 @@
-import { ActionResult, response } from "@plumier/core"
-import { Context } from 'koa';
 
 
-
-function content(message: any) {
+export function content(message: any) {
     return `
     <!DOCTYPE html>
     <html>
@@ -17,15 +14,6 @@ function content(message: any) {
                 })()
             </script>
         </body>
-        
     </html>
     `
-}
-
-export class CallbackView extends ActionResult {
-    constructor(private message: any) { super() }
-
-    async execute(ctx: Context) {
-        ctx.body = content(this.message)
-    }
 }
