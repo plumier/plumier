@@ -20,13 +20,13 @@
   "license": "MIT",
   "dependencies": {
     "@types/glob": "^7.1.1",
-    "@types/koa": "^2.0.49",
+    "@types/koa": "^2.0.50",
     "chalk": "^2.4.2",
     "glob": "^7.1.4",
     "path-to-regexp": "^3.1.0",
-    "tinspector": "^2.2.5",
+    "tinspector": "^2.2.7",
     "tslib": "^1.10.0",
-    "typedconverter": "^1.0.0-beta.6"
+    "typedconverter": "^1.0.0"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"

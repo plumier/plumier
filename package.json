@@ -26,9 +26,9 @@
 		"lerna": "3.16.4",
 		"pre-push": "^0.1.1",
 		"reflect-metadata": "^0.1.13",
-		"ts-jest": "^24.0.2",
-		"tslint": "^5.19.0",
-		"typescript": "^3.5.3"
+		"ts-jest": "^24.1.0",
+		"tslint": "^5.20.0",
+		"typescript": "^3.6.3"
 	},
 	"workspaces": [
 		"packages/*"
@@ -37,7 +37,7 @@
 		"test"
 	],
 	"dependencies": {
-		"@types/puppeteer": "^1.19.1",
-		"puppeteer": "^1.19.0"
+		"@types/puppeteer": "^1.20.1",
+		"puppeteer": "^1.20.0"
 	}
 }
