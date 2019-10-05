@@ -1,11 +1,11 @@
-import { Class, route, val } from "@plumier/core"
+import { Class, route, val, HttpMethod } from "@plumier/core"
 import { collection, Constructor, model, MongooseFacility } from "@plumier/mongoose"
 import Mongoose from "mongoose"
 import { fixture } from "plumier/test/helper"
 import supertest = require("supertest")
 import { decorate } from "tinspector"
 
-async function setup<T extends object>({ controller, domain, initUser, testUser }: { controller: Class; domain: Constructor<T>; initUser?: T; testUser: T; }) {
+async function setup<T extends object>({ controller, domain, initUser, testUser, method }: { controller: Class; domain: Constructor<T>; initUser?: T; testUser: T; method?: HttpMethod }) {
     const koa = await fixture(controller)
         .set(new MongooseFacility({
             model: [domain],
@@ -19,7 +19,7 @@ async function setup<T extends object>({ controller, domain, initUser, testUser 
         await new UserModel(initUser).save()
     //test
     return await supertest(koa.callback())
-        .post("/user/save")
+    [method || "post"]("/user/save")
         .send(testUser)
 }
 
@@ -171,5 +171,43 @@ describe("unique validator", () => {
             testUser: { email: "ketut@gmail.com" }
         })
         expect(res.status).toBe(500)
+    })
+
+    it("Should not check on PUT method", async () => {
+        @collection()
+        class User {
+            constructor(
+                public name: string,
+                @val.unique()
+                public email: string
+            ) { }
+        }
+        class UserController {
+            @route.put()
+            save(user: User) { }
+        }
+
+        const user = { name: "Ketut", email: "ketut@gmail.com" }
+        const res = await setup({ controller: UserController, domain: User, initUser: user, testUser: user, method: "put" })
+        expect(res.status).toBe(200)
+    })
+
+    it("Should not check on PATCH method", async () => {
+        @collection()
+        class User {
+            constructor(
+                public name: string,
+                @val.unique()
+                public email: string
+            ) { }
+        }
+        class UserController {
+            @route.patch()
+            save(user: User) { }
+        }
+
+        const user = { name: "Ketut", email: "ketut@gmail.com" }
+        const res = await setup({ controller: UserController, domain: User, initUser: user, testUser: user, method: "patch" })
+        expect(res.status).toBe(200)
     })
 })
