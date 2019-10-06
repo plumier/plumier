@@ -151,7 +151,10 @@ declare module "typedconverter" {
     }
 }
 
-val.unique = () => val.custom((value, info) => isUnique(value, info.parent && info.parent.type, info.name))
+val.unique = () => val.custom(async (value, info) => {
+    if(info.ctx.method.toLocaleLowerCase() === "post")
+        return isUnique(value, info.parent && info.parent.type, info.name)
+})
 
 export function reflectPath(path: string | Class | Class[]): Reflection[] {
     if (Array.isArray(path))
