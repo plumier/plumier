@@ -313,6 +313,49 @@ describe("JwtAuth", () => {
                 .expect(401)
         })
 
+        it("Should able to send token using cookie", async () => {
+            class AnimalController {
+                @authorize.role("admin")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("cookie", `Authorization=${ADMIN_TOKEN}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("cookie", `Authorization=${USER_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(403)
+        })
+
+        it("Should able to send token using cookie with custom name", async () => {
+            class AnimalController {
+                @authorize.role("admin")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET, cookie: "__JWT" }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("cookie", `__JWT=${ADMIN_TOKEN}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("cookie", `__JWT=${USER_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(403)
+        })
     })
 
     describe("Global Authorization", () => {
