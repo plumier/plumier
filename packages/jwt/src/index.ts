@@ -7,6 +7,7 @@ import {
     updateRouteAccess,
 } from "@plumier/core"
 import KoaJwt from "koa-jwt"
+import jwt from 'koa-jwt'
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- TYPES ----------------------------------------- */
@@ -27,11 +28,11 @@ export interface JwtAuthFacilityOption {
 
 
 export class JwtAuthFacility extends DefaultFacility {
-    constructor(private option: JwtAuthFacilityOption) { super() }
+    constructor(private option: JwtAuthFacilityOption & jwt.Options) { super() }
 
     setup(app: Readonly<PlumierApplication>) {
         app.set({ authorizer: this.option.authorizer })
-        app.koa.use(KoaJwt({ secret: this.option.secret, passthrough: true }))
+        app.koa.use(KoaJwt({ cookie: "Authorization", ...this.option, secret: this.option.secret, passthrough: true }))
         app.use(new AuthorizeMiddleware(this.option.roleField || "role", this.option.global))
     }
 
