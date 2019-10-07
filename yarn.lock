@@ -7656,6 +7656,11 @@ supports-color@^6.1.0:
   dependencies:
     has-flag "^3.0.0"
 
+swagger-ui-dist@3.23.5:
+  version "3.23.5"
+  resolved "https://registry.yarnpkg.com/swagger-ui-dist/-/swagger-ui-dist-3.23.5.tgz#cab27aa83a8f0e75fec37ff965ed4d4f33f4b1fe"
+  integrity sha512-fsCF3wR0kBF5G7yF8uD5kALSbo2TjpfdheXWnrmxD2/d/8bgKDlUVoqO4gMNrZRQOEbyXCexZiU9geMNspWWyA==
+
 symbol-tree@^3.2.2:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"

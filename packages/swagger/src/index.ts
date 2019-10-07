@@ -1,6 +1,8 @@
-import {OpenApiBuilder} from "openapi3-ts"
-import {RouteInfo} from "@plumier/core"
+import { RouteInfo } from "@plumier/core"
+import { PathItemObject } from "openapi3-ts"
 
-let info:RouteInfo;
 
-info.
+
+export function transformRoute(route:RouteInfo) : PathItemObject{
+     
+}
