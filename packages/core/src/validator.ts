@@ -12,6 +12,7 @@ import {
     ValidatorFunction,
     ValidatorInfo,
     ValidationError,
+    AsyncValidatorResult,
 } from "./types"
 import { binder } from "./binder"
 import { decorateProperty } from 'tinspector';
@@ -25,13 +26,9 @@ interface AsyncValidatorItem {
     value: any,
     path: string,
     parent?: { type: Class, decorators: any[] }
-    validator: ValidatorFunction
+    validator: ValidatorFunction | string
 }
 
-interface AsyncValidatorResult {
-    path: string,
-    messages: string[]
-}
 
 function createVisitor(items: AsyncValidatorItem[]) {
     return (i: tc.VisitorInvocation) => {
@@ -58,20 +55,22 @@ tc.val.custom = (val: ValidatorFunction | string) => {
 // --------------------------------------------------------------------- //
 const getName = (path: string) => path.indexOf(".") > -1 ? path.substring(path.lastIndexOf(".") + 1) : path
 
-async function validateAsync(x: AsyncValidatorItem, ctx: Context): Promise<AsyncValidatorResult | undefined> {
+async function validateAsync(x: AsyncValidatorItem, ctx: Context): Promise<AsyncValidatorResult[]> {
     const name = getName(x.path)
     const info: ValidatorInfo = { ctx, name, parent: x.parent, route: ctx.route! }
-    if (x.value === undefined || x.value === null) return
-    if (typeof x.validator === "function") {
-        const messages = await x.validator(x.value, info)
-        if (messages) return { path: x.path, messages: [messages] }
-    }
-    else {
-        if (!ctx.config.validators || !ctx.config.validators[x.validator])
-            throw new Error(`No validation implementation found for ${x.validator}`)
-        const messages = await ctx.config.validators[x.validator](x.value, info)
-        if (messages) return { path: x.path, messages: [messages] }
-    }
+    if (x.value === undefined || x.value === null) return []
+    const validators = ctx.config.validators || {}
+    if (typeof x.validator === "string" && !validators[x.validator])
+        throw new Error(`No validation implementation found for ${x.validator}`)
+    const validator = typeof x.validator === "function" ? x.validator : validators[x.validator]
+    const message = await validator(x.value, info)
+    if (!message) return []
+    if (typeof message === "string")
+        return [{ path: x.path, messages: [message] }]
+    return message.map(y => <AsyncValidatorResult>({
+        path: `${x.path}.${y.path}`,
+        messages: y.messages
+    }))
 }
 
 async function validate(ctx: Context): Promise<tc.Result> {
@@ -93,12 +92,10 @@ async function validate(ctx: Context): Promise<tc.Result> {
     //async validations
     if (decsAsync.length > 0) {
         const results = await Promise.all(decsAsync.map(async x => validateAsync(x, ctx)))
-        for (const invalid of results) {
-            if (invalid) {
-                const msg = issues.find(x => x.path === invalid.path)
-                if (msg) msg.messages.push(...invalid.messages)
-                else issues.push(invalid)
-            }
+        for (const invalid of results.flatten()) {
+            const msg = issues.find(x => x.path === invalid.path)
+            if (msg) msg.messages.push(...invalid.messages)
+            else issues.push(invalid)
         }
     }
     return (issues.length > 0) ? { issues, value: undefined } : { value: result }

@@ -6,7 +6,7 @@ title: Custom Validator
 Custom validator can be created using `@val.custom` decorator, you can wrap the `@val.custom` inside a function and make a new validator decorator, and provide logic on the Validator function callback. Validator function signature is like below:
 
 ```typescript 
-(value: string, info: ValidatorInfo) => Promise<string | undefined>
+(value: string, info: ValidatorInfo) => Promise<AsyncValidatorResult[] | string | undefined>
 ```
 
 * `value` is the current value that will be validated. value will always of type string
@@ -53,6 +53,30 @@ class User {
 ```
 
 The `info` parameter of the validator function useful when you need to validate value that require request context parameter such as `body`, `params` etc.
+
+### Class Validation
+Sometime its not possible to validate value only on single property, but require multiple properties. Real world example is the confirm password.
+
+```typescript
+function checkConfirmPassword() {
+    return val.custom(async (x, info) => {
+        return x.password !== x.confirmPassword ? [{ path: "confirmPassword", messages: ["Password is not the same"] }] : undefined
+    })
+}
+
+@domain()
+class User {
+    constructor(
+        public password: string,
+        public confirmPassword: string
+    ) { }
+}
+
+class UsersController {
+    @route.post()
+    get(@checkConfirmPassword() model: User) { }
+}
+```
 
 ### Separate Decorator and Implementation
 Validator decorator sometime need to be free from dependencies, for example if you want to separate Domain (with validation) into single package and will be shared between UI and Server side. Thus, validation that tightly coupled with database logic (for example `@val.unique()`) can't be used.

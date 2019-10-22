@@ -195,6 +195,23 @@ Object {
 }
 `;
 
+exports[`Validation Should be able to validate class and return several validation result 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Password is not the same",
+      ],
+      "path": Array [
+        "model",
+        "confirmPassword",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
 exports[`Validation Should validate model with correct path 1`] = `
 Object {
   "message": Array [
