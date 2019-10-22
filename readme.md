@@ -9,9 +9,21 @@ Delightful Node.js Rest Framework
 
 ## Blog Posts and Publications
 
-* [Hacker Noon story](https://hackernoon.com/i-spent-a-year-to-reinvent-a-node-js-framework-b3b0b1602ad5) about idea and reasons and how Plumier designed.
-* [Hacker Noon story](https://hackernoon.com/adding-an-auditing-system-into-a-rest-api-4fbb522240ea) about advanced usage of Plumier middleware to perform AOP and metaprogramming
+* [Reason, motivation and how Plumier designed](https://medium.com/hackernoon/i-spent-a-year-to-reinvent-a-node-js-framework-b3b0b1602ad5)
+* [How to use Plumier with mongoose](https://hackernoon.com/create-secure-restful-api-with-plumier-and-mongoose-3ngz32lu)
+* [Advanced usage of Plumier middleware to perform AOP and metaprogramming](https://hackernoon.com/adding-an-auditing-system-into-a-rest-api-4fbb522240ea)
 
+## Tutorials
+
+* [Basic REST api tutorial using Knex.js](https://plumierjs.com/docs/tutorials/basic-sql/get-started)
+  
+
+## Examples 
+
+* [Basic REST API with Knex.js](https://github.com/plumier/tutorial-todo-sql-backend)
+* [Basic REST api with Mongoose](https://github.com/plumier/tutorial-todo-mongodb-backend)
+* [Plumier - React - Monorepo - Social Login](https://github.com/plumier/tutorial-monorepo-social-login)
+* [Plumier - React Native- Monorepo](https://github.com/plumier/tutorial-todo-monorepo-react-native)
 
 ## Motivation
 
