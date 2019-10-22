@@ -23,7 +23,7 @@ Delightful Node.js Rest Framework
 * [Basic REST API with Knex.js](https://github.com/plumier/tutorial-todo-sql-backend)
 * [Basic REST api with Mongoose](https://github.com/plumier/tutorial-todo-mongodb-backend)
 * [Plumier - React - Monorepo - Social Login](https://github.com/plumier/tutorial-monorepo-social-login)
-* [Plumier - React Native- Monorepo](https://github.com/plumier/tutorial-todo-monorepo-react-native)
+* [Plumier - React Native - Monorepo](https://github.com/plumier/tutorial-todo-monorepo-react-native)
 
 ## Motivation
 
