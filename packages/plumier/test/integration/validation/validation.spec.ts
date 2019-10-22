@@ -1,4 +1,4 @@
-import Plumier, { domain, RestfulApiFacility, route, val, ValidatorInfo, ValidatorStore } from "plumier"
+import Plumier, { domain, RestfulApiFacility, route, val, ValidatorInfo, ValidatorStore, ValidatorFunction } from "plumier"
 import Supertest from "supertest"
 import supertest = require("supertest")
 import reflect from "tinspector"
@@ -116,8 +116,32 @@ describe("Validation", () => {
             .send({ id: "123", deceased: "True" })
             .expect(200)
     })
-})
 
+    it("Should be able to validate class and return several validation result", async () => {
+        function checkConfirmPassword() {
+            return val.custom(async (x, info) => {
+                return x.password !== x.confirmPassword ? [{ path: "confirmPassword", messages: ["Password is not the same"] }] : undefined
+            })
+        }
+        @domain()
+        class User {
+            constructor(
+                public password: string,
+                public confirmPassword: string
+            ) { }
+        }
+        class UsersController {
+            @route.post()
+            get(@checkConfirmPassword() model: User) { }
+        }
+        const koa = await fixture(UsersController).initialize()
+        let result = await Supertest(koa.callback())
+            .post("/users/get")
+            .send({ password: "111111", confirmPassword: "2222222" })
+            .expect(422)
+        expect(result.body).toMatchSnapshot()
+    })
+})
 
 describe("Error handling", () => {
     function customValidator() {
@@ -490,7 +514,7 @@ describe("Custom Validation", () => {
         }
 
         const koa = await fixture(UserController).initialize()
-        koa.on("error", () => {})
+        koa.on("error", () => { })
         await supertest(koa.callback())
             .post("/user/save")
             .send({ age: "12" })
