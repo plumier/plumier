@@ -9,7 +9,7 @@ before_deploy:
 deploy:
   skip_cleanup: true
   provider: script
-  script: git checkout HEAD yarn.lock && yarn build:canary
+  script: yarn build:canary
   on:
     node: stable
     branch: master
