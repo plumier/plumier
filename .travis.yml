@@ -3,6 +3,10 @@ node_js:
   - stable
   - 10
   - 8
+install: 
+  - yarn install
+script: 
+  - yarn test
 after_script: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 before_deploy: 
   - printf "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
