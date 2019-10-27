@@ -8,15 +8,15 @@ install:
 script: 
   - yarn test
 after_script: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
-before_deploy: 
-  - printf "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
-deploy:
-  skip_cleanup: true
-  provider: script
-  script: yarn build:canary
-  on:
-    node: stable
-    branch: master
+# before_deploy: 
+#   - printf "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
+# deploy:
+#   skip_cleanup: true
+#   provider: script
+#   script: yarn build:canary
+#   on:
+#     node: stable
+#     branch: master
 services: mongodb
 git:
     submodules: false

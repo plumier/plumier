@@ -15,7 +15,7 @@ jobs:
     - name: Setup Node
       uses: actions/setup-node@v1
       with:
-        node-version: 'stable'
+        node-version: '12'
     - name: Install yarn
       run: curl -o- -L https://yarnpkg.com/install.sh | bash
     - name: Install dependencies
