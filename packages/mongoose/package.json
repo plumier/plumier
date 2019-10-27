@@ -17,7 +17,7 @@
     "@plumier/core": "1.0.0-beta.10",
     "@types/mongoose": "^5.5.23",
     "chalk": "^2.4.2",
-    "mongoose": "^5.7.6"
+    "mongoose": "^5.7.7"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"

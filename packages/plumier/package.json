@@ -32,7 +32,7 @@
     "@plumier/mongoose": "1.0.0-beta.10",
     "@plumier/multipart": "1.0.0-beta.10",
     "@plumier/serve-static": "1.0.0-beta.10",
-    "@plumier/social-login": "1.0.0-canary.31",
+    "@plumier/social-login": "1.0.0-beta.10",
     "@types/body-parser": "^1.17.1",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.1",
