@@ -26,5 +26,5 @@ jobs:
       run: yarn test
     - name: Publish
       run: |
-        printf "//registry.npmjs.org/:_authToken=${secrets.NPM_TOKEN}" >> ~/.npmrc
+        printf "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
         yarn build:canary
