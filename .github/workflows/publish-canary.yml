@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches:    
+      - master 
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 'stable'
+    - name: Install yarn
+      run: curl -o- -L https://yarnpkg.com/install.sh | bash
+    - name: Install dependencies
+      run: yarn install
+    - name: Run tests 
+      run: yarn test
+    - name: Publish
+      run: |
+        printf "//registry.npmjs.org/:_authToken=${secrets.NPM_TOKEN}" >> ~/.npmrc
+        yarn build:canary
