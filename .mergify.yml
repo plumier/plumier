@@ -5,7 +5,7 @@ pull_request_rules:
       - status-success=continuous-integration/travis-ci/pr
       - status-success=continuous-integration/travis-ci/push
       - status-success=coverage/coveralls
-      #- "#approved-reviews-by>=2"
+      - "#approved-reviews-by>=1"
     actions:
       merge:
         method: merge

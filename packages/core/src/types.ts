@@ -241,7 +241,12 @@ export interface ValidatorInfo {
     parent?: { type: Class, decorators: any[] }
 }
 
-export type ValidatorFunction = (value: string, info: ValidatorInfo) => Promise<string | undefined>
+export interface AsyncValidatorResult {
+    path: string,
+    messages: string[]
+}
+
+export type ValidatorFunction = (value: any, info: ValidatorInfo) => Promise<AsyncValidatorResult[] | string | undefined>
 export type ValidatorStore = { [key: string]: ValidatorFunction }
 
 

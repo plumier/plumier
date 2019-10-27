@@ -12,6 +12,7 @@ packages/**/*.js.snap
 !test.js
 .docs
 .env
+yarn.lock
 !packages/plumier/test/integration/mongoose/model/jsonly-domain.js
 website/translated_docs
 website/build/

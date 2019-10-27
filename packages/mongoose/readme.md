@@ -5,16 +5,56 @@ Delightful Node.js Rest Framework
 [![Build status](https://ci.appveyor.com/api/projects/status/6carp7h4q50v4pj6?svg=true)](https://ci.appveyor.com/project/ktutnik/plumier-isghw)
 [![Coverage Status](https://coveralls.io/repos/github/plumier/plumier/badge.svg?branch=master)](https://coveralls.io/github/plumier/plumier?branch=master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/plumier/plumier.svg)](https://greenkeeper.io/)
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
+
+## Blog Posts and Publications
+
+* [Reason, motivation and how Plumier designed](https://medium.com/hackernoon/i-spent-a-year-to-reinvent-a-node-js-framework-b3b0b1602ad5)
+* [How to use Plumier with mongoose](https://hackernoon.com/create-secure-restful-api-with-plumier-and-mongoose-3ngz32lu)
+* [Advanced usage of Plumier middleware to perform AOP and metaprogramming](https://hackernoon.com/adding-an-auditing-system-into-a-rest-api-4fbb522240ea)
+
+## Tutorials
+
+* [Basic REST api tutorial using Knex.js](https://plumierjs.com/docs/tutorials/basic-sql/get-started)
+  
+
+## Examples 
+
+* [Basic REST API with Knex.js](https://github.com/plumier/tutorial-todo-sql-backend)
+* [Basic REST api with Mongoose](https://github.com/plumier/tutorial-todo-mongodb-backend)
+* [Plumier - React - Monorepo - Social Login](https://github.com/plumier/tutorial-monorepo-social-login)
+* [Plumier - React Native - Monorepo](https://github.com/plumier/tutorial-todo-monorepo-react-native)
 
 ## Motivation
+
 Plumier primarily created for full stack developer who spend more time working on the UI side and focus on creating a good user experience. Plumier comes with some built-in production-ready features that make creating secure JSON Api fun and easy.
 
 ### Lightweight
 Plumier relatively has small code base which make it light and fast. It uses Koa as its core http handler which is quite fast, below is comparison result of Koa, Plumier and Express.
 
-![Benchmarks](https://plumierjs.com/docs/assets/benchmarks.png)
+```
+GET method benchmark starting...
 
-The benchmark project forked from Fastify benchmark project, you can test it your self [here](https://github.com/ktutnik/benchmarks).
+Server       Base         Method         Req/s  Cost (%)
+plumier      koa          GET         33624.00     -0.06
+koa                       GET         33602.19      0.00
+express                   GET         17688.37      0.00
+nest         express      GET         16932.91      4.27
+loopback     express      GET          5174.61     70.75
+
+POST method benchmark starting...
+
+Server       Base         Method         Req/s  Cost (%)
+koa                       POST        12218.37      0.00
+plumier      koa          POST        11196.55      8.36
+express                   POST         9543.46      0.00
+nest         express      POST         6814.64     28.59
+loopback     express      POST         3108.91     67.42
+```
+
+Version 1.0.0-beta.9 successfully reduce the framework cost, its mean using Plumier is the same as using Koa + Koa Router + Joi stack with all of Plumier features. 
+
+The benchmark script can be found [here](https://github.com/ktutnik/full-stack-benchmarks).
 
 ### Flexible
 Almost every part of framework is fully configurable and easy to override. For example plumier route generation system provided flexibility using convention and also configuration.
@@ -174,6 +214,5 @@ Plumier already provided vscode `task` and `launch` setting. To start debugging 
 * Build the project 
 * Locate the test file and narrow the test runs by using `.only`
 * Put breakpoint on any location you need on `.ts` file 
-* Locate the `.js` version of the test file that will be run **(important)**
 * On start/debug configuration select `Jest Current File` and start debugging
 * Process will halt properly on the `.ts` file.
