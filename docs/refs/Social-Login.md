@@ -78,11 +78,25 @@ Plumier provided a simple html used to communicate to the parent window. From th
         <script type="text/javascript">
             var message = '<message passed from method, serialized into json>';
             (function(){
-                window.opener.onLogin(JSON.parse(message))
+                window.onbeforeunload = function () {
+                    window.opener.onCancelLogin(window)
+                };
+                window.opener.onLogin(window, JSON.parse(message))
             })()
         </script>
     </body>
 </html>
 ```
 
-Important part of above code is it will call parent window `onLogin` function, its mean you need to provide `onLogin` function on the parent window that showing the login popup.
+Important part of above code is you need to provide 2 global functions that will be called by the popup: 
+
+* `onLogin` function will be called when the login process ended (Fail or Success)
+* `onCancelLogin` called when the popup closed.
+
+
+## Example
+The full implementation of social login can be found [here](https://github.com/plumier/tutorial-monorepo-social-login). Important parts of the example are: 
+
+* OAuth callbacks implementations for each social medias can be found [AuthController](https://github.com/plumier/tutorial-monorepo-social-login/blob/eba5a1da0f14a452011673ec731a414392afae35/packages/server/src/controller/auth-controller.ts#L77)
+* UI logic to compose auth url and show the social login popup [here](https://github.com/plumier/tutorial-monorepo-social-login/blob/eba5a1da0f14a452011673ec731a414392afae35/packages/ui/src/page/popup.ts#L1)
+* UI logic to handle social login `onLogin` event [here](https://github.com/plumier/tutorial-monorepo-social-login/blob/3497b498857011ec794e761446c9ff73207d5683/packages/ui/src/App.tsx#L10)
