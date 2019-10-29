@@ -10,7 +10,10 @@ export function content(message: any) {
             <script type="text/javascript">
                 var message = '${JSON.stringify(message)}';
                 (function(){
-                    window.opener.onLogin(JSON.parse(message));
+                    window.onbeforeunload = function () {
+                        window.opener.onCancelLogin(window)
+                    };
+                    window.opener.onLogin(window, JSON.parse(message));
                 })()
             </script>
         </body>
