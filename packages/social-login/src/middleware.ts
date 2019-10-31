@@ -3,6 +3,7 @@ import Axios from "axios"
 import { Context } from "koa"
 import { decorateProperty, mergeDecorator } from "tinspector"
 import * as tc from "typedconverter"
+import debug from "debug"
 
 
 const LoginStatusParameterBinding = "LoginStatusParameterBinding"
@@ -35,6 +36,8 @@ bind.loginStatus = () => {
 }
 
 export class SocialAuthMiddleware implements Middleware {
+    private log = debug("@plumier/social-login")
+
     constructor(private option: SocialAuthProvider) { }
 
     private bindProfile(value: SocialLoginStatus<any>, ctx: Context) {
@@ -46,6 +49,8 @@ export class SocialAuthMiddleware implements Middleware {
             for (const decorator of paramMeta.decorators) {
                 if (decorator.type === "ParameterBinding" && decorator.name === LoginStatusParameterBinding) {
                     const result = tc.validate(value, { type: paramMeta.type, path: paramMeta.name })
+                    this.log("Binding: %o", result.value)
+                    this.log("Binding Issue: %o", result.issues)
                     if (!result.issues)
                         ctx.parameters![idx] = result.value
                     else
@@ -86,11 +91,16 @@ export class SocialAuthMiddleware implements Middleware {
         const req = invocation.context.request;
         if (req.query.code) {
             try {
+                this.log("Exchange Code: %s", req.query.code)
+                this.log("Redirect Uri: %s", req.origin + req.path)
                 const token = await this.exchange(req.query.code, req.origin + req.path)
+                this.log("Token: %s", token)
                 const data = await this.getProfile(token)
+                this.log("Profile: %o", data)
                 this.bindProfile({ status: "Success", data }, invocation.context)
             }
             catch (e) {
+                this.log("Error: %o", e.response && e.response.data || e)
                 if (e.response)
                     this.bindProfile({ status: "Failed", error: e.response.data }, invocation.context)
                 else if (e instanceof ValidationError)
@@ -100,6 +110,7 @@ export class SocialAuthMiddleware implements Middleware {
             }
         }
         else {
+            this.log("No authorization code provided")
             this.bindProfile({ status: "Failed", error: { message: "Authorization code is required" } }, invocation.context)
         }
         return invocation.proceed()
