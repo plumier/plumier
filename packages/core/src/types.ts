@@ -238,7 +238,7 @@ export interface ValidatorInfo {
     name: string,
     route: RouteInfo,
     ctx: Context,
-    parent?: { type: Class, decorators: any[] }
+    parent?: { value:any, type: Class, decorators: any[] }
 }
 
 export interface AsyncValidatorResult {

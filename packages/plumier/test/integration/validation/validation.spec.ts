@@ -117,30 +117,6 @@ describe("Validation", () => {
             .expect(200)
     })
 
-    it("Should be able to validate class and return several validation result", async () => {
-        function checkConfirmPassword() {
-            return val.custom(async (x, info) => {
-                return x.password !== x.confirmPassword ? [{ path: "confirmPassword", messages: ["Password is not the same"] }] : undefined
-            })
-        }
-        @domain()
-        class User {
-            constructor(
-                public password: string,
-                public confirmPassword: string
-            ) { }
-        }
-        class UsersController {
-            @route.post()
-            get(@checkConfirmPassword() model: User) { }
-        }
-        const koa = await fixture(UsersController).initialize()
-        let result = await Supertest(koa.callback())
-            .post("/users/get")
-            .send({ password: "111111", confirmPassword: "2222222" })
-            .expect(422)
-        expect(result.body).toMatchSnapshot()
-    })
 })
 
 describe("Error handling", () => {
@@ -441,6 +417,31 @@ describe("Custom Validation", () => {
             .expect(200)
     })
 
+    it("Should provide parent value information", async () =>{
+        @domain()
+        class ClientModel {
+            constructor(
+                public password: string,
+                @val.custom(async (val, info) => {
+                    const pwd = (info.parent!.value as ClientModel).password
+                    return val !== pwd ? "Password doesn't match" : undefined
+                })
+                public confirmPassword: string
+            ) { }
+        }
+        class UserController {
+            @route.post()
+            save(data: ClientModel) { }
+        }
+
+        const koa = await fixture(UserController).initialize()
+        const result = await supertest(koa.callback())
+            .post("/user/save")
+            .send({ password: "abcde", confirmPassword: "efghi" })
+            .expect(422)
+        expect(result.body).toMatchSnapshot()
+    })
+
     it("Should able to combine TypedConverter validator and custom validator", async () => {
         function longerThanTwenty() {
             return val.custom(async x => x.length > 20 ? undefined : "String must be longer than 20")
@@ -542,6 +543,32 @@ describe("Custom Validation", () => {
         const result = await supertest(koa.callback())
             .post("/user/save")
             .send({ password: "abcde", confirmPassword: "efghi" })
+            .expect(422)
+        expect(result.body).toMatchSnapshot()
+    })
+
+
+    it("Should be able to validate class and return several validation result", async () => {
+        function checkConfirmPassword() {
+            return val.custom(async (x, info) => {
+                return x.password !== x.confirmPassword ? [{ path: "confirmPassword", messages: ["Password is not the same"] }] : undefined
+            })
+        }
+        @domain()
+        class User {
+            constructor(
+                public password: string,
+                public confirmPassword: string
+            ) { }
+        }
+        class UsersController {
+            @route.post()
+            get(@checkConfirmPassword() model: User) { }
+        }
+        const koa = await fixture(UsersController).initialize()
+        let result = await Supertest(koa.callback())
+            .post("/users/get")
+            .send({ password: "111111", confirmPassword: "2222222" })
             .expect(422)
         expect(result.body).toMatchSnapshot()
     })
