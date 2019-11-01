@@ -25,10 +25,9 @@ import { decorateProperty } from 'tinspector';
 interface AsyncValidatorItem {
     value: any,
     path: string,
-    parent?: { type: Class, decorators: any[] }
+    parent?: { value:any, type: Class, decorators: any[] }
     validator: ValidatorFunction | string
 }
-
 
 function createVisitor(items: AsyncValidatorItem[]) {
     return (i: tc.VisitorInvocation) => {
