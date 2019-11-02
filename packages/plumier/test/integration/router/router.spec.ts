@@ -97,6 +97,43 @@ describe("Route Generator", () => {
             .expect(200)
     })
 
+    it("Should able to rename class name using relative route in nested controller", async () => {
+        const app = await fixture(join(__dirname, "nested"))
+            .initialize()
+        await Supertest(app.callback())
+            .get("/api/v1/kitty/get")
+            .expect(200)
+    })
+
+    it("Should skip nested route using absolute root route in nested controller", async () => {
+        const app = await fixture(join(__dirname, "nested"))
+            .initialize()
+        await Supertest(app.callback())
+            .get("/quack/get")
+            .expect(200)
+    })
+
+    it("Should skip nested route using absolute method route in nested controller", async () => {
+        const app = await fixture(join(__dirname, "nested"))
+            .initialize()
+        await Supertest(app.callback())
+            .get("/chicken")
+            .expect(200)
+    })
+
+    it("Should allow relative root name on non nested controller", async () =>{
+        @route.root("beast")
+        class AnimalController {
+            method() {
+            }
+        }
+        const app = await fixture(AnimalController)
+            .initialize()
+        await Supertest(app.callback())
+            .get("/beast/method")
+            .expect(200)
+    })
+
     describe("GET route", () => {
         it("Should route simple path", async () => {
             class AnimalController {

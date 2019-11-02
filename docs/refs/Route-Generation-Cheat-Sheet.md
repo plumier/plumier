@@ -5,6 +5,8 @@ title: Route Cheat Sheet
 
 Plumier generate routes directly from controllers. By default it will looks into the `./controller` directory. Except other directory or controller classes specified on the configuration.
 
+The main idea of Plumier route generator is generate route based on: `<directories>/<controller name>/<method name>`. Further more decorator(s) `@route` can be used to customize the generation result
+
 > [Parameter destructuring](https://www.typescriptlang.org/docs/handbook/variable-declarations.html#function-declarations) is not supported on current route generator, consider to avoid them.
 
 ## Name Convention
@@ -99,7 +101,7 @@ PUT  /animal/modify?id=<number>
 
 ## Absolute Route Override
 
-Absolute route override (route start with `/`) will ignore all the controller and action name, instead it will used provided route.
+Absolute route override (route start with `/`) will ignore all the controller and action name including the directory convention name, instead it will used provided route.
 
 ```typescript
 export class AnimalController {
@@ -113,8 +115,6 @@ export class AnimalController {
 GET /beast/:id
 GET /beast/list?last=<number>&limit=<number>
 ```
-
-> Route by directory convention will kept intact in absolute route override, due to directory convention usually used for API versioning.
 
 ## Relative Route Override
 
@@ -188,6 +188,9 @@ export class AnimalController {
 GET /beast/get?id=<number>
 GET /beast/list?last=<number>&limit=<number>
 ```
+
+> Relative / Absolute rule also applied into the Root route. When placed inside directory convention, an absolute Root route will skipped the directory name convention.  
+> And logically Relative / Absolute rule, doesn't affected Root route name.
 
 ## Parameterized Root Route
 
