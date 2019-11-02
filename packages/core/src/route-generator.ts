@@ -42,9 +42,14 @@ function striveController(name: string) {
    return name.substring(0, name.lastIndexOf("Controller")).toLowerCase()
 }
 
-function getControllerRoute(controller: ClassReflection): string[] {
-   const root: RootDecorator[] = controller.decorators.filter((x: RootDecorator) => x.name == "Root")
-   return root.length > 0 ? root.slice().reverse().map(x => x.url) : [`/${striveController(controller.name)}`]
+function getControllerRoutes(root: string, controller: ClassReflection): string[] {
+   const decs: RootDecorator[] = controller.decorators.filter((x: RootDecorator) => x.name == "Root")
+   if (decs.length > 0) {
+      return decs.slice().reverse().map(x => transformDecorator(root, "", x))
+   }
+   else {
+      return [createRoute(root, striveController(controller.name))]
+   }
 }
 
 function getActionName(route: RouteInfo) {
@@ -61,7 +66,7 @@ function getRoot(rootPath: string, path: string) {
 /* ---------------------------------- TRANSFORMER -------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function transformDecorator(root: string, actionName: string, actionDecorator: RouteDecorator) {
+function transformDecorator(root: string, actionName: string, actionDecorator: { url?: string }) {
    //absolute route override
    if (actionDecorator.url && actionDecorator.url.startsWith("/"))
       return actionDecorator.url
@@ -101,16 +106,15 @@ function transformMethod(root: string, controller: ClassReflection, method: Meth
 function transformController(object: ClassReflection | Class, opt?: TransformOption) {
    const controller = typeof object === "function" ? reflect(object) : object
    if (!controller.name.toLowerCase().endsWith("controller")) return []
-   const controllerRoutes = getControllerRoute(controller)
+   const controllerRoutes = getControllerRoutes(opt && opt.root || "", controller)
    const infos: RouteInfo[] = []
 
    for (const ctl of controllerRoutes) {
-      const root = createRoute(opt && opt.root || "", ctl)
       for (const method of controller.methods) {
          if (method.decorators.some((x: IgnoreDecorator | RouteDecorator) => x.name == "Ignore" || x.name == "Route"))
-            infos.push(...transformMethodWithDecorator(root, controller, method))
+            infos.push(...transformMethodWithDecorator(ctl, controller, method))
          else
-            infos.push(...transformMethod(root, controller, method))
+            infos.push(...transformMethod(ctl, controller, method))
       }
    }
    return infos
