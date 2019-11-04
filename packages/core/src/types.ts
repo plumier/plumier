@@ -15,7 +15,7 @@ export class ActionResult {
         return new ActionResult(ctx.body, ctx.status)
     }
     private readonly headers: { [key: string]: string | string[] } = {}
-    private readonly cookies: { key: string, value: string, option?: SetOption }[] = []
+    private readonly cookies: { key: string, value?: string, option?: SetOption }[] = []
     constructor(public body?: any, public status?: number) { }
 
     setHeader(key: string, value: string | string[]) {
@@ -28,8 +28,8 @@ export class ActionResult {
         return this
     }
 
-    setCookie(key: string, value: string, option?: SetOption) {
-        this.cookies.push({key, value, option})
+    setCookie(key: string, value?: string, option?: SetOption) {
+        this.cookies.push({ key, value, option })
         return this
     }
 
@@ -40,7 +40,10 @@ export class ActionResult {
         if (this.status)
             ctx.status = this.status
         for (const cookie of this.cookies) {
-            ctx.cookies.set(cookie.key, cookie.value, cookie.option)
+            if (!cookie.value)
+                ctx.cookies.set(cookie.key)
+            else
+                ctx.cookies.set(cookie.key, cookie.value, cookie.option)
         }
         if (this.body)
             ctx.body = this.body
