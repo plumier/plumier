@@ -10,7 +10,10 @@ exports[`Callback View Should able to provide callback view 1`] = `
             <script type=\\"text/javascript\\">
                 var message = '{\\"type\\":\\"auth\\",\\"lorem\\":\\"ipsum\\"}';
                 (function(){
-                    window.opener.onLogin(JSON.parse(message));
+                    window.onbeforeunload = function () {
+                        window.opener.onCancelLogin(window)
+                    };
+                    window.opener.onLogin(window, JSON.parse(message));
                 })()
             </script>
         </body>

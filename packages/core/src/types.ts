@@ -4,6 +4,7 @@ import { VisitorExtension } from "typedconverter"
 
 import { Class } from "./common"
 import { HttpStatus } from "./http-status"
+import { SetOption } from 'cookies'
 
 // --------------------------------------------------------------------- //
 // --------------------------- ACTION RESULT --------------------------- //
@@ -14,6 +15,7 @@ export class ActionResult {
         return new ActionResult(ctx.body, ctx.status)
     }
     private readonly headers: { [key: string]: string | string[] } = {}
+    private readonly cookies: { key: string, value: string, option?: SetOption }[] = []
     constructor(public body?: any, public status?: number) { }
 
     setHeader(key: string, value: string | string[]) {
@@ -26,14 +28,22 @@ export class ActionResult {
         return this
     }
 
+    setCookie(key: string, value: string, option?: SetOption) {
+        this.cookies.push({key, value, option})
+        return this
+    }
+
     async execute(ctx: Context): Promise<void> {
         Object.keys(this.headers).forEach(x => {
             ctx.set(x, this.headers[x])
         })
-        if (this.body)
-            ctx.body = this.body
         if (this.status)
             ctx.status = this.status
+        for (const cookie of this.cookies) {
+            ctx.cookies.set(cookie.key, cookie.value, cookie.option)
+        }
+        if (this.body)
+            ctx.body = this.body
     }
 }
 
@@ -238,7 +248,7 @@ export interface ValidatorInfo {
     name: string,
     route: RouteInfo,
     ctx: Context,
-    parent?: { type: Class, decorators: any[] }
+    parent?: { value: any, type: Class, decorators: any[] }
 }
 
 export interface AsyncValidatorResult {
@@ -345,7 +355,7 @@ export class HttpStatusError extends Error {
 }
 
 export class ValidationError extends HttpStatusError {
-    constructor(public issues: {path:string[], messages: string[]}[]) {
+    constructor(public issues: { path: string[], messages: string[] }[]) {
         super(HttpStatus.UnprocessableEntity, JSON.stringify(issues))
         Object.setPrototypeOf(this, ValidationError.prototype);
     }
