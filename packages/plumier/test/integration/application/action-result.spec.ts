@@ -57,7 +57,7 @@ describe("Redirect Action Result", () => {
         class AnimalController {
             @route.get()
             index() {
-                return response.json({ lorem: 1 })
+                return response.json({})
                     .setCookie("theName", "lorem ipsum")
             }
         }
@@ -71,6 +71,37 @@ describe("Redirect Action Result", () => {
             .expect(200)
             .expect((resp: supertest.Response) => {
                 expect(resp.get("Set-Cookie")[0]).toBe("theName=lorem ipsum; path=/; httponly")
+            })
+    })
+
+    it("Should be able to remove cookie", async () => {
+        class AnimalController {
+            @route.get()
+            index() {
+                return response.json({})
+                    .setCookie("theName", "lorem ipsum")
+            }
+            remove() {
+                return response.json({})
+                    .setCookie("theName")
+            }
+        }
+        const plumier = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set({ controller: AnimalController })
+            .set({ mode: "production" })
+            .initialize()
+        await supertest(plumier.callback())
+            .get("/animal/index")
+            .expect(200)
+            .expect((resp: supertest.Response) => {
+                expect(resp.get("Set-Cookie")[0]).toBe("theName=lorem ipsum; path=/; httponly")
+            })
+        await supertest(plumier.callback())
+            .get("/animal/remove")
+            .expect(200)
+            .expect((resp: supertest.Response) => {
+                expect(resp.get("Set-Cookie")[0]).toContain("expires")
             })
     })
 })
