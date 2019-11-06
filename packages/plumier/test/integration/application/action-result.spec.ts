@@ -1,4 +1,4 @@
-import Plumier, { response, route, RestfulApiFacility } from "plumier"
+import Plumier, { response, route, RestfulApiFacility, bind } from "plumier"
 import supertest from "supertest"
 
 
@@ -91,17 +91,40 @@ describe("Redirect Action Result", () => {
             .set({ controller: AnimalController })
             .set({ mode: "production" })
             .initialize()
-        await supertest(plumier.callback())
+        const agent = supertest.agent(plumier.callback())
+        await agent
             .get("/animal/index")
             .expect(200)
-            .expect((resp: supertest.Response) => {
-                expect(resp.get("Set-Cookie")[0]).toBe("theName=lorem ipsum; path=/; httponly")
-            })
-        await supertest(plumier.callback())
+        await agent
             .get("/animal/remove")
             .expect(200)
             .expect((resp: supertest.Response) => {
                 expect(resp.get("Set-Cookie")[0]).toContain("expires")
             })
+    })
+
+    it("Should be able to bind cookie", async () => {
+        class AnimalController {
+            @route.get()
+            index() {
+                return response.json({})
+                    .setCookie("theName", "lorem ipsum")
+            }
+            check(@bind.cookie("theName") cookie: string) {
+                return response.json({ cookie })
+            }
+        }
+        const plumier = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set({ controller: AnimalController })
+            .set({ mode: "production" })
+            .initialize()
+        const agent = supertest.agent(plumier.callback())
+        await agent
+            .get("/animal/index")
+            .expect(200)
+        await agent
+            .get("/animal/check")
+            .expect(200, { cookie: "lorem ipsum" })
     })
 })
