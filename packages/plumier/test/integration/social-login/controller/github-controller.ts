@@ -1,21 +1,12 @@
-import { GitHubLoginStatus, GitHubProvider, oAuthCallback } from "@plumier/social-login"
-import { bind, response, route } from "plumier"
-import qs from "querystring"
+import { GitHubDialogProvider, GitHubLoginStatus, GitHubProvider, oAuthCallback, oAuthDialogEndPoint } from "@plumier/social-login"
+import { bind } from "plumier"
 
 import { github } from "../config"
 
 
 export class GithubController {
-    @route.get()
-    login() {
-        const query = qs.stringify({
-            state: "state",
-            redirect_uri: github.redirectUri,
-            client_id: github.appId,
-        })
-        const dialog = "https://github.com/login/oauth/authorize?" + query
-        return response.redirect(dialog)
-    }
+    @oAuthDialogEndPoint(new GitHubDialogProvider("/github/callback", github.appId))
+    login() { }
 
     @oAuthCallback(new GitHubProvider(github.appId, github.appSecret))
     callback(@bind.loginStatus() profile: GitHubLoginStatus) {

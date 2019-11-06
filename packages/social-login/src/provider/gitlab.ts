@@ -1,4 +1,4 @@
-import { SocialAuthProvider, SocialLoginStatus } from "../middleware"
+import { SocialAuthProvider, SocialLoginStatus, DialogProvider } from "../middleware"
 import { domain, val } from '@plumier/core';
 
 /*
@@ -63,4 +63,11 @@ export class GitLabProvider implements SocialAuthProvider {
         public profileParams: {} = {}
     ) { }
 
+}
+
+export class GitLabDialogProvider extends DialogProvider {
+    url = "https://gitlab.com/oauth/authorize"
+    params = {
+        response_type:"code"
+    }
 }

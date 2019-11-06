@@ -1,10 +1,10 @@
-import { GoogleProfile } from "@plumier/social-login"
 import axios from "axios"
 import faker from "faker"
 import Plumier, { WebApiFacility } from "plumier"
+import qs from "querystring"
 import supertest from "supertest"
 
-import { axiosResult, googleProfile, axiosError } from "./helper"
+import { axiosError, axiosResult, googleProfile } from "./helper"
 
 jest.mock("axios")
 
@@ -20,8 +20,9 @@ describe("Social Login Mock Test", () => {
         (axios.post as jest.Mock).mockReturnValue(axiosResult({ access_token: faker.random.uuid() }));
         (axios.get as jest.Mock).mockReturnValue(axiosResult(googleProfile));
         const app = await createApp()
-        const { body } = await supertest(app.callback())
-            .get("/google/callback?code=lorem")
+        const agent = supertest.agent(app.callback())
+        const { body } = await agent
+            .get(`/google/callback?code=lorem`)
             .expect(200)
         expect(body.status).toBe("Success")
         expect(body.data).toMatchObject(googleProfile)
@@ -31,8 +32,9 @@ describe("Social Login Mock Test", () => {
         (axios.post as jest.Mock).mockRejectedValue(axiosError({ error: "invalid auth code" }));
         (axios.get as jest.Mock).mockReturnValue(axiosResult(googleProfile));
         const app = await createApp()
-        const { body } = await supertest(app.callback())
-            .get("/google/callback?code=lorem")
+        const agent = supertest.agent(app.callback())
+        const { body } = await agent
+            .get(`/google/callback?code=lorem`)
             .expect(200)
         expect(body.status).toBe("Failed")
         expect(body.error).toMatchObject({ error: "invalid auth code" })
@@ -42,8 +44,9 @@ describe("Social Login Mock Test", () => {
         (axios.post as jest.Mock).mockRejectedValue(new Error("lorem ipsum"));
         (axios.get as jest.Mock).mockReturnValue(axiosResult(googleProfile));
         const app = await createApp()
-        const { body } = await supertest(app.callback())
-            .get("/google/callback?code=lorem")
+        const agent = supertest.agent(app.callback())
+        const { body } = await agent
+            .get(`/google/callback?code=lorem`)
             .expect(200)
         expect(body.status).toBe("Failed")
         expect(body.error).toMatchObject({ message: "lorem ipsum" })
@@ -53,7 +56,8 @@ describe("Social Login Mock Test", () => {
         (axios.post as jest.Mock).mockReturnValue(axiosResult({ access_token: faker.random.uuid() }));;
         (axios.get as jest.Mock).mockReturnValue(axiosResult(googleProfile));
         const app = await createApp()
-        const { body } = await supertest(app.callback())
+        const agent = supertest.agent(app.callback())
+        const { body } = await agent
             .get("/google/callback")
             .expect(200)
         expect(body.status).toBe("Failed")
@@ -64,8 +68,9 @@ describe("Social Login Mock Test", () => {
         (axios.post as jest.Mock).mockReturnValue(axiosResult({ access_token: faker.random.uuid() }));;
         (axios.get as jest.Mock).mockReturnValue(axiosResult({ ...googleProfile, family_name: undefined }));
         const app = await createApp()
-        const { body } = await supertest(app.callback())
-            .get("/google/callback?code=lorem")
+        const agent = supertest.agent(app.callback())
+        const { body } = await agent
+            .get(`/google/callback?code=lorem`)
             .expect(200)
         expect(body.status).toBe("Failed")
         expect(body.error).toMatchObject([{ messages: ["Required"], path: ["profile", "data", "family_name"] }])
@@ -79,5 +84,48 @@ describe("Callback View", () => {
             .get("/view/popup")
             .expect(200)
         expect(text).toMatchSnapshot()
+    })
+})
+
+describe("Social Login Dialogs", () => {
+
+    it("Should return facebook dialog properly", async () => {
+        const app = await createApp()
+        const resp = await supertest(app.callback())
+            .get("/facebook/login")
+            .expect(302)
+        const parts = resp.get("location").split("?")
+        expect(parts[0]).toBe("https://www.facebook.com/v4.0/dialog/oauth")
+        expect(Object.keys(qs.parse(parts[1])).sort()).toMatchSnapshot()
+    })
+
+    it("Should return google dialog properly", async () => {
+        const app = await createApp()
+        const resp = await supertest(app.callback())
+            .get("/google/login")
+            .expect(302)
+        const parts = resp.get("location").split("?")
+        expect(parts[0]).toBe("https://accounts.google.com/o/oauth2/v2/auth")
+        expect(Object.keys(qs.parse(parts[1])).sort()).toMatchSnapshot()
+    })
+
+    it("Should return github dialog properly", async () => {
+        const app = await createApp()
+        const resp = await supertest(app.callback())
+            .get("/github/login")
+            .expect(302)
+        const parts = resp.get("location").split("?")
+        expect(parts[0]).toBe("https://github.com/login/oauth/authorize")
+        expect(Object.keys(qs.parse(parts[1])).sort()).toMatchSnapshot()
+    })
+
+    it("Should return gitlab dialog properly", async () => {
+        const app = await createApp()
+        const resp = await supertest(app.callback())
+            .get("/gitlab/login")
+            .expect(302)
+        const parts = resp.get("location").split("?")
+        expect(parts[0]).toBe("https://gitlab.com/oauth/authorize")
+        expect(Object.keys(qs.parse(parts[1])).sort()).toMatchSnapshot()
     })
 })
