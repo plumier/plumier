@@ -1,5 +1,6 @@
-import { SocialAuthProvider, SocialLoginStatus } from "../middleware"
-import { domain, val } from '@plumier/core';
+import { domain, val } from "@plumier/core"
+
+import { DialogProvider, SocialAuthProvider, SocialLoginStatus } from "../middleware"
 
 /*
 Dialog: 
@@ -37,15 +38,15 @@ export class GoogleProfile {
     ) { }
 }
 
-@domain() 
+@domain()
 export class GoogleLoginStatus implements SocialLoginStatus<GoogleProfile> {
     constructor(
         public status: "Success" | "Failed",
         @val.optional()
         public error?: any,
         @val.optional()
-        public data?: GoogleProfile 
-    ){}
+        public data?: GoogleProfile
+    ) { }
 }
 
 export class GoogleProvider implements SocialAuthProvider {
@@ -57,5 +58,14 @@ export class GoogleProvider implements SocialAuthProvider {
         public clientSecret: string,
         public profileParams: {} = {}
     ) { }
+}
 
+export class GoogleDialogProvider extends DialogProvider {
+    url = "https://accounts.google.com/o/oauth2/v2/auth"
+    params = {
+        access_type: "offline",
+        include_granted_scopes: true,
+        response_type: "code",
+        scope: "https://www.googleapis.com/auth/userinfo.profile"
+    }
 }

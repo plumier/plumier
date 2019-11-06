@@ -1,10 +1,10 @@
-import { ActionResult, bind, BindingDecorator, Invocation, Middleware, val, ValidationError } from "@plumier/core"
+import { ActionResult, bind, BindingDecorator, Invocation, Middleware, response, val, ValidationError } from "@plumier/core"
 import Axios from "axios"
+import debug from "debug"
 import { Context } from "koa"
+import qs from "querystring"
 import { decorateProperty, mergeDecorator } from "tinspector"
 import * as tc from "typedconverter"
-import debug from "debug"
-
 
 const LoginStatusParameterBinding = "LoginStatusParameterBinding"
 
@@ -22,6 +22,12 @@ export interface SocialAuthProvider {
     profileParams: {}
 }
 
+export abstract class DialogProvider {
+    abstract url: string
+    params: any = {}
+    constructor(public redirectUriPath: string, public clientId: string) { }
+}
+
 declare module "@plumier/core" {
     namespace bind {
         export function loginStatus(): (target: any, name: string, index: number) => void
@@ -35,7 +41,7 @@ bind.loginStatus = () => {
     }), val.optional())
 }
 
-export class SocialAuthMiddleware implements Middleware {
+export class OAuthCallbackMiddleware implements Middleware {
     private log = debug("@plumier/social-login")
 
     constructor(private option: SocialAuthProvider) { }
@@ -114,5 +120,20 @@ export class SocialAuthMiddleware implements Middleware {
             this.bindProfile({ status: "Failed", error: { message: "Authorization code is required" } }, invocation.context)
         }
         return invocation.proceed()
+    }
+}
+
+export class OAuthDialogEndPointMiddleware implements Middleware {
+    constructor(private provider: DialogProvider) { }
+
+    async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
+        const result = await invocation.proceed()
+        const params = { ...this.provider.params, ...result.body }
+        const url = this.provider.url
+        const root = url.endsWith("?") ? url.substring(0, url.length - 1) : url;
+        params.redirect_uri = invocation.context.origin + this.provider.redirectUriPath
+        params.client_id = this.provider.clientId
+        const redirect = root + "?" + qs.stringify(params)
+        return response.redirect(redirect)
     }
 }

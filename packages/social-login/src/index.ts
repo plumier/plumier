@@ -1,18 +1,21 @@
-import { middleware, ActionResult, response } from "@plumier/core"
+import { ActionResult, middleware, response } from "@plumier/core"
 
-import { SocialAuthMiddleware, SocialAuthProvider } from "./middleware"
-import { content } from './callback-view'
+import { content } from "./callback-view"
+import { DialogProvider, SocialAuthProvider, OAuthCallbackMiddleware, OAuthDialogEndPointMiddleware } from "./middleware"
 
 export function oAuthCallback(option: SocialAuthProvider) {
-    return middleware.use(new SocialAuthMiddleware(option))
+    return middleware.use(new OAuthCallbackMiddleware(option))
 }
 
-export { GoogleProvider, GoogleLoginStatus, GoogleProfile } from "./provider/google"
-export { FacebookProvider, FacebookLoginStatus, FacebookProfile } from "./provider/facebook"
-export { GitHubProvider, GitHubLoginStatus, GitHubProfile } from "./provider/github"
-export { GitLabProvider, GitLabLoginStatus, GitLabProfile } from "./provider/gitlab"
-export { SocialAuthMiddleware, SocialLoginStatus, SocialAuthProvider } from "./middleware"
+export function oAuthDialogEndPoint(option:DialogProvider){
+    return middleware.use(new OAuthDialogEndPointMiddleware(option))
+}
 
+export { GoogleProvider, GoogleLoginStatus, GoogleProfile, GoogleDialogProvider } from "./provider/google"
+export { FacebookProvider, FacebookLoginStatus, FacebookProfile, FacebookDialogProvider } from "./provider/facebook"
+export { GitHubProvider, GitHubLoginStatus, GitHubProfile, GitHubDialogProvider } from "./provider/github"
+export { GitLabProvider, GitLabLoginStatus, GitLabProfile, GitLabDialogProvider } from "./provider/gitlab"
+export { OAuthCallbackMiddleware, OAuthDialogEndPointMiddleware, SocialLoginStatus, SocialAuthProvider, DialogProvider } from "./middleware"
 
 declare module "@plumier/core" {
     namespace response {
