@@ -1,11 +1,11 @@
-import { GoogleDialogProvider, GoogleLoginStatus, GoogleProvider, oAuthCallback, socialDialog } from "@plumier/social-login"
+import { GoogleDialogProvider, GoogleLoginStatus, GoogleProvider, oAuthCallback, oAuthDialogEndPoint } from "@plumier/social-login"
 import { bind } from "plumier"
 
 import { google } from "../config"
 
 
 export class GoogleController {
-    @socialDialog(new GoogleDialogProvider("/google/callback", google.appId))
+    @oAuthDialogEndPoint(new GoogleDialogProvider("/google/callback", google.appId))
     login() { }
 
     @oAuthCallback(new GoogleProvider(google.appId, google.appSecret))

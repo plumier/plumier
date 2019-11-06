@@ -3,7 +3,7 @@ import {
     FacebookLoginStatus,
     FacebookProvider,
     oAuthCallback,
-    socialDialog,
+    oAuthDialogEndPoint,
 } from "@plumier/social-login"
 import { bind } from "plumier"
 
@@ -11,7 +11,7 @@ import { fb } from "../config"
 
 
 export class FacebookController {
-    @socialDialog(new FacebookDialogProvider("/facebook/callback", fb.appId))
+    @oAuthDialogEndPoint(new FacebookDialogProvider("/facebook/callback", fb.appId))
     login() { }
 
     @oAuthCallback(new FacebookProvider(fb.appId, fb.appSecret))

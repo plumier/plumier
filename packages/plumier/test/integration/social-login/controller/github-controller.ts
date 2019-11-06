@@ -1,11 +1,11 @@
-import { GitHubDialogProvider, GitHubLoginStatus, GitHubProvider, oAuthCallback, socialDialog } from "@plumier/social-login"
+import { GitHubDialogProvider, GitHubLoginStatus, GitHubProvider, oAuthCallback, oAuthDialogEndPoint } from "@plumier/social-login"
 import { bind } from "plumier"
 
 import { github } from "../config"
 
 
 export class GithubController {
-    @socialDialog(new GitHubDialogProvider("/github/callback", github.appId))
+    @oAuthDialogEndPoint(new GitHubDialogProvider("/github/callback", github.appId))
     login() { }
 
     @oAuthCallback(new GitHubProvider(github.appId, github.appSecret))
