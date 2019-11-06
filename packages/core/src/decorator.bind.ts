@@ -4,6 +4,7 @@ import { decorateParameter, mergeDecorator } from "tinspector"
 import { BindingDecorator, HeaderPart, RequestPart } from "./binder"
 import { getChildValue } from "./common"
 import { val } from '.';
+import { GetOption } from 'cookies';
 
 export namespace bind {
 
@@ -93,6 +94,15 @@ export namespace bind {
      */
     export function user() {
         return mergeDecorator(val.optional(), ctxDecorator("state.user"))
+    }
+
+    /**
+     * Bind request cookie into parameter
+     *    
+     *     method(@bind.cookie("name") cookie:string){}
+     */
+    export function cookie(name: string, opt?: GetOption) {
+        return mergeDecorator(val.optional(), bind.custom(ctx => ctx.cookies.get(name, opt)))
     }
 
     /**
