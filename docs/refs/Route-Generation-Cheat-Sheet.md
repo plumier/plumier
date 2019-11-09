@@ -240,6 +240,8 @@ DELETE category/:type/animal/:id
 ## Multiple Route Decorator
 Multiple routes can be applied to an action, this functionalities needed for example when hosting an SPA with url rewrite
 
+> A more convenient way to serve SPA url rewrite is using `@route.historyApiFallback()` see [here](/docs/refs/serve-static#history-api-fallback) for more info
+
 ```typescript
 export class HomeController {
     @route.get("/")
