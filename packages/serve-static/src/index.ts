@@ -1,10 +1,19 @@
-import { ActionResult, DefaultFacility, Invocation, Middleware, PlumierApplication, response, bind, RouteInfo } from "@plumier/core"
+import {
+    ActionResult,
+    route,
+    DefaultFacility,
+    Invocation,
+    Middleware,
+    PlumierApplication,
+    response,
+    RouteAnalyzerIssue,
+    RouteInfo,
+} from "@plumier/core"
 import { Context } from "koa"
 import send from "koa-send"
-import { extname } from "path"
-import { string } from 'joi';
-import { decorateMethod } from "tinspector"
 import mime from "mime-types"
+import { extname } from "path"
+import { decorateMethod } from "tinspector"
 
 
 // --------------------------------------------------------------------- //
@@ -16,8 +25,8 @@ declare module "@plumier/core" {
         function file(path: string, opt?: ServeStaticOptions): ActionResult
     }
 
-    namespace bind {
-        function historyApiFallback(): (target: any, name: string) => void
+    interface RouteDecoratorImpl {
+        historyApiFallback(): (target: any, name: string) => void
     }
 
     export interface Configuration {
@@ -74,7 +83,7 @@ export class FileActionResult extends ActionResult {
 
 response.file = (path: string, opt?: ServeStaticOptions) => new FileActionResult(path, opt)
 
-bind.historyApiFallback = () => {
+route.historyApiFallback = () => {
     return decorateMethod({ type: "HistoryApiFallback" })
 }
 
@@ -128,8 +137,24 @@ export class HistoryApiFallbackMiddleware implements Middleware {
 // ------------------------------ ANALYZER ----------------------------- //
 // --------------------------------------------------------------------- //
 
-function multipleDecorators(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
-    
+function getActionName(route: RouteInfo) {
+    return `${route.controller.name}.${route.action.name}(${route.action.parameters.map(x => x.name).join(", ")})`
+}
+
+function multipleDecoratorsCheck(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
+    const histories = allRoutes.filter(x => x.action.decorators.some(x => x.type === "HistoryApiFallback"))
+    if (histories.length > 1) {
+        const actions = histories.map(x => getActionName(x)).join(", ")
+        return { type: "error", message: `PLUM1020: Multiple @route.historyApiFallback() is not allowed, in ${actions}` }
+    }
+    else return { type: "success" }
+}
+
+function httpMethodCheck(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
+    if (route.method !== "get")
+        return { type: "error", message: `PLUM1021: History api fallback should have GET http method, in ${getActionName(route)}` }
+    else
+        return { type: "success" }
 }
 
 
@@ -142,13 +167,14 @@ export class ServeStaticFacility extends DefaultFacility {
     constructor(public option: ServeStaticOptions) { super() }
 
     setup(app: Readonly<PlumierApplication>) {
+        const analyzers = (app.config.analyzers || []).concat([multipleDecoratorsCheck, httpMethodCheck])
+        Object.assign(app.config, { analyzers })
         app.use(new ServeStaticMiddleware(this.option))
         app.use(new HistoryApiFallbackMiddleware(() => this.redirectPath))
     }
 
     async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[]) {
         const histories = routes.filter(x => x.action.decorators.some(x => x.type === "HistoryApiFallback"))
-        if (histories.length > 1) throw new Error(`Multiple @route.historyApiFallback() is not allowed, in ${histories.map(x => `${x.controller.name}.${x.action.name}`).join(", ")}`)
         if (histories.length === 1) {
             this.redirectPath = histories[0].url
         }

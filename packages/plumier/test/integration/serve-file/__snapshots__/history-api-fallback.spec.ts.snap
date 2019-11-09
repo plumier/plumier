@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`History Api Fallback Should fallback if requested by provide accept header html 1`] = `"Redirecting to <a href=\\"/animal/get\\">/animal/get</a>."`;
