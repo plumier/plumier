@@ -21,7 +21,7 @@
   "dependencies": {
     "@types/glob": "^7.1.1",
     "@types/koa": "^2.0.51",
-    "chalk": "^2.4.2",
+    "chalk": "^3.0.0",
     "glob": "^7.1.5",
     "path-to-regexp": "^3.1.0",
     "tinspector": "^2.2.7",
