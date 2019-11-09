@@ -72,6 +72,10 @@ export interface RouteInfo {
     access?: string
 }
 
+export interface RouteAnalyzerIssue { type: "error" | "warning" | "success", message?: string }
+export type RouteAnalyzerFunction = (route: RouteInfo, allRoutes: RouteInfo[]) => RouteAnalyzerIssue
+
+
 // --------------------------------------------------------------------- //
 // ------------------------------ FACILITY ----------------------------- //
 // --------------------------------------------------------------------- //
@@ -338,6 +342,8 @@ export interface Configuration {
      * Key-value pair to store authorization logic. Separate decorator and authorization logic
      */
     authorizer?: AuthorizeStore
+
+    analyzers?: RouteAnalyzerFunction[]
 }
 
 export interface PlumierConfiguration extends Configuration {
