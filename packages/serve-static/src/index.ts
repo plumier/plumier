@@ -1,17 +1,27 @@
-import { ActionResult, DefaultFacility, Invocation, Middleware, PlumierApplication, response } from "@plumier/core"
+import { ActionResult, DefaultFacility, Invocation, Middleware, PlumierApplication, response, bind, RouteInfo } from "@plumier/core"
 import { Context } from "koa"
 import send from "koa-send"
 import { extname } from "path"
 import { string } from 'joi';
+import { decorateMethod } from "tinspector"
+import mime from "mime-types"
 
+
+// --------------------------------------------------------------------- //
+// ------------------------------- TYPES ------------------------------- //
+// --------------------------------------------------------------------- //
 
 declare module "@plumier/core" {
     namespace response {
-        function file (path: string, opt?: ServeStaticOptions) :ActionResult
+        function file(path: string, opt?: ServeStaticOptions): ActionResult
+    }
+
+    namespace bind {
+        function historyApiFallback(): (target: any, name: string) => void
     }
 
     export interface Configuration {
-        sendFile?: (path:string, opt?:ServeStaticOptions) => Promise<string>
+        sendFile?: (path: string, opt?: ServeStaticOptions) => Promise<string>
     }
 }
 
@@ -52,10 +62,26 @@ export class FileActionResult extends ActionResult {
     async execute(ctx: Context) {
         await super.execute(ctx)
         ctx.type = extname(this.body)
-        const sendFile = ctx.config.sendFile || ((path:string, opt?:ServeStaticOptions) => send(ctx, path, opt))
+        const sendFile = ctx.config.sendFile || ((path: string, opt?: ServeStaticOptions) => send(ctx, path, opt))
         await sendFile(this.body, this.opt)
     }
 }
+
+// --------------------------------------------------------------------- //
+// ----------------------------- DECORATORS ---------------------------- //
+// --------------------------------------------------------------------- //
+
+
+response.file = (path: string, opt?: ServeStaticOptions) => new FileActionResult(path, opt)
+
+bind.historyApiFallback = () => {
+    return decorateMethod({ type: "HistoryApiFallback" })
+}
+
+
+// --------------------------------------------------------------------- //
+// ---------------------------- MIDDLEWARES ---------------------------- //
+// --------------------------------------------------------------------- //
 
 export class ServeStaticMiddleware implements Middleware {
     constructor(public option: ServeStaticOptions) { }
@@ -81,13 +107,42 @@ export class ServeStaticMiddleware implements Middleware {
     }
 }
 
-export class ServeStaticFacility extends DefaultFacility {
-    constructor(public option: ServeStaticOptions) { super() }
 
-    setup(app: Readonly<PlumierApplication>) {
-        app.use(new ServeStaticMiddleware(this.option))
+export class HistoryApiFallbackMiddleware implements Middleware {
+    constructor(private redirectPath: () => string | undefined) { }
+
+    async execute(i: Readonly<Invocation>): Promise<ActionResult> {
+        const isFile = !!mime.lookup(i.context.path)
+        const redirect = this.redirectPath()
+        //no route = no controller = no handler
+        if (!isFile && !!redirect && !i.context.route && i.context.request.method === "GET" && i.context.request.accepts("html")) {
+            return response.redirect(redirect)
+        }
+        else
+            return i.proceed()
     }
 }
 
 
-response.file = (path: string, opt?: ServeStaticOptions) => new FileActionResult(path, opt)
+// --------------------------------------------------------------------- //
+// ------------------------------ FACILITY ----------------------------- //
+// --------------------------------------------------------------------- //
+
+export class ServeStaticFacility extends DefaultFacility {
+    private redirectPath?: string
+    constructor(public option: ServeStaticOptions) { super() }
+
+    setup(app: Readonly<PlumierApplication>) {
+        app.use(new ServeStaticMiddleware(this.option))
+        app.use(new HistoryApiFallbackMiddleware(() => this.redirectPath))
+    }
+
+    async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[]) {
+        const histories = routes.filter(x => x.action.decorators.some(x => x.type === "HistoryApiFallback"))
+        if (histories.length > 1) throw new Error(`Multiple @route.historyApiFallback() is not allowed, in ${histories.map(x => `${x.controller.name}.${x.action.name}`).join(", ")}`)
+        if (histories.length === 1) {
+            this.redirectPath = histories[0].url
+        }
+    }
+}
+
