@@ -1,7 +1,6 @@
-import { consoleLog, RouteInfo } from "@plumier/core"
+import { consoleLog, RouteAnalyzerFunction, RouteInfo } from "@plumier/core"
 import Plumier, { domain, RestfulApiFacility, route } from "plumier"
 import reflect from "tinspector"
-import { RouteAnalyzerFunction } from 'core/src/types'
 
 describe("Route Analyzer", () => {
     it("Should identify missing backing parameter", async () => {
