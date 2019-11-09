@@ -3,7 +3,7 @@
 
 
 describe("History Api Fallback", () =>{
-    it("Should fallback if requested by accept html", async () =>{
+    it("Should fallback if requested by provide accept header html", async () =>{
 
     })
 
