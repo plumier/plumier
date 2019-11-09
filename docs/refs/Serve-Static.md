@@ -38,3 +38,26 @@ const HomeController {
     }
 }
 ```
+
+## History Api Fallback
+History Api Fallback help SPA application which commonly handle navigation using History Api. Its become problem when user hitting refresh button in the middle of navigation or if user bookmark the page because it will result in 404. 
+
+Plumier provide `@route.historyApiFallback()` decorator to automatically redirect all the browser request (API or file request can be detected) into the specific controller action. Internally it detects the request `Accept` header to guess if the request comes from a browser or an API call.
+
+> Keep in mind that `@route.historyApiFallback()` require the `ServeStaticFacility` enabled on the Plumier application.
+
+
+```typescript
+const HomeController {
+    @route.get("/")
+    @route.historyApiFallback()
+    index(){
+        return response.file(join(__dirname, "../../build/index.html"))
+    }
+}
+```
+
+Example above showing that you host the SPA html built by `create-react-app` or `@vue/cli` as the root url `/`. The `@route.historyApiFallback()` will automatically redirect all browser request into the root url `/` with exception:
+* Requested url doesn't have any appropriate controller / handler 
+* Requested url is not a static file serve
+* Requested url is not an API call
