@@ -35,7 +35,7 @@ export class WebApiFacility extends DefaultFacility {
             app.set({ controller: this.opt.controller })
         if (this.opt && this.opt.validators)
             app.set({ validators: this.opt.validators })
-        app.use(new ValidationMiddleware(app.config))
+        app.use(new ValidationMiddleware())
     }
 }
 

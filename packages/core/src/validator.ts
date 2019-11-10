@@ -106,11 +106,10 @@ async function validate(ctx: Context): Promise<tc.Result> {
 // --------------------------------------------------------------------- //
 
 class ValidationMiddleware implements Middleware {
-    constructor(private config: Configuration) { }
+    constructor() { }
 
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
         const ctx = invocation.context;
-        (ctx as any).config = this.config
         if (!ctx.route) return invocation.proceed();
         const result = await validate(invocation.context);
         if (result.issues)

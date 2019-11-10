@@ -19,7 +19,9 @@
                 "${fileBasenameNoExtension}",
                 "--runInBand",
                 "--config",
-                "jest.config.debug.js"
+                "jest.config.debug.js",
+                "--testTimeout",
+                "1000000"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"

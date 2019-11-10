@@ -1,6 +1,20 @@
-import { Context } from "koa"
+import { Context } from "koa";
+import { ActionResult, HttpStatusError, Invocation, Middleware, MiddlewareUtil, RouteContext, RouteInfo } from "./types";
 
-import { ActionResult, HttpStatusError, Invocation, Middleware, RouteContext } from "./types"
+
+
+function getMiddleware(global: Middleware[], route: RouteInfo) {
+    const conMdws = MiddlewareUtil.extractDecorators(route)
+    const result: Middleware[] = []
+    for (const mdw of global) {
+        result.push(mdw)
+    }
+    for (const mdw of conMdws) {
+        result.push(mdw)
+    }
+    return result
+}
+
 
 class MiddlewareInvocation implements Invocation {
     constructor(private middleware: Middleware, public context: Context, private next: Invocation) { }
@@ -18,14 +32,13 @@ class NotFoundActionInvocation implements Invocation {
 }
 
 class ActionInvocation implements Invocation {
-    constructor(public context: RouteContext) { }
+    constructor(public context: RouteContext, private route: RouteInfo) { }
     async proceed(): Promise<ActionResult> {
-        const route = this.context.route;
         const config = this.context.config
-        const controller: any = config.dependencyResolver.resolve(route.controller.type)
-        const result = (<Function>controller[route.action.name]).apply(controller, this.context.parameters)
+        const controller: any = config.dependencyResolver.resolve(this.route.controller.type)
+        const result = (<Function>controller[this.route.action.name]).apply(controller, this.context.parameters)
         const awaitedResult = await Promise.resolve(result)
-        const status = config.responseStatus && config.responseStatus[route.method] || 200
+        const status = config.responseStatus && config.responseStatus[this.route.method] || 200
         //if instance of action result, return immediately
         if (awaitedResult && awaitedResult.execute) {
             awaitedResult.status = awaitedResult.status || status
@@ -37,14 +50,24 @@ class ActionInvocation implements Invocation {
     }
 }
 
-async function pipe(middlewares: Middleware[], context: Context, invocation: Invocation) {
-    let invocationStack: Invocation = invocation;
+function pipe(ctx: Context, route?: RouteInfo, state?: any) {
+    const context = ctx;
+    context.state = { ...ctx.state, ...state }
+    let middlewares: Middleware[];
+    let invocationStack: Invocation;
+    if (!!route) {
+        middlewares = getMiddleware(context.config.middlewares, route)
+        invocationStack = new ActionInvocation(context as RouteContext, route)
+    }
+    else {
+        middlewares = context.config.middlewares.slice(0)
+        invocationStack = new NotFoundActionInvocation(context)
+    }
     for (let i = middlewares.length; i--;) {
         const mdw = middlewares[i];
         invocationStack = new MiddlewareInvocation(mdw, context, invocationStack)
     }
-    const result = await invocationStack.proceed()
-    await result.execute(context)
+    return invocationStack.proceed()
 }
 
-export { pipe, ActionInvocation, NotFoundActionInvocation }
+export { pipe };

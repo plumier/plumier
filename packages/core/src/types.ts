@@ -111,7 +111,6 @@ declare module "koa" {
     }
 }
 
-
 export interface RouteContext extends Context {
     route: Readonly<RouteInfo>,
     parameters: any[]
@@ -311,6 +310,11 @@ export interface Configuration {
     mode: "debug" | "production"
 
     /**
+     * List of registered global middlewares
+     */
+    middlewares:Middleware[]
+
+    /**
      * Specify controller path (absolute or relative to entry point) or the controller classes array.
      */
     controller: string | Class[] | Class
@@ -347,7 +351,6 @@ export interface Configuration {
 }
 
 export interface PlumierConfiguration extends Configuration {
-    middleware: Middleware[]
     facilities: Facility[]
 }
 
