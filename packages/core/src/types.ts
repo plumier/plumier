@@ -106,6 +106,7 @@ export interface Invocation {
 declare module "koa" {
     interface Context {
         route?: Readonly<RouteInfo>,
+        routes: RouteInfo[]
         config: Readonly<Configuration>,
         parameters?: any[]
     }

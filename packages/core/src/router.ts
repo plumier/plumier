@@ -50,6 +50,7 @@ function router(infos: RouteInfo[], config:Configuration) {
     return async (ctx: Context) => {
         try {
             ctx.config = config
+            ctx.routes = infos
             const match = getMatcherCached(infos, ctx)
             if (match) {
                 for (const key in match.query) {
