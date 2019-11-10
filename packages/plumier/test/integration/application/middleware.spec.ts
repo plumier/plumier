@@ -322,6 +322,45 @@ describe("Middleware", () => {
                 .expect(200, { method: "get" })
         })
 
+        it("Should be able to invoke another controller from inside controller with the same signature", async () => {
+            class AnimalController {
+                @route.get("get/:id")
+                get(id:string, offset:number) {
+                    return { id, offset }
+                }
+
+                @route.get("list/:id")
+                list(id:string, offset:number, @bind.ctx() ctx:Context){
+                    return invoke(ctx, ctx.routes.find(x => x.action.name === "get")!)
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/list/200?offset=30")
+                .expect(200, { id: "200", offset: 30 })
+        })
+
+        it("Should be able to invoke another controller from inside controller with POST method", async () => {
+            class AnimalController {
+                @route.post()
+                get(id:string, offset:number) {
+                    return { id, offset }
+                }
+
+                @route.post()
+                list(id:string, offset:number, @bind.ctx() ctx:Context){
+                    return invoke(ctx, ctx.routes.find(x => x.action.name === "get")!)
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .post("/animal/list")
+                .send({id: "200", offset: 30})
+                .expect(201, { id: "200", offset: 30 })
+        })
+
         it("Should able to invoke controller from inside middleware", async () => {
             class AnimalController {
                 get() {
@@ -342,6 +381,28 @@ describe("Middleware", () => {
                 .get("/hello")
                 .expect(200, { method: "get" })
         })
+
+        it("Should able to invoke controller from inside middleware with predefined parameters", async () => {
+            class AnimalController {
+                get(id:string) {
+                    return { id }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .use({
+                    execute: async i => {
+                        if (i.context.state.caller === "system" && i.context.request.path === "/hello"){
+                            (i.context.parameters as any) = [i.context.query.id]
+                            return invoke(i.context, i.context.routes[0])
+                        }
+                        else
+                            return i.proceed()
+                    }
+                })
+                .initialize()
+            await Supertest(app.callback())
+                .get("/hello?id=300")
+                .expect(200, { id: "300" })
+        })
     })
 })
-
