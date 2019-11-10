@@ -1,7 +1,7 @@
+import { invoke } from '@plumier/core'
 import { Context } from "koa"
-import Plumier, { Class, Invocation, Middleware, middleware, RestfulApiFacility, route, Facility, DefaultFacility, PlumierApplication, RouteInfo } from "plumier"
+import Plumier, { bind, Class, Invocation, Middleware, middleware, RestfulApiFacility, route } from "plumier"
 import Supertest from "supertest"
-import { pipe } from '@plumier/core'
 
 
 class InterceptBody implements Middleware {
@@ -304,27 +304,39 @@ describe("Middleware", () => {
         })
     })
 
-    describe("Pipeline", () => {
-        it("Should able to execute handler using RouteInfo", async () => {
+    describe("Controller Invoker", () => {
+        it("Should be able to invoke another controller from inside controller", async () => {
+            class AnimalController {
+                get() {
+                    return { method: "get" }
+                }
+
+                list(@bind.ctx() ctx:Context){
+                    return invoke(ctx, ctx.routes.find(x => x.action.name === "get")!)
+                }
+            }
+            const app = await fixture(AnimalController)
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/list")
+                .expect(200, { method: "get" })
+        })
+
+        it("Should able to invoke controller from inside middleware", async () => {
             class AnimalController {
                 get() {
                     return { method: "get" }
                 }
             }
-            class AnimalFacility extends DefaultFacility {
-                async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[]): Promise<void> {
-                    app.use({
-                        execute: async i => {
-                            if (!i.context.state.isFallback && i.context.request.path === "/hello")
-                                return await pipe(i.context, routes[0], { isFallback: true })
-                            else
-                                return i.proceed()
-                        }
-                    })
-                }
-            }
             const app = await fixture(AnimalController)
-                .set(new AnimalFacility())
+                .use({
+                    execute: async i => {
+                        if (i.context.state.caller === "system" && i.context.request.path === "/hello")
+                            return invoke(i.context, i.context.routes[0])
+                        else
+                            return i.proceed()
+                    }
+                })
                 .initialize()
             await Supertest(app.callback())
                 .get("/hello")
