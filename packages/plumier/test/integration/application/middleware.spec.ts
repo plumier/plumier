@@ -1,6 +1,7 @@
 import { Context } from "koa"
-import Plumier, { Class, Invocation, Middleware, middleware, RestfulApiFacility, route } from "plumier"
+import Plumier, { Class, Invocation, Middleware, middleware, RestfulApiFacility, route, Facility, DefaultFacility, PlumierApplication, RouteInfo } from "plumier"
 import Supertest from "supertest"
+import { pipe } from '@plumier/core'
 
 
 class InterceptBody implements Middleware {
@@ -302,4 +303,33 @@ describe("Middleware", () => {
                 .expect(200)
         })
     })
+
+    describe("Pipeline", () => {
+        it("Should able to execute handler using RouteInfo", async () => {
+            class AnimalController {
+                get() {
+                    return { method: "get" }
+                }
+            }
+            class AnimalFacility extends DefaultFacility {
+                async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[]): Promise<void> {
+                    app.use({
+                        execute: async i => {
+                            if (!i.context.state.isFallback && i.context.request.path === "/hello")
+                                return await pipe(i.context, routes[0], { isFallback: true })
+                            else
+                                return i.proceed()
+                        }
+                    })
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set(new AnimalFacility())
+                .initialize()
+            await Supertest(app.callback())
+                .get("/hello")
+                .expect(200, { method: "get" })
+        })
+    })
 })
+
