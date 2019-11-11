@@ -50,7 +50,7 @@ class ActionInvocation implements Invocation {
     }
 }
 
-function pipe(ctx: Context, route?: RouteInfo, caller:string = "system") {
+function pipe(ctx: Context, route?: RouteInfo, caller: "system" | "invoke" = "system") {
     const context = ctx;
     context.state.caller = caller
     let middlewares: Middleware[];
@@ -70,7 +70,7 @@ function pipe(ctx: Context, route?: RouteInfo, caller:string = "system") {
     return invocationStack.proceed()
 }
 
-function invoke(ctx: Context, route: RouteInfo){
+function invoke(ctx: Context, route: RouteInfo) {
     return pipe(ctx, route, "invoke")
 }
 

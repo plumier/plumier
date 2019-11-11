@@ -8,6 +8,7 @@ import {
     response,
     RouteAnalyzerIssue,
     RouteInfo,
+    invoke,
 } from "@plumier/core"
 import { Context } from "koa"
 import send from "koa-send"
@@ -118,14 +119,14 @@ export class ServeStaticMiddleware implements Middleware {
 
 
 export class HistoryApiFallbackMiddleware implements Middleware {
-    constructor(private redirectPath: () => string | undefined) { }
+    constructor() { }
 
     async execute(i: Readonly<Invocation>): Promise<ActionResult> {
         const isFile = !!mime.lookup(i.context.path)
-        const redirect = this.redirectPath()
-        //no route = no controller = no handler
-        if (!isFile && !!redirect && !i.context.route && i.context.request.method === "GET" && i.context.request.accepts("html")) {
-            return response.redirect(redirect)
+        const route = i.context.routes.find(x => x.action.decorators.some(x => x.type === "HistoryApiFallback"))
+        //no context.route = no controller = no handler
+        if (!i.context.route && i.context.state.caller === "system" && !isFile && !!route && i.context.request.method === "GET" && i.context.request.accepts("html")) {
+            return invoke(i.context, route)
         }
         else
             return i.proceed()
@@ -163,21 +164,13 @@ function httpMethodCheck(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyze
 // --------------------------------------------------------------------- //
 
 export class ServeStaticFacility extends DefaultFacility {
-    private redirectPath?: string
     constructor(public option: ServeStaticOptions) { super() }
 
     setup(app: Readonly<PlumierApplication>) {
         const analyzers = (app.config.analyzers || []).concat([multipleDecoratorsCheck, httpMethodCheck])
         Object.assign(app.config, { analyzers })
         app.use(new ServeStaticMiddleware(this.option))
-        app.use(new HistoryApiFallbackMiddleware(() => this.redirectPath))
-    }
-
-    async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[]) {
-        const histories = routes.filter(x => x.action.decorators.some(x => x.type === "HistoryApiFallback"))
-        if (histories.length === 1) {
-            this.redirectPath = histories[0].url
-        }
+        app.use(new HistoryApiFallbackMiddleware())
     }
 }
 

@@ -110,6 +110,10 @@ declare module "koa" {
         config: Readonly<Configuration>,
         parameters?: any[]
     }
+
+    interface DefaultState {
+        caller: "system" | "invoke"
+    }
 }
 
 export interface RouteContext extends Context {

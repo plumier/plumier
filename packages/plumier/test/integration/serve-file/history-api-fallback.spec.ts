@@ -1,9 +1,10 @@
+import { consoleLog, response, route } from "@plumier/core"
+import { ServeStaticFacility } from "@plumier/serve-static"
+import { join } from "path"
+import supertest = require("supertest")
 
 import { fixture } from "../../helper"
-import { ServeStaticFacility } from '@plumier/serve-static'
-import { join } from 'path'
-import { route, response, consoleLog } from '@plumier/core'
-import supertest = require('supertest')
+
 
 
 describe("History Api Fallback", () => {
@@ -20,7 +21,7 @@ describe("History Api Fallback", () => {
         const resp = await supertest(koa.callback())
             .get("/login")
             .set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3")
-            .expect(302)
+            .expect(200)
         expect(resp.text).toMatchSnapshot()
     })
 
@@ -71,7 +72,7 @@ describe("History Api Fallback", () => {
             .expect(200)
     })
 
-    it("Should return 404 if requested non exists file", async () => {
+    it("Should return 404 if requested is a non exists file", async () => {
         class AnimalController {
             @route.historyApiFallback()
             get() {
@@ -100,7 +101,7 @@ describe("History Api Fallback", () => {
         }
         const app = fixture(AnimalController, { mode: "debug" })
         consoleLog.startMock()
-        const koa = await app.set(new ServeStaticFacility({ root: join(__dirname, "./assets") }))
+        await app.set(new ServeStaticFacility({ root: join(__dirname, "./assets") }))
             .initialize()
         expect((console.log as any).mock.calls[3][0]).toContain("error PLUM1020: Multiple @route.historyApiFallback() is not allowed, in AnimalController.get(), AnimalController.data()")
         consoleLog.clearMock()
@@ -116,7 +117,7 @@ describe("History Api Fallback", () => {
         }
         const app = fixture(AnimalController, { mode: "debug" })
         consoleLog.startMock()
-        const koa = await app.set(new ServeStaticFacility({ root: join(__dirname, "./assets") }))
+        await app.set(new ServeStaticFacility({ root: join(__dirname, "./assets") }))
             .initialize()
         expect((console.log as any).mock.calls[3][0]).toContain("error PLUM1021: History api fallback should have GET http method, in AnimalController.get(b)")
         consoleLog.clearMock()
