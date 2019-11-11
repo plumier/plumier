@@ -122,4 +122,20 @@ describe("History Api Fallback", () => {
         expect((console.log as any).mock.calls[3][0]).toContain("error PLUM1021: History api fallback should have GET http method, in AnimalController.get(b)")
         consoleLog.clearMock()
     })
+
+    it("Should not analyze non history api fallback method", async () => {
+        class AnimalController {
+            @route.post()
+            get() {
+                return response.file(join(__dirname, "assets/index.html"))
+            }
+        }
+        
+        const app = fixture(AnimalController, { mode: "debug" })
+        consoleLog.startMock()
+        await app.set(new ServeStaticFacility({ root: join(__dirname, "./assets") }))
+            .initialize()
+        expect((console.log as any).mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
 })

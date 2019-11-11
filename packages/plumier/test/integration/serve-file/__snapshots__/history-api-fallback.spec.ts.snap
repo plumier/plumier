@@ -16,3 +16,16 @@ exports[`History Api Fallback Should fallback if requested by provide accept hea
 </body>
 </html>"
 `;
+
+exports[`History Api Fallback Should not analyze non history api fallback method 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.get() -> POST /animal/get",
+  ],
+  Array [],
+]
+`;
