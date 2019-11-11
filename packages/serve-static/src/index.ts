@@ -152,7 +152,7 @@ function multipleDecoratorsCheck(route: RouteInfo, allRoutes: RouteInfo[]): Rout
 }
 
 function httpMethodCheck(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
-    if (route.method !== "get")
+    if (route.method !== "get" && route.action.decorators.some(x => x.type === "HistoryApiFallback"))
         return { type: "error", message: `PLUM1021: History api fallback should have GET http method, in ${getActionName(route)}` }
     else
         return { type: "success" }
