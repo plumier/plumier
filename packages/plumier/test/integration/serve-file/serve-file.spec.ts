@@ -187,7 +187,7 @@ describe("Serve Files", () => {
             .expect(500)
     })
 
-    it.only("Should not block 404 when the route doesn't have controller handler", async () => {
+    it("Should not block 404 when the route doesn't have controller handler", async () => {
         const root = join(__dirname, "./assets");
         class HomeController {
             index() {
