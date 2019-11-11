@@ -59,6 +59,7 @@ describe("Serve File From Controller", () => {
             .get("/")
             .expect(404)
     })
+
 })
 
 describe("Serve Files", () => {
@@ -184,5 +185,21 @@ describe("Serve Files", () => {
         await Supertest(koa.callback())
             .get("/clock.jpeg")
             .expect(500)
+    })
+
+    it.only("Should not block 404 when the route doesn't have controller handler", async () => {
+        const root = join(__dirname, "./assets");
+        class HomeController {
+            index() {
+                return { abc: 1 }
+            }
+        }
+        const app = fixture(HomeController)
+        app.set(new ServeStaticFacility({ root }))
+        const koa = await app.initialize()
+        koa.on("error", () => { })
+        const result = await Supertest(koa.callback())
+            .get("/")
+            .expect(404)
     })
 })

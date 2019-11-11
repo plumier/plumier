@@ -1,21 +1,27 @@
 import {
     ActionResult,
-    route,
     DefaultFacility,
+    HttpStatus,
+    HttpStatusError,
     Invocation,
+    invoke,
     Middleware,
     PlumierApplication,
     response,
+    route,
     RouteAnalyzerIssue,
     RouteInfo,
-    invoke,
 } from "@plumier/core"
+import { exists, existsSync } from "fs"
 import { Context } from "koa"
 import send from "koa-send"
 import mime from "mime-types"
 import { extname } from "path"
 import { decorateMethod } from "tinspector"
+import { promisify } from "util"
 
+
+const existsAsync = promisify(exists)
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -71,6 +77,10 @@ export class FileActionResult extends ActionResult {
 
     async execute(ctx: Context) {
         await super.execute(ctx)
+        const isFile = !!mime.lookup(this.body)
+        const isExists = await existsSync(this.body)
+        if (!isFile || !isExists)
+            throw new HttpStatusError(HttpStatus.NotFound)
         ctx.type = extname(this.body)
         const sendFile = ctx.config.sendFile || ((path: string, opt?: ServeStaticOptions) => send(ctx, path, opt))
         await sendFile(this.body, this.opt)
