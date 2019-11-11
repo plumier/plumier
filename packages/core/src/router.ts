@@ -2,8 +2,8 @@ import { Context } from "koa"
 import ptr from "path-to-regexp"
 import { useCache } from "tinspector"
 
-import { Configuration, Middleware, MiddlewareUtil, RouteContext, RouteInfo, ValidationError, HttpStatusError } from "./types"
-import { ActionInvocation, NotFoundActionInvocation, pipe } from "./middleware-pipeline"
+import {  pipe } from "./middleware-pipeline"
+import { HttpStatusError, Configuration, Middleware, MiddlewareUtil, RouteContext, RouteInfo, ValidationError } from "./types"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -35,18 +35,6 @@ function getMatcher(infos: RouteInfo[], ctx: Context) {
     return infos.map(x => toRegExp(x, ctx.path)).find(x => Boolean(x.match) && x.method == ctx.method)
 }
 
-function getMiddleware(global: Middleware[], route: RouteInfo) {
-    const conMdws = MiddlewareUtil.extractDecorators(route)
-    const result: Middleware[] = []
-    for (const mdw of global) {
-        result.push(mdw)
-    }
-    for (const mdw of conMdws) {
-        result.push(mdw)
-    }
-    return result
-}
-
 function sendError(ctx: Context, status: number, message: any) {
     ctx.status = status
     ctx.body = { status, message }
@@ -56,13 +44,13 @@ function sendError(ctx: Context, status: number, message: any) {
 /* ------------------------------- ROUTER ---------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function router(infos: RouteInfo[], globalMiddleware: Middleware[]) {
+function router(infos: RouteInfo[], config:Configuration) {
     const matchCache = new Map<string, RouteMatcher | undefined>()
-    const middlewareCache = new Map<string, Middleware[]>()
     const getMatcherCached = useCache(matchCache, getMatcher, (info, ctx) => `${ctx.method}${ctx.path}`)
-    const getMiddlewareCached = useCache(middlewareCache, getMiddleware, (global, route) => route.url)
     return async (ctx: Context) => {
         try {
+            ctx.config = config
+            ctx.routes = infos
             const match = getMatcherCached(infos, ctx)
             if (match) {
                 for (const key in match.query) {
@@ -70,12 +58,9 @@ function router(infos: RouteInfo[], globalMiddleware: Middleware[]) {
                     ctx.request.query[key] = element
                 }
                 ctx.route = match.route
-                const middlewares = getMiddlewareCached(globalMiddleware, match.route)
-                await pipe(middlewares, ctx, new ActionInvocation(<RouteContext>ctx))
             }
-            else {
-                await pipe(globalMiddleware.slice(0), ctx, new NotFoundActionInvocation(ctx))
-            }
+            const result = await pipe(ctx, ctx.route)
+            await result.execute(ctx)
         }
         catch (e) {
             if (e instanceof ValidationError) 

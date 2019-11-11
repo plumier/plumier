@@ -20,3 +20,37 @@ exports[`Callback View Should able to provide callback view 1`] = `
     </html>
     "
 `;
+
+exports[`Social Login Dialogs Should return facebook dialog properly 1`] = `
+Array [
+  "client_id",
+  "display",
+  "redirect_uri",
+]
+`;
+
+exports[`Social Login Dialogs Should return github dialog properly 1`] = `
+Array [
+  "client_id",
+  "redirect_uri",
+]
+`;
+
+exports[`Social Login Dialogs Should return gitlab dialog properly 1`] = `
+Array [
+  "client_id",
+  "redirect_uri",
+  "response_type",
+]
+`;
+
+exports[`Social Login Dialogs Should return google dialog properly 1`] = `
+Array [
+  "access_type",
+  "client_id",
+  "include_granted_scopes",
+  "redirect_uri",
+  "response_type",
+  "scope",
+]
+`;

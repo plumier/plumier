@@ -4,7 +4,7 @@ import { isAbsolute, join } from "path"
 import { ClassReflection, MethodReflection, ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
 import { Class, findFilesRecursive, isCustomClass } from "./common"
-import { errorMessage, HttpMethod, RouteInfo } from "./types"
+import { errorMessage, HttpMethod, RouteInfo, RouteAnalyzerIssue, RouteAnalyzerFunction } from "./types"
 
 
 // --------------------------------------------------------------------- //
@@ -16,10 +16,8 @@ interface IgnoreDecorator { name: "Ignore" }
 interface RootDecorator { name: "Root", url: string }
 
 
-type AnalyzerFunction = (route: RouteInfo, allRoutes: RouteInfo[]) => Issue
 type PropOrParamReflection = PropertyReflection | ParameterReflection
-interface Issue { type: "error" | "warning" | "success", message?: string }
-interface TestResult { route: RouteInfo, issues: Issue[] }
+interface TestResult { route: RouteInfo, issues: RouteAnalyzerIssue[] }
 
 interface TransformOption { root?: string }
 
@@ -183,7 +181,7 @@ function traverseArray(parent: string, par: PropOrParamReflection[]): string[] {
       .map(x => `${parent}.${x.name}`)
 }
 
-function backingParameterTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
+function backingParameterTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
    const ids = route.url.split("/")
       .filter(x => x.startsWith(":"))
       .map(x => x.substring(1).toLowerCase())
@@ -197,7 +195,7 @@ function backingParameterTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
    else return { type: "success" }
 }
 
-function metadataTypeTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
+function metadataTypeTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
    const hasTypeInfo = route.action
       .parameters.some(x => Boolean(x.type))
    if (!hasTypeInfo && route.action.parameters.length > 0) {
@@ -209,7 +207,7 @@ function metadataTypeTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
    else return { type: "success" }
 }
 
-function duplicateRouteTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
+function duplicateRouteTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
    const dup = allRoutes.filter(x => x.url == route.url && x.method == route.method)
    if (dup.length > 1) {
       return {
@@ -220,7 +218,7 @@ function duplicateRouteTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
    else return { type: "success" }
 }
 
-function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
+function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
    const classes = traverseModel(route.action.parameters)
       .filter(x => x.properties.every(par => typeof par.type == "undefined"))
       .map(x => x.type)
@@ -235,7 +233,7 @@ function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
    else return { type: "success" }
 }
 
-function arrayTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
+function arrayTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
    const issues = traverseArray(`${route.controller.name}.${route.action.name}`, route.action.parameters)
    const array = Array.from(new Set(issues))
    if (array.length > 0) {
@@ -251,7 +249,7 @@ function arrayTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): Issue {
 /* -------------------------------- ANALYZER ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function analyzeRoute(route: RouteInfo, tests: AnalyzerFunction[], allRoutes: RouteInfo[]): TestResult {
+function analyzeRoute(route: RouteInfo, tests: RouteAnalyzerFunction[], allRoutes: RouteInfo[]): TestResult {
    const issues = tests.map(test => {
       return test(route, allRoutes)
    })
@@ -259,13 +257,13 @@ function analyzeRoute(route: RouteInfo, tests: AnalyzerFunction[], allRoutes: Ro
    return { route, issues }
 }
 
-function analyzeRoutes(routes: RouteInfo[]) {
-   const tests: AnalyzerFunction[] = [
+function analyzeRoutes(routes: RouteInfo[], extensions: RouteAnalyzerFunction[] = []) {
+   const tests: RouteAnalyzerFunction[] = [
       backingParameterTest, metadataTypeTest,
       duplicateRouteTest, modelTypeInfoTest,
       arrayTypeInfoTest
    ]
-   return routes.map(x => analyzeRoute(x, tests, routes))
+   return routes.map(x => analyzeRoute(x, tests.concat(extensions), routes))
 }
 
 function printAnalysis(results: TestResult[]) {

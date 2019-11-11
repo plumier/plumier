@@ -1,5 +1,6 @@
-import { SocialAuthProvider, SocialLoginStatus } from "../middleware"
-import { domain, val } from '@plumier/core';
+import { domain, val } from "@plumier/core"
+
+import { DialogProvider, SocialAuthProvider, SocialLoginStatus } from "../middleware"
 
 /*
 Dialog: 
@@ -55,4 +56,8 @@ export class GitHubProvider implements SocialAuthProvider {
         public profileParams: {} = {}
     ) { }
 
+}
+
+export class GitHubDialogProvider extends DialogProvider {
+    url = "https://github.com/login/oauth/authorize"
 }

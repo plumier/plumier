@@ -1,17 +1,37 @@
-import { ActionResult, DefaultFacility, Invocation, Middleware, PlumierApplication, response } from "@plumier/core"
+import {
+    ActionResult,
+    route,
+    DefaultFacility,
+    Invocation,
+    Middleware,
+    PlumierApplication,
+    response,
+    RouteAnalyzerIssue,
+    RouteInfo,
+    invoke,
+} from "@plumier/core"
 import { Context } from "koa"
 import send from "koa-send"
+import mime from "mime-types"
 import { extname } from "path"
-import { string } from 'joi';
+import { decorateMethod } from "tinspector"
 
+
+// --------------------------------------------------------------------- //
+// ------------------------------- TYPES ------------------------------- //
+// --------------------------------------------------------------------- //
 
 declare module "@plumier/core" {
     namespace response {
-        function file (path: string, opt?: ServeStaticOptions) :ActionResult
+        function file(path: string, opt?: ServeStaticOptions): ActionResult
+    }
+
+    interface RouteDecoratorImpl {
+        historyApiFallback(): (target: any, name: string) => void
     }
 
     export interface Configuration {
-        sendFile?: (path:string, opt?:ServeStaticOptions) => Promise<string>
+        sendFile?: (path: string, opt?: ServeStaticOptions) => Promise<string>
     }
 }
 
@@ -52,10 +72,26 @@ export class FileActionResult extends ActionResult {
     async execute(ctx: Context) {
         await super.execute(ctx)
         ctx.type = extname(this.body)
-        const sendFile = ctx.config.sendFile || ((path:string, opt?:ServeStaticOptions) => send(ctx, path, opt))
+        const sendFile = ctx.config.sendFile || ((path: string, opt?: ServeStaticOptions) => send(ctx, path, opt))
         await sendFile(this.body, this.opt)
     }
 }
+
+// --------------------------------------------------------------------- //
+// ----------------------------- DECORATORS ---------------------------- //
+// --------------------------------------------------------------------- //
+
+
+response.file = (path: string, opt?: ServeStaticOptions) => new FileActionResult(path, opt)
+
+route.historyApiFallback = () => {
+    return decorateMethod({ type: "HistoryApiFallback" })
+}
+
+
+// --------------------------------------------------------------------- //
+// ---------------------------- MIDDLEWARES ---------------------------- //
+// --------------------------------------------------------------------- //
 
 export class ServeStaticMiddleware implements Middleware {
     constructor(public option: ServeStaticOptions) { }
@@ -81,13 +117,60 @@ export class ServeStaticMiddleware implements Middleware {
     }
 }
 
-export class ServeStaticFacility extends DefaultFacility {
-    constructor(public option: ServeStaticOptions) { super() }
 
-    setup(app: Readonly<PlumierApplication>) {
-        app.use(new ServeStaticMiddleware(this.option))
+export class HistoryApiFallbackMiddleware implements Middleware {
+    constructor() { }
+
+    async execute(i: Readonly<Invocation>): Promise<ActionResult> {
+        const isFile = !!mime.lookup(i.context.path)
+        const route = i.context.routes.find(x => x.action.decorators.some(x => x.type === "HistoryApiFallback"))
+        //no context.route = no controller = no handler
+        if (!i.context.route && i.context.state.caller === "system" && !isFile && !!route && i.context.request.method === "GET" && i.context.request.accepts("html")) {
+            return invoke(i.context, route)
+        }
+        else
+            return i.proceed()
     }
 }
 
 
-response.file = (path: string, opt?: ServeStaticOptions) => new FileActionResult(path, opt)
+// --------------------------------------------------------------------- //
+// ------------------------------ ANALYZER ----------------------------- //
+// --------------------------------------------------------------------- //
+
+function getActionName(route: RouteInfo) {
+    return `${route.controller.name}.${route.action.name}(${route.action.parameters.map(x => x.name).join(", ")})`
+}
+
+function multipleDecoratorsCheck(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
+    const histories = allRoutes.filter(x => x.action.decorators.some(x => x.type === "HistoryApiFallback"))
+    if (histories.length > 1) {
+        const actions = histories.map(x => getActionName(x)).join(", ")
+        return { type: "error", message: `PLUM1020: Multiple @route.historyApiFallback() is not allowed, in ${actions}` }
+    }
+    else return { type: "success" }
+}
+
+function httpMethodCheck(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
+    if (route.method !== "get" && route.action.decorators.some(x => x.type === "HistoryApiFallback"))
+        return { type: "error", message: `PLUM1021: History api fallback should have GET http method, in ${getActionName(route)}` }
+    else
+        return { type: "success" }
+}
+
+
+// --------------------------------------------------------------------- //
+// ------------------------------ FACILITY ----------------------------- //
+// --------------------------------------------------------------------- //
+
+export class ServeStaticFacility extends DefaultFacility {
+    constructor(public option: ServeStaticOptions) { super() }
+
+    setup(app: Readonly<PlumierApplication>) {
+        const analyzers = (app.config.analyzers || []).concat([multipleDecoratorsCheck, httpMethodCheck])
+        Object.assign(app.config, { analyzers })
+        app.use(new ServeStaticMiddleware(this.option))
+        app.use(new HistoryApiFallbackMiddleware())
+    }
+}
+

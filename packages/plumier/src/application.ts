@@ -25,30 +25,28 @@ class DefaultDependencyResolver implements DependencyResolver {
     }
 }
 
-const DefaultConfiguration: Configuration = {
-    mode: "debug",
-    controller: "./controller",
-    dependencyResolver: new DefaultDependencyResolver()
-}
-
 export class Plumier implements PlumierApplication {
     readonly config: Readonly<PlumierConfiguration>;
     readonly koa: Koa
-    private globalMiddleware: Middleware[] = []
 
     constructor() {
         this.koa = new Koa()
-        this.config = { ...DefaultConfiguration, middleware: [], facilities: [] }
+        this.config = {
+            mode: "debug",
+            controller: "./controller",
+            dependencyResolver: new DefaultDependencyResolver(),
+            middlewares: [], facilities: []
+        }
     }
 
     use(option: KoaMiddleware): Application
     use(option: Middleware): Application
     use(option: KoaMiddleware | Middleware): Application {
         if (typeof option === "function") {
-            this.globalMiddleware.push(MiddlewareUtil.fromKoa(option))
+            this.config.middlewares.push(MiddlewareUtil.fromKoa(option))
         }
         else {
-            this.globalMiddleware.push(option)
+            this.config.middlewares.push(option)
         }
         return this
     }
@@ -75,8 +73,8 @@ export class Plumier implements PlumierApplication {
             for (const facility of this.config.facilities) {
                 await facility.initialize(this, routes)
             }
-            if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes))
-            this.koa.use(router(routes, this.globalMiddleware))
+            if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes, this.config.analyzers))
+            this.koa.use(router(routes, this.config))
             return this.koa
         }
         catch (e) {

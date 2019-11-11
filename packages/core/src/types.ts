@@ -15,7 +15,7 @@ export class ActionResult {
         return new ActionResult(ctx.body, ctx.status)
     }
     private readonly headers: { [key: string]: string | string[] } = {}
-    private readonly cookies: { key: string, value: string, option?: SetOption }[] = []
+    private readonly cookies: { key: string, value?: string, option?: SetOption }[] = []
     constructor(public body?: any, public status?: number) { }
 
     setHeader(key: string, value: string | string[]) {
@@ -28,8 +28,8 @@ export class ActionResult {
         return this
     }
 
-    setCookie(key: string, value: string, option?: SetOption) {
-        this.cookies.push({key, value, option})
+    setCookie(key: string, value?: string, option?: SetOption) {
+        this.cookies.push({ key, value, option })
         return this
     }
 
@@ -40,7 +40,10 @@ export class ActionResult {
         if (this.status)
             ctx.status = this.status
         for (const cookie of this.cookies) {
-            ctx.cookies.set(cookie.key, cookie.value, cookie.option)
+            if (!cookie.value)
+                ctx.cookies.set(cookie.key)
+            else
+                ctx.cookies.set(cookie.key, cookie.value, cookie.option)
         }
         if (this.body)
             ctx.body = this.body
@@ -68,6 +71,10 @@ export interface RouteInfo {
     controller: ClassReflection
     access?: string
 }
+
+export interface RouteAnalyzerIssue { type: "error" | "warning" | "success", message?: string }
+export type RouteAnalyzerFunction = (route: RouteInfo, allRoutes: RouteInfo[]) => RouteAnalyzerIssue
+
 
 // --------------------------------------------------------------------- //
 // ------------------------------ FACILITY ----------------------------- //
@@ -99,11 +106,15 @@ export interface Invocation {
 declare module "koa" {
     interface Context {
         route?: Readonly<RouteInfo>,
+        routes: RouteInfo[]
         config: Readonly<Configuration>,
         parameters?: any[]
     }
-}
 
+    interface DefaultState {
+        caller: "system" | "invoke"
+    }
+}
 
 export interface RouteContext extends Context {
     route: Readonly<RouteInfo>,
@@ -304,6 +315,11 @@ export interface Configuration {
     mode: "debug" | "production"
 
     /**
+     * List of registered global middlewares
+     */
+    middlewares:Middleware[]
+
+    /**
      * Specify controller path (absolute or relative to entry point) or the controller classes array.
      */
     controller: string | Class[] | Class
@@ -335,10 +351,11 @@ export interface Configuration {
      * Key-value pair to store authorization logic. Separate decorator and authorization logic
      */
     authorizer?: AuthorizeStore
+
+    analyzers?: RouteAnalyzerFunction[]
 }
 
 export interface PlumierConfiguration extends Configuration {
-    middleware: Middleware[]
     facilities: Facility[]
 }
 
