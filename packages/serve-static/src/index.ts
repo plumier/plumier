@@ -78,8 +78,7 @@ export class FileActionResult extends ActionResult {
     async execute(ctx: Context) {
         await super.execute(ctx)
         const isFile = !!mime.lookup(this.body)
-        const isExists = await existsSync(this.body)
-        if (!isFile || !isExists)
+        if (!isFile)
             throw new HttpStatusError(HttpStatus.NotFound)
         ctx.type = extname(this.body)
         const sendFile = ctx.config.sendFile || ((path: string, opt?: ServeStaticOptions) => send(ctx, path, opt))
