@@ -1,6 +1,6 @@
 {
   "name": "plumier",
-  "version": "1.0.0-beta.10",
+  "version": "1.0.0-beta.11",
   "description": "Delightful Node.js Rest Framework",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "@koa/cors": "^3.0.0",
-    "@plumier/core": "1.0.0-beta.10",
+    "@plumier/core": "1.0.0-beta.11",
     "@types/faker": "^4.1.7",
     "@types/koa__cors": "^2.2.3",
     "faker": "^4.1.0",
@@ -28,11 +28,11 @@
     "koa-body": "^4.1.1"
   },
   "devDependencies": {
-    "@plumier/jwt": "1.0.0-beta.10",
-    "@plumier/mongoose": "1.0.0-beta.10",
-    "@plumier/multipart": "1.0.0-beta.10",
-    "@plumier/serve-static": "1.0.0-beta.10",
-    "@plumier/social-login": "1.0.0-beta.10",
+    "@plumier/jwt": "1.0.0-beta.11",
+    "@plumier/mongoose": "1.0.0-beta.11",
+    "@plumier/multipart": "1.0.0-beta.11",
+    "@plumier/serve-static": "1.0.0-beta.11",
+    "@plumier/social-login": "1.0.0-beta.11",
     "@types/body-parser": "^1.17.1",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.2",
