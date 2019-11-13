@@ -66,6 +66,7 @@ export interface ServeStaticOptions {
      * Try to serve the brotli version of a file automatically when brotli is supported by a client and if the requested file with .br extension exists. (defaults to true). 
      **/
     brotli?: boolean;
+
 }
 
 export class FileActionResult extends ActionResult {

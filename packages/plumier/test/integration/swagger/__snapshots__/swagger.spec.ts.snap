@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Swagger Paths Should provide path on controller convention 1`] = `
+Object {
+  "info": Object {
+    "title": "title",
+    "version": "1.0.0",
+  },
+  "openapi": "3.0.0",
+  "paths": Object {},
+}
+`;
