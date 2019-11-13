@@ -1,6 +1,6 @@
 {
   "name": "@plumier/multipart",
-  "version": "1.0.0-beta.10",
+  "version": "1.0.0-beta.11",
   "description": "Multipart file upload for Plumier",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,7 +14,7 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumier/core": "1.0.0-beta.10",
+    "@plumier/core": "1.0.0-beta.11",
     "@types/formidable": "^1.0.31",
     "formidable": "^1.2.1"
   },
