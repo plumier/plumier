@@ -66,6 +66,11 @@ export interface ServeStaticOptions {
      * Try to serve the brotli version of a file automatically when brotli is supported by a client and if the requested file with .br extension exists. (defaults to true). 
      **/
     brotli?: boolean;
+
+    /**
+     * Root path of the request, all containing assets will accessible with this root path. Default is /
+     */
+    rootPath?: string
 }
 
 export class FileActionResult extends ActionResult {
@@ -106,11 +111,16 @@ export class ServeStaticMiddleware implements Middleware {
     constructor(public option: ServeStaticOptions) { }
 
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
+        if(this.option.rootPath && !this.option.rootPath.startsWith("/"))
+            this.option.rootPath = "/" + this.option.rootPath
+        const rootPath = this.option.rootPath || ""
         //no route = no controller = possibly static file request
-        if (!invocation.context.route) {
+        if (!invocation.context.route && invocation.context.path.toLowerCase().startsWith(rootPath.toLowerCase())) {
+            //check if not in root path then proceed
             //execute action result directly here, so if file not found it will possible to chain with next middleware
             try {
-                const result = new FileActionResult(invocation.context.path, this.option)
+                const path = invocation.context.path.substr(rootPath.length)
+                const result = new FileActionResult(path, this.option)
                 await result.execute(invocation.context)
                 return ActionResult.fromContext(invocation.context)
             }
