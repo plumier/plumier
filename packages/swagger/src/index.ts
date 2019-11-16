@@ -1,7 +1,18 @@
-import { HttpMethod, RouteInfo, Middleware, Invocation, ActionResult, response, DefaultFacility, PlumierApplication } from "@plumier/core"
-import { OpenApiBuilder, OperationObject, PathItemObject, PathObject, ResponseObject } from "openapi3-ts"
-import dist from 'swagger-ui-dist'
-import { ServeStaticFacility } from 'serve-static/lib'
+import {
+    ActionResult,
+    DefaultFacility,
+    HttpMethod,
+    Invocation,
+    Middleware,
+    PlumierApplication,
+    response,
+    RouteInfo,
+} from "@plumier/core"
+import { ServeStaticMiddleware } from "@plumier/serve-static"
+import { OpenApiBuilder, OperationObject, PathItemObject, PathObject, ResponseObject, ParameterObject } from "openapi3-ts"
+import dist from "swagger-ui-dist"
+import { join } from 'path'
+import { MethodReflection, ParameterReflection } from 'tinspector'
 
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
@@ -18,6 +29,10 @@ function groupRoutes(routes: RouteInfo[]): RouteGroup {
 
 function transformUrl(url: string) {
     return url.replace(/(:(\w*\d*)(\/|-{0,1}))/g, (a, b, par, slash) => `{${par}}${slash}`)
+}
+
+function parPosition(action:MethodReflection, par:ParameterReflection): "cookie" | "path" | "query" | "header" {
+    if(par.decorators.)
 }
 
 // --------------------------------------------------------------------- //
@@ -49,6 +64,14 @@ function transformOperation(route: RouteInfo): [HttpMethod, OperationObject] {
     return [route.method, operation]
 }
 
+function transformParameters(action:MethodReflection, par:ParameterReflection): ParameterObject {
+
+    return {
+        name: par.name,
+        in: 
+    }
+}
+
 function transformResponses(route: RouteInfo): { [status: string]: ResponseObject } {
     return {
         "200": { description: "", content: {} }
@@ -69,23 +92,36 @@ function transform(routes: RouteInfo[]) {
 // ----------------------------- MIDDLEWARE ---------------------------- //
 // --------------------------------------------------------------------- //
 
-class OpenApiMiddleware implements Middleware {
-    constructor(private spec: any) { }
+export interface SwaggerFacilityConfiguration { endpoint: string }
+
+class SwaggerMiddleware implements Middleware {
+    constructor(private spec: any, private opt: SwaggerFacilityConfiguration) { }
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
-        if (invocation.context.request.path === "/swagger.json") 
+        const uiPath = this.opt.endpoint.toLowerCase() + "/index"
+        if (invocation.context.path.toLowerCase() === "/swagger.json")
             return response.json(this.spec)
-        else 
+        if (invocation.context.path.toLowerCase() === this.opt.endpoint.toLowerCase())
+            return response.redirect(uiPath)
+        if (invocation.context.path.toLowerCase() === uiPath)
+            return response.file(join(dist.getAbsoluteFSPath(), "index.html"))
+        else
             return invocation.proceed()
     }
 }
 
-export class OpenApiFacility extends DefaultFacility {
-     
+export class SwaggerFacility extends DefaultFacility {
+    opt: SwaggerFacilityConfiguration
+    constructor(opt?: SwaggerFacilityConfiguration) {
+        super()
+        this.opt = { endpoint: "/swagger", ...opt }
+        if(this.opt.endpoint.toLocaleLowerCase().endsWith("/index")) 
+            this.opt.endpoint = this.opt.endpoint.substring(0, this.opt.endpoint.length - 6)
+    }
+
     async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[]): Promise<void> {
         const path = dist.getAbsoluteFSPath()
         const spec = transform(routes)
-        app.use(new OpenApiMiddleware(spec))
-        //app.use(new ServeStaticFacility({}))
-
+        app.use(new SwaggerMiddleware(spec, this.opt))
+        app.use(new ServeStaticMiddleware({ root: path, rootPath: this.opt.endpoint }))
     }
 }
