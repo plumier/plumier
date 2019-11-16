@@ -1,7 +1,17 @@
-import { HttpMethod, RouteInfo, Middleware, Invocation, ActionResult, response, DefaultFacility, PlumierApplication } from "@plumier/core"
+import {
+    ActionResult,
+    DefaultFacility,
+    HttpMethod,
+    Invocation,
+    Middleware,
+    PlumierApplication,
+    response,
+    RouteInfo,
+} from "@plumier/core"
+import { ServeStaticMiddleware } from "@plumier/serve-static"
 import { OpenApiBuilder, OperationObject, PathItemObject, PathObject, ResponseObject } from "openapi3-ts"
-import dist from 'swagger-ui-dist'
-import { ServeStaticFacility } from 'serve-static/lib'
+import dist from "swagger-ui-dist"
+import { join } from 'path'
 
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
@@ -69,23 +79,36 @@ function transform(routes: RouteInfo[]) {
 // ----------------------------- MIDDLEWARE ---------------------------- //
 // --------------------------------------------------------------------- //
 
+export interface OpenApiFacilityConfiguration { endpoint: string }
+
 class OpenApiMiddleware implements Middleware {
-    constructor(private spec: any) { }
+    constructor(private spec: any, private opt: OpenApiFacilityConfiguration) { }
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
-        if (invocation.context.request.path === "/swagger.json") 
+        const uiPath = this.opt.endpoint.toLowerCase() + "/index"
+        if (invocation.context.path.toLowerCase() === "/swagger.json")
             return response.json(this.spec)
-        else 
+        if (invocation.context.path.toLowerCase() === this.opt.endpoint.toLowerCase())
+            return response.redirect(uiPath)
+        if (invocation.context.path.toLowerCase() === uiPath)
+            return response.file(join(dist.getAbsoluteFSPath(), "index.html"))
+        else
             return invocation.proceed()
     }
 }
 
 export class OpenApiFacility extends DefaultFacility {
-     
+    opt: OpenApiFacilityConfiguration
+    constructor(opt?: OpenApiFacilityConfiguration) {
+        super()
+        this.opt = { endpoint: "/swagger", ...opt }
+        if(this.opt.endpoint.toLocaleLowerCase().endsWith("/index")) 
+            this.opt.endpoint = this.opt.endpoint.substring(0, this.opt.endpoint.length - 6)
+    }
+
     async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[]): Promise<void> {
         const path = dist.getAbsoluteFSPath()
         const spec = transform(routes)
-        app.use(new OpenApiMiddleware(spec))
-        //app.use(new ServeStaticFacility({}))
-
+        app.use(new OpenApiMiddleware(spec, this.opt))
+        app.use(new ServeStaticMiddleware({ root: path, rootPath: this.opt.endpoint }))
     }
 }

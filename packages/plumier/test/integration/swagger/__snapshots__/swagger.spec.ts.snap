@@ -1,12 +1,166 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Swagger Paths Should provide path on controller convention 1`] = `
+exports[`Open API Paths Should provide correct path template 1`] = `
 Object {
-  "info": Object {
-    "title": "title",
-    "version": "1.0.0",
+  "/animal/{id}": Object {
+    "get": Object {
+      "responses": Object {
+        "200": Object {
+          "content": Object {},
+          "description": "",
+        },
+      },
+    },
   },
-  "openapi": "3.0.0",
-  "paths": Object {},
+}
+`;
+
+exports[`Open API Paths Should provide correct path template in nested route 1`] = `
+Object {
+  "/users/{userid}/animals/{id}": Object {
+    "get": Object {
+      "responses": Object {
+        "200": Object {
+          "content": Object {},
+          "description": "",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`Open API Paths Should provide path on controller convention 1`] = `
+Object {
+  "/animal/index": Object {
+    "get": Object {
+      "responses": Object {
+        "200": Object {
+          "content": Object {},
+          "description": "",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`Open API Paths Should response http method on controller decorated with @route.delete() 1`] = `
+Object {
+  "/animal": Object {
+    "delete": Object {
+      "responses": Object {
+        "200": Object {
+          "content": Object {},
+          "description": "",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`Open API Paths Should response http method on controller decorated with @route.get() 1`] = `
+Object {
+  "/animal": Object {
+    "get": Object {
+      "responses": Object {
+        "200": Object {
+          "content": Object {},
+          "description": "",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`Open API Paths Should response http method on controller decorated with @route.head() 1`] = `
+Object {
+  "/animal": Object {
+    "head": Object {
+      "responses": Object {
+        "200": Object {
+          "content": Object {},
+          "description": "",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`Open API Paths Should response http method on controller decorated with @route.options() 1`] = `
+Object {
+  "/animal": Object {
+    "options": Object {
+      "responses": Object {
+        "200": Object {
+          "content": Object {},
+          "description": "",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`Open API Paths Should response http method on controller decorated with @route.patch() 1`] = `
+Object {
+  "/animal": Object {
+    "patch": Object {
+      "responses": Object {
+        "200": Object {
+          "content": Object {},
+          "description": "",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`Open API Paths Should response http method on controller decorated with @route.post() 1`] = `
+Object {
+  "/animal": Object {
+    "post": Object {
+      "responses": Object {
+        "200": Object {
+          "content": Object {},
+          "description": "",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`Open API Paths Should response http method on controller decorated with @route.put() 1`] = `
+Object {
+  "/animal": Object {
+    "put": Object {
+      "responses": Object {
+        "200": Object {
+          "content": Object {},
+          "description": "",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`Open API Paths Should response http method on controller decorated with @route.trace() 1`] = `
+Object {
+  "/animal": Object {
+    "trace": Object {
+      "responses": Object {
+        "200": Object {
+          "content": Object {},
+          "description": "",
+        },
+      },
+    },
+  },
 }
 `;

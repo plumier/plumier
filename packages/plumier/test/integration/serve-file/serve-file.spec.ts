@@ -82,6 +82,44 @@ describe("Serve Files", () => {
         expect(result.text).toEqual(file)
     })
 
+    it("Should be able to serve files with root path", async () => {
+        const root = join(__dirname, "./assets");
+        class HomeController {
+            @route.get("/")
+            index() {
+                return "Hello"
+            }
+        }
+        const app = fixture(HomeController)
+        app.set(new ServeStaticFacility({ root, rootPath: "/files" }))
+        const koa = await app.initialize()
+        const result = await Supertest(koa.callback())
+            .get("/files/index.html")
+            .expect(200)
+        expect(result.type).toBe("text/html")
+        const file = readFileSync(join(root, "index.html")).toString()
+        expect(result.text).toEqual(file)
+    })
+
+    it("Should fix root path if doesn't contains preceding /", async () => {
+        const root = join(__dirname, "./assets");
+        class HomeController {
+            @route.get("/")
+            index() {
+                return "Hello"
+            }
+        }
+        const app = fixture(HomeController)
+        app.set(new ServeStaticFacility({ root, rootPath: "files" }))
+        const koa = await app.initialize()
+        const result = await Supertest(koa.callback())
+            .get("/files/index.html")
+            .expect(200)
+        expect(result.type).toBe("text/html")
+        const file = readFileSync(join(root, "index.html")).toString()
+        expect(result.text).toEqual(file)
+    })
+
     it("Should be able to serve jpg files", async () => {
         const root = join(__dirname, "./assets");
         class HomeController {
