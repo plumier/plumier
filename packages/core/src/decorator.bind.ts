@@ -1,7 +1,7 @@
 import { Context } from "koa"
 import { decorateParameter, mergeDecorator } from "tinspector"
 
-import { BindingDecorator, HeaderPart, RequestPart, BinderName } from "./binder"
+import { BindingDecorator, HeaderPart, RequestPart } from "./binder"
 import { getChildValue } from "./common"
 import { val } from '.';
 import { GetOption } from 'cookies';
@@ -9,7 +9,7 @@ import { GetOption } from 'cookies';
 
 export namespace bind {
 
-    function ctxDecorator(name: BinderName, part?: string) {
+    function ctxDecorator(name: string, part?: string) {
         return custom(ctx => part ? getChildValue(ctx, part) : ctx, name)
     }
 

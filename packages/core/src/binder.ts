@@ -8,9 +8,7 @@ import { isCustomClass } from "./common"
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- // 
 
-type BinderName = "ctx" | "cookie" | "header" | "body" | "request" | "query" | "user" | "cookie"
-
-interface BindingDecorator { type: "ParameterBinding", process: (ctx: Context) => any, name:BinderName }
+interface BindingDecorator { type: "ParameterBinding", process: (ctx: Context) => any, name:string }
 type RequestPart = keyof Request
 type HeaderPart = keyof IncomingHttpHeaders
 
@@ -55,4 +53,4 @@ function chain(...binder: Binder[]) {
 
 const binder = chain(bindDecorator, bindByName, bindBody)
 
-export { RequestPart, HeaderPart, BindingDecorator, binder, BinderName }
+export { RequestPart, HeaderPart, BindingDecorator, binder }
