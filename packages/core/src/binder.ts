@@ -8,7 +8,7 @@ import { isCustomClass } from "./common"
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- // 
 
-interface BindingDecorator { type: "ParameterBinding", process: (ctx: Context) => any }
+interface BindingDecorator { type: "ParameterBinding", process: (ctx: Context) => any, name:string }
 type RequestPart = keyof Request
 type HeaderPart = keyof IncomingHttpHeaders
 

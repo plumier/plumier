@@ -565,6 +565,16 @@ describe("Parameter Binding", () => {
         //     const meta = reflect(AnimalController)
         //     expect(skipValidation(meta.methods[0].parameters[0].decorators)).toBe(true)
         // })
+
+        it("Should has appropriate name", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.request() b: Request) {
+                }
+            }
+            const meta = reflect(AnimalController)
+            expect(meta.methods[0].parameters[0].decorators[0].name).toBe("request")
+        })
     })
 
     describe("Request body parameter binding", () => {
@@ -642,6 +652,16 @@ describe("Parameter Binding", () => {
         //     const meta = reflect(AnimalController)
         //     expect(skipValidation(meta.methods[0].parameters[0].decorators)).toBe(false)
         // })
+
+        it("Should has appropriate name", async () => {
+            class AnimalController {
+                @route.post()
+                get(@bind.body() b: any) {
+                }
+            }
+            const meta = reflect(AnimalController)
+            expect(meta.methods[0].parameters[0].decorators[0].name).toBe("body")
+        })
     })
 
     describe("Request header parameter binding", () => {
@@ -700,6 +720,16 @@ describe("Parameter Binding", () => {
                 .post("/animal/save")
                 .send({})
                 .expect(422, { status: 422, message: [{ "path": ["b"], "messages": [`Unable to convert "[object Object]" into Number`] }] })
+        })
+
+        it("Should has appropriate name", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.header("ip") b: string) {
+                }
+            }
+            const meta = reflect(AnimalController)
+            expect(meta.methods[0].parameters[0].decorators[0].name).toBe("header")
         })
     })
 
@@ -789,6 +819,16 @@ describe("Parameter Binding", () => {
                 .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
                 .expect(422, { status: 422, message: [{ "path": ["b"], "messages": [`Unable to convert "[object Object]" into Number`] }] })
         })
+
+        it("Should has appropriate name", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.query() b: any) {
+                }
+            }
+            const meta = reflect(AnimalController)
+            expect(meta.methods[0].parameters[0].decorators[0].name).toBe("query")
+        })
     })
 
     describe("Context parameter binding", () => {
@@ -845,6 +885,16 @@ describe("Parameter Binding", () => {
                 .post("/animal/get")
                 .send([{ id: '747474', name: 'Mimi', deceased: 'ON', birthday: '2018-1-1' }])
                 .expect(200, { id: 747474, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+
+        it("Should has appropriate name", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.ctx() b: any) {
+                }
+            }
+            const meta = reflect(AnimalController)
+            expect(meta.methods[0].parameters[0].decorators[0].name).toBe("ctx")
         })
     })
 
@@ -905,6 +955,16 @@ describe("Parameter Binding", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .expect(403)
+        })
+
+        it("Should has appropriate name", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.user() b: any) {
+                }
+            }
+            const meta = reflect(AnimalController)
+            expect(meta.methods[0].parameters[0].decorators[1].name).toBe("user")
         })
     })
 

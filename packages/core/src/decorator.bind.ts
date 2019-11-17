@@ -6,10 +6,11 @@ import { getChildValue } from "./common"
 import { val } from '.';
 import { GetOption } from 'cookies';
 
+
 export namespace bind {
 
-    function ctxDecorator(part?: string) {
-        return custom(ctx => part ? getChildValue(ctx, part) : ctx)
+    function ctxDecorator(name: string, part?: string) {
+        return custom(ctx => part ? getChildValue(ctx, part) : ctx, name)
     }
 
     /**
@@ -26,7 +27,7 @@ export namespace bind {
      * @param part part of context, use dot separator to access child property
      */
     export function ctx(part?: string) {
-        return ctxDecorator(part)
+        return ctxDecorator("ctx", part)
     }
 
     /**
@@ -42,7 +43,7 @@ export namespace bind {
      * @param part part of request ex: body, method, query etc
      */
     export function request(part?: RequestPart) {
-        return ctxDecorator(["request", part].join("."))
+        return ctxDecorator("request", ["request", part].join("."))
     }
 
     /**
@@ -56,7 +57,7 @@ export namespace bind {
      *     method(@bind.body("age") age:number){}
      */
     export function body(part?: string) {
-        return ctxDecorator(["request", "body", part].join("."))
+        return ctxDecorator("body", ["request", "body", part].join("."))
     }
 
     /**
@@ -70,7 +71,7 @@ export namespace bind {
      *     method(@bind.header("cookie") age:any){}
      */
     export function header(key?: HeaderPart) {
-        return ctxDecorator(["request", "headers", key].join("."))
+        return ctxDecorator("header", ["request", "headers", key].join("."))
     }
 
     /**
@@ -84,7 +85,7 @@ export namespace bind {
      *     method(@bind.query("type") type:string){}
      */
     export function query(name?: string) {
-        return ctxDecorator(["request", "query", name].join("."))
+        return ctxDecorator("query", ["request", "query", name].join("."))
     }
 
     /**
@@ -93,7 +94,7 @@ export namespace bind {
      *     method(@bind.user() user:User){}
      */
     export function user() {
-        return mergeDecorator(val.optional(), ctxDecorator("state.user"))
+        return mergeDecorator(val.optional(), ctxDecorator("user", "state.user"))
     }
 
     /**
@@ -102,7 +103,7 @@ export namespace bind {
      *     method(@bind.cookie("name") cookie:string){}
      */
     export function cookie(name: string, opt?: GetOption) {
-        return mergeDecorator(val.optional(), bind.custom(ctx => ctx.cookies.get(name, opt)))
+        return mergeDecorator(val.optional(), bind.custom(ctx => ctx.cookies.get(name, opt), "cookie"))
     }
 
     /**
@@ -124,8 +125,8 @@ export namespace bind {
      * 
      * @param process callback function to process the Koa context
      */
-    export function custom(process: (ctx: Context) => any) {
-        return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", process })
+    export function custom(process: (ctx: Context) => any, name: string = "custom") {
+        return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", process, name })
     }
 }
 
