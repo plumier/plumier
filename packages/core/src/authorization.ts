@@ -8,11 +8,11 @@ import { ActionResult, HttpStatusError, Invocation, Middleware, RouteInfo, Autho
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-type AuthorizeCallback = (info: AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method") => Promise<boolean>
+type AuthorizeCallback = (info: AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method") => boolean | Promise<boolean>
 
 interface AuthorizeDecorator {
     type: "plumier-meta:authorize",
-    authorize: string | ((info: AuthorizeMetadataInfo) => Promise<boolean>),
+    authorize: string | ((info: AuthorizeMetadataInfo) => boolean | Promise<boolean>),
     tag: string
 }
 

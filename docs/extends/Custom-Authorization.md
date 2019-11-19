@@ -28,7 +28,7 @@ export class AnimalController {
 `@authorize.custom` receive two parameters a callback which will evaluate user authorization and `tag` metadata that will be used for further metadata processing. The callback signature is like below
 
 ```typescript
-(info: AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method") => Promise<boolean>
+(info: AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method") => boolean | Promise<boolean>
 ```
 
 * `info` Metadata information about current authorization.
@@ -41,8 +41,6 @@ export interface AuthorizeMetadataInfo {
     role: string[]
     user:any
     ctx: Koa.Context
-    route: RouteInfo
-    parameters: any[]
     value?: any
 }
 ```
@@ -50,8 +48,6 @@ export interface AuthorizeMetadataInfo {
 * `role` is roles of current login user, single or multiple role
 * `user` Current login user
 * `ctx` Koa context of current request
-* `route` Information about current route, contains metadata information about controller and action
-* `parameters` List of parameters that will be used to execute the action
 * `value` optional, value of current parameter (if authorization applied into parameter)
 
 
@@ -86,10 +82,10 @@ Action `modify` above will only authorized to `Admin` or if the login user has t
 
 ```typescript
 export function isAdminOrOwner() {
-    return authorize.custom(async (info, position) => {
-        const {role, user, parameters} = info
+    return authorize.custom((info, position) => {
+        const {role, user, ctx} = info
         //the first parameter MUST be the ID of the requested user
-        const id = parameters[0]
+        const id = ctx.parameters[0]
         return role.some(x => x === "Admin") || user.id === id
     })
 }

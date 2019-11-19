@@ -277,15 +277,13 @@ export type ValidatorStore = { [key: string]: ValidatorFunction }
 // --------------------------------------------------------------------- //
 
 
-export type AuthorizeStore = { [key: string]: (info: AuthorizeMetadataInfo) => Promise<boolean> }
+export type AuthorizeStore = { [key: string]: (info: AuthorizeMetadataInfo) => boolean | Promise<boolean> }
 
 export interface AuthorizeMetadataInfo {
+    value?: any
     role: string[]
     user: any
     ctx: RouteContext
-    route: RouteInfo
-    parameters: any[]
-    value?: any
 }
 
 
