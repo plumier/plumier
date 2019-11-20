@@ -23,7 +23,7 @@
     "@types/koa": "^2.0.51",
     "chalk": "^2.4.2",
     "glob": "^7.1.5",
-    "path-to-regexp": "^3.1.0",
+    "path-to-regexp": "^6.0.0",
     "tinspector": "^2.2.7",
     "tslib": "^1.10.0",
     "typedconverter": "^1.0.5"
