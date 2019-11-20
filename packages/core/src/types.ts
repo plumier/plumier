@@ -257,8 +257,7 @@ export interface ValidatorDecorator {
 
 export interface ValidatorInfo {
     name: string,
-    route: RouteInfo,
-    ctx: Context,
+    ctx: RouteContext,
     parent?: { value: any, type: Class, decorators: any[] }
 }
 
@@ -267,9 +266,8 @@ export interface AsyncValidatorResult {
     messages: string[]
 }
 
-export type ValidatorFunction = (value: any, info: ValidatorInfo) => Promise<AsyncValidatorResult[] | string | undefined>
+export type ValidatorFunction = (value: any, info: ValidatorInfo) => undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
 export type ValidatorStore = { [key: string]: ValidatorFunction }
-
 
 
 // --------------------------------------------------------------------- //

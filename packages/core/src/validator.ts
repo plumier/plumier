@@ -13,6 +13,7 @@ import {
     ValidatorInfo,
     ValidationError,
     AsyncValidatorResult,
+    RouteContext,
 } from "./types"
 import { binder } from "./binder"
 import { decorateProperty } from 'tinspector';
@@ -25,7 +26,7 @@ import { decorateProperty } from 'tinspector';
 interface AsyncValidatorItem {
     value: any,
     path: string,
-    parent?: { value:any, type: Class, decorators: any[] }
+    parent?: { value: any, type: Class, decorators: any[] }
     validator: ValidatorFunction | string
 }
 
@@ -42,6 +43,7 @@ function createVisitor(items: AsyncValidatorItem[]) {
 declare module "typedconverter" {
     namespace val {
         export function custom(val: ValidatorFunction | string): (...arg: any[]) => void
+        export function result(path: string, messages: string | string[]): AsyncValidatorResult[]
     }
 }
 
@@ -49,14 +51,19 @@ tc.val.custom = (val: ValidatorFunction | string) => {
     return decorateProperty(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: val })
 }
 
+tc.val.result = (a: string, b: string | string[]) => {
+    if (Array.isArray(b)) return [{ path: a, messages: b }]
+    else return [{ path: a, messages: [b] }]
+}
+
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //
 // --------------------------------------------------------------------- //
 const getName = (path: string) => path.indexOf(".") > -1 ? path.substring(path.lastIndexOf(".") + 1) : path
 
-async function validateAsync(x: AsyncValidatorItem, ctx: Context): Promise<AsyncValidatorResult[]> {
+async function validateAsync(x: AsyncValidatorItem, ctx: RouteContext): Promise<AsyncValidatorResult[]> {
     const name = getName(x.path)
-    const info: ValidatorInfo = { ctx, name, parent: x.parent, route: ctx.route! }
+    const info: ValidatorInfo = { ctx, name, parent: x.parent }
     if (x.value === undefined || x.value === null) return []
     const validators = ctx.config.validators || {}
     if (typeof x.validator === "string" && !validators[x.validator])
@@ -72,7 +79,7 @@ async function validateAsync(x: AsyncValidatorItem, ctx: Context): Promise<Async
     }))
 }
 
-async function validate(ctx: Context): Promise<tc.Result> {
+async function validate(ctx: RouteContext): Promise<tc.Result> {
     const decsAsync: AsyncValidatorItem[] = []
     const visitors = [createVisitor(decsAsync), ...(ctx.config.typeConverterVisitors || [])]
     const result: any[] = []
@@ -111,7 +118,7 @@ class ValidationMiddleware implements Middleware {
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
         const ctx = invocation.context;
         if (!ctx.route) return invocation.proceed();
-        const result = await validate(invocation.context);
+        const result = await validate(invocation.context as RouteContext);
         if (result.issues)
             throw new ValidationError(result.issues
                 .map(x => ({ path: x.path.split("."), messages: x.messages })));
