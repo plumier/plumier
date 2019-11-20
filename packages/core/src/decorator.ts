@@ -1,6 +1,6 @@
 import reflect, { decorate } from "tinspector"
 
-import { KoaMiddleware, Middleware, MiddlewareDecorator, MiddlewareUtil } from "./types"
+import { MiddlewareDecorator, MiddlewareFunction, Middleware } from "./types"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- DOMAIN ------------------------------ //
@@ -13,9 +13,12 @@ function domain() { return reflect.parameterProperties() }
 // --------------------------------------------------------------------- //
 
 namespace middleware {
-    export function use(...middleware: (Middleware | KoaMiddleware)[]) {
-        const mdw = middleware.map(x => typeof x == "function" ? MiddlewareUtil.fromKoa(x) : x).reverse()
-        const value: MiddlewareDecorator = { name: "Middleware", value: mdw }
+    export function use(middleware:MiddlewareFunction): (...args:any[]) => void
+    export function use(middleware:Middleware): (...args:any[]) => void
+    export function use(id:string): (...args:any[]) => void
+    export function use(id:symbol): (...args:any[]) => void
+    export function use(...middleware: (string | symbol | MiddlewareFunction | Middleware)[]) {
+        const value: MiddlewareDecorator = { name: "Middleware", value: middleware }
         return decorate(value, ["Class", "Method"])
     }
 }

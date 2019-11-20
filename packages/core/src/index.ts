@@ -1,6 +1,6 @@
 import { val } from "typedconverter"
 export { val }
-export { AuthorizeCallback, AuthorizeMiddleware, RoleField, updateRouteAccess } from "./authorization";
+export { AuthorizeCallback, AuthorizeMiddleware, RoleField, updateRouteAccess, Authorizer } from "./authorization";
 export { HeaderPart, RequestPart, BindingDecorator, binder } from "./binder";
 export { invoke } from "./middleware-pipeline";
 export { response } from "./response";
@@ -14,9 +14,9 @@ export { domain, middleware } from "./decorator";
 export { route, RouteDecoratorImpl } from "./decorator.route";
 export { HttpStatus } from "./http-status";
 export {
-    ActionResult, Application, AuthorizeMetadataInfo, AuthorizeStore, Configuration, DefaultFacility,
+    ActionResult, Application, AuthorizeMetadataInfo, Configuration, DefaultFacility, CustomValidator,
     DependencyResolver, Facility, FileParser, FileUploadInfo, HttpMethod, HttpStatusError, Invocation, KoaMiddleware,
-    Middleware, MiddlewareDecorator, MiddlewareUtil, PlumierApplication, PlumierConfiguration, RedirectActionResult,
+    Middleware, MiddlewareFunction, MiddlewareDecorator, MiddlewareUtil, PlumierApplication, PlumierConfiguration, RedirectActionResult,
     RouteContext, RouteInfo, RouteAnalyzerFunction, RouteAnalyzerIssue, ValidatorDecorator, ValidatorFunction,
-    ValidatorInfo, ValidatorStore, ValidationError, errorMessage
+    ValidatorInfo, ValidationError, errorMessage, AsyncValidatorResult, DefaultDependencyResolver
 } from "./types";

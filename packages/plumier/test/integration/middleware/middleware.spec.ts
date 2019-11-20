@@ -1,7 +1,30 @@
-import { invoke } from '@plumier/core'
+import { invoke, MiddlewareUtil, ActionResult, DefaultDependencyResolver } from '@plumier/core'
 import { Context } from "koa"
 import Plumier, { bind, Class, Invocation, Middleware, middleware, RestfulApiFacility, route } from "plumier"
 import Supertest from "supertest"
+
+
+const resolver = new DefaultDependencyResolver()
+
+@resolver.register("lorem")
+class MiddlewareWithStringRegistry implements Middleware {
+    async execute(i: Invocation) {
+        const result = await i.proceed()
+        result.body = "The Body"
+        return result
+    }
+}
+
+const registryId = Symbol("lorem")
+
+@resolver.register(registryId)
+class MiddlewareWithSymbolRegistry implements Middleware {
+    async execute(i: Invocation) {
+        const result = await i.proceed()
+        result.body = "The Body"
+        return result
+    }
+}
 
 
 class InterceptBody implements Middleware {
@@ -22,10 +45,10 @@ class AssertParameterMiddleware implements Middleware {
 }
 
 function KoaInterceptBody(body: any) {
-    return async (ctx: Context, next: () => Promise<any>) => {
+    return MiddlewareUtil.fromKoa(async (ctx: Context, next: () => Promise<any>) => {
         await next()
         ctx.body = body
-    }
+    })
 }
 
 function fixture(controller: Class) {
@@ -33,6 +56,15 @@ function fixture(controller: Class) {
         .set(new RestfulApiFacility())
         .set({ mode: "production" })
         .set({ controller: [controller] })
+}
+
+async function returnError(i:Invocation) {
+    try{
+        return i.proceed()
+    }
+    catch(e){
+        return new ActionResult(e.message, 500)
+    }
 }
 
 describe("Middleware", () => {
@@ -87,6 +119,53 @@ describe("Middleware", () => {
                 .expect(200, "The Body")
         })
 
+        it("Should be able to use string middleware", async () => {
+            class AnimalController {
+                get() {
+                    return "Body"
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set({ dependencyResolver: resolver })
+                .use("lorem")
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(200, "The Body")
+        })
+
+        it("Should be able to use symbol middleware", async () => {
+            class AnimalController {
+                get() {
+                    return "Body"
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set({ dependencyResolver: resolver })
+                .use(registryId)
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(200, "The Body")
+        })
+
+
+        it("Should throw error if wrong id provided", async () => {
+            class AnimalController {
+                get() {
+                    return "Body"
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set({dependencyResolver: resolver})
+                .use(returnError)
+                .use("ipsum")
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(500, "PLUM1009: Object with id ipsum not found in Object registry")
+        })
+
         it("Should execute middleware in proper order", async () => {
             class AnimalController {
                 get() {
@@ -95,18 +174,16 @@ describe("Middleware", () => {
             }
             const spy = jest.fn((a) => { })
             const app = await fixture(AnimalController)
-                .use(async (ctx, next) => {
+                .use(MiddlewareUtil.fromKoa(async (ctx, next) => {
                     spy(1)
                     await next()
                     spy(2)
-                })
-                .use({
-                    execute: async x => {
-                        spy(3)
-                        const result = x.proceed()
-                        spy(4)
-                        return result;
-                    }
+                }))
+                .use(async x => {
+                    spy(3)
+                    const result = x.proceed()
+                    spy(4)
+                    return result;
                 })
                 .use({
                     execute: async x => {
@@ -169,20 +246,65 @@ describe("Middleware", () => {
                 .expect(200, "New Body")
         })
 
+        it("Should able to use string middleware", async () => {
+            @middleware.use("lorem")
+            class AnimalController {
+                get() {
+                    return "Body"
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set({ dependencyResolver: resolver })
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(200, "The Body")
+        })
+
+        it("Should able to use symbol middleware", async () => {
+            @middleware.use(registryId)
+            class AnimalController {
+                get() {
+                    return "Body"
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set({ dependencyResolver: resolver })
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(200, "The Body")
+        })
+
+
+        it("Should throw error if wrong id provided", async () => {
+            @middleware.use("ipsum")
+            class AnimalController {
+                get() {
+                    return "Body"
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set({dependencyResolver: resolver})
+                .use(returnError)
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(500, "PLUM1009: Object with id ipsum not found in Object registry")
+        })
+
         it("Should execute middleware in proper order", async () => {
             const spy = jest.fn((a) => { })
-            @middleware.use(async (ctx, next) => {
+            @middleware.use(MiddlewareUtil.fromKoa(async (ctx, next) => {
                 spy(1)
                 await next()
                 spy(2)
-            })
-            @middleware.use({
-                execute: async x => {
-                    spy(3)
-                    const result = x.proceed()
-                    spy(4)
-                    return result;
-                }
+            }))
+            @middleware.use(async x => {
+                spy(3)
+                const result = x.proceed()
+                spy(4)
+                return result;
             })
             @middleware.use({
                 execute: async x => {
@@ -251,21 +373,66 @@ describe("Middleware", () => {
                 .expect(200, "New Body")
         })
 
+        it("Should be able to use string middleware", async () => {
+            class AnimalController {
+                @middleware.use("lorem")
+                get() {
+                    return "Body"
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set({ dependencyResolver: resolver })
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(200, "The Body")
+        })
+
+        it("Should be able to use symbol middleware", async () => {
+            class AnimalController {
+                @middleware.use(registryId)
+                get() {
+                    return "Body"
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set({ dependencyResolver: resolver })
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(200, "The Body")
+        })
+
+
+        it("Should throw error if wrong id provided", async () => {
+            class AnimalController {
+                @middleware.use("ipsum")
+                get() {
+                    return "Body"
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set({dependencyResolver: resolver})
+                .use(returnError)
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(500, "PLUM1009: Object with id ipsum not found in Object registry")
+        })
+
         it("Should execute middleware in proper order", async () => {
             const spy = jest.fn((a) => { })
             class AnimalController {
-                @middleware.use(async (ctx, next) => {
+                @middleware.use(MiddlewareUtil.fromKoa(async (ctx, next) => {
                     spy(1)
                     await next()
                     spy(2)
-                })
-                @middleware.use({
-                    execute: async x => {
-                        spy(3)
-                        const result = x.proceed()
-                        spy(4)
-                        return result;
-                    }
+                }))
+                @middleware.use(async x => {
+                    spy(3)
+                    const result = x.proceed()
+                    spy(4)
+                    return result;
                 })
                 @middleware.use({
                     execute: async x => {
@@ -311,7 +478,7 @@ describe("Middleware", () => {
                     return { method: "get" }
                 }
 
-                list(@bind.ctx() ctx:Context){
+                list(@bind.ctx() ctx: Context) {
                     return invoke(ctx, ctx.routes.find(x => x.action.name === "get")!)
                 }
             }
@@ -325,12 +492,12 @@ describe("Middleware", () => {
         it("Should be able to invoke another controller from inside controller with the same signature", async () => {
             class AnimalController {
                 @route.get("get/:id")
-                get(id:string, offset:number) {
+                get(id: string, offset: number) {
                     return { id, offset }
                 }
 
                 @route.get("list/:id")
-                list(id:string, offset:number, @bind.ctx() ctx:Context){
+                list(id: string, offset: number, @bind.ctx() ctx: Context) {
                     return invoke(ctx, ctx.routes.find(x => x.action.name === "get")!)
                 }
             }
@@ -344,12 +511,12 @@ describe("Middleware", () => {
         it("Should be able to invoke another controller from inside controller with POST method", async () => {
             class AnimalController {
                 @route.post()
-                get(id:string, offset:number) {
+                get(id: string, offset: number) {
                     return { id, offset }
                 }
 
                 @route.post()
-                list(id:string, offset:number, @bind.ctx() ctx:Context){
+                list(id: string, offset: number, @bind.ctx() ctx: Context) {
                     return invoke(ctx, ctx.routes.find(x => x.action.name === "get")!)
                 }
             }
@@ -357,7 +524,7 @@ describe("Middleware", () => {
                 .initialize()
             await Supertest(app.callback())
                 .post("/animal/list")
-                .send({id: "200", offset: 30})
+                .send({ id: "200", offset: 30 })
                 .expect(201, { id: "200", offset: 30 })
         })
 
@@ -384,14 +551,14 @@ describe("Middleware", () => {
 
         it("Should able to invoke controller from inside middleware with predefined parameters", async () => {
             class AnimalController {
-                get(id:string) {
+                get(id: string) {
                     return { id }
                 }
             }
             const app = await fixture(AnimalController)
                 .use({
                     execute: async i => {
-                        if (i.context.state.caller === "system" && i.context.request.path === "/hello"){
+                        if (i.context.state.caller === "system" && i.context.request.path === "/hello") {
                             (i.context.parameters as any) = [i.context.query.id]
                             return invoke(i.context, i.context.routes[0])
                         }
@@ -405,4 +572,5 @@ describe("Middleware", () => {
                 .expect(200, { id: "300" })
         })
     })
+
 })

@@ -2,8 +2,8 @@ import { Context } from "koa"
 import ptr from "path-to-regexp"
 import { useCache } from "tinspector"
 
-import {  pipe } from "./middleware-pipeline"
-import { HttpStatusError, Configuration, Middleware, MiddlewareUtil, RouteContext, RouteInfo, ValidationError } from "./types"
+import { pipe } from "./middleware-pipeline"
+import { Configuration, HttpStatusError, RouteInfo, ValidationError } from "./types"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
