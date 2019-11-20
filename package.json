@@ -39,7 +39,7 @@
 		"test"
 	],
 	"dependencies": {
-		"@types/puppeteer": "^1.20.2",
+		"@types/puppeteer": "^2.0.0",
 		"puppeteer": "^2.0.0"
 	}
 }
