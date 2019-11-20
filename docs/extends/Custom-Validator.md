@@ -57,8 +57,9 @@ Sometime its not possible to validate value only on single property, but require
 
 ```typescript
 function checkConfirmPassword() {
-    return val.custom(async (x, info) => {
-        return x.password !== x.confirmPassword ? [{ path: "confirmPassword", messages: ["Password is not the same"] }] : undefined
+    return val.custom((x, info) => {
+        if(x.password !== x.confirmPassword)
+            return val.result("confirmPassword", "Password is not the same") 
     })
 }
 
