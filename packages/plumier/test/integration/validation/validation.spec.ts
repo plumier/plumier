@@ -192,218 +192,13 @@ describe("Decouple Validation Logic", () => {
     })
 })
 
-
-
-// describe("Object Validation", () => {
-
-//     it("Should validate object with parameter properties", async () => {
-//         @domain()
-//         class ClientModel {
-//             constructor(
-//                 @val.email()
-//                 public email: string,
-//                 @val.email()
-//                 public secondaryEmail: string
-//             ) { }
-//         }
-//         const result = await validateMe(new ClientModel("kitty", "doggy"))
-//         expect(result).toMatchObject([
-//             { path: ["email"] },
-//             { path: ["secondaryEmail"] }
-//         ])
-//     })
-
-//     it("Should validate object with common property", async () => {
-//         @domain()
-//         class ClientModel {
-//             @val.email()
-//             public email: string = "kitty"
-//             @val.email()
-//             public secondaryEmail: string = "doggy"
-//         }
-//         const result = await validateMe(new ClientModel())
-//         expect(result).toMatchObject([
-//             { path: ["email"] },
-//             { path: ["secondaryEmail"] }
-//         ])
-//     })
-
-//     it("Should validate object with getter property", async () => {
-//         @domain()
-//         class ClientModel {
-//             @val.email()
-//             get email(): string { return "kitty" }
-//             @val.email()
-//             get secondaryEmail(): string { return "doggy" }
-//         }
-//         const result = await validateMe(new ClientModel())
-//         expect(result).toMatchObject([
-//             { path: ["email"] },
-//             { path: ["secondaryEmail"] }
-//         ])
-//     })
-
-//     it("Should validate nested object", async () => {
-//         @domain()
-//         class CreditCardModel {
-//             constructor(
-//                 @val.creditCard()
-//                 public creditCard: string,
-//             ) { }
-//         }
-//         @domain()
-//         class ClientModel {
-//             constructor(
-//                 @val.email()
-//                 public email: string,
-//                 @val.email()
-//                 public secondaryEmail: string,
-//                 public spouse: CreditCardModel
-//             ) { }
-//         }
-//         const result = await validateMe(new ClientModel("kitty", "doggy", new CreditCardModel("kitty")))
-//         expect(result).toMatchObject([
-//             { path: ["email"] },
-//             { path: ["secondaryEmail"] },
-//             { path: ["spouse", "creditCard"] }
-//         ])
-//     })
-// })
-
-// describe("Array Validation", () => {
-//     it("Should validate object inside array", async () => {
-//         @domain()
-//         class Dummy {
-//             constructor(
-//                 @val.email()
-//                 public email: string,
-//             ) { }
-//         }
-//         const result = await validateArray([new Dummy("support@gmail.com"), new Dummy("noreply@gmail.com"), new Dummy("kitty")], [], {} as any)
-//         expect(result).toMatchObject([
-//             { path: ["2", "email"] }
-//         ])
-//     })
-//     it("Should validate nested array inside object", async () => {
-//         @domain()
-//         class Empty {
-//             constructor(
-//                 public dummies: Dummy[],
-//             ) { }
-//         }
-//         @domain()
-//         class Dummy {
-//             constructor(
-//                 @val.email()
-//                 public email: string,
-//             ) { }
-//         }
-//         const dummies = [new Dummy("support@gmail.com"), new Dummy("noreply@gmail.com"), new Dummy("kitty")]
-//         const result = await validateArray([new Empty(dummies)], [], {} as any)
-//         expect(result).toMatchObject([
-//             { path: ["0", "dummies", "2", "email"] }
-//         ])
-//     })
-// })
-
-// describe("Durability", () => {
-//     it("Should treat property as required except @optional() defined", async () => {
-//         @domain()
-//         class ClientModel {
-//             constructor(
-//                 @val.email()
-//                 public email?: string | null | undefined,
-//             ) { }
-//         }
-//         expect((await validateMe(new ClientModel()))).toMatchObject([{ "messages": ["Required"] }])
-//         expect((await validateMe(new ClientModel("")))).toMatchObject([{ "messages": ["Required"] }])
-//         expect((await validateMe(new ClientModel("abc")))).toMatchObject([{ "messages": ["Invalid email address"] }])
-//         expect((await validateMe(new ClientModel("support@gmail.com")))).toEqual([])
-//     })
-
-//     it("Should skip required if @option() is provided", async () => {
-//         @domain()
-//         class ClientModel {
-//             constructor(
-//                 @val.optional()
-//                 @val.email()
-//                 public email?: string | null | undefined,
-//             ) { }
-//         }
-//         expect((await validateMe(new ClientModel())).length).toBe(0)
-//         expect((await validateMe(new ClientModel(""))).length).toBe(0)
-//         expect((await validateMe(new ClientModel(null))).length).toBe(0)
-//         expect((await validateMe(new ClientModel("abc")))).toMatchObject([{ "messages": ["Invalid email address"] }])
-//     })
-
-//     it("Should not error if provided boolean", async () => {
-//         @domain()
-//         class ClientModel {
-//             constructor(
-//                 @val.email()
-//                 public hasEmail: boolean,
-//             ) { }
-//         }
-//         const result = await validateMe(new ClientModel(false))
-//         expect(result).toMatchObject([{
-//             path: ["hasEmail"]
-//         }])
-//     })
-//     it("Should not error if provided number", async () => {
-//         @domain()
-//         class ClientModel {
-//             constructor(
-//                 @val.email()
-//                 public age: number,
-//             ) { }
-//         }
-//         const result = await validateMe(new ClientModel(50))
-//         expect(result).toMatchObject([{
-//             path: ["age"]
-//         }])
-//     })
-//     it("Should not error if provided function", async () => {
-//         @domain()
-//         class ClientModel {
-//             constructor(
-//                 @val.email()
-//                 public fn: () => void,
-//             ) { }
-//         }
-//         const result = await validateMe(new ClientModel(() => { }))
-//         expect(result).toMatchObject([{
-//             path: ["fn"]
-//         }])
-//     })
-
-// })
-
-// describe("Partial Validation", () => {
-//     class ClientModel {
-//         constructor(
-//             public name?: string,
-//             @val.email()
-//             public email?: string,
-//         ) { }
-//     }
-//     it("Should called without error", () => {
-//         const result = val.partial(ClientModel)
-//         expect(result).not.toBeNull()
-//     })
-//     it("Should skip required validation on partial type", async () => {
-//         const result = await validate(new ClientModel(), [<TypeDecorator>{ kind: "Override", type: ClientModel, info: "Partial" }], [], {} as any)
-//         expect(result).toEqual([])
-//     })
-// })
-
-
 describe("Custom Validation", () => {
 
     it("Should provided correct information for custom validation", async () => {
         async function customValidator(val: any, info: ValidatorInfo) {
             expect(info.name).toBe("data")
             expect(info.parent).toBeUndefined()
-            expect(info.route).toMatchSnapshot()
+            expect(info.ctx.route).toMatchSnapshot()
             return undefined
         }
         class UserController {
@@ -417,7 +212,46 @@ describe("Custom Validation", () => {
             .expect(200)
     })
 
-    it("Should provide parent value information", async () =>{
+    it("Should able to use sync function as custom validator", async () => {
+        class UserController {
+            @route.post()
+            save(@val.custom(val => val < 18 ? "Must greater than 18" : undefined) data: number) { }
+        }
+        const koa = await fixture(UserController).initialize()
+        const { body } = await supertest(koa.callback())
+            .post("/user/save")
+            .send({ data: 12 })
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should able to return AsyncValidatorResult from sync validation", async () => {
+        class UserController {
+            @route.post()
+            save(@val.custom(v => v < 18 ? val.result("other", "Must greater than 18") : undefined) data: number) { }
+        }
+        const koa = await fixture(UserController).initialize()
+        const { body } = await supertest(koa.callback())
+            .post("/user/save")
+            .send({ data: 12 })
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should able to use async function as custom validator", async () => {
+        class UserController {
+            @route.post()
+            save(@val.custom(async val => val < 18 ? "Must greater than 18" : undefined) data: number) { }
+        }
+        const koa = await fixture(UserController).initialize()
+        const { body } = await supertest(koa.callback())
+            .post("/user/save")
+            .send({ data: 12 })
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should provide parent value information", async () => {
         @domain()
         class ClientModel {
             constructor(
@@ -466,7 +300,6 @@ describe("Custom Validation", () => {
             .expect(422)
         expect(result.body).toMatchSnapshot()
     })
-
 
     it("Should validate using decouple logic", async () => {
         function only18Plus() {
@@ -546,7 +379,6 @@ describe("Custom Validation", () => {
             .expect(422)
         expect(result.body).toMatchSnapshot()
     })
-
 
     it("Should be able to validate class and return several validation result", async () => {
         function checkConfirmPassword() {
