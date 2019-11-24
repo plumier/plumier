@@ -3,7 +3,6 @@ import { bind } from "plumier"
 
 import { google } from "../config"
 
-
 export class GoogleController {
     @oAuthDialogEndPoint(new GoogleDialogProvider("/google/callback", google.appId))
     login() { }

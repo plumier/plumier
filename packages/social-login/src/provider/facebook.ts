@@ -13,30 +13,18 @@ https://www.facebook.com/v4.0/dialog/oauth?
     &state={state-param}
 */
 
-@domain()
-export class FacebookProfile {
-    constructor(
-        public id: string,
-        public name: string,
-        public picture: {
-            data: {
-                height: number, width: number,
-                is_silhouette: boolean, url: string
-            }
+export interface FacebookProfile {
+    id: string
+    name: string
+    picture: {
+        data: {
+            height: number, width: number,
+            is_silhouette: boolean, url: string
         }
-    ) { }
+    }
 }
 
-@domain()
-export class FacebookLoginStatus implements SocialLoginStatus<FacebookProfile> {
-    constructor(
-        public status: "Success" | "Failed",
-        @val.optional()
-        public error?: any,
-        @val.optional()
-        public data?: FacebookProfile
-    ) { }
-}
+export interface FacebookLoginStatus extends SocialLoginStatus<FacebookProfile> {}
 
 export class FacebookProvider implements SocialAuthProvider {
     tokenEndPoint = "https://graph.facebook.com/v4.0/oauth/access_token"
