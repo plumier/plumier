@@ -54,14 +54,8 @@ export class OAuthCallbackMiddleware implements Middleware {
         for (const [idx, paramMeta] of ctx.route!.action.parameters.entries()) {
             for (const decorator of paramMeta.decorators) {
                 if (decorator.type === "ParameterBinding" && decorator.name === LoginStatusParameterBinding) {
-                    const result = tc.validate(value, { type: paramMeta.type, path: paramMeta.name })
-                    this.log("Binding: %o", result.value)
-                    this.log("Binding Issue: %o", result.issues)
-                    if (!result.issues)
-                        ctx.parameters![idx] = result.value
-                    else
-                        throw new ValidationError(result.issues
-                            .map(x => ({ path: x.path.split("."), messages: x.messages })));
+                    this.log("Binding: %o", value)
+                    ctx.parameters![idx] = value
                 }
             }
         }
@@ -109,8 +103,6 @@ export class OAuthCallbackMiddleware implements Middleware {
                 this.log("Error: %o", e.response && e.response.data || e)
                 if (e.response)
                     this.bindProfile({ status: "Failed", error: e.response.data }, invocation.context)
-                else if (e instanceof ValidationError)
-                    this.bindProfile({ status: "Failed", error: e.issues }, invocation.context)
                 else
                     this.bindProfile({ status: "Failed", error: { message: e.message } }, invocation.context)
             }

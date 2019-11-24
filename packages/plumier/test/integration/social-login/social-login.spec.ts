@@ -64,7 +64,7 @@ describe("Social Login Mock Test", () => {
         expect(body.error).toMatchObject({ message: "Authorization code is required" })
     })
 
-    it("Should return error if fail validation occur", async () => {
+    it("Should skip validation", async () => {
         (axios.post as jest.Mock).mockReturnValue(axiosResult({ access_token: faker.random.uuid() }));;
         (axios.get as jest.Mock).mockReturnValue(axiosResult({ ...googleProfile, family_name: undefined }));
         const app = await createApp()
@@ -72,8 +72,7 @@ describe("Social Login Mock Test", () => {
         const { body } = await agent
             .get(`/google/callback?code=lorem`)
             .expect(200)
-        expect(body.status).toBe("Failed")
-        expect(body.error).toMatchObject([{ messages: ["Required"], path: ["profile", "data", "family_name"] }])
+        expect(body.status).toBe("Success")
     })
 })
 

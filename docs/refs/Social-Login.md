@@ -11,7 +11,7 @@ Every OAuth2 with authorization code flow require us to create a callback url to
 Plumier OAuth callback middleware done all those process for you and automatically bind the login status into parameter marked with `@bind.loginStatus()`. 
 
 ```typescript 
-import { FacebookProvider } from "@plumier/social-login"
+import { FacebookProvider, FacebookLoginStatus } from "@plumier/social-login"
 import { sign } from "jsonwebtoken"
 import { response, bind } from "plumier"
 
@@ -25,6 +25,34 @@ export class FacebookController {
 ```
 
 Controller above will handle `GET /facebook/callback` which will be used as a OAuth callback url. `@oAuthCallback` is an action specific middleware that will be process the provided authorization code passed by the Facebook login screen. 
+
+For other OAuth provider, the implementation is quite straightforward 
+
+```typescript 
+export class GitHubController {
+    @oAuthCallback(new GitHubProvider(<client id>, <client secret>))
+    callback(@bind.loginStatus() status: GitHubLoginStatus) {
+        const token = sign({ <token claim> }, <token secret>)
+        return response.callbackView({ accessToken: token })
+    }
+} 
+
+export class GoogleController {
+    @oAuthCallback(new GoogleProvider(<client id>, <client secret>))
+    callback(@bind.loginStatus() status: GoogleLoginStatus) {
+        const token = sign({ <token claim> }, <token secret>)
+        return response.callbackView({ accessToken: token })
+    }
+} 
+
+export class GitLabController {
+    @oAuthCallback(new GitLabProvider(<client id>, <client secret>))
+    callback(@bind.loginStatus() status: GitLabLoginStatus) {
+        const token = sign({ <token claim> }, <token secret>)
+        return response.callbackView({ accessToken: token })
+    }
+} 
+```
 
 > Keep in mind that by default controller method translated into `GET` route, so on example above its not necessary to decorate the `callback` method with  `@route.get()`.
 
@@ -65,8 +93,40 @@ Interface above is a contract for a provider required by `@oAuthCallback` middle
 * `profileParams` extra parameter used to query login user profile.
 
 
+## Authentication Dialog URL Middleware
+Plumier provided another middleware to easily generate OAuth authentication dialog url. The implementation is simply like below
+
+```typescript
+export class FacebookController {
+    @oAuthDialogEndPoint(new FacebookDialogProvider("/facebook/callback", process.env.FACEBOOK_CLIENT_ID))
+    login() { }
+}
+```
+
+Above code will generate route `GET /facebook/login` the route automatically redirected into Facebook OAuth authentication like picture below. 
+
+![facebook](../assets/facebook-oauth-dialog.png)
+
+The `@oAuthDialogEndPoint` received single parameter that is a dialog provider. Dialog provider will provide default OAuth authentication URL information. The parameters are: 
+* `callbackUrl` the OAuth callback parameter, only the path, doesn't require the full url.
+* `clientId` the OAuth client id
+
+If the default URL doesn't enough, for example you need to setup more parameters on the OAuth url, you can return the extra parameters from the controller. 
+
+Example below showing that we provide `state` parameter for the OAuth url. 
+
+```typescript
+export class FacebookController {
+    @oAuthDialogEndPoint(new FacebookDialogProvider("/facebook/callback", process.env.FACEBOOK_CLIENT_ID))
+    //GET /auth/dialogs/facebook
+    facebook(@bind.cookie("csrf:key") secret: string) {
+        return { state: new Tokens().create(secret) }
+    }
+}
+```
+
 ## Callback View 
-Ideally OAuth login launched in a new browser window or popup, at the end of login process callback url need a way to pass a login token into the parent window. 
+Usually OAuth login launched in a new browser popup dialog, at the end of login process callback url need a way to pass a login token into the parent window. 
 
 Plumier provided a simple html used to communicate to the parent window. From the previous example you can see that the `callback` method returned `response.callbackView()`, this function actually returned html that will be pass the token into the parent window, the html is like below:
 

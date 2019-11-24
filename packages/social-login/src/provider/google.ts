@@ -26,28 +26,16 @@ https://developers.google.com/oauthplayground
 
 */
 
-@domain()
-export class GoogleProfile {
-    constructor(
-        public id: string,
-        public family_name: string,
-        public given_name: string,
-        public locale: string,
-        public name: string,
-        public picture: string,
-    ) { }
+export interface GoogleProfile {
+    id: string,
+    family_name: string,
+    given_name: string,
+    locale: string,
+    name: string,
+    picture: string,
 }
 
-@domain()
-export class GoogleLoginStatus implements SocialLoginStatus<GoogleProfile> {
-    constructor(
-        public status: "Success" | "Failed",
-        @val.optional()
-        public error?: any,
-        @val.optional()
-        public data?: GoogleProfile
-    ) { }
-}
+export interface GoogleLoginStatus extends SocialLoginStatus<GoogleProfile> { }
 
 export class GoogleProvider implements SocialAuthProvider {
     tokenEndPoint = "https://www.googleapis.com/oauth2/v4/token"

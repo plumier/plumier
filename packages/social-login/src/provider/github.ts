@@ -11,40 +11,28 @@ SETUP APPLICATION:
 https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/
 */
 
-@domain()
-export class GitHubProfile {
-    constructor(
-        public html_url: string,
-        public id: number,
-        public location: string,
-        public login: string,
-        public name: string,
-        public node_id: string,
-        public organizations_url: string,
-        public public_gists: number,
-        public public_repos: number,
-        public received_events_url: string,
-        public repos_url: string,
-        public site_admin: boolean,
-        public starred_url: string,
-        public subscriptions_url: string,
-        public type: string,
-        public updated_at: string,
-        public url: string,
-    ) { }
+export interface GitHubProfile {
+    html_url: string,
+    id: number,
+    location: string,
+    login: string,
+    name: string,
+    node_id: string,
+    organizations_url: string,
+    public_gists: number,
+    public_repos: number,
+    received_events_url: string,
+    repos_url: string,
+    site_admin: boolean,
+    starred_url: string,
+    subscriptions_url: string,
+    type: string,
+    updated_at: string,
+    url: string,
 }
 
 
-@domain() 
-export class GitHubLoginStatus implements SocialLoginStatus<GitHubProfile> {
-    constructor(
-        public status: "Success" | "Failed",
-        @val.optional()
-        public error?: any,
-        @val.optional()
-        public data?: GitHubProfile 
-    ){}
-}
+export interface GitHubLoginStatus extends SocialLoginStatus<GitHubProfile> {}
 
 export class GitHubProvider implements SocialAuthProvider {
     tokenEndPoint = "https://github.com/login/oauth/access_token"
