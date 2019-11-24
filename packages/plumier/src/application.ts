@@ -2,13 +2,12 @@ import {
     analyzeRoutes,
     Application,
     Configuration,
-    DependencyResolver,
+    DefaultDependencyResolver,
     Facility,
     generateRoutes,
     hasKeyOf,
-    KoaMiddleware,
     Middleware,
-    MiddlewareUtil,
+    MiddlewareFunction,
     PlumierApplication,
     PlumierConfiguration,
     printAnalysis,
@@ -19,11 +18,6 @@ import Koa from "koa"
 import { dirname } from "path"
 
 
-class DefaultDependencyResolver implements DependencyResolver {
-    resolve(type: new (...args: any[]) => any) {
-        return new type()
-    }
-}
 
 export class Plumier implements PlumierApplication {
     readonly config: Readonly<PlumierConfiguration>;
@@ -35,19 +29,13 @@ export class Plumier implements PlumierApplication {
             mode: "debug",
             controller: "./controller",
             dependencyResolver: new DefaultDependencyResolver(),
-            middlewares: [], facilities: []
+            middlewares: [],
+            facilities: []
         }
     }
 
-    use(option: KoaMiddleware): Application
-    use(option: Middleware): Application
-    use(option: KoaMiddleware | Middleware): Application {
-        if (typeof option === "function") {
-            this.config.middlewares.push(MiddlewareUtil.fromKoa(option))
-        }
-        else {
-            this.config.middlewares.push(option)
-        }
+    use(option: string | symbol | MiddlewareFunction | Middleware): Application {
+        this.config.middlewares.push(option)
         return this
     }
 

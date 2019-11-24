@@ -50,7 +50,6 @@ export interface AuthorizeMetadataInfo {
 * `ctx` Koa context of current request
 * `value` optional, value of current parameter (if authorization applied into parameter)
 
-
 ## Example
 Example we will create custom authorization to authorize if the current user is an `Admin` or the owner of the data. As an example we have controller to modify user data like below
 
@@ -103,36 +102,51 @@ export class UsersController {
 }
 ```
 
-## Separate Decorator and Implementation
-Authorization decorator that is applied for parameter authorization, sometime need to be free from server specific dependency because will be shared with UI. To do so Plumier provided separation between logic and decorator by providing `ID` of the validator logic inside configuration, example:
+## Separate Decorator and Its Implementation
+Putting authorization implementation inside decorator is simple and easy to read, but in some case it might cause circular dependency issue. You can use dependency resolver to solve this issue, by register the authorization classes by ID. 
+
+The first step, create a class implements `Authorizer` interface like below.
 
 ```typescript
-import { authorize } from "@plumier/core";
+import { Authorizer, AuthorizeMetadataInfo, DefaultDependencyResolver } from "plumier"
 
-export function isAdminOrOwner(){
-    return authorize.custom("auth:isAdminOrOwner") 
-}
-```
+//create instance of DefaultDependencyResolver globally
+const resolver = new DefaultDependencyResolver()
 
-Define logic of the validation by providing key-value pair of authorize id and authorize logic like below
-
-```typescript
-//here is separate logic (can be place in different file)
-export const authorizeStore:AuthorizeStore = {
-    "auth:isAdminOrOwner": async (info, position) => {
-        const {role, user, parameters} = info
-        const id = parameters[0]
+//register the custom authorizer with the ID
+@resolver.register("isAdminOrOwner")
+export class IsAdminOrOwnerAuthorizer implements Authorizer {
+    authorize({ role, user, ctx }:AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method") {
+        const id = ctx.parameters[0]
         return role.some(x => x === "Admin") || user.id === id
     }
 }
 ```
 
-To use it, register the authorize logic on the configuration, can be from `JwtAuthFacility` or from `Plumier.set({authorizer: {}})`
+Register the created resolver into the Plumier application 
 
 ```typescript
+import { Plumier, WebApiFacility } from "plumier"
 
-const plumier = new Plumier()
-plumier.set(new JwtAuthFacility({ authorizer: authorizeStore }))
-//or
-plumier.set({ authorizer: authorizeStore })
+const app = new Plumier()
+    .set(new WebApiFacility({ dependencyResolver: resolver }))
+    //other facilities or middlewares
+    .initialize()
 ```
+
+Then use the ID on each authorization applied. 
+
+```typescript
+export class UsersController {
+    //use the ID here, Plumier will use resolver 
+    //to create instance of the custom authorizer 
+    //then execute it
+    @authorize.custom("isAdminOrOwner")
+    @route.put(":id")
+    async modify(id:number, user:User){
+        
+    }
+}
+```
+
+> This functionality work well with dependency injection, register the custom authorizer by name/id and plumier will automatically pass the ID into the custom dependency resolver.

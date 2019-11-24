@@ -1,4 +1,4 @@
-import { consoleLog, bind } from "@plumier/core"
+import { consoleLog, Authorizer, AuthorizeMetadataInfo, DefaultDependencyResolver } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { sign } from "jsonwebtoken"
 import { authorize, domain, route, val } from "plumier"
@@ -228,11 +228,9 @@ describe("JwtAuth", () => {
             const fn = jest.fn()
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({ secret: SECRET }))
-                .use({
-                    execute: async i => {
-                        fn()
-                        return i.proceed()
-                    }
+                .use(i => {
+                    fn()
+                    return i.proceed()
                 })
                 .initialize()
 
@@ -362,6 +360,27 @@ describe("JwtAuth", () => {
         it("Should able to use async @authorize.custom()", async () => {
             class AnimalController {
                 @authorize.custom(async i => i.role.some(x => x === "admin"))
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+        })
+
+        it("Should able to use Class based authorizer", async () => {
+            class IsAdmin implements Authorizer {
+                authorize(info:AuthorizeMetadataInfo){
+                    return info.role.some(x => x === "admin")
+                }
+            }
+
+            class AnimalController {
+                @authorize.custom(new IsAdmin())
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -903,28 +922,26 @@ describe("JwtAuth", () => {
 
     })
 
-    describe("Separate Decorator And Implementation", () => {
+    describe("Separate Decorator And Implementation with Object Registry", () => {
         const OTHER_USER_TOKEN = sign({ email: "other-ketut@gmail.com", role: "user" }, SECRET)
+        const resolver = new DefaultDependencyResolver()
 
-        function isOwner() {
-            return authorize.custom("isOwner")
+        @resolver.register("isOwner")
+        class OwnerAuthorizer implements Authorizer {
+            authorize(info: AuthorizeMetadataInfo) {
+                return info.ctx.parameters[0] === info.user.email
+            }
         }
 
         it("Should able to use separate implementation", async () => {
             class AnimalController {
-                @isOwner()
+                @authorize.custom("isOwner")
                 @route.get()
                 save(email: string) { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({
-                    secret: SECRET,
-                    authorizer: {
-                        "isOwner": i => {
-                            return i.ctx.parameters[0] === i.user.email
-                        }
-                    }
-                }))
+                .set({ dependencyResolver: resolver })
+                .set(new JwtAuthFacility({ secret: SECRET }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -935,29 +952,6 @@ describe("JwtAuth", () => {
                 .get("/animal/save?email=ketut@gmail.com")
                 .set("Authorization", `Bearer ${OTHER_USER_TOKEN}`)
                 .expect(401, { status: 401, message: "Unauthorized" })
-        })
-
-        it("Should able to use separate implementation with async method", async () => {
-            class AnimalController {
-                @isOwner()
-                @route.get()
-                save(email: string) { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({
-                    secret: SECRET,
-                    authorizer: {
-                        "isOwner": async i => {
-                            return i.ctx.parameters[0] === i.user.email
-                        }
-                    }
-                }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/save?email=ketut@gmail.com")
-                .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(200)
         })
     })
 

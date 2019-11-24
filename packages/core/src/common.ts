@@ -38,7 +38,7 @@ function getChildValue(object: any, path: string) {
 }
 
 function hasKeyOf<T>(opt: any, key: string): opt is T {
-    return key in opt;
+    return!!opt[key]
 }
 
 function isCustomClass(type: Function | Function[]) {

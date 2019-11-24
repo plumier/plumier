@@ -1,22 +1,20 @@
-import { Context } from "koa"
+import { decorateProperty } from "tinspector"
 import * as tc from "typedconverter"
 
-import { Class } from "./common"
-import { HttpStatus } from "./http-status"
+import { binder } from "./binder"
+import { Class, hasKeyOf } from "./common"
 import {
     ActionResult,
-    Configuration,
+    AsyncValidatorResult,
     Invocation,
     Middleware,
+    RouteContext,
+    ValidationError,
     ValidatorDecorator,
     ValidatorFunction,
     ValidatorInfo,
-    ValidationError,
-    AsyncValidatorResult,
-    RouteContext,
+    CustomValidator,
 } from "./types"
-import { binder } from "./binder"
-import { decorateProperty } from 'tinspector';
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -27,7 +25,7 @@ interface AsyncValidatorItem {
     value: any,
     path: string,
     parent?: { value: any, type: Class, decorators: any[] }
-    validator: ValidatorFunction | string
+    validator: ValidatorFunction | string | symbol | CustomValidator
 }
 
 function createVisitor(items: AsyncValidatorItem[]) {
@@ -42,12 +40,16 @@ function createVisitor(items: AsyncValidatorItem[]) {
 
 declare module "typedconverter" {
     namespace val {
-        export function custom(val: ValidatorFunction | string): (...arg: any[]) => void
+        export function custom(validator: ValidatorFunction): (...arg: any[]) => void
+        export function custom(validator: CustomValidator): (...arg: any[]) => void
+        export function custom(id: string): (...arg: any[]) => void
+        export function custom(id: symbol): (...arg: any[]) => void
+        export function custom(val: ValidatorFunction | string | symbol | CustomValidator): (...arg: any[]) => void
         export function result(path: string, messages: string | string[]): AsyncValidatorResult[]
     }
 }
 
-tc.val.custom = (val: ValidatorFunction | string) => {
+tc.val.custom = (val: ValidatorFunction | string | symbol | CustomValidator) => {
     return decorateProperty(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: val })
 }
 
@@ -65,11 +67,14 @@ async function validateAsync(x: AsyncValidatorItem, ctx: RouteContext): Promise<
     const name = getName(x.path)
     const info: ValidatorInfo = { ctx, name, parent: x.parent }
     if (x.value === undefined || x.value === null) return []
-    const validators = ctx.config.validators || {}
-    if (typeof x.validator === "string" && !validators[x.validator])
-        throw new Error(`No validation implementation found for ${x.validator}`)
-    const validator = typeof x.validator === "function" ? x.validator : validators[x.validator]
-    const message = await validator(x.value, info)
+    let validator: CustomValidator;
+    if (typeof x.validator === "function")
+        validator = { validate: x.validator }
+    else if (hasKeyOf<CustomValidator>(x.validator, "validate"))
+        validator = x.validator
+    else
+        validator = ctx.config.dependencyResolver.resolve(x.validator)
+    const message = await validator.validate(x.value, info)
     if (!message) return []
     if (typeof message === "string")
         return [{ path: x.path, messages: [message] }]

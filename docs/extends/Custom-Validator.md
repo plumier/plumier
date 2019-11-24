@@ -77,38 +77,53 @@ class UsersController {
 }
 ```
 
-### Separate Decorator and Implementation
-Validator decorator sometime need to be free from dependencies, for example if you want to separate Domain (with validation) into single package and will be shared between UI and Server side. Thus, validation that tightly coupled with database logic (for example `@val.unique()`) can't be used.
 
-Plumier provided separation between logic and decorator by providing `ID` of the validator logic inside configuration, example:
+## Separate Decorator and Its Implementation
+Putting validator implementation inside decorator is simple and easy to read, but in some case it might cause circular dependency issue. You can use dependency resolver to solve this issue, by register the validator classes by ID. 
+
+The first step, create a class implements `CustomValidator` interface like below.
 
 ```typescript
-//@plumier/validator can be used in UI and Server because it uses pure JS code
-import { val } from "@plumier/validator";
+import { CustomValidator, AuthorizeMetadataInfo, DefaultDependencyResolver } from "plumier"
 
-export function is18plus(){
-    return val.custom("val:18+") //provided the ID (val:18+)
+//create instance of DefaultDependencyResolver globally
+const resolver = new DefaultDependencyResolver()
+
+//register the custom authorizer with the ID
+@resolver.register("is18plus")
+export class Is18PlusValidator implements CustomValidator {
+    validate(value: any, info: ValidatorInfo)
+        if(parseInt(val) < 18)
+            return "Should greater than 18 years old"
+    }
 }
 ```
 
-Define logic of the validation by providing key-value pair of validator id and validator logic like below
+Register the created resolver into the Plumier application 
 
 ```typescript
-//here is separate logic (can be place in different file)
-export const validatorStore:ValidatorStore = {
-    "val:18+": async (val:string) =>  parseInt(val) < 18 : "Should greater than 18 years old" : undefined
+import { Plumier, WebApiFacility } from "plumier"
+
+const app = new Plumier()
+    .set(new WebApiFacility({ dependencyResolver: resolver }))
+    //other facilities or middlewares
+    .initialize()
+```
+
+Then use the ID on each authorization applied. 
+
+```typescript
+
+@domain()
+class User {
+    constructor(
+        //use the ID here, Plumier will use resolver 
+        //to create instance of the custom authorizer 
+        //then execute it
+        @val.custom("is18plus")
+        public age:number
+    ){}
 }
-export 
 ```
 
-To use it, register the validator logic on the configuration, can be from `WebApiFacility`, `RestfulApiFacility` or from `Plumier.set({validators: {}})`
-
-```typescript
-
-const plumier = new Plumier()
-plumier.set(new WebApiFacility({ validators: validatorStore }))
-//or 
-plumier.set(new RestfulApiFacility({ validators: validatorStore }))
-//or
-plumier.set({ validators: validatorStore })
-```
+> This functionality work well with dependency injection, register the custom validator by name/id and plumier will automatically pass the ID into the custom dependency resolver.

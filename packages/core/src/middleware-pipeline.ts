@@ -1,11 +1,21 @@
-import { Context } from "koa";
-import { ActionResult, HttpStatusError, Invocation, Middleware, MiddlewareUtil, RouteContext, RouteInfo } from "./types";
+import { Context } from "koa"
+
+import { hasKeyOf } from "./common"
+import {
+    ActionResult,
+    HttpStatusError,
+    Invocation,
+    Middleware,
+    MiddlewareFunction,
+    MiddlewareUtil,
+    RouteContext,
+    RouteInfo,
+} from "./types"
 
 
-
-function getMiddleware(global: Middleware[], route: RouteInfo) {
+function getMiddleware(global: (string | symbol | MiddlewareFunction | Middleware)[], route: RouteInfo) {
     const conMdws = MiddlewareUtil.extractDecorators(route)
-    const result: Middleware[] = []
+    const result: (string | symbol | MiddlewareFunction | Middleware)[] = []
     for (const mdw of global) {
         result.push(mdw)
     }
@@ -17,9 +27,19 @@ function getMiddleware(global: Middleware[], route: RouteInfo) {
 
 
 class MiddlewareInvocation implements Invocation {
-    constructor(private middleware: Middleware, public context: Context, private next: Invocation) { }
+    constructor(private middleware: string | symbol | MiddlewareFunction | Middleware, public context: Context, private next: Invocation) { }
     proceed(): Promise<ActionResult> {
-        return this.middleware.execute(this.next)
+        let middleware: Middleware
+        if (typeof this.middleware === "function") {
+            middleware = { execute: this.middleware }
+        }
+        else if (hasKeyOf<Middleware>(this.middleware, "execute")) {
+            middleware = this.middleware
+        }
+        else {
+            middleware = this.context.config.dependencyResolver.resolve(this.middleware)
+        }
+        return middleware.execute(this.next)
     }
 }
 
@@ -53,7 +73,7 @@ class ActionInvocation implements Invocation {
 function pipe(ctx: Context, route?: RouteInfo, caller: "system" | "invoke" = "system") {
     const context = ctx;
     context.state.caller = caller
-    let middlewares: Middleware[];
+    let middlewares: (string | symbol | MiddlewareFunction | Middleware)[];
     let invocationStack: Invocation;
     if (!!route) {
         middlewares = getMiddleware(context.config.middlewares, route)
@@ -64,8 +84,7 @@ function pipe(ctx: Context, route?: RouteInfo, caller: "system" | "invoke" = "sy
         invocationStack = new NotFoundActionInvocation(context)
     }
     for (let i = middlewares.length; i--;) {
-        const mdw = middlewares[i];
-        invocationStack = new MiddlewareInvocation(mdw, context, invocationStack)
+        invocationStack = new MiddlewareInvocation(middlewares[i], context, invocationStack)
     }
     return invocationStack.proceed()
 }

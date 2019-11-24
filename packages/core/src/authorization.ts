@@ -1,6 +1,6 @@
 import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
-import { Class, isCustomClass } from "./common"
+import { Class, isCustomClass, hasKeyOf } from "./common"
 import { HttpStatus } from "./http-status"
 import { ActionResult, HttpStatusError, Invocation, Middleware, RouteInfo, AuthorizeMetadataInfo } from "./types"
 
@@ -12,8 +12,13 @@ type AuthorizeCallback = (info: AuthorizeMetadataInfo, location: "Class" | "Para
 
 interface AuthorizeDecorator {
     type: "plumier-meta:authorize",
-    authorize: string | ((info: AuthorizeMetadataInfo) => boolean | Promise<boolean>),
-    tag: string
+    authorize: string | AuthorizeCallback | Authorizer
+    tag: string, 
+    location: "Class" | "Parameter" | "Method"
+}
+
+interface Authorizer {
+    authorize(info: AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method"): boolean | Promise<boolean>
 }
 
 type RoleField = string | ((value: any) => Promise<string[]>)
@@ -25,8 +30,14 @@ type RoleField = string | ((value: any) => Promise<string[]>)
 
 function executeDecorator(decorator: AuthorizeDecorator, info: AuthorizeMetadataInfo) {
     const authorize = decorator.authorize
-    const impl = typeof authorize === "string" ? info.ctx.config.authorizer![authorize] : authorize
-    return impl(info)
+    let instance: Authorizer
+    if (typeof authorize === "function")
+        instance = { authorize }
+    else if(hasKeyOf<Authorizer>(authorize, "authorize"))
+        instance = authorize 
+    else 
+        instance = info.ctx.config.dependencyResolver.resolve(authorize)
+    return instance.authorize(info, decorator.location)
 }
 
 function isAuthDecorator(decorator: AuthorizeDecorator) {
@@ -148,7 +159,7 @@ class AuthorizeMiddleware implements Middleware {
     }
 }
 
-export { 
-    AuthorizeCallback,  RoleField, 
-    updateRouteAccess, AuthorizeMiddleware, AuthorizeDecorator 
+export {
+    AuthorizeCallback, RoleField, Authorizer,
+    updateRouteAccess, AuthorizeMiddleware, AuthorizeDecorator
 }

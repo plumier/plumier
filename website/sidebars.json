@@ -23,10 +23,11 @@
       "refs/static-analysis",
       "refs/testing-tips"
     ],
-    "Extending": [
+    "Extend": [
       "extends/custom-parameter-binding",
       "extends/custom-validator",
-      "extends/custom-authorization"
+      "extends/custom-authorization",
+      "extends/custom-dependency-resolver"
     ]
   },
   "tutorials": {

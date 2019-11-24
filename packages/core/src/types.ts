@@ -1,5 +1,5 @@
 import Koa, { Context } from "koa"
-import { ClassReflection, MethodReflection } from "tinspector"
+import { ClassReflection, MethodReflection, decorateClass } from "tinspector"
 import { VisitorExtension } from "typedconverter"
 
 import { Class } from "./common"
@@ -125,9 +125,11 @@ export interface RouteContext extends Context {
 // ----------------------------- MIDDLEWARE ---------------------------- //
 // --------------------------------------------------------------------- //
 
-
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>
-export interface MiddlewareDecorator { name: "Middleware", value: Middleware[] }
+
+export interface MiddlewareDecorator { name: "Middleware", value: (string | symbol | MiddlewareFunction | Middleware)[] }
+
+export type MiddlewareFunction = (invocation: Readonly<Invocation>) => Promise<ActionResult>
 
 export interface Middleware {
     execute(invocation: Readonly<Invocation>): Promise<ActionResult>
@@ -145,8 +147,8 @@ export namespace MiddlewareUtil {
             }
         }
     }
-    export function extractDecorators(route: RouteInfo): Middleware[] {
-        const middlewares: Middleware[] = []
+    export function extractDecorators(route: RouteInfo): (string | symbol | MiddlewareFunction | Middleware)[] {
+        const middlewares: (string | symbol | MiddlewareFunction | Middleware)[] = []
         for (let i = route.controller.decorators.length; i--;) {
             const dec: MiddlewareDecorator = route.controller.decorators[i];
             if (dec.name === "Middleware")
@@ -166,9 +168,32 @@ export namespace MiddlewareUtil {
 // ------------------------ DEPENDENCY RESOLVER ------------------------ //
 // --------------------------------------------------------------------- //
 
+interface RegistryDecorator { type: "RegistryDecorator", id: string | symbol }
 
 export interface DependencyResolver {
-    resolve(type: (new (...args: any[]) => any)): any
+    resolve(type: Class | string | symbol): any
+}
+
+export class DefaultDependencyResolver implements DependencyResolver {
+    private readonly registry = new Map<string | symbol, Class>()
+
+    register(id: string | symbol) {
+        return decorateClass(cls => {
+            this.registry.set(id, cls)
+            return <RegistryDecorator>{ type: "RegistryDecorator", id }
+        })
+    }
+
+    resolve(type: Class | string | symbol) {
+        if(typeof type === "function"){
+            return new type()
+        }
+        else {
+            const Type = this.registry.get(type)
+            if (!Type) throw new Error(errorMessage.ObjectNotFound.format(type))
+            return new Type()
+        }
+    }
 }
 
 // --------------------------------------------------------------------- //
@@ -179,32 +204,34 @@ export interface DependencyResolver {
 
 export interface Application {
     /**
-     * Use Koa middleware
+     * Use plumier middleware registered from the registry
     ```
-    use(KoaBodyParser())
-    ```
-     * Use inline Koa middleware
-    ```
-    use(async (ctx, next) => { })
+    use("myMiddleware")
     ```
      */
-    use(middleware: KoaMiddleware): Application
+
+    use(middleware: string | symbol): Application
 
     /**
-     * Use plumier middleware by class instance inherited from Middleware
+     * Use plumier middleware 
     ```
     use(new MyMiddleware())
     ```
-     * Use plumier middleware by inline object
+     */
+
+    use(middleware: Middleware): Application
+
+    /**
+     * Use plumier middleware 
     ```
-    use({ execute: x => x.proceed()})
-    use({ execute: async x => {
+    use(x => x.proceed())
+    use(async x => {
         return new ActionResult({ json: "body" }, 200)
     })
     ```
      */
 
-    use(middleware: Middleware): Application
+    use(middleware: MiddlewareFunction): Application
 
     /**
      * Set facility (advanced configuration)
@@ -252,7 +279,7 @@ export interface PlumierApplication extends Application {
 
 export interface ValidatorDecorator {
     type: "ValidatorDecorator",
-    validator: ValidatorFunction,
+    validator: ValidatorFunction | string | symbol,
 }
 
 export interface ValidatorInfo {
@@ -267,15 +294,15 @@ export interface AsyncValidatorResult {
 }
 
 export type ValidatorFunction = (value: any, info: ValidatorInfo) => undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
-export type ValidatorStore = { [key: string]: ValidatorFunction }
 
+export interface CustomValidator {
+    validate(value: any, info: ValidatorInfo): undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
+}
 
 // --------------------------------------------------------------------- //
 // --------------------------- AUTHORIZATION --------------------------- //
 // --------------------------------------------------------------------- //
 
-
-export type AuthorizeStore = { [key: string]: (info: AuthorizeMetadataInfo) => boolean | Promise<boolean> }
 
 export interface AuthorizeMetadataInfo {
     value?: any
@@ -313,7 +340,7 @@ export interface Configuration {
     /**
      * List of registered global middlewares
      */
-    middlewares:Middleware[]
+    middlewares:(string | symbol | MiddlewareFunction | Middleware)[]
 
     /**
      * Specify controller path (absolute or relative to entry point) or the controller classes array.
@@ -338,16 +365,10 @@ export interface Configuration {
      */
     typeConverterVisitors?: VisitorExtension[],
 
-    /**
-     * Key-value pair to store validator logic. Separate decorator and validation logic
-     */
-    validators?: ValidatorStore
 
     /**
-     * Key-value pair to store authorization logic. Separate decorator and authorization logic
+     * Set custom route analyser functions
      */
-    authorizer?: AuthorizeStore
-
     analyzers?: RouteAnalyzerFunction[]
 }
 
@@ -389,6 +410,7 @@ export namespace errorMessage {
     export const ModelNotFound = "PLUM1007: Domain model not found, no class decorated with @domain() on provided classes"
     export const ModelPathNotFound = "PLUM1007: Domain model not found, no class decorated with @domain() on path {0}"
     export const PublicNotInParameter = "PLUM1008: @authorize.public() can not be applied to parameter"
+    export const ObjectNotFound = "PLUM1009: Object with id {0} not found in Object registry"
 
     //PLUM2XXX internal app error
     export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate {0}. Domain model should not throw error inside constructor`

@@ -1,4 +1,3 @@
-import { ValidatorDecorator } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { IncomingMessage, ServerResponse } from "http"
 import { sign } from "jsonwebtoken"
@@ -6,9 +5,9 @@ import { Context, Request } from "koa"
 import { bind, domain, route, val } from "plumier"
 import Supertest from "supertest"
 import reflect from "tinspector"
+import { Result } from "typedconverter"
 
 import { fixture } from "../../helper"
-import { Result } from 'typedconverter';
 
 export class AnimalModel {
     constructor(

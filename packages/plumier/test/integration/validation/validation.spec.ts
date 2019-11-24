@@ -1,6 +1,15 @@
-import Plumier, { domain, RestfulApiFacility, route, val, ValidatorInfo, ValidatorStore, ValidatorFunction } from "plumier"
+import { DefaultDependencyResolver } from "@plumier/core"
+import Plumier, {
+    AsyncValidatorResult,
+    CustomValidator,
+    domain,
+    RestfulApiFacility,
+    route,
+    val,
+    ValidatorInfo,
+    WebApiFacility,
+} from "plumier"
 import Supertest from "supertest"
-import supertest = require("supertest")
 import reflect from "tinspector"
 
 import { fixture } from "../../helper"
@@ -140,13 +149,10 @@ describe("Error handling", () => {
 })
 
 describe("Decouple Validation Logic", () => {
-    function only18Plus() {
-        return val.custom("18+only")
-    }
     @domain()
     class Person {
         constructor(
-            @only18Plus()
+            @val.custom("18+only")
             public age: number
         ) { }
     }
@@ -154,12 +160,19 @@ describe("Decouple Validation Logic", () => {
         @route.post()
         save(data: Person) { }
     }
-    const validators: ValidatorStore = {
-        "18+only": async val => parseInt(val) > 18 ? undefined : "Only 18+ allowed"
+    const resolver = new DefaultDependencyResolver()
+
+    @resolver.register("18+only")
+    class AgeValidator implements CustomValidator {
+        validate(value: any) {
+            if (parseInt(value) <= 18)
+                return "Only 18+ allowed"
+        }
     }
 
+
     it("Should validate using decouple logic from setting", async () => {
-        const koa = await fixture(PersonController, { validators }).initialize()
+        const koa = await fixture(PersonController, { dependencyResolver: resolver }).initialize()
         const result = await Supertest(koa.callback())
             .post("/person/save")
             .send({ age: 9 })
@@ -169,7 +182,7 @@ describe("Decouple Validation Logic", () => {
 
     it("Should validate using decouple logic from WebApiFacility", async () => {
         const koa = await new Plumier()
-            .set(new RestfulApiFacility({ validators, controller: PersonController }))
+            .set(new WebApiFacility({ dependencyResolver: resolver, controller: PersonController }))
             .set({ mode: "production" })
             .initialize()
         const result = await Supertest(koa.callback())
@@ -181,7 +194,7 @@ describe("Decouple Validation Logic", () => {
 
     it("Should validate using decouple logic from RestfulApiFacility", async () => {
         const koa = await new Plumier()
-            .set(new RestfulApiFacility({ validators, controller: PersonController }))
+            .set(new RestfulApiFacility({ dependencyResolver: resolver, controller: PersonController }))
             .set({ mode: "production" })
             .initialize()
         const result = await Supertest(koa.callback())
@@ -206,7 +219,7 @@ describe("Custom Validation", () => {
             save(@val.custom(customValidator) data: string) { }
         }
         const koa = await fixture(UserController).initialize()
-        await supertest(koa.callback())
+        await Supertest(koa.callback())
             .post("/user/save")
             .send({ data: "abc" })
             .expect(200)
@@ -218,7 +231,26 @@ describe("Custom Validation", () => {
             save(@val.custom(val => val < 18 ? "Must greater than 18" : undefined) data: number) { }
         }
         const koa = await fixture(UserController).initialize()
-        const { body } = await supertest(koa.callback())
+        const { body } = await Supertest(koa.callback())
+            .post("/user/save")
+            .send({ data: 12 })
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should able to use class based custom validator", async () => {
+        class AgeValidator implements CustomValidator {
+            validate(val: any) {
+                if (val < 18)
+                    return "Must greater than 18"
+            }
+        }
+        class UserController {
+            @route.post()
+            save(@val.custom(new AgeValidator()) data: number) { }
+        }
+        const koa = await fixture(UserController).initialize()
+        const { body } = await Supertest(koa.callback())
             .post("/user/save")
             .send({ data: 12 })
             .expect(422)
@@ -231,12 +263,26 @@ describe("Custom Validation", () => {
             save(@val.custom(v => v < 18 ? val.result("other", "Must greater than 18") : undefined) data: number) { }
         }
         const koa = await fixture(UserController).initialize()
-        const { body } = await supertest(koa.callback())
+        const { body } = await Supertest(koa.callback())
             .post("/user/save")
             .send({ data: 12 })
             .expect(422)
         expect(body).toMatchSnapshot()
     })
+
+    it("Should able to return AsyncValidatorResult with multiple messages", async () => {
+        class UserController {
+            @route.post()
+            save(@val.custom(v => v < 18 ? val.result("other", ["Must greater", "Than 18"]) : undefined) data: number) { }
+        }
+        const koa = await fixture(UserController).initialize()
+        const { body } = await Supertest(koa.callback())
+            .post("/user/save")
+            .send({ data: 12 })
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
 
     it("Should able to use async function as custom validator", async () => {
         class UserController {
@@ -244,7 +290,7 @@ describe("Custom Validation", () => {
             save(@val.custom(async val => val < 18 ? "Must greater than 18" : undefined) data: number) { }
         }
         const koa = await fixture(UserController).initialize()
-        const { body } = await supertest(koa.callback())
+        const { body } = await Supertest(koa.callback())
             .post("/user/save")
             .send({ data: 12 })
             .expect(422)
@@ -269,7 +315,7 @@ describe("Custom Validation", () => {
         }
 
         const koa = await fixture(UserController).initialize()
-        const result = await supertest(koa.callback())
+        const result = await Supertest(koa.callback())
             .post("/user/save")
             .send({ password: "abcde", confirmPassword: "efghi" })
             .expect(422)
@@ -294,7 +340,7 @@ describe("Custom Validation", () => {
         }
 
         const koa = await fixture(UserController).initialize()
-        const result = await supertest(koa.callback())
+        const result = await Supertest(koa.callback())
             .post("/user/save")
             .send({ email: "lorem ipsum" })
             .expect(422)
@@ -302,29 +348,37 @@ describe("Custom Validation", () => {
     })
 
     it("Should validate using decouple logic", async () => {
-        function only18Plus() {
-            return val.custom("18+only")
+        const registry = new DefaultDependencyResolver()
+
+        @registry.register("18+only")
+        class AgeValidator implements CustomValidator {
+            validate(value: any, info: ValidatorInfo): string | AsyncValidatorResult[] | Promise<string | AsyncValidatorResult[] | undefined> | undefined {
+                if (parseInt(value) <= 18)
+                    return "Only 18+ allowed"
+            }
         }
+
         @reflect.parameterProperties()
         class EmailOnly {
             constructor(
-                @only18Plus()
+                @val.custom("18+only")
                 public age: number
             ) { }
         }
+
         class UserController {
             @route.post()
             save(data: EmailOnly) { }
         }
 
-        const koa = await fixture(UserController, {
-            validators: { "18+only": async val => parseInt(val) > 18 ? undefined : "Only 18+ allowed" }
-        }).initialize()
-        const result = await supertest(koa.callback())
+        const koa = await fixture(UserController)
+            .set({ dependencyResolver: registry })
+            .initialize()
+        const result = await Supertest(koa.callback())
             .post("/user/save")
             .send({ age: "12" })
             .expect(422)
-        await supertest(koa.callback())
+        await Supertest(koa.callback())
             .post("/user/save")
             .send({ age: "20" })
             .expect(200)
@@ -349,7 +403,7 @@ describe("Custom Validation", () => {
 
         const koa = await fixture(UserController).initialize()
         koa.on("error", () => { })
-        await supertest(koa.callback())
+        await Supertest(koa.callback())
             .post("/user/save")
             .send({ age: "12" })
             .expect(500)
@@ -373,7 +427,7 @@ describe("Custom Validation", () => {
         }
 
         const koa = await fixture(UserController).initialize()
-        const result = await supertest(koa.callback())
+        const result = await Supertest(koa.callback())
             .post("/user/save")
             .send({ password: "abcde", confirmPassword: "efghi" })
             .expect(422)

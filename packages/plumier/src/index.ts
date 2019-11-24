@@ -6,6 +6,7 @@ export {
     Configuration,
     Class,
     DependencyResolver,
+    DefaultDependencyResolver,
     Facility,
     FileUploadInfo,
     FileParser,
@@ -17,18 +18,22 @@ export {
     KoaMiddleware,
     middleware,
     Middleware,
+    MiddlewareUtil,
     domain,
     PlumierApplication,
     PlumierConfiguration,
     RequestPart,
     route,
     RouteInfo,
-    ValidatorStore,
+    Authorizer, 
+    AuthorizeMetadataInfo,
+    CustomValidator,
     ValidatorFunction,
     ValidatorInfo,
     DefaultFacility,
     response,
-    val
+    val, 
+    AsyncValidatorResult
 } from "@plumier/core"
 export * from "./facility"
 

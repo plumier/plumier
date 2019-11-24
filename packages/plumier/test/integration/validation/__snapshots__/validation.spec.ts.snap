@@ -35,7 +35,41 @@ Object {
 }
 `;
 
+exports[`Custom Validation Should able to return AsyncValidatorResult with multiple messages 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Must greater",
+        "Than 18",
+      ],
+      "path": Array [
+        "data",
+        "other",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
 exports[`Custom Validation Should able to use async function as custom validator 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Must greater than 18",
+      ],
+      "path": Array [
+        "data",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Custom Validation Should able to use class based custom validator 1`] = `
 Object {
   "message": Array [
     Object {

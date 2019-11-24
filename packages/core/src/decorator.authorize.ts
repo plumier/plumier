@@ -1,16 +1,19 @@
 import { decorate, mergeDecorator } from "tinspector"
-import { val, ValidatorDecorator, OptionalValidator } from "typedconverter"
+import { OptionalValidator, ValidatorDecorator } from "typedconverter"
 
-import { AuthorizeCallback, AuthorizeDecorator } from "./authorization"
-import { AuthorizeMetadataInfo, errorMessage } from "./types"
+import { AuthorizeCallback, AuthorizeDecorator, Authorizer } from "./authorization"
+import { errorMessage } from "./types"
 
 class AuthDecoratorImpl {
-    custom(authorize: string | AuthorizeCallback, tag: string = "Custom") {
+    custom(callback:AuthorizeCallback, tag?:string): (...args:any[]) => void
+    custom(authorizer:Authorizer, tag?:string): (...args:any[]) => void
+    custom(id:string, tag?:string): (...args:any[]) => void
+    custom(id:symbol, tag?:string): (...args:any[]) => void
+    custom(authorize: symbol | string | AuthorizeCallback | Authorizer, tag: string = "Custom") {
         return decorate((...args: any[]) => {
-            const type = args.length === 1 ? "Class" : args.length === 2 ? "Method" : "Parameter"
+            const location = args.length === 1 ? "Class" : args.length === 2 ? "Method" : "Parameter"
             return <AuthorizeDecorator>{
-                type: "plumier-meta:authorize", tag,
-                authorize: typeof authorize === "string" ? authorize : (info: AuthorizeMetadataInfo) => authorize(info, type),
+                type: "plumier-meta:authorize", tag, authorize, location
             }
         }, ["Class", "Parameter", "Method", "Property"])
     }
