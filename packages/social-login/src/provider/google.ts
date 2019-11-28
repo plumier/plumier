@@ -54,6 +54,6 @@ export class GoogleDialogProvider extends DialogProvider {
         access_type: "offline",
         include_granted_scopes: true,
         response_type: "code",
-        scope: "https://www.googleapis.com/auth/userinfo.profile"
+        scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"
     }
 }
