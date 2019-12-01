@@ -24,7 +24,7 @@ describe("Social Login Using Robot", () => {
         // await browser.close()
     })
 
-    it.only("Should able to pass message to callback view", async () => {
+    it("Should able to pass message to callback view", async () => {
         const page = (await browser.pages())[0]
         await page.goto("http://localhost:8000/view/index", { waitUntil: "networkidle0" })
         console.log(100)

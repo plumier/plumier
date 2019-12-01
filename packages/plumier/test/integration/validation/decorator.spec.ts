@@ -208,7 +208,7 @@ describe("Validator Decorator Tests", () => {
     })
 
     test("matches", async () => {
-        expect(await harness({ validator: val.matches({ pattern: /^[a-z0-9 ]+$/i }), type: String, testValue: "the;hero" }))
+        expect(await harness({ validator: val.matches({ pattern: "^[a-z0-9 ]+$" }), type: String, testValue: "the;hero" }))
             .toMatchObject([{ path: ["data", "property"], messages: ["Invalid string"] }])
     })
 
@@ -248,7 +248,7 @@ describe("Validator Decorator Tests", () => {
     })
 
     test("postalCode", async () => {
-        expect(await harness({ validator: val.postalCode({ locale: "any" }), type: String, testValue: "abc123-234" }))
+        expect(await harness({ validator: val.postalCode({ locale: "ID" }), type: String, testValue: "abc123-234" }))
             .toMatchObject([{ path: ["data", "property"], messages: ["Invalid postal code"] }])
     })
 

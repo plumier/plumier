@@ -4,6 +4,7 @@ import { removeSync } from "fs-extra"
 import { extname, join } from "path"
 import Plumier, { bind, Class, Configuration, FileParser, FileUploadInfo, route, WebApiFacility } from "plumier"
 import Supertest from "supertest"
+import reflect from 'tinspector'
 
 export function fixture(controller: Class | Class[] | string, config?: Partial<Configuration>) {
     const mergedConfig = <Configuration>{ mode: "production", ...config }
@@ -22,6 +23,9 @@ describe("File Upload", () => {
                 fn(files)
             }
         }
+
+        const meta = reflect(ImageController)
+
         const app = fixture(ImageController)
         app.set(new MultiPartFacility({ uploadPath: join(__dirname, "./upload") }))
         const koa = await app.initialize()
