@@ -1,5 +1,5 @@
 import { Context } from "koa"
-import ptr from "path-to-regexp"
+import {pathToRegexp, Key} from "path-to-regexp"
 import { useCache } from "tinspector"
 
 import { pipe } from "./middleware-pipeline"
@@ -21,8 +21,8 @@ interface RouteMatcher {
 // --------------------------------------------------------------------- //
 
 function toRegExp(route: RouteInfo, path: string): RouteMatcher {
-    const keys: ptr.Key[] = []
-    const regexp = ptr(route.url, keys)
+    const keys: Key[] = []
+    const regexp = pathToRegexp(route.url, keys)
     const match = regexp.exec(path)
     const query = !match ? {} : keys.reduce((a, b, i) => {
         a[b.name] = match![i + 1]
