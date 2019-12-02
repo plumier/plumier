@@ -1037,6 +1037,84 @@ describe("Parameter Binding", () => {
             })
         })
     })
+
+    describe("Parameter binding with parameter destructuring", () => {
+        it("Should able to use parameter destructuring on model binder", async () => {
+            @domain()
+            class AnimalModel {
+                constructor(
+                    public id: number,
+                    public name: string,
+                    public deceased: boolean,
+                    public birthday: Date
+                ) { }
+            }
+            class AnimalController {
+                @route.post()
+                save(type: string, { id, name, deceased, birthday }: AnimalModel) {
+                    expect(typeof id).toBe("number")
+                    expect(typeof name).toBe("string")
+                    expect(typeof deceased).toBe("boolean")
+                    expect(birthday).toBeInstanceOf(Date)
+                    return { type, id, name, deceased, birthday }
+                }
+            }
+
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .post("/animal/save?type=hello")
+                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(200, { type: "hello", id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+
+        it("Should able to use parameter destructuring on request body binder", async () => {
+            @domain()
+            class AnimalModel {
+                constructor(
+                    public id: number,
+                    public name: string,
+                    public deceased: boolean,
+                    public birthday: Date
+                ) { }
+            }
+            class AnimalController {
+                @route.post()
+                save(type: string, @bind.body() { id, name, deceased, birthday }: AnimalModel) {
+                    expect(typeof id).toBe("number")
+                    expect(typeof name).toBe("string")
+                    expect(typeof deceased).toBe("boolean")
+                    expect(birthday).toBeInstanceOf(Date)
+                    return { type, id, name, deceased, birthday }
+                }
+            }
+
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .post("/animal/save?type=hello")
+                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(200, { type: "hello", id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+
+        it("Should able to use parameter destructuring on request query binder", async () => {
+            @domain()
+            class AnimalModel {
+                constructor(
+                    public id: number,
+                    public name: string,
+                    public deceased: boolean,
+                    public birthday: Date
+                ) { }
+            }
+
+            class AnimalController {
+                @route.get()
+                get(@bind.query() { id, name, deceased, birthday }: AnimalModel) {
+                    return { id, name, deceased, birthday }
+                }
+            }
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
+                .expect(200, { id: 747474, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+    })
 })
 
 describe("Custom Converter", () => {
