@@ -118,6 +118,23 @@ Object {
 }
 `;
 
+exports[`Custom Validation Should be able to validate class from the class decorator 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Password is not the same",
+      ],
+      "path": Array [
+        "model",
+        "confirmPassword",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
 exports[`Custom Validation Should provide parent value information 1`] = `
 Object {
   "message": Array [

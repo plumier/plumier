@@ -1,8 +1,8 @@
-import { decorateProperty } from "tinspector"
+import reflect, { decorateProperty, decorate } from "tinspector"
 import * as tc from "typedconverter"
 
 import { binder } from "./binder"
-import { Class, hasKeyOf } from "./common"
+import { Class, hasKeyOf, isCustomClass } from "./common"
 import {
     ActionResult,
     AsyncValidatorResult,
@@ -32,6 +32,11 @@ function createVisitor(items: AsyncValidatorItem[]) {
     return (i: tc.VisitorInvocation) => {
         const result = i.proceed();
         const decorators: ValidatorDecorator[] = i.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
+        if(isCustomClass(i.type)){
+            const meta = reflect(i.type)
+            const classDecorators = meta.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
+            decorators.push(...classDecorators)
+        }
         if (decorators.length > 0)
             items.push(...decorators.map(x => ({ value: i.value, path: i.path, parent: i.parent, validator: x.validator })))
         return result;
@@ -50,7 +55,7 @@ declare module "typedconverter" {
 }
 
 tc.val.custom = (val: ValidatorFunction | string | symbol | CustomValidator) => {
-    return decorateProperty(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: val })
+    return decorate(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: val }, ["Class", "Property", "Parameter"])
 }
 
 tc.val.result = (a: string, b: string | string[]) => {
