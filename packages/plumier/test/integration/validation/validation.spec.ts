@@ -436,8 +436,9 @@ describe("Custom Validation", () => {
 
     it("Should be able to validate class and return several validation result", async () => {
         function checkConfirmPassword() {
-            return val.custom(async (x, info) => {
-                return x.password !== x.confirmPassword ? [{ path: "confirmPassword", messages: ["Password is not the same"] }] : undefined
+            return val.custom( x => {
+                if(x.password !== x.confirmPassword)
+                    return val.result("confirmPassword", "Password is not the same")
             })
         }
         @domain()
@@ -450,6 +451,33 @@ describe("Custom Validation", () => {
         class UsersController {
             @route.post()
             get(@checkConfirmPassword() model: User) { }
+        }
+        const koa = await fixture(UsersController).initialize()
+        let result = await Supertest(koa.callback())
+            .post("/users/get")
+            .send({ password: "111111", confirmPassword: "2222222" })
+            .expect(422)
+        expect(result.body).toMatchSnapshot()
+    })
+
+    it("Should be able to validate class from the class decorator", async () => {
+        function checkConfirmPassword() {
+            return val.custom( x => {
+                if(x.password !== x.confirmPassword)
+                    return val.result("confirmPassword", "Password is not the same")
+            })
+        }
+        @domain()
+        @checkConfirmPassword()
+        class User {
+            constructor(
+                public password: string,
+                public confirmPassword: string
+            ) { }
+        }
+        class UsersController {
+            @route.post()
+            get(model: User) { }
         }
         const koa = await fixture(UsersController).initialize()
         let result = await Supertest(koa.callback())
