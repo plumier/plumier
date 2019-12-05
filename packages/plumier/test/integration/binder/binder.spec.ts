@@ -25,7 +25,7 @@ describe("Parameter Binding", () => {
     describe("Boolean parameter binding", () => {
         class AnimalController {
             @route.get()
-            get(b: boolean) { return { b } }
+            get(@val.required() b: boolean) { return { b } }
         }
         it("Should convert Truthy as true", async () => {
             const callback = (await fixture(AnimalController).initialize()).callback()
@@ -70,7 +70,7 @@ describe("Parameter Binding", () => {
     describe("Number parameter binding", () => {
         class AnimalController {
             @route.get()
-            get(b: number) { return { b } }
+            get(@val.required() b: number) { return { b } }
         }
         it("Should return integer from string", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
@@ -137,7 +137,7 @@ describe("Parameter Binding", () => {
     describe("Date parameter binding", () => {
         class AnimalController {
             @route.get()
-            get(b: Date) { return { b } }
+            get(@val.required() b: Date) { return { b } }
         }
         it("Should return date from string", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
@@ -963,7 +963,7 @@ describe("Parameter Binding", () => {
                 }
             }
             const meta = reflect(AnimalController)
-            expect(meta.methods[0].parameters[0].decorators[1].name).toBe("user")
+            expect(meta.methods[0].parameters[0].decorators[0].name).toBe("user")
         })
     })
 
@@ -1124,7 +1124,7 @@ describe("Custom Converter", () => {
             name: string
             deceased: boolean
             birthday: Date
-            constructor(@val.optional() json: any) {
+            constructor(json: any) {
                 json = json || {}
                 this.id = json.id;
                 this.name = json.name

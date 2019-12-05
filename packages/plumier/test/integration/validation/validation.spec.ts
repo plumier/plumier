@@ -15,14 +15,14 @@ import reflect from "tinspector"
 import { fixture } from "../../helper"
 
 describe("Validation", () => {
-    it("Parameter should be mandatory by default", async () => {
+    it("Parameter should be optional by default", async () => {
         class AnimalController {
             get(email: string) { }
         }
         const koa = await fixture(AnimalController).initialize()
         const result = await Supertest(koa.callback())
             .get("/animal/get")
-            .expect(422)
+            .expect(200)
         expect(result.body).toMatchSnapshot()
     })
 
@@ -32,6 +32,7 @@ describe("Validation", () => {
             constructor(
                 public id: number,
                 public name: string,
+                @val.required()
                 public deceased: boolean
             ) { }
         }
@@ -50,7 +51,7 @@ describe("Validation", () => {
     it("Should validate nested model with correct path", async () => {
         @domain()
         class TagModel {
-            constructor(public name: string, public id: number) { }
+            constructor(public name: string, @val.required() public id: number) { }
         }
         @domain()
         class AnimalModel {
@@ -83,9 +84,9 @@ describe("Validation", () => {
         expect(result.body).toMatchSnapshot()
     })
 
-    it("Should skip optional validation if provided undefined", async () => {
+    it("Should skip validation if no query provided", async () => {
         class AnimalController {
-            get(@val.optional() @val.email() email: string) { }
+            get(@val.email() email: string) { }
         }
         const koa = await fixture(AnimalController).initialize()
         const result = await Supertest(koa.callback())

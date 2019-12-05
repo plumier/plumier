@@ -35,10 +35,10 @@ declare module "@plumier/core" {
 }
 
 bind.loginStatus = () => {
-    return mergeDecorator(decorateProperty(<BindingDecorator>{
+    return decorateProperty(<BindingDecorator>{
         type: "ParameterBinding", process: () => undefined,
         name: LoginStatusParameterBinding
-    }), val.optional())
+    })
 }
 
 export class OAuthCallbackMiddleware implements Middleware {

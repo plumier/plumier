@@ -870,15 +870,12 @@ describe("JwtAuth", () => {
         class DomainBase {
             constructor(
                 @authorize.role("Machine")
-                @val.optional()
                 public id: number = 0,
 
                 @authorize.role("Machine")
-                @val.optional()
                 public createdAt: Date = new Date(),
 
                 @authorize.role("Machine")
-                @val.optional()
                 public deleted: boolean = false
             ) { }
         }

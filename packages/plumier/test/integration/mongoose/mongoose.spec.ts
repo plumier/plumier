@@ -460,7 +460,6 @@ describe("Automatically replace mongodb id into ObjectId on populate data", () =
             constructor(
                 public name: string,
                 @reflect.array(Image)
-                @val.optional()
                 public images: Image[]
             ) { }
         }

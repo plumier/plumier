@@ -1,5 +1,5 @@
 import { GitHubDialogProvider, GitHubLoginStatus, GitHubProvider, oAuthCallback, oAuthDialogEndPoint } from "@plumier/social-login"
-import { bind } from "plumier"
+import { bind, val } from "plumier"
 
 import { github } from "../config"
 
