@@ -42,7 +42,7 @@ function hasKeyOf<T>(opt: any, key: string): opt is T {
 }
 
 function isCustomClass(type: Function | Function[]) {
-    switch (Array.isArray(type) ? type[0] : type) {
+    switch (type && (type as any)[0] || type) {
         case undefined:
         case Boolean:
         case String:
