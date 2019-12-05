@@ -5,7 +5,7 @@ import {
     oAuthCallback,
     oAuthDialogEndPoint,
 } from "@plumier/social-login"
-import { bind } from "plumier"
+import { bind, val } from "plumier"
 
 import { fb } from "../config"
 

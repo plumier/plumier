@@ -1,5 +1,4 @@
-import { decorate, mergeDecorator } from "tinspector"
-import { OptionalValidator, ValidatorDecorator } from "typedconverter"
+import { decorate } from "tinspector"
 
 import { AuthorizeCallback, AuthorizeDecorator, Authorizer } from "./authorization"
 import { errorMessage } from "./types"
@@ -34,12 +33,11 @@ class AuthDecoratorImpl {
      * @param roles List of roles allowed
      */
     role(...roles: string[]) {
-        const roleDecorator = this.custom(async (info, location) => {
+        return this.custom(async (info, location) => {
             const { role, value } = info
             const isAuthorized = roles.some(x => role.some(y => x === y))
             return location === "Parameter" ? !!value && isAuthorized : isAuthorized
         }, roles.join("|"))
-        return mergeDecorator(roleDecorator, decorate(<ValidatorDecorator>{ type: "tc:validator", validator: OptionalValidator }))
     }
 }
 

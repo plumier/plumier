@@ -137,7 +137,6 @@ describe("unique validator", () => {
         class User {
             constructor(
                 public name: string,
-                @val.optional()
                 @val.unique()
                 public email: string | undefined
             ) { }
@@ -157,7 +156,6 @@ describe("unique validator", () => {
         @collection()
         class User {
             constructor(
-                @val.optional()
                 @val.unique()
                 public email: string | undefined
             ) { }

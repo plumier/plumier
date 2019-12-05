@@ -64,7 +64,7 @@ describe("Social Login Mock Test", () => {
         const app = await createApp()
         const agent = supertest.agent(app.callback())
         const { body } = await agent
-            .get("/google/callback")
+            .get("/github/callback")
             .expect(200)
         expect(body.status).toBe("Failed")
         expect(body.error).toMatchObject({ message: "Authorization code is required" })

@@ -315,21 +315,7 @@ Object {
 }
 `;
 
-exports[`Validation Parameter should be mandatory by default 1`] = `
-Object {
-  "message": Array [
-    Object {
-      "messages": Array [
-        "Required",
-      ],
-      "path": Array [
-        "email",
-      ],
-    },
-  ],
-  "status": 422,
-}
-`;
+exports[`Validation Parameter should be optional by default 1`] = `Object {}`;
 
 exports[`Validation Should validate model with correct path 1`] = `
 Object {
