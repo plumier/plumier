@@ -145,21 +145,6 @@ save(data: Todo, @bind.user() user: LoginUser) {
 
 Above code showing that we doing decorator binding `@bind.user()` to the `user` parameter, using this snippet `user` parameter will automatically populated with current login domain during request.
 
-`userId` property now should be optional to prevent required validation error thrown by Plumier system. Navigate to `domain.ts` and modify the `Todo` domain like below
-
-```typescript
-@domain()
-export class Todo extends Domain {
-    constructor(
-        public todo: string,
-        @val.optional() // <--- add this line
-        public userId:number,
-        @val.optional()
-        public completed: boolean = false
-    ) { super() }
-}
-```
-
 Test above modification by executing command below in Visual Studio Code integrated terminal
 
 ```bash
