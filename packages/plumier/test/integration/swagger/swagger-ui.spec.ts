@@ -1,12 +1,12 @@
-import { OpenApiFacility, OpenApiFacilityConfiguration } from "@plumier/swagger"
+import { SwaggerFacility, SwaggerFacilityConfiguration } from "@plumier/swagger"
 import Plumier, { Class, WebApiFacility } from "plumier"
 import supertest = require("supertest")
 
-export function appStub(controller: Class | Class[] | string, opt?: OpenApiFacilityConfiguration) {
+export function appStub(controller: Class | Class[] | string, opt?: SwaggerFacilityConfiguration) {
     return new Plumier()
         .set({ mode: "production" })
         .set(new WebApiFacility({ controller }))
-        .set(new OpenApiFacility(opt))
+        .set(new SwaggerFacility(opt))
         .initialize()
 }
 

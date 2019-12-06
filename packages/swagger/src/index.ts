@@ -31,9 +31,9 @@ function transformUrl(url: string) {
     return url.replace(/(:(\w*\d*)(\/|-{0,1}))/g, (a, b, par, slash) => `{${par}}${slash}`)
 }
 
-function parPosition(action:MethodReflection, par:ParameterReflection): "cookie" | "path" | "query" | "header" {
-    if(par.decorators.)
-}
+// function parPosition(action:MethodReflection, par:ParameterReflection): "cookie" | "path" | "query" | "header" {
+//     if(par.decorators.)
+// }
 
 // --------------------------------------------------------------------- //
 // ----------------------------- TRANSFORM ----------------------------- //
@@ -64,13 +64,13 @@ function transformOperation(route: RouteInfo): [HttpMethod, OperationObject] {
     return [route.method, operation]
 }
 
-function transformParameters(action:MethodReflection, par:ParameterReflection): ParameterObject {
+// function transformParameters(action:MethodReflection, par:ParameterReflection): ParameterObject {
 
-    return {
-        name: par.name,
-        in: 
-    }
-}
+//     return {
+//         name: par.name,
+//         in: 
+//     }
+// }
 
 function transformResponses(route: RouteInfo): { [status: string]: ResponseObject } {
     return {
