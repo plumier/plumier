@@ -35,8 +35,6 @@ export class User extends Domain {
 
 By adding `@authorize.role("Admin")` above `role` property like above code, it will prevent `User`  role modify the property. If `User` role tries to set the value, Plumier will return Unauthorized error with http status code 401.
 
-Note that all properties or parameters decorated with `@authorize` will automatically marked as optional, so we don't need to specify `@val.optional()` anymore.
-
 ## Securing Domain With Default Value
 If you review our domain closely you will notice that there are another security hole that possibly cause some issue on our domain, take a look at our domains below
 
@@ -45,9 +43,7 @@ If you review our domain closely you will notice that there are another security
 export class Todo extends Domain {
     constructor(
         public todo: string,
-        @val.optional()
         public userId:number,
-        @val.optional()
         public completed: boolean = false
     ) { super() }
 }
@@ -66,7 +62,6 @@ export class Todo extends Domain {
         public todo: string,
         @authorize.role("Machine") // <--- add this line
         public userId:number,
-        @val.optional()
         public completed: boolean = false
     ) { super() }
 }
@@ -82,7 +77,6 @@ export class Domain {
         public id: number = 0,
         @authorize.role("Machine") // <--- add this line
         public createdAt: Date = new Date(),
-        @val.optional()
         public deleted:boolean = false
     ) { }
 }

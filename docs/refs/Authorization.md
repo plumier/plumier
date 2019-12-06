@@ -174,8 +174,6 @@ Grant access to pass value to parameter to specific role. This feature useful wh
 
 > Parameter authorization only affect on how the end user send/provided the data. It will not affect how the data will be retrieved. Means **it will not** automatically filter some property based on role on the JSON result.
 
-> Parameter decorated with `@authorize.role()` will automatically have [`@val.optional()`](validation#optional-validation). Make sure to use optional parameter `?` or `| undefined` datatype to properly catch the null safety.
-
 
 ```typescript
 @domain()

@@ -151,7 +151,7 @@ export class UsersController {
 
     @authorize.role("Admin")
     @route.get("")
-    all(offset: number, @val.optional() limit: number = 50) {
+    all(offset: number, limit: number = 50) {
         return this.repo.find(offset, limit)
     }
 
