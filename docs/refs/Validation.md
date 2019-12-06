@@ -45,46 +45,43 @@ export class AnimalController {
 
 Above code will make sure:
 * Animal name is exists and only contains alpha string
-* Animal birthday is optional and should not in the future
+* Animal birthday should not in the future
 
-## Optional Validation
-By default all property treated as required follow the TypeScript strict null check except it declarated with `?` or `| undefined`. To do that Plumier provided `@val.optional()` validation to skip check for required property.
+## Required Validation
+By default all property is optional, to make a property required Plumier provide `@val.required()` like below.
 
 ```typescript
 @domain()
 export class AnimalDto {
     constructor(
+        @val.required()
         @val.alpha()
         public name:string
         @val.before()
-        @val.optional()
         public birthday?:Date
     ){}
 }
 ```
 
-Code above showing birthday property decorated with `@val.optional()` decorator, means its value can be undefined or null. 
-> It is best practice to make the birthday property optional type `?` or `|undefined` if you enable `strict` compiler option, so the possibility of null/undefined value can be detected by the compiler.
+Code above showing that the `name` property is required, means its will returned 422 if provided empty value (null, undefined or empty string)
 
 ## Partial Validation
-In some case you want all properties of your domain optional by default by providing `Partial<Type>`. The problem of using `Partial<Type>` is the design type emit it into `Object` so we unable to inspect the properties of the type.
-
-Plumier provided `@val.partial(<Type>)` to do that, so system can inspect the properties properly.
+In some case you want all properties of your domain optional even if it has required property. In real world situation is in `PATCH` method when you allow user to supply some property and skip the `required` validator. Using this trick will reduce the need of creating another domain model. Plumier provided `@val.partial(<Type>)` to do that, Plumier will treat all properties of the class as optional even its decorated with `@val.required()`.
 
 ```typescript
 @domain()
 export class AnimalDto {
     constructor(
+        @val.required()
         @val.alpha()
         public name:string
         @val.before()
-        @val.optional()
         public birthday?:Date
     ){}
 }
 
 export class AnimalController {
-    @route.put(":id")
+    @route.patch(":id")
     modify(id:string, @val.partial(AnimalDto) data:Partial<AnimalDto>) {}
 }
 ```

@@ -23,11 +23,8 @@ export type UserRole = "User" | "Admin"
 @domain()
 export class Domain {
     constructor(
-        @val.optional()
         public id: number = 0,
-        @val.optional()
         public createdAt: Date = new Date(),
-        @val.optional()
         public deleted:boolean = false
     ) { }
 }
@@ -35,11 +32,12 @@ export class Domain {
 @domain()
 export class User extends Domain {
     constructor(
+        @val.required()
         @val.email()
         public email: string,
         public password: string,
+        @val.required()
         public name: string,
-        @val.optional()
         public role: UserRole
     ) { super() }
 }
@@ -47,9 +45,9 @@ export class User extends Domain {
 @domain()
 export class Todo extends Domain {
     constructor(
+        @val.required()
         public todo: string,
         public userId:number,
-        @val.optional()
         public completed: boolean = false
     ) { super() }
 }
@@ -60,8 +58,6 @@ All above class is a plain ES6 classes defined with parameter properties. We def
 > Using parameter properties is best practice and required for null safety programming in TypeScript. 
 
 `@domain()` decorator tells TypeScript to save data type information for each domain properties and tells [tinspector](https://github.com/plumier/tinspector) (reflection library) that all parameters inside domain constructor is parameter properties and create appropriate meta data reflection for them.
-
-By default all properties inside domain class is required, we define `@val.optional()` validation for both `id` and `created` properties because both will automatically populated on database and api client doesn't need to provide value for them.
 
 On the `User` domain we define `@val.email()` validation for `email` property, doing so Plumier will automatically return Unprocessable entity error http status 422 to the api client if provided invalid email format.
 
