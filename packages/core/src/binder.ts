@@ -33,7 +33,7 @@ function getProperty(obj: any, parKey: string) {
 }
 
 function bindBody(ctx: Context, par: ParameterReflection): any {
-    return isCustomClass(par.type) || Array.isArray(par.type) ? ctx.request.body : undefined
+    return isCustomClass(par.type) || !!(par.type && par.type[0]) ? ctx.request.body : undefined
 }
 
 function bindDecorator(ctx: Context, par: ParameterReflection): any {

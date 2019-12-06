@@ -1,4 +1,4 @@
-import { consoleLog, bind } from "@plumier/core"
+import { consoleLog, Authorizer, AuthorizeMetadataInfo, DefaultDependencyResolver } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { sign } from "jsonwebtoken"
 import { authorize, domain, route, val } from "plumier"
@@ -228,11 +228,9 @@ describe("JwtAuth", () => {
             const fn = jest.fn()
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({ secret: SECRET }))
-                .use({
-                    execute: async i => {
-                        fn()
-                        return i.proceed()
-                    }
+                .use(i => {
+                    fn()
+                    return i.proceed()
                 })
                 .initialize()
 
@@ -290,29 +288,6 @@ describe("JwtAuth", () => {
                 .expect(200)
         })
 
-        it("Should able to use @authorize.custom()", async () => {
-            class AnimalController {
-                @authorize.custom(async i => i.role.some(x => x === "admin"))
-                get() { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(401)
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(200)
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
-                .expect(401)
-        })
-
         it("Should able to send token using cookie", async () => {
             class AnimalController {
                 @authorize.role("admin")
@@ -355,6 +330,144 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .expect(403)
+        })
+    })
+
+    describe("Custom Authorization", () => {
+        it("Should able to use @authorize.custom()", async () => {
+            class AnimalController {
+                @authorize.custom(i => i.role.some(x => x === "admin"))
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
+                .expect(401)
+        })
+
+        it("Should able to use async @authorize.custom()", async () => {
+            class AnimalController {
+                @authorize.custom(async i => i.role.some(x => x === "admin"))
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+        })
+
+        it("Should able to use Class based authorizer", async () => {
+            class IsAdmin implements Authorizer {
+                authorize(info:AuthorizeMetadataInfo){
+                    return info.role.some(x => x === "admin")
+                }
+            }
+
+            class AnimalController {
+                @authorize.custom(new IsAdmin())
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+        })
+
+        it("Should able to get decorator position in class scope", async () => {
+            @authorize.custom((i, pos) => pos === "Class" && i.role.some(x => x === "admin"))
+            class AnimalController {
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+        })
+
+        it("Should able to get decorator position in method scope", async () => {
+            class AnimalController {
+                @authorize.custom((i, pos) => pos === "Method" && i.role.some(x => x === "admin"))
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+        })
+
+        it("Should able to get decorator position in parameter scope", async () => {
+            class AnimalController {
+                get(
+                    @authorize.custom((i, pos) => pos === "Parameter" && i.role.some(x => x === "admin"))
+                    data: string) { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get?data=123")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+        })
+
+        it("Should able to get parameter value in parameter scope", async () => {
+            class AnimalController {
+                get(
+                    @authorize.custom(i => i.value === "123" && i.role.some(x => x === "admin"))
+                    data: string) { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get?data=123")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+        })
+
+        it("Should able to get context information", async () => {
+            class AnimalController {
+                @authorize.custom(i => i.ctx.path === "/animal/get" && i.role.some(x => x === "admin"))
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
         })
     })
 
@@ -757,15 +870,12 @@ describe("JwtAuth", () => {
         class DomainBase {
             constructor(
                 @authorize.role("Machine")
-                @val.optional()
                 public id: number = 0,
 
                 @authorize.role("Machine")
-                @val.optional()
                 public createdAt: Date = new Date(),
 
                 @authorize.role("Machine")
-                @val.optional()
                 public deleted: boolean = false
             ) { }
         }
@@ -809,28 +919,26 @@ describe("JwtAuth", () => {
 
     })
 
-    describe("Separate Decorator And Implementation", () => {
+    describe("Separate Decorator And Implementation with Object Registry", () => {
         const OTHER_USER_TOKEN = sign({ email: "other-ketut@gmail.com", role: "user" }, SECRET)
+        const resolver = new DefaultDependencyResolver()
 
-        function isOwner() {
-            return authorize.custom("isOwner")
+        @resolver.register("isOwner")
+        class OwnerAuthorizer implements Authorizer {
+            authorize(info: AuthorizeMetadataInfo) {
+                return info.ctx.parameters[0] === info.user.email
+            }
         }
 
         it("Should able to use separate implementation", async () => {
             class AnimalController {
-                @isOwner()
+                @authorize.custom("isOwner")
                 @route.get()
                 save(email: string) { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({
-                    secret: SECRET,
-                    authorizer: {
-                        "isOwner": async i => {
-                            return i.parameters[0] === i.user.email
-                        }
-                    }
-                }))
+                .set({ dependencyResolver: resolver })
+                .set(new JwtAuthFacility({ secret: SECRET }))
                 .initialize()
 
             await Supertest(app.callback())

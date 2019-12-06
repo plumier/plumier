@@ -1,10 +1,9 @@
+import { GetOption } from "cookies"
 import { Context } from "koa"
-import { decorateParameter, mergeDecorator } from "tinspector"
+import { decorateParameter } from "tinspector"
 
 import { BindingDecorator, HeaderPart, RequestPart } from "./binder"
 import { getChildValue } from "./common"
-import { val } from '.';
-import { GetOption } from 'cookies';
 
 
 export namespace bind {
@@ -94,7 +93,7 @@ export namespace bind {
      *     method(@bind.user() user:User){}
      */
     export function user() {
-        return mergeDecorator(val.optional(), ctxDecorator("user", "state.user"))
+        return ctxDecorator("user", "state.user")
     }
 
     /**
@@ -103,7 +102,7 @@ export namespace bind {
      *     method(@bind.cookie("name") cookie:string){}
      */
     export function cookie(name: string, opt?: GetOption) {
-        return mergeDecorator(val.optional(), bind.custom(ctx => ctx.cookies.get(name, opt), "cookie"))
+        return bind.custom(ctx => ctx.cookies.get(name, opt), "cookie")
     }
 
     /**

@@ -1,4 +1,3 @@
-import { ValidatorDecorator } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { IncomingMessage, ServerResponse } from "http"
 import { sign } from "jsonwebtoken"
@@ -6,9 +5,9 @@ import { Context, Request } from "koa"
 import { bind, domain, route, val } from "plumier"
 import Supertest from "supertest"
 import reflect from "tinspector"
+import { Result } from "typedconverter"
 
 import { fixture } from "../../helper"
-import { Result } from 'typedconverter';
 
 export class AnimalModel {
     constructor(
@@ -26,7 +25,7 @@ describe("Parameter Binding", () => {
     describe("Boolean parameter binding", () => {
         class AnimalController {
             @route.get()
-            get(b: boolean) { return { b } }
+            get(@val.required() b: boolean) { return { b } }
         }
         it("Should convert Truthy as true", async () => {
             const callback = (await fixture(AnimalController).initialize()).callback()
@@ -71,7 +70,7 @@ describe("Parameter Binding", () => {
     describe("Number parameter binding", () => {
         class AnimalController {
             @route.get()
-            get(b: number) { return { b } }
+            get(@val.required() b: number) { return { b } }
         }
         it("Should return integer from string", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
@@ -138,7 +137,7 @@ describe("Parameter Binding", () => {
     describe("Date parameter binding", () => {
         class AnimalController {
             @route.get()
-            get(b: Date) { return { b } }
+            get(@val.required() b: Date) { return { b } }
         }
         it("Should return date from string", async () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
@@ -964,7 +963,7 @@ describe("Parameter Binding", () => {
                 }
             }
             const meta = reflect(AnimalController)
-            expect(meta.methods[0].parameters[0].decorators[1].name).toBe("user")
+            expect(meta.methods[0].parameters[0].decorators[0].name).toBe("user")
         })
     })
 
@@ -1038,6 +1037,84 @@ describe("Parameter Binding", () => {
             })
         })
     })
+
+    describe("Parameter binding with parameter destructuring", () => {
+        it("Should able to use parameter destructuring on model binder", async () => {
+            @domain()
+            class AnimalModel {
+                constructor(
+                    public id: number,
+                    public name: string,
+                    public deceased: boolean,
+                    public birthday: Date
+                ) { }
+            }
+            class AnimalController {
+                @route.post()
+                save(type: string, { id, name, deceased, birthday }: AnimalModel) {
+                    expect(typeof id).toBe("number")
+                    expect(typeof name).toBe("string")
+                    expect(typeof deceased).toBe("boolean")
+                    expect(birthday).toBeInstanceOf(Date)
+                    return { type, id, name, deceased, birthday }
+                }
+            }
+
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .post("/animal/save?type=hello")
+                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(200, { type: "hello", id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+
+        it("Should able to use parameter destructuring on request body binder", async () => {
+            @domain()
+            class AnimalModel {
+                constructor(
+                    public id: number,
+                    public name: string,
+                    public deceased: boolean,
+                    public birthday: Date
+                ) { }
+            }
+            class AnimalController {
+                @route.post()
+                save(type: string, @bind.body() { id, name, deceased, birthday }: AnimalModel) {
+                    expect(typeof id).toBe("number")
+                    expect(typeof name).toBe("string")
+                    expect(typeof deceased).toBe("boolean")
+                    expect(birthday).toBeInstanceOf(Date)
+                    return { type, id, name, deceased, birthday }
+                }
+            }
+
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .post("/animal/save?type=hello")
+                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(200, { type: "hello", id: 200, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+
+        it("Should able to use parameter destructuring on request query binder", async () => {
+            @domain()
+            class AnimalModel {
+                constructor(
+                    public id: number,
+                    public name: string,
+                    public deceased: boolean,
+                    public birthday: Date
+                ) { }
+            }
+
+            class AnimalController {
+                @route.get()
+                get(@bind.query() { id, name, deceased, birthday }: AnimalModel) {
+                    return { id, name, deceased, birthday }
+                }
+            }
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
+                .expect(200, { id: 747474, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+    })
 })
 
 describe("Custom Converter", () => {
@@ -1047,7 +1124,7 @@ describe("Custom Converter", () => {
             name: string
             deceased: boolean
             birthday: Date
-            constructor(@val.optional() json: any) {
+            constructor(json: any) {
                 json = json || {}
                 this.id = json.id;
                 this.name = json.name

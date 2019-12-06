@@ -13,7 +13,6 @@ describe("Restful API", () => {
             constructor(
                 public name: string,
                 public email: string,
-                @val.optional()
                 public id?: number,
             ) { }
         }
@@ -90,9 +89,7 @@ describe("Restful API", () => {
             constructor(
                 public name: string,
                 public age: number,
-                @val.optional()
                 public clientI?: number,
-                @val.optional()
                 public id?: number,
             ) { }
         }

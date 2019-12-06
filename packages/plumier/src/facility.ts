@@ -1,14 +1,6 @@
 import Cors from "@koa/cors"
-import {
-    Class,
-    DefaultFacility,
-    HttpStatusError,
-    PlumierApplication,
-    ValidationMiddleware,
-    ValidatorStore
-} from "@plumier/core"
+import { Class, DefaultDependencyResolver, DefaultFacility, PlumierApplication, ValidationMiddleware, DependencyResolver } from "@plumier/core"
 import BodyParser from "koa-body"
-import { VisitorExtension } from 'typedconverter';
 
 
 /**
@@ -23,18 +15,18 @@ import { VisitorExtension } from 'typedconverter';
 export class WebApiFacility extends DefaultFacility {
     constructor(private opt?: {
         controller?: string | Class | Class[],
-        bodyParser?: BodyParser.IKoaBodyOptions, 
+        bodyParser?: BodyParser.IKoaBodyOptions,
         cors?: Cors.Options,
-        validators?: ValidatorStore
+        dependencyResolver?: DependencyResolver
     }) { super() }
 
     setup(app: Readonly<PlumierApplication>) {
         app.koa.use(BodyParser(this.opt && this.opt.bodyParser))
         app.koa.use(Cors(this.opt && this.opt.cors))
+        if(this.opt && this.opt.dependencyResolver)
+        app.set({ dependencyResolver: this.opt.dependencyResolver })
         if (this.opt && this.opt.controller)
             app.set({ controller: this.opt.controller })
-        if (this.opt && this.opt.validators)
-            app.set({ validators: this.opt.validators })
         app.use(new ValidationMiddleware())
     }
 }

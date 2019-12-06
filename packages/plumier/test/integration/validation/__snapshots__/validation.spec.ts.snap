@@ -18,7 +18,107 @@ Object {
 }
 `;
 
+exports[`Custom Validation Should able to return AsyncValidatorResult from sync validation 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Must greater than 18",
+      ],
+      "path": Array [
+        "data",
+        "other",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Custom Validation Should able to return AsyncValidatorResult with multiple messages 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Must greater",
+        "Than 18",
+      ],
+      "path": Array [
+        "data",
+        "other",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Custom Validation Should able to use async function as custom validator 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Must greater than 18",
+      ],
+      "path": Array [
+        "data",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Custom Validation Should able to use class based custom validator 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Must greater than 18",
+      ],
+      "path": Array [
+        "data",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Custom Validation Should able to use sync function as custom validator 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Must greater than 18",
+      ],
+      "path": Array [
+        "data",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
 exports[`Custom Validation Should be able to validate class and return several validation result 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Password is not the same",
+      ],
+      "path": Array [
+        "model",
+        "confirmPassword",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Custom Validation Should be able to validate class from the class decorator 1`] = `
 Object {
   "message": Array [
     Object {
@@ -74,6 +174,7 @@ Object {
         ],
         "kind": "Parameter",
         "name": "data",
+        "properties": Object {},
         "type": String,
         "typeClassification": "Primitive",
       },
@@ -110,6 +211,7 @@ Object {
             ],
             "kind": "Parameter",
             "name": "data",
+            "properties": Object {},
             "type": String,
             "typeClassification": "Primitive",
           },
@@ -213,21 +315,7 @@ Object {
 }
 `;
 
-exports[`Validation Parameter should be mandatory by default 1`] = `
-Object {
-  "message": Array [
-    Object {
-      "messages": Array [
-        "Required",
-      ],
-      "path": Array [
-        "email",
-      ],
-    },
-  ],
-  "status": 422,
-}
-`;
+exports[`Validation Parameter should be optional by default 1`] = `Object {}`;
 
 exports[`Validation Should validate model with correct path 1`] = `
 Object {

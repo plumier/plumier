@@ -15,6 +15,12 @@ function createApp() {
         .initialize()
 }
 
+function getParams(path:string){
+    const object = qs.parse(path)
+    const props = Object.keys(object).filter(x => x !== "redirect_uri")
+    return JSON.parse(JSON.stringify(object, props))
+}
+
 describe("Social Login Mock Test", () => {
     it("Should return profile properly", async () => {
         (axios.post as jest.Mock).mockReturnValue(axiosResult({ access_token: faker.random.uuid() }));
@@ -58,13 +64,13 @@ describe("Social Login Mock Test", () => {
         const app = await createApp()
         const agent = supertest.agent(app.callback())
         const { body } = await agent
-            .get("/google/callback")
+            .get("/github/callback")
             .expect(200)
         expect(body.status).toBe("Failed")
         expect(body.error).toMatchObject({ message: "Authorization code is required" })
     })
 
-    it("Should return error if fail validation occur", async () => {
+    it("Should skip validation", async () => {
         (axios.post as jest.Mock).mockReturnValue(axiosResult({ access_token: faker.random.uuid() }));;
         (axios.get as jest.Mock).mockReturnValue(axiosResult({ ...googleProfile, family_name: undefined }));
         const app = await createApp()
@@ -72,8 +78,7 @@ describe("Social Login Mock Test", () => {
         const { body } = await agent
             .get(`/google/callback?code=lorem`)
             .expect(200)
-        expect(body.status).toBe("Failed")
-        expect(body.error).toMatchObject([{ messages: ["Required"], path: ["profile", "data", "family_name"] }])
+        expect(body.status).toBe("Success")
     })
 })
 
@@ -96,7 +101,7 @@ describe("Social Login Dialogs", () => {
             .expect(302)
         const parts = resp.get("location").split("?")
         expect(parts[0]).toBe("https://www.facebook.com/v4.0/dialog/oauth")
-        expect(Object.keys(qs.parse(parts[1])).sort()).toMatchSnapshot()
+        expect(getParams(parts[1])).toMatchSnapshot()
     })
 
     it("Should return google dialog properly", async () => {
@@ -106,7 +111,7 @@ describe("Social Login Dialogs", () => {
             .expect(302)
         const parts = resp.get("location").split("?")
         expect(parts[0]).toBe("https://accounts.google.com/o/oauth2/v2/auth")
-        expect(Object.keys(qs.parse(parts[1])).sort()).toMatchSnapshot()
+        expect(getParams(parts[1])).toMatchSnapshot()
     })
 
     it("Should return github dialog properly", async () => {
@@ -116,7 +121,7 @@ describe("Social Login Dialogs", () => {
             .expect(302)
         const parts = resp.get("location").split("?")
         expect(parts[0]).toBe("https://github.com/login/oauth/authorize")
-        expect(Object.keys(qs.parse(parts[1])).sort()).toMatchSnapshot()
+        expect(getParams(parts[1])).toMatchSnapshot()
     })
 
     it("Should return gitlab dialog properly", async () => {
@@ -126,6 +131,6 @@ describe("Social Login Dialogs", () => {
             .expect(302)
         const parts = resp.get("location").split("?")
         expect(parts[0]).toBe("https://gitlab.com/oauth/authorize")
-        expect(Object.keys(qs.parse(parts[1])).sort()).toMatchSnapshot()
+        expect(getParams(parts[1])).toMatchSnapshot()
     })
 })
