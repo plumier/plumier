@@ -1,8 +1,8 @@
 import { Context } from "koa"
-import {pathToRegexp, Key} from "path-to-regexp"
+import { Key, pathToRegexp } from "path-to-regexp"
 import { useCache } from "tinspector"
 
-import { pipe } from "./middleware-pipeline"
+import { pipe } from "./application-pipeline"
 import { Configuration, HttpStatusError, RouteInfo, ValidationError } from "./types"
 
 // --------------------------------------------------------------------- //
@@ -59,7 +59,7 @@ function router(infos: RouteInfo[], config:Configuration) {
                 }
                 ctx.route = match.route
             }
-            const result = await pipe(ctx, ctx.route)
+            const result = await pipe(ctx)
             await result.execute(ctx)
         }
         catch (e) {

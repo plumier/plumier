@@ -1,4 +1,4 @@
-import { ActionResult, bind, BindingDecorator, Invocation, Middleware, response, val, ValidationError } from "@plumier/core"
+import { ActionResult, bind, BindingDecorator, Invocation, Middleware, response, } from "@plumier/core"
 import Axios from "axios"
 import debug from "debug"
 import { Context } from "koa"
@@ -34,32 +34,12 @@ declare module "@plumier/core" {
     }
 }
 
-bind.loginStatus = () => {
-    return decorateProperty(<BindingDecorator>{
-        type: "ParameterBinding", process: () => undefined,
-        name: LoginStatusParameterBinding
-    })
-}
+bind.loginStatus = () => bind.custom(x => x.state.loginStatus)
 
 export class OAuthCallbackMiddleware implements Middleware {
     private log = debug("@plumier/social-login")
 
     constructor(private option: SocialAuthProvider) { }
-
-    private bindProfile(value: SocialLoginStatus<any>, ctx: Context) {
-        /**
-         * parameter binding occur in the higher middleware so its must be 
-         * injected manually
-         */
-        for (const [idx, paramMeta] of ctx.route!.action.parameters.entries()) {
-            for (const decorator of paramMeta.decorators) {
-                if (decorator.type === "ParameterBinding" && decorator.name === LoginStatusParameterBinding) {
-                    this.log("Binding: %o", value)
-                    ctx.parameters![idx] = value
-                }
-            }
-        }
-    }
 
     protected async exchange(code: string, redirectUri: string): Promise<string> {
         const response = await Axios.post<{ access_token: string }>(this.option.tokenEndPoint,
@@ -97,19 +77,19 @@ export class OAuthCallbackMiddleware implements Middleware {
                 this.log("Token: %s", token)
                 const data = await this.getProfile(token)
                 this.log("Profile: %o", data)
-                this.bindProfile({ status: "Success", data }, invocation.context)
+                invocation.context.state.loginStatus = { status: "Success", data }
             }
             catch (e) {
                 this.log("Error: %o", e.response && e.response.data || e)
                 if (e.response)
-                    this.bindProfile({ status: "Failed", error: e.response.data }, invocation.context)
+                    invocation.context.state.loginStatus = { status: "Failed", error: e.response.data }
                 else
-                    this.bindProfile({ status: "Failed", error: { message: e.message } }, invocation.context)
+                    invocation.context.state.loginStatus = { status: "Failed", error: { message: e.message } }
             }
         }
         else {
             this.log("No authorization code provided")
-            this.bindProfile({ status: "Failed", error: { message: "Authorization code is required" } }, invocation.context)
+            invocation.context.state.loginStatus = { status: "Failed", error: { message: "Authorization code is required" } }
         }
         return invocation.proceed()
     }

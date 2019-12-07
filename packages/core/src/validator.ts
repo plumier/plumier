@@ -1,20 +1,17 @@
-import reflect, { decorateProperty, decorate } from "tinspector"
+import reflect, { decorate } from "tinspector"
 import * as tc from "typedconverter"
 
-import { binder } from "./binder"
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import {
-    ActionResult,
     AsyncValidatorResult,
-    Invocation,
-    Middleware,
+    CustomValidator,
     RouteContext,
     ValidationError,
     ValidatorDecorator,
     ValidatorFunction,
     ValidatorInfo,
-    CustomValidator,
 } from "./types"
+
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -32,7 +29,7 @@ function createVisitor(items: AsyncValidatorItem[]) {
     return (i: tc.VisitorInvocation) => {
         const result = i.proceed();
         const decorators: ValidatorDecorator[] = i.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
-        if(isCustomClass(i.type)){
+        if (isCustomClass(i.type)) {
             const meta = reflect(i.type)
             const classDecorators = meta.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
             decorators.push(...classDecorators)
@@ -89,14 +86,14 @@ async function validateAsync(x: AsyncValidatorItem, ctx: RouteContext): Promise<
     }))
 }
 
-async function validate(ctx: RouteContext): Promise<tc.Result> {
+async function validate(ctx: RouteContext) {
     const decsAsync: AsyncValidatorItem[] = []
     const visitors = [createVisitor(decsAsync), ...(ctx.config.typeConverterVisitors || [])]
     const result: any[] = []
     const issues: tc.ResultMessages[] = []
     //sync validations
-    for (const parMeta of ctx.route!.action.parameters) {
-        const rawParameter = binder(ctx, parMeta)
+    for (const [index, parMeta] of ctx.route!.action.parameters.entries()) {
+        const rawParameter = ctx.parameters[index]
         const parValue = tc.validate(rawParameter, {
             decorators: parMeta.decorators, path: parMeta.name, type: parMeta.type || Object,
             visitors: visitors, guessArrayElement: !!ctx.is("urlencoded")
@@ -114,27 +111,9 @@ async function validate(ctx: RouteContext): Promise<tc.Result> {
             else issues.push(invalid)
         }
     }
-    return (issues.length > 0) ? { issues, value: undefined } : { value: result }
+    if (issues.length > 0)
+        throw new ValidationError(issues.map(x => ({ path: x.path.split("."), messages: x.messages })));
+    return result
 }
 
-
-// --------------------------------------------------------------------- //
-// ----------------------------- MIDDLEWARE ---------------------------- //
-// --------------------------------------------------------------------- //
-
-class ValidationMiddleware implements Middleware {
-    constructor() { }
-
-    async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
-        const ctx = invocation.context;
-        if (!ctx.route) return invocation.proceed();
-        const result = await validate(invocation.context as RouteContext);
-        if (result.issues)
-            throw new ValidationError(result.issues
-                .map(x => ({ path: x.path.split("."), messages: x.messages })));
-        (ctx as any).parameters = result.value
-        return invocation.proceed()
-    }
-}
-
-export { ValidationMiddleware }
+export { validate }

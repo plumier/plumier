@@ -1,5 +1,5 @@
 import Cors from "@koa/cors"
-import { Class, DefaultDependencyResolver, DefaultFacility, PlumierApplication, ValidationMiddleware, DependencyResolver } from "@plumier/core"
+import { Class, DefaultDependencyResolver, DefaultFacility, PlumierApplication, DependencyResolver } from "@plumier/core"
 import BodyParser from "koa-body"
 
 
@@ -27,7 +27,6 @@ export class WebApiFacility extends DefaultFacility {
         app.set({ dependencyResolver: this.opt.dependencyResolver })
         if (this.opt && this.opt.controller)
             app.set({ controller: this.opt.controller })
-        app.use(new ValidationMiddleware())
     }
 }
 

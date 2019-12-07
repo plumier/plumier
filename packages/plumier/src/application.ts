@@ -30,7 +30,9 @@ export class Plumier implements PlumierApplication {
             controller: "./controller",
             dependencyResolver: new DefaultDependencyResolver(),
             middlewares: [],
-            facilities: []
+            facilities: [],
+            roleField: "role",
+            enableAuthorization:false
         }
     }
 
@@ -61,7 +63,7 @@ export class Plumier implements PlumierApplication {
             for (const facility of this.config.facilities) {
                 await facility.initialize(this, routes)
             }
-            if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes, this.config.analyzers))
+            if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes, this.config))
             this.koa.use(router(routes, this.config))
             return this.koa
         }

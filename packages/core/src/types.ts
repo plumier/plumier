@@ -5,6 +5,7 @@ import { VisitorExtension } from "typedconverter"
 import { Class } from "./common"
 import { HttpStatus } from "./http-status"
 import { SetOption } from 'cookies'
+import { RoleField } from './authorization'
 
 // --------------------------------------------------------------------- //
 // --------------------------- ACTION RESULT --------------------------- //
@@ -107,8 +108,7 @@ declare module "koa" {
     interface Context {
         route?: Readonly<RouteInfo>,
         routes: RouteInfo[]
-        config: Readonly<Configuration>,
-        parameters?: any[]
+        config: Readonly<Configuration>
     }
 
     interface DefaultState {
@@ -185,7 +185,7 @@ export class DefaultDependencyResolver implements DependencyResolver {
     }
 
     resolve(type: Class | string | symbol) {
-        if(typeof type === "function"){
+        if (typeof type === "function") {
             return new type()
         }
         else {
@@ -340,7 +340,7 @@ export interface Configuration {
     /**
      * List of registered global middlewares
      */
-    middlewares:(string | symbol | MiddlewareFunction | Middleware)[]
+    middlewares: (string | symbol | MiddlewareFunction | Middleware)[]
 
     /**
      * Specify controller path (absolute or relative to entry point) or the controller classes array.
@@ -369,7 +369,23 @@ export interface Configuration {
     /**
      * Set custom route analyser functions
      */
-    analyzers?: RouteAnalyzerFunction[]
+    analyzers?: RouteAnalyzerFunction[],
+
+    /**
+     * Role field / function used to specify current login user role inside JWT claim for authorization
+     */
+    roleField: RoleField,
+
+
+    /**
+     * Global authorization decorators, use mergeDecorator for multiple
+     */
+    globalAuthorizationDecorators?: (...args: any[]) => void
+
+    /**
+     * Enable/disable authorization, when enabled all routes will be private by default. Default false
+     */
+    enableAuthorization: boolean
 }
 
 export interface PlumierConfiguration extends Configuration {

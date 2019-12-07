@@ -962,6 +962,7 @@ describe("JwtAuth", () => {
                 .set(new JwtAuthFacility({ secret: SECRET }))
                 .initialize()
             const mock = (console.log as jest.Mock)
+            console.log(mock.mock.calls)
             expect(mock.mock.calls[2][0]).toContain("Authenticated")
             consoleLog.clearMock()
         })

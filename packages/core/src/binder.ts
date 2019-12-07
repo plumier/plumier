@@ -4,6 +4,7 @@ import { ParameterReflection } from "tinspector"
 
 import { isCustomClass } from "./common"
 
+
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- // 
@@ -51,6 +52,10 @@ function chain(...binder: Binder[]) {
         .reduce((a: any, b) => a === NEXT ? b(ctx, par) : a, NEXT)
 }
 
-const binder = chain(bindDecorator, bindByName, bindBody)
+const binderChain = chain(bindDecorator, bindByName, bindBody)
+
+function binder(ctx:Context){
+    return ctx.route!.action.parameters.map(x => binderChain(ctx, x))
+}
 
 export { RequestPart, HeaderPart, BindingDecorator, binder }

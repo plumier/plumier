@@ -11,6 +11,9 @@ import {
     RouteContext,
     RouteInfo,
 } from "./types"
+import { binder } from './binder'
+import { validate } from './validator'
+import { checkAuthorize } from './authorization'
 
 
 function getMiddleware(global: (string | symbol | MiddlewareFunction | Middleware)[], route: RouteInfo) {
@@ -55,29 +58,36 @@ class ActionInvocation implements Invocation {
     constructor(public context: RouteContext, private route: RouteInfo) { }
     async proceed(): Promise<ActionResult> {
         const config = this.context.config
+        // 1. Parameter Binding
+        this.context.parameters = binder(this.context)
+        // 2. Conversion & validation
+        this.context.parameters = await validate(this.context)
+        // 3. Authorization
+        await checkAuthorize(this.context)
+        // 4. Controller Creation
         const controller: any = config.dependencyResolver.resolve(this.route.controller.type)
-        const result = (<Function>controller[this.route.action.name]).apply(controller, this.context.parameters)
-        const awaitedResult = await Promise.resolve(result)
+        // 5. Controller Invocation
+        const result = await(<Function>controller[this.route.action.name]).apply(controller, this.context.parameters)
         const status = config.responseStatus && config.responseStatus[this.route.method] || 200
         //if instance of action result, return immediately
-        if (awaitedResult && awaitedResult.execute) {
-            awaitedResult.status = awaitedResult.status || status
-            return awaitedResult;
+        if (result && result.execute) {
+            result.status = result.status || status
+            return result;
         }
         else {
-            return new ActionResult(awaitedResult, status)
+            return new ActionResult(result, status)
         }
     }
 }
 
-function pipe(ctx: Context, route?: RouteInfo, caller: "system" | "invoke" = "system") {
+function pipe(ctx: Context, caller: "system" | "invoke" = "system") {
     const context = ctx;
     context.state.caller = caller
     let middlewares: (string | symbol | MiddlewareFunction | Middleware)[];
     let invocationStack: Invocation;
-    if (!!route) {
-        middlewares = getMiddleware(context.config.middlewares, route)
-        invocationStack = new ActionInvocation(context as RouteContext, route)
+    if (!!ctx.route) {
+        middlewares = getMiddleware(context.config.middlewares, ctx.route)
+        invocationStack = new ActionInvocation(context as RouteContext, ctx.route)
     }
     else {
         middlewares = context.config.middlewares.slice(0)
@@ -90,7 +100,8 @@ function pipe(ctx: Context, route?: RouteInfo, caller: "system" | "invoke" = "sy
 }
 
 function invoke(ctx: Context, route: RouteInfo) {
-    return pipe(ctx, route, "invoke")
+    ctx.route = route
+    return pipe(ctx, "invoke")
 }
 
 export { invoke, pipe };
