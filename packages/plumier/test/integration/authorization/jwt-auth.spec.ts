@@ -469,6 +469,24 @@ describe("JwtAuth", () => {
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
                 .expect(200)
         })
+
+        it("Should able to get cleansed parameter binding information", async () => {
+            class AnimalController {
+                @authorize.custom(i => {
+                    expect(i.ctx.parameters).toMatchObject(["abc", 123, false])
+                    return true
+                })
+                get(str:string, num:number, bool:boolean) { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get?str=abc&num=123&bool=false")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+        })
     })
 
     describe("Global Authorization", () => {

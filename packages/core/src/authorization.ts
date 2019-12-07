@@ -9,11 +9,11 @@ import { AuthorizeMetadataInfo, HttpStatusError, RouteContext, RouteInfo, Config
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-type AuthorizeCallback = (info: AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method") => boolean | Promise<boolean>
+type AuthorizerFunction = (info: AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method") => boolean | Promise<boolean>
 
 interface AuthorizeDecorator {
     type: "plumier-meta:authorize",
-    authorize: string | AuthorizeCallback | Authorizer
+    authorize: string | AuthorizerFunction | Authorizer
     tag: string,
     location: "Class" | "Parameter" | "Method"
 }
@@ -157,6 +157,6 @@ async function checkAuthorize(ctx: RouteContext) {
 }
 
 export {
-    AuthorizeCallback, RoleField, Authorizer, checkAuthorize, AuthorizeDecorator,
+    AuthorizerFunction, RoleField, Authorizer, checkAuthorize, AuthorizeDecorator,
     getAuthorizeDecorators, updateRouteAuthorizationAccess
 }

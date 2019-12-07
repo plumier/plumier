@@ -279,7 +279,7 @@ export interface PlumierApplication extends Application {
 
 export interface ValidatorDecorator {
     type: "ValidatorDecorator",
-    validator: ValidatorFunction | string | symbol,
+    validator: CustomValidatorFunction | string | symbol,
 }
 
 export interface ValidatorInfo {
@@ -293,7 +293,7 @@ export interface AsyncValidatorResult {
     messages: string[]
 }
 
-export type ValidatorFunction = (value: any, info: ValidatorInfo) => undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
+export type CustomValidatorFunction = (value: any, info: ValidatorInfo) => undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
 
 export interface CustomValidator {
     validate(value: any, info: ValidatorInfo): undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>

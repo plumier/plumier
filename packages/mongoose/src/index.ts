@@ -1,27 +1,18 @@
 import {
     Class,
     DefaultFacility,
-    domain,
     findFilesRecursive,
     isCustomClass,
     PlumierApplication,
-    ValidatorDecorator,
-    val
+    val,
+    ValidatorFunction,
 } from "@plumier/core"
 import Chalk from "chalk"
-import Mongoose, { Model } from "mongoose"
+import Mongoose from "mongoose"
 import { dirname, isAbsolute, join } from "path"
-import {
-    ClassReflection,
-    decorateClass,
-    decorateProperty,
-    mergeDecorator,
-    PropertyReflection,
-    reflect,
-    Reflection,
-} from "tinspector"
-import { VisitorInvocation, Result } from "typedconverter"
-import { safeToString } from 'typedconverter/lib/converter';
+import { ClassReflection, decorateClass, mergeDecorator, PropertyReflection, reflect, Reflection } from "tinspector"
+import { Result, VisitorInvocation } from "typedconverter"
+import { safeToString } from "typedconverter/lib/converter"
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------------ TYPES ------------------------------------ */
@@ -147,6 +138,7 @@ async function isUnique(value: string, target: Class | undefined, field: string)
 
 declare module "typedconverter" {
     namespace val {
+        function custom(validator: ValidatorFunction): (...arg: any[]) => void
         function unique(): (target: any, name: string, index?: any) => void
     }
 }

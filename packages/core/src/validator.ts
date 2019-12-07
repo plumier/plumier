@@ -8,7 +8,7 @@ import {
     RouteContext,
     ValidationError,
     ValidatorDecorator,
-    ValidatorFunction,
+    CustomValidatorFunction,
     ValidatorInfo,
 } from "./types"
 
@@ -22,7 +22,7 @@ interface AsyncValidatorItem {
     value: any,
     path: string,
     parent?: { value: any, type: Class, decorators: any[] }
-    validator: ValidatorFunction | string | symbol | CustomValidator
+    validator: CustomValidatorFunction | string | symbol | CustomValidator
 }
 
 function createVisitor(items: AsyncValidatorItem[]) {
@@ -42,16 +42,16 @@ function createVisitor(items: AsyncValidatorItem[]) {
 
 declare module "typedconverter" {
     namespace val {
-        export function custom(validator: ValidatorFunction): (...arg: any[]) => void
+        export function custom(validator: CustomValidatorFunction): (...arg: any[]) => void
         export function custom(validator: CustomValidator): (...arg: any[]) => void
         export function custom(id: string): (...arg: any[]) => void
         export function custom(id: symbol): (...arg: any[]) => void
-        export function custom(val: ValidatorFunction | string | symbol | CustomValidator): (...arg: any[]) => void
+        //export function custom(val: ValidatorFunction | string | symbol | CustomValidator): (...arg: any[]) => void
         export function result(path: string, messages: string | string[]): AsyncValidatorResult[]
     }
 }
 
-tc.val.custom = (val: ValidatorFunction | string | symbol | CustomValidator) => {
+tc.val.custom = (val: CustomValidatorFunction | string | symbol | CustomValidator) => {
     return decorate(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: val }, ["Class", "Property", "Parameter"])
 }
 

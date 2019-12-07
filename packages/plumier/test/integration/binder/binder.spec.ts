@@ -17,10 +17,6 @@ export class AnimalModel {
     ) { }
 }
 
-// function skipValidation(decs: any[]) {
-//     return decs.some((x: ValidatorDecorator): x is ValidatorDecorator => x.type === "ValidatorDecorator" && x.validator === ValidatorId.skip)
-// }
-
 describe("Parameter Binding", () => {
     describe("Boolean parameter binding", () => {
         class AnimalController {

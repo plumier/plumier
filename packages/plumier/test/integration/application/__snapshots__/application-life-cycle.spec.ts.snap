@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Application life cycle Should provide correct application life cycle 1`] = `
+Array [
+  Array [
+    "before middleware: global 1",
+  ],
+  Array [
+    "before middleware: global 2",
+  ],
+  Array [
+    "before middleware: controller 1",
+  ],
+  Array [
+    "before middleware: controller 2",
+  ],
+  Array [
+    "before middleware: action 1",
+  ],
+  Array [
+    "before middleware: action 2",
+  ],
+  Array [
+    "parameter binder",
+  ],
+  Array [
+    "validator",
+  ],
+  Array [
+    "authorizer",
+  ],
+  Array [
+    "action",
+  ],
+  Array [
+    "after middleware: action 2",
+  ],
+  Array [
+    "after middleware: action 1",
+  ],
+  Array [
+    "after middleware: controller 2",
+  ],
+  Array [
+    "after middleware: controller 1",
+  ],
+  Array [
+    "after middleware: global 2",
+  ],
+  Array [
+    "after middleware: global 1",
+  ],
+]
+`;
+
+exports[`Application life cycle Should provide correct parameter binding value 1`] = `
+Array [
+  Array [
+    "validator",
+  ],
+  Array [
+    "parameters:",
+    Array [
+      "123",
+    ],
+  ],
+  Array [
+    "authorizer",
+  ],
+  Array [
+    "parameters:",
+    Array [
+      123,
+    ],
+  ],
+  Array [
+    "action",
+  ],
+]
+`;

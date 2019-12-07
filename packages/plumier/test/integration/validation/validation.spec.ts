@@ -213,6 +213,7 @@ describe("Custom Validation", () => {
             expect(info.name).toBe("data")
             expect(info.parent).toBeUndefined()
             expect(info.ctx.route).toMatchSnapshot()
+            expect(info.ctx.parameters).toMatchObject(["abc"])
             return undefined
         }
         class UserController {
@@ -437,8 +438,8 @@ describe("Custom Validation", () => {
 
     it("Should be able to validate class and return several validation result", async () => {
         function checkConfirmPassword() {
-            return val.custom( x => {
-                if(x.password !== x.confirmPassword)
+            return val.custom(x => {
+                if (x.password !== x.confirmPassword)
                     return val.result("confirmPassword", "Password is not the same")
             })
         }
@@ -463,8 +464,8 @@ describe("Custom Validation", () => {
 
     it("Should be able to validate class from the class decorator", async () => {
         function checkConfirmPassword() {
-            return val.custom( x => {
-                if(x.password !== x.confirmPassword)
+            return val.custom(x => {
+                if (x.password !== x.confirmPassword)
                     return val.result("confirmPassword", "Password is not the same")
             })
         }

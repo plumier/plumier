@@ -1,14 +1,14 @@
 import { decorate } from "tinspector"
 
-import { AuthorizeCallback, AuthorizeDecorator, Authorizer } from "./authorization"
+import { AuthorizerFunction, AuthorizeDecorator, Authorizer } from "./authorization"
 import { errorMessage } from "./types"
 
 class AuthDecoratorImpl {
-    custom(callback:AuthorizeCallback, tag?:string): (...args:any[]) => void
+    custom(callback:AuthorizerFunction, tag?:string): (...args:any[]) => void
     custom(authorizer:Authorizer, tag?:string): (...args:any[]) => void
     custom(id:string, tag?:string): (...args:any[]) => void
     custom(id:symbol, tag?:string): (...args:any[]) => void
-    custom(authorize: symbol | string | AuthorizeCallback | Authorizer, tag: string = "Custom") {
+    custom(authorize: symbol | string | AuthorizerFunction | Authorizer, tag: string = "Custom") {
         return decorate((...args: any[]) => {
             const location = args.length === 1 ? "Class" : args.length === 2 ? "Method" : "Parameter"
             return <AuthorizeDecorator>{
