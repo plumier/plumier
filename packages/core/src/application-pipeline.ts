@@ -8,7 +8,7 @@ import {
     Middleware,
     MiddlewareFunction,
     MiddlewareUtil,
-    RouteContext,
+    ActionContext,
     RouteInfo,
 } from "./types"
 import { binder } from './binder'
@@ -55,7 +55,7 @@ class NotFoundActionInvocation implements Invocation {
 }
 
 class ActionInvocation implements Invocation {
-    constructor(public context: RouteContext, private route: RouteInfo) { }
+    constructor(public context: ActionContext, private route: RouteInfo) { }
     async proceed(): Promise<ActionResult> {
         const config = this.context.config
         // 1. Parameter Binding
@@ -87,7 +87,7 @@ function pipe(ctx: Context, caller: "system" | "invoke" = "system") {
     let invocationStack: Invocation;
     if (!!ctx.route) {
         middlewares = getMiddleware(context.config.middlewares, ctx.route)
-        invocationStack = new ActionInvocation(context as RouteContext, ctx.route)
+        invocationStack = new ActionInvocation(context as ActionContext, ctx.route)
     }
     else {
         middlewares = context.config.middlewares.slice(0)

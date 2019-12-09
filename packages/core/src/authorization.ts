@@ -2,7 +2,7 @@ import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import { HttpStatus } from "./http-status"
-import { AuthorizeMetadataInfo, HttpStatusError, RouteContext, RouteInfo, Configuration } from "./types"
+import { AuthorizeMetadataInfo, HttpStatusError, ActionContext, RouteInfo, Configuration } from "./types"
 
 
 // --------------------------------------------------------------------- //
@@ -143,7 +143,7 @@ function updateRouteAuthorizationAccess(routes: RouteInfo[], config:Configuratio
     }
 }
 
-async function checkAuthorize(ctx: RouteContext) {
+async function checkAuthorize(ctx: ActionContext) {
     if (ctx.config.enableAuthorization) {
         const { route, parameters, state, config } = ctx
         const decorator = getAuthorizeDecorators(route, config.globalAuthorizationDecorators)

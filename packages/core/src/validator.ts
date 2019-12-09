@@ -5,7 +5,7 @@ import { Class, hasKeyOf, isCustomClass } from "./common"
 import {
     AsyncValidatorResult,
     CustomValidator,
-    RouteContext,
+    ActionContext,
     ValidationError,
     ValidatorDecorator,
     CustomValidatorFunction,
@@ -65,7 +65,7 @@ tc.val.result = (a: string, b: string | string[]) => {
 // --------------------------------------------------------------------- //
 const getName = (path: string) => path.indexOf(".") > -1 ? path.substring(path.lastIndexOf(".") + 1) : path
 
-async function validateAsync(x: AsyncValidatorItem, ctx: RouteContext): Promise<AsyncValidatorResult[]> {
+async function validateAsync(x: AsyncValidatorItem, ctx: ActionContext): Promise<AsyncValidatorResult[]> {
     const name = getName(x.path)
     const info: ValidatorInfo = { ctx, name, parent: x.parent }
     if (x.value === undefined || x.value === null) return []
@@ -86,7 +86,7 @@ async function validateAsync(x: AsyncValidatorItem, ctx: RouteContext): Promise<
     }))
 }
 
-async function validate(ctx: RouteContext) {
+async function validate(ctx: ActionContext) {
     const decsAsync: AsyncValidatorItem[] = []
     const visitors = [createVisitor(decsAsync), ...(ctx.config.typeConverterVisitors || [])]
     const result: any[] = []

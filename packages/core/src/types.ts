@@ -116,7 +116,7 @@ declare module "koa" {
     }
 }
 
-export interface RouteContext extends Context {
+export interface ActionContext extends Context {
     route: Readonly<RouteInfo>,
     parameters: any[]
 }
@@ -284,7 +284,7 @@ export interface ValidatorDecorator {
 
 export interface ValidatorInfo {
     name: string,
-    ctx: RouteContext,
+    ctx: ActionContext,
     parent?: { value: any, type: Class, decorators: any[] }
 }
 
@@ -308,7 +308,7 @@ export interface AuthorizeMetadataInfo {
     value?: any
     role: string[]
     user: any
-    ctx: RouteContext
+    ctx: ActionContext
 }
 
 
