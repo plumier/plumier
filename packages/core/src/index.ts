@@ -14,9 +14,9 @@ export { domain, middleware } from "./decorator";
 export { route, RouteDecoratorImpl } from "./decorator.route";
 export { HttpStatus } from "./http-status";
 export {
-    ActionResult, Application, AuthorizeMetadataInfo, Configuration, DefaultFacility, CustomValidator,
+    ActionResult, Application, AuthorizationContext as AuthorizationContext, Configuration, DefaultFacility, CustomValidator,
     DependencyResolver, Facility, FileParser, FileUploadInfo, HttpMethod, HttpStatusError, Invocation, KoaMiddleware,
     Middleware, MiddlewareFunction, MiddlewareDecorator, MiddlewareUtil, PlumierApplication, PlumierConfiguration, RedirectActionResult,
-    ActionContext as RouteContext, RouteInfo, RouteAnalyzerFunction, RouteAnalyzerIssue, ValidatorDecorator, CustomValidatorFunction as ValidatorFunction,
-    ValidatorInfo, ValidationError, errorMessage, AsyncValidatorResult, DefaultDependencyResolver
+    ActionContext, RouteInfo, RouteAnalyzerFunction, RouteAnalyzerIssue, ValidatorDecorator, CustomValidatorFunction as CustomValidatorFunction,
+    ValidatorContext, ValidationError, errorMessage, AsyncValidatorResult, DefaultDependencyResolver
 } from "./types";

@@ -1,4 +1,4 @@
-import { consoleLog, Authorizer, AuthorizeMetadataInfo, DefaultDependencyResolver } from "@plumier/core"
+import { consoleLog, Authorizer, AuthorizationContext, DefaultDependencyResolver } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { sign } from "jsonwebtoken"
 import { authorize, domain, route, val } from "plumier"
@@ -374,7 +374,7 @@ describe("JwtAuth", () => {
 
         it("Should able to use Class based authorizer", async () => {
             class IsAdmin implements Authorizer {
-                authorize(info:AuthorizeMetadataInfo){
+                authorize(info:AuthorizationContext){
                     return info.role.some(x => x === "admin")
                 }
             }
@@ -943,7 +943,7 @@ describe("JwtAuth", () => {
 
         @resolver.register("isOwner")
         class OwnerAuthorizer implements Authorizer {
-            authorize(info: AuthorizeMetadataInfo) {
+            authorize(info: AuthorizationContext) {
                 return info.ctx.parameters[0] === info.user.email
             }
         }

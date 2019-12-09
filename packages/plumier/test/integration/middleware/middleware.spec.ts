@@ -39,7 +39,7 @@ class InterceptBody implements Middleware {
 class AssertParameterMiddleware implements Middleware {
     constructor(private expected: any[]) { }
     async execute(i: Invocation) {
-        expect(i.context.parameters).toMatchObject(this.expected)
+        expect(i.ctx.parameters).toMatchObject(this.expected)
         return i.proceed()
     }
 }
@@ -94,7 +94,7 @@ describe("Middleware", () => {
             const app = await fixture(AnimalController)
                 .use({
                     execute: async x => {
-                        fn(x.context.route!.url, x.context.config.mode)
+                        fn(x.ctx.route!.url, x.ctx.config.mode)
                         return x.proceed()
                     }
                 })
@@ -491,8 +491,8 @@ describe("Middleware", () => {
             const app = await fixture(AnimalController)
                 .use({
                     execute: async i => {
-                        if (i.context.state.caller === "system" && i.context.request.path === "/hello")
-                            return invoke(i.context, i.context.routes[0])
+                        if (i.ctx.state.caller === "system" && i.ctx.request.path === "/hello")
+                            return invoke(i.ctx, i.ctx.routes[0])
                         else
                             return i.proceed()
                     }
@@ -512,9 +512,9 @@ describe("Middleware", () => {
             const app = await fixture(AnimalController)
                 .use({
                     execute: async i => {
-                        if (i.context.state.caller === "system" && i.context.request.path === "/hello") {
-                            (i.context.parameters as any) = [i.context.query.id]
-                            return invoke(i.context, i.context.routes[0])
+                        if (i.ctx.state.caller === "system" && i.ctx.request.path === "/hello") {
+                            (i.ctx.parameters as any) = [i.ctx.query.id]
+                            return invoke(i.ctx, i.ctx.routes[0])
                         }
                         else
                             return i.proceed()

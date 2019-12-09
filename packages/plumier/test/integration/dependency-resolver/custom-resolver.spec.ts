@@ -1,4 +1,4 @@
-import { Class, DependencyResolver, domain, route, Middleware, Invocation, response, ActionResult, Authorizer, AuthorizeMetadataInfo, CustomValidator, authorize, val, middleware } from "@plumier/core"
+import { Class, DependencyResolver, domain, route, Middleware, Invocation, response, ActionResult, Authorizer, AuthorizationContext, CustomValidator, authorize, val, middleware } from "@plumier/core"
 import Plumier, { WebApiFacility } from "plumier"
 
 import { Container, inject } from "./ioc-container"
@@ -51,7 +51,7 @@ class AnimalMiddleware implements Middleware {
 class AnimalAuthorizer implements Authorizer {
     constructor(@inject.name("repository") private repository: AnimalRepository) { }
 
-    authorize({ user }: AuthorizeMetadataInfo) {
+    authorize({ user }: AuthorizationContext) {
         return this.repository.authorize(user)
     }
 }

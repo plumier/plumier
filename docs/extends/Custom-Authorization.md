@@ -28,16 +28,16 @@ export class AnimalController {
 `@authorize.custom` receive two parameters a callback which will evaluate user authorization and `tag` metadata that will be used for further metadata processing. The callback signature is like below
 
 ```typescript
-(info: AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method") => boolean | Promise<boolean>
+(info: AuthorizationContext, location: "Class" | "Parameter" | "Method") => boolean | Promise<boolean>
 ```
 
 * `info` Metadata information about current authorization.
 * `location` location of decorator applied `Class` `Parameter` `Method`
 
-`AuthorizeMetadataInfo` members is like below
+`AuthorizationContext` members is like below
 
 ```typescript
-export interface AuthorizeMetadataInfo {
+export interface AuthorizationContext {
     role: string[]
     user:any
     ctx: Koa.Context
@@ -108,7 +108,7 @@ Putting authorization implementation inside decorator is simple and easy to read
 The first step, create a class implements `Authorizer` interface like below.
 
 ```typescript
-import { Authorizer, AuthorizeMetadataInfo, DefaultDependencyResolver } from "plumier"
+import { Authorizer, AuthorizationContext, DefaultDependencyResolver } from "plumier"
 
 //create instance of DefaultDependencyResolver globally
 const resolver = new DefaultDependencyResolver()
@@ -116,7 +116,7 @@ const resolver = new DefaultDependencyResolver()
 //register the custom authorizer with the ID
 @resolver.register("isAdminOrOwner")
 export class IsAdminOrOwnerAuthorizer implements Authorizer {
-    authorize({ role, user, ctx }:AuthorizeMetadataInfo, location: "Class" | "Parameter" | "Method") {
+    authorize({ role, user, ctx }:AuthorizationContext, location: "Class" | "Parameter" | "Method") {
         const id = ctx.parameters[0]
         return role.some(x => x === "Admin") || user.id === id
     }

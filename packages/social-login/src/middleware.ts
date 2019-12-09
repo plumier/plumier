@@ -68,7 +68,7 @@ export class OAuthCallbackMiddleware implements Middleware {
     }
 
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
-        const req = invocation.context.request;
+        const req = invocation.ctx.request;
         if (req.query.code) {
             try {
                 this.log("Exchange Code: %s", req.query.code)
@@ -77,19 +77,19 @@ export class OAuthCallbackMiddleware implements Middleware {
                 this.log("Token: %s", token)
                 const data = await this.getProfile(token)
                 this.log("Profile: %o", data)
-                invocation.context.state.loginStatus = { status: "Success", data }
+                invocation.ctx.state.loginStatus = { status: "Success", data }
             }
             catch (e) {
                 this.log("Error: %o", e.response && e.response.data || e)
                 if (e.response)
-                    invocation.context.state.loginStatus = { status: "Failed", error: e.response.data }
+                    invocation.ctx.state.loginStatus = { status: "Failed", error: e.response.data }
                 else
-                    invocation.context.state.loginStatus = { status: "Failed", error: { message: e.message } }
+                    invocation.ctx.state.loginStatus = { status: "Failed", error: { message: e.message } }
             }
         }
         else {
             this.log("No authorization code provided")
-            invocation.context.state.loginStatus = { status: "Failed", error: { message: "Authorization code is required" } }
+            invocation.ctx.state.loginStatus = { status: "Failed", error: { message: "Authorization code is required" } }
         }
         return invocation.proceed()
     }
@@ -103,7 +103,7 @@ export class OAuthDialogEndPointMiddleware implements Middleware {
         const params = { ...this.provider.params, ...result.body }
         const url = this.provider.url
         const root = url.endsWith("?") ? url.substring(0, url.length - 1) : url;
-        params.redirect_uri = invocation.context.origin + this.provider.redirectUriPath
+        params.redirect_uri = invocation.ctx.origin + this.provider.redirectUriPath
         params.client_id = this.provider.clientId
         const redirect = root + "?" + qs.stringify(params)
         return response.redirect(redirect)

@@ -30,7 +30,7 @@ function getMiddleware(global: (string | symbol | MiddlewareFunction | Middlewar
 
 
 class MiddlewareInvocation implements Invocation {
-    constructor(private middleware: string | symbol | MiddlewareFunction | Middleware, public context: Context, private next: Invocation) { }
+    constructor(private middleware: string | symbol | MiddlewareFunction | Middleware, public ctx: Context, private next: Invocation) { }
     proceed(): Promise<ActionResult> {
         let middleware: Middleware
         if (typeof this.middleware === "function") {
@@ -40,14 +40,14 @@ class MiddlewareInvocation implements Invocation {
             middleware = this.middleware
         }
         else {
-            middleware = this.context.config.dependencyResolver.resolve(this.middleware)
+            middleware = this.ctx.config.dependencyResolver.resolve(this.middleware)
         }
         return middleware.execute(this.next)
     }
 }
 
 class NotFoundActionInvocation implements Invocation {
-    constructor(public context: Context) { }
+    constructor(public ctx: Context) { }
 
     proceed(): Promise<ActionResult> {
         throw new HttpStatusError(404)
@@ -55,19 +55,19 @@ class NotFoundActionInvocation implements Invocation {
 }
 
 class ActionInvocation implements Invocation {
-    constructor(public context: ActionContext, private route: RouteInfo) { }
+    constructor(public ctx: ActionContext, private route: RouteInfo) { }
     async proceed(): Promise<ActionResult> {
-        const config = this.context.config
+        const config = this.ctx.config
         // 1. Parameter Binding
-        this.context.parameters = binder(this.context)
+        this.ctx.parameters = binder(this.ctx)
         // 2. Conversion & validation
-        this.context.parameters = await validate(this.context)
+        this.ctx.parameters = await validate(this.ctx)
         // 3. Authorization
-        await checkAuthorize(this.context)
+        await checkAuthorize(this.ctx)
         // 4. Controller Creation
         const controller: any = config.dependencyResolver.resolve(this.route.controller.type)
         // 5. Controller Invocation
-        const result = await(<Function>controller[this.route.action.name]).apply(controller, this.context.parameters)
+        const result = await(<Function>controller[this.route.action.name]).apply(controller, this.ctx.parameters)
         const status = config.responseStatus && config.responseStatus[this.route.method] || 200
         //if instance of action result, return immediately
         if (result && result.execute) {

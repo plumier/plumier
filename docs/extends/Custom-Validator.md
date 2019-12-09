@@ -6,17 +6,17 @@ title: Custom Validator
 Custom validator can be created using `@val.custom` decorator, you can wrap the `@val.custom` inside a function and make a new validator decorator, and provide logic on the Validator function callback. Validator function signature is like below:
 
 ```typescript 
-(value: string, info: ValidatorInfo) => string | AsyncValidatorResult[] | undefined | Promise<AsyncValidatorResult[] | string | undefined>
+(value: string, info: ValidatorContext) => string | AsyncValidatorResult[] | undefined | Promise<AsyncValidatorResult[] | string | undefined>
 ```
 
 * `value` is the current value that will be validated. value will always of type string
 * `info` is the context information required for validation see below
 * return value: return error message if not valid, or return `undefined` for valid value.
 
-Signature of the `ValidatorInfo` is like below
+Signature of the `ValidatorContext` is like below
 
 ```typescript
-interface ValidatorInfo {
+interface ValidatorContext {
     name: string,
     ctx: Context,
     parent?: { type: Class, decorators: any[] }
@@ -84,7 +84,7 @@ Putting validator implementation inside decorator is simple and easy to read, bu
 The first step, create a class implements `CustomValidator` interface like below.
 
 ```typescript
-import { CustomValidator, AuthorizeMetadataInfo, DefaultDependencyResolver } from "plumier"
+import { CustomValidator, ValidatorContext, DefaultDependencyResolver } from "plumier"
 
 //create instance of DefaultDependencyResolver globally
 const resolver = new DefaultDependencyResolver()
@@ -92,7 +92,7 @@ const resolver = new DefaultDependencyResolver()
 //register the custom authorizer with the ID
 @resolver.register("is18plus")
 export class Is18PlusValidator implements CustomValidator {
-    validate(value: any, info: ValidatorInfo)
+    validate(value: any, info: ValidatorContext)
         if(parseInt(val) < 18)
             return "Should greater than 18 years old"
     }

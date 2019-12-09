@@ -44,9 +44,9 @@ class AnimalMiddleware implements Middleware {
     execute(i: Readonly<Invocation>): Promise<ActionResult> {
         //make sure to check the context state property
         //only invoke another controller if the state is "system"
-        if (i.context.state.caller === "system" && i.context.request.path === "/hello")
+        if (i.ctx.state.caller === "system" && i.ctx.request.path === "/hello")
                 //assume that it execute the first controller's action
-                return invoke(i.context, i.context.routes[0])
+                return invoke(i.ctx, i.ctx.routes[0])
             else
                 return i.proceed()
     }

@@ -115,14 +115,14 @@ export class ServeStaticMiddleware implements Middleware {
             this.option.rootPath = "/" + this.option.rootPath
         const rootPath = this.option.rootPath || ""
         //no route = no controller = possibly static file request
-        if (!invocation.context.route && invocation.context.path.toLowerCase().startsWith(rootPath.toLowerCase())) {
+        if (!invocation.ctx.route && invocation.ctx.path.toLowerCase().startsWith(rootPath.toLowerCase())) {
             //check if not in root path then proceed
             //execute action result directly here, so if file not found it will possible to chain with next middleware
             try {
-                const path = invocation.context.path.substr(rootPath.length)
+                const path = invocation.ctx.path.substr(rootPath.length)
                 const result = new FileActionResult(path, this.option)
-                await result.execute(invocation.context)
-                return ActionResult.fromContext(invocation.context)
+                await result.execute(invocation.ctx)
+                return ActionResult.fromContext(invocation.ctx)
             }
             catch (e) {
                 if (e.status && e.status === 404)
@@ -141,11 +141,11 @@ export class HistoryApiFallbackMiddleware implements Middleware {
     constructor() { }
 
     async execute(i: Readonly<Invocation>): Promise<ActionResult> {
-        const isFile = !!mime.lookup(i.context.path)
-        const route = i.context.routes.find(x => x.action.decorators.some(x => x.type === "HistoryApiFallback"))
+        const isFile = !!mime.lookup(i.ctx.path)
+        const route = i.ctx.routes.find(x => x.action.decorators.some(x => x.type === "HistoryApiFallback"))
         //no context.route = no controller = no handler
-        if (!i.context.route && i.context.state.caller === "system" && !isFile && !!route && i.context.request.method === "GET" && i.context.request.accepts("html")) {
-            return invoke(i.context, route)
+        if (!i.ctx.route && i.ctx.state.caller === "system" && !isFile && !!route && i.ctx.request.method === "GET" && i.ctx.request.accepts("html")) {
+            return invoke(i.ctx, route)
         }
         else
             return i.proceed()

@@ -14,7 +14,7 @@ Router is the main process during the occurrence of the http request. There thre
 ### Routing
 Routing will parse the request URL into path and query object using RegEx and specify the correct controller that will handle the request. 
 
-There are `Context` variable (`ctx`) initialized during this phase. `ctx` accessible from middleware using `invocation.context`
+There are `Context` variable (`ctx`) initialized during this phase. `ctx` accessible from middleware using `invocation.ctx`
 
 1. `ctx.route` contains route metadata information such as controller name, current method name, parameters, route etc. The value can be `undefined` if the current request doesn't associated with any controller.
 2. `ctx.request.query` contains request query string in query form. 

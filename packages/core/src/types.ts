@@ -96,7 +96,7 @@ export class DefaultFacility implements Facility {
 // --------------------------------------------------------------------- //
 
 export interface Invocation {
-    context: Readonly<Context>
+    ctx: Readonly<Context>
     proceed(): Promise<ActionResult>
 }
 
@@ -139,11 +139,11 @@ export namespace MiddlewareUtil {
     export function fromKoa(middleware: KoaMiddleware): Middleware {
         return {
             execute: async x => {
-                await middleware(x.context, async () => {
+                await middleware(x.ctx, async () => {
                     const nextResult = await x.proceed()
-                    await nextResult.execute(x.context)
+                    await nextResult.execute(x.ctx)
                 })
-                return ActionResult.fromContext(x.context)
+                return ActionResult.fromContext(x.ctx)
             }
         }
     }
@@ -282,7 +282,7 @@ export interface ValidatorDecorator {
     validator: CustomValidatorFunction | string | symbol,
 }
 
-export interface ValidatorInfo {
+export interface ValidatorContext {
     name: string,
     ctx: ActionContext,
     parent?: { value: any, type: Class, decorators: any[] }
@@ -293,10 +293,10 @@ export interface AsyncValidatorResult {
     messages: string[]
 }
 
-export type CustomValidatorFunction = (value: any, info: ValidatorInfo) => undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
+export type CustomValidatorFunction = (value: any, info: ValidatorContext) => undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
 
 export interface CustomValidator {
-    validate(value: any, info: ValidatorInfo): undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
+    validate(value: any, info: ValidatorContext): undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
 }
 
 // --------------------------------------------------------------------- //
@@ -304,7 +304,7 @@ export interface CustomValidator {
 // --------------------------------------------------------------------- //
 
 
-export interface AuthorizeMetadataInfo {
+export interface AuthorizationContext {
     value?: any
     role: string[]
     user: any

@@ -9,7 +9,7 @@ import {
     ValidationError,
     ValidatorDecorator,
     CustomValidatorFunction,
-    ValidatorInfo,
+    ValidatorContext,
 } from "./types"
 
 
@@ -67,7 +67,7 @@ const getName = (path: string) => path.indexOf(".") > -1 ? path.substring(path.l
 
 async function validateAsync(x: AsyncValidatorItem, ctx: ActionContext): Promise<AsyncValidatorResult[]> {
     const name = getName(x.path)
-    const info: ValidatorInfo = { ctx, name, parent: x.parent }
+    const info: ValidatorContext = { ctx, name, parent: x.parent }
     if (x.value === undefined || x.value === null) return []
     let validator: CustomValidator;
     if (typeof x.validator === "function")

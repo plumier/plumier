@@ -76,7 +76,7 @@ import { Middleware, Invocation, ActionResult, HttpStatusError } from "plumier"
 
 class AdminOnlyMiddleware implements Middleware {
     execute(next: Readonly<Invocation>): Promise<ActionResult> {
-        if(next.context.state.user.role !== "Admin")
+        if(next.ctx.state.user.role !== "Admin")
             throw new HttpStatusError(401)
         else
             return next.proceed()

@@ -5,7 +5,7 @@ import {
     isCustomClass,
     PlumierApplication,
     val,
-    ValidatorFunction,
+    CustomValidatorFunction,
 } from "@plumier/core"
 import Chalk from "chalk"
 import Mongoose from "mongoose"
@@ -138,7 +138,7 @@ async function isUnique(value: string, target: Class | undefined, field: string)
 
 declare module "typedconverter" {
     namespace val {
-        function custom(validator: ValidatorFunction): (...arg: any[]) => void
+        function custom(validator: CustomValidatorFunction): (...arg: any[]) => void
         function unique(): (target: any, name: string, index?: any) => void
     }
 }
