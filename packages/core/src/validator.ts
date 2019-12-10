@@ -40,17 +40,6 @@ function createVisitor(items: AsyncValidatorItem[]) {
     }
 }
 
-declare module "typedconverter" {
-    namespace val {
-        export function custom(validator: CustomValidatorFunction): (...arg: any[]) => void
-        export function custom(validator: CustomValidator): (...arg: any[]) => void
-        export function custom(id: string): (...arg: any[]) => void
-        export function custom(id: symbol): (...arg: any[]) => void
-        //export function custom(val: ValidatorFunction | string | symbol | CustomValidator): (...arg: any[]) => void
-        export function result(path: string, messages: string | string[]): AsyncValidatorResult[]
-    }
-}
-
 tc.val.custom = (val: CustomValidatorFunction | string | symbol | CustomValidator) => {
     return decorate(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: val }, ["Class", "Property", "Parameter"])
 }

@@ -138,11 +138,9 @@ async function isUnique(value: string, target: Class | undefined, field: string)
 
 declare module "typedconverter" {
     namespace val {
-        function custom(validator: CustomValidatorFunction): (...arg: any[]) => void
         function unique(): (target: any, name: string, index?: any) => void
     }
 }
-
 val.unique = () => val.custom(async (value, info) => {
     if(info.ctx.method.toLocaleLowerCase() === "post")
         return isUnique(value, info.parent && info.parent.type, info.name)
