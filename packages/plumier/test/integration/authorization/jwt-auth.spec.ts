@@ -1,4 +1,4 @@
-import { consoleLog, Authorizer, AuthorizeMetadataInfo, DefaultDependencyResolver } from "@plumier/core"
+import { consoleLog, Authorizer, AuthorizationContext, DefaultDependencyResolver } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { sign } from "jsonwebtoken"
 import { authorize, domain, route, val } from "plumier"
@@ -374,7 +374,7 @@ describe("JwtAuth", () => {
 
         it("Should able to use Class based authorizer", async () => {
             class IsAdmin implements Authorizer {
-                authorize(info:AuthorizeMetadataInfo){
+                authorize(info:AuthorizationContext){
                     return info.role.some(x => x === "admin")
                 }
             }
@@ -466,6 +466,24 @@ describe("JwtAuth", () => {
 
             await Supertest(app.callback())
                 .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+        })
+
+        it("Should able to get cleansed parameter binding information", async () => {
+            class AnimalController {
+                @authorize.custom(i => {
+                    expect(i.ctx.parameters).toMatchObject(["abc", 123, false])
+                    return true
+                })
+                get(str:string, num:number, bool:boolean) { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get?str=abc&num=123&bool=false")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
                 .expect(200)
         })
@@ -925,7 +943,7 @@ describe("JwtAuth", () => {
 
         @resolver.register("isOwner")
         class OwnerAuthorizer implements Authorizer {
-            authorize(info: AuthorizeMetadataInfo) {
+            authorize(info: AuthorizationContext) {
                 return info.ctx.parameters[0] === info.user.email
             }
         }
@@ -962,6 +980,7 @@ describe("JwtAuth", () => {
                 .set(new JwtAuthFacility({ secret: SECRET }))
                 .initialize()
             const mock = (console.log as jest.Mock)
+            console.log(mock.mock.calls)
             expect(mock.mock.calls[2][0]).toContain("Authenticated")
             consoleLog.clearMock()
         })

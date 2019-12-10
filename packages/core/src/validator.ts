@@ -1,20 +1,17 @@
-import reflect, { decorateProperty, decorate } from "tinspector"
+import reflect, { decorate } from "tinspector"
 import * as tc from "typedconverter"
 
-import { binder } from "./binder"
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import {
-    ActionResult,
     AsyncValidatorResult,
-    Invocation,
-    Middleware,
-    RouteContext,
+    CustomValidator,
+    ActionContext,
     ValidationError,
     ValidatorDecorator,
-    ValidatorFunction,
-    ValidatorInfo,
-    CustomValidator,
+    CustomValidatorFunction,
+    ValidatorContext,
 } from "./types"
+
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -25,14 +22,14 @@ interface AsyncValidatorItem {
     value: any,
     path: string,
     parent?: { value: any, type: Class, decorators: any[] }
-    validator: ValidatorFunction | string | symbol | CustomValidator
+    validator: CustomValidatorFunction | string | symbol | CustomValidator
 }
 
 function createVisitor(items: AsyncValidatorItem[]) {
     return (i: tc.VisitorInvocation) => {
         const result = i.proceed();
         const decorators: ValidatorDecorator[] = i.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
-        if(isCustomClass(i.type)){
+        if (isCustomClass(i.type)) {
             const meta = reflect(i.type)
             const classDecorators = meta.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
             decorators.push(...classDecorators)
@@ -45,16 +42,16 @@ function createVisitor(items: AsyncValidatorItem[]) {
 
 declare module "typedconverter" {
     namespace val {
-        export function custom(validator: ValidatorFunction): (...arg: any[]) => void
+        export function custom(validator: CustomValidatorFunction): (...arg: any[]) => void
         export function custom(validator: CustomValidator): (...arg: any[]) => void
         export function custom(id: string): (...arg: any[]) => void
         export function custom(id: symbol): (...arg: any[]) => void
-        export function custom(val: ValidatorFunction | string | symbol | CustomValidator): (...arg: any[]) => void
+        //export function custom(val: ValidatorFunction | string | symbol | CustomValidator): (...arg: any[]) => void
         export function result(path: string, messages: string | string[]): AsyncValidatorResult[]
     }
 }
 
-tc.val.custom = (val: ValidatorFunction | string | symbol | CustomValidator) => {
+tc.val.custom = (val: CustomValidatorFunction | string | symbol | CustomValidator) => {
     return decorate(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: val }, ["Class", "Property", "Parameter"])
 }
 
@@ -68,9 +65,9 @@ tc.val.result = (a: string, b: string | string[]) => {
 // --------------------------------------------------------------------- //
 const getName = (path: string) => path.indexOf(".") > -1 ? path.substring(path.lastIndexOf(".") + 1) : path
 
-async function validateAsync(x: AsyncValidatorItem, ctx: RouteContext): Promise<AsyncValidatorResult[]> {
+async function validateAsync(x: AsyncValidatorItem, ctx: ActionContext): Promise<AsyncValidatorResult[]> {
     const name = getName(x.path)
-    const info: ValidatorInfo = { ctx, name, parent: x.parent }
+    const info: ValidatorContext = { ctx, name, parent: x.parent }
     if (x.value === undefined || x.value === null) return []
     let validator: CustomValidator;
     if (typeof x.validator === "function")
@@ -89,14 +86,14 @@ async function validateAsync(x: AsyncValidatorItem, ctx: RouteContext): Promise<
     }))
 }
 
-async function validate(ctx: RouteContext): Promise<tc.Result> {
+async function validate(ctx: ActionContext) {
     const decsAsync: AsyncValidatorItem[] = []
     const visitors = [createVisitor(decsAsync), ...(ctx.config.typeConverterVisitors || [])]
     const result: any[] = []
     const issues: tc.ResultMessages[] = []
     //sync validations
-    for (const parMeta of ctx.route!.action.parameters) {
-        const rawParameter = binder(ctx, parMeta)
+    for (const [index, parMeta] of ctx.route!.action.parameters.entries()) {
+        const rawParameter = ctx.parameters[index]
         const parValue = tc.validate(rawParameter, {
             decorators: parMeta.decorators, path: parMeta.name, type: parMeta.type || Object,
             visitors: visitors, guessArrayElement: !!ctx.is("urlencoded")
@@ -114,27 +111,9 @@ async function validate(ctx: RouteContext): Promise<tc.Result> {
             else issues.push(invalid)
         }
     }
-    return (issues.length > 0) ? { issues, value: undefined } : { value: result }
+    if (issues.length > 0)
+        throw new ValidationError(issues.map(x => ({ path: x.path.split("."), messages: x.messages })));
+    return result
 }
 
-
-// --------------------------------------------------------------------- //
-// ----------------------------- MIDDLEWARE ---------------------------- //
-// --------------------------------------------------------------------- //
-
-class ValidationMiddleware implements Middleware {
-    constructor() { }
-
-    async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
-        const ctx = invocation.context;
-        if (!ctx.route) return invocation.proceed();
-        const result = await validate(invocation.context as RouteContext);
-        if (result.issues)
-            throw new ValidationError(result.issues
-                .map(x => ({ path: x.path.split("."), messages: x.messages })));
-        (ctx as any).parameters = result.value
-        return invocation.proceed()
-    }
-}
-
-export { ValidationMiddleware }
+export { validate }

@@ -6,7 +6,7 @@ import Plumier, {
     RestfulApiFacility,
     route,
     val,
-    ValidatorInfo,
+    ValidatorContext,
     WebApiFacility,
 } from "plumier"
 import Supertest from "supertest"
@@ -209,10 +209,11 @@ describe("Decouple Validation Logic", () => {
 describe("Custom Validation", () => {
 
     it("Should provided correct information for custom validation", async () => {
-        async function customValidator(val: any, info: ValidatorInfo) {
+        async function customValidator(val: any, info: ValidatorContext) {
             expect(info.name).toBe("data")
             expect(info.parent).toBeUndefined()
             expect(info.ctx.route).toMatchSnapshot()
+            expect(info.ctx.parameters).toMatchObject(["abc"])
             return undefined
         }
         class UserController {
@@ -353,7 +354,7 @@ describe("Custom Validation", () => {
 
         @registry.register("18+only")
         class AgeValidator implements CustomValidator {
-            validate(value: any, info: ValidatorInfo): string | AsyncValidatorResult[] | Promise<string | AsyncValidatorResult[] | undefined> | undefined {
+            validate(value: any, info: ValidatorContext): string | AsyncValidatorResult[] | Promise<string | AsyncValidatorResult[] | undefined> | undefined {
                 if (parseInt(value) <= 18)
                     return "Only 18+ allowed"
             }
@@ -437,8 +438,8 @@ describe("Custom Validation", () => {
 
     it("Should be able to validate class and return several validation result", async () => {
         function checkConfirmPassword() {
-            return val.custom( x => {
-                if(x.password !== x.confirmPassword)
+            return val.custom(x => {
+                if (x.password !== x.confirmPassword)
                     return val.result("confirmPassword", "Password is not the same")
             })
         }
@@ -463,8 +464,8 @@ describe("Custom Validation", () => {
 
     it("Should be able to validate class from the class decorator", async () => {
         function checkConfirmPassword() {
-            return val.custom( x => {
-                if(x.password !== x.confirmPassword)
+            return val.custom(x => {
+                if (x.password !== x.confirmPassword)
                     return val.result("confirmPassword", "Password is not the same")
             })
         }

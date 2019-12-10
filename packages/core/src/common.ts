@@ -1,6 +1,6 @@
 import { existsSync, lstatSync } from "fs"
 import glob from "glob"
-import { extname } from 'path';
+import { extname } from "path"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -38,7 +38,7 @@ function getChildValue(object: any, path: string) {
 }
 
 function hasKeyOf<T>(opt: any, key: string): opt is T {
-    return!!opt[key]
+    return !!opt[key]
 }
 
 function isCustomClass(type: Function | Function[]) {
@@ -92,8 +92,4 @@ function findFilesRecursive(path: string): string[] {
     else return [path]
 }
 
-// --------------------------------------------------------------------- //
-// ------------------------------- CACHE ------------------------------- //
-// --------------------------------------------------------------------- // 
-
-export { getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, }
+export { getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive };

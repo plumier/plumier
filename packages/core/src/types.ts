@@ -5,6 +5,7 @@ import { VisitorExtension } from "typedconverter"
 import { Class } from "./common"
 import { HttpStatus } from "./http-status"
 import { SetOption } from 'cookies'
+import { RoleField } from './authorization'
 
 // --------------------------------------------------------------------- //
 // --------------------------- ACTION RESULT --------------------------- //
@@ -95,7 +96,7 @@ export class DefaultFacility implements Facility {
 // --------------------------------------------------------------------- //
 
 export interface Invocation {
-    context: Readonly<Context>
+    ctx: Readonly<Context>
     proceed(): Promise<ActionResult>
 }
 
@@ -107,8 +108,7 @@ declare module "koa" {
     interface Context {
         route?: Readonly<RouteInfo>,
         routes: RouteInfo[]
-        config: Readonly<Configuration>,
-        parameters?: any[]
+        config: Readonly<Configuration>
     }
 
     interface DefaultState {
@@ -116,7 +116,7 @@ declare module "koa" {
     }
 }
 
-export interface RouteContext extends Context {
+export interface ActionContext extends Context {
     route: Readonly<RouteInfo>,
     parameters: any[]
 }
@@ -139,11 +139,11 @@ export namespace MiddlewareUtil {
     export function fromKoa(middleware: KoaMiddleware): Middleware {
         return {
             execute: async x => {
-                await middleware(x.context, async () => {
+                await middleware(x.ctx, async () => {
                     const nextResult = await x.proceed()
-                    await nextResult.execute(x.context)
+                    await nextResult.execute(x.ctx)
                 })
-                return ActionResult.fromContext(x.context)
+                return ActionResult.fromContext(x.ctx)
             }
         }
     }
@@ -185,7 +185,7 @@ export class DefaultDependencyResolver implements DependencyResolver {
     }
 
     resolve(type: Class | string | symbol) {
-        if(typeof type === "function"){
+        if (typeof type === "function") {
             return new type()
         }
         else {
@@ -279,12 +279,12 @@ export interface PlumierApplication extends Application {
 
 export interface ValidatorDecorator {
     type: "ValidatorDecorator",
-    validator: ValidatorFunction | string | symbol,
+    validator: CustomValidatorFunction | string | symbol,
 }
 
-export interface ValidatorInfo {
+export interface ValidatorContext {
     name: string,
-    ctx: RouteContext,
+    ctx: ActionContext,
     parent?: { value: any, type: Class, decorators: any[] }
 }
 
@@ -293,10 +293,10 @@ export interface AsyncValidatorResult {
     messages: string[]
 }
 
-export type ValidatorFunction = (value: any, info: ValidatorInfo) => undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
+export type CustomValidatorFunction = (value: any, info: ValidatorContext) => undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
 
 export interface CustomValidator {
-    validate(value: any, info: ValidatorInfo): undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
+    validate(value: any, info: ValidatorContext): undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
 }
 
 // --------------------------------------------------------------------- //
@@ -304,11 +304,11 @@ export interface CustomValidator {
 // --------------------------------------------------------------------- //
 
 
-export interface AuthorizeMetadataInfo {
+export interface AuthorizationContext {
     value?: any
     role: string[]
     user: any
-    ctx: RouteContext
+    ctx: ActionContext
 }
 
 
@@ -340,7 +340,7 @@ export interface Configuration {
     /**
      * List of registered global middlewares
      */
-    middlewares:(string | symbol | MiddlewareFunction | Middleware)[]
+    middlewares: (string | symbol | MiddlewareFunction | Middleware)[]
 
     /**
      * Specify controller path (absolute or relative to entry point) or the controller classes array.
@@ -369,7 +369,23 @@ export interface Configuration {
     /**
      * Set custom route analyser functions
      */
-    analyzers?: RouteAnalyzerFunction[]
+    analyzers?: RouteAnalyzerFunction[],
+
+    /**
+     * Role field / function used to specify current login user role inside JWT claim for authorization
+     */
+    roleField: RoleField,
+
+
+    /**
+     * Global authorization decorators, use mergeDecorator for multiple
+     */
+    globalAuthorizationDecorators?: (...args: any[]) => void
+
+    /**
+     * Enable/disable authorization, when enabled all routes will be private by default. Default false
+     */
+    enableAuthorization: boolean
 }
 
 export interface PlumierConfiguration extends Configuration {

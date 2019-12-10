@@ -6,7 +6,8 @@
       "controller",
       "action-result",
       "middleware",
-      "facility"
+      "facility",
+      "application-lifecycle"
     ],
     "References": [
       "refs/route",
