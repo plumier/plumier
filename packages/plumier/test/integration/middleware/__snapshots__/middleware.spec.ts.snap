@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Middleware Action Middleware Should throw error if wrong id provided 1`] = `
+Array [
+  Array [
+    [Error: PLUM1009: Object with id ipsum not found in Object registry],
+  ],
+]
+`;
+
+exports[`Middleware Controller Middleware Should throw error if wrong id provided 1`] = `
+Array [
+  Array [
+    [Error: PLUM1009: Object with id ipsum not found in Object registry],
+  ],
+]
+`;

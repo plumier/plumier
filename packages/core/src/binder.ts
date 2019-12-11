@@ -3,6 +3,8 @@ import { Context, Request } from "koa"
 import { ParameterReflection } from "tinspector"
 
 import { isCustomClass } from "./common"
+import { Middleware, Invocation, ActionContext, ActionResult } from './types'
+import { checkAuthorize } from '@plumier/core'
 
 
 // --------------------------------------------------------------------- //
@@ -58,4 +60,11 @@ function binder(ctx:Context){
     return ctx.route!.action.parameters.map(x => binderChain(ctx, x))
 }
 
-export { RequestPart, HeaderPart, BindingDecorator, binder }
+class ParameterBinderMiddleware implements Middleware {
+    async execute(invocation: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
+        (invocation.ctx as any).parameters = binder(invocation.ctx)
+        return invocation.proceed()
+    }
+}
+
+export { RequestPart, HeaderPart, BindingDecorator, binder, ParameterBinderMiddleware }
