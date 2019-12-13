@@ -58,11 +58,11 @@ function fixture(controller: Class) {
         .set({ controller: [controller] })
 }
 
-async function returnError(i:Invocation) {
-    try{
+async function returnError(i: Invocation) {
+    try {
         return i.proceed()
     }
-    catch(e){
+    catch (e) {
         return new ActionResult(e.message, 500)
     }
 }
@@ -151,13 +151,16 @@ describe("Middleware", () => {
 
 
         it("Should throw error if wrong id provided", async () => {
+            @middleware.use(x => {
+                return x.proceed()
+            })
             class AnimalController {
                 get() {
                     return "Body"
                 }
             }
             const app = await fixture(AnimalController)
-                .set({dependencyResolver: resolver})
+                .set({ dependencyResolver: resolver })
                 .use(returnError)
                 .use("ipsum")
                 .initialize()
@@ -263,6 +266,7 @@ describe("Middleware", () => {
 
 
         it("Should throw error if wrong id provided", async () => {
+            const spy = jest.fn()
             @middleware.use("ipsum")
             class AnimalController {
                 get() {
@@ -270,12 +274,16 @@ describe("Middleware", () => {
                 }
             }
             const app = await fixture(AnimalController)
-                .set({dependencyResolver: resolver})
+                .set({ dependencyResolver: resolver })
                 .use(returnError)
                 .initialize()
+            app.on("error", e => {
+                spy(e)
+            })
             await Supertest(app.callback())
                 .get("/animal/get")
-                .expect(500, "PLUM1009: Object with id ipsum not found in Object registry")
+                .expect(500)
+            expect(spy.mock.calls).toMatchSnapshot()
         })
 
         it("Should execute middleware in proper order", async () => {
@@ -373,8 +381,8 @@ describe("Middleware", () => {
                 .expect(200, "The Body")
         })
 
-
         it("Should throw error if wrong id provided", async () => {
+            const spy = jest.fn()
             class AnimalController {
                 @middleware.use("ipsum")
                 get() {
@@ -382,12 +390,16 @@ describe("Middleware", () => {
                 }
             }
             const app = await fixture(AnimalController)
-                .set({dependencyResolver: resolver})
+                .set({ dependencyResolver: resolver })
                 .use(returnError)
                 .initialize()
+            app.on("error", e => {
+                spy(e)
+            })
             await Supertest(app.callback())
                 .get("/animal/get")
-                .expect(500, "PLUM1009: Object with id ipsum not found in Object registry")
+                .expect(500)
+            expect(spy.mock.calls).toMatchSnapshot()
         })
 
         it("Should execute middleware in proper order", async () => {

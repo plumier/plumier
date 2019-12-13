@@ -2,7 +2,8 @@ import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import { HttpStatus } from "./http-status"
-import { AuthorizationContext, HttpStatusError, ActionContext, RouteInfo, Configuration } from "./types"
+import { AuthorizationContext, HttpStatusError, ActionContext, RouteInfo, Configuration, Middleware, Invocation, ActionResult } from "./types"
+import { Context } from 'koa'
 
 
 // --------------------------------------------------------------------- //
@@ -131,8 +132,8 @@ async function getRole(user: any, roleField: RoleField): Promise<string[]> {
 /* --------------------------- MAIN IMPLEMENTATION ------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function updateRouteAuthorizationAccess(routes: RouteInfo[], config:Configuration) {
-    if(config.enableAuthorization){
+function updateRouteAuthorizationAccess(routes: RouteInfo[], config: Configuration) {
+    if (config.enableAuthorization) {
         routes.forEach(x => {
             const decorators = getAuthorizeDecorators(x, config.globalAuthorizationDecorators)
             if (decorators.length > 0)
@@ -156,7 +157,14 @@ async function checkAuthorize(ctx: ActionContext) {
     }
 }
 
+class AuthorizerMiddleware implements Middleware {
+    async execute(invocation: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
+        await checkAuthorize(invocation.ctx)
+        return invocation.proceed()
+    }
+}
+
 export {
     AuthorizerFunction, RoleField, Authorizer, checkAuthorize, AuthorizeDecorator,
-    getAuthorizeDecorators, updateRouteAuthorizationAccess
+    getAuthorizeDecorators, updateRouteAuthorizationAccess, AuthorizerMiddleware
 }

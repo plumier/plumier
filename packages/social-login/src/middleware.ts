@@ -34,7 +34,8 @@ declare module "@plumier/core" {
     }
 }
 
-bind.loginStatus = () => bind.custom(x => x.state.loginStatus)
+
+bind.loginStatus = () => bind.custom(x => { }, LoginStatusParameterBinding)
 
 export class OAuthCallbackMiddleware implements Middleware {
     private log = debug("@plumier/social-login")
@@ -67,6 +68,21 @@ export class OAuthCallbackMiddleware implements Middleware {
         return response.data;
     }
 
+    private bindProfile(value: SocialLoginStatus<any>, ctx: Context) {
+        /**
+         * parameter binding occur in the higher middleware so its must be 
+         * injected manually
+         */
+        for (const [idx, paramMeta] of ctx.route!.action.parameters.entries()) {
+            for (const decorator of paramMeta.decorators) {
+                if (decorator.type === "ParameterBinding" && decorator.name === LoginStatusParameterBinding) {
+                    this.log("Binding: %o", value)
+                    ctx.parameters![idx] = value
+                }
+            }
+        }
+    }
+
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
         const req = invocation.ctx.request;
         if (req.query.code) {
@@ -77,19 +93,19 @@ export class OAuthCallbackMiddleware implements Middleware {
                 this.log("Token: %s", token)
                 const data = await this.getProfile(token)
                 this.log("Profile: %o", data)
-                invocation.ctx.state.loginStatus = { status: "Success", data }
+                this.bindProfile({ status: "Success", data }, invocation.ctx)
             }
             catch (e) {
                 this.log("Error: %o", e.response && e.response.data || e)
                 if (e.response)
-                    invocation.ctx.state.loginStatus = { status: "Failed", error: e.response.data }
+                    this.bindProfile({ status: "Failed", error: e.response.data }, invocation.ctx)
                 else
-                    invocation.ctx.state.loginStatus = { status: "Failed", error: { message: e.message } }
+                    this.bindProfile({ status: "Failed", error: { message: e.message } }, invocation.ctx)
             }
         }
         else {
             this.log("No authorization code provided")
-            invocation.ctx.state.loginStatus = { status: "Failed", error: { message: "Authorization code is required" } }
+            this.bindProfile({ status: "Failed", error: { message: "Authorization code is required" } }, invocation.ctx)
         }
         return invocation.proceed()
     }

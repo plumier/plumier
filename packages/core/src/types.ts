@@ -91,14 +91,6 @@ export class DefaultFacility implements Facility {
     async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[]) { }
 }
 
-// --------------------------------------------------------------------- //
-// ----------------------------- INVOCATION ---------------------------- //
-// --------------------------------------------------------------------- //
-
-export interface Invocation {
-    ctx: Readonly<Context>
-    proceed(): Promise<ActionResult>
-}
 
 // --------------------------------------------------------------------- //
 // ------------------------ KOA CONTEXT AUGMENT ------------------------ //
@@ -129,10 +121,15 @@ export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise
 
 export interface MiddlewareDecorator { name: "Middleware", value: (string | symbol | MiddlewareFunction | Middleware)[] }
 
-export type MiddlewareFunction = (invocation: Readonly<Invocation>) => Promise<ActionResult>
+export interface Invocation<T = Context> {
+    ctx: Readonly<T>
+    proceed(): Promise<ActionResult>
+}
 
-export interface Middleware {
-    execute(invocation: Readonly<Invocation>): Promise<ActionResult>
+export type MiddlewareFunction<T = Context> = (invocation: Readonly<Invocation<T>>) => Promise<ActionResult>
+
+export interface Middleware<T = Context> {
+    execute(invocation: Readonly<Invocation<T>>): Promise<ActionResult>
 }
 
 export namespace MiddlewareUtil {

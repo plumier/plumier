@@ -2,32 +2,35 @@ import { Context } from "koa"
 
 import { hasKeyOf } from "./common"
 import {
+    ActionContext,
     ActionResult,
     HttpStatusError,
     Invocation,
     Middleware,
     MiddlewareFunction,
     MiddlewareUtil,
-    ActionContext,
     RouteInfo,
 } from "./types"
-import { binder } from './binder'
-import { validate } from './validator'
-import { checkAuthorize } from './authorization'
+import { ParameterBinderMiddleware } from './binder'
+import { ValidatorMiddleware } from "./validator"
+import { AuthorizerMiddleware } from './authorization'
 
 
-function getMiddleware(global: (string | symbol | MiddlewareFunction | Middleware)[], route: RouteInfo) {
-    const conMdws = MiddlewareUtil.extractDecorators(route)
-    const result: (string | symbol | MiddlewareFunction | Middleware)[] = []
-    for (const mdw of global) {
-        result.push(mdw)
+// --------------------------------------------------------------------- //
+// ------------------------------ HELPERS ------------------------------ //
+// --------------------------------------------------------------------- //
+
+function pipeMiddleware(middlewares: (string | symbol | MiddlewareFunction | Middleware)[], ctx: Context, invocation: Invocation) {
+    for (let i = middlewares.length; i--;) {
+        invocation = new MiddlewareInvocation(middlewares[i], ctx, invocation)
     }
-    for (const mdw of conMdws) {
-        result.push(mdw)
-    }
-    return result
+    return invocation.proceed()
 }
 
+
+// --------------------------------------------------------------------- //
+// ---------------------------- INVOCATIONS ---------------------------- //
+// --------------------------------------------------------------------- //
 
 class MiddlewareInvocation implements Invocation {
     constructor(private middleware: string | symbol | MiddlewareFunction | Middleware, public ctx: Context, private next: Invocation) { }
@@ -55,20 +58,14 @@ class NotFoundActionInvocation implements Invocation {
 }
 
 class ActionInvocation implements Invocation {
-    constructor(public ctx: ActionContext, private route: RouteInfo) { }
+    constructor(public ctx: ActionContext) { }
     async proceed(): Promise<ActionResult> {
-        const config = this.ctx.config
-        // 1. Parameter Binding
-        this.ctx.parameters = binder(this.ctx)
-        // 2. Conversion & validation
-        this.ctx.parameters = await validate(this.ctx)
-        // 3. Authorization
-        await checkAuthorize(this.ctx)
+        const { config, route, parameters } = this.ctx
         // 4. Controller Creation
-        const controller: any = config.dependencyResolver.resolve(this.route.controller.type)
+        const controller: any = config.dependencyResolver.resolve(route.controller.type)
         // 5. Controller Invocation
-        const result = await(<Function>controller[this.route.action.name]).apply(controller, this.ctx.parameters)
-        const status = config.responseStatus && config.responseStatus[this.route.method] || 200
+        const result = await (<Function>controller[route.action.name]).apply(controller, parameters)
+        const status = config.responseStatus && config.responseStatus[route.method] || 200
         //if instance of action result, return immediately
         if (result && result.execute) {
             result.status = result.status || status
@@ -80,23 +77,35 @@ class ActionInvocation implements Invocation {
     }
 }
 
-function pipe(ctx: Context, caller: "system" | "invoke" = "system") {
-    const context = ctx;
-    context.state.caller = caller
-    let middlewares: (string | symbol | MiddlewareFunction | Middleware)[];
-    let invocationStack: Invocation;
-    if (!!ctx.route) {
-        middlewares = getMiddleware(context.config.middlewares, ctx.route)
-        invocationStack = new ActionInvocation(context as ActionContext, ctx.route)
+
+// --------------------------------------------------------------------- //
+// ------------------------------ PIPELINE ----------------------------- //
+// --------------------------------------------------------------------- //
+
+
+function pipe(context: Context | ActionContext, caller: "system" | "invoke" = "system") {
+    context.state.caller = caller;
+    // request with controller's handler
+    if (hasKeyOf<ActionContext>(context, "route")) {
+        const middlewares:(string | symbol | MiddlewareFunction | Middleware)[] = []
+        // 1. global middlewares
+        middlewares.push(...context.config.middlewares)
+        // 2. parameter binding
+        middlewares.push(new ParameterBinderMiddleware())
+        // 3. validation
+        middlewares.push(new ValidatorMiddleware())
+        // 4. authorization
+        middlewares.push(new AuthorizerMiddleware())
+        // 5. action middlewares
+        middlewares.push(...MiddlewareUtil.extractDecorators(context.route))
+        // 6. execute action
+        return pipeMiddleware(middlewares, context, new ActionInvocation(context))
     }
+    // request without controller handler
     else {
-        middlewares = context.config.middlewares.slice(0)
-        invocationStack = new NotFoundActionInvocation(context)
+        const globalMiddlewares = context.config.middlewares.slice(0)
+        return pipeMiddleware(globalMiddlewares, context, new NotFoundActionInvocation(context))
     }
-    for (let i = middlewares.length; i--;) {
-        invocationStack = new MiddlewareInvocation(middlewares[i], context, invocationStack)
-    }
-    return invocationStack.proceed()
 }
 
 function invoke(ctx: Context, route: RouteInfo) {

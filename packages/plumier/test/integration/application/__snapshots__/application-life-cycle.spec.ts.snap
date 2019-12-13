@@ -9,6 +9,15 @@ Array [
     "before middleware: global 2",
   ],
   Array [
+    "parameter binder",
+  ],
+  Array [
+    "validator",
+  ],
+  Array [
+    "authorizer",
+  ],
+  Array [
     "before middleware: controller 1",
   ],
   Array [
@@ -19,15 +28,6 @@ Array [
   ],
   Array [
     "before middleware: action 2",
-  ],
-  Array [
-    "parameter binder",
-  ],
-  Array [
-    "validator",
-  ],
-  Array [
-    "authorizer",
   ],
   Array [
     "action",

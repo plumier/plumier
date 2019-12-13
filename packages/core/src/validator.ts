@@ -10,7 +10,11 @@ import {
     ValidatorDecorator,
     CustomValidatorFunction,
     ValidatorContext,
+    Middleware,
+    Invocation,
+    ActionResult,
 } from "./types"
+import { checkAuthorize } from '@plumier/core'
 
 
 // --------------------------------------------------------------------- //
@@ -105,4 +109,11 @@ async function validate(ctx: ActionContext) {
     return result
 }
 
-export { validate }
+class ValidatorMiddleware implements Middleware {
+    async execute(invocation: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
+        (invocation.ctx as any).parameters = await validate(invocation.ctx)
+        return invocation.proceed()
+    }
+}
+
+export { validate, ValidatorMiddleware }
