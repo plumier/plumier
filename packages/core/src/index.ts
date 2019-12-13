@@ -1,7 +1,7 @@
 import { val } from "typedconverter"
 export { val }
 export { AuthorizerFunction, checkAuthorize, RoleField, Authorizer } from "./authorization";
-export { HeaderPart, RequestPart, BindingDecorator, binder } from "./binder";
+export { HeaderPart, RequestPart, BindingDecorator, binder, ParameterBinderMiddleware } from "./binder";
 export { invoke } from "./application-pipeline";
 export { response } from "./response";
 export { generateRoutes } from "./route-generator";
@@ -13,10 +13,11 @@ export { bind } from "./decorator.bind";
 export { domain, middleware } from "./decorator";
 export { route, RouteDecoratorImpl } from "./decorator.route";
 export { HttpStatus } from "./http-status";
+export { validate, ValidatorMiddleware } from "./validator"
 export {
-    ActionResult, Application, AuthorizationContext as AuthorizationContext, Configuration, DefaultFacility, CustomValidator,
+    ActionResult, Application, AuthorizationContext, Configuration, DefaultFacility, CustomValidator,
     DependencyResolver, Facility, FileParser, FileUploadInfo, HttpMethod, HttpStatusError, Invocation, KoaMiddleware,
     Middleware, MiddlewareFunction, MiddlewareDecorator, MiddlewareUtil, PlumierApplication, PlumierConfiguration, RedirectActionResult,
-    ActionContext, RouteInfo, RouteAnalyzerFunction, RouteAnalyzerIssue, ValidatorDecorator, CustomValidatorFunction as CustomValidatorFunction,
-    ValidatorContext, ValidationError, errorMessage, AsyncValidatorResult, DefaultDependencyResolver
+    ActionContext, RouteInfo, RouteAnalyzerFunction, RouteAnalyzerIssue, ValidatorDecorator, CustomValidatorFunction,
+    ValidatorContext, ValidationError, errorMessage, AsyncValidatorResult, DefaultDependencyResolver,
 } from "./types";
