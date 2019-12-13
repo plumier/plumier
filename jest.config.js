@@ -3,10 +3,10 @@ module.exports = {
   testEnvironment: 'node',
   silent: false,
   verbose: false,
-  // collectCoverage: true,
-  // collectCoverageFrom: [
-  //   "packages/*/src/*"
-  // ],
+  collectCoverage: true,
+  collectCoverageFrom: [
+    "packages/*/src/*"
+  ],
   coverageThreshold: {
     global: {
       branches: 100,
