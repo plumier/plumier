@@ -3,8 +3,7 @@ import { Context, Request } from "koa"
 import { ParameterReflection } from "tinspector"
 
 import { isCustomClass } from "./common"
-import { Middleware, Invocation, ActionContext, ActionResult } from './types'
-import { checkAuthorize } from '@plumier/core'
+import { ActionContext, ActionResult, Invocation, Middleware } from "./types"
 
 
 // --------------------------------------------------------------------- //
