@@ -3,18 +3,17 @@ import * as tc from "typedconverter"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import {
+    ActionContext,
+    ActionResult,
     AsyncValidatorResult,
     CustomValidator,
-    ActionContext,
-    ValidationError,
-    ValidatorDecorator,
     CustomValidatorFunction,
-    ValidatorContext,
-    Middleware,
     Invocation,
-    ActionResult,
+    Middleware,
+    ValidationError,
+    ValidatorContext,
+    ValidatorDecorator,
 } from "./types"
-import { checkAuthorize } from '@plumier/core'
 
 
 // --------------------------------------------------------------------- //
