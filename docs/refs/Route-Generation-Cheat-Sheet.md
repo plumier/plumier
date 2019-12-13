@@ -279,3 +279,18 @@ GET /dashboard/index
 ```
 
 > Absolute route when combined with multiple root route will cause conflict, consider to avoid them.
+
+## Rest Decorator 
+`@rest` decorator extends all `@route` functionalities except it will ignore method name when applied without parameter. 
+
+```typescript
+//controller/home-controller.ts
+export class HomeController {
+    @rest.get()
+    index(){
+        return "My Cool Animal API"
+    }
+}
+```
+
+Above code will generate `GET /home` route instead of `GET /home/index`. `@rest.get("")` and `@rest.get()` will behave the same.

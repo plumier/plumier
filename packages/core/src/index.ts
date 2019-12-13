@@ -12,6 +12,7 @@ export { AuthDecoratorImpl, authorize } from "./decorator.authorize";
 export { bind } from "./decorator.bind";
 export { domain, middleware } from "./decorator";
 export { route, RouteDecoratorImpl } from "./decorator.route";
+export { rest,  RestDecoratorImpl} from "./decorator.rest";
 export { HttpStatus } from "./http-status";
 export { validate, ValidatorMiddleware } from "./validator"
 export {
