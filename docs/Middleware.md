@@ -3,8 +3,6 @@ id: middleware
 title: Middleware
 ---
 
-> Plumier supports Koa middleware out of the box, you can use any existing Koa middleware
-
 Plumier middleware works exactly like Koa middleware, it executed in a stack-like order and has full control of the next middleware. 
 
 The different between Plumier middleware and Koa middleware is Plumier middleware is a stateless class which has a method that act like pure function. It doesn't mutate things but returns value. With this behavior Plumier middleware relatively easy to unit test in isolation.
