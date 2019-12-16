@@ -101,6 +101,23 @@ Object {
 }
 `;
 
+exports[`Custom Validation Should be able to use access body request property that is not part of the domain 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Password is not the same",
+      ],
+      "path": Array [
+        "model",
+        "confirmPassword",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
 exports[`Custom Validation Should be able to validate class and return several validation result 1`] = `
 Object {
   "message": Array [

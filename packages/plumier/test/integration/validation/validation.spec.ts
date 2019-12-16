@@ -455,6 +455,10 @@ describe("Custom Validation", () => {
             get(@checkConfirmPassword() model: User) { }
         }
         const koa = await fixture(UsersController).initialize()
+        await Supertest(koa.callback())
+            .post("/users/get")
+            .send({ password: "111111", confirmPassword: "111111" })
+            .expect(200)
         let result = await Supertest(koa.callback())
             .post("/users/get")
             .send({ password: "111111", confirmPassword: "2222222" })
@@ -482,6 +486,41 @@ describe("Custom Validation", () => {
             get(model: User) { }
         }
         const koa = await fixture(UsersController).initialize()
+        await Supertest(koa.callback())
+            .post("/users/get")
+            .send({ password: "111111", confirmPassword: "111111" })
+            .expect(200)
+        let result = await Supertest(koa.callback())
+            .post("/users/get")
+            .send({ password: "111111", confirmPassword: "2222222" })
+            .expect(422)
+        expect(result.body).toMatchSnapshot()
+    })
+
+
+    it("Should be able to use access body request property that is not part of the domain", async () => {
+        function checkConfirmPassword() {
+            return val.custom(x => {
+                if (x.password !== x.confirmPassword)
+                    return val.result("confirmPassword", "Password is not the same")
+            })
+        }
+        @domain()
+        @checkConfirmPassword()
+        class User {
+            constructor(
+                public password: string
+            ) { }
+        }
+        class UsersController {
+            @route.post()
+            get(model: User) { }
+        }
+        const koa = await fixture(UsersController).initialize()
+        await Supertest(koa.callback())
+            .post("/users/get")
+            .send({ password: "111111", confirmPassword: "111111" })
+            .expect(200)
         let result = await Supertest(koa.callback())
             .post("/users/get")
             .send({ password: "111111", confirmPassword: "2222222" })
