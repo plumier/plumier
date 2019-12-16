@@ -1,10 +1,8 @@
-import { ActionResult, bind, BindingDecorator, Invocation, Middleware, response, } from "@plumier/core"
+import { ActionResult, bind, Invocation, Middleware, response } from "@plumier/core"
 import Axios from "axios"
 import debug from "debug"
 import { Context } from "koa"
 import qs from "querystring"
-import { decorateProperty, mergeDecorator } from "tinspector"
-import * as tc from "typedconverter"
 
 const LoginStatusParameterBinding = "LoginStatusParameterBinding"
 

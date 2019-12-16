@@ -3,7 +3,8 @@ id: motivation
 title: Motivation
 ---
 
-If you're Node.js developer you'd be very familiar with [Express](https://expressjs.com/). The key feature of Express framework is its simplicity, I believe most Node.js developer uses Express will become an Express expert only by reading the documentation once or twice. 
+
+If you're Node.js developer you'd be very familiar with [Express](https://expressjs.com/) for its simple and beautiful API. 
 
 Another great Node.js framework that you'd never miss is [Nest](https://nestjs.com/). Nest is great framework that includes  enterprise best practice into the framework with its selling words such as Dependency Injection, Interceptors, Guards, Pipes. Nest designed for a big scale application it provide some best practice on how you layout your code and separate your logic with [SOLID](https://en.wikipedia.org/wiki/SOLID) in mind. 
 

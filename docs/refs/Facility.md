@@ -3,9 +3,9 @@ id: facility
 title: Facility
 ---
 
-Facility is prebuilt middlewares and configuration bundled into one component. 
-For example to build an API you will need: a Body parser, CORS, Generic error handler 
-and some configuration etc, all can be bundled into one facility called `WebApiFacility`. 
+Facility is a configuration component used to configure Plumier application to get a new ability. It consist some middlewares in a correct order, some process before the application initialized and some default application configuration. 
+
+For example to build an API you will need: a Body parser, CORS, Generic error handler and some configuration etc, all can be bundled into one facility called `WebApiFacility`. 
 
 ## Signature
 Facility is a class that implements `Facility`, the signature of `Facility` is like below:
