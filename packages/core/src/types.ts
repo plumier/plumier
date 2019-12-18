@@ -132,6 +132,9 @@ export interface Middleware<T = Context> {
     execute(invocation: Readonly<Invocation<T>>): Promise<ActionResult>
 }
 
+export type CustomMiddleware = Middleware 
+export type CustomMiddlewareFunction = MiddlewareFunction
+
 export namespace MiddlewareUtil {
     export function fromKoa(middleware: KoaMiddleware): Middleware {
         return {
@@ -307,17 +310,6 @@ export interface CustomValidator {
     validate(value: any, info: ValidatorContext): undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
 }
 
-// --------------------------------------------------------------------- //
-// --------------------------- AUTHORIZATION --------------------------- //
-// --------------------------------------------------------------------- //
-
-
-export interface AuthorizationContext {
-    value?: any
-    role: string[]
-    user: any
-    ctx: ActionContext
-}
 
 
 // --------------------------------------------------------------------- //
