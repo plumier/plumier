@@ -5,18 +5,20 @@ title: Fundamentals
 
 This documentation covers all the basic features of Plumier. By reading this documentation you will get the basic understanding on how the framework work.
 
-## Basic Framework
+## Basic Framework Skeleton
 The simplest Plumier application consist of two parts: **Application bootstrap** and a **controller**. This simple application can be written in single TypeScript file like below:
 
 ```typescript
 import Plumier, { WebApiFacility } from "plumier"
 
+// controller
 class HelloController {
     index(name:string) {
         return { say: `Hello ${name}` }
     }
 }
 
+// application bootstrap
 new Plumier()
     .set(new WebApiFacility({ controller: __dirname }))
     .initialize()
@@ -24,10 +26,10 @@ new Plumier()
     .catch(console.error)
 ```
 
-Above code host an API, listens to port 8000 and serve endpoint `GET /hello/index?name=<string>`. 
+Above code host an API listens to port 8000 and serve an endpoint `GET /hello/index?name=<string>`. 
 
 ## Bootstrap Application
-The bootstrap application consists of two steps initialization and listen to the port for incoming http request. 
+The bootstrap application consists of two steps: initialization and listen to the port for incoming http request. 
 
 ```typescript
 new Plumier()
@@ -37,7 +39,7 @@ new Plumier()
     .catch(console.error)
 ```
 
-Facility is a component used to configure Plumier application to get a new ability. It consist of some middlewares in a correct order, some process before the application initialized and some default application configuration. Plumier provided some facilities for development convenient.
+Facility is a component used to configure Plumier application to add a new functionalities. It consist of ordered middlewares, some initialization process before the application started and some application configuration. Plumier provided some facilities for development convenient.
 
 | Facility              | Includes                                                          | Package                 |
 | --------------------- | ----------------------------------------------------------------- | ----------------------- |
@@ -56,6 +58,7 @@ The term of Controller in Plumier is the same as in other MVC framework. Control
 ```typescript 
 import {route} from "plumier"
 
+//file: ./controller/animal-controller.ts
 class AnimalsController {
     @rest.get()
     get() { }
@@ -75,7 +78,9 @@ class AnimalsController {
 GET /animals/get?id=123
 ```
 
-Default http method used is `GET`, the methods parameters by default bound with the request query. This behavior can be change using the `@route` decorator. 
+Default http method used is `GET`, the controller name `AnimalsController` generated into `animals` note that the `Controller` word is removed. Method name kept intact `get`. Methods parameter `id` bound with the request query `id`. 
+
+Furthermore this behavior can be customized using the `@route` decorator. 
 
 ```typescript 
 import {route} from "plumier"
@@ -98,7 +103,7 @@ POST /animals
 PUT  /animals/:id
 ```
 
-String parameter passed into the route parameter `@route.get(":id")` will rename the method name, thus its become `GET /animals/:id`, note that the `get` method name changed into `:id`. 
+String parameter passed into the route parameter `@route.get(":id")` will rename the method name, thus its become `GET /animals/:id`, note that the controller name kept intact `animals`, the `get` method name changed into `:id`. 
 
 When empty string provided `@route.post("")` the method name will be ignored, thus its become `POST /animals`, note the `save` method name ignored from the url.
 
@@ -143,7 +148,7 @@ Above code will bound the `forward` parameter with request header `x-forwarded-p
 class Animal {
     constructor(
         public name:string,
-        public breed:string,
+        public active:boolean,
         public dateOfBirth:Date
     )
 }
@@ -154,9 +159,9 @@ class AnimalsController {
 }
 ```
 
-By issuing `POST /animals` with a request body will automatically bound the request body into the `data` parameter using Model Parameter Binding, because `data` is a custom class and doesn't have any decorator nor match any request name. 
+By issuing `POST /animals` with a request body `{ "name": "Mimi", "active": "Yes", "dateOfBirth": "2018-12-3" }` will automatically bound the request body into the `data` parameter using Model Parameter Binding, because `data` is a custom class and doesn't have any decorator nor match any request name. 
 
-Note that using above code, the request boy automatically converted into `Animal` class including all its properties for free.
+Note that using above code, the request boy automatically converted into `Animal` class including all its properties `"active": "Yes"` automatically converted into `active: true`, `"dateOfBirth": "2018-12-3"` converted into `dateOfBirth: new Date("2018-12-3")`
 
 ## Basic Validation
 Plumier validation checked automatically before the controller executed. Plumier provided comprehensive decorator based validation functionalities. Decorator can be applied directly on the parameter or in the domain properties.
@@ -170,8 +175,9 @@ class AuthController {
 }
 ```
 
-Above code showing that the `@val.email()` validator applied into the parameter directly. 
+Above code showing that the `@val.email()` validator applied into the parameter directly. Using controller above when API consumer provided invalid email address the response with status 422 automatically returned without having to touch the controller. This is an intended behavior because further you can create your own custom validator easily.
 
+`@val` decorator can be applied anywhere on the domain property in a deep nested children.
 
 ```typescript
 import { val } from "plumier"
@@ -196,7 +202,7 @@ Above code have the same behavior with the previous one, but showing that the va
 ## Authorization
 Plumier provided authorization decorator to easily securing access to the endpoints. This functionality automatically enabled when the `JwtAuthFacility` installed on Plumier application. Once installed all endpoints secured (not accessible by non login user) except decorated with `@authorize.public()`
 
-Plumier authorization required a valid JWT key passed within the `Authorization` header or a cookie named `Authorization`, Plumier automatically returned back response with status code if: 
+Plumier authorization required a valid JWT key passed within the `Authorization` header or a cookie named `Authorization`, Plumier automatically returned back response with status code: 
 1. 403 (Forbidden) If JWT key not provided in header or cookie, except the endpoint mark with `@authorize.public()`.
 2. 401 (Unauthorized) If current login user Role doesn't match with authorized endpoint specified in `@authorize.role(<allowed role>)`.
 
@@ -262,7 +268,17 @@ class AnimalController {
     @route.get(":id")
     get(id:string){
         return new ActionResult({ name: "Mimi" })
+            .setCookie("Name", "Value")
     }
 }
 ```
 
+Plumier provided several `ActionResult` derived class for development convenient. 
+
+| Action                 | Alias                 | Description                | Package                 |
+| ---------------------- | --------------------- | -------------------------- | ----------------------- |
+| `ActionResult`         | `response.json()`     | Return json response       | `plumier`               |
+| `RedirectActionResult` | `response.redirect()` | Redirect response          | `plumier`               |
+| `FileActionResult`     | `response.file()`     | Serve static file response | `@plumier/serve-static` |
+
+Refer to [action result documentation](refs/action-result) for more information.
