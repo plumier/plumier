@@ -2,7 +2,7 @@ import { GetOption } from "cookies"
 import { Context } from "koa"
 import { decorateParameter } from "tinspector"
 
-import { BindingDecorator, HeaderPart, RequestPart } from "./binder"
+import { BindingDecorator, HeaderPart, RequestPart, CustomBinderFunction } from "./binder"
 import { getChildValue } from "./common"
 
 
@@ -124,7 +124,7 @@ export namespace bind {
      * 
      * @param process callback function to process the Koa context
      */
-    export function custom(process: (ctx: Context) => any, name: string = "custom") {
+    export function custom(process: CustomBinderFunction, name: string = "custom") {
         return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", process, name })
     }
 }

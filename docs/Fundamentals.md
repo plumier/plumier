@@ -163,6 +163,85 @@ By issuing `POST /animals` with a request body `{ "name": "Mimi", "active": "Yes
 
 Note that using above code, the request boy automatically converted into `Animal` class including all its properties `"active": "Yes"` automatically converted into `active: true`, `"dateOfBirth": "2018-12-3"` converted into `dateOfBirth: new Date("2018-12-3")`
 
+
+## Type Conversion Limitation
+Due to TypeScript reflection limitation in some case type conversion will not work in parameter binding like expected. Plumier use its own reflection library named [TInspector](https://github.com/plumier/tinspector). It uses TypeScript `experimentalDecorators` and `emitDecoratorMetadata` to get the type information such as type name, method name, methods parameter names etc during runtime.
+
+`emitDecoratorMetadata` configuration tells TypeScript compiler to add type information only on decorated class. This limitation also affect TInspector ability:
+
+1. Will not able to get type information of an interface
+2. Will not able to get type information of a class without decorator. It can get name information of class, method, property and parameters but unable to get its data type.
+3. Will not able to get type information of complex class such as generic type : `Array<User>`, `Partial<User>` or even `Promise<User>`
+   
+By having an understanding of above limitation, then you will understand that below controller will not work like expected.
+
+```typescript
+class DataController {
+    get(num:number){
+        return { number }
+    }
+}
+```
+
+By issuing `GET /data/get?num=hello` won't make Plumier response error, because converter unable to get the type information of the `num` parameter. This issue can be fixed by adding any decorator on the `get` method
+
+
+```typescript
+class DataController {
+    @route.get()
+    get(num:number){
+        return { number }
+    }
+}
+```
+
+By providing `@route.get()` decorator TypeScript will add type information on the `num` parameter that make issuing `GET /data/get?num=hello` will make Plumier response an error properly.
+
+If you're good static type programmer than you'll notice that Plumier uses class as domain model instead of interface. Example below uses interface as the domain model and due to reflection limitation on interface below example will not work like expected.
+
+```typescript
+interface User {
+    name:string,
+    dateOfBirth:Date,
+    active:boolean
+}
+
+class UsersController {
+    @route.post("")
+    save(user:User){ }
+}
+```
+
+Even if you provide `@route.post("")` decorator TypeScript will not add information about property type of the `User` domain above. Thus issuing request below will not causing response error.
+
+```
+POST /users
+{ 
+    "name": "Mimi", 
+    "dateOfBirth": 123, 
+    "active": "lorem ipsum" 
+}
+```
+
+To fix above issue use a class as domain model decorated with `@domain()` decorator like below
+
+```typescript
+@domain()
+class User {
+    constructor(
+        public name:string,
+        public dateOfBirth:Date,
+        public active:boolean
+    ){}
+}
+
+class UsersController {
+    @route.post("")
+    save(user:User){ }
+}
+```
+
+
 ## Basic Validation
 Plumier validation checked automatically before the controller executed. Plumier provided comprehensive decorator based validation functionalities. Decorator can be applied directly on the parameter or in the domain properties.
 
@@ -255,7 +334,7 @@ Or return promised value returned by database library
 class AnimalController {
     @route.get(":id")
     get(id:string){
-        //return mongoose model
+        // mongoose model
         return AnimalModel.findById(id)
     }
 }

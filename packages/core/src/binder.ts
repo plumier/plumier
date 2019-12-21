@@ -10,9 +10,10 @@ import { ActionContext, ActionResult, Invocation, Middleware } from "./types"
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- // 
 
-interface BindingDecorator { type: "ParameterBinding", process: (ctx: Context) => any, name:string }
+interface BindingDecorator { type: "ParameterBinding", process: CustomBinderFunction, name:string }
 type RequestPart = keyof Request
 type HeaderPart = keyof IncomingHttpHeaders
+type CustomBinderFunction = (ctx:Context) => any
 
 declare module "koa" {
     interface Request {
@@ -66,4 +67,4 @@ class ParameterBinderMiddleware implements Middleware {
     }
 }
 
-export { RequestPart, HeaderPart, BindingDecorator, binder, ParameterBinderMiddleware }
+export { RequestPart, HeaderPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction }

@@ -8,7 +8,8 @@ export {
     middleware, Middleware, MiddlewareUtil, ParameterBinderMiddleware,
     PlumierApplication, PlumierConfiguration, RequestPart, response, route, RouteInfo,
     val, validate, ValidatorContext, ValidatorMiddleware, rest, RestDecoratorImpl,
-    RouteDecoratorImpl
+    RouteDecoratorImpl, CustomBinderFunction, CustomAuthorizerFunction, CustomAuthorizer,
+    AuthorizerContext, CustomMiddleware, CustomMiddlewareFunction
 } from "@plumier/core"
 export * from "./facility"
 

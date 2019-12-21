@@ -2,13 +2,19 @@ import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import { HttpStatus } from "./http-status"
-import { AuthorizationContext, HttpStatusError, ActionContext, RouteInfo, Configuration, Middleware, Invocation, ActionResult } from "./types"
-import { Context } from 'koa'
+import { ActionContext, ActionResult, Configuration, HttpStatusError, Invocation, Middleware, RouteInfo } from "./types"
 
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
+
+interface AuthorizationContext {
+    value?: any
+    role: string[]
+    user: any
+    ctx: ActionContext
+}
 
 type AuthorizerFunction = (info: AuthorizationContext, location: "Class" | "Parameter" | "Method") => boolean | Promise<boolean>
 
@@ -22,6 +28,10 @@ interface AuthorizeDecorator {
 interface Authorizer {
     authorize(info: AuthorizationContext, location: "Class" | "Parameter" | "Method"): boolean | Promise<boolean>
 }
+
+type CustomAuthorizer = Authorizer
+type CustomAuthorizerFunction = AuthorizerFunction
+type AuthorizerContext = AuthorizationContext
 
 type RoleField = string | ((value: any) => Promise<string[]>)
 
@@ -166,5 +176,6 @@ class AuthorizerMiddleware implements Middleware {
 
 export {
     AuthorizerFunction, RoleField, Authorizer, checkAuthorize, AuthorizeDecorator,
-    getAuthorizeDecorators, updateRouteAuthorizationAccess, AuthorizerMiddleware
+    getAuthorizeDecorators, updateRouteAuthorizationAccess, AuthorizerMiddleware, 
+    CustomAuthorizer, CustomAuthorizerFunction, AuthorizationContext, AuthorizerContext
 }
