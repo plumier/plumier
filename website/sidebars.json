@@ -3,7 +3,8 @@
     "Overview": [
       "overview",
       "fundamentals",
-      "extend"
+      "extend",
+      "project-template"
     ],
     "References": [
       "refs/route",

@@ -1,4 +1,4 @@
-import { invoke, MiddlewareUtil, ActionResult, DefaultDependencyResolver } from '@plumier/core'
+import { invoke, MiddlewareUtil, ActionResult, DefaultDependencyResolver, CustomAuthorizer, CustomAuthorizerFunction } from '@plumier/core'
 import { Context } from "koa"
 import Plumier, { bind, Class, Invocation, Middleware, middleware, RestfulApiFacility, route } from "plumier"
 import Supertest from "supertest"
