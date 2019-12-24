@@ -13,7 +13,7 @@ There are some knowledge base you need to know to make a better understanding on
 ## Plumier Middleware in a Nutshell
 The term of middleware in Plumier is the same as in other framework such as Express and Koa. All functionalities (validator, authorization, parameter binding etc) in Plumier are implementation of middleware. 
 
-Unlike Express middleware Plumier middleware used a modern pipeline, instead of using a chain of callback Plumier middleware used chain of promise (async/await) executed from one to another waiting the execution result of the next middleware. 
+Unlike Express, Plumier middleware used a modern pipeline. Instead of using a chain of callback Plumier middleware used chain of promise (async/await) executed from one to another waiting the execution result of the next middleware. 
 
 ![Pipeline](assets/middleware-pipeline.png)
 
@@ -57,6 +57,7 @@ Context can be accessed from inside controller using parameter binding `@bind.ct
 7. `ctx.route` the current route information, contains metadata information of current controller or action handles the request. For request doesn't associated with controller the value will be `undefined`.
 8. `ctx.routes` array of all route information used by the route generator. 
 9. `ctx.parameters` array of value that will be bound to controller's method. The value arranged in a correct order match with methods parameter. This property only available on controller/method middleware
+
 
 For a complete reference about Context and its properties can be found in [Koa documentation](https://github.com/koajs/koa/blob/master/docs/api/context.md). 
 
