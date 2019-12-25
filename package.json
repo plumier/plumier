@@ -11,7 +11,7 @@
 		"publish:beta": "yarn compile && lerna publish prerelease --exact --preid beta --force-publish",
 		"publish:rc": "yarn compile && lerna publish prerelease --exact --preid rc --force-publish",
 		"publish:canary": "lerna run compile && lerna publish prerelease --exact --canary --preid canary --force-publish --yes",
-		"publish:dev": "lerna run compile && lerna publish prerelease --exact --canary --preid dev11 --force-publish --yes",
+		"publish:dev": "lerna run compile && lerna publish prerelease --exact --canary --preid rc0 --force-publish --yes",
 		"publish:prod": "yarn compile && lerna publish && yarn clean",
 		"benchmark": "yarn workspace plumier benchmark",
 		"doc:start": "cd website && yarn start",
