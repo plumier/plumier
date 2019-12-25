@@ -5,6 +5,8 @@ title: Extending Plumier
 
 This documentation covers most of advanced Plumier functionalities. By reading this documentation you will be able to extends the framework functionalities to give plumier a new ability.
 
+> By reading this documentation assume that you are already familiar with basic Plumier functionalities such as parameter binding, routing, type conversion etc described in [Fundamentals Documentation](fundamentals)
+
 Plumier has some built-in functionalities such as validators, parameter binders, authorizer etc. If those functionalities doesn't fit your needs, you can extends Plumier capability by providing your own custom extension. Plumier provided some interfaces contract to easily extend its capability.
 
 There are some knowledge base you need to know to make a better understanding on how things work inside the framework before start creating custom extension.

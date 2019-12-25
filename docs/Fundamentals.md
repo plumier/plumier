@@ -28,6 +28,21 @@ new Plumier()
 
 Above code host an API listens to port 8000 and serve an endpoint `GET /hello/index?name=<string>`. 
 
+## Minimum TypeScript Configuration
+To be able to run the Plumier application properly, some TypeScript option need to be enabled. Below is minimum required configuration to be able to run Plumier application properly. 
+
+```json
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}
+```
+
+
 ## Bootstrap Application
 The bootstrap application consists of two steps: initialization and listen to the port for incoming http request. 
 
@@ -317,6 +332,7 @@ class AnimalsController {
 
 
 Go to the [Authorization](refs/authorization) for more information.
+
 
 ## Controller Return Value
 Controller's return value by default will rendered into JSON response with status code 200. Controller allowed to returned value or promised value. 

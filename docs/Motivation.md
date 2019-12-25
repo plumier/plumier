@@ -12,13 +12,13 @@ In the other hands frameworks doesn't put robustness and secureness as priority 
 ## What About Express?
 I am a big fans of Express, I spent years developing API using Express. Good parts about Express is its simplicity, its easy to master Express only by reading the documentation or by spending a 10 minutes tutorial. Because its only consist of Routing and middleware. 
 
-Bad things about Express is its getting harder when you get into the detail. By default express doesn't have a built-in type conversion validator and authorization functionalities. Thus you need to combine some npm packages, configure schema for joi validation and mongoose, setting this and that for authorization, at the end your code is so far from simple. 
+Bad things about Express is its getting harder when you get into the detail. By default express doesn't have a built-in type conversion validator and authorization functionalities. Thus you need to combine some npm packages to do the detail things. You need to configure schema for joi validation and mongoose, setting this and that for authorization, at the end your code is so far from simple. 
 
 ## Enter Plumier
-Welcome to Plumier where robustness and secureness is mandatory and fanciness is optional. Unlike most TypeScript framework Plumier focus on how to make your development delightful and fast while keep simplest implementation robust and secure. Plumier doesn't force you to follow some design pattern or best practice. Plumier application is highly configurable make you able to layout your source code freely. 
+Welcome to Plumier where robustness and secureness is mandatory and fanciness is optional. Unlike most TypeScript framework Plumier focus on how to make your development delightful and fast while keep simplest implementation robust and secure. Plumier doesn't force you to follow some design pattern or best practice, instead, Plumier application is highly configurable that make you able to layout your source code freely. 
 
 ## Robust and Secure
-Plumier provided some built-in functionalities that work in the background to make below trivial Plumier controller keep secure and robust. 
+Plumier provided some built-in functionalities that work in the background to make the most trivial implementation keep secure and robust. 
 
 ```typescript 
 class AnimalsController {
@@ -29,12 +29,82 @@ class AnimalsController {
 }
 ```
 
-Above controller generate single endpoints `GET /animals/list?offset=0&list=10`. Plumier uses a dedicated type introspection (reflection) library to make it able to extract TypeScript type annotation than translate those information into metadata and provide functionalities that working on the background. 
+Above controller generate single endpoints `GET /animals/list?offset=0&list=10`. Plumier uses a dedicated type introspection (reflection) library to make it able to extract TypeScript type annotation than translate it into metadata and provide functionalities that working on the background. 
 1. It automatically bound `offset` and `limit` parameter with request query by name, no further configuration needed. 
-2. It automatically convert the `offset` and `limit` value into number match with its data type. This function prevent bad user submitting bad value causing conversion error or even sql injection.
+2. It automatically convert the request query `offset` and `limit` value into appropriate parameter data type. This function prevent bad user submitting bad value causing conversion error or even sql injection.
 3. It taking care of query case insensitivity, `GET /animals/list?OFFSET=0&LIMIT=10` will keep working. Note that query is case sensitive in most frameworks.
 
-Furthermore Plumier provided built-in decorator based [authorization](refs/authorization) and [parameter authorization](refs/authorization#parameter-authorization) to easily restrict access to your API endpoints.
+Furthermore Plumier provided built-in decorator based authorization to easily restrict access to your API endpoints.
+
+```typescript 
+class UsersController {
+
+    // GET /users?offset&limit
+    // only accessible by Admin
+    @authorize.role("Admin")
+    @route.get("")
+    list(offset:number, limit:number) { }
+
+    // POST /users 
+    // accessible by public
+    @authorize.public()
+    @route.post("")
+    save(data:User){}
+}
+```
+
+Above code showing that some authorization decorator applied to the method to restrict access to each endpoint handled by controller's method.
+
+## Useful Reflection Based Helpers
+
+Another benefit of using reflection library is Plumier able to provided an official [Mongoose](https://mongoosejs.com/) helper to automatically generate mongoose schema from domain model. 
+
+```typescript
+import { collection, model } from "@plumier/mongoose"
+
+// mark domain model as collection
+@collection()
+class User {
+    constructor(
+        public name:string,
+        public email:string,
+        public dateOfBirth:Date,
+        public role: "Admin" | "User",
+        public active:boolean
+    ){}
+}
+
+// model() function automatically generate Mongoose schema 
+// based on User properties 
+const UserModel = model(User)
+```
+
+Read more information about Mongoose helper [here](refs/mongoose-helper). 
+
+## Reduce Duplication
+There is a best practice spread among static type programmers: **Never use your domain model as DTO**. Literally its a good advice because in a common framework using domain model as DTO can lead to some security issue, but this will ends up in another issue: bloated code and duplication. 
+
+Plumier provided an advanced authorization functionalities which enables you to restrict setting some property of request body by providing `@authorize` decorator on the domain model.
+
+```typescript
+import { authorize } from "plumier"
+import { collection } from "@plumier/mongoose"
+
+@collection()
+class User {
+    constructor(
+        public name:string,
+        public email:string,
+        public dateOfBirth:Date,
+        //restrict access only to Admin
+        @authorize.role("Admin") 
+        public role: "Admin" | "User",
+        public active:boolean
+    ){}
+}
+```
+
+Using above code, only user with `Admin` role will be able to set the `role` property. Using this trick will cut a lot of bloated DTO classes and duplication.
 
 ## Lightweight
 
