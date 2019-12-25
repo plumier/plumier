@@ -24,6 +24,7 @@
       "refs/social-login",
       "refs/controller-invoker",
       "refs/testing-tips",
+      "refs/static-analysis",
       "refs/application-lifecycle"
     ],
     "Extend": [
