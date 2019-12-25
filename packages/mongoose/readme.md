@@ -13,183 +13,185 @@ Delightful Node.js Rest Framework
 * [How to use Plumier with mongoose](https://hackernoon.com/create-secure-restful-api-with-plumier-and-mongoose-3ngz32lu)
 * [Advanced usage of Plumier middleware to perform AOP and metaprogramming](https://hackernoon.com/adding-an-auditing-system-into-a-rest-api-4fbb522240ea)
 
+
+## Documentation
+Go to Plumier [documentation](https://plumierjs.com) for complete documentation and tutorial
+
+
 ## Tutorials
 
 * [Basic REST api tutorial using Knex.js](https://plumierjs.com/docs/tutorials/basic-sql/get-started)
   
-
 ## Examples 
 
 * [Basic REST API with Knex.js](https://github.com/plumier/tutorial-todo-sql-backend)
 * [Basic REST api with Mongoose](https://github.com/plumier/tutorial-todo-mongodb-backend)
 * [Plumier - React - Monorepo - Social Login](https://github.com/plumier/tutorial-monorepo-social-login)
+* [Plumier - Vue.js - Monorepo - Social Login](https://github.com/plumier/tutorial-social-login-vue)
 * [Plumier - React Native - Monorepo](https://github.com/plumier/tutorial-todo-monorepo-react-native)
 
 ## Motivation
 
-Plumier primarily created for full stack developer who spend more time working on the UI side and focus on creating a good user experience. Plumier comes with some built-in production-ready features that make creating secure JSON Api fun and easy.
+My subjective opinion about TypeScript frameworks nowadays is most of them are too advanced, even to start a very simple API you need to prepare yourself with some advanced knowledge of Separation of Concern, Dependency Injection, SOLID principle and many other design pattern and best practices comes from Object Oriented world. 
 
-### Lightweight
-Plumier relatively has small code base which make it light and fast. It uses Koa as its core http handler which is quite fast, below is comparison result of Koa, Plumier and Express.
+Most of those frameworks take advantage of OO fanciness, where framework provided a mandatory rule on how you should separate your logic and layout your source code to keep it clean and SOLID.
 
-```
-GET method benchmark starting...
+In the other hands frameworks doesn't put robustness and secureness as priority because with its fancy separation you can create your own implementation of type conversion, validator or authorization on top of an existing library such as Joi and Passport. 
 
-Server       Base         Method         Req/s  Cost (%)
-plumier      koa          GET         33624.00     -0.06
-koa                       GET         33602.19      0.00
-express                   GET         17688.37      0.00
-nest         express      GET         16932.91      4.27
-loopback     express      GET          5174.61     70.75
+### What About Express?
+I am a big fans of Express, I spent years developing API using Express. Good parts about Express is its simplicity, its easy to master Express only by reading the documentation or by spending a 10 minutes tutorial. Because its only consist of Routing and middleware. 
 
-POST method benchmark starting...
+Bad things about Express is its getting harder when you get into the detail. By default express doesn't have a built-in type conversion validator and authorization functionalities. Thus you need to combine some npm packages to do the detail things. You need to configure schema for joi validation and mongoose, setting this and that for authorization, at the end your code is so far from simple. 
 
-Server       Base         Method         Req/s  Cost (%)
-koa                       POST        12218.37      0.00
-plumier      koa          POST        11196.55      8.36
-express                   POST         9543.46      0.00
-nest         express      POST         6814.64     28.59
-loopback     express      POST         3108.91     67.42
-```
+## Enter Plumier
+Welcome to Plumier where robustness and secureness is mandatory and fanciness is optional. Unlike most TypeScript framework Plumier focus on development happiness and productivity while keep simplest implementation robust and secure. 
 
-Version 1.0.0-beta.9 successfully reduce the framework cost, its mean using Plumier is the same as using Koa + Koa Router + Joi stack with all of Plumier features. 
+The main goal is to make your development time fast and delightful by providing built-in functionalities such as automatic data type conversion, comprehensive list (40+ types) of validator, authorization to programmatically restrict access to some endpoints and more cool features such as: 
 
-The benchmark script can be found [here](https://github.com/ktutnik/full-stack-benchmarks).
+* [Parameter binding](https://plumierjs.com/docs/refs/parameter-binding)
+* [Route generation](https://plumierjs.com/docs/refs/route)
+* [Static route generation analysis](https://plumierjs.com/docs/refs/static-analysis)
+* [Meta programming on middleware basis](https://medium.com/hackernoon/adding-an-auditing-system-into-a-rest-api-4fbb522240ea)
+* API versioning based on reflection
 
-### Flexible
-Almost every part of framework is fully configurable and easy to override. For example plumier route generation system provided flexibility using convention and also configuration.
+All above features created with dedicated reflection library to possibly perform rich meta programming on top of TypeScript language to make everything feel more automatic with less configurations.
 
-Plumier traverse through the controller directories and generate routes based on directory name, controller name, method name and parameter names. This behavior make you easily separate your controllers based on version etc.
+Furthermore Plumier doesn't force you to follow some design pattern or best practice. Plumier application is highly configurable that make you able to layout your source code freely. 
 
-```typescript
-// path: controller/api/v1/users-controller.ts
-export class UsersController {
+### Robust and Secure
+Plumier provided some built-in functionalities that work in the background to make the most trivial implementation keep secure and robust. 
 
-    @route.put(":id")
-    modify(id:number, data:User){
+```typescript 
+class AnimalsController {
+    @route.get()
+    list(offset:number, @val.range({ min: 1 }) limit:number) {
         //implementation
     }
 }
 ```
 
-Above class generated into
+Above controller generate single endpoints `GET /animals/list?offset=0&list=10`. Plumier uses a dedicated type introspection (reflection) library to make it able to extract TypeScript type annotation than translate it into metadata and provide functionalities that working on the background. 
+1. It automatically bound `offset` and `limit` parameter with request query by name, no further configuration needed. 
+2. It automatically convert the request query `offset` and `limit` value into appropriate parameter data type. This function prevent bad user submitting bad value causing conversion error or even sql injection.
+3. It automatically validate the `limit` parameter and make sure if the provided value is a positive number.
+4. It taking care of query case insensitivity, `GET /animals/list?OFFSET=0&LIMIT=10` will keep working. Note that query is case sensitive in most frameworks.
 
-```
-PUT /api/v1/users/:id
-```
-
-* `api` is a directory
-* `v1` is a directory
-* `user` is a controller `UsersController`
-* `:id` is method parameter, the method name is ignored
-
-Plumier has a flexible decorator based routing configuration, it makes you easily create clean restful api routes and nested restful api with separate controller. 
-
-Check the [route cheat sheet](https://plumierjs.com/docs/refs/route) for detail information
-
-### Testable
-Plumier controller is a plain TypeScript class it doesn't need to inherit from any base class, thats make it easily instantiated outside the framework. 
-
-Plumier provided powerful [parameter binding](https://plumierjs.com/docs/refs/parameter-binding) to bound specific value of request object into method's parameter which eliminate usage of Request stub. Controller returned object or promised object or throw `HttpStatusError` and translated into http response which eliminate usage of Response mock.
-
-```typescript
-export class AuthController {
-    @route.post()
-    login(userName:string, password:string){
-        const user = await userDb.findByEmail(email)
-        if (user && await bcrypt.compare(password, user.password)) {
-            return { token: sign({ userId: user.id, role: user.role }, config.jwtSecret) }
-        }
-        else
-            throw new HttpStatusError(403, "Invalid username or password")
-    }
-}
-```
-
-Controller above uses [name binding](https://plumierjs.com/docs/refs/parameter-binding#name-binding), `userName` and `password` parameter will automatically bound with request body `{ "userName": "abcd", "password": "12345" }` or url encoded form `userName=abcd&password=12345`.
-
-Testing above controller is as simple as testing plain object:
-
-```typescript
-it("Should return signed token if login successfully", async () => {
-    const controller = new AuthController()
-    const result = await controller.login("abcd", "12345")
-    expect(result).toBe(<signed token>)
-})
-
-it("Should reject if provided invalid username or password", async () => {
-    const controller = new AuthController()
-    expect(controller.login("abcd", "1234578"))
-        .rejects.toEqual(new HttpStatusError(403, "Invalid username or password"))
-})
-```
-
-### Secure
-Plumier provided built-in [type converter](https://plumierjs.com/docs/refs/converters), [validator](https://plumierjs.com/docs/refs/validation), [token based authentication](https://plumierjs.com/docs/refs/authorization), [declarative authorization](https://plumierjs.com/docs/refs/authorization#role-authorization) and [parameter authorization](https://plumierjs.com/docs/refs/authorization#parameter-authorization) which make creating secure JSON API trivial.
+Plumier has [comprehensive list](refs/validation#decorators) of decorator based validators, it easily can be applied on method parameters or domain model properties. 
 
 ```typescript
 @domain()
-export class User  {
+class User {
     constructor(
+        @val.length({ min: 5, max: 128 })
+        public name: string,
         @val.email()
         public email: string,
-        public displayName: string,
-        public birthDate: Date,
-        @authorize.role("Admin")
-        public role: "Admin" | "User"
+        @val.before()
+        public dateOfBirth: Date,
+        public active: boolean
     ) { }
 }
 ```
 
-Above is `User` domain that will be used as controller parameter type.  Its a plain TypeScript class using [parameter properties](https://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) decorated with some validation and parameter authorization. 
+Furthermore Plumier provided built-in decorator based authorization to easily restrict access to your API endpoints.
 
-Plumier aware of TypeScript type annotation and will make sure user provided the correct data type, `@val.email()` will validate the email, `@authorize.role("Admin")` will make sure only Admin can set the role field.
+```typescript 
+class UsersController {
 
-```typescript
-export class UsersController {
-    private readonly repo = new Repository<User>("User")
-
+    // GET /users?offset&limit
+    // only accessible by Admin
     @authorize.role("Admin")
     @route.get("")
-    all(offset: number, limit: number = 50) {
-        return this.repo.find(offset, limit)
-    }
+    list(offset:number, limit:number) { }
 
+    // POST /users 
+    // accessible by public
     @authorize.public()
     @route.post("")
-    save(data: User) {
-        return this.repo.add(data)
-    }
+    save(data:User){}
 }
 ```
 
-Above controller will generate routes below
+Above code showing that some authorization decorator applied to the method to restrict access to each endpoint handled by controller's method.
+
+### Useful Reflection Based Helpers
+
+Another benefit of using reflection library is Plumier able to provided an official [Mongoose](https://mongoosejs.com/) helper to automatically generate mongoose schema from domain model. 
+
+```typescript
+import { collection, model } from "@plumier/mongoose"
+
+// mark domain model as collection
+@collection()
+class User {
+    constructor(
+        public name:string,
+        public email:string,
+        public dateOfBirth:Date,
+        public role: "Admin" | "User",
+        public active:boolean
+    ){}
+}
+
+// model() function automatically generate Mongoose schema 
+// based on User properties 
+const UserModel = model(User)
+```
+
+Read more information about Mongoose helper [here](refs/mongoose-helper). 
+
+### Reduce Duplication
+There is a best practice spread among static type programmers: **Never use your domain model as DTO**. Literally its a good advice because in a common framework using domain model as DTO can lead to some security issue, but this will ends up in another issue: bloated code and duplication. 
+
+Plumier provided an advanced authorization functionalities which enables you to restrict write some property of request body by providing `@authorize` decorator on the domain model.
+
+```typescript
+import { authorize } from "plumier"
+import { collection } from "@plumier/mongoose"
+
+@collection()
+class User {
+    constructor(
+        public name:string,
+        public email:string,
+        public dateOfBirth:Date,
+        //restrict access only to Admin
+        @authorize.role("Admin") 
+        public role: "Admin" | "User",
+        public active:boolean
+    ){}
+}
+```
+
+Using above code, only user with `Admin` role will be able to set the `role` property. Using this functionalities will cut a lot of bloated DTO classes and duplication, and make the security aspect of the application easily reviewed.
+
+### Lightweight
+
+Above all, with all those features above, Plumier is a lightweight framework.
 
 ```
-POST /users
-GET  /users?offset=0&limit=<optional>
+GET method benchmark starting...
+
+Server       Base         Method         Req/s  Cost (%)
+koa                       GET         32566.55      0.00
+plumier      koa          GET         31966.55      1.84
+express                   GET         19047.60      0.00
+nest         express      GET         16972.91     10.89
+loopback     express      GET          3719.80     80.47
+
+POST method benchmark starting...
+
+Server       Base         Method         Req/s  Cost (%)
+koa                       POST        12651.46      0.00
+plumier      koa          POST        11175.10     11.67
+express                   POST         9521.28      0.00
+nest         express      POST         5251.00     44.85
+loopback     express      POST         2294.00     75.91
 ```
 
-Even if above controller implementation look so naive and vulnerable, but Plumier already done some security check before user input touching database. Get users route only accessible by Admin other user try accessing it will got 401 or 403 status. Save user is public so everyone can register to the service. 
+Above is a full stack benchmark (routing, body parser, validator, type conversion) result of Plumier and other TypeScript framework. Showing that using Plumier is as fast as using Koa. The benchmark source code can be found [here](https://github.com/ktutnik/full-stack-benchmarks).
 
-Plumier done some data conversion and security check, example below is list of user input and their appropriate status returned.
-
-| User Input                                                                                                                    | Description                                      |
-| ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `{ "email": "john.doe@gmail.com", "displayName": "John Doe", "birthDate": "1988-1-1" }`                                       | Valid, `birthDate` converted to `Date`           |
-| `{ "birthDate": "1988-1-1" }`                                                                                                 | Invalid, `email` and `displayName` is required   |
-| `{ "email": "abc", "displayName": "John Doe", "birthDate": "1988-1-1" }`                                                      | Invalid email                                    |
-| `{ "email": "john.doe@gmail.com", "displayName": "John Doe", "birthDate": "abc" }`                                            | Invalid `birthDate`                              |
-| `{ "email": "john.doe@gmail.com", "displayName": "John Doe", "birthDate": "1988-1-1", "hack": "lorem ipsum dolor sit amet" }` | Valid, `hack` field removed                      |
-| `{ "email": "john.doe@gmail.com", "displayName": "John Doe", "birthDate": "1988-1-1", "role" : "Admin" }`                     | Setting `role` only valid if login user is Admin |
-
-### Friendly
-Plumier enhanced with static route analysis which will print friendly message if you misconfigure controller or forgot some decorator.
-
-![static analysis](https://plumierjs.com/docs/assets/static-analysis.png)
-
-## Documentation
-Go to Plumier [documentation](https://plumierjs.com) for complete documentation and tutorial
+Creating lightweight framework is not easy, from result above Plumier only 1.84% slower than Koa (its base framework) in the other hand Nest 10.89% and Loopback 4 is 80% slower than their base framework.
 
 ## Requirements
 * TypeScript
