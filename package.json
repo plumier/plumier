@@ -18,7 +18,7 @@
 	},
 	"author": "Ketut Sandiarsa",
 	"devDependencies": {
-		"@types/jest": "^24.0.23",
+		"@types/jest": "^24.0.24",
 		"babel-core": "^6.26.3",
 		"coveralls": "^3.0.9",
 		"del": "^5.1.0",
@@ -29,17 +29,13 @@
 		"reflect-metadata": "^0.1.13",
 		"ts-jest": "^24.2.0",
 		"tslint": "^5.20.1",
-		"typescript": "^3.7.2",
-		"npm-check-updates": "3.2.2"
+		"typescript": "^3.7.4",
+		"npm-check-updates": "4.0.1"
 	},
 	"workspaces": [
 		"packages/*"
 	],
 	"pre-push": [
 		"test"
-	],
-	"dependencies": {
-		"@types/puppeteer": "^2.0.0",
-		"puppeteer": "^2.0.0"
-	}
+	]
 }
