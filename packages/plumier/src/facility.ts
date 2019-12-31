@@ -3,6 +3,13 @@ import { Class, DefaultDependencyResolver, DefaultFacility, PlumierApplication, 
 import BodyParser from "koa-body"
 
 
+export interface WebApiFacilityOption {
+    controller?: string | Class | Class[],
+    bodyParser?: BodyParser.IKoaBodyOptions,
+    cors?: Cors.Options | boolean,
+    dependencyResolver?: DependencyResolver
+}
+
 /**
  * Preset configuration for building rest. This facility contains:
  * 
@@ -13,20 +20,21 @@ import BodyParser from "koa-body"
  * cors: @koa/cors
  */
 export class WebApiFacility extends DefaultFacility {
-    constructor(private opt?: {
-        controller?: string | Class | Class[],
-        bodyParser?: BodyParser.IKoaBodyOptions,
-        cors?: Cors.Options,
-        dependencyResolver?: DependencyResolver
-    }) { super() }
+    constructor(private opt?: WebApiFacilityOption) { super() }
 
     setup(app: Readonly<PlumierApplication>) {
-        app.koa.use(BodyParser(this.opt && this.opt.bodyParser))
-        app.koa.use(Cors(this.opt && this.opt.cors))
-        if(this.opt && this.opt.dependencyResolver)
-        app.set({ dependencyResolver: this.opt.dependencyResolver })
-        if (this.opt && this.opt.controller)
-            app.set({ controller: this.opt.controller })
+        const option: WebApiFacilityOption = { ...this.opt }
+        app.koa.use(BodyParser(option.bodyParser))
+        if (typeof option.cors !== "boolean" && option.cors) {
+            app.koa.use(Cors(option.cors))
+        }
+        else if(option.cors){
+            app.koa.use(Cors())
+        }
+        if (option.dependencyResolver)
+            app.set({ dependencyResolver: option.dependencyResolver })
+        if (option.controller)
+            app.set({ controller: option.controller })
     }
 }
 
