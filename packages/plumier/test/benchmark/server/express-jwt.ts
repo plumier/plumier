@@ -13,7 +13,6 @@ const schema = Joi.object().keys({
 
 express()
     .use(bodyParser())
-    .use(Cors())
     .use(jwt({ secret }))
     .post("/", (req, res) => {
         const fix = schema.validate(req.body)

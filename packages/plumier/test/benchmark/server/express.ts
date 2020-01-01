@@ -11,7 +11,6 @@ const schema = Joi.object().keys({
 
 express()
     .use(bodyParser())
-    .use(Cors())
     .get("/", (req, res) => {
         res.send({ message: "Hello world!" })
     })

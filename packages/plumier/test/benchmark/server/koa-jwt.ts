@@ -21,7 +21,6 @@ const routes = new Router()
 
 new Koa()
     .use(bodyParser())
-    .use(Cors())
     .use(KoaJwt({ secret }))
     .use(routes.routes())
     .listen(5555)
