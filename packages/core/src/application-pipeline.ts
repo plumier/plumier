@@ -20,11 +20,8 @@ import { AuthorizerMiddleware } from './authorization'
 // ------------------------------ HELPERS ------------------------------ //
 // --------------------------------------------------------------------- //
 
-function pipeMiddleware(middlewares: (string | symbol | MiddlewareFunction | Middleware)[], ctx: Context, invocation: Invocation) {
-    for (let i = middlewares.length; i--;) {
-        invocation = new MiddlewareInvocation(middlewares[i], ctx, invocation)
-    }
-    return invocation.proceed()
+interface Pipe {
+    execute(ctx: Context): Invocation
 }
 
 
@@ -60,15 +57,12 @@ class NotFoundActionInvocation implements Invocation {
 class ActionInvocation implements Invocation {
     constructor(public ctx: ActionContext) { }
     async proceed(): Promise<ActionResult> {
-        const { config, route, parameters } = this.ctx
-        // 4. Controller Creation
-        const controller: any = config.dependencyResolver.resolve(route.controller.type)
-        // 5. Controller Invocation
-        const result = await (<Function>controller[route.action.name]).apply(controller, parameters)
-        const status = config.responseStatus && config.responseStatus[route.method] || 200
+        const controller: any = this.ctx.config.dependencyResolver.resolve(this.ctx.route.controller.type)
+        const result = await (<Function>controller[this.ctx.route.action.name]).apply(controller, this.ctx.parameters)
+        const status = this.ctx.config.responseStatus?.[this.ctx.route.method] ?? 200
         //if instance of action result, return immediately
         if (result && result.execute) {
-            result.status = result.status || status
+            result.status = result.status ?? status
             return result;
         }
         else {
@@ -77,17 +71,45 @@ class ActionInvocation implements Invocation {
     }
 }
 
+// --------------------------------------------------------------------- //
+// ------------------------------- PIPES ------------------------------- //
+// --------------------------------------------------------------------- //
+
+class MiddlewarePipe implements Pipe {
+    constructor(private middleware: string | symbol | MiddlewareFunction | Middleware, private next: Pipe) { }
+    execute(ctx: Context): Invocation<Context> {
+        return new MiddlewareInvocation(this.middleware, ctx, this.next.execute(ctx))
+    }
+}
+
+class ActionPipe implements Pipe {
+    execute(ctx: ActionContext): Invocation<Context> {
+        return new ActionInvocation(ctx)
+    }
+}
+
+class NotFoundPipe implements Pipe {
+    execute(ctx: ActionContext): Invocation<Context> {
+        return new NotFoundActionInvocation(ctx)
+    }
+}
+
 
 // --------------------------------------------------------------------- //
 // ------------------------------ PIPELINE ----------------------------- //
 // --------------------------------------------------------------------- //
 
+function link(middlewares: (string | symbol | MiddlewareFunction | Middleware)[], topNode: Pipe) {
+    for (let i = middlewares.length; i--;) {
+        topNode = new MiddlewarePipe(middlewares[i], topNode)
+    }
+    return topNode
+}
 
-function pipe(context: Context | ActionContext, caller: "system" | "invoke" = "system") {
-    context.state.caller = caller;
-    // request with controller's handler
+function createPipes(context: Context | ActionContext) {
     if (hasKeyOf<ActionContext>(context, "route")) {
-        const middlewares:(string | symbol | MiddlewareFunction | Middleware)[] = []
+        // request handled by controller (see application lifecycle)
+        const middlewares: (string | symbol | MiddlewareFunction | Middleware)[] = []
         // 1. global middlewares
         middlewares.push(...context.config.middlewares)
         // 2. parameter binding
@@ -98,19 +120,19 @@ function pipe(context: Context | ActionContext, caller: "system" | "invoke" = "s
         middlewares.push(new AuthorizerMiddleware())
         // 5. action middlewares
         middlewares.push(...MiddlewareUtil.extractDecorators(context.route))
-        // 6. execute action
-        return pipeMiddleware(middlewares, context, new ActionInvocation(context))
+        return link(middlewares, new ActionPipe())
     }
-    // request without controller handler
     else {
-        const globalMiddlewares = context.config.middlewares.slice(0)
-        return pipeMiddleware(globalMiddlewares, context, new NotFoundActionInvocation(context))
+        // unhandled request
+        return link(context.config.middlewares, new NotFoundPipe())
     }
 }
 
 function invoke(ctx: Context, route: RouteInfo) {
     ctx.route = route
-    return pipe(ctx, "invoke")
+    ctx.state.caller = "invoke"
+    const pipe = createPipes(ctx)
+    return pipe.execute(ctx).proceed()
 }
 
-export { invoke, pipe };
+export { invoke, createPipes, Pipe };

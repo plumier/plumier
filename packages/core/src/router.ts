@@ -2,7 +2,7 @@ import { Context } from "koa"
 import { Key, pathToRegexp } from "path-to-regexp"
 import { useCache } from "tinspector"
 
-import { pipe } from "./application-pipeline"
+import { createPipes, Pipe } from "./application-pipeline"
 import { Configuration, HttpStatusError, RouteInfo, ValidationError } from "./types"
 
 // --------------------------------------------------------------------- //
@@ -56,12 +56,15 @@ function createQuery(query: any, { keys, match }: RouteMatcher) {
 /* ------------------------------------------------------------------------------- */
 
 function router(infos: RouteInfo[], config: Configuration) {
+    const nodeCache = new Map<string, Pipe>()
     const matchCache = new Map<string, RouteMatcher | undefined>()
     const getHandlerCached = useCache(matchCache, getHandler, (ctx) => `${ctx.method}${ctx.path}`)
+    const createPipe = useCache(nodeCache, createPipes, (ctx) => `${ctx.method}${ctx.path}`)
     return async (ctx: Context) => {
         try {
             ctx.config = config
             ctx.routes = infos
+            ctx.state.caller = "system"
             const handler = getHandlerCached(ctx)
             if (handler) {
                 Object.defineProperty(ctx.request, "query", {
@@ -69,7 +72,8 @@ function router(infos: RouteInfo[], config: Configuration) {
                 })
                 ctx.route = handler.route
             }
-            const result = await pipe(ctx)
+            const pipe = createPipe(ctx)
+            const result = await pipe.execute(ctx).proceed()
             await result.execute(ctx)
         }
         catch (e) {

@@ -14,6 +14,7 @@ import {
     ValidatorContext,
     ValidatorDecorator,
 } from "./types"
+import { route } from './decorator.route'
 
 
 // --------------------------------------------------------------------- //
@@ -79,12 +80,13 @@ async function validateAsync(x: AsyncValidatorItem, ctx: ActionContext): Promise
 }
 
 async function validate(ctx: ActionContext) {
+    if(ctx.route.action.parameters.length === 0) return []
     const decsAsync: AsyncValidatorItem[] = []
     const visitors = [createVisitor(decsAsync), ...(ctx.config.typeConverterVisitors || [])]
     const result: any[] = []
     const issues: tc.ResultMessages[] = []
     //sync validations
-    for (const [index, parMeta] of ctx.route!.action.parameters.entries()) {
+    for (const [index, parMeta] of ctx.route.action.parameters.entries()) {
         const rawParameter = ctx.parameters[index]
         const parValue = tc.validate(rawParameter, {
             decorators: parMeta.decorators, path: parMeta.name, type: parMeta.type || Object,
