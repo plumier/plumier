@@ -26,7 +26,8 @@
     "path-to-regexp": "^6.1.0",
     "tinspector": "^2.2.9",
     "tslib": "^1.10.0",
-    "typedconverter": "^2.0.0"
+    "typedconverter": "^2.0.0",
+    "micro-memoize": "4.0.9"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"

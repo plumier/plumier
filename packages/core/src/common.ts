@@ -1,6 +1,7 @@
 import { existsSync, lstatSync } from "fs"
 import glob from "glob"
 import { extname } from "path"
+import { useCache } from 'tinspector'
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -56,6 +57,11 @@ function isCustomClass(type: Function | Function[]) {
     }
 }
 
+function memoize<R, P extends any[]>(fn: (...args: P) => R, getKey: (...args: P) => string): (...args: P) => R {
+    const cache: Map<string, R> = new Map()
+    return useCache(cache, fn, getKey)
+}
+
 
 // --------------------------------------------------------------------- //
 // ------------------------------ TESTING ------------------------------ //
@@ -92,4 +98,4 @@ function findFilesRecursive(path: string): string[] {
     else return [path]
 }
 
-export { getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive };
+export { getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, memoize };

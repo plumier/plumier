@@ -56,8 +56,8 @@ function chain(...binder: Binder[]) {
 
 const binderChain = chain(bindDecorator, bindByName, bindBody)
 
-function binder(ctx:Context){
-    return ctx.route!.action.parameters.map(x => binderChain(ctx, x))
+function binder(ctx:ActionContext){
+    return ctx.route.action.parameters.map(x => binderChain(ctx, x))
 }
 
 class ParameterBinderMiddleware implements Middleware {
