@@ -1,8 +1,8 @@
 import { Context } from "koa"
 import { Key, pathToRegexp } from "path-to-regexp"
-import { useCache } from "tinspector"
 
-import { createPipes, Pipe } from "./application-pipeline"
+import { createPipes } from "./application-pipeline"
+import { memoize } from "./common"
 import { Configuration, HttpStatusError, RouteInfo, ValidationError } from "./types"
 
 // --------------------------------------------------------------------- //
@@ -56,10 +56,9 @@ function createQuery(query: any, { keys, match }: RouteMatcher) {
 /* ------------------------------------------------------------------------------- */
 
 function router(infos: RouteInfo[], config: Configuration) {
-    const nodeCache = new Map<string, Pipe>()
-    const matchCache = new Map<string, RouteMatcher | undefined>()
-    const getHandlerCached = useCache(matchCache, getHandler, (ctx) => `${ctx.method}${ctx.path}`)
-    const createPipe = useCache(nodeCache, createPipes, (ctx) => `${ctx.method}${ctx.path}`)
+    const getKey = (ctx: Context) => `${ctx.method}${ctx.path}`
+    const getHandlerCached = memoize(getHandler, getKey)
+    const createPipe = memoize(createPipes, getKey)
     return async (ctx: Context) => {
         try {
             ctx.config = config

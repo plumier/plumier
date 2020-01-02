@@ -94,7 +94,6 @@ class NotFoundPipe implements Pipe {
     }
 }
 
-
 // --------------------------------------------------------------------- //
 // ------------------------------ PIPELINE ----------------------------- //
 // --------------------------------------------------------------------- //
@@ -108,18 +107,18 @@ function link(middlewares: (string | symbol | MiddlewareFunction | Middleware)[]
 
 function createPipes(context: Context | ActionContext) {
     if (hasKeyOf<ActionContext>(context, "route")) {
-        // request handled by controller (see application lifecycle)
-        const middlewares: (string | symbol | MiddlewareFunction | Middleware)[] = []
-        // 1. global middlewares
-        middlewares.push(...context.config.middlewares)
-        // 2. parameter binding
-        middlewares.push(new ParameterBinderMiddleware())
-        // 3. validation
-        middlewares.push(new ValidatorMiddleware())
-        // 4. authorization
-        middlewares.push(new AuthorizerMiddleware())
-        // 5. action middlewares
-        middlewares.push(...MiddlewareUtil.extractDecorators(context.route))
+        const middlewares = [
+            // 1. global middlewares
+            ...context.config.middlewares,
+            // 2. parameter binding
+            new ParameterBinderMiddleware(),
+            // 3. validation
+            new ValidatorMiddleware(),
+            // 4. authorization
+            new AuthorizerMiddleware(),
+            // 5. action middlewares
+            ...MiddlewareUtil.extractDecorators(context.route)
+        ]
         return link(middlewares, new ActionPipe())
     }
     else {

@@ -6,9 +6,9 @@ import Router from "koa-router"
 import body from "koa-body"
 
 const schema = Joi.object().keys({
-    email: Joi.string().required(),
-    displayName: Joi.string().required(),
-    age: Joi.number().required()
+    email: Joi.string(),
+    displayName: Joi.string(),
+    age: Joi.number()
 })
 
 const routes = new Router()
