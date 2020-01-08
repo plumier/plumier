@@ -44,9 +44,19 @@ I am a big fans of Express, I spent years developing API using Express. Good par
 Bad things about Express is its getting harder when you get into the detail. By default express doesn't have a built-in type conversion validator and authorization functionalities. Thus you need to combine some npm packages to do the detail things. You need to configure schema for joi validation and mongoose, setting this and that for authorization, at the end your code is so far from simple. 
 
 ## Enter Plumier
-Welcome to Plumier where robustness and secureness is mandatory and fanciness is optional. Unlike most TypeScript framework Plumier focus on development happiness and productivity while keep simplest implementation robust and secure. The main goal is to make your development time fast and delightful by providing built-in functionalities such as automatic data type conversion, comprehensive list (40+ types) of validator and authorization to programmatically restrict access to some endpoints.
+Welcome to Plumier where robustness and secureness is mandatory and fanciness is optional. Unlike most TypeScript framework Plumier focus on development happiness and productivity while keep simplest implementation robust and secure. 
 
-Plumier doesn't force you to follow some design pattern or best practice, instead, Plumier application is highly configurable that make you able to layout your source code freely. 
+The main goal is to make your development time fast and delightful by providing built-in functionalities such as automatic data type conversion, comprehensive list (40+ types) of validator, authorization to programmatically restrict access to some endpoints and more cool features such as: 
+
+* [Parameter binding](https://plumierjs.com/docs/refs/parameter-binding)
+* [Route generation](https://plumierjs.com/docs/refs/route)
+* [Static route generation analysis](https://plumierjs.com/docs/refs/static-analysis)
+* [Meta programming on middleware basis](https://medium.com/hackernoon/adding-an-auditing-system-into-a-rest-api-4fbb522240ea)
+* API versioning based on reflection
+
+All above features created with dedicated reflection library to possibly perform rich meta programming on top of TypeScript language to make everything feel more automatic with less configurations.
+
+Furthermore Plumier doesn't force you to follow some design pattern or best practice. Plumier application is highly configurable that make you able to layout your source code freely. 
 
 ### Robust and Secure
 Plumier provided some built-in functionalities that work in the background to make the most trivial implementation keep secure and robust. 

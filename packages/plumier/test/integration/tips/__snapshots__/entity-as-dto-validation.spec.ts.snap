@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Should return 422 when try to set role 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Password doesn't match",
+      ],
+      "path": Array [
+        "data",
+        "confirmPassword",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
