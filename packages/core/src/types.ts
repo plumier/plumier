@@ -132,7 +132,7 @@ export interface Middleware<T = Context> {
     execute(invocation: Readonly<Invocation<T>>): Promise<ActionResult>
 }
 
-export type CustomMiddleware = Middleware 
+export type CustomMiddleware = Middleware
 export type CustomMiddlewareFunction = MiddlewareFunction
 
 export namespace MiddlewareUtil {
@@ -285,6 +285,7 @@ declare module "typedconverter" {
         export function custom(id: symbol): (...arg: any[]) => void
         export function custom(val: CustomValidatorFunction | string | symbol | CustomValidator): (...arg: any[]) => void
         export function result(path: string, messages: string | string[]): AsyncValidatorResult[]
+        export function enums(opt: { enums: string[], message?: string }): (...arg: any[]) => void
     }
 }
 
