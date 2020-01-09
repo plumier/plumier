@@ -332,6 +332,19 @@ Object {
 }
 `;
 
+exports[`Enums Validation Should return prover invalid message 1`] = `
+Array [
+  Object {
+    "messages": Array [
+      "Value must be one of Male, Female",
+    ],
+    "path": Array [
+      "gender",
+    ],
+  },
+]
+`;
+
 exports[`Validation Parameter should be optional by default 1`] = `Object {}`;
 
 exports[`Validation Should validate model with correct path 1`] = `

@@ -107,6 +107,11 @@ describe("Validator Decorator Tests", () => {
             .toMatchObject([{ path: ["data", "property"], messages: ["Invalid email address"] }])
     })
 
+    test("enums", async () => {
+        expect(await harness({ validator: val.enums({ enums: ["lorem",  "ipsum"] }), type: String, testValue: "lorems" }))
+            .toMatchObject([{ path: ["data", "property"], messages: ["Value must be one of lorem, ipsum"] }])
+    })
+
     test("fQDN", async () => {
         expect(await harness({ validator: val.fqdn(), type: String, testValue: "abc123-234" }))
             .toMatchObject([{ path: ["data", "property"], messages: ["Invalid FQDN"] }])

@@ -106,6 +106,11 @@ describe("Validator Decorator Tests", () => {
         expect(await harness({ validator: val.email({ message: "Lorem ipsum dolor" }), type: String, testValue: "abc123-234" }))
             .toMatchObject([{path: ["data", "property"], messages: ["Lorem ipsum dolor"]}])
     })
+
+    test("enums", async () => {
+        expect(await harness({ validator: val.enums({ enums: ["lorem", "ipsum"], message: "Lorem ipsum dolor" }), type: String, testValue: "abc123-234" }))
+            .toMatchObject([{path: ["data", "property"], messages: ["Lorem ipsum dolor"]}])
+    })
     
     test("fQDN", async () => {
         expect(await harness({ validator: val.fqdn({ message: "Lorem ipsum dolor" }), type: String, testValue: "abc123-234" }))

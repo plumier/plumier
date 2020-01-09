@@ -528,3 +528,29 @@ describe("Custom Validation", () => {
         expect(result.body).toMatchSnapshot()
     })
 })
+
+describe("Enums Validation", () => {
+    it("Should validate based on enum values", async () => {
+        class AnimalController {
+            get(@val.enums({ enums: ["Male", "Female"] }) gender: "Male" | "Female") { }
+        }
+        const koa = await fixture(AnimalController).initialize()
+        await Supertest(koa.callback())
+            .get("/animal/get?gender=Male")
+            .expect(200)
+        await Supertest(koa.callback())
+            .get("/animal/get?gender=Female")
+            .expect(200)
+    })
+
+    it("Should return prover invalid message", async () => {
+        class AnimalController {
+            get(@val.enums({ enums: ["Male", "Female"] }) gender: "Male" | "Female") { }
+        }
+        const koa = await fixture(AnimalController).initialize()
+        const {body} = await Supertest(koa.callback())
+            .get("/animal/get?gender=SemiFemale")
+            .expect(422)
+        expect(body.message).toMatchSnapshot()
+    })
+})

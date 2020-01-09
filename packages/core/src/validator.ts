@@ -42,6 +42,13 @@ tc.val.result = (a: string, b: string | string[]) => {
     else return [{ path: a, messages: [b] }]
 }
 
+tc.val.enums = (opt) => {
+    return tc.val.custom(x => {
+        if (!opt.enums.some(y => x === y))
+            return opt.message ||  `Value must be one of ${opt.enums.join(", ")}`
+    })
+}
+
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //
 // --------------------------------------------------------------------- //
@@ -120,11 +127,11 @@ async function validateAsync(ctx: ActionContext, nodes: CustomValidatorNode[]): 
 }
 
 
-function mergeMessage(messages: tc.ResultMessages[]){
-    const hash:{[key:string]: tc.ResultMessages} = {}
-    const result:tc.ResultMessages[] = []
+function mergeMessage(messages: tc.ResultMessages[]) {
+    const hash: { [key: string]: tc.ResultMessages } = {}
+    const result: tc.ResultMessages[] = []
     for (const invalid of messages) {
-        if(!!hash[invalid.path]){
+        if (!!hash[invalid.path]) {
             hash[invalid.path].messages.push(...invalid.messages)
         }
         else {
@@ -138,11 +145,11 @@ function mergeMessage(messages: tc.ResultMessages[]){
 async function validate(ctx: ActionContext) {
     if (ctx.route.action.parameters.length === 0) return []
     const nodes: CustomValidatorNode[] = []
-    const visitors = [ customValidatorNodeVisitor(nodes), ...(ctx.config.typeConverterVisitors || [])]
+    const visitors = [customValidatorNodeVisitor(nodes), ...(ctx.config.typeConverterVisitors || [])]
     const syncResult = validateSync(ctx, visitors)
     const asyncResult = await validateAsync(ctx, nodes)
     const issues = syncResult.issues.concat(asyncResult.issues)
-    if (issues.length > 0){
+    if (issues.length > 0) {
         throw new ValidationError(mergeMessage(issues).map(x => ({ path: x.path.split("."), messages: x.messages })));
     }
     return syncResult.result
