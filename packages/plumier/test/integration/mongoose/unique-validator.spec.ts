@@ -6,6 +6,7 @@ import supertest = require("supertest")
 import { decorate } from "tinspector"
 
 async function setup<T extends object>({ controller, domain, initUser, testUser, method }: { controller: Class; domain: Constructor<T>; initUser?: T; testUser: T; method?: HttpMethod }) {
+    const httpMethod = method || "post"
     const koa = await fixture(controller)
         .set(new MongooseFacility({
             model: [domain],
@@ -17,9 +18,11 @@ async function setup<T extends object>({ controller, domain, initUser, testUser,
     await UserModel.deleteMany({})
     if (!!initUser)
         await new UserModel(initUser).save()
+    if(httpMethod !== "post")
+        await new UserModel(testUser).save()
     //test
     return await supertest(koa.callback())
-    [method || "post"]("/user/save")
+    [httpMethod || "post"]("/user/save")
         .send(testUser)
 }
 
@@ -171,7 +174,7 @@ describe("unique validator", () => {
         expect(res.status).toBe(500)
     })
 
-    it("Should not check on PUT method", async () => {
+    it("Should check on PUT method", async () => {
         @collection()
         class User {
             constructor(
@@ -186,11 +189,18 @@ describe("unique validator", () => {
         }
 
         const user = { name: "Ketut", email: "ketut@gmail.com" }
-        const res = await setup({ controller: UserController, domain: User, initUser: user, testUser: user, method: "put" })
-        expect(res.status).toBe(200)
+        const res = await setup({ 
+            controller: UserController, 
+            domain: User, 
+            initUser: user, 
+            testUser: user, 
+            method: "put" 
+        })
+        expect(res.status).toBe(422)
+        expect(res.body).toEqual({ status: 422, message: [{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }] })
     })
 
-    it("Should not check on PATCH method", async () => {
+    it("Should check on PATCH method", async () => {
         @collection()
         class User {
             constructor(
@@ -206,6 +216,7 @@ describe("unique validator", () => {
 
         const user = { name: "Ketut", email: "ketut@gmail.com" }
         const res = await setup({ controller: UserController, domain: User, initUser: user, testUser: user, method: "patch" })
-        expect(res.status).toBe(200)
+        expect(res.status).toBe(422)
+        expect(res.body).toEqual({ status: 422, message: [{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }] })
     })
 })
