@@ -195,7 +195,7 @@ Creating lightweight framework is not easy, from result above Plumier only 1.84%
 
 ## Requirements
 * TypeScript
-* NodeJS >= 8.0.0
+* NodeJS >= 10.0.0
 * Visual Studio Code
 
 ## Contributing
@@ -203,7 +203,6 @@ To run Plumier project on local machine, some setup/app required
 
 ### App requirements
 * Visual Studio Code (Recommended)
-* Nodejs 8+
 * Yarn `npm install -g yarn`
 
 ### Local Setup
