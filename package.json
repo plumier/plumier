@@ -25,10 +25,10 @@
 		"del": "^5.1.0",
 		"edit-json-file": "^1.4.0",
 		"jest": "^24.9.0",
-		"lerna": "3.20.1",
+		"lerna": "3.20.2",
 		"pre-push": "^0.1.1",
 		"reflect-metadata": "^0.1.13",
-		"ts-jest": "^24.2.0",
+		"ts-jest": "^24.3.0",
 		"tslint": "^5.20.1",
 		"typescript": "^3.7.4"
 	},
