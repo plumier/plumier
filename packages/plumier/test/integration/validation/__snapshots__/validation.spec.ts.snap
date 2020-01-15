@@ -1,5 +1,56 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Class Scope Validation Should be able to use access body request property that is not part of the domain 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Password is not the same",
+      ],
+      "path": Array [
+        "model",
+        "confirmPassword",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Class Scope Validation Should be able to validate class and return several validation result 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Password is not the same",
+      ],
+      "path": Array [
+        "model",
+        "confirmPassword",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Class Scope Validation Should be able to validate class from the class decorator 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Password is not the same",
+      ],
+      "path": Array [
+        "model",
+        "confirmPassword",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
 exports[`Custom Validation Should able to combine TypedConverter validator and custom validator 1`] = `
 Object {
   "message": Array [
@@ -101,55 +152,17 @@ Object {
 }
 `;
 
-exports[`Custom Validation Should be able to use access body request property that is not part of the domain 1`] = `
-Object {
-  "message": Array [
-    Object {
-      "messages": Array [
-        "Password is not the same",
-      ],
-      "path": Array [
-        "model",
-        "confirmPassword",
-      ],
-    },
-  ],
-  "status": 422,
-}
-`;
-
-exports[`Custom Validation Should be able to validate class and return several validation result 1`] = `
-Object {
-  "message": Array [
-    Object {
-      "messages": Array [
-        "Password is not the same",
-      ],
-      "path": Array [
-        "model",
-        "confirmPassword",
-      ],
-    },
-  ],
-  "status": 422,
-}
-`;
-
-exports[`Custom Validation Should be able to validate class from the class decorator 1`] = `
-Object {
-  "message": Array [
-    Object {
-      "messages": Array [
-        "Password is not the same",
-      ],
-      "path": Array [
-        "model",
-        "confirmPassword",
-      ],
-    },
-  ],
-  "status": 422,
-}
+exports[`Custom Validation Should prioritize required validator 1`] = `
+Array [
+  Object {
+    "messages": Array [
+      "Required",
+    ],
+    "path": Array [
+      "data",
+    ],
+  },
+]
 `;
 
 exports[`Custom Validation Should provide parent value information 1`] = `
