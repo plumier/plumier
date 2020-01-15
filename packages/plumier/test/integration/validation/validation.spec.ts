@@ -1,4 +1,4 @@
-import { DefaultDependencyResolver } from "@plumier/core"
+import { DefaultDependencyResolver, CustomValidatorFunction } from "@plumier/core"
 import Plumier, {
     AsyncValidatorResult,
     CustomValidator,
@@ -488,6 +488,37 @@ describe("Custom Validation", () => {
             .send({ password: "abcde", confirmPassword: "efghi" })
             .expect(422)
         expect(result.body).toMatchSnapshot()
+    })
+
+    it("Should allow multiple validator implementation", async () => {
+        const fn = jest.fn()
+        const resolver = new DefaultDependencyResolver()
+
+        @resolver.register("18+only")
+        class AgeValidator implements CustomValidator {
+            validate(value: any) {
+                fn()
+                if (parseInt(value) <= 18)
+                    return "Only 18+ allowed"
+            }
+        }
+        const ageValidator: CustomValidatorFunction = value => {
+            fn()
+            if (parseInt(value) <= 18)
+                return "Only 18+ allowed"
+        }
+
+        class UserController {
+            @route.post()
+            save(@val.custom("18+only", new AgeValidator(), ageValidator) data: number) { }
+        }
+
+        const koa = await fixture(UserController, { dependencyResolver: resolver }).initialize()
+        await Supertest(koa.callback())
+            .post("/user/save")
+            .send({ data: 20 })
+            .expect(200)
+        expect(fn).toBeCalledTimes(3)
     })
 })
 

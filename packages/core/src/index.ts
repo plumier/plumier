@@ -1,4 +1,5 @@
 import { val } from "typedconverter"
+import "./decorator.val"
 export { val }
 export { AuthorizerFunction, checkAuthorize, RoleField, Authorizer, CustomAuthorizer, CustomAuthorizerFunction, AuthorizationContext, AuthorizerContext } from "./authorization";
 export { HeaderPart, RequestPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction } from "./binder";

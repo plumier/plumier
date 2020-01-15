@@ -1,4 +1,4 @@
-import reflect, { decorate } from "tinspector"
+import reflect from "tinspector"
 import * as tc from "typedconverter"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
@@ -16,6 +16,7 @@ import {
 } from "./types"
 
 
+
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
@@ -30,22 +31,6 @@ interface CustomValidatorNode {
 interface ValidationResult {
     result: any[],
     issues: tc.ResultMessages[]
-}
-
-tc.val.custom = (val: CustomValidatorFunction | string | symbol | CustomValidator) => {
-    return decorate(<ValidatorDecorator>{ type: "ValidatorDecorator", validator: val }, ["Class", "Property", "Parameter"])
-}
-
-tc.val.result = (a: string, b: string | string[]) => {
-    if (Array.isArray(b)) return [{ path: a, messages: b }]
-    else return [{ path: a, messages: [b] }]
-}
-
-tc.val.enums = (opt) => {
-    return tc.val.custom(x => {
-        if (!opt.enums.some(y => x === y))
-            return opt.message ||  `Value must be one of ${opt.enums.join(", ")}`
-    })
 }
 
 // --------------------------------------------------------------------- //
@@ -163,3 +148,4 @@ class ValidatorMiddleware implements Middleware {
 }
 
 export { validate, ValidatorMiddleware }
+
