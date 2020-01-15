@@ -20,7 +20,6 @@ import {
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-
 interface CustomValidatorNode {
     value: any,
     path: string,
@@ -61,6 +60,7 @@ tc.val.enums = (opt) => {
 // Furthermore async validation process doesn't need to do the traversal process because all the required data already provided
 
 const getName = (path: string) => path.indexOf(".") > -1 ? path.substring(path.lastIndexOf(".") + 1) : path
+const emptyObject = (obj:any) => Object.keys(obj).length === 0 && obj.constructor === Object
 
 //custom visitor extension to gather the CustomValidatorNode
 function customValidatorNodeVisitor(items: CustomValidatorNode[]) {
@@ -78,31 +78,26 @@ function customValidatorNodeVisitor(items: CustomValidatorNode[]) {
     }
 }
 
-async function validateNode(x: CustomValidatorNode, ctx: ActionContext): Promise<AsyncValidatorResult[]> {
-    const name = getName(x.path)
-    const info: ValidatorContext = { ctx, name, parent: x.parent }
-    if (x.value === undefined || x.value === null) return []
+async function validateNode(node: CustomValidatorNode, ctx: ActionContext): Promise<AsyncValidatorResult[]> {
+    const name = getName(node.path)
+    const info: ValidatorContext = { ctx, name, parent: node.parent }
+    if (node.value === undefined || node.value === null || emptyObject(node.value)) return []
     let validator: CustomValidator;
-    if (typeof x.validator === "function")
-        validator = { validate: x.validator }
-    else if (hasKeyOf<CustomValidator>(x.validator, "validate"))
-        validator = x.validator
+    if (typeof node.validator === "function")
+        validator = { validate: node.validator }
+    else if (hasKeyOf<CustomValidator>(node.validator, "validate"))
+        validator = node.validator
     else
-        validator = ctx.config.dependencyResolver.resolve(x.validator)
-    const message = await validator.validate(x.value, info)
+        validator = ctx.config.dependencyResolver.resolve(node.validator)
+    const message = await validator.validate(node.value, info)
     if (!message) return []
     if (typeof message === "string")
-        return [{ path: x.path, messages: [message] }]
+        return [{ path: node.path, messages: [message] }]
     return message.map(y => <AsyncValidatorResult>({
-        path: `${x.path}.${y.path}`,
+        path: `${node.path}.${y.path}`,
         messages: y.messages
     }))
 }
-
-
-// --------------------------------------------------------------------- //
-// -------------------------- IMPLEMENTATIONS -------------------------- //
-// --------------------------------------------------------------------- //
 
 function validateSync(ctx: ActionContext, visitors: tc.VisitorExtension[]): ValidationResult {
     const result = []
@@ -141,6 +136,10 @@ function mergeMessage(messages: tc.ResultMessages[]) {
     }
     return result;
 }
+
+// --------------------------------------------------------------------- //
+// -------------------------- IMPLEMENTATIONS -------------------------- //
+// --------------------------------------------------------------------- //
 
 async function validate(ctx: ActionContext) {
     if (ctx.route.action.parameters.length === 0) return []

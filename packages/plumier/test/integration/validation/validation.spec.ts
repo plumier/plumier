@@ -207,6 +207,61 @@ describe("Decouple Validation Logic", () => {
 })
 
 describe("Custom Validation", () => {
+    it("Should not be called when provided null value", async () => {
+        const fn = jest.fn()
+        class UserController {
+            @route.post()
+            save(@val.custom(val => { fn(); return undefined }) data: number) { }
+        }
+        const koa = await fixture(UserController).initialize()
+        await Supertest(koa.callback())
+            .post("/user/save")
+            .send({ data: null })
+            .expect(200)
+        expect(fn).not.toBeCalled()
+    })
+
+    it("Should not be called when provided undefined value", async () => {
+        const fn = jest.fn()
+        class UserController {
+            @route.post()
+            save(@val.custom(val => { fn(); return undefined }) data: number) { }
+        }
+        const koa = await fixture(UserController).initialize()
+        await Supertest(koa.callback())
+            .post("/user/save")
+            .send({ data: undefined })
+            .expect(200)
+        expect(fn).not.toBeCalled()
+    })
+
+    it("Should not be called when provided empty string value", async () => {
+        const fn = jest.fn()
+        class UserController {
+            @route.post()
+            save(@val.custom(val => { fn(); return undefined }) data: number) { }
+        }
+        const koa = await fixture(UserController).initialize()
+        await Supertest(koa.callback())
+            .post("/user/save")
+            .send({ data: "" })
+            .expect(200)
+        expect(fn).not.toBeCalled()
+    })
+
+    it("Should prioritize required validator", async () => {
+        const fn = jest.fn()
+        class UserController {
+            @route.post()
+            save(@val.required() @val.custom(val => { fn(); return undefined }) data: number) { }
+        }
+        const koa = await fixture(UserController).initialize()
+        const { body } = await Supertest(koa.callback())
+            .post("/user/save")
+            .send({ data: undefined })
+            .expect(422)
+        expect(body.message).toMatchSnapshot()
+    })
 
     it("Should provided correct information for custom validation", async () => {
         async function customValidator(val: any, info: ValidatorContext) {
@@ -284,7 +339,6 @@ describe("Custom Validation", () => {
             .expect(422)
         expect(body).toMatchSnapshot()
     })
-
 
     it("Should able to use async function as custom validator", async () => {
         class UserController {
@@ -435,6 +489,29 @@ describe("Custom Validation", () => {
             .expect(422)
         expect(result.body).toMatchSnapshot()
     })
+})
+
+describe("Class Scope Validation", () => {
+    it("Should not called when provided empty body", async () => {
+        const fn = jest.fn()
+        @domain()
+        class User {
+            constructor(
+                public password: string,
+                public confirmPassword: string
+            ) { }
+        }
+        class UsersController {
+            @route.post()
+            get(@val.custom(x => { fn(); return undefined }) model: User) { }
+        }
+        const koa = await fixture(UsersController).initialize()
+        await Supertest(koa.callback())
+            .post("/users/get")
+            .send({})
+            .expect(200)
+        expect(fn).not.toBeCalled()
+    })
 
     it("Should be able to validate class and return several validation result", async () => {
         function checkConfirmPassword() {
@@ -497,7 +574,6 @@ describe("Custom Validation", () => {
         expect(result.body).toMatchSnapshot()
     })
 
-
     it("Should be able to use access body request property that is not part of the domain", async () => {
         function checkConfirmPassword() {
             return val.custom(x => {
@@ -548,7 +624,7 @@ describe("Enums Validation", () => {
             get(@val.enums({ enums: ["Male", "Female"] }) gender: "Male" | "Female") { }
         }
         const koa = await fixture(AnimalController).initialize()
-        const {body} = await Supertest(koa.callback())
+        const { body } = await Supertest(koa.callback())
             .get("/animal/get?gender=SemiFemale")
             .expect(422)
         expect(body.message).toMatchSnapshot()
