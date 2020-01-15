@@ -276,19 +276,6 @@ export interface PlumierApplication extends Application {
 // ----------------------------- VALIDATOR ----------------------------- //
 // --------------------------------------------------------------------- //
 
-
-declare module "typedconverter" {
-    namespace val {
-        export function custom(validator: CustomValidatorFunction): (...arg: any[]) => void
-        export function custom(validator: CustomValidator): (...arg: any[]) => void
-        export function custom(id: string): (...arg: any[]) => void
-        export function custom(id: symbol): (...arg: any[]) => void
-        export function custom(val: CustomValidatorFunction | string | symbol | CustomValidator): (...arg: any[]) => void
-        export function result(path: string, messages: string | string[]): AsyncValidatorResult[]
-        export function enums(opt: { enums: string[], message?: string }): (...arg: any[]) => void
-    }
-}
-
 export interface ValidatorDecorator {
     type: "ValidatorDecorator",
     validator: CustomValidatorFunction | string | symbol,
