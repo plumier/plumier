@@ -1,5 +1,4 @@
-import { domain, val } from "@plumier/core"
-
+import { FacebookProfile } from "../../facebook"
 import { DialogProvider, SocialAuthProvider, SocialLoginStatus } from "../middleware"
 
 /*
@@ -12,17 +11,6 @@ https://www.facebook.com/v4.0/dialog/oauth?
     &redirect_uri={redirect-uri}
     &state={state-param}
 */
-
-export interface FacebookProfile {
-    id: string
-    name: string
-    picture: {
-        data: {
-            height: number, width: number,
-            is_silhouette: boolean, url: string
-        }
-    }
-}
 
 export interface FacebookLoginStatus extends SocialLoginStatus<FacebookProfile> {}
 

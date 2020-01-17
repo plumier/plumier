@@ -1,0 +1,130 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Post Message Should provide post message 1`] = `
+ActionResult {
+  "body": "
+    <!DOCTYPE html>
+    <html>
+        <title></title>
+        <body>
+            <div class=\\"container\\"></div>
+            <script type=\\"text/javascript\\">
+                var message = '{\\"message\\":\\"Hello world\\"}';
+                var origin ;
+                (function(){
+                    window.onbeforeunload = function () {
+                        window.opener.postMessage({ status: \\"Close\\" }, origin || window.location.origin)
+                    };
+                    window.opener.postMessage(JSON.parse(message), origin || window.location.origin)
+                })()
+            </script>
+        </body>
+    </html>
+    ",
+  "cookies": Array [],
+  "headers": Object {
+    "Content-Type": "text/html",
+  },
+  "status": undefined,
+}
+`;
+
+exports[`Redirect Uri Should able to handle facebook redirect uri 1`] = `
+Array [
+  Array [
+    Object {
+      "dateOfBirth": undefined,
+      "email": "Josianne_Bosco@gmail.com",
+      "firstName": "Greta",
+      "gender": undefined,
+      "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+      "lastName": "Erdman",
+      "name": "Manuel Auer",
+      "profilePicture": "http://lorempixel.com/640/480",
+      "provider": "Facebook",
+      "raw": Object {
+        "email": "Josianne_Bosco@gmail.com",
+        "first_name": "Greta",
+        "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+        "last_name": "Erdman",
+        "name": "Manuel Auer",
+        "picture": Object {
+          "data": Object {
+            "url": "http://lorempixel.com/640/480",
+          },
+        },
+      },
+    },
+  ],
+]
+`;
+
+exports[`Redirect Uri Should able to handle github redirect uri 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "Josianne_Bosco@gmail.com",
+      "firstName": "Manuel",
+      "id": "123456",
+      "lastName": "",
+      "name": "Manuel",
+      "profilePicture": "http://lorempixel.com/640/480",
+      "provider": "GitHub",
+      "raw": Object {
+        "avatar_url": "http://lorempixel.com/640/480",
+        "email": "Josianne_Bosco@gmail.com",
+        "id": 123456,
+        "name": "Manuel",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Redirect Uri Should able to handle gitlab redirect uri 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "Josianne_Bosco@gmail.com",
+      "firstName": "Manuel",
+      "id": "123456",
+      "lastName": "Auer",
+      "name": "Manuel Auer",
+      "profilePicture": "http://lorempixel.com/640/480",
+      "provider": "GitLab",
+      "raw": Object {
+        "avatar_url": "http://lorempixel.com/640/480",
+        "email": "Josianne_Bosco@gmail.com",
+        "id": 123456,
+        "name": "Manuel Auer",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Redirect Uri Should able to handle google redirect uri 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "Josianne_Bosco@gmail.com",
+      "firstName": "Greta",
+      "gender": undefined,
+      "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+      "lastName": "Erdman",
+      "name": "Manuel Auer",
+      "profilePicture": "http://lorempixel.com/640/480",
+      "provider": "Google",
+      "raw": Object {
+        "email": "Josianne_Bosco@gmail.com",
+        "family_name": "Erdman",
+        "given_name": "Greta",
+        "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+        "locale": "en",
+        "name": "Manuel Auer",
+        "picture": "http://lorempixel.com/640/480",
+      },
+    },
+  ],
+]
+`;

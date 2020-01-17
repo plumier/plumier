@@ -1,0 +1,30 @@
+<html>
+
+<head>
+    <script>
+        window.addEventListener("message", ev => {
+            if(ev.origin === location.origin){
+                const child = document.createElement("div")
+                child.innerText = JSON.stringify(ev.data)
+                document.getElementById("msg").appendChild(child)
+            }
+
+        })
+
+        const dialog = (url, w = 600, h = 500) => {
+            const y = window.top.outerHeight / 2 + window.top.screenY - (h / 2);
+            const x = window.top.outerWidth / 2 + window.top.screenX - (w / 2);
+            window.open(url, "Social Login", 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' + w + ', height=' + h + ', top=' + y + ', left=' + x);
+        }
+        function showDialog() {
+            dialog("/dialog")
+        }
+    </script>
+</head>
+
+<body>
+    <button onclick="showDialog()">Show</button>
+    <div id="msg"></div>
+</body>
+
+</html>

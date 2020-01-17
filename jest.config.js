@@ -5,7 +5,7 @@ module.exports = {
   verbose: false,
   collectCoverage: true,
   collectCoverageFrom: [
-    "packages/*/src/*"
+    "packages/*/src/**/*"
   ],
   coverageThreshold: {
     global: {
