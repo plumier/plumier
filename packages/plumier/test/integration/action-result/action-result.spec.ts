@@ -241,5 +241,19 @@ describe("Action Result", () => {
             .get("/animal/method")
             .expect(201, "Hello world!")
     })
+
+    it("Should expose cookies", () => {
+        const result = new ActionResult()
+            .setCookie("key", "value", { path: "/", sameSite: "strict" })
+            .setCookie("key2", "value2", { path: "/data", sameSite: "lax" })
+        expect(result.cookies).toMatchSnapshot()
+    })
+
+    it("Should expose headers", () => {
+        const result = new ActionResult()
+            .setHeader("x-api-key", "lorem ipsum")
+            .setHeader("x-redirect", "https://google.com")
+        expect(result.headers).toMatchSnapshot()
+    })
 })
 

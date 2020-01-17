@@ -12,12 +12,13 @@ import { RoleField } from './authorization'
 // --------------------------------------------------------------------- //
 
 export class ActionResult {
+    headers: { [key: string]: string | string[] } = {}
+    cookies: { key: string, value?: string, option?: SetOption }[] = []
+    constructor(public body?: any, public status?: number) { }
+
     static fromContext(ctx: Context) {
         return new ActionResult(ctx.body, ctx.status)
     }
-    private readonly headers: { [key: string]: string | string[] } = {}
-    private readonly cookies: { key: string, value?: string, option?: SetOption }[] = []
-    constructor(public body?: any, public status?: number) { }
 
     setHeader(key: string, value: string | string[]) {
         this.headers[key] = value;
