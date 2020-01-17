@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Action Result Should expose cookies 1`] = `
+Array [
+  Object {
+    "key": "key",
+    "option": Object {
+      "path": "/",
+      "sameSite": "strict",
+    },
+    "value": "value",
+  },
+  Object {
+    "key": "key2",
+    "option": Object {
+      "path": "/data",
+      "sameSite": "lax",
+    },
+    "value": "value2",
+  },
+]
+`;
+
+exports[`Action Result Should expose headers 1`] = `
+Object {
+  "x-api-key": "lorem ipsum",
+  "x-redirect": "https://google.com",
+}
+`;
