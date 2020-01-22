@@ -54,7 +54,7 @@
     "joi": "^14.3.1",
     "jsonwebtoken": "^8.5.1",
     "koa-better-body": "^3.2.0",
-    "koa-router": "^7.4.0",
+    "koa-router": "^8.0.6",
     "rimraf": "^3.0.0",
     "supertest": "^4.0.2",
     "ts-node": "^8.6.2",
