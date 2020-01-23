@@ -1,5 +1,4 @@
-import { domain, val } from "@plumier/core"
-
+import { GoogleProfile } from "../../google"
 import { DialogProvider, SocialAuthProvider, SocialLoginStatus } from "../middleware"
 
 /*
@@ -25,15 +24,6 @@ Playground
 https://developers.google.com/oauthplayground
 
 */
-
-export interface GoogleProfile {
-    id: string,
-    family_name: string,
-    given_name: string,
-    locale: string,
-    name: string,
-    picture: string,
-}
 
 export interface GoogleLoginStatus extends SocialLoginStatus<GoogleProfile> { }
 

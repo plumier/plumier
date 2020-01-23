@@ -1,162 +1,220 @@
 ---
 id: social-login
-title: Social Login
+title: Social Media Login
 ---
 
-Plumier provided action specific middleware to easily create OAuth 2 callback url. Internally it uses [authorization code flow](https://developer.okta.com/blog/2018/04/10/oauth-authorization-code-grant-type). With supported provider Google, Facebook, Github, GitLab.
+Plumier provided functionalities to easily secure your API and application using social media login such as Facebook, Google, GitHub and GitLab (Other provider will be added in the future). It included some security best practices out of the box, so you don't need to understand the security practice technically to implement social media login in Plumier.
 
-## OAuth Callback Middleware 
-Every OAuth2 with authorization code flow require us to create a callback url to parse authorization `code` and further  we can exchange the authorization code into access token. 
+> This documentation assume that you have knowledge on how to setup social login application on [Facebook](https://developers.facebook.com/), [Google](https://console.developers.google.com/), [GitHub](https://github.com/settings/developers) and [GitLab](https://gitlab.com/profile/applications), and have basic knowledge on how to setup OAuth 2.0 login.
 
-Plumier OAuth callback middleware done all those process for you and automatically bind the login status into parameter marked with `@bind.loginStatus()`. 
 
-```typescript 
-import { FacebookProvider, FacebookLoginStatus } from "@plumier/social-login"
-import { sign } from "jsonwebtoken"
-import { response, bind } from "plumier"
+## Enable Functionalities 
+Plumier social media login is not enabled by default, to enable the functionalities use some provided Facility from `@plumier/social-login` package. 
 
-export class FacebookController {
-    @oAuthCallback(new FacebookProvider(<client id>, <client secret>))
-    callback(@bind.loginStatus() status: FacebookLoginStatus) {
-        const token = sign({ <token claim> }, <token secret>)
-        return response.callbackView({ accessToken: token })
-    }
-} 
-```
+| Facility                | Description                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------------ |
+| `OAuthFacility`         | Provided general function to work with OAuth 2, such as the CSRF Secret endpoint etc |
+| `FacebookOAuthFacility` | Provide Facebook specific social login functionalities                               |
+| `GoogleOAuthFacility`   | Provide Google specific social login functionalities                                 |
+| `GitHubOAuthFacility`   | Provide GitHub specific social login functionalities                                 |
+| `GitLabOAuthFacility`   | Provide GitLab specific social login functionalities                                 |
 
-Controller above will handle `GET /facebook/callback` which will be used as a OAuth callback url. `@oAuthCallback` is an action specific middleware that will be process the provided authorization code passed by the Facebook login screen. 
+`OAuthFacility` facility is mandatory because its provide the common functionalities required to perform OAuth process.
 
-For other OAuth provider, the implementation is quite straightforward 
-
-```typescript 
-export class GitHubController {
-    @oAuthCallback(new GitHubProvider(<client id>, <client secret>))
-    callback(@bind.loginStatus() status: GitHubLoginStatus) {
-        const token = sign({ <token claim> }, <token secret>)
-        return response.callbackView({ accessToken: token })
-    }
-} 
-
-export class GoogleController {
-    @oAuthCallback(new GoogleProvider(<client id>, <client secret>))
-    callback(@bind.loginStatus() status: GoogleLoginStatus) {
-        const token = sign({ <token claim> }, <token secret>)
-        return response.callbackView({ accessToken: token })
-    }
-} 
-
-export class GitLabController {
-    @oAuthCallback(new GitLabProvider(<client id>, <client secret>))
-    callback(@bind.loginStatus() status: GitLabLoginStatus) {
-        const token = sign({ <token claim> }, <token secret>)
-        return response.callbackView({ accessToken: token })
-    }
-} 
-```
-
-> Keep in mind that by default controller method translated into `GET` route, so on example above its not necessary to decorate the `callback` method with  `@route.get()`.
-
-Internally `@oAuthCallback` will process the authorization code, exchange the code into access token and retrieve user profile from OAuth provider. `@oAuthCallback` automatically bind parameter decorated with `@bind.loginStatus()` and populate its value with data like below
-
+To enable the social login functionality, register above facility on the Plumier application like below: 
 
 ```typescript
-interface SocialLoginStatus<T = any> {
-    status: "Success" | "Error",
-    error?: any,
-    data?: T
-}
+const plumier = new Plumier()
+    .set(new WebApiFacility())
+    .set(new OAuthFacility())
+    .set(new FacebookOAuthFacility({ 
+        clientId: <FACEBOOK APP ID>, 
+        clientSecret: <FACEBOOK APP SECRET> 
+    }))
+    .initialize()
 ```
 
-* `status`: status of the login the value can be `Success` or `Error`.
-* `error`: error information of the current login
-* `data`: contains current user profile information if `status` is `Success`.
+All OAuth provider facility (`FacebookOAuthFacility`, `GoogleOAuthFacility`, `GitHubOAuthFacility`, `GitLabOAuthFacility`) receive option parameter which required a client id and client secret. This value can be found in the appropriate social login console application. 
 
-## Provider
-`@oAuthCallback` middleware receive single parameter named provider which will provide info about token url and profile url, you can create your own provider easily by using plain TypeScript class implements `SocialAuthProvider` the signature is like below
+## Showing The Login Page
 
-```typescript
-export interface SocialAuthProvider {
-    tokenEndPoint: string
-    profileEndPoint: string
-    clientId: string
-    clientSecret: string
-    profileParams: {}
-}
+Plumier provided endpoints that will be redirected to the social media login page. It generate the required parameter including the csrf token and then redirect the request to the generated url.
+
+| Endpoint                   | Served By               | Description                     |
+| -------------------------- | ----------------------- | ------------------------------- |
+| `GET /auth/csrf-secret`    | `OAuthFacility`         | Retrieve csrf secret.           |
+| `GET /auth/facebook/login` | `FacebookOAuthFacility` | Redirect to Facebook login page |
+| `GET /auth/google/login`   | `GoogleOAuthFacility`   | Redirect to Google login page   |
+| `GET /auth/github/login`   | `GitHubOAuthFacility`   | Redirect to GitHub login page   |
+| `GET /auth/gitlab/login`   | `GitLabOAuthFacility`   | Redirect to GitLab login page   |
+
+Above endpoint can be change accordingly see [customization](#customization) section for more detail.
+
+Before showing the social media login page it is necessary to call the `/auth/csrf-secret` to attach the current session with the CSRF Secret. This process can be done by issuing an AJAX call to the endpoint using http client such as `fetch` or `axios`. 
+
+```javascript
+Axios.get("/auth/csrf-secret")
 ```
 
-Interface above is a contract for a provider required by `@oAuthCallback` middleware.
-
-* `tokenEndPoint` token endpoint of the OAuth server 
-* `profileEndPoint` profile endpoint to get current login user information.
-* `clientId` OAuth 2 client id
-* `clientSecret` OAuth 2 client secret 
-* `profileParams` extra parameter used to query login user profile.
-
-
-## Authentication Dialog URL Middleware
-Plumier provided another middleware to easily generate OAuth authentication dialog url. The implementation is simply like below
-
-```typescript
-export class FacebookController {
-    @oAuthDialogEndPoint(new FacebookDialogProvider("/facebook/callback", process.env.FACEBOOK_CLIENT_ID))
-    login() { }
-}
-```
-
-Above code will generate route `GET /facebook/login` the route automatically redirected into Facebook OAuth authentication like picture below. 
-
-![facebook](../assets/facebook-oauth-dialog.png)
-
-The `@oAuthDialogEndPoint` received single parameter that is a dialog provider. Dialog provider will provide default OAuth authentication URL information. The parameters are: 
-* `callbackUrl` the OAuth callback parameter, only the path, doesn't require the full url.
-* `clientId` the OAuth client id
-
-If the default URL doesn't enough, for example you need to setup more parameters on the OAuth url, you can return the extra parameters from the controller. 
-
-Example below showing that we provide `state` parameter for the OAuth url. 
-
-```typescript
-export class FacebookController {
-    @oAuthDialogEndPoint(new FacebookDialogProvider("/facebook/callback", process.env.FACEBOOK_CLIENT_ID))
-    //GET /auth/dialogs/facebook
-    facebook(@bind.cookie("csrf:key") secret: string) {
-        return { state: new Tokens().create(secret) }
-    }
-}
-```
-
-## Callback View 
-Usually OAuth login launched in a new browser popup dialog, at the end of login process callback url need a way to pass a login token into the parent window. 
-
-Plumier provided a simple html used to communicate to the parent window. From the previous example you can see that the `callback` method returned `response.callbackView()`, this function actually returned html that will be pass the token into the parent window, the html is like below:
+Serve the social media login page using the url provided, for example you can redirect the user to the Facebook login screen like below
 
 ```html
-<!DOCTYPE html>
-<html>
-    <title></title>
-    <body>
-        <script type="text/javascript">
-            var message = '<message passed from method, serialized into json>';
-            (function(){
-                window.onbeforeunload = function () {
-                    window.opener.onCancelLogin(window)
-                };
-                window.opener.onLogin(window, JSON.parse(message))
-            })()
-        </script>
-    </body>
-</html>
+<a href="/auth/facebook/login">Login with Facebook</a>
 ```
 
-Important part of above code is you need to provide 2 global functions that will be called by the popup: 
+Or you can show a popup dialog window like below:
 
-* `onLogin` function will be called when the login process ended (Fail or Success)
-* `onCancelLogin` called when the popup closed.
+```html
+<script>
+    function showFacebookDialog(){
+        window.open("/auth/facebook/login", "Login using Facebook", "toolbar=no, width=500, height=500")
+    }
+</script>
 
+<button onclick="showFacebookDialog()">Login with Facebook</button>
+```
 
-## Example
-The full implementation of social login can be found [here](https://github.com/plumier/tutorial-monorepo-social-login). Important parts of the example are: 
+When user click the link or button above, user will redirected to the Facebook login page properly.
 
-* OAuth callbacks implementations for each social medias can be found [AuthController](https://github.com/plumier/tutorial-monorepo-social-login/blob/eba5a1da0f14a452011673ec731a414392afae35/packages/server/src/controller/auth-controller.ts#L77)
-* UI logic to compose auth url and show the social login popup [here](https://github.com/plumier/tutorial-monorepo-social-login/blob/eba5a1da0f14a452011673ec731a414392afae35/packages/ui/src/page/popup.ts#L1)
-* UI logic to handle social login `onLogin` event [here](https://github.com/plumier/tutorial-monorepo-social-login/blob/3497b498857011ec794e761446c9ff73207d5683/packages/ui/src/App.tsx#L10)
+## Redirect URI Handler 
+Plumier provided `@redirectUri()` decorator to easily mark controller as a social media redirect uri. To create a controller as a redirect uri handler simply mark the method with the decorator like below.
+
+```typescript
+class AuthController {
+
+    @route.get()
+    @redirectUri()
+    callback(@bind.oAuthUser() user:OAuthUser) {
+
+    }
+}
+```
+
+Above is a common Plumier controller, no special configuration added except the `@redirectUri()`. Above controller is a general redirect uri handler, its mean that it will handle all provider's redirect uris registered in the Plumier application into single method's controller. 
+
+Controller above handles `GET /auth/callback` route, you can change this easily to match your redirect uri registered in the OAuth application provider. 
+
+## Separate Redirect Uris
+
+If you have different redirect uri registered on your OAuth application, you can create separate redirect uri for specific provider, while keep using the general redirect uri: 
+
+```typescript
+class AuthController {
+
+    @route.get()
+    @redirectUri()
+    callback(@bind.oAuthUser() user:OAuthUser) {
+        // this will handle the rest provider registered except facebook
+    }
+
+    @route.get()
+    @redirectUri("Facebook")
+    facebook(@bind.oAuthUser() user:OAuthUser) {
+        // this will only handle Facebook redirect uri
+    }
+}
+```
+
+If you provide a specific redirect uri handler, the general redirect uri will not be called.
+
+## OAuth User 
+OAuth user is the current social media user. If you notice all example above, all controller has parameter decorate with `@bind.oAuthUser()` decorator. 
+
+```typescript
+interface OAuthUser<T = {}> {
+    provider: "Facebook" | "Google" | "GitHub" | "GitLab"
+    id: string,
+    name: string,
+    firstName: string,
+    lastName: string,
+    profilePicture: string,
+    email?: string,
+    gender?: string,
+    dateOfBirth?: string
+    raw: T
+}
+```
+
+* `provider` is the OAuth provider name calling the redirect uri 
+* `id` is the user id on OAuth provider. Note that this field unique to `provider` field
+* `name` is the complete name of the current social media login user
+* `firstName` is the first name of the current social media login user
+* `lastName` is the last name of the current social media login user
+* `profilePicture` is the profile picture or avatar of the current social media login user
+* `email`, `gender`, `dateOfBirth` is optional, its based on your OAuth application access
+* `raw` is the raw value of the social media profile result.
+
+## Sending Message Back To Main Window
+When social medial login process done using a dialog window, it needs a way to signal the main window that the login process successful or not. 
+
+Plumier provided an ActionResult returned html that will automatically post message to main window that open the login dialog. `response.postMessage()`.
+
+```typescript
+class AuthController {
+
+    @route.get()
+    @redirectUri()
+    callback(@bind.oAuthUser() user:OAuthUser) {
+        // other process... for example check if user is in database
+
+        //create JWT TOKEN
+        const token = sign(<claim>, <secret>)
+        return response.postMessage({ status: "Success", token })
+    }
+}
+```
+
+> By default `response.postMessage` will send message only to the same origin, you can change this behavior by providing the origin on second parameter.
+
+Redirect uri handler above will send the `{ status: "Success", token }` message to the main window using [post message](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage), main window need to listen to the `message` event like below: 
+
+```javascript
+window.addEventListener("message", ev => {
+    // IMPORTANT!!
+    // make sure the message comes from the same origin
+    if(ev.origin === location.origin && ev.data.status === "Success"){
+        // retrieve the token 
+        const token = ev.data.token;
+    }
+})
+```
+
+> **Best Practice**: Its required to check the `ev.origin` of the message event because any window possible to send message to the main window. 
+
+## Customization
+Plumier social login functionalities can be customize to match your need. 
+
+### Custom CSRF Token Secret Endpoint
+CSRF Token Secret can be customize from the `OAuthFacility` like below 
+
+```typescript
+new Plumier()
+    .set(new OAuthFacility({ csrfEndpoint: "/auth/identity" }))
+```
+
+### Custom Login Endpoint 
+Login endpoint served by OAuth provider facility can be customized accordingly from the facility
+
+```typescript 
+new Plumier()
+    .set(new FacebookOAuthFacility({ 
+        loginEndPoint: "/auth/facebook/login-url"
+    }))
+```
+
+### Add Extra Parameter To Login Endpoint 
+Its possible to customize the generated login endpoint by providing the parameter. For example the default scope of google endpoint used is: `https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile`. You can override this by providing the scope on the login endpoint: 
+
+```
+GET /auth/google/login?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email
+```
+
+### Add Extra Parameter on Profile Endpoint 
+OAuth provider facility used minimum configuration parameter to access the user profile endpoint. For example for Facebook provider the field params use is `id,name,first_name,last_name,picture.type(large)`. You can override this by providing the parameters in the `FacebookOAuthFacility` (other provider also can be configured) like below: 
+
+```typescript 
+new Plumier()
+    .set(new FacebookOAuthFacility({ 
+        profileParams: { fields: "id,name,email,birthday,first_name,last_name,picture.type(large)" }
+    }))
+```

@@ -1,0 +1,99 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login Endpoint Should include other required parameters 1`] = `
+Object {
+  "access_type": "offline",
+  "client_id": "123456",
+  "include_granted_scopes": "true",
+  "response_type": "code",
+  "scope": "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
+}
+`;
+
+exports[`Redirect URI Handler Should able to override the profile params 1`] = `
+Object {
+  "email": "Josianne_Bosco@gmail.com",
+  "firstName": "Greta",
+  "gender": undefined,
+  "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+  "lastName": "Erdman",
+  "name": "Manuel Auer",
+  "profilePicture": "http://lorempixel.com/640/480",
+  "provider": "Google",
+  "raw": Object {
+    "email": "Josianne_Bosco@gmail.com",
+    "family_name": "Erdman",
+    "given_name": "Greta",
+    "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+    "locale": "en",
+    "name": "Manuel Auer",
+    "picture": "http://lorempixel.com/640/480",
+  },
+}
+`;
+
+exports[`Redirect URI Handler Should able to override the profile params 2`] = `
+Array [
+  "https://www.googleapis.com/oauth2/v2/userinfo",
+  Object {
+    "headers": Object {
+      "Authorization": "Bearer 87b23deb-3fde-4de5-b726-c1a4bb2747ff",
+    },
+    "params": Object {
+      "fields": "id",
+    },
+  },
+]
+`;
+
+exports[`Redirect URI Handler Should handle redirection properly 1`] = `
+Object {
+  "email": "Josianne_Bosco@gmail.com",
+  "firstName": "Greta",
+  "gender": undefined,
+  "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+  "lastName": "Erdman",
+  "name": "Manuel Auer",
+  "profilePicture": "http://lorempixel.com/640/480",
+  "provider": "Google",
+  "raw": Object {
+    "email": "Josianne_Bosco@gmail.com",
+    "family_name": "Erdman",
+    "given_name": "Greta",
+    "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+    "locale": "en",
+    "name": "Manuel Auer",
+    "picture": "http://lorempixel.com/640/480",
+  },
+}
+`;
+
+exports[`Redirect URI Handler Should handle redirection properly 2`] = `
+Array [
+  "https://www.googleapis.com/oauth2/v4/token",
+  Object {
+    "client_id": "123456",
+    "client_secret": "super-secret",
+    "code": "lorem",
+    "grant_type": "authorization_code",
+    "redirect_uri": "http://127.0.0.1/auth/google/callback",
+  },
+  Object {
+    "headers": Object {
+      "Accept": "application/json",
+    },
+  },
+]
+`;
+
+exports[`Redirect URI Handler Should handle redirection properly 3`] = `
+Array [
+  "https://www.googleapis.com/oauth2/v2/userinfo",
+  Object {
+    "headers": Object {
+      "Authorization": "Bearer 87b23deb-3fde-4de5-b726-c1a4bb2747ff",
+    },
+    "params": Object {},
+  },
+]
+`;
