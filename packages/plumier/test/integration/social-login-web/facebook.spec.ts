@@ -79,7 +79,7 @@ describe("Login Endpoint", () => {
         const resp = await request.get("/auth/facebook/login")
             .expect(302)
         const url = new URL(resp.header["location"])
-        expect(url.searchParams.get("redirect_uri")?.replace(/:[0-9]{5}/, ""))
+        expect(url.searchParams.get("redirect_uri")?.replace(/:[0-9]{4,5}/, ""))
             .toBe("http://127.0.0.1/auth/facebook/callback")
     })
 
@@ -97,7 +97,7 @@ describe("Login Endpoint", () => {
         const resp = await request.get("/auth/facebook/login")
             .expect(302)
         const url = new URL(resp.header["location"])
-        expect(url.searchParams.get("redirect_uri")?.replace(/:[0-9]{5}/, ""))
+        expect(url.searchParams.get("redirect_uri")?.replace(/:[0-9]{4,5}/, ""))
             .toBe("http://127.0.0.1/auth/facebook/redirect-uri")
     })
 
@@ -189,7 +189,7 @@ describe("Redirect URI Handler", () => {
             .expect(200)
         expect(fn.mock.calls[0][0]).toMatchSnapshot()
         const tokenCall: any[] = (axios.post as jest.Mock).mock.calls[0]
-        tokenCall[1].redirect_uri = tokenCall[1].redirect_uri.replace(/:[0-9]{5}/, "")
+        tokenCall[1].redirect_uri = tokenCall[1].redirect_uri.replace(/:[0-9]{4,5}/, "")
         expect(tokenCall).toMatchSnapshot()
         const profileCall: any[] = (axios.get as jest.Mock).mock.calls[0]
         expect(profileCall).toMatchSnapshot()
