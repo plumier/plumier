@@ -1,5 +1,34 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Post Message Should able to set origin on post message 1`] = `
+ActionResult {
+  "body": "
+    <!DOCTYPE html>
+    <html>
+        <title></title>
+        <body>
+            <div class=\\"container\\"></div>
+            <script type=\\"text/javascript\\">
+                var message = '{\\"message\\":\\"Hello world\\"}';
+                var origin = 'www.google.com';
+                (function(){
+                    window.onbeforeunload = function () {
+                        window.opener.postMessage({ status: \\"Close\\" }, origin || window.location.origin)
+                    };
+                    window.opener.postMessage(JSON.parse(message), origin || window.location.origin)
+                })()
+            </script>
+        </body>
+    </html>
+    ",
+  "cookies": Array [],
+  "headers": Object {
+    "Content-Type": "text/html",
+  },
+  "status": undefined,
+}
+`;
+
 exports[`Post Message Should provide post message 1`] = `
 ActionResult {
   "body": "
