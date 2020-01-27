@@ -19,7 +19,7 @@
 	},
 	"author": "Ketut Sandiarsa",
 	"devDependencies": {
-		"@types/jest": "^24.0.25",
+		"@types/jest": "^25.1.0",
 		"babel-core": "^6.26.3",
 		"coveralls": "^3.0.9",
 		"del": "^5.1.0",
