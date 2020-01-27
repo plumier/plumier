@@ -3,22 +3,24 @@ name: ubuntu
 on: [push]
 
 jobs:
-  test:
+  node:
 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [10.x, 12.x, 13.x]
-
+    services:
+      mongodb:
+        image: mongo:3.4.23
+        ports:
+          - 27017:27017
     steps:
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Start MongoDB As Docker
-      uses: wbari/start-mongoDB@v0.2
     - name: Install yarn
       run: curl -o- -L https://yarnpkg.com/install.sh | bash
     - name: Install dependencies
