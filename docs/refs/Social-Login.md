@@ -7,6 +7,7 @@ Plumier provided functionalities to easily secure your API and application using
 
 > This documentation assume that you have knowledge on how to setup social login application on [Facebook](https://developers.facebook.com/), [Google](https://console.developers.google.com/), [GitHub](https://github.com/settings/developers) and [GitLab](https://gitlab.com/profile/applications), and have basic knowledge on how to setup OAuth 2.0 login.
 
+> **Source Code Example**: Complete example using social media login can be found in these GitHub repositories: [React](https://github.com/plumier/tutorial-monorepo-social-login) and [Vue.js](https://github.com/plumier/tutorial-social-login-vue)
 
 ## Enable Functionalities 
 Plumier social media login is not enabled by default, to enable the functionalities use some provided Facility from `@plumier/social-login` package. 
@@ -145,7 +146,7 @@ interface OAuthUser<T = {}> {
 * `raw` is the raw value of the social media profile result.
 
 ## Sending Message Back To Main Window
-When social medial login process done using a dialog window, it needs a way to signal the main window that the login process successful or not. 
+When social medial login process done using a popup dialog window, it needs a way to signal the main window that the login process successful or not. 
 
 Plumier provided an ActionResult returned html that will automatically post message to main window that open the login dialog. `response.postMessage()`.
 
@@ -173,8 +174,11 @@ window.addEventListener("message", ev => {
     // IMPORTANT!!
     // make sure the message comes from the same origin
     if(ev.origin === location.origin && ev.data.status === "Success"){
+        // close the popup dialog
+        if (ev.source && "close" in ev.source) ev.source.close()
         // retrieve the token 
         const token = ev.data.token;
+        // add code, when the login successful
     }
 })
 ```
