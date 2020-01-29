@@ -2,7 +2,7 @@ import { route, domain, bind } from "@plumier/core"
 import Plumier, { WebApiFacility } from '@plumier/plumier'
 import supertest = require('supertest')
 import { Context } from 'koa'
-import { fixture } from '../../../test/helper'
+import { fixture } from '../helper'
 
 
 describe("Request Query", () => {

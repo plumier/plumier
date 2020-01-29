@@ -4,7 +4,7 @@ import { join } from "path"
 import { response, route } from "plumier"
 import Supertest from "supertest"
 
-import { fixture } from "../../helper"
+import { fixture } from "../helper"
 
 
 describe("Serve File From Controller", () => {

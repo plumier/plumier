@@ -1,7 +1,7 @@
 import { Class, route, val, HttpMethod } from "@plumier/core"
 import { collection, Constructor, model, MongooseFacility } from "@plumier/mongoose"
 import Mongoose from "mongoose"
-import { fixture } from "plumier/test/helper"
+import { fixture } from "../helper"
 import supertest = require("supertest")
 import { decorate } from "tinspector"
 

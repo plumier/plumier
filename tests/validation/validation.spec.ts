@@ -12,7 +12,7 @@ import Plumier, {
 import Supertest from "supertest"
 import reflect from "tinspector"
 
-import { fixture } from "../../helper"
+import { fixture } from "../helper"
 
 describe("Validation", () => {
     it("Parameter should be optional by default", async () => {

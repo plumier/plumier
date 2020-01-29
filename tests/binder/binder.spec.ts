@@ -7,7 +7,7 @@ import Supertest from "supertest"
 import reflect from "tinspector"
 import { Result } from "typedconverter"
 
-import { fixture } from "../../helper"
+import { fixture } from "../helper"
 
 export class AnimalModel {
     constructor(

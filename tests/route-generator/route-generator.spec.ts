@@ -4,7 +4,7 @@ import Plumier, { domain, RestfulApiFacility, route } from "plumier"
 import Supertest from "supertest"
 import reflect from "tinspector"
 
-import { fixture } from "../../helper"
+import { fixture } from "../helper"
 
 describe("Route Generator", () => {
     it("Should transform regular method to GET", async () => {

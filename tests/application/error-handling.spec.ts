@@ -2,7 +2,7 @@ import { HttpStatusError, middleware, Class, ActionResult, route } from "@plumie
 import { join } from "path"
 import Supertest from "supertest"
 
-import { fixture } from "../../helper"
+import { fixture } from "../helper"
 import Plumier, { WebApiFacility } from '@plumier/plumier';
 
 
