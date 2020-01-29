@@ -3,7 +3,7 @@ import { ServeStaticFacility } from "@plumier/serve-static"
 import { join } from "path"
 import supertest = require("supertest")
 
-import { fixture } from "../../helper"
+import { fixture } from "../helper"
 
 
 

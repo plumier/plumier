@@ -1,25 +1,25 @@
 import { bind, Class, route } from "@plumier/core"
-import { redirectUri, GitLabOAuthFacility, OAuthFacility, OAuthUser } from "@plumier/social-login"
+import { redirectUri, GitHubOAuthFacility, OAuthFacility, OAuthUser } from "@plumier/social-login"
 import axios from "axios"
 import Csrf from "csrf"
 import qs from "querystring"
 import supertest = require("supertest")
 
-import { fixture } from "../../helper"
-import { axiosResult, gitLabProfile } from "./helper"
+import { fixture } from "../helper"
+import { axiosResult, gitHubProfile } from "./helper"
 
 
 function appStub(opt?: { controller?: Class, csrfEndPoint?: string, loginEndPoint?: string, profileParams?: {} }) {
     class AuthController {
-        @redirectUri("GitLab")
-        @route.get("/auth/gitlab/callback")
+        @redirectUri("GitHub")
+        @route.get("/auth/github/callback")
         callback() {
 
         }
     }
     return fixture(opt?.controller ?? AuthController)
         .set(new OAuthFacility({ csrfEndpoint: opt?.csrfEndPoint }))
-        .set(new GitLabOAuthFacility({ clientId: "123456", clientSecret: "super-secret", loginEndPoint: opt?.loginEndPoint, profileParams: opt?.profileParams }))
+        .set(new GitHubOAuthFacility({ clientId: "123456", clientSecret: "super-secret", loginEndPoint: opt?.loginEndPoint, profileParams: opt?.profileParams }))
         .initialize()
 }
 
@@ -31,62 +31,62 @@ function mockAxios() {
     (axios.post as jest.Mock).mockReturnValue(axiosResult({ access_token: "87b23deb-3fde-4de5-b726-c1a4bb2747ff" }));
     //get profile
     (axios.get as jest.Mock).mockClear();
-    (axios.get as jest.Mock).mockReturnValue(axiosResult(gitLabProfile));
+    (axios.get as jest.Mock).mockReturnValue(axiosResult(gitHubProfile));
 }
 
-describe("GitLabOAuthFacility", () => {
+describe("GitHubOAuthFacility", () => {
     it("Should throw when no redirect uri handler provided", async () => {
         class AuthController { }
         expect(appStub({ controller: AuthController }))
-            .rejects.toThrowError("No GitLab redirect uri handler found")
+            .rejects.toThrowError("No GitHub redirect uri handler found")
     })
 
     it("Should throw when provided parameterized redirect uri handler", async () => {
         class AuthController {
-            @redirectUri("GitLab")
-            @route.get("/auth/gitlab/callback/:id")
+            @redirectUri("GitHub")
+            @route.get("/auth/github/callback/:id")
             callback(id: string, @bind.oAuthUser() user: OAuthUser) {
             }
         }
         expect(appStub({ controller: AuthController }))
-            .rejects.toThrowError("Parameterized route is not supported on GitLab callback uri")
+            .rejects.toThrowError("Parameterized route is not supported on GitHub callback uri")
     })
 })
 
 describe("Login Endpoint", () => {
-    it("Should serve gitlab login endpoint", async () => {
+    it("Should serve github login endpoint", async () => {
         const app = await appStub()
         const request = supertest.agent(app.callback())
         await request.get("/auth/csrf-secret")
-        await request.get("/auth/gitlab/login")
+        await request.get("/auth/github/login")
             .expect(302)
     })
 
-    it("Should redirected to gitlab", async () => {
+    it("Should redirected to github", async () => {
         const app = await appStub()
         const request = supertest.agent(app.callback())
         await request.get("/auth/csrf-secret")
-        const resp = await request.get("/auth/gitlab/login")
+        const resp = await request.get("/auth/github/login")
             .expect(302)
         const url = new URL(resp.header["location"])
-        expect(url.origin + url.pathname).toBe("https://gitlab.com/oauth/authorize")
+        expect(url.origin + url.pathname).toBe("https://github.com/login/oauth/authorize")
     })
 
     it("Should detect redirect uri properly", async () => {
         const app = await appStub()
         const request = supertest.agent(app.callback())
         await request.get("/auth/csrf-secret")
-        const resp = await request.get("/auth/gitlab/login")
+        const resp = await request.get("/auth/github/login")
             .expect(302)
         const url = new URL(resp.header["location"])
         expect(url.searchParams.get("redirect_uri")?.replace(/:[0-9]{4,5}/, ""))
-            .toBe("http://127.0.0.1/auth/gitlab/callback")
+            .toBe("http://127.0.0.1/auth/github/callback")
     })
 
     it("Should detect redirect uri if changed", async () => {
         class AuthController {
-            @redirectUri("GitLab")
-            @route.get("/auth/gitlab/redirect-uri")
+            @redirectUri("GitHub")
+            @route.get("/auth/github/redirect-uri")
             callback() {
 
             }
@@ -94,11 +94,11 @@ describe("Login Endpoint", () => {
         const app = await appStub({ controller: AuthController })
         const request = supertest.agent(app.callback())
         await request.get("/auth/csrf-secret")
-        const resp = await request.get("/auth/gitlab/login")
+        const resp = await request.get("/auth/github/login")
             .expect(302)
         const url = new URL(resp.header["location"])
         expect(url.searchParams.get("redirect_uri")?.replace(/:[0-9]{4,5}/, ""))
-            .toBe("http://127.0.0.1/auth/gitlab/redirect-uri")
+            .toBe("http://127.0.0.1/auth/github/redirect-uri")
     })
 
     it("Should add state parameter which valid with csrf secret", async () => {
@@ -106,7 +106,7 @@ describe("Login Endpoint", () => {
         const request = supertest.agent(app.callback())
         const resp = await request.get("/auth/csrf-secret")
         const secret = resp.header["set-cookie"][0].split(";")[0].split("=")[1]
-        const redirect = await request.get("/auth/gitlab/login")
+        const redirect = await request.get("/auth/github/login")
             .expect(302)
         const url = new URL(redirect.header["location"])
         const state = url.searchParams.get("state")
@@ -117,7 +117,7 @@ describe("Login Endpoint", () => {
     it("Should throw 400 if no csrf secret", async () => {
         const app = await appStub()
         const request = supertest.agent(app.callback())
-        await request.get("/auth/gitlab/login")
+        await request.get("/auth/github/login")
             .expect(400, { "status": 400, "message": "Request doesn\'t contains csrf secret" })
     })
 
@@ -125,7 +125,7 @@ describe("Login Endpoint", () => {
         const app = await appStub()
         const request = supertest.agent(app.callback())
         await request.get("/auth/csrf-secret")
-        const resp = await request.get("/auth/gitlab/login")
+        const resp = await request.get("/auth/github/login")
             .expect(302)
         const query = qs.parse(resp.header["location"].split("?")[1])
         delete query["redirect_uri"]
@@ -137,7 +137,7 @@ describe("Login Endpoint", () => {
         const app = await appStub()
         const request = supertest.agent(app.callback())
         await request.get("/auth/csrf-secret")
-        const resp = await request.get("/auth/gitlab/login?foo=bar&lorem=ipsum")
+        const resp = await request.get("/auth/github/login?foo=bar&lorem=ipsum")
             .expect(302)
         const url = new URL(resp.header["location"])
         expect(url.searchParams.get("foo")).toBe("bar")
@@ -145,30 +145,30 @@ describe("Login Endpoint", () => {
     })
 
     it("Should able to change the login endpoint", async () => {
-        const app = await appStub({ loginEndPoint: "/auth/gitlab-login" })
+        const app = await appStub({ loginEndPoint: "/auth/github-login" })
         const request = supertest.agent(app.callback())
         await request.get("/auth/csrf-secret")
-        const resp = await request.get("/auth/gitlab-login")
+        const resp = await request.get("/auth/github-login")
             .expect(302)
         const url = new URL(resp.header["location"])
-        expect(url.origin + url.pathname).toBe("https://gitlab.com/oauth/authorize")
+        expect(url.origin + url.pathname).toBe("https://github.com/login/oauth/authorize")
     })
 
     it("Should provide case insensitive login endpoint", async () => {
-        const app = await appStub({ loginEndPoint: "/auth/GITLAB-LOGIN" })
+        const app = await appStub({ loginEndPoint: "/auth/GITHUB-LOGIN" })
         const request = supertest.agent(app.callback())
         await request.get("/auth/csrf-secret")
-        const resp = await request.get("/auth/gitlab-login")
+        const resp = await request.get("/auth/github-login")
             .expect(302)
         const url = new URL(resp.header["location"])
-        expect(url.origin + url.pathname).toBe("https://gitlab.com/oauth/authorize")
+        expect(url.origin + url.pathname).toBe("https://github.com/login/oauth/authorize")
     })
 })
 
 describe("Redirect URI Handler", () => {
     const getState = async (rqs: supertest.SuperTest<supertest.Test>) => {
         await rqs.get("/auth/csrf-secret")
-        const resp = await rqs.get("/auth/gitlab/login")
+        const resp = await rqs.get("/auth/github/login")
         return new URL(resp.header["location"]).searchParams.get("state")
     }
 
@@ -176,8 +176,8 @@ describe("Redirect URI Handler", () => {
         mockAxios()
         const fn = jest.fn()
         class AuthController {
-            @redirectUri("GitLab")
-            @route.get("/auth/gitlab/callback")
+            @redirectUri("GitHub")
+            @route.get("/auth/github/callback")
             callback(@bind.oAuthUser() user: OAuthUser) {
                 fn(user)
             }
@@ -185,7 +185,7 @@ describe("Redirect URI Handler", () => {
         const app = await appStub({ controller: AuthController })
         const request = await supertest.agent(app.callback())
         const state = await getState(request)
-        await request.get(`/auth/gitlab/callback?code=lorem&state=${state}`)
+        await request.get(`/auth/github/callback?code=lorem&state=${state}`)
             .expect(200)
         expect(fn.mock.calls[0][0]).toMatchSnapshot()
         const tokenCall: any[] = (axios.post as jest.Mock).mock.calls[0]
@@ -199,8 +199,8 @@ describe("Redirect URI Handler", () => {
         mockAxios()
         const fn = jest.fn()
         class AuthController {
-            @redirectUri("GitLab")
-            @route.get("/auth/gitlab/callback")
+            @redirectUri("GitHub")
+            @route.get("/auth/github/callback")
             callback(@bind.oAuthUser() user: OAuthUser) {
                 fn(user)
             }
@@ -208,7 +208,7 @@ describe("Redirect URI Handler", () => {
         const app = await appStub({ controller: AuthController, profileParams: { fields: "id" } })
         const request = await supertest.agent(app.callback())
         const state = await getState(request)
-        await request.get(`/auth/gitlab/callback?code=lorem&state=${state}`)
+        await request.get(`/auth/github/callback?code=lorem&state=${state}`)
             .expect(200)
         expect(fn.mock.calls[0][0]).toMatchSnapshot()
         const call: any[] = (axios.get as jest.Mock).mock.calls[0]
@@ -218,30 +218,30 @@ describe("Redirect URI Handler", () => {
     it("Should return 400 when no state parameter provided", async () => {
         const fn = jest.fn()
         class AuthController {
-            @redirectUri("GitLab")
-            @route.get("/auth/gitlab/callback")
+            @redirectUri("GitHub")
+            @route.get("/auth/github/callback")
             callback(@bind.oAuthUser() user: OAuthUser) {
                 fn(user)
             }
         }
         const app = await appStub({ controller: AuthController })
         const request = await supertest.agent(app.callback())
-        await request.get(`/auth/gitlab/callback?code=lorem`)
+        await request.get(`/auth/github/callback?code=lorem`)
             .expect(400, { status: 400, message: "No state parameter provided" })
     })
 
     it("Should return 400 when no authorization code specified", async () => {
         const fn = jest.fn()
         class AuthController {
-            @redirectUri("GitLab")
-            @route.get("/auth/gitlab/callback")
+            @redirectUri("GitHub")
+            @route.get("/auth/github/callback")
             callback(@bind.oAuthUser() user: OAuthUser) {
                 fn(user)
             }
         }
         const app = await appStub({ controller: AuthController })
         const request = await supertest.agent(app.callback())
-        await request.get(`/auth/gitlab/callback?state=lorem`)
+        await request.get(`/auth/github/callback?state=lorem`)
             .expect(400, { status: 400, message: "No authorization code provided" })
     })
 
@@ -249,23 +249,23 @@ describe("Redirect URI Handler", () => {
         mockAxios()
         const fn = jest.fn()
         class AuthController {
-            @redirectUri("GitLab")
-            @route.get("/auth/gitlab/callback")
+            @redirectUri("GitHub")
+            @route.get("/auth/github/callback")
             callback(@bind.oAuthUser() user: OAuthUser) {
                 fn(user)
             }
         }
         const app = await appStub({ controller: AuthController })
         const request = await supertest.agent(app.callback())
-        await request.get(`/auth/gitlab/callback?code=lorem&state=GitLab.ipsum`)
+        await request.get(`/auth/github/callback?code=lorem&state=GitHub.ipsum`)
             .expect(400, { status: 400, message: "Request doesn't contains csrf secret" })
     })
 
     it("Should return 400 when provided invalid csrf token", async () => {
         const fn = jest.fn()
         class AuthController {
-            @redirectUri("GitLab")
-            @route.get("/auth/gitlab/callback")
+            @redirectUri("GitHub")
+            @route.get("/auth/github/callback")
             callback(@bind.oAuthUser() user: OAuthUser) {
                 fn(user)
             }
@@ -273,14 +273,14 @@ describe("Redirect URI Handler", () => {
         const app = await appStub({ controller: AuthController })
         const request = await supertest.agent(app.callback())
         await getState(request)
-        await request.get(`/auth/gitlab/callback?code=lorem&state=GitLab.lorem`)
+        await request.get(`/auth/github/callback?code=lorem&state=GitHub.lorem`)
             .expect(400, { status: 400, message: "Invalid csrf token" })
     })
 
     it("Should forward to next invocation for different path", async () => {
         class AuthController {
-            @redirectUri("GitLab")
-            @route.get("/auth/gitlab/callback")
+            @redirectUri("GitHub")
+            @route.get("/auth/github/callback")
             callback(@bind.oAuthUser() user: OAuthUser) {
             }
         }

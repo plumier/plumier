@@ -11,7 +11,7 @@ import {
 import axios from "axios"
 import supertest = require("supertest")
 
-import { fixture } from "../../helper"
+import { fixture } from "../helper"
 import { axiosResult, fbProfile, gitHubProfile, gitLabProfile, googleProfile } from "./helper"
 
 describe("Csrf Secret", () => {

@@ -1,7 +1,7 @@
 import Plumier, { ActionResult, bind, response, RestfulApiFacility, route } from "plumier"
 import supertest from "supertest"
 
-import { fixture } from "../../helper"
+import { fixture } from "../helper"
 
 describe("Redirect Action Result", () => {
     it("Should be able to redirect result", async () => {

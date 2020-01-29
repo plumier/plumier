@@ -5,7 +5,7 @@ import { authorize, domain, route, val } from "plumier"
 import Supertest from "supertest"
 import { reflect } from "tinspector"
 
-import { fixture } from "../../helper"
+import { fixture } from "../helper"
 
 const SECRET = "super secret"
 const USER_TOKEN = sign({ email: "ketut@gmail.com", role: "user" }, SECRET)

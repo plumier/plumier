@@ -5,7 +5,7 @@ import Csrf from "csrf"
 import qs from "querystring"
 import supertest = require("supertest")
 
-import { fixture } from "../../helper"
+import { fixture } from "../helper"
 import { axiosResult, fbProfile } from "./helper"
 
 
