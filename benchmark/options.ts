@@ -30,13 +30,13 @@ const jwtOption = <BenchmarkOption>{
 }
 
 const servers = [
-    //"express",
+    "express",
     "koa",
     "plumier",
 ]
 
 export const options = [
-    //...servers.map(x => ({...getOption, path: join(__dirname, "server", x)})),
+    ...servers.map(x => ({...getOption, path: join(__dirname, "server", x)})),
     ...servers.map(x => ({...postOption, path: join(__dirname, "server", x)})),
-    //...servers.map(x => ({...jwtOption, path: join(__dirname, "server", `${x}-jwt`)})),
+    ...servers.map(x => ({...jwtOption, path: join(__dirname, "server", `${x}-jwt`)})),
 ]

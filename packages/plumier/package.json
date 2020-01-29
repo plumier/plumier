@@ -12,9 +12,7 @@
     "TDD"
   ],
   "scripts": {
-    "compile": "tsc -p tsconfig.build.json",
-    "benchmark": "ts-node test/benchmark/run",
-    "exe": "ts-node"
+    "compile": "tsc -p tsconfig.build.json"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
@@ -23,38 +21,10 @@
     "@plumier/core": "1.0.0-rc.1",
     "@types/faker": "^4.1.9",
     "@types/koa__cors": "^3.0.0",
-    "faker": "^4.1.0",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1"
   },
-  "devDependencies": {
-    "@types/body-parser": "^1.17.1",
-    "@types/cors": "^2.8.6",
-    "@types/express": "^4.17.2",
-    "@types/express-jwt": "^0.0.42",
-    "@types/fs-extra": "^8.0.1",
-    "@types/joi": "^14.3.4",
-    "@types/jsonwebtoken": "^8.3.6",
-    "@types/koa-better-body": "^3.1.2",
-    "@types/koa-router": "^7.4.0",
-    "@types/rimraf": "^2.0.3",
-    "@types/supertest": "^2.0.8",
-    "autocannon": "^4.4.2",
-    "benalu": "^2.0.0-beta-1",
-    "body-parser": "^1.19.0",
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "express-jwt": "^5.3.1",
-    "fs-extra": "^8.1.0",
-    "joi": "^14.3.1",
-    "jsonwebtoken": "^8.5.1",
-    "koa-better-body": "^3.2.0",
-    "koa-router": "^7.4.0",
-    "rimraf": "^3.0.0",
-    "supertest": "^4.0.2",
-    "ts-node": "^8.6.2",
-    "typescript": "^3.7.4"
-  },
+  "devDependencies": {},
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"
   },
