@@ -23,6 +23,12 @@ function appStub(opt?: { controller?: Class, csrfEndPoint?: string, loginEndPoin
         .initialize()
 }
 
+const getState = async (rqs: supertest.SuperTest<supertest.Test>) => {
+    await rqs.get("/auth/csrf-secret")
+    const resp = await rqs.get("/auth/google/login")
+    return new URL(resp.header["location"]).searchParams.get("state")
+}
+
 jest.mock("axios")
 
 function mockAxios() {
@@ -50,6 +56,75 @@ describe("GoogleOAuthFacility", () => {
         }
         expect(appStub({ controller: AuthController }))
             .rejects.toThrowError("Parameterized route is not supported on Google callback uri")
+    })
+
+    it("Should use default configuration", async () => {
+        process.env.PLUM_GOOGLE_CLIENT_ID = "123"
+        process.env.PLUM_GOOGLE_CLIENT_SECRET = "secret"
+        mockAxios()
+        const fn = jest.fn()
+        class AuthController {
+            @redirectUri("Google")
+            @route.get("/auth/google/callback")
+            callback(@bind.oAuthUser() user: OAuthUser) {
+                fn(user)
+            }
+        }
+        const app = await fixture(AuthController)
+            .set(new OAuthFacility())
+            .set(new GoogleOAuthFacility())
+            .initialize()
+        const request = await supertest.agent(app.callback())
+        const state = await getState(request)
+        await request.get(`/auth/google/callback?code=lorem&state=${state}`)
+            .expect(200)
+        const tokenCall: any[] = (axios.post as jest.Mock).mock.calls[0]
+        tokenCall[1].redirect_uri = tokenCall[1].redirect_uri.replace(/:[0-9]{4,5}/, "")
+        expect(tokenCall).toMatchSnapshot()
+    })
+
+    it("Should throw error when no clientId default configuration provided", async () => {
+        delete process.env.PLUM_GOOGLE_CLIENT_ID
+        process.env.PLUM_GOOGLE_CLIENT_SECRET = "secret"
+        const fn = jest.fn()
+        try {
+            class AuthController {
+                @redirectUri("Google")
+                @route.get("/auth/google/callback")
+                callback(@bind.oAuthUser() user: OAuthUser) {
+                }
+            }
+            await fixture(AuthController)
+                .set(new OAuthFacility())
+                .set(new GoogleOAuthFacility())
+                .initialize()
+        }
+        catch (e) {
+            fn(e)
+        }
+        expect(fn.mock.calls).toMatchSnapshot()
+    })
+
+    it("Should throw error when no clientSecret default configuration provided", async () => {
+        process.env.PLUM_GOOGLE_CLIENT_ID = "1234"
+        delete process.env.PLUM_GOOGLE_CLIENT_SECRET
+        const fn = jest.fn()
+        try {
+            class AuthController {
+                @redirectUri("Google")
+                @route.get("/auth/google/callback")
+                callback(@bind.oAuthUser() user: OAuthUser) {
+                }
+            }
+            await fixture(AuthController)
+                .set(new OAuthFacility())
+                .set(new GoogleOAuthFacility())
+                .initialize()
+        }
+        catch (e) {
+            fn(e)
+        }
+        expect(fn.mock.calls).toMatchSnapshot()
     })
 })
 
@@ -166,12 +241,6 @@ describe("Login Endpoint", () => {
 })
 
 describe("Redirect URI Handler", () => {
-    const getState = async (rqs: supertest.SuperTest<supertest.Test>) => {
-        await rqs.get("/auth/csrf-secret")
-        const resp = await rqs.get("/auth/google/login")
-        return new URL(resp.header["location"]).searchParams.get("state")
-    }
-
     it("Should handle redirection properly", async () => {
         mockAxios()
         const fn = jest.fn()

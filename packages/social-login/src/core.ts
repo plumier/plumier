@@ -23,6 +23,8 @@ import { decorateMethod } from "tinspector"
 
 const csrfCookieName = "plum-social-login:csrf-secret"
 type SocialProvider = "Facebook" | "GitHub" | "Google" | "GitLab"
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export interface EndPoint {
     endpoint: string
@@ -52,11 +54,14 @@ export interface OAuthUser<T = {}> {
 }
 
 export interface OAuthProviderOption {
-    clientId: string,
-    clientSecret: string,
+    clientId?: string,
+    clientSecret?: string,
     loginEndPoint?: string,
     profileParams?: {}
 }
+
+
+
 
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //
@@ -94,11 +99,11 @@ bind.oAuthUser = () => bind.custom(x => x.state.oAuthUser)
 
 declare module "@plumier/core" {
     namespace response {
-        function postMessage(message: any, origin?:string): ActionResult;
+        function postMessage(message: any, origin?: string): ActionResult;
     }
 }
 
-response.postMessage = (message: any, origin?:string) => {
+response.postMessage = (message: any, origin?: string) => {
     return new ActionResult(`
     <!DOCTYPE html>
     <html>
@@ -228,7 +233,7 @@ export class OAuthFacility extends DefaultFacility {
 }
 
 export class OAuthProviderBaseFacility extends DefaultFacility {
-    constructor(private option: OAuthOptions, private loginEndpoint: string) { super() }
+    constructor(private option: Optional<OAuthOptions, "clientId" | "clientSecret">, private loginEndpoint: string) { super() }
 
     getRedirectUri(routes: RouteInfo[], provider: string) {
         return routes.find(x => x.action.decorators
@@ -239,7 +244,13 @@ export class OAuthProviderBaseFacility extends DefaultFacility {
         const redirectUriRoute = this.getRedirectUri(routes, this.option.provider) ?? this.getRedirectUri(routes, "General")
         if (!redirectUriRoute) throw new Error(`No ${this.option.provider} redirect uri handler found`)
         if (redirectUriRoute.url.search(":") > -1) throw new Error(`Parameterized route is not supported on ${this.option.provider} callback uri`)
-        app.use(new OAuthLoginEndPointMiddleware(this.option, this.loginEndpoint, redirectUriRoute.url))
-        app.use(new OAuthRedirectUriMiddleware(this.option, redirectUriRoute.url))
+        const clientIdKey = `PLUM_${this.option.provider.toUpperCase()}_CLIENT_ID`
+        const clientSecretKey = `PLUM_${this.option.provider.toUpperCase()}_CLIENT_SECRET`
+        const clientId = this.option.clientId ?? process.env[clientIdKey]
+        if (!clientId) throw new Error(`Client id for ${this.option.provider} not provided`)
+        const clientSecret = this.option.clientSecret ?? process.env[clientSecretKey]
+        if (!clientSecret) throw new Error(`Client secret for ${this.option.provider} not provided`)
+        app.use(new OAuthLoginEndPointMiddleware({ ...this.option, clientId, clientSecret }, this.loginEndpoint, redirectUriRoute.url))
+        app.use(new OAuthRedirectUriMiddleware({ ...this.option, clientId, clientSecret }, redirectUriRoute.url))
     }
 }

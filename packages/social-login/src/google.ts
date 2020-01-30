@@ -30,12 +30,12 @@ function transform(value: GoogleProfile): OAuthUser {
 }
 
 class GoogleOAuthFacility extends OAuthProviderBaseFacility {
-    constructor(opt: OAuthProviderOption) {
+    constructor(opt?: OAuthProviderOption) {
         super({
             ...opt,
             profile: {
                 endpoint: profileEndPoint,
-                params: { ...opt.profileParams },
+                params: { ...opt?.profileParams },
                 transformer: transform
             },
             login: {
@@ -52,7 +52,7 @@ class GoogleOAuthFacility extends OAuthProviderBaseFacility {
                 params: { grant_type: "authorization_code" }
             },
             provider: "Google"
-        }, opt.loginEndPoint ?? "/auth/google/login")
+        }, opt?.loginEndPoint ?? "/auth/google/login")
     }
 }
 

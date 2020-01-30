@@ -22,7 +22,7 @@ export type Constructor<T> = new (...args: any[]) => T
 export type SchemaRegistry = { [key: string]: Mongoose.Schema }
 export interface MongooseFacilityOption {
     model?: string | Class | Class[]
-    uri: string,
+    uri?: string,
     schemaGenerator?: SchemaGenerator
 }
 export interface SubSchema {
@@ -179,11 +179,11 @@ function relationToObjectIdVisitor(i: VisitorInvocation): Result {
 
 export class MongooseFacility extends DefaultFacility {
     option: MongooseFacilityOption
-    constructor(opts: MongooseFacilityOption) {
+    constructor(opts?: MongooseFacilityOption) {
         super()
-        const model = opts.model || "./model"
+        const model = opts?.model ?? "./model"
         const domain = typeof model === "string" ? isAbsolute(model) ?
-            model! : join(dirname(module.parent!.filename), model) : model
+            model : join(dirname(module.parent!.filename), model) : model
         this.option = { ...opts, model: domain }
     }
 
@@ -200,7 +200,9 @@ export class MongooseFacility extends DefaultFacility {
         //register custom converter
         app.set({ typeConverterVisitors: [relationToObjectIdVisitor] })
         Mongoose.set("useUnifiedTopology", true)
-        await Mongoose.connect(this.option.uri, { useNewUrlParser: true })
+        const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
+        if (uri)
+            await Mongoose.connect(uri, { useNewUrlParser: true })
     }
 }
 

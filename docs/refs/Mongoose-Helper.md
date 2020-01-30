@@ -10,10 +10,17 @@ MongoDB helper is optional in Plumier, it can be enabled by installing `@plumier
 
 ```typescript
 const plum = new Plumier()
-plum.set(new MongooseFacility({uri: "mongodb://localhost:27017/test-data"}))
+plum.set(new MongooseFacility({ uri: "mongodb://localhost:27017/test-data" }))
+//if no uri provided will check for environment variable PLUM_MONGODB_URI
+plum.set(new MongooseFacility())
 ```
 
 Mongoose facility will automatically connect to the MongoDB database and make sure it ready before application started.
+
+There are several ways to use the mongodb connection: 
+1. By providing the uri on the `MongooseFacility` constructor, like example above.
+2. By providing the environment variable named `PLUM_MONGODB_URI`. This can be achieve using `.env` file or by set the environment variable manually.
+3. If none above provided, connection should be done manually using `mongoose.connect()` function. 
 
 ## Mark Domain Model For Schema Generated
 Your domain model and you MongoDB collection is not 1 : 1 relation, means not all domain model will will have an appropriate MongoDB collection. 

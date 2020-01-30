@@ -1,5 +1,39 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`GoogleOAuthFacility Should throw error when no clientId default configuration provided 1`] = `
+Array [
+  Array [
+    [Error: Client id for Google not provided],
+  ],
+]
+`;
+
+exports[`GoogleOAuthFacility Should throw error when no clientSecret default configuration provided 1`] = `
+Array [
+  Array [
+    [Error: Client secret for Google not provided],
+  ],
+]
+`;
+
+exports[`GoogleOAuthFacility Should use default configuration 1`] = `
+Array [
+  "https://www.googleapis.com/oauth2/v4/token",
+  Object {
+    "client_id": "123",
+    "client_secret": "secret",
+    "code": "lorem",
+    "grant_type": "authorization_code",
+    "redirect_uri": "http://127.0.0.1/auth/google/callback",
+  },
+  Object {
+    "headers": Object {
+      "Accept": "application/json",
+    },
+  },
+]
+`;
+
 exports[`Login Endpoint Should include other required parameters 1`] = `
 Object {
   "access_type": "offline",

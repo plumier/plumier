@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`JwtAuth Default Configuration Should throw error when no secret provided nor environment variable 1`] = `
+Array [
+  Array [
+    "JWT Secret not provided. Provide secret on JwtAuthFacility constructor or environment variable PLUM_JWT_SECRET",
+  ],
+]
+`;

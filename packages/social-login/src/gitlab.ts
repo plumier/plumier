@@ -52,12 +52,12 @@ function transform(value: GitLabProfile): OAuthUser {
 }
 
 class GitLabOAuthFacility extends OAuthProviderBaseFacility {
-    constructor(opt: OAuthProviderOption) {
+    constructor(opt?: OAuthProviderOption) {
         super({
             ...opt,
             profile: {
                 endpoint: profileEndPoint,
-                params: { ...opt.profileParams },
+                params: { ...opt?.profileParams },
                 transformer: transform
             },
             login: {
@@ -71,7 +71,7 @@ class GitLabOAuthFacility extends OAuthProviderBaseFacility {
                 params: { }
             },
             provider: "GitLab"
-        }, opt.loginEndPoint ?? "/auth/gitlab/login")
+        }, opt?.loginEndPoint ?? "/auth/gitlab/login")
     }
 }
 
