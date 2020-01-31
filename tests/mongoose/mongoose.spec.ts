@@ -392,7 +392,6 @@ describe("Proxy", () => {
     })
 })
 
-
 describe("Analysis", () => {
     beforeEach(() => clearCache())
     afterEach(async () => await Mongoose.disconnect())
@@ -544,4 +543,29 @@ describe("Automatically replace mongodb id into ObjectId on populate data", () =
             .expect(200)
         expect(fn.mock.calls[0][0]).toBe("string")
     })
+})
+
+
+describe("Default MongoDB Uri", () => {
+    beforeEach(() => clearCache())
+    afterEach(async () => await Mongoose.disconnect())
+
+    it("Should not connect if no URI provided nor environment variable", async () => {
+        const connect = Mongoose.connect
+        Mongoose.connect = jest.fn()
+        delete process.env.MONGODB_URI
+        const facility = new MongooseFacility()
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        expect(Mongoose.connect).not.toBeCalled()
+        Mongoose.connect = connect
+    })
+
+    it("Should check for PLUM_MONGODB_URI environment variable", async () => {
+        process.env.PLUM_MONGODB_URI = "mongodb://localhost:27017/lorem"
+        const facility = new MongooseFacility()
+        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        expect(Mongoose.connection.readyState).toBe(1)
+        expect(Mongoose.connection.db.databaseName).toBe("lorem")
+    })
+
 })

@@ -37,18 +37,18 @@ function transform(value: FacebookProfile): OAuthUser {
 }
 
 class FacebookOAuthFacility extends OAuthProviderBaseFacility {
-    constructor(opt: OAuthProviderOption) {
+    constructor(opt?: OAuthProviderOption) {
         super({
-            ...opt,
+            ...opt, 
             profile: {
                 endpoint: profileEndPoint,
-                params: { fields: "id,name,first_name,last_name,picture.type(large)", ...opt.profileParams },
+                params: { fields: "id,name,first_name,last_name,picture.type(large)", ...opt?.profileParams },
                 transformer: transform
             },
             login: { endpoint: loginEndpoint, params: { display: "popup" } },
             token: { endpoint: tokenEndPoint, params: {} },
             provider: "Facebook"
-        }, opt.loginEndPoint ?? "/auth/facebook/login")
+        }, opt?.loginEndPoint ?? "/auth/facebook/login")
     }
 }
 

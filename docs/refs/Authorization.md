@@ -11,7 +11,11 @@ import { JwtAuthFacility } from "@plumier/jwt"
 
 const app = new Plumier()
 app.set(new JwtAuthFacility({ secret: "<your secret key>" }))
+// looking for environment variable PLUM_JWT_SECRET
+app.set(new JwtAuthFacility())
 ```
+
+>  If no `secret` provide `JwtAuthFacility` will check for environment variable named `PLUM_JWT_SECRET`, if both not provided an error will be thrown.
 
 ## Setup
 Plumier authorization uses standard token based authentication using json web token, internally it uses [koa-jwt](https://github.com/koajs/jwt) middleware. 

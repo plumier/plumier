@@ -1,5 +1,38 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`GitLabOAuthFacility Should throw error when no clientId default configuration provided 1`] = `
+Array [
+  Array [
+    [Error: Client id for GitLab not provided],
+  ],
+]
+`;
+
+exports[`GitLabOAuthFacility Should throw error when no clientSecret default configuration provided 1`] = `
+Array [
+  Array [
+    [Error: Client secret for GitLab not provided],
+  ],
+]
+`;
+
+exports[`GitLabOAuthFacility Should use default configuration 1`] = `
+Array [
+  "https://gitlab.com/oauth/token",
+  Object {
+    "client_id": "123",
+    "client_secret": "secret",
+    "code": "lorem",
+    "redirect_uri": "http://127.0.0.1/auth/gitlab/callback",
+  },
+  Object {
+    "headers": Object {
+      "Accept": "application/json",
+    },
+  },
+]
+`;
+
 exports[`Login Endpoint Should include other required parameters 1`] = `
 Object {
   "client_id": "123456",

@@ -37,6 +37,29 @@ const plumier = new Plumier()
 
 All OAuth provider facility (`FacebookOAuthFacility`, `GoogleOAuthFacility`, `GitHubOAuthFacility`, `GitLabOAuthFacility`) receive option parameter which required a client id and client secret. This value can be found in the appropriate social login console application. 
 
+## Environment Variable for Default Configuration
+All OAuth provider facility can be instantiated without parameters, It will automatically check for the environment variable for each Client ID and Client Secret. For example if the registration is like below
+
+
+```typescript
+const plumier = new Plumier()
+    .set(new WebApiFacility())
+    .set(new OAuthFacility())
+    .set(new FacebookOAuthFacility())
+    .initialize()
+```
+
+`FacebookOAuthFacility` will search for environment variable `PLUM_FACEBOOK_CLIENT_ID` and `PLUM_FACEBOOK_CLIENT_SECRET`. If both not found an error will be thrown.
+
+
+| Facility                | Client ID                 | Client Secret                 |
+| ----------------------- | ------------------------- | ----------------------------- |
+| `FacebookOAuthFacility` | `PLUM_FACEBOOK_CLIENT_ID` | `PLUM_FACEBOOK_CLIENT_SECRET` |
+| `GoogleOAuthFacility`   | `PLUM_GOOGLE_CLIENT_ID`   | `PLUM_GOOGLE_CLIENT_SECRET`   |
+| `GitHubOAuthFacility`   | `PLUM_GITHUB_CLIENT_ID`   | `PLUM_GITHUB_CLIENT_SECRET`   |
+| `GitLabOAuthFacility`   | `PLUM_GITLAB_CLIENT_ID`   | `PLUM_GITLAB_CLIENT_SECRET`   |
+
+
 ## Showing The Login Page
 
 Plumier provided endpoints that will be redirected to the social media login page. It generate the required parameter including the csrf token and then redirect the request to the generated url.

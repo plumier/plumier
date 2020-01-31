@@ -374,7 +374,7 @@ describe("JwtAuth", () => {
 
         it("Should able to use Class based authorizer", async () => {
             class IsAdmin implements Authorizer {
-                authorize(info:AuthorizationContext){
+                authorize(info: AuthorizationContext) {
                     return info.role.some(x => x === "admin")
                 }
             }
@@ -476,7 +476,7 @@ describe("JwtAuth", () => {
                     expect(i.ctx.parameters).toMatchObject(["abc", 123, false])
                     return true
                 })
-                get(str:string, num:number, bool:boolean) { return "Hello" }
+                get(str: string, num: number, bool: boolean) { return "Hello" }
             }
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({ secret: SECRET }))
@@ -1136,6 +1136,43 @@ describe("JwtAuth", () => {
                 '5. AnimalController.mix()           -> GET /animal/mix'
             ])
             consoleLog.clearMock()
+        })
+    })
+
+    describe("Default Configuration", () => {
+        it("load PLUM_JWT_SECRET if no secret provided", async () => {
+            process.env.PLUM_JWT_SECRET = "lorem ipsum"
+            const USER_TOKEN = sign({ email: "ketut@gmail.com", role: "user" }, process.env.PLUM_JWT_SECRET)
+            class AnimalController {
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility())
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(403)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
+
+        it("Should throw error when no secret provided nor environment variable", async () => {
+            const fn = jest.fn()
+            delete process.env.PLUM_JWT_SECRET
+            try{
+                class AnimalController {
+                    get() { return "Hello" }
+                }
+                await fixture(AnimalController)
+                .set(new JwtAuthFacility())
+                .initialize()
+            }
+            catch(e){
+                fn(e.message)
+            }
+            expect(fn.mock.calls).toMatchSnapshot()
         })
     })
 

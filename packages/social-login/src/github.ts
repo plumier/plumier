@@ -54,12 +54,12 @@ function transform(value: GitHubProfile): OAuthUser {
 }
 
 class GitHubOAuthFacility extends OAuthProviderBaseFacility {
-    constructor(opt: OAuthProviderOption) {
+    constructor(opt?: OAuthProviderOption) {
         super({
             ...opt,
             profile: {
                 endpoint: profileEndPoint,
-                params: { ...opt.profileParams },
+                params: { ...opt?.profileParams },
                 transformer: transform
             },
             login: {
@@ -71,7 +71,7 @@ class GitHubOAuthFacility extends OAuthProviderBaseFacility {
                 params: { }
             },
             provider: "GitHub"
-        }, opt.loginEndPoint ?? "/auth/github/login")
+        }, opt?.loginEndPoint ?? "/auth/github/login")
     }
 }
 

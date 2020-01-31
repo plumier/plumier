@@ -9,9 +9,9 @@ import jwt from "koa-jwt"
 export type RoleField = string | ((value: any) => Promise<string[]>)
 
 export interface JwtAuthFacilityOption {
-    secret: string,
+    secret?: string,
     roleField?: RoleField,
-    global?: (...args:any[]) => void
+    global?: (...args: any[]) => void
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -19,14 +19,16 @@ export interface JwtAuthFacilityOption {
 /* ------------------------------------------------------------------------------- */
 
 export class JwtAuthFacility extends DefaultFacility {
-    constructor(private option: JwtAuthFacilityOption & jwt.Options) { super() }
+    constructor(private option?: JwtAuthFacilityOption & jwt.Options) { super() }
 
     setup(app: Readonly<PlumierApplication>) {
-        Object.assign(app.config, { 
-            enableAuthorization: true, 
-            roleField: this.option.roleField || "role",
-            globalAuthorizationDecorators: this.option.global
-         })
-        app.koa.use(KoaJwt({ cookie: "Authorization", ...this.option, secret: this.option.secret, passthrough: true }))
+        Object.assign(app.config, {
+            enableAuthorization: true,
+            roleField: this.option?.roleField || "role",
+            globalAuthorizationDecorators: this.option?.global
+        })
+        const secret = this.option?.secret ?? process.env.PLUM_JWT_SECRET
+        if(!secret) throw new Error("JWT Secret not provided. Provide secret on JwtAuthFacility constructor or environment variable PLUM_JWT_SECRET")
+        app.koa.use(KoaJwt({ cookie: "Authorization", ...this.option, secret, passthrough: true }))
     }
 }
