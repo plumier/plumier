@@ -12,6 +12,7 @@ describe("Route Generator", () => {
             method() { }
         }
         const app = await fixture(AnimalController)
+            .set({ rootDir: __dirname })
             .initialize()
         await Supertest(app.callback())
             .get("/animal/method")
@@ -121,7 +122,7 @@ describe("Route Generator", () => {
             .expect(200)
     })
 
-    it("Should allow relative root name on non nested controller", async () =>{
+    it("Should allow relative root name on non nested controller", async () => {
         @route.root("beast")
         class AnimalController {
             method() {
@@ -1390,7 +1391,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-                await Supertest(app.callback())
+            await Supertest(app.callback())
                 .get("/beast/method")
                 .expect(200)
         })
@@ -1402,7 +1403,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-                await Supertest(app.callback())
+            await Supertest(app.callback())
                 .get("/beast/method")
                 .expect(200)
         })
@@ -1414,7 +1415,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-                await Supertest(app.callback())
+            await Supertest(app.callback())
                 .get("/beast/method")
                 .expect(200)
         })
@@ -1427,7 +1428,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-                await Supertest(app.callback())
+            await Supertest(app.callback())
                 .get("/beast/no-method")
                 .expect(200)
         })

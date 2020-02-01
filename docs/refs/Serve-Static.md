@@ -17,6 +17,16 @@ const app = new Plumier()
 app.set(new ServeStaticFacility({ root: join(__dirname, "./assets") }))
 ```
 
+If no `root` directory provided it will automatically search for directory named `www` in the same level with the application. 
+
+```typescript
+const app = new Plumier()
+//looks for directory named www
+app.set(new ServeStaticFacility())
+//specify relative directory in the same level 
+app.set(new ServeStaticFacility({ root: "assets" }))
+```
+
 You can serve multiple folder by specifying multiple facility
 
 ```typescript

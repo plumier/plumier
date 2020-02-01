@@ -1,6 +1,7 @@
-import { consoleLog, domain, route } from "@plumier/core"
+import { consoleLog, domain, route, DefaultFacility, PlumierApplication } from "@plumier/core"
 import Plumier, { WebApiFacility } from "plumier"
 import Supertest from "supertest"
+import { join } from "path"
 
 @domain()
 export class AnimalModel {
@@ -127,5 +128,32 @@ describe("DEV_ENV", () => {
             .initialize();
         const mock = (console.log as jest.Mock)
         expect(mock).toBeCalled()
+    })
+})
+
+describe("Root Directory", () => {
+    const fn = jest.fn()
+    class MockFacility extends DefaultFacility {
+        async initialize(app: PlumierApplication) {
+            fn(app.config.rootDir)
+        }
+    }
+    it("Should equals to current directory when not defined", async () => {
+        fn.mockClear()
+        await fixture()
+            .set(new MockFacility())
+            .initialize()
+        const rootDir = fn.mock.calls[0][0]
+        expect(rootDir).toBe(__dirname)
+    })
+
+    it("Should able to specify rootDir", async () => {
+        fn.mockClear()
+        await fixture()
+            .set({ rootDir: "/lorem/ipsum" })
+            .set(new MockFacility())
+            .initialize()
+        const rootDir = fn.mock.calls[0][0]
+        expect(rootDir).toBe("/lorem/ipsum")
     })
 })

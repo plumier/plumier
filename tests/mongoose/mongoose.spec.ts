@@ -23,18 +23,25 @@ async function save<T extends object>(cls: Constructor<T>, value: T) {
     return { model: Model, result }
 }
 
+class AnimalController { get() { } }
+
+function createApp(mode: "production" | "debug" = "production") {
+    return new Plumier()
+        .set(new WebApiFacility({ controller: AnimalController }))
+        .set({ mode })
+}
+
 describe("Mongoose Reference Domain Directly", () => {
     beforeAll(async () => {
         clearCache()
-        const app = new Plumier().set({ mode: "production" })
-        const facility = new MongooseFacility({
-            uri: "mongodb://localhost:27017/test-data"
-        })
-        await facility.initialize(<PlumierApplication>app)
+        await createApp()
+            .set(new MongooseFacility({
+                uri: "mongodb://localhost:27017/test-data"
+            }))
+            .initialize()
     })
 
     afterAll(async () => await Mongoose.disconnect())
-
 
     it("Should generate domain with primitive type", async () => {
         const value = new DomainWithPrimitives("Mimi", false, 5, new Date("2018-1-1"))
@@ -76,14 +83,46 @@ describe("Model Load", () => {
     beforeEach(() => clearCache())
     afterEach(async () => Mongoose.disconnect())
 
+    it("Should be able to use default directory", async () => {
+        consoleLog.startMock()
+        await createApp("debug")
+            .set(new MongooseFacility({
+                uri: "mongodb://localhost:27017/test-data"
+            }))
+            .initialize()
+            expect((console.log as jest.Mock).mock.calls[2][0]).toContain("DomainWithPrimitives")
+            expect((console.log as jest.Mock).mock.calls[3][0]).toContain("DomainWithPrimitives")
+            expect((console.log as jest.Mock).mock.calls[4][0]).toContain("DomainWithArrays")
+            expect((console.log as jest.Mock).mock.calls[5][0]).toContain("DomainWithDomain")
+            expect((console.log as jest.Mock).mock.calls[6][0]).toContain("DomainWithArrayOfDomain")
+            expect((console.log as jest.Mock).mock.calls[7][0]).toContain("DomainWithPrimitivesForTS")
+            consoleLog.clearMock()
+    })
+
+    it("Should be able to transform if rootDir defined", async () => {
+        consoleLog.startMock()
+        await createApp("debug")
+            .set({rootDir: __dirname})
+            .set(new MongooseFacility({
+                uri: "mongodb://localhost:27017/test-data"
+            }))
+            .initialize()
+            expect((console.log as jest.Mock).mock.calls[2][0]).toContain("DomainWithPrimitives")
+            expect((console.log as jest.Mock).mock.calls[3][0]).toContain("DomainWithPrimitives")
+            expect((console.log as jest.Mock).mock.calls[4][0]).toContain("DomainWithArrays")
+            expect((console.log as jest.Mock).mock.calls[5][0]).toContain("DomainWithDomain")
+            expect((console.log as jest.Mock).mock.calls[6][0]).toContain("DomainWithArrayOfDomain")
+            expect((console.log as jest.Mock).mock.calls[7][0]).toContain("DomainWithPrimitivesForTS")
+            consoleLog.clearMock()
+    })
 
     it("Should be able to fill with absolute path", async () => {
-        const facility = new MongooseFacility({
-            model: join(__dirname, "./model/my-domain"),
-            uri: "mongodb://localhost:27017/test-data"
-        })
         consoleLog.startMock()
-        await facility.initialize(<PlumierApplication>new Plumier())
+        await createApp("debug")
+            .set(new MongooseFacility({
+                model: join(__dirname, "./model/my-domain"),
+                uri: "mongodb://localhost:27017/test-data"
+            })).initialize()
         expect((console.log as jest.Mock).mock.calls[2][0]).toContain("DomainWithPrimitives")
         expect((console.log as jest.Mock).mock.calls[3][0]).toContain("DomainWithArrays")
         expect((console.log as jest.Mock).mock.calls[4][0]).toContain("DomainWithDomain")
@@ -92,12 +131,12 @@ describe("Model Load", () => {
     })
 
     it("Should be able to fill with file name .js", async () => {
-        const facility = new MongooseFacility({
-            model: join(__dirname, "./model/jsonly-domain"),
-            uri: "mongodb://localhost:27017/test-data"
-        })
         consoleLog.startMock()
-        await facility.initialize(<PlumierApplication>new Plumier())
+        await createApp("debug")
+            .set(new MongooseFacility({
+                model: join(__dirname, "./model/jsonly-domain"),
+                uri: "mongodb://localhost:27017/test-data"
+            })).initialize()
         expect((console.log as jest.Mock).mock.calls[2][0]).toContain("DomainWithPrimitives")
         consoleLog.clearMock()
     })
@@ -106,12 +145,12 @@ describe("Model Load", () => {
         const jsFile = join(__dirname, "./model/tsonly-domain.js")
         if (existsSync(jsFile))
             unlinkSync(jsFile)
-        const facility = new MongooseFacility({
-            model: join(__dirname, "./model/tsonly-domain"),
-            uri: "mongodb://localhost:27017/test-data"
-        })
         consoleLog.startMock()
-        await facility.initialize(<PlumierApplication>new Plumier())
+        await createApp("debug")
+            .set(new MongooseFacility({
+                model: join(__dirname, "./model/tsonly-domain"),
+                uri: "mongodb://localhost:27017/test-data"
+            })).initialize()
         expect((console.log as jest.Mock).mock.calls[2][0]).toContain("DomainWithPrimitives")
         consoleLog.clearMock()
     })
@@ -129,12 +168,12 @@ describe("Model Load", () => {
                 public name: string,
             ) { }
         }
-        const facility = new MongooseFacility({
-            model: [DomainA, DomainB],
-            uri: "mongodb://localhost:27017/test-data"
-        })
         consoleLog.startMock()
-        await facility.initialize(<PlumierApplication>new Plumier())
+        await createApp("debug")
+            .set(new MongooseFacility({
+                model: [DomainA, DomainB],
+                uri: "mongodb://localhost:27017/test-data"
+            })).initialize()
         expect((console.log as jest.Mock).mock.calls[2][0]).toContain("DomainA")
         expect((console.log as jest.Mock).mock.calls[3][0]).toContain("DomainB")
         consoleLog.clearMock()
@@ -532,19 +571,18 @@ describe("Automatically replace mongodb id into ObjectId on populate data", () =
         const fn = jest.fn()
         class AnimalController {
             @route.get(":id")
-            async get(id:string) {
+            async get(id: string) {
                 fn(typeof id)
             }
         }
         const koa = await fixture(AnimalController, [Image])
-        
+
         await supertest(koa.callback())
             .get("/animal/" + Mongoose.Types.ObjectId())
             .expect(200)
         expect(fn.mock.calls[0][0]).toBe("string")
     })
 })
-
 
 describe("Default MongoDB Uri", () => {
     beforeEach(() => clearCache())
@@ -554,16 +592,18 @@ describe("Default MongoDB Uri", () => {
         const connect = Mongoose.connect
         Mongoose.connect = jest.fn()
         delete process.env.MONGODB_URI
-        const facility = new MongooseFacility()
-        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await createApp()
+            .set(new MongooseFacility())
+            .initialize()
         expect(Mongoose.connect).not.toBeCalled()
         Mongoose.connect = connect
     })
 
     it("Should check for PLUM_MONGODB_URI environment variable", async () => {
         process.env.PLUM_MONGODB_URI = "mongodb://localhost:27017/lorem"
-        const facility = new MongooseFacility()
-        await facility.initialize(<PlumierApplication>new Plumier().set({ mode: "production" }))
+        await createApp()
+            .set(new MongooseFacility())
+            .initialize()
         expect(Mongoose.connection.readyState).toBe(1)
         expect(Mongoose.connection.db.databaseName).toBe("lorem")
     })

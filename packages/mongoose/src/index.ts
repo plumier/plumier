@@ -181,15 +181,17 @@ export class MongooseFacility extends DefaultFacility {
     option: MongooseFacilityOption
     constructor(opts?: MongooseFacilityOption) {
         super()
-        const model = opts?.model ?? "./model"
-        const domain = typeof model === "string" ? isAbsolute(model) ?
-            model : join(dirname(module.parent!.filename), model) : model
-        this.option = { ...opts, model: domain }
+        this.option = { ...opts }
     }
 
     async initialize(app: Readonly<PlumierApplication>) {
+        //default config 
+        const optModel = this.option.model ?? "./model"
+        const model = typeof optModel === "string" ? isAbsolute(optModel) ?
+            optModel : join(app.config.rootDir, optModel) : optModel
+        const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
         //generate schemas
-        const collections = reflectPath(this.option.model!)
+        const collections = reflectPath(model)
             .filter((x): x is ClassReflection => x.kind === "Class")
             .filter(x => x.decorators.some((x: MongooseCollectionDecorator) => x.type == "MongooseCollectionDecorator"))
         if (app.config.mode === "debug") {
@@ -200,7 +202,6 @@ export class MongooseFacility extends DefaultFacility {
         //register custom converter
         app.set({ typeConverterVisitors: [relationToObjectIdVisitor] })
         Mongoose.set("useUnifiedTopology", true)
-        const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
         if (uri)
             await Mongoose.connect(uri, { useNewUrlParser: true })
     }

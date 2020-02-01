@@ -374,7 +374,12 @@ export interface Configuration {
     /**
      * Enable/disable authorization, when enabled all routes will be private by default. Default false
      */
-    enableAuthorization: boolean
+    enableAuthorization: boolean,
+
+    /**
+     * Root directory of the application, usually __dirname
+     */
+    rootDir:string
 }
 
 export interface PlumierConfiguration extends Configuration {

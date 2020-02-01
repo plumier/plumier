@@ -63,6 +63,58 @@ describe("Serve File From Controller", () => {
 })
 
 describe("Serve Files", () => {
+    it("Should looks for www directory by default", async () => {
+        class HomeController {
+            @route.get("/")
+            index() {
+                return "Hello"
+            }
+        }
+        const app = fixture(HomeController)
+        app.set(new ServeStaticFacility())
+        const koa = await app.initialize()
+        const result = await Supertest(koa.callback())
+            .get("/index.html")
+            .expect(200)
+        expect(result.type).toBe("text/html")
+        expect(result.text).toMatchSnapshot()
+    })
+
+    it("Should looks for correct directory if rootDir provided", async () => {
+        class HomeController {
+            @route.get("/")
+            index() {
+                return "Hello"
+            }
+        }
+        const app = fixture(HomeController)
+            .set({ rootDir: __dirname })
+            .set(new ServeStaticFacility())
+        const koa = await app.initialize()
+        const result = await Supertest(koa.callback())
+            .get("/index.html")
+            .expect(200)
+        expect(result.type).toBe("text/html")
+        expect(result.text).toMatchSnapshot()
+    })
+
+    it("Should be able to serve files using relative directory", async () => {
+        class HomeController {
+            @route.get("/")
+            index() {
+                return "Hello"
+            }
+        }
+        const app = fixture(HomeController)
+        app.set(new ServeStaticFacility({ root: "assets" }))
+        const koa = await app.initialize()
+        const result = await Supertest(koa.callback())
+            .get("/index.html")
+            .expect(200)
+        expect(result.type).toBe("text/html")
+        expect(result.text).toMatchSnapshot()
+    })
+
     it("Should be able to serve files", async () => {
         const root = join(__dirname, "./assets");
         class HomeController {

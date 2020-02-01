@@ -32,7 +32,8 @@ export class Plumier implements PlumierApplication {
             middlewares: [],
             facilities: [],
             roleField: "role",
-            enableAuthorization:false
+            enableAuthorization: false,
+            rootDir: "__UNSET__"
         }
     }
 
@@ -59,7 +60,9 @@ export class Plumier implements PlumierApplication {
                 Object.assign(this.config, { mode: "production" })
             //get file location of script who initialized the application to calculate the controller path
             //module.parent.parent.filename -> because Plumier app also exported in plumier/src/index.ts
-            let routes: RouteInfo[] = generateRoutes(dirname(module.parent!.parent!.filename), this.config.controller)
+            if (this.config.rootDir === "__UNSET__")
+                (this.config as Configuration).rootDir = dirname(module.parent!.parent!.filename)
+            let routes: RouteInfo[] = generateRoutes(this.config.rootDir, this.config.controller)
             for (const facility of this.config.facilities) {
                 await facility.initialize(this, routes)
             }

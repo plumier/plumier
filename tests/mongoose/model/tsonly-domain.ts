@@ -1,7 +1,7 @@
 import { collection } from '@plumier/mongoose';
 
 @collection()
-export class DomainWithPrimitives {
+export class DomainWithPrimitivesForTS {
     constructor(
         public name: string,
         public deceased: boolean,
