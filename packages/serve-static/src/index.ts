@@ -19,7 +19,7 @@ import mime from "mime-types"
 import { extname } from "path"
 import { decorateMethod } from "tinspector"
 import { promisify } from "util"
-
+import { isAbsolute, join } from "path"
 
 const existsAsync = promisify(exists)
 
@@ -45,7 +45,7 @@ export interface ServeStaticOptions {
     /** 
      * Root directory of static assets 
      **/
-    root: string
+    root?: string
 
     /** 
      * Browser cache max-age in milliseconds. (defaults to 0) 
@@ -111,7 +111,7 @@ export class ServeStaticMiddleware implements Middleware {
     constructor(public option: ServeStaticOptions) { }
 
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
-        if(this.option.rootPath && !this.option.rootPath.startsWith("/"))
+        if (this.option.rootPath && !this.option.rootPath.startsWith("/"))
             this.option.rootPath = "/" + this.option.rootPath
         const rootPath = this.option.rootPath || ""
         //no route = no controller = possibly static file request
@@ -183,13 +183,14 @@ function httpMethodCheck(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyze
 // --------------------------------------------------------------------- //
 
 export class ServeStaticFacility extends DefaultFacility {
-    constructor(public option: ServeStaticOptions) { super() }
+    constructor(public option?: ServeStaticOptions) { super() }
 
-    setup(app: Readonly<PlumierApplication>) {
+    async initialize(app: Readonly<PlumierApplication>) {
         const analyzers = (app.config.analyzers || []).concat([multipleDecoratorsCheck, httpMethodCheck])
         Object.assign(app.config, { analyzers })
-        app.use(new ServeStaticMiddleware(this.option))
+        const dir = this.option?.root ?? "www"
+        const root = isAbsolute(dir) ? dir : join(app.config.rootDir, dir)
+        app.use(new ServeStaticMiddleware({ ...this.option, root }))
         app.use(new HistoryApiFallbackMiddleware())
     }
 }
-
