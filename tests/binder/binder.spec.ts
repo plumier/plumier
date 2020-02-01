@@ -2,12 +2,14 @@ import { JwtAuthFacility } from "@plumier/jwt"
 import { IncomingMessage, ServerResponse } from "http"
 import { sign } from "jsonwebtoken"
 import { Context, Request } from "koa"
-import { bind, domain, route, val } from "plumier"
+import Plumier, { bind, domain, route, val, WebApiFacility, Class } from "plumier"
 import Supertest from "supertest"
 import reflect from "tinspector"
 import { Result } from "typedconverter"
+import { join } from "path"
 
 import { fixture } from "../helper"
+import { FormFile } from 'core/src/types'
 
 export class AnimalModel {
     constructor(
@@ -1109,6 +1111,45 @@ describe("Parameter Binding", () => {
             await Supertest((await fixture(AnimalController).initialize()).callback())
                 .get("/animal/get?id=747474&name=Mimi&deceased=ON&birthday=2018-1-1")
                 .expect(200, { id: 747474, name: "Mimi", deceased: true, birthday: new Date("2018-1-1").toISOString() })
+        })
+    })
+
+    describe("File parameter binding", () => {
+        function createApp(controller: Class) {
+            return new Plumier()
+                .set(new WebApiFacility({ controller, bodyParser: { multipart: true } }))
+                .set({ mode: "production" })
+                .initialize()
+        }
+
+        it("Should able to bind file", async () => {
+            class AnimalController {
+                @route.post()
+                save(file: FormFile) {
+                    return { name: file.name, type: file.type }
+                }
+            }
+            const { body } = await Supertest((await createApp(AnimalController)).callback())
+                .post("/animal/save")
+                .attach("file", join(__dirname, "./files/clock.jpeg"))
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+
+        it("Should able to bind array of files", async () => {
+            class AnimalController {
+                @route.post()
+                save(file: FormFile[]) {
+                    return file.map(f => ({ name: f.name, type: f.type }))
+                }
+            }
+            const { body } = await Supertest((await createApp(AnimalController)).callback())
+                .post("/animal/save")
+                .attach("file", join(__dirname, "./files/clock.jpeg"))
+                .attach("file", join(__dirname, "./files/dice.png"))
+                .attach("file", join(__dirname, "./files/index.html"))
+                .expect(200)
+            expect((body as any[]).sort((a, b) => a.name - b.name)).toMatchSnapshot()
         })
     })
 })

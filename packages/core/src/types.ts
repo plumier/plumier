@@ -300,10 +300,17 @@ export interface CustomValidator {
 }
 
 
-
 // --------------------------------------------------------------------- //
 // ----------------------------- MULTIPART ----------------------------- //
 // --------------------------------------------------------------------- //
+
+export interface FormFile {
+    size:number
+    path:string
+    name:string
+    type:string
+    mtime?:string
+}
 
 export interface FileUploadInfo {
     field: string,

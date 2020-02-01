@@ -273,6 +273,62 @@ body:
 
 Above code, the `animal` parameter in `save` action will automatically bound with request body.
 
+## File Binding 
+Unlike File Parser parameter binding, File binding works like name binding and retrieve file(s) that already parsed into the parameter. Parameter type should be of type `FormFile`. 
+
+```typescript
+interface FormFile {
+    size:number
+    path:string
+    name:string
+    type:string
+    mtime?:string
+}
+```
+
+* `size`: Size of the file (bytes)
+* `path`: Temporary path of the uploaded file
+* `name`: File name provided by client
+* `type`: Mime type of the file 
+* `mtime`: The file timestamp
+
+By default this feature is not enable, you need to enable this feature like below: 
+
+```typescript
+new Plumier()
+    .set(new WebApiFacility({ bodyParser: { multipart: true } }))
+```
+
+Than on the controller simply do something like below
+
+```typescript 
+class PictureController {
+    @route.post()
+    save(image: FormFile) {
+        
+    }
+}
+```
+
+Above code will handle multipart form below
+
+```html
+<form method="post" enctype="multipart/form-data" action="/picture/save">
+    <input type="file" name="image"/>
+    <input type="submit" value="Upload"/>
+</form>
+```
+
+For multiple file upload, method's parameter can be specified using array like below
+
+```typescript 
+class PictureController {
+    @route.post()
+    save(image: FormFile[]) {
+        
+    }
+}
+```
 
 ## Behavior
 In order to properly bound the request, plumier use priority based on parameter binding kind above.

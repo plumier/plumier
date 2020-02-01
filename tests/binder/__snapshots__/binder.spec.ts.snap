@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Parameter Binding File parameter binding Should able to bind array of files 1`] = `
+Array [
+  Object {
+    "name": "clock.jpeg",
+    "type": "image/jpeg",
+  },
+  Object {
+    "name": "dice.png",
+    "type": "image/png",
+  },
+  Object {
+    "name": "index.html",
+    "type": "text/html",
+  },
+]
+`;
+
+exports[`Parameter Binding File parameter binding Should able to bind file 1`] = `
+Object {
+  "name": "clock.jpeg",
+  "type": "image/jpeg",
+}
+`;
