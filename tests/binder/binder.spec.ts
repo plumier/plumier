@@ -1126,7 +1126,7 @@ describe("Parameter Binding", () => {
             class AnimalController {
                 @route.post()
                 save(file: FormFile) {
-                    return { name: file.name, type: file.type, size: file.size }
+                    return { name: file.name, type: file.type }
                 }
             }
             const { body } = await Supertest((await createApp(AnimalController)).callback())
@@ -1140,7 +1140,7 @@ describe("Parameter Binding", () => {
             class AnimalController {
                 @route.post()
                 save(file: FormFile[]) {
-                    return file.map(f => ({ name: f.name, type: f.type, size: f.size }))
+                    return file.map(f => ({ name: f.name, type: f.type }))
                 }
             }
             const { body } = await Supertest((await createApp(AnimalController)).callback())
