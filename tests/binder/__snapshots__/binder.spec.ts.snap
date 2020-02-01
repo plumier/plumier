@@ -3,6 +3,11 @@
 exports[`Parameter Binding File parameter binding Should able to bind array of files 1`] = `
 Array [
   Object {
+    "name": "index.html",
+    "size": 385,
+    "type": "text/html",
+  },
+  Object {
     "name": "clock.jpeg",
     "size": 35933,
     "type": "image/jpeg",
@@ -11,11 +16,6 @@ Array [
     "name": "dice.png",
     "size": 39545,
     "type": "image/png",
-  },
-  Object {
-    "name": "index.html",
-    "size": 385,
-    "type": "text/html",
   },
 ]
 `;

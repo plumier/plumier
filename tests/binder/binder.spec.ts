@@ -1115,15 +1115,12 @@ describe("Parameter Binding", () => {
     })
 
     describe("File parameter binding", () => {
-
-
         function createApp(controller: Class) {
             return new Plumier()
                 .set(new WebApiFacility({ controller, bodyParser: { multipart: true } }))
                 .set({ mode: "production" })
                 .initialize()
         }
-
 
         it("Should able to bind file", async () => {
             class AnimalController {
@@ -1152,7 +1149,7 @@ describe("Parameter Binding", () => {
                 .attach("file", join(__dirname, "./files/dice.png"))
                 .attach("file", join(__dirname, "./files/index.html"))
                 .expect(200)
-            expect(body).toMatchSnapshot()
+            expect((body as any[]).sort((a, b) => a.size - b.size)).toMatchSnapshot()
         })
     })
 })
