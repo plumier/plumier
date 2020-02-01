@@ -46,7 +46,10 @@ function bindDecorator(ctx: Context, par: ParameterReflection): any {
 }
 
 function bindByName(ctx: Context, par: ParameterReflection): any {
-    return getProperty(ctx.request.query, par.name) || getProperty(ctx.request.body, par.name) || NEXT
+    return getProperty(ctx.request.query, par.name) 
+    || getProperty(ctx.request.body, par.name) 
+    || getProperty((ctx.request as any).files, par.name)
+    || NEXT
 }
 
 function chain(...binder: Binder[]) {
