@@ -345,6 +345,19 @@ Object {
 }
 `;
 
+exports[`Enums Validation Should able to use custom message 1`] = `
+Array [
+  Object {
+    "messages": Array [
+      "lorem ipsum",
+    ],
+    "path": Array [
+      "gender",
+    ],
+  },
+]
+`;
+
 exports[`Enums Validation Should return prover invalid message 1`] = `
 Array [
   Object {
@@ -356,6 +369,193 @@ Array [
     ],
   },
 ]
+`;
+
+exports[`File Validation Should able to use custom file size validation message 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "lorem ipsum",
+      ],
+      "path": Array [
+        "file",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`File Validation Should able to use custom mime type validation message 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "lorem ipsum",
+      ],
+      "path": Array [
+        "file",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`File Validation Should able to validate file size 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "File size exceed the limit allowed",
+      ],
+      "path": Array [
+        "file",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`File Validation Should able to validate file size in array of files 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "File size exceed the limit allowed",
+      ],
+      "path": Array [
+        "file",
+        "2",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`File Validation Should able to validate file size using number 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "File size exceed the limit allowed",
+      ],
+      "path": Array [
+        "file",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`File Validation Should able to validate mime type 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Invalid file type",
+      ],
+      "path": Array [
+        "file",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`File Validation Should able to validate mime type in array 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Invalid file type",
+      ],
+      "path": Array [
+        "file",
+        "1",
+      ],
+    },
+    Object {
+      "messages": Array [
+        "Invalid file type",
+      ],
+      "path": Array [
+        "file",
+        "2",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Image Validation Should able to use custom file size validation message 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "lorem ipsum",
+      ],
+      "path": Array [
+        "file",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Image Validation Should able to use custom image validation message 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "lorem ipsum",
+      ],
+      "path": Array [
+        "file",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Image Validation Should able to validate image size 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "File size exceed the limit allowed",
+      ],
+      "path": Array [
+        "file",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Image Validation Should not allow html 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Invalid image file",
+      ],
+      "path": Array [
+        "file",
+      ],
+    },
+  ],
+  "status": 422,
+}
 `;
 
 exports[`Validation Parameter should be optional by default 1`] = `Object {}`;
