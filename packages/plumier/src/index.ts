@@ -12,6 +12,7 @@ export {
     AuthorizerContext, CustomMiddleware, CustomMiddlewareFunction, FormFile
 } from "@plumier/core"
 export * from "./facility"
+import "./validator"
 
 import { Plumier } from "./application"
 export default Plumier

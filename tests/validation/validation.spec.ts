@@ -1,4 +1,4 @@
-import { DefaultDependencyResolver, CustomValidatorFunction } from "@plumier/core"
+import { DefaultDependencyResolver, CustomValidatorFunction, FormFile, Class } from "@plumier/core"
 import Plumier, {
     AsyncValidatorResult,
     CustomValidator,
@@ -11,6 +11,7 @@ import Plumier, {
 } from "plumier"
 import Supertest from "supertest"
 import reflect from "tinspector"
+import { join } from "path"
 
 import { fixture } from "../helper"
 
@@ -170,7 +171,6 @@ describe("Decouple Validation Logic", () => {
                 return "Only 18+ allowed"
         }
     }
-
 
     it("Should validate using decouple logic from setting", async () => {
         const koa = await fixture(PersonController, { dependencyResolver: resolver }).initialize()
@@ -659,5 +659,241 @@ describe("Enums Validation", () => {
             .get("/animal/get?gender=SemiFemale")
             .expect(422)
         expect(body.message).toMatchSnapshot()
+    })
+
+    it("Should able to use custom message", async () => {
+        class AnimalController {
+            get(@val.enums({ enums: ["Male", "Female"], message: "lorem ipsum" }) gender: "Male" | "Female") { }
+        }
+        const koa = await fixture(AnimalController).initialize()
+        const { body } = await Supertest(koa.callback())
+            .get("/animal/get?gender=SemiFemale")
+            .expect(422)
+        expect(body.message).toMatchSnapshot()
+    })
+})
+
+describe("File Validation", () => {
+    function createApp(controller: Class) {
+        return new Plumier()
+            .set(new WebApiFacility({ controller, bodyParser: { multipart: true } }))
+            .set({ mode: "production" })
+            .initialize()
+    }
+
+    it("Should able to validate file size", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.file("2Mb") file: FormFile) {
+                return { name: file.name, type: file.type }
+            }
+        }
+        await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/dice.png"))
+            .expect(200)
+        const { body } = await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/big-image.jpg"))
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should able to validate file size using number", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.file(2 * 1024 * 1024) file: FormFile) {
+                return { name: file.name, type: file.type }
+            }
+        }
+        await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/dice.png"))
+            .expect(200)
+        const { body } = await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/big-image.jpg"))
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should able to validate file size in array of files", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.file("2Mb") file: FormFile[]) { }
+        }
+        const { body } = await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/dice.png"))
+            .attach("file", join(__dirname, "./assets/index.html"))
+            .attach("file", join(__dirname, "./assets/big-image.jpg"))
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should able to validate mime type", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.file({ mime: "html" }) file: FormFile) {
+                return { name: file.name, type: file.type }
+            }
+        }
+        await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/index.html"))
+            .expect(200)
+        const { body } = await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/dice.png"))
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should able to validate mime type in array", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.file({ mime: "html" }) file: FormFile) {
+                return { name: file.name, type: file.type }
+            }
+        }
+        const { body } = await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/index.html"))
+            .attach("file", join(__dirname, "./assets/dice.png"))
+            .attach("file", join(__dirname, "./assets/clock.jpeg"))
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should able to use custom file size validation message", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.file({ maxSize: "2Mb", invalidSizeMessage: "lorem ipsum" }) file: FormFile) {
+                return { name: file.name, type: file.type }
+            }
+        }
+        const { body } = await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/big-image.jpg"))
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should able to use custom mime type validation message", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.file({ mime: "html", invalidMimeMessage: "lorem ipsum" }) file: FormFile) {
+                return { name: file.name, type: file.type }
+            }
+        }
+        const { body } = await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/dice.png"))
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+})
+
+describe("Image Validation", () => {
+    function createApp(controller: Class) {
+        return new Plumier()
+            .set(new WebApiFacility({ controller, bodyParser: { multipart: true } }))
+            .set({ mode: "production" })
+            .initialize()
+    }
+
+    it("Should allow jpeg", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.image() file: FormFile) {
+                return { name: file.name, type: file.type }
+            }
+        }
+        await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/clock.jpeg"))
+            .expect(200)
+    })
+
+    it("Should allow png", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.image() file: FormFile) {
+                return { name: file.name, type: file.type }
+            }
+        }
+        await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/dice.png"))
+            .expect(200)
+    })
+
+    it("Should allow gif", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.image() file: FormFile) {
+                return { name: file.name, type: file.type }
+            }
+        }
+        await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/earth.gif"))
+            .expect(200)
+    })
+
+    it("Should not allow html", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.image() file: FormFile) {
+                return { name: file.name, type: file.type }
+            }
+        }
+        const { body } = await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/index.html"))
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should able to validate image size", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.image("2Mb") file: FormFile) {
+                return { name: file.name, type: file.type }
+            }
+        }
+        const { body } = await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/big-image.jpg"))
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should able to use custom file size validation message", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.image({ maxSize: "2Mb", invalidSizeMessage: "lorem ipsum" }) file: FormFile) {
+                return { name: file.name, type: file.type }
+            }
+        }
+        const { body } = await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/big-image.jpg"))
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should able to use custom image validation message", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.image({ invalidImageMessage: "lorem ipsum" }) file: FormFile) {
+                return { name: file.name, type: file.type }
+            }
+        }
+        const { body } = await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/index.html"))
+            .expect(422)
+        expect(body).toMatchSnapshot()
     })
 })
