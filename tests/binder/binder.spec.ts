@@ -2,14 +2,13 @@ import { JwtAuthFacility } from "@plumier/jwt"
 import { IncomingMessage, ServerResponse } from "http"
 import { sign } from "jsonwebtoken"
 import { Context, Request } from "koa"
-import Plumier, { bind, domain, route, val, WebApiFacility, Class } from "plumier"
+import Plumier, { bind, domain, route, val, WebApiFacility, Class, FormFile } from "plumier"
 import Supertest from "supertest"
 import reflect from "tinspector"
 import { Result } from "typedconverter"
 import { join } from "path"
 
 import { fixture } from "../helper"
-import { FormFile } from 'core/src/types'
 
 export class AnimalModel {
     constructor(
