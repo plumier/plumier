@@ -1149,7 +1149,7 @@ describe("Parameter Binding", () => {
                 .attach("file", join(__dirname, "./files/dice.png"))
                 .attach("file", join(__dirname, "./files/index.html"))
                 .expect(200)
-            expect((body as any[]).sort((a, b) => a.name - b.name)).toMatchSnapshot()
+            expect((body as any[]).sort((a, b) => a.name < b.name ? 1 : a.name > b.name ? -1 : 0)).toMatchSnapshot()
         })
     })
 })
