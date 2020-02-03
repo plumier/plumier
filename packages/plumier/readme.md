@@ -6,29 +6,8 @@ Delightful Node.js Rest Framework
 [![Coverage Status](https://coveralls.io/repos/github/plumier/plumier/badge.svg?branch=master)](https://coveralls.io/github/plumier/plumier?branch=master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/plumier/plumier.svg)](https://greenkeeper.io/)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
-
-## Blog Posts and Publications
-
-* [Reason, motivation and how Plumier designed](https://medium.com/hackernoon/i-spent-a-year-to-reinvent-a-node-js-framework-b3b0b1602ad5)
-* [How to use Plumier with mongoose](https://hackernoon.com/create-secure-restful-api-with-plumier-and-mongoose-3ngz32lu)
-* [Advanced usage of Plumier middleware to perform AOP and metaprogramming](https://hackernoon.com/adding-an-auditing-system-into-a-rest-api-4fbb522240ea)
-
-
-## Documentation
-Go to Plumier [documentation](https://plumierjs.com) for complete documentation and tutorial
-
-
-## Tutorials
-
-* [Basic REST api tutorial using Knex.js](https://plumierjs.com/docs/tutorials/basic-sql/get-started)
-  
-## Examples 
-
-* [Basic REST API with Knex.js](https://github.com/plumier/tutorial-todo-sql-backend)
-* [Basic REST api with Mongoose](https://github.com/plumier/tutorial-todo-mongodb-backend)
-* [Plumier - React - Monorepo - Social Login](https://github.com/plumier/tutorial-monorepo-social-login)
-* [Plumier - Vue.js - Monorepo - Social Login](https://github.com/plumier/tutorial-social-login-vue)
-* [Plumier - React Native - Monorepo](https://github.com/plumier/tutorial-todo-monorepo-react-native)
+![npm (canary)](https://img.shields.io/npm/v/plumier/canary)
+![npm (latest)](https://img.shields.io/npm/v/plumier/latest)
 
 ## Motivation
 
@@ -64,7 +43,7 @@ Plumier provided some built-in functionalities that work in the background to ma
 ```typescript 
 class AnimalsController {
     @route.get()
-    list(offset:number, @val.range({ min: 1 }) limit:number) {
+    list(offset:number, @val.int({ min: 1 }) limit:number) {
         //implementation
     }
 }
@@ -194,9 +173,29 @@ Above is a full stack benchmark (routing, body parser, validator, type conversio
 Creating lightweight framework is not easy, from result above Plumier only 1.84% slower than Koa (its base framework) in the other hand Nest 10.89% and Loopback 4 is 80% slower than their base framework.
 
 ## Requirements
+* Node.js >= 10.0.0
 * TypeScript
-* NodeJS >= 10.0.0
-* Visual Studio Code
+
+## Blog Posts and Publications
+* [Reason, motivation and how Plumier designed](https://medium.com/hackernoon/i-spent-a-year-to-reinvent-a-node-js-framework-b3b0b1602ad5)
+* [How to use Plumier with mongoose](https://hackernoon.com/create-secure-restful-api-with-plumier-and-mongoose-3ngz32lu)
+* [Advanced usage of Plumier middleware to perform AOP and metaprogramming](https://hackernoon.com/adding-an-auditing-system-into-a-rest-api-4fbb522240ea)
+
+
+## Documentation
+Go to Plumier [documentation](https://plumierjs.com) for complete documentation and tutorial
+
+## Tutorials
+
+* [Basic REST api tutorial using Knex.js](https://plumierjs.com/docs/tutorials/basic-sql/get-started)
+  
+## Examples 
+
+* [Basic REST API with Knex.js](https://github.com/plumier/tutorial-todo-sql-backend)
+* [Basic REST api with Mongoose](https://github.com/plumier/tutorial-todo-mongodb-backend)
+* [Plumier - React - Monorepo - Social Login](https://github.com/plumier/tutorial-monorepo-social-login)
+* [Plumier - Vue.js - Monorepo - Social Login](https://github.com/plumier/tutorial-social-login-vue)
+* [Plumier - React Native - Monorepo](https://github.com/plumier/tutorial-todo-monorepo-react-native)
 
 ## Contributing
 To run Plumier project on local machine, some setup/app required

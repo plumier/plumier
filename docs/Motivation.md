@@ -35,7 +35,7 @@ Plumier provided some built-in functionalities that work in the background to ma
 ```typescript 
 class AnimalsController {
     @route.get()
-    list(offset:number, @val.range({ min: 1 }) limit:number) {
+    list(offset:number, @val.int({ min: 1 }) limit:number) {
         //implementation
     }
 }
