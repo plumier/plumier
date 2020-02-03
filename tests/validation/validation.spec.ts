@@ -1,4 +1,4 @@
-import { DefaultDependencyResolver, CustomValidatorFunction, FormFile, Class } from "@plumier/core"
+import { DefaultDependencyResolver, CustomValidatorFunction, FormFile, Class, bind } from "@plumier/core"
 import Plumier, {
     AsyncValidatorResult,
     CustomValidator,
@@ -692,6 +692,20 @@ describe("File Validation", () => {
             .post("/animal/save")
             .attach("file", join(__dirname, "./assets/dice.png"))
             .expect(200)
+        const { body } = await Supertest((await createApp(AnimalController)).callback())
+            .post("/animal/save")
+            .attach("file", join(__dirname, "./assets/big-image.jpg"))
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should able to validate file size with file binding decorator", async () => {
+        class AnimalController {
+            @route.post()
+            save(@val.file("2Mb") @bind.formFile("file") data: FormFile) {
+                return { name: data.name, type: data.type }
+            }
+        }
         const { body } = await Supertest((await createApp(AnimalController)).callback())
             .post("/animal/save")
             .attach("file", join(__dirname, "./assets/big-image.jpg"))
