@@ -106,6 +106,15 @@ export namespace bind {
     }
 
     /**
+     * Bind file upload into parameter
+     *    
+     *     method(@bind.file("file") cookie:FormFile){}
+     */
+    export function file(name: string) {
+        return bind.custom(ctx => (ctx.request as any).files?.[name])
+    }
+
+    /**
      * Bind custom part of Koa context into parameter
      * example:
      * 

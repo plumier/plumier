@@ -23,3 +23,18 @@ Object {
   "type": "image/jpeg",
 }
 `;
+
+exports[`Parameter Binding File parameter binding Should able to bind file using decorator 1`] = `
+Object {
+  "name": "clock.jpeg",
+  "type": "image/jpeg",
+}
+`;
+
+exports[`Parameter Binding File parameter binding Should not error when provided file binder decorator but provided no files 1`] = `
+Array [
+  Array [
+    undefined,
+  ],
+]
+`;

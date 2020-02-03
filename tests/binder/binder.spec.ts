@@ -1135,6 +1135,35 @@ describe("Parameter Binding", () => {
             expect(body).toMatchSnapshot()
         })
 
+        it("Should able to bind file using decorator", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.file("file") data: FormFile) {
+                    return { name: data.name, type: data.type }
+                }
+            }
+            const { body } = await Supertest((await createApp(AnimalController)).callback())
+                .post("/animal/save")
+                .attach("file", join(__dirname, "./files/clock.jpeg"))
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+
+        it("Should not error when provided file binder decorator but provided no files", async () => {
+            const fn = jest.fn()
+            class AnimalController {
+                @route.post()
+                save(@bind.file("file") data: FormFile) {
+                    fn(data)
+                }
+            }
+            await Supertest((await createApp(AnimalController)).callback())
+                .post("/animal/save")
+                .expect(200)
+            expect(fn).toBeCalled()
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+
         it("Should able to bind array of files", async () => {
             class AnimalController {
                 @route.post()
