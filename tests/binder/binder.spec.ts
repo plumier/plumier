@@ -1179,6 +1179,20 @@ describe("Parameter Binding", () => {
                 .expect(200)
             expect((body as any[]).sort((a, b) => a.name < b.name ? 1 : a.name > b.name ? -1 : 0)).toMatchSnapshot()
         })
+
+        it("Should not error when provided array of files but received single file", async () => {
+            class AnimalController {
+                @route.post()
+                save(file: FormFile[]) {
+                    return file.map(f => ({ name: f.name, type: f.type }))
+                }
+            }
+            const { body } = await Supertest((await createApp(AnimalController)).callback())
+                .post("/animal/save")
+                .attach("file", join(__dirname, "./files/clock.jpeg"))
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
     })
 })
 

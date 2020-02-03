@@ -85,7 +85,7 @@ function generateSchema(opt: Class[], registry: SchemaRegistry, generator?: Sche
 
 function noArrayTypeInfoTest(domain: ClassReflection): AnalysisResult[] {
     return domain.properties
-        .map(x => (x.type === Array) ?
+        .map(x => (Array.isArray(x.type) && x.type[0] === Object) ?
             <AnalysisResult>{ message: ArrayHasNoTypeInfo.format(domain.name, x.name), type: "error" } : undefined)
         .filter((x): x is AnalysisResult => Boolean(x))
 }

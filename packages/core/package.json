@@ -24,9 +24,9 @@
     "chalk": "^3.0.0",
     "glob": "^7.1.6",
     "path-to-regexp": "^6.1.0",
-    "tinspector": "^2.2.9",
+    "tinspector": "^2.2.10",
     "tslib": "^1.10.0",
-    "typedconverter": "^2.1.0"
+    "typedconverter": "^2.2.0"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"
