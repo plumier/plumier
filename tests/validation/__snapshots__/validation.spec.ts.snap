@@ -452,6 +452,22 @@ Object {
 }
 `;
 
+exports[`File Validation Should able to validate file size with file binding decorator 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "File size exceed the limit allowed",
+      ],
+      "path": Array [
+        "data",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
 exports[`File Validation Should able to validate mime type 1`] = `
 Object {
   "message": Array [

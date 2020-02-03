@@ -1138,7 +1138,7 @@ describe("Parameter Binding", () => {
         it("Should able to bind file using decorator", async () => {
             class AnimalController {
                 @route.post()
-                save(@bind.file("file") data: FormFile) {
+                save(@bind.formFile("file") data: FormFile) {
                     return { name: data.name, type: data.type }
                 }
             }
@@ -1153,7 +1153,7 @@ describe("Parameter Binding", () => {
             const fn = jest.fn()
             class AnimalController {
                 @route.post()
-                save(@bind.file("file") data: FormFile) {
+                save(@bind.formFile("file") data: FormFile) {
                     fn(data)
                 }
             }

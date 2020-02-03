@@ -110,7 +110,7 @@ export namespace bind {
      *    
      *     method(@bind.file("file") cookie:FormFile){}
      */
-    export function file(name: string) {
+    export function formFile(name: string) {
         return bind.custom(ctx => (ctx.request as any).files?.[name])
     }
 
