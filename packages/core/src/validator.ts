@@ -91,7 +91,7 @@ function validateSync(ctx: ActionContext, visitors: tc.VisitorExtension[]): Vali
         const rawParameter = ctx.parameters[index]
         const parValue = tc.validate(rawParameter, {
             decorators: parMeta.decorators, path: parMeta.name, type: parMeta.type || Object,
-            visitors, guessArrayElement: !!ctx.is("urlencoded")
+            visitors, guessArrayElement: !!ctx.is("urlencoded") || !!ctx.is("multipart")
         })
         result.push(parValue.value)
         if (parValue.issues)

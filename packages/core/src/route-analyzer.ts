@@ -42,7 +42,7 @@ function traverseArray(parent: string, par: PropOrParamReflection[]): string[] {
       return models.map((x, i) => traverseArray(x.meta.name, x.meta.properties))
          .flatten()
    }
-   return par.filter(x => x.type === Array)
+   return par.filter(x => Array.isArray(x.type) && x.type[0] === Object)
       .map(x => `${parent}.${x.name}`)
 }
 
