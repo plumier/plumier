@@ -6,6 +6,12 @@ import { Class } from "./common"
 import { HttpStatus } from "./http-status"
 import { SetOption } from 'cookies'
 import { RoleField } from './authorization'
+import { domain } from './decorator'
+import { join, extname } from "path"
+import { copyFile, createReadStream } from 'fs'
+import { promisify } from "util"
+
+const copyFileAsync = promisify(copyFile)
 
 // --------------------------------------------------------------------- //
 // --------------------------- ACTION RESULT --------------------------- //
@@ -304,12 +310,29 @@ export interface CustomValidator {
 // ----------------------------- MULTIPART ----------------------------- //
 // --------------------------------------------------------------------- //
 
-export interface FormFile {
-    size:number
-    path:string
-    name:string
-    type:string
-    mtime?:string
+@domain()
+export class FormFile {
+    constructor(
+        public size: number,
+        public path: string,
+        public name: string,
+        public type: string,
+        public mtime?: string,
+    ) { }
+
+    /**
+     * Copy uploaded file into target directory, file name automatically generated
+     * @param dir target directory
+     * @returns the full path of the new location { fullPath, name }
+     */
+    async copy(dir: string) {
+        const random = Math.round((Math.random() * 10000)).toString(36)
+        const time = new Date().getTime().toString(36)
+        const name = time + random + extname(this.name)
+        const fullPath = join(dir, name)
+        await copyFileAsync(this.path, fullPath)
+        return { fullPath, name }
+    }
 }
 
 export interface FileUploadInfo {
@@ -386,7 +409,7 @@ export interface Configuration {
     /**
      * Root directory of the application, usually __dirname
      */
-    rootDir:string
+    rootDir: string
 }
 
 export interface PlumierConfiguration extends Configuration {

@@ -31,6 +31,16 @@ Object {
 }
 `;
 
+exports[`Parameter Binding File parameter binding Should able to instantiate FormFile without error 1`] = `
+FormFile {
+  "mtime": "2018-1-1",
+  "name": "file.jpg",
+  "path": "/docs/file.jpg",
+  "size": 200,
+  "type": "image/jpeg",
+}
+`;
+
 exports[`Parameter Binding File parameter binding Should not error when provided array of files but received single file 1`] = `
 Array [
   Object {

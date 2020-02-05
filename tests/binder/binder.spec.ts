@@ -7,6 +7,11 @@ import Supertest from "supertest"
 import reflect from "tinspector"
 import { Result } from "typedconverter"
 import { join } from "path"
+import { exists, unlink } from "fs"
+import { promisify } from "util"
+
+const existsAsync = promisify(exists)
+const unlinkAsync = promisify(unlink)
 
 import { fixture } from "../helper"
 
@@ -1121,6 +1126,10 @@ describe("Parameter Binding", () => {
                 .initialize()
         }
 
+        it("Should able to instantiate FormFile without error", () => {
+            expect(new FormFile(200, "/docs/file.jpg", "file.jpg", "image/jpeg", "2018-1-1")).toMatchSnapshot()
+        })
+
         it("Should able to bind file", async () => {
             class AnimalController {
                 @route.post()
@@ -1133,6 +1142,24 @@ describe("Parameter Binding", () => {
                 .attach("file", join(__dirname, "./files/clock.jpeg"))
                 .expect(200)
             expect(body).toMatchSnapshot()
+        })
+
+        it("Should able to copy file to other directory", async () => {
+            const fn = jest.fn()
+            class AnimalController {
+                @route.post()
+                async save(file: FormFile) {
+                    const paths = await file.copy(join(__dirname, "files"))
+                    fn(paths.fullPath)
+                }
+            }
+            await Supertest((await createApp(AnimalController)).callback())
+                .post("/animal/save")
+                .attach("file", join(__dirname, "./files/clock.jpeg"))
+                .expect(200)
+            const file = fn.mock.calls[0][0]
+            expect(await existsAsync(file)).toBe(true)
+            await unlinkAsync(file)
         })
 
         it("Should able to bind file using decorator", async () => {
@@ -1183,7 +1210,7 @@ describe("Parameter Binding", () => {
         it("Should not error when provided array of files but received single file", async () => {
             class AnimalController {
                 @route.post()
-                save(file: FormFile[]) {
+                save(@reflect.type([FormFile]) file: FormFile[]) {
                     return file.map(f => ({ name: f.name, type: f.type }))
                 }
             }
