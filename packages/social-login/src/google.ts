@@ -1,4 +1,4 @@
-import { OAuthProviderBaseFacility, redirectUri, OAuthUser, OAuthProviderOption } from "./core"
+import { OAuthProviderBaseFacility, redirectUri, OAuthUser, OAuthProviderOption, Optional } from "./core"
 
 const tokenEndPoint = "https://www.googleapis.com/oauth2/v4/token"
 const profileEndPoint = "https://www.googleapis.com/oauth2/v2/userinfo"
@@ -11,32 +11,26 @@ export interface GoogleProfile {
     locale: string,
     name: string,
     picture: string,
-    email:string
-    gender:string
-}
-
-function transform(value: GoogleProfile): OAuthUser {
-    return {
-        provider: "Google",
-        firstName: value.given_name,
-        lastName: value.family_name,
-        name: value.name,
-        id: value.id,
-        profilePicture: value.picture,
-        email: value.email,
-        gender: value.gender,
-        raw: value
-    }
+    email: string
+    gender: string
 }
 
 class GoogleOAuthFacility extends OAuthProviderBaseFacility {
     constructor(opt?: OAuthProviderOption) {
         super({
-            ...opt,
             profile: {
                 endpoint: profileEndPoint,
-                params: { ...opt?.profileParams },
-                transformer: transform
+                params: {},
+                transformer: (value: GoogleProfile) => ({
+                    firstName: value.given_name,
+                    lastName: value.family_name,
+                    name: value.name,
+                    id: value.id,
+                    profilePicture: value.picture,
+                    email: value.email,
+                    gender: value.gender,
+                    raw: value
+                })
             },
             login: {
                 endpoint: loginEndpoint,
@@ -51,8 +45,9 @@ class GoogleOAuthFacility extends OAuthProviderBaseFacility {
                 endpoint: tokenEndPoint,
                 params: { grant_type: "authorization_code" }
             },
-            provider: "Google"
-        }, opt?.loginEndPoint ?? "/auth/google/login")
+            provider: "Google",
+            oAuthVersion: "2.0"
+        }, opt)
     }
 }
 

@@ -1,0 +1,201 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OAuth 2.0 Providers Facebook Should run properly 1`] = `
+Object {
+  "email": "Josianne_Bosco@gmail.com",
+  "firstName": "Greta",
+  "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+  "lastName": "Erdman",
+  "name": "Manuel Auer",
+  "profilePicture": "http://lorempixel.com/640/480",
+  "provider": "Facebook",
+  "raw": Object {
+    "email": "Josianne_Bosco@gmail.com",
+    "first_name": "Greta",
+    "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+    "last_name": "Erdman",
+    "name": "Manuel Auer",
+    "picture": Object {
+      "data": Object {
+        "url": "http://lorempixel.com/640/480",
+      },
+    },
+  },
+}
+`;
+
+exports[`OAuth 2.0 Providers Facebook Should run properly 2`] = `
+Array [
+  "https://graph.facebook.com/v4.0/me",
+  Object {
+    "headers": Object {
+      "Authorization": "Bearer 87b23deb-3fde-4de5-b726-c1a4bb2747ff",
+    },
+    "params": Object {
+      "fields": "id,name,first_name,last_name,picture.type(large)",
+    },
+  },
+]
+`;
+
+exports[`OAuth 2.0 Providers Facebook Should run properly 3`] = `
+Array [
+  "https://graph.facebook.com/v4.0/oauth/access_token",
+  Object {
+    "client_id": "123",
+    "client_secret": "secret",
+    "code": "lorem",
+    "redirect_uri": "http://127.0.0.1/auth/callback",
+  },
+  Object {
+    "headers": Object {
+      "Accept": "application/json",
+    },
+  },
+]
+`;
+
+exports[`OAuth 2.0 Providers GitHub Should run properly 1`] = `
+Object {
+  "email": "Josianne_Bosco@gmail.com",
+  "firstName": "Manuel",
+  "id": "123456",
+  "lastName": "",
+  "name": "Manuel",
+  "profilePicture": "http://lorempixel.com/640/480",
+  "provider": "GitHub",
+  "raw": Object {
+    "avatar_url": "http://lorempixel.com/640/480",
+    "email": "Josianne_Bosco@gmail.com",
+    "id": 123456,
+    "name": "Manuel",
+  },
+}
+`;
+
+exports[`OAuth 2.0 Providers GitHub Should run properly 2`] = `
+Array [
+  "https://api.github.com/user",
+  Object {
+    "headers": Object {
+      "Authorization": "Bearer 87b23deb-3fde-4de5-b726-c1a4bb2747ff",
+    },
+    "params": Object {},
+  },
+]
+`;
+
+exports[`OAuth 2.0 Providers GitHub Should run properly 3`] = `
+Array [
+  "https://github.com/login/oauth/access_token",
+  Object {
+    "client_id": "123",
+    "client_secret": "secret",
+    "code": "lorem",
+    "redirect_uri": "http://127.0.0.1/auth/callback",
+  },
+  Object {
+    "headers": Object {
+      "Accept": "application/json",
+    },
+  },
+]
+`;
+
+exports[`OAuth 2.0 Providers GitLab Should run properly 1`] = `
+Object {
+  "email": "Josianne_Bosco@gmail.com",
+  "firstName": "Manuel",
+  "id": "123456",
+  "lastName": "Auer",
+  "name": "Manuel Auer",
+  "profilePicture": "http://lorempixel.com/640/480",
+  "provider": "GitLab",
+  "raw": Object {
+    "avatar_url": "http://lorempixel.com/640/480",
+    "email": "Josianne_Bosco@gmail.com",
+    "id": 123456,
+    "name": "Manuel Auer",
+  },
+}
+`;
+
+exports[`OAuth 2.0 Providers GitLab Should run properly 2`] = `
+Array [
+  "https://gitlab.com/api/v4/user",
+  Object {
+    "headers": Object {
+      "Authorization": "Bearer 87b23deb-3fde-4de5-b726-c1a4bb2747ff",
+    },
+    "params": Object {},
+  },
+]
+`;
+
+exports[`OAuth 2.0 Providers GitLab Should run properly 3`] = `
+Array [
+  "https://gitlab.com/oauth/token",
+  Object {
+    "client_id": "123",
+    "client_secret": "secret",
+    "code": "lorem",
+    "redirect_uri": "http://127.0.0.1/auth/callback",
+  },
+  Object {
+    "headers": Object {
+      "Accept": "application/json",
+    },
+  },
+]
+`;
+
+exports[`OAuth 2.0 Providers Google Should run properly 1`] = `
+Object {
+  "email": "Josianne_Bosco@gmail.com",
+  "firstName": "Greta",
+  "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+  "lastName": "Erdman",
+  "name": "Manuel Auer",
+  "profilePicture": "http://lorempixel.com/640/480",
+  "provider": "Google",
+  "raw": Object {
+    "email": "Josianne_Bosco@gmail.com",
+    "family_name": "Erdman",
+    "given_name": "Greta",
+    "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+    "locale": "en",
+    "name": "Manuel Auer",
+    "picture": "http://lorempixel.com/640/480",
+  },
+}
+`;
+
+exports[`OAuth 2.0 Providers Google Should run properly 2`] = `
+Array [
+  "https://www.googleapis.com/oauth2/v2/userinfo",
+  Object {
+    "headers": Object {
+      "Authorization": "Bearer 87b23deb-3fde-4de5-b726-c1a4bb2747ff",
+    },
+    "params": Object {},
+  },
+]
+`;
+
+exports[`OAuth 2.0 Providers Google Should run properly 3`] = `
+Array [
+  "https://www.googleapis.com/oauth2/v4/token",
+  Object {
+    "client_id": "123",
+    "client_secret": "secret",
+    "code": "lorem",
+    "grant_type": "authorization_code",
+    "redirect_uri": "http://127.0.0.1/auth/callback",
+  },
+  Object {
+    "headers": Object {
+      "Accept": "application/json",
+    },
+  },
+]
+`;

@@ -1,0 +1,174 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OAuth 2.0 Durability Should show proper error when internal OAuth server error occur 1`] = `
+Object {
+  "profile": Object {
+    "message": "Bad Request",
+    "status": 400,
+  },
+  "status": 400,
+}
+`;
+
+exports[`OAuth 2.0 Durability Should throw error when no Client ID provided 1`] = `
+Array [
+  Array [
+    "OAuth: Client id for Googol not provided",
+  ],
+]
+`;
+
+exports[`OAuth 2.0 Durability Should throw error when no Client SECRET provided 1`] = `
+Array [
+  Array [
+    "OAuth: Client secret for MazeBook not provided",
+  ],
+]
+`;
+
+exports[`OAuth 2.0 Durability Should throw error when no redirect uri provided 1`] = `
+Array [
+  Array [
+    "OAuth: No MazeBook redirect uri handler found",
+  ],
+]
+`;
+
+exports[`OAuth 2.0 Durability Should throw error when provided non GET redirect uri 1`] = `
+Array [
+  Array [
+    "OAuth: Redirect uri must have GET http method on AnimalController.callback",
+  ],
+]
+`;
+
+exports[`OAuth 2.0 Durability Should throw error when provided redirect uri with parameter 1`] = `
+Array [
+  Array [
+    "OAuth: Parameterized route is not supported on Googol callback uri",
+  ],
+]
+`;
+
+exports[`OAuth 2.0 Functionalities Should able add extra profile params 1`] = `
+Object {
+  "profile": Object {
+    "email": "Josianne_Bosco@gmail.com",
+    "family_name": "Erdman",
+    "firstName": "I",
+    "given_name": "Greta",
+    "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+    "lastName": "Ketut Manuel Auer",
+    "locale": "en",
+    "name": "I Ketut Manuel Auer",
+    "picture": "http://lorempixel.com/640/480",
+    "provider": "MazeBook",
+    "query": Object {
+      "dolor": "sit",
+      "lorem": "ipsum",
+    },
+  },
+  "status": 200,
+}
+`;
+
+exports[`OAuth 2.0 Functionalities Should able to distinguish global callback and specific callback 1`] = `
+Object {
+  "profile": Object {
+    "lorem": "ipsum",
+  },
+  "status": 200,
+}
+`;
+
+exports[`OAuth 2.0 Functionalities Should able to send postMessage UI 1`] = `
+"
+    <!DOCTYPE html>
+    <html>
+        <title></title>
+        <body>
+            <div class=\\"container\\"></div>
+            <script type=\\"text/javascript\\">
+                
+                var origin ;
+                (function(){
+                    window.onbeforeunload = function () {
+                        window.opener.postMessage({ status: \\"Close\\" }, origin || window.location.origin)
+                    };
+                    window.opener.postMessage(JSON.parse(message), origin || window.location.origin)
+                })()
+            </script>
+        </body>
+    </html>
+    "
+`;
+
+exports[`OAuth 2.0 Functionalities Should able to set postMessage origin 1`] = `
+"
+    <!DOCTYPE html>
+    <html>
+        <title></title>
+        <body>
+            <div class=\\"container\\"></div>
+            <script type=\\"text/javascript\\">
+                
+                var origin = 'http://localhost';
+                (function(){
+                    window.onbeforeunload = function () {
+                        window.opener.postMessage({ status: \\"Close\\" }, origin || window.location.origin)
+                    };
+                    window.opener.postMessage(JSON.parse(message), origin || window.location.origin)
+                })()
+            </script>
+        </body>
+    </html>
+    "
+`;
+
+exports[`OAuth 2.0 Functionalities Should attach proper redirect URI on login url 1`] = `"http://localhost/auth/callback"`;
+
+exports[`OAuth 2.0 Functionalities Should login properly 1`] = `
+Object {
+  "authUrl": "",
+  "cookie": "",
+  "profile": Object {
+    "email": "Josianne_Bosco@gmail.com",
+    "family_name": "Erdman",
+    "firstName": "I",
+    "given_name": "Greta",
+    "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+    "lastName": "Ketut Manuel Auer",
+    "locale": "en",
+    "name": "I Ketut Manuel Auer",
+    "picture": "http://lorempixel.com/640/480",
+    "provider": "MazeBook",
+    "query": Object {},
+  },
+  "status": 200,
+}
+`;
+
+exports[`OAuth 2.0 Functionalities Should login properly 2`] = `
+Object {
+  "authUrl": "",
+  "cookie": "",
+  "profile": Object {
+    "email": "Josianne_Bosco@gmail.com",
+    "family_name": "Erdman",
+    "firstName": "I",
+    "given_name": "Greta",
+    "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+    "lastName": "Ketut Manuel Auer",
+    "locale": "en",
+    "name": "I Ketut Manuel Auer",
+    "picture": "http://lorempixel.com/640/480",
+    "provider": "Googol",
+    "query": Object {},
+  },
+  "status": 200,
+}
+`;
+
+exports[`OAuth 2.0 Functionalities Should save CSRF secret on cookie and CSRF token on state parameter 1`] = `"plum-oauth:csrf-secret=; path=/; httponly"`;
+
+exports[`OAuth 2.0 Functionalities Should save provider on cookie 1`] = `"plum-oauth:provider=MazeBook; path=/; httponly"`;

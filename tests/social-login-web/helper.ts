@@ -1,7 +1,31 @@
 import { FacebookProfile, GitHubProfile, GitLabProfile, GoogleProfile } from "@plumier/social-login"
+import Koa from "koa"
+import getPort from "get-port"
+import qs from "querystring"
 
-export async function axiosResult(data: any): Promise<{ data: any }> {
-    return { data }
+export const portRegex = /:[0-9]{4,5}/
+
+export const error = async (callback: Promise<any>) => {
+    const fn = jest.fn()
+    try {
+        await callback
+    }
+    catch (e) {
+        fn(e.message)
+    }
+    return fn
+}
+
+export const getLoginUrl = (text:string) => /const REDIRECT = '(.*)'/.exec(text)![1]
+
+export async function runServer(app:Koa) {
+    const port = await getPort()
+    const server = app.listen(port)
+    return { server, origin: `http://localhost:${port}` }
+}
+
+export function params(url:string){
+    return qs.parse(url.split("?")[1]) as any
 }
 
 export const fbProfile = <FacebookProfile>{
@@ -40,3 +64,4 @@ export const gitLabProfile = <GitLabProfile> {
     name: "Manuel Auer",
     avatar_url:  "http://lorempixel.com/640/480"
 }
+

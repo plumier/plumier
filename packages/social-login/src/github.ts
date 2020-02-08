@@ -1,4 +1,4 @@
-import { OAuthProviderBaseFacility, redirectUri, OAuthUser, splitName, OAuthProviderOption } from "./core"
+import { OAuthProviderBaseFacility, redirectUri, OAuthUser, splitName, OAuthProviderOption, Optional } from "./core"
 
 const tokenEndPoint = "https://github.com/login/oauth/access_token"
 const profileEndPoint = "https://api.github.com/user"
@@ -39,28 +39,24 @@ export interface GitHubProfile {
     updated_at: string
 }
 
-function transform(value: GitHubProfile): OAuthUser {
-    const names = splitName(value.name)
-    return {
-        provider: "GitHub",
-        firstName: names.firstName,
-        lastName: names.lastName,
-        name: value.name,
-        id: value.id.toString(),
-        profilePicture: value.avatar_url,
-        email: value.email,
-        raw: value
-    }
-}
-
 class GitHubOAuthFacility extends OAuthProviderBaseFacility {
     constructor(opt?: OAuthProviderOption) {
         super({
-            ...opt,
             profile: {
                 endpoint: profileEndPoint,
-                params: { ...opt?.profileParams },
-                transformer: transform
+                params: {},
+                transformer: (value: GitHubProfile) => {
+                    const names = splitName(value.name)
+                    return {
+                        firstName: names.firstName,
+                        lastName: names.lastName,
+                        name: value.name,
+                        id: value.id.toString(),
+                        profilePicture: value.avatar_url,
+                        email: value.email,
+                        raw: value
+                    }
+                }
             },
             login: {
                 endpoint: loginEndpoint,
@@ -68,10 +64,11 @@ class GitHubOAuthFacility extends OAuthProviderBaseFacility {
             },
             token: {
                 endpoint: tokenEndPoint,
-                params: { }
+                params: {}
             },
-            provider: "GitHub"
-        }, opt?.loginEndPoint ?? "/auth/github/login")
+            provider: "GitHub",
+            oAuthVersion: "2.0"
+        }, opt)
     }
 }
 
