@@ -128,6 +128,87 @@ describe("Redirect Action Result", () => {
             .get("/animal/check")
             .expect(200, { cookie: "lorem ipsum" })
     })
+
+    it("Should be able to set cookie object", async () => {
+        class AnimalController {
+            @route.get()
+            index() {
+                return response.json({})
+                    .setCookie({ key: "theName", value: "lorem ipsum" })
+            }
+        }
+        const plumier = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set({ controller: AnimalController })
+            .set({ mode: "production" })
+            .initialize()
+        await supertest(plumier.callback())
+            .get("/animal/index")
+            .expect(200)
+            .expect((resp: supertest.Response) => {
+                expect(resp.get("Set-Cookie")[0]).toBe("theName=lorem ipsum; path=/; httponly")
+            })
+    })
+
+    it("Should be able to set array of cookie object", async () => {
+        class AnimalController {
+            @route.get()
+            index() {
+                return response.json({})
+                    .setCookie([
+                        { key: "theName", value: "lorem ipsum" },
+                        { key: "otherName", value: "lorem ipsum" }
+                    ])
+            }
+        }
+        const plumier = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set({ controller: AnimalController })
+            .set({ mode: "production" })
+            .initialize()
+        await supertest(plumier.callback())
+            .get("/animal/index")
+            .expect(200)
+            .expect((resp: supertest.Response) => {
+                expect(resp.get("Set-Cookie")[0]).toBe("theName=lorem ipsum; path=/; httponly")
+                expect(resp.get("Set-Cookie")[1]).toBe("otherName=lorem ipsum; path=/; httponly")
+            })
+    })
+
+    it("Should be able to remove multiple cookies using array", async () => {
+        class AnimalController {
+            @route.get()
+            index() {
+                return response.json({})
+                    .setCookie([
+                        { key: "theName", value: "lorem ipsum" },
+                        { key: "otherName", value: "lorem ipsum" }
+                    ])
+            }
+            remove() {
+                return response.json({})
+                    .setCookie([
+                        { key: "theName" },
+                        { key: "otherName" }
+                    ])
+            }
+        }
+        const plumier = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set({ controller: AnimalController })
+            .set({ mode: "production" })
+            .initialize()
+        await supertest(plumier.callback())
+            .get("/animal/index")
+            .expect(200)
+        await supertest(plumier.callback())
+            .get("/animal/remove")
+            .expect(200)
+            .expect((resp: supertest.Response) => {
+                expect(resp.get("Set-Cookie")[0]).toContain("expires")
+                expect(resp.get("Set-Cookie")[1]).toContain("expires")
+            })
+    })
 })
 
 describe("Action Result", () => {
