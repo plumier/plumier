@@ -17,6 +17,10 @@ const copyFileAsync = promisify(copyFile)
 // --------------------------- ACTION RESULT --------------------------- //
 // --------------------------------------------------------------------- //
 
+export interface HttpCookie {
+    key: string, value?: string, option?: SetOption
+}
+
 export class ActionResult {
     headers: { [key: string]: string | string[] } = {}
     cookies: { key: string, value?: string, option?: SetOption }[] = []
@@ -36,8 +40,17 @@ export class ActionResult {
         return this
     }
 
-    setCookie(key: string, value?: string, option?: SetOption) {
-        this.cookies.push({ key, value, option })
+    setCookie(cookie: HttpCookie): this
+    setCookie(cookie: HttpCookie[]): this
+    setCookie(key: string, value?: string, option?: SetOption): this
+    setCookie(key: string | HttpCookie | HttpCookie[], value?: string, option?: SetOption) {
+        if (typeof key === "string")
+            this.cookies.push({ key, value, option })
+        else if (Array.isArray(key)) {
+            key.forEach(x => this.cookies.push(x))
+        }
+        else
+            this.cookies.push(key)
         return this
     }
 
