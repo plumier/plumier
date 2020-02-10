@@ -93,9 +93,9 @@ exports[`OAuth 2.0 Functionalities Should able to send postMessage UI 1`] = `
                 var origin ;
                 (function(){
                     window.onbeforeunload = function () {
-                        window.opener.postMessage({ status: \\"Close\\" }, origin || window.location.origin)
+                        window.opener.postMessage({ status: \\"Close\\" }, origin || window.location.origin);
                     };
-                    window.opener.postMessage(JSON.parse(message), origin || window.location.origin)
+                    window.opener.postMessage(JSON.parse(message), origin || window.location.origin);
                 })()
             </script>
         </body>
@@ -115,9 +115,9 @@ exports[`OAuth 2.0 Functionalities Should able to set postMessage origin 1`] = `
                 var origin = 'http://localhost';
                 (function(){
                     window.onbeforeunload = function () {
-                        window.opener.postMessage({ status: \\"Close\\" }, origin || window.location.origin)
+                        window.opener.postMessage({ status: \\"Close\\" }, origin || window.location.origin);
                     };
-                    window.opener.postMessage(JSON.parse(message), origin || window.location.origin)
+                    window.opener.postMessage(JSON.parse(message), origin || window.location.origin);
                 })()
             </script>
         </body>
