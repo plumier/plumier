@@ -115,6 +115,27 @@ Above is a common Plumier controller, no special configuration added except the 
 
 Controller above handles `GET /auth/callback` route, you can change this easily to match your redirect uri registered in the OAuth application provider. 
 
+## Parameter Binding
+Plumier provided several parameter binding to bind social media login data into callback uri methods.
+
+| Decorator | Description |
+| - | - |
+| `@bind.oAuthUser()` | Bind generalized social media login user of type `OAuthUser` |
+| `@bind.oAuthProfile()` | Bind the raw social media user profile | 
+| `@bind.oAuthToken()` | Bind social media auth token |
+
+To use it simply apply it in the method's parameter like below 
+
+```typescript
+class AuthController {
+    @route.get()
+    @redirectUri()
+    callback(@bind.oAuthUser() user:OAuthUser, @bind.oAuthProfile() profile:any, @bind.oAuthToken() token:string) {
+
+    }
+}
+```
+
 ## Separate Redirect Uris
 
 If you have different redirect uri registered on your OAuth application, you can create separate redirect uri for specific provider, while keep using the general redirect uri: 
