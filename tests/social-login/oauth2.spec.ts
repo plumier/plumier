@@ -180,6 +180,32 @@ describe("OAuth 2.0", () => {
             expect(profile.profile.replace(/var message = '(.*)';/, "").replace(portRegex, "")).toMatchSnapshot()
             servers.close()
         })
+
+        it("Should able to bind the raw profile", async () => {
+            class AuthController {
+                @redirectUri()
+                callback(@bind.oAuthProfile() user: any) {
+                    return user
+                }
+            }
+            const servers = await appStub(AuthController, opt, opt)
+            const profile = await login(`${servers.origin}/auth/mazebook/login`)
+            expect(profile.profile).toMatchSnapshot()
+            servers.close()
+        })
+
+        it("Should able to bind the oauth access_token", async () => {
+            class AuthController {
+                @redirectUri()
+                callback(@bind.oAuthToken() token: string) {
+                    return token
+                }
+            }
+            const servers = await appStub(AuthController, opt, opt)
+            const profile = await login(`${servers.origin}/auth/mazebook/login`)
+            expect(profile.profile).toMatchSnapshot()
+            servers.close()
+        })
     })
 
     describe("Durability", () => {
