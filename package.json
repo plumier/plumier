@@ -57,7 +57,8 @@
 		"koa-router": "^8.0.6",
 		"rimraf": "^3.0.1",
 		"supertest": "^4.0.2",
-		"ts-node": "^8.6.2"
+		"ts-node": "^8.6.2", 
+		"get-port": "5.1.1"
 	},
 	"workspaces": [
 		"packages/*"

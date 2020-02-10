@@ -28,7 +28,7 @@ response.callbackView = (message: any) => {
         .setHeader("Content-Type", "text/html")
 }
 
-export { OAuthFacility, OAuthUser, redirectUri } from "./core"
+export { OAuthUser, redirectUri, CookieName, SocialProvider, OAuthProviderBaseFacility, OAuthProviderOption, OAuthOptions, splitName } from "./core"
 export { FacebookOAuthFacility, FacebookProfile } from "./facebook"
 export { GoogleOAuthFacility, GoogleProfile } from "./google"
 export { GitHubOAuthFacility, GitHubProfile } from "./github"

@@ -1,4 +1,4 @@
-import { OAuthProviderBaseFacility, redirectUri, OAuthUser, splitName, OAuthProviderOption } from "./core"
+import { OAuthProviderBaseFacility, redirectUri, OAuthUser, splitName, OAuthProviderOption, Optional } from "./core"
 
 const tokenEndPoint = "https://gitlab.com/oauth/token"
 const profileEndPoint = "https://gitlab.com/api/v4/user"
@@ -37,28 +37,25 @@ export interface GitLabProfile {
     private_profile: boolean
 }
 
-function transform(value: GitLabProfile): OAuthUser {
-    const names = splitName(value.name)
-    return {
-        provider: "GitLab",
-        firstName: names.firstName,
-        lastName: names.lastName,
-        name: value.name,
-        id: value.id.toString(),
-        profilePicture: value.avatar_url,
-        email: value.email,
-        raw: value
-    }
-}
-
 class GitLabOAuthFacility extends OAuthProviderBaseFacility {
     constructor(opt?: OAuthProviderOption) {
         super({
-            ...opt,
             profile: {
                 endpoint: profileEndPoint,
-                params: { ...opt?.profileParams },
-                transformer: transform
+                params: {},
+                transformer: (value: GitLabProfile) => {
+                    const names = splitName(value.name)
+                    return {
+                        firstName: names.firstName,
+                        lastName: names.lastName,
+                        name: value.name,
+                        id: value.id.toString(),
+                        profilePicture: value.avatar_url,
+                        email: value.email,
+                        raw: value
+                    }
+                }
+                
             },
             login: {
                 endpoint: loginEndpoint,
@@ -68,10 +65,11 @@ class GitLabOAuthFacility extends OAuthProviderBaseFacility {
             },
             token: {
                 endpoint: tokenEndPoint,
-                params: { }
+                params: {}
             },
-            provider: "GitLab"
-        }, opt?.loginEndPoint ?? "/auth/gitlab/login")
+            provider: "GitLab",
+            oAuthVersion: "2.0"
+        }, opt)
     }
 }
 

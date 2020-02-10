@@ -1,4 +1,4 @@
-import { OAuthProviderBaseFacility, redirectUri, OAuthUser, OAuthProviderOption } from "./core"
+import { OAuthProviderBaseFacility, redirectUri, OAuthUser, OAuthProviderOption, Optional } from "./core"
 
 const tokenEndPoint = "https://graph.facebook.com/v4.0/oauth/access_token"
 const profileEndPoint = "https://graph.facebook.com/v4.0/me"
@@ -21,34 +21,29 @@ export interface FacebookProfile {
     }
 }
 
-function transform(value: FacebookProfile): OAuthUser {
-    return {
-        provider: "Facebook",
-        firstName: value.first_name,
-        lastName: value.last_name,
-        name: value.name,
-        id: value.id,
-        profilePicture: value.picture.data.url,
-        dateOfBirth: value.birthday,
-        email: value.email,
-        gender: value.gender,
-        raw: value
-    }
-}
-
 class FacebookOAuthFacility extends OAuthProviderBaseFacility {
     constructor(opt?: OAuthProviderOption) {
         super({
-            ...opt, 
             profile: {
                 endpoint: profileEndPoint,
-                params: { fields: "id,name,first_name,last_name,picture.type(large)", ...opt?.profileParams },
-                transformer: transform
+                params: { fields: "id,name,first_name,last_name,picture.type(large)" },
+                transformer: (value: FacebookProfile) => ({
+                    firstName: value.first_name,
+                    lastName: value.last_name,
+                    name: value.name,
+                    id: value.id,
+                    profilePicture: value.picture.data.url,
+                    dateOfBirth: value.birthday,
+                    email: value.email,
+                    gender: value.gender,
+                    raw: value
+                })
             },
             login: { endpoint: loginEndpoint, params: { display: "popup" } },
             token: { endpoint: tokenEndPoint, params: {} },
-            provider: "Facebook"
-        }, opt?.loginEndPoint ?? "/auth/facebook/login")
+            provider: "Facebook",
+            oAuthVersion: "2.0"
+        }, opt)
     }
 }
 
