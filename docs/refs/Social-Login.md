@@ -66,7 +66,6 @@ Plumier provided endpoints that will be redirected to the social media login pag
 
 | Endpoint                   | Served By               | Description                     |
 | -------------------------- | ----------------------- | ------------------------------- |
-| `GET /auth/csrf-secret`    | `OAuthFacility`         | Retrieve csrf secret.           |
 | `GET /auth/facebook/login` | `FacebookOAuthFacility` | Redirect to Facebook login page |
 | `GET /auth/google/login`   | `GoogleOAuthFacility`   | Redirect to Google login page   |
 | `GET /auth/github/login`   | `GitHubOAuthFacility`   | Redirect to GitHub login page   |
@@ -74,17 +73,15 @@ Plumier provided endpoints that will be redirected to the social media login pag
 
 Above endpoint can be change accordingly see [customization](#customization) section for more detail.
 
-Before showing the social media login page it is necessary to call the `/auth/csrf-secret` to attach the current session with the CSRF Secret. This process can be done by issuing an AJAX call to the endpoint using http client such as `fetch` or `axios`. 
+### Social Media Login Button
 
-```javascript
-Axios.get("/auth/csrf-secret")
-```
-
-Serve the social media login page using the url provided, for example you can redirect the user to the Facebook login screen like below
+Use the provided endpoints above to create the social media login button, by showing a dialog window popup or redirect the user to the Facebook login screen.
 
 ```html
 <a href="/auth/facebook/login">Login with Facebook</a>
 ```
+
+Code above will redirect the user to the Facebook login screen.
 
 Or you can show a popup dialog window like below:
 
