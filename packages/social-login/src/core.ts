@@ -46,7 +46,7 @@ export interface OAuthOptions {
     oAuthVersion: "2.0"
 }
 
-export interface OAuthUser<T = {}> {
+export interface OAuthUser {
     provider: SocialProvider
     id: string,
     name: string,
@@ -56,7 +56,6 @@ export interface OAuthUser<T = {}> {
     email?: string,
     gender?: string,
     dateOfBirth?: string
-    raw: T
 }
 
 export interface OAuthProviderOption {
@@ -118,10 +117,15 @@ export function redirectUri(provider: SocialProvider | "General" = "General") {
 declare module "@plumier/core" {
     namespace bind {
         export function oAuthUser(): (target: any, name: string, index: number) => void
+        export function oAuthToken(): (target: any, name: string, index: number) => void
+        export function oAuthProfile(): (target: any, name: string, index: number) => void
     }
 }
 
 bind.oAuthUser = () => bind.custom(x => x.state.oAuthUser)
+bind.oAuthToken = () => bind.custom(x => x.state.oAuthToken)
+bind.oAuthProfile = () => bind.custom(x => x.state.oAuthProfile)
+
 
 
 // --------------------------------------------------------------------- //
@@ -234,9 +238,10 @@ class OAuthRedirectUriMiddleware implements CustomMiddleware {
             log.debug("Redirect Uri: %s", req.origin + req.path)
             const token = await this.exchange(req.query.code, req.origin + req.path)
             log.debug("Token: %s", token)
-            const data = await this.getProfile(token)
-            log.debug("OAuth User: %o", data)
-            return this.option.profile.transformer(data)
+            const profile = await this.getProfile(token)
+            log.debug("OAuth Profile: %o", profile)
+            const user = {...this.option.profile.transformer(profile), provider: this.option.provider }
+            return { user, profile, token }
         }
         catch (e) {
             if (e.response) {
@@ -255,8 +260,10 @@ class OAuthRedirectUriMiddleware implements CustomMiddleware {
         const cookies = OAuthCookies.parse(inv.ctx)
         log.debug("CSRF Cookie: %o", cookies)
         if (cookies.provider !== this.option.provider) return inv.proceed()
-        const oAuthUser = await this.parse(inv.ctx)
-        inv.ctx.state.oAuthUser = <OAuthUser>{ ...oAuthUser, provider: this.option.provider }
+        const result = await this.parse(inv.ctx)
+        inv.ctx.state.oAuthUser = result.user
+        inv.ctx.state.oAuthToken = result.token
+        inv.ctx.state.oAuthProfile = result.profile
         return invoke(inv.ctx, inv.ctx.route!)
     }
 }
