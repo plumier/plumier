@@ -72,6 +72,21 @@ Object {
 }
 `;
 
+exports[`OAuth 2.0 Functionalities Should able to bind the oauth access_token 1`] = `"secret"`;
+
+exports[`OAuth 2.0 Functionalities Should able to bind the raw profile 1`] = `
+Object {
+  "email": "Josianne_Bosco@gmail.com",
+  "family_name": "Erdman",
+  "given_name": "Greta",
+  "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+  "locale": "en",
+  "name": "I Ketut Manuel Auer",
+  "picture": "http://lorempixel.com/640/480",
+  "query": Object {},
+}
+`;
+
 exports[`OAuth 2.0 Functionalities Should able to distinguish global callback and specific callback 1`] = `
 Object {
   "profile": Object {
