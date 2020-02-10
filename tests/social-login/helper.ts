@@ -1,20 +1,67 @@
-import { GoogleProfile } from '@plumier/social-login'
+import { FacebookProfile, GitHubProfile, GitLabProfile, GoogleProfile } from "@plumier/social-login"
+import Koa from "koa"
+import getPort from "get-port"
+import qs from "querystring"
 
-import faker from "faker"
+export const portRegex = /:[0-9]{4,5}/
 
-export async function axiosResult(data: any): Promise<{ data: any }> {
-    return { data }
+export const error = async (callback: Promise<any>) => {
+    const fn = jest.fn()
+    try {
+        await callback
+    }
+    catch (e) {
+        fn(e.message)
+    }
+    return fn
 }
 
-export function axiosError(error: any) {
-    return { response: { data: error } }
+export const getLoginUrl = (text:string) => /const REDIRECT = '(.*)'/.exec(text)![1]
+
+export async function runServer(app:Koa) {
+    const port = await getPort()
+    const server = app.listen(port)
+    return { server, origin: `http://localhost:${port}` }
+}
+
+export function params(url:string){
+    return qs.parse(url.split("?")[1]) as any
+}
+
+export const fbProfile = <FacebookProfile>{
+    email: "Josianne_Bosco@gmail.com",
+    first_name: "Greta",
+    id: "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+    last_name: "Erdman",
+    name: "Manuel Auer",
+    picture: {
+        data: {
+            url: "http://lorempixel.com/640/480",
+        }
+    }
 }
 
 export const googleProfile = <GoogleProfile>{
-    family_name: faker.name.lastName(),
-    given_name: faker.name.firstName(),
-    id: faker.random.uuid(),
+    email: "Josianne_Bosco@gmail.com",
+    given_name: "Greta",
+    id: "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+    family_name: "Erdman",
+    name: "Manuel Auer",
+    picture:  "http://lorempixel.com/640/480",
     locale: "en",
-    name: faker.name.findName(),
-    picture: faker.internet.url()
 }
+
+export const gitHubProfile = <GitHubProfile>{
+    email: "Josianne_Bosco@gmail.com",
+    id: 123456,
+    name: "Manuel",
+    avatar_url:  "http://lorempixel.com/640/480"
+}
+
+export const gitLabProfile = <GitLabProfile> {
+    email: "Josianne_Bosco@gmail.com",
+    id: 123456,
+    name: "Manuel Auer",
+    avatar_url:  "http://lorempixel.com/640/480"
+}
+
