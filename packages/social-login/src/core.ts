@@ -146,9 +146,9 @@ response.postMessage = (message: any, origin?: string) => {
                 var origin ${!!origin ? `= '${origin}'` : ""};
                 (function(){
                     window.onbeforeunload = function () {
-                        window.opener.postMessage({ status: "Close" }, origin || window.location.origin)
+                        window.opener.postMessage({ status: "Close" }, origin || window.location.origin);
                     };
-                    window.opener.postMessage(JSON.parse(message), origin || window.location.origin)
+                    window.opener.postMessage(JSON.parse(message), origin || window.location.origin);
                 })()
             </script>
         </body>
@@ -165,9 +165,9 @@ function clientRedirect(url: string) {
         <body>
             <div class="container"></div>
             <script type="text/javascript">
-                const REDIRECT = '${url}'
+                const REDIRECT = '${url}';
                 (function(){
-                    window.location.href = REDIRECT
+                    window.location.href = REDIRECT;
                 })()
             </script>
         </body>
