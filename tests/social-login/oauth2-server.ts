@@ -21,7 +21,7 @@ export class OAuthController {
             throw new HttpStatusError(400, "Invalid redirect uri")
         return {
             access_token: "secret",
-            request: { code, client_id, client_secret, redirect_uri }
+            refresh_token: "very secret"
         }
     }
 

@@ -118,11 +118,11 @@ Controller above handles `GET /auth/callback` route, you can change this easily 
 ## Parameter Binding
 Plumier provided several parameter binding to bind social media login data into callback uri methods.
 
-| Decorator | Description |
-| - | - |
-| `@bind.oAuthUser()` | Bind generalized social media login user of type `OAuthUser` |
-| `@bind.oAuthProfile()` | Bind the raw social media user profile | 
-| `@bind.oAuthToken()` | Bind social media auth token |
+| Decorator              | Type        | Description                                                  |
+| ---------------------- | ----------- | ------------------------------------------------------------ |
+| `@bind.oAuthUser()`    | `OAuthUser` | Bind generalized social media login user of type `OAuthUser` |
+| `@bind.oAuthProfile()` | `any`       | Bind the raw social media user profile                       |
+| `@bind.oAuthToken()`   | `any`       | Bind social media auth token                                 |
 
 To use it simply apply it in the method's parameter like below 
 

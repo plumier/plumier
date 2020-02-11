@@ -72,7 +72,12 @@ Object {
 }
 `;
 
-exports[`OAuth 2.0 Functionalities Should able to bind the oauth access_token 1`] = `"secret"`;
+exports[`OAuth 2.0 Functionalities Should able to bind the oauth access_token 1`] = `
+Object {
+  "access_token": "secret",
+  "refresh_token": "very secret",
+}
+`;
 
 exports[`OAuth 2.0 Functionalities Should able to bind the raw profile 1`] = `
 Object {

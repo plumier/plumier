@@ -9,18 +9,6 @@ Object {
   "name": "Manuel Auer",
   "profilePicture": "http://lorempixel.com/640/480",
   "provider": "Facebook",
-  "raw": Object {
-    "email": "Josianne_Bosco@gmail.com",
-    "first_name": "Greta",
-    "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
-    "last_name": "Erdman",
-    "name": "Manuel Auer",
-    "picture": Object {
-      "data": Object {
-        "url": "http://lorempixel.com/640/480",
-      },
-    },
-  },
 }
 `;
 
@@ -64,12 +52,6 @@ Object {
   "name": "Manuel",
   "profilePicture": "http://lorempixel.com/640/480",
   "provider": "GitHub",
-  "raw": Object {
-    "avatar_url": "http://lorempixel.com/640/480",
-    "email": "Josianne_Bosco@gmail.com",
-    "id": 123456,
-    "name": "Manuel",
-  },
 }
 `;
 
@@ -111,12 +93,6 @@ Object {
   "name": "Manuel Auer",
   "profilePicture": "http://lorempixel.com/640/480",
   "provider": "GitLab",
-  "raw": Object {
-    "avatar_url": "http://lorempixel.com/640/480",
-    "email": "Josianne_Bosco@gmail.com",
-    "id": 123456,
-    "name": "Manuel Auer",
-  },
 }
 `;
 
@@ -159,15 +135,6 @@ Object {
   "name": "Manuel Auer",
   "profilePicture": "http://lorempixel.com/640/480",
   "provider": "Google",
-  "raw": Object {
-    "email": "Josianne_Bosco@gmail.com",
-    "family_name": "Erdman",
-    "given_name": "Greta",
-    "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
-    "locale": "en",
-    "name": "Manuel Auer",
-    "picture": "http://lorempixel.com/640/480",
-  },
 }
 `;
 

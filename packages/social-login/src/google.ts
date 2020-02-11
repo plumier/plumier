@@ -28,8 +28,7 @@ class GoogleOAuthFacility extends OAuthProviderBaseFacility {
                     id: value.id,
                     profilePicture: value.picture,
                     email: value.email,
-                    gender: value.gender,
-                    raw: value
+                    gender: value.gender
                 })
             },
             login: {

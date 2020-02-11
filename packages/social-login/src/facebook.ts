@@ -35,8 +35,7 @@ class FacebookOAuthFacility extends OAuthProviderBaseFacility {
                     profilePicture: value.picture.data.url,
                     dateOfBirth: value.birthday,
                     email: value.email,
-                    gender: value.gender,
-                    raw: value
+                    gender: value.gender
                 })
             },
             login: { endpoint: loginEndpoint, params: { display: "popup" } },
