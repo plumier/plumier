@@ -221,24 +221,26 @@ class OAuthRedirectUriMiddleware implements CustomMiddleware {
 
     // oauth 2.0
     protected async parse(ctx: Context) {
+        const req = ctx.request
         try {
-            const req = ctx.request
+            log.debug("Provider: %s", this.option.provider)
             const secretCookie = ctx.cookies.get(CookieName.csrfSecret)!
             const csrf = new Csrf()
             if (!csrf.verify(secretCookie, req.query.state)) {
-                log.error("Invalid csrf token")
+                log.error("*** Invalid csrf token ***")
+                log.error("CSRF Secret: %s", secretCookie)
+                log.error("CSRF Token: %s", req.query.state)
                 throw new HttpStatusError(400)
             }
-            log.debug("Auth Code: %s", req.query.code)
-            log.debug("State: %s", req.query.state)
-            log.debug("Redirect Uri: %s", req.origin + req.path)
             const token = await this.exchange(req.query.code, req.origin + req.path)
-            log.debug("Token: %s", token)
+            log.debug("Token: %s")
             const data = await this.getProfile(token)
-            log.debug("OAuth User: %o", data)
             return this.option.profile.transformer(data)
         }
         catch (e) {
+            log.error("*** OAuth 2.0 Error ***", this.option.provider)
+            log.error("Auth Code: %s", req.query.code)
+            log.error("Redirect Uri: %s", req.origin + req.path)
             if (e.response) {
                 const response = (e as AxiosError).response!
                 log.error("Error: %o", { status: response.status, message: response.statusText, data: response.data })
@@ -253,7 +255,6 @@ class OAuthRedirectUriMiddleware implements CustomMiddleware {
         if (inv.ctx.state.caller === "invoke") return inv.proceed()
         if (inv.ctx.path.toLocaleLowerCase() !== this.redirectUri.toLowerCase()) return inv.proceed()
         const cookies = OAuthCookies.parse(inv.ctx)
-        log.debug("CSRF Cookie: %o", cookies)
         if (cookies.provider !== this.option.provider) return inv.proceed()
         const oAuthUser = await this.parse(inv.ctx)
         inv.ctx.state.oAuthUser = <OAuthUser>{ ...oAuthUser, provider: this.option.provider }
