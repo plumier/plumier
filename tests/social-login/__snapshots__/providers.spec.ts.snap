@@ -1,32 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`OAuth 2.0 Providers Facebook Should run properly 1`] = `
-Object {
-  "email": "Josianne_Bosco@gmail.com",
-  "firstName": "Greta",
-  "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
-  "lastName": "Erdman",
-  "name": "Manuel Auer",
-  "profilePicture": "http://lorempixel.com/640/480",
-  "provider": "Facebook",
-}
-`;
-
-exports[`OAuth 2.0 Providers Facebook Should run properly 2`] = `
-Array [
-  "https://graph.facebook.com/v4.0/me",
-  Object {
-    "headers": Object {
-      "Authorization": "Bearer 87b23deb-3fde-4de5-b726-c1a4bb2747ff",
-    },
-    "params": Object {
-      "fields": "id,name,first_name,last_name,picture.type(large)",
-    },
-  },
-]
-`;
-
-exports[`OAuth 2.0 Providers Facebook Should run properly 3`] = `
+exports[`OAuth Providers Facebook 1`] = `
 Array [
   "https://graph.facebook.com/v4.0/oauth/access_token",
   Object {
@@ -43,31 +17,33 @@ Array [
 ]
 `;
 
-exports[`OAuth 2.0 Providers GitHub Should run properly 1`] = `
-Object {
-  "email": "Josianne_Bosco@gmail.com",
-  "firstName": "Manuel",
-  "id": "123456",
-  "lastName": "",
-  "name": "Manuel",
-  "profilePicture": "http://lorempixel.com/640/480",
-  "provider": "GitHub",
-}
-`;
-
-exports[`OAuth 2.0 Providers GitHub Should run properly 2`] = `
+exports[`OAuth Providers Facebook 2`] = `
 Array [
-  "https://api.github.com/user",
+  "https://graph.facebook.com/v4.0/me",
   Object {
     "headers": Object {
       "Authorization": "Bearer 87b23deb-3fde-4de5-b726-c1a4bb2747ff",
     },
-    "params": Object {},
+    "params": Object {
+      "fields": "id,name,first_name,last_name,picture.type(large)",
+    },
   },
 ]
 `;
 
-exports[`OAuth 2.0 Providers GitHub Should run properly 3`] = `
+exports[`OAuth Providers Facebook 3`] = `
+Object {
+  "email": "Josianne_Bosco@gmail.com",
+  "firstName": "Greta",
+  "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+  "lastName": "Erdman",
+  "name": "Manuel Auer",
+  "profilePicture": "http://lorempixel.com/640/480",
+  "provider": "Facebook",
+}
+`;
+
+exports[`OAuth Providers GitHub 1`] = `
 Array [
   "https://github.com/login/oauth/access_token",
   Object {
@@ -84,21 +60,9 @@ Array [
 ]
 `;
 
-exports[`OAuth 2.0 Providers GitLab Should run properly 1`] = `
-Object {
-  "email": "Josianne_Bosco@gmail.com",
-  "firstName": "Manuel",
-  "id": "123456",
-  "lastName": "Auer",
-  "name": "Manuel Auer",
-  "profilePicture": "http://lorempixel.com/640/480",
-  "provider": "GitLab",
-}
-`;
-
-exports[`OAuth 2.0 Providers GitLab Should run properly 2`] = `
+exports[`OAuth Providers GitHub 2`] = `
 Array [
-  "https://gitlab.com/api/v4/user",
+  "https://api.github.com/user",
   Object {
     "headers": Object {
       "Authorization": "Bearer 87b23deb-3fde-4de5-b726-c1a4bb2747ff",
@@ -108,7 +72,19 @@ Array [
 ]
 `;
 
-exports[`OAuth 2.0 Providers GitLab Should run properly 3`] = `
+exports[`OAuth Providers GitHub 3`] = `
+Object {
+  "email": "Josianne_Bosco@gmail.com",
+  "firstName": "Manuel",
+  "id": "123456",
+  "lastName": "",
+  "name": "Manuel",
+  "profilePicture": "http://lorempixel.com/640/480",
+  "provider": "GitHub",
+}
+`;
+
+exports[`OAuth Providers GitLab 1`] = `
 Array [
   "https://gitlab.com/oauth/token",
   Object {
@@ -126,21 +102,9 @@ Array [
 ]
 `;
 
-exports[`OAuth 2.0 Providers Google Should run properly 1`] = `
-Object {
-  "email": "Josianne_Bosco@gmail.com",
-  "firstName": "Greta",
-  "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
-  "lastName": "Erdman",
-  "name": "Manuel Auer",
-  "profilePicture": "http://lorempixel.com/640/480",
-  "provider": "Google",
-}
-`;
-
-exports[`OAuth 2.0 Providers Google Should run properly 2`] = `
+exports[`OAuth Providers GitLab 2`] = `
 Array [
-  "https://www.googleapis.com/oauth2/v2/userinfo",
+  "https://gitlab.com/api/v4/user",
   Object {
     "headers": Object {
       "Authorization": "Bearer 87b23deb-3fde-4de5-b726-c1a4bb2747ff",
@@ -150,7 +114,19 @@ Array [
 ]
 `;
 
-exports[`OAuth 2.0 Providers Google Should run properly 3`] = `
+exports[`OAuth Providers GitLab 3`] = `
+Object {
+  "email": "Josianne_Bosco@gmail.com",
+  "firstName": "Manuel",
+  "id": "123456",
+  "lastName": "Auer",
+  "name": "Manuel Auer",
+  "profilePicture": "http://lorempixel.com/640/480",
+  "provider": "GitLab",
+}
+`;
+
+exports[`OAuth Providers Google 1`] = `
 Array [
   "https://www.googleapis.com/oauth2/v4/token",
   Object {
@@ -166,4 +142,93 @@ Array [
     },
   },
 ]
+`;
+
+exports[`OAuth Providers Google 2`] = `
+Array [
+  "https://www.googleapis.com/oauth2/v2/userinfo",
+  Object {
+    "headers": Object {
+      "Authorization": "Bearer 87b23deb-3fde-4de5-b726-c1a4bb2747ff",
+    },
+    "params": Object {},
+  },
+]
+`;
+
+exports[`OAuth Providers Google 3`] = `
+Object {
+  "email": "Josianne_Bosco@gmail.com",
+  "firstName": "Greta",
+  "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+  "lastName": "Erdman",
+  "name": "Manuel Auer",
+  "profilePicture": "http://lorempixel.com/640/480",
+  "provider": "Google",
+}
+`;
+
+exports[`OAuth Providers Twitter 1`] = `
+Array [
+  Object {
+    "data": Object {
+      "oauth_callback": "http://127.0.0.1/auth/callback",
+    },
+    "headers": Object {
+      "Authorization": "OAuth oauth_callback=\\"http%3A%2F%2F127.0.0.1%2Fauth%2Fcallback\\", oauth_consumer_key=\\"123\\", oauth_nonce=\\"\\", oauth_signature=\\"\\", oauth_signature_method=\\"HMAC-SHA1\\", oauth_timestamp=\\"\\", oauth_version=\\"1.0\\"",
+    },
+    "method": "POST",
+    "url": "https://api.twitter.com/oauth/request_token",
+  },
+]
+`;
+
+exports[`OAuth Providers Twitter 2`] = `
+Array [
+  Object {
+    "data": Object {
+      "oauth_token": "\\"123456\\"",
+      "oauth_verifier": "\\"VERIFIER\\"",
+    },
+    "headers": Object {
+      "Authorization": "OAuth oauth_consumer_key=\\"123\\", oauth_nonce=\\"\\", oauth_signature=\\"\\", oauth_signature_method=\\"HMAC-SHA1\\", oauth_timestamp=\\"\\", oauth_token=\\"\\"123456\\"\\", oauth_verifier=\\"\\"VERIFIER\\"\\", oauth_version=\\"1.0\\"",
+    },
+    "method": "POST",
+    "url": "https://api.twitter.com/oauth/access_token",
+  },
+]
+`;
+
+exports[`OAuth Providers Twitter 3`] = `
+Array [
+  Object {
+    "data": undefined,
+    "headers": Object {
+      "Authorization": "OAuth oauth_consumer_key=\\"123\\", oauth_nonce=\\"\\", oauth_signature=\\"\\", oauth_signature_method=\\"HMAC-SHA1\\", oauth_timestamp=\\"\\", oauth_token=\\"\\"12345\\"\\", oauth_version=\\"1.0\\"",
+    },
+    "method": "GET",
+    "url": "https://api.twitter.com/1.1/account/verify_credentials.json",
+  },
+]
+`;
+
+exports[`OAuth Providers Twitter 4`] = `
+Object {
+  "firstName": "Manuel",
+  "id": "1234567",
+  "lastName": "Auer",
+  "name": "Manuel Auer",
+  "profilePicture": "http://lorempixel.com/640/480",
+  "provider": "Twitter",
+}
+`;
+
+exports[`OAuth Providers Twitter should not error when provided undefined profile picture 1`] = `
+Object {
+  "firstName": "Manuel",
+  "id": "1234567",
+  "lastName": "Auer",
+  "name": "Manuel Auer",
+  "provider": "Twitter",
+}
 `;

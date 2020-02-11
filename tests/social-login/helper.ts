@@ -1,4 +1,4 @@
-import { FacebookProfile, GitHubProfile, GitLabProfile, GoogleProfile } from "@plumier/social-login"
+import { FacebookProfile, GitHubProfile, GitLabProfile, GoogleProfile, TwitterProfile } from "@plumier/social-login"
 import Koa from "koa"
 import getPort from "get-port"
 import qs from "querystring"
@@ -65,3 +65,9 @@ export const gitLabProfile = <GitLabProfile> {
     avatar_url:  "http://lorempixel.com/640/480"
 }
 
+export const twitterProfile = <TwitterProfile>{
+    name: "Manuel Auer",
+    screen_name: "manuel",
+    id_str: "1234567",
+    profile_image_url_https:  "http://lorempixel.com/640/480"
+}

@@ -485,29 +485,18 @@ Object {
 `;
 
 exports[`File Validation Should able to validate mime type in array 1`] = `
-Object {
-  "message": Array [
-    Object {
-      "messages": Array [
-        "Invalid file type",
-      ],
-      "path": Array [
-        "file",
-        "1",
-      ],
-    },
-    Object {
-      "messages": Array [
-        "Invalid file type",
-      ],
-      "path": Array [
-        "file",
-        "2",
-      ],
-    },
-  ],
-  "status": 422,
-}
+Array [
+  Object {
+    "messages": Array [
+      "Invalid file type",
+    ],
+  },
+  Object {
+    "messages": Array [
+      "Invalid file type",
+    ],
+  },
+]
 `;
 
 exports[`Image Validation Should able to use custom file size validation message 1`] = `
