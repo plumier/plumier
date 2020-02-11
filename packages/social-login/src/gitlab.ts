@@ -55,7 +55,7 @@ class GitLabOAuthFacility extends OAuthProviderBaseFacility {
                         raw: value
                     }
                 }
-                
+
             },
             login: {
                 endpoint: loginEndpoint,
@@ -65,7 +65,7 @@ class GitLabOAuthFacility extends OAuthProviderBaseFacility {
             },
             token: {
                 endpoint: tokenEndPoint,
-                params: {}
+                params: { grant_type: "authorization_code" }
             },
             provider: "GitLab",
             oAuthVersion: "2.0"

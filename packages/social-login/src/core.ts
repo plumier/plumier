@@ -237,7 +237,6 @@ class OAuthRedirectUriMiddleware implements CustomMiddleware {
                 throw new HttpStatusError(400)
             }
             const token = await this.exchange(req.query.code, req.origin + req.path)
-            log.debug("Token: %s", token)
             const profile = await this.getProfile(token)
             log.debug("OAuth Profile: %o", profile)
             const user = {...this.option.profile.transformer(profile), provider: this.option.provider }
@@ -248,7 +247,11 @@ class OAuthRedirectUriMiddleware implements CustomMiddleware {
             log.error("Auth Code: %s", req.query.code)
             log.error("Redirect Uri: %s", req.origin + req.path)
             if (e.response) {
-                const response = (e as AxiosError).response!
+                const error = (e as AxiosError)
+                const response = error.response!;
+                log.error("Request URL: %s %s", error.config.method, error.config.url)
+                log.error("Request Data: %o", error.config.data)
+                log.error("Request Headers: %o", error.config.headers)
                 log.error("Error: %o", { status: response.status, message: response.statusText, data: response.data })
                 throw new HttpStatusError(response.status, response.statusText)
             }

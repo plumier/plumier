@@ -139,6 +139,7 @@ Array [
     "client_id": "123",
     "client_secret": "secret",
     "code": "lorem",
+    "grant_type": "authorization_code",
     "redirect_uri": "http://127.0.0.1/auth/callback",
   },
   Object {
