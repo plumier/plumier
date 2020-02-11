@@ -53,8 +53,7 @@ class GitHubOAuthFacility extends OAuthProviderBaseFacility {
                         name: value.name,
                         id: value.id.toString(),
                         profilePicture: value.avatar_url,
-                        email: value.email,
-                        raw: value
+                        email: value.email
                     }
                 }
             },

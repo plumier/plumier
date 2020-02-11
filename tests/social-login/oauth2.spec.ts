@@ -197,7 +197,7 @@ describe("OAuth 2.0", () => {
         it("Should able to bind the oauth access_token", async () => {
             class AuthController {
                 @redirectUri()
-                callback(@bind.oAuthToken() token: string) {
+                callback(@bind.oAuthToken() token: any) {
                     return token
                 }
             }

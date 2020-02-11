@@ -207,12 +207,12 @@ class OAuthRedirectUriMiddleware implements CustomMiddleware {
 
     constructor(private option: OAuthOptions, private redirectUri: string) { }
 
-    protected async exchange(code: string, redirect_uri: string): Promise<string> {
+    protected async exchange(code: string, redirect_uri: string): Promise<any> {
         const { token: { endpoint, params }, clientId: client_id, clientSecret: client_secret } = this.option
         const data = { client_id, redirect_uri, client_secret, code, ...params }
         const headers = { Accept: 'application/json' }
         const response = await Axios.post<{ access_token: string }>(endpoint, data, { headers })
-        return response.data.access_token;
+        return response.data;
     }
 
     protected async getProfile(token: string): Promise<any> {
@@ -237,9 +237,9 @@ class OAuthRedirectUriMiddleware implements CustomMiddleware {
                 throw new HttpStatusError(400)
             }
             const token = await this.exchange(req.query.code, req.origin + req.path)
-            const profile = await this.getProfile(token)
-            log.debug("OAuth Profile: %o", profile)
+            const profile = await this.getProfile(token.access_token)
             const user = {...this.option.profile.transformer(profile), provider: this.option.provider }
+            log.debug("OAuth User: %O", user)
             return { user, profile, token }
         }
         catch (e) {
