@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`OAuth 2.0 Durability Should show proper error when internal OAuth server error occur 1`] = `
+exports[`Durability Should show proper error when internal OAuth server error occur 1`] = `
 Object {
   "profile": Object {
     "message": "Bad Request",
@@ -10,7 +10,7 @@ Object {
 }
 `;
 
-exports[`OAuth 2.0 Durability Should throw error when no Client ID provided 1`] = `
+exports[`Durability Should throw error when no Client ID provided 1`] = `
 Array [
   Array [
     "OAuth: Client id for Googol not provided",
@@ -18,7 +18,7 @@ Array [
 ]
 `;
 
-exports[`OAuth 2.0 Durability Should throw error when no Client SECRET provided 1`] = `
+exports[`Durability Should throw error when no Client SECRET provided 1`] = `
 Array [
   Array [
     "OAuth: Client secret for MazeBook not provided",
@@ -26,7 +26,7 @@ Array [
 ]
 `;
 
-exports[`OAuth 2.0 Durability Should throw error when no redirect uri provided 1`] = `
+exports[`Durability Should throw error when no redirect uri provided 1`] = `
 Array [
   Array [
     "OAuth: No MazeBook redirect uri handler found",
@@ -34,7 +34,7 @@ Array [
 ]
 `;
 
-exports[`OAuth 2.0 Durability Should throw error when provided non GET redirect uri 1`] = `
+exports[`Durability Should throw error when provided non GET redirect uri 1`] = `
 Array [
   Array [
     "OAuth: Redirect uri must have GET http method on AnimalController.callback",
@@ -42,7 +42,7 @@ Array [
 ]
 `;
 
-exports[`OAuth 2.0 Durability Should throw error when provided redirect uri with parameter 1`] = `
+exports[`Durability Should throw error when provided redirect uri with parameter 1`] = `
 Array [
   Array [
     "OAuth: Parameterized route is not supported on Googol callback uri",
@@ -50,15 +50,35 @@ Array [
 ]
 `;
 
-exports[`OAuth 2.0 Functionalities Should able add extra profile params 1`] = `
+exports[`OAuth 1.0a Should login properly 1`] = `
+Object {
+  "authUrl": "",
+  "cookie": "",
+  "profile": Object {
+    "email": "Josianne_Bosco@gmail.com",
+    "family_name": "Erdman",
+    "firstName": "I Ketut Manuel",
+    "given_name": "Greta",
+    "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
+    "lastName": "Auer",
+    "locale": "en",
+    "name": "I Ketut Manuel Auer",
+    "picture": "http://lorempixel.com/640/480",
+    "provider": "Teeter",
+  },
+  "status": 200,
+}
+`;
+
+exports[`OAuth 2.0 Should able add extra profile params 1`] = `
 Object {
   "profile": Object {
     "email": "Josianne_Bosco@gmail.com",
     "family_name": "Erdman",
-    "firstName": "I",
+    "firstName": "I Ketut Manuel",
     "given_name": "Greta",
     "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
-    "lastName": "Ketut Manuel Auer",
+    "lastName": "Auer",
     "locale": "en",
     "name": "I Ketut Manuel Auer",
     "picture": "http://lorempixel.com/640/480",
@@ -72,14 +92,15 @@ Object {
 }
 `;
 
-exports[`OAuth 2.0 Functionalities Should able to bind the oauth access_token 1`] = `
+exports[`OAuth 2.0 Should able to bind the oauth access_token 1`] = `
 Object {
   "access_token": "secret",
+  "provider": "MazeBook",
   "refresh_token": "very secret",
 }
 `;
 
-exports[`OAuth 2.0 Functionalities Should able to bind the raw profile 1`] = `
+exports[`OAuth 2.0 Should able to bind the raw profile 1`] = `
 Object {
   "email": "Josianne_Bosco@gmail.com",
   "family_name": "Erdman",
@@ -88,11 +109,12 @@ Object {
   "locale": "en",
   "name": "I Ketut Manuel Auer",
   "picture": "http://lorempixel.com/640/480",
+  "provider": "MazeBook",
   "query": Object {},
 }
 `;
 
-exports[`OAuth 2.0 Functionalities Should able to distinguish global callback and specific callback 1`] = `
+exports[`OAuth 2.0 Should able to distinguish global callback and specific callback 1`] = `
 Object {
   "profile": Object {
     "lorem": "ipsum",
@@ -101,7 +123,7 @@ Object {
 }
 `;
 
-exports[`OAuth 2.0 Functionalities Should able to send postMessage UI 1`] = `
+exports[`OAuth 2.0 Should able to send postMessage UI 1`] = `
 "
     <!DOCTYPE html>
     <html>
@@ -123,7 +145,7 @@ exports[`OAuth 2.0 Functionalities Should able to send postMessage UI 1`] = `
     "
 `;
 
-exports[`OAuth 2.0 Functionalities Should able to set postMessage origin 1`] = `
+exports[`OAuth 2.0 Should able to set postMessage origin 1`] = `
 "
     <!DOCTYPE html>
     <html>
@@ -145,19 +167,19 @@ exports[`OAuth 2.0 Functionalities Should able to set postMessage origin 1`] = `
     "
 `;
 
-exports[`OAuth 2.0 Functionalities Should attach proper redirect URI on login url 1`] = `"http://localhost/auth/callback"`;
+exports[`OAuth 2.0 Should attach proper redirect URI on login url 1`] = `"http://localhost/auth/callback"`;
 
-exports[`OAuth 2.0 Functionalities Should login properly 1`] = `
+exports[`OAuth 2.0 Should login properly 1`] = `
 Object {
   "authUrl": "",
   "cookie": "",
   "profile": Object {
     "email": "Josianne_Bosco@gmail.com",
     "family_name": "Erdman",
-    "firstName": "I",
+    "firstName": "I Ketut Manuel",
     "given_name": "Greta",
     "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
-    "lastName": "Ketut Manuel Auer",
+    "lastName": "Auer",
     "locale": "en",
     "name": "I Ketut Manuel Auer",
     "picture": "http://lorempixel.com/640/480",
@@ -168,17 +190,17 @@ Object {
 }
 `;
 
-exports[`OAuth 2.0 Functionalities Should login properly 2`] = `
+exports[`OAuth 2.0 Should login properly 2`] = `
 Object {
   "authUrl": "",
   "cookie": "",
   "profile": Object {
     "email": "Josianne_Bosco@gmail.com",
     "family_name": "Erdman",
-    "firstName": "I",
+    "firstName": "I Ketut Manuel",
     "given_name": "Greta",
     "id": "54f483f9-9b50-4c15-b53f-46ece9e3e5f8",
-    "lastName": "Ketut Manuel Auer",
+    "lastName": "Auer",
     "locale": "en",
     "name": "I Ketut Manuel Auer",
     "picture": "http://lorempixel.com/640/480",
@@ -189,6 +211,6 @@ Object {
 }
 `;
 
-exports[`OAuth 2.0 Functionalities Should save CSRF secret on cookie and CSRF token on state parameter 1`] = `"plum-oauth:csrf-secret=; path=/; httponly"`;
+exports[`OAuth 2.0 Should save CSRF secret on cookie and CSRF token on state parameter 1`] = `"plum-oauth:csrf-secret=; path=/; httponly"`;
 
-exports[`OAuth 2.0 Functionalities Should save provider on cookie 1`] = `"plum-oauth:provider=MazeBook; path=/; httponly"`;
+exports[`OAuth 2.0 Should save provider on cookie 1`] = `"plum-oauth:provider=MazeBook; path=/; httponly"`;

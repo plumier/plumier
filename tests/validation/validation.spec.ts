@@ -776,7 +776,7 @@ describe("File Validation", () => {
             .attach("file", join(__dirname, "./assets/dice.png"))
             .attach("file", join(__dirname, "./assets/clock.jpeg"))
             .expect(422)
-        expect(body).toMatchSnapshot()
+        expect(body.message.map((x: any) => ({ messages: x.messages }))).toMatchSnapshot()
     })
 
     it("Should able to use custom file size validation message", async () => {

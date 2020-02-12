@@ -6,6 +6,7 @@ import { fixture } from "../helper"
 
 
 
+
 export class OAuthController {
 
     @route.post()
@@ -43,7 +44,6 @@ export class OAuthController {
 export class FakeOAuth2Facility extends OAuthProviderBaseFacility {
     constructor(provider: string, origin: string, opt?: OAuthProviderOption) {
         super({
-            ...opt,
             profile: {
                 endpoint: `${origin}/oauth/profile`,
                 params: {},
@@ -60,7 +60,7 @@ export class FakeOAuth2Facility extends OAuthProviderBaseFacility {
     }
 }
 
-export async function oAuthServer() {
+export async function oAuth20Server() {
     return fixture(OAuthController)
         .initialize()
 }

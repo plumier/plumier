@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`splitName Should not error when provided undefined 1`] = `
+Object {
+  "firstName": "",
+  "lastName": "",
+}
+`;
+
+exports[`splitName Should split name with 1 words 1`] = `
+Object {
+  "firstName": "Ketut",
+  "lastName": "",
+}
+`;
+
+exports[`splitName Should split name with 2 words 1`] = `
+Object {
+  "firstName": "Ketut",
+  "lastName": "Sandiarsa",
+}
+`;
+
+exports[`splitName Should split name with 3 words 1`] = `
+Object {
+  "firstName": "Ketut Sandiarsa",
+  "lastName": "Rugita",
+}
+`;
+
+exports[`splitName Should split name with 4 words 1`] = `
+Object {
+  "firstName": "I Ketut Sandiarsa",
+  "lastName": "Rugita",
+}
+`;
