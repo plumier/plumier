@@ -91,10 +91,12 @@ const log = {
     error: debug("@plumier/social-login:error")
 }
 
-export function splitName(name: string) {
-    const names = name.split(" ")
-    const firstName = names[0]
-    const lastName = names.length > 1 ? names.filter((x, i) => i > 0).join(" ") : ""
+export function splitName(name: string | undefined) {
+    if (!name) return { firstName: "", lastName: "" }
+    const idx = name.lastIndexOf(" ")
+    if (idx === -1) return { firstName: name, lastName: "" }
+    const lastName = name.substr(idx + 1)
+    const firstName = name.substring(0, idx)
     return { firstName, lastName }
 }
 
