@@ -5,7 +5,7 @@ title: Social Media Login
 
 Plumier provided functionalities to easily secure your API and application using social media login such as Facebook, Google, GitHub and GitLab (Other provider will be added in the future). It included some security best practices out of the box, so you don't need to understand the security practice technically to implement social media login in Plumier.
 
-> This documentation assume that you have knowledge on how to setup social login application on [Facebook](https://developers.facebook.com/), [Google](https://console.developers.google.com/), [GitHub](https://github.com/settings/developers) and [GitLab](https://gitlab.com/profile/applications), and have basic knowledge on how to setup OAuth 2.0 login.
+> This documentation assume that you have knowledge on how to setup social login application on [Facebook](https://developers.facebook.com/), [Google](https://console.developers.google.com/), [GitHub](https://github.com/settings/developers) and [GitLab](https://gitlab.com/profile/applications), and have basic knowledge on how to setup OAuth login.
 
 > **Source Code Example**: Complete example using social media login can be found in these GitHub repositories: [React](https://github.com/plumier/tutorial-monorepo-social-login) and [Vue.js](https://github.com/plumier/tutorial-social-login-vue)
 
@@ -19,6 +19,7 @@ Plumier social media login is not enabled by default, to enable the functionalit
 | `GoogleOAuthFacility`   | Provide Google specific social login functionalities                                 |
 | `GitHubOAuthFacility`   | Provide GitHub specific social login functionalities                                 |
 | `GitLabOAuthFacility`   | Provide GitLab specific social login functionalities                                 |
+| `TwitterOAuthFacility`   | Provide Twitter specific social login functionalities                                 |
 
 `OAuthFacility` facility is mandatory because its provide the common functionalities required to perform OAuth process.
 
@@ -58,6 +59,7 @@ const plumier = new Plumier()
 | `GoogleOAuthFacility`   | `PLUM_GOOGLE_CLIENT_ID`   | `PLUM_GOOGLE_CLIENT_SECRET`   |
 | `GitHubOAuthFacility`   | `PLUM_GITHUB_CLIENT_ID`   | `PLUM_GITHUB_CLIENT_SECRET`   |
 | `GitLabOAuthFacility`   | `PLUM_GITLAB_CLIENT_ID`   | `PLUM_GITLAB_CLIENT_SECRET`   |
+| `TwitterOAuthFacility`   | `PLUM_TWITTER_CLIENT_ID`   | `PLUM_TWITTER_CLIENT_SECRET`   |
 
 
 ## Showing The Login Page
@@ -70,6 +72,7 @@ Plumier provided endpoints that will be redirected to the social media login pag
 | `GET /auth/google/login`   | `GoogleOAuthFacility`   | Redirect to Google login page   |
 | `GET /auth/github/login`   | `GitHubOAuthFacility`   | Redirect to GitHub login page   |
 | `GET /auth/gitlab/login`   | `GitLabOAuthFacility`   | Redirect to GitLab login page   |
+| `GET /auth/tiwtter/login`   | `TwitterOAuthFacility`   | Redirect to Twitter login page   |
 
 Above endpoint can be change accordingly see [customization](#customization) section for more detail.
 
