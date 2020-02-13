@@ -2,6 +2,8 @@ import { consoleLog, domain, route, DefaultFacility, PlumierApplication } from "
 import Plumier, { WebApiFacility } from "plumier"
 import Supertest from "supertest"
 import { join } from "path"
+import getPort from "get-port"
+import supertest from 'supertest'
 
 @domain()
 export class AnimalModel {
@@ -48,6 +50,8 @@ function fixture() {
 }
 
 describe("Basic Controller", () => {
+    
+
     it("Should able to perform GET request", async () => {
         const koa = await fixture().initialize()
         await Supertest(koa.callback())
@@ -128,6 +132,38 @@ describe("DEV_ENV", () => {
             .initialize();
         const mock = (console.log as jest.Mock)
         expect(mock).toBeCalled()
+    })
+})
+
+describe("Listen", () => {
+    it("Should able to listen to port", async () => {
+        const port = await getPort()
+        const app = await fixture().listen(port)
+        await Supertest(`http://localhost:${port}`)
+            .get("/animal/get?id=123")
+            .expect(200)
+        app.close()
+    })
+
+    it("Should able to listen to env variable", async () => {
+        process.env.PLUM_PORT = (await getPort()).toString()
+        const app = await fixture().listen()
+        await Supertest(`http://localhost:${process.env.PLUM_PORT}`)
+            .get("/animal/get?id=123")
+            .expect(200)
+        app.close()
+        delete process.env.PLUM_PORT
+    })
+
+    it("Should show server info when in debug mode", async () => {
+        consoleLog.startMock()
+        process.env.PLUM_PORT = (await getPort()).toString()
+        const app = await fixture().set({mode: "debug"}).listen()
+        app.close()
+        const mock = (console.log as jest.Mock)
+        expect(mock.mock.calls[7][0].replace(/:[0-9]{4,5}/, "")).toMatchSnapshot()
+        delete process.env.PLUM_PORT
+        consoleLog.clearMock()
     })
 })
 

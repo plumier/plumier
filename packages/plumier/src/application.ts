@@ -74,4 +74,12 @@ export class Plumier implements PlumierApplication {
             throw e
         }
     }
+
+    async listen(port = 8000) {
+        const app = await this.initialize()
+        const envPort = process.env.PLUM_PORT ? parseInt(process.env.PLUM_PORT) : port
+        if (this.config.mode === "debug")
+            console.log(`Server ready http://localhost:${envPort}/`)
+        return app.listen(envPort)
+    }
 }

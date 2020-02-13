@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Listen Should show server info when in debug mode 1`] = `"Server ready http://localhost/"`;
