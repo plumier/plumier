@@ -145,24 +145,33 @@ describe("Listen", () => {
         app.close()
     })
 
-    it("Should able to listen to env variable", async () => {
-        process.env.PLUM_PORT = (await getPort()).toString()
-        const app = await fixture().listen()
-        await Supertest(`http://localhost:${process.env.PLUM_PORT}`)
+    it("Should able to listen string port variable", async () => {
+        const port = await getPort()
+        const app = await fixture().listen(port.toString())
+        await Supertest(`http://localhost:${port}`)
             .get("/animal/get?id=123")
             .expect(200)
         app.close()
-        delete process.env.PLUM_PORT
+    })
+
+    it("Should throw error when provided invalid port number", async () => {
+        const fn = jest.fn()
+        try{
+            await fixture().listen("INVALID NUMBER")
+        }
+        catch(e){
+            fn(e.message)
+        }
+        expect(fn.mock.calls).toMatchSnapshot()
     })
 
     it("Should show server info when in debug mode", async () => {
         consoleLog.startMock()
-        process.env.PLUM_PORT = (await getPort()).toString()
-        const app = await fixture().set({mode: "debug"}).listen()
+        const port = (await getPort()).toString()
+        const app = await fixture().set({mode: "debug"}).listen(port)
         app.close()
         const mock = (console.log as jest.Mock)
         expect(mock.mock.calls[7][0].replace(/:[0-9]{4,5}/, "")).toMatchSnapshot()
-        delete process.env.PLUM_PORT
         consoleLog.clearMock()
     })
 })

@@ -293,7 +293,7 @@ export interface Application {
      * Check for env variable named PLUM_PORT or listen to 8000
      * @param port http port
      */
-    listen(port?: number): Promise<Server>
+    listen(port?: number | string): Promise<Server>
 }
 
 export interface PlumierApplication extends Application {
