@@ -10,6 +10,7 @@ import { domain } from './decorator'
 import { join, extname } from "path"
 import { copyFile, createReadStream } from 'fs'
 import { promisify } from "util"
+import { Server } from "http"
 
 const copyFileAsync = promisify(copyFile)
 
@@ -285,6 +286,14 @@ export interface Application {
     ```
      */
     initialize(): Promise<Koa>
+
+
+    /**
+     * Initialize Plumier and listen immediately to port. 
+     * Check for env variable named PLUM_PORT or listen to 8000
+     * @param port http port
+     */
+    listen(port?: number): Promise<Server>
 }
 
 export interface PlumierApplication extends Application {
