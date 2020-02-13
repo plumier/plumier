@@ -1,3 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Listen Should show server info when in debug mode 1`] = `"Server ready http://localhost/"`;
+
+exports[`Listen Should throw error when provided invalid port number 1`] = `
+Array [
+  Array [
+    "Unable to parse port number INVALID NUMBER. Please provide a valid integer number",
+  ],
+]
+`;

@@ -75,9 +75,16 @@ export class Plumier implements PlumierApplication {
         }
     }
 
-    async listen(port = 8000) {
+    async listen(port?: number | string) {
         const app = await this.initialize()
-        const envPort = process.env.PLUM_PORT ? parseInt(process.env.PLUM_PORT) : port
+        let envPort: number | undefined;
+        if(typeof port === "string"){
+            const result = parseInt(port)
+            if(isNaN(result)) throw Error(`Unable to parse port number ${port}. Please provide a valid integer number`)
+            envPort = result
+        }
+        else 
+            envPort = port
         if (this.config.mode === "debug")
             console.log(`Server ready http://localhost:${envPort}/`)
         return app.listen(envPort)
