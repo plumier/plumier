@@ -218,7 +218,6 @@ describe("Proxy Headers", () => {
 
     it("Should accept protocol when trusted", async () => {
         const app = await fixture(true)
-            .set({ trustProxyHeader: true })
             .initialize()
         const { body } = await Supertest(app.callback())
             .get("/animal/index")
@@ -235,5 +234,43 @@ describe("Proxy Headers", () => {
             .set("x-forwarded-proto", "https")
             .expect(200)
         expect(body).toMatchSnapshot()
+    })
+})
+
+describe("Force HTTPS", () => {
+
+    class AnimalController {
+        index(@bind.ctx("protocol") protocol: string) {
+            return { protocol }
+        }
+    }
+
+    function fixture(forceHttps: boolean) {
+        return new Plumier()
+            .set(new WebApiFacility({ forceHttps, controller: AnimalController }))
+            .set({ mode: "production" })
+    }
+
+    it("Should redirect to https when enabled", async () => {
+        process.env.NODE_ENV = "production"
+        const app = await fixture(true)
+            .initialize()
+        const resp = await Supertest(app.callback())
+            .get("/animal/index")
+            .expect(302)
+        expect(resp.header["location"]).toMatchSnapshot()
+        delete process.env.NODE_ENV
+    })
+
+    it("Should not redirect if in debug mode", async () => {
+        consoleLog.startMock()
+        const app = await fixture(true)
+        .initialize()
+        await Supertest(app.callback())
+            .get("/animal/index")
+            .expect(200)
+        const log = console.log as jest.Mock
+        consoleLog.clearMock()
+        expect(log.mock.calls).toMatchSnapshot()
     })
 })

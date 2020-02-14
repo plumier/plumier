@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Force HTTPS Should not redirect if in debug mode 1`] = `
+Array [
+  Array [
+    "Force HTTP disabled on debug mode",
+  ],
+]
+`;
+
+exports[`Force HTTPS Should redirect to https when enabled 1`] = `"https://127.0.0.1/animal/index"`;
+
 exports[`Listen Should show server info when in debug mode 1`] = `"Server ready http://localhost/"`;
 
 exports[`Listen Should throw error when provided invalid port number 1`] = `
