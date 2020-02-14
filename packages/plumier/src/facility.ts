@@ -64,13 +64,16 @@ export class RestfulApiFacility extends WebApiFacility {
 }
 
 
-class ForceHttpsMiddleware implements CustomMiddleware {
+export class ForceHttpsMiddleware implements CustomMiddleware {
     async execute(i: Readonly<Invocation<Context>>): Promise<ActionResult> {
         if (process.env.NODE_ENV !== "production") {
             console.log("Force HTTP disabled on debug mode")
             return i.proceed()
         }
         const req = i.ctx.request
-        return response.redirect(`https://${req.hostname}${req.originalUrl}`)
+        if(req.protocol === "http")
+            return response.redirect(`https://${req.hostname}${req.originalUrl}`)
+        else 
+            return i.proceed()
     }
 }

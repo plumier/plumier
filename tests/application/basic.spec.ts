@@ -1,8 +1,9 @@
-import { bind, consoleLog, DefaultFacility, domain, PlumierApplication, route } from "@plumier/core"
+import { bind, consoleLog, DefaultFacility, domain, PlumierApplication, route, ActionResult } from "@plumier/core"
 import getPort from "get-port"
 import { Context } from "koa"
-import Plumier, { WebApiFacility } from "plumier"
+import Plumier, { WebApiFacility, ForceHttpsMiddleware } from "plumier"
 import Supertest from "supertest"
+import Axios from "axios"
 
 @domain()
 export class AnimalModel {
@@ -262,10 +263,27 @@ describe("Force HTTPS", () => {
         delete process.env.NODE_ENV
     })
 
+    it("Should not redirect when already requested https", async () => {
+        process.env.NODE_ENV = "production"
+        const mdw = new ForceHttpsMiddleware()
+        const result = await mdw.execute({
+            proceed: async () => new ActionResult("not processed"),
+            ctx: {
+                request: {
+                    protocol: "https", 
+                    hostName: "localhost",
+                    originalUrl: "/animals/index"
+                } as any
+            } as any
+        })
+        delete process.env.NODE_ENV
+        expect(result).toMatchSnapshot()
+    })
+
     it("Should not redirect if in debug mode", async () => {
         consoleLog.startMock()
         const app = await fixture(true)
-        .initialize()
+            .initialize()
         await Supertest(app.callback())
             .get("/animal/index")
             .expect(200)
