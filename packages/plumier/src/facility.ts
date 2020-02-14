@@ -7,6 +7,7 @@ export interface WebApiFacilityOption {
     controller?: string | Class | Class[],
     bodyParser?: BodyParser.IKoaBodyOptions,
     cors?: Cors.Options | boolean,
+    trustProxyHeader?: boolean
     dependencyResolver?: DependencyResolver
 }
 
@@ -28,13 +29,15 @@ export class WebApiFacility extends DefaultFacility {
         if (typeof option.cors !== "boolean" && option.cors) {
             app.koa.use(Cors(option.cors))
         }
-        else if(option.cors){
+        else if (option.cors) {
             app.koa.use(Cors())
         }
         if (option.dependencyResolver)
             app.set({ dependencyResolver: option.dependencyResolver })
         if (option.controller)
             app.set({ controller: option.controller })
+        if (option.trustProxyHeader)
+            app.set({ trustProxyHeader: option.trustProxyHeader })
     }
 }
 
@@ -55,4 +58,3 @@ export class RestfulApiFacility extends WebApiFacility {
         app.set({ responseStatus: { post: 201, put: 204, delete: 204 } })
     }
 }
-

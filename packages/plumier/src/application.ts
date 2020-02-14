@@ -33,7 +33,8 @@ export class Plumier implements PlumierApplication {
             facilities: [],
             roleField: "role",
             enableAuthorization: false,
-            rootDir: "__UNSET__"
+            rootDir: "__UNSET__", 
+            trustProxyHeader: false
         }
     }
 
@@ -68,6 +69,7 @@ export class Plumier implements PlumierApplication {
             }
             if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes, this.config))
             this.koa.use(router(routes, this.config))
+            this.koa.proxy = this.config.trustProxyHeader
             return this.koa
         }
         catch (e) {
