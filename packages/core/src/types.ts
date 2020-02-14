@@ -432,6 +432,12 @@ export interface Configuration {
      * Root directory of the application, usually __dirname
      */
     rootDir: string
+
+    /**
+     * Trust proxy headers such as X-Forwarded-For, X-Forwarded-Proto, X-Forwarded-Host and use its value 
+     * to appropriate request properties: ip, protocol, host
+     */
+    trustProxyHeader: boolean
 }
 
 export interface PlumierConfiguration extends Configuration {

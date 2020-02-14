@@ -1,9 +1,8 @@
-import { consoleLog, domain, route, DefaultFacility, PlumierApplication } from "@plumier/core"
+import { bind, consoleLog, DefaultFacility, domain, PlumierApplication, route } from "@plumier/core"
+import getPort from "get-port"
+import { Context } from "koa"
 import Plumier, { WebApiFacility } from "plumier"
 import Supertest from "supertest"
-import { join } from "path"
-import getPort from "get-port"
-import supertest from 'supertest'
 
 @domain()
 export class AnimalModel {
@@ -50,7 +49,7 @@ function fixture() {
 }
 
 describe("Basic Controller", () => {
-    
+
 
     it("Should able to perform GET request", async () => {
         const koa = await fixture().initialize()
@@ -156,10 +155,10 @@ describe("Listen", () => {
 
     it("Should throw error when provided invalid port number", async () => {
         const fn = jest.fn()
-        try{
+        try {
             await fixture().listen("INVALID NUMBER")
         }
-        catch(e){
+        catch (e) {
             fn(e.message)
         }
         expect(fn.mock.calls).toMatchSnapshot()
@@ -168,7 +167,7 @@ describe("Listen", () => {
     it("Should show server info when in debug mode", async () => {
         consoleLog.startMock()
         const port = (await getPort()).toString()
-        const app = await fixture().set({mode: "debug"}).listen(port)
+        const app = await fixture().set({ mode: "debug" }).listen(port)
         app.close()
         const mock = (console.log as jest.Mock)
         expect(mock.mock.calls[7][0].replace(/:[0-9]{4,5}/, "")).toMatchSnapshot()
@@ -200,5 +199,41 @@ describe("Root Directory", () => {
             .initialize()
         const rootDir = fn.mock.calls[0][0]
         expect(rootDir).toBe("/lorem/ipsum")
+    })
+})
+
+describe("Proxy Headers", () => {
+
+    class AnimalController {
+        index(@bind.ctx("protocol") protocol: string) {
+            return { protocol }
+        }
+    }
+
+    function fixture(trustProxyHeader: boolean) {
+        return new Plumier()
+            .set(new WebApiFacility({ trustProxyHeader, controller: AnimalController }))
+            .set({ mode: "production" })
+    }
+
+    it("Should accept protocol when trusted", async () => {
+        const app = await fixture(true)
+            .set({ trustProxyHeader: true })
+            .initialize()
+        const { body } = await Supertest(app.callback())
+            .get("/animal/index")
+            .set("x-forwarded-proto", "https")
+            .expect(200)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should not accept protocol by default", async () => {
+        const app = await fixture(false)
+            .initialize()
+        const { body } = await Supertest(app.callback())
+            .get("/animal/index")
+            .set("x-forwarded-proto", "https")
+            .expect(200)
+        expect(body).toMatchSnapshot()
     })
 })

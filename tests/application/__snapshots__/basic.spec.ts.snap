@@ -9,3 +9,15 @@ Array [
   ],
 ]
 `;
+
+exports[`Proxy Headers Should accept protocol when trusted 1`] = `
+Object {
+  "protocol": "https",
+}
+`;
+
+exports[`Proxy Headers Should not accept protocol by default 1`] = `
+Object {
+  "protocol": "http",
+}
+`;
