@@ -27,8 +27,12 @@ export class WebApiFacility extends DefaultFacility {
 
     setup(app: Readonly<PlumierApplication>) {
         const option: WebApiFacilityOption = { ...this.opt }
-        if(option.forceHttps)
+        if(option.forceHttps){
+            if (process.env.NODE_ENV !== "production") {
+                console.log("Force HTTP disabled on debug mode")
+            }
             app.use(new ForceHttpsMiddleware())
+        }
         app.koa.use(BodyParser(option.bodyParser))
         if (typeof option.cors !== "boolean" && option.cors) {
             app.koa.use(Cors(option.cors))
@@ -67,7 +71,6 @@ export class RestfulApiFacility extends WebApiFacility {
 export class ForceHttpsMiddleware implements CustomMiddleware {
     async execute(i: Readonly<Invocation<Context>>): Promise<ActionResult> {
         if (process.env.NODE_ENV !== "production") {
-            console.log("Force HTTP disabled on debug mode")
             return i.proceed()
         }
         const req = i.ctx.request
