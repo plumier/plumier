@@ -289,9 +289,7 @@ export interface Application {
 
 
     /**
-     * Initialize Plumier and listen immediately to port. 
-     * Check for env variable named PLUM_PORT or listen to 8000
-     * @param port http port
+     * Initialize Plumier and listen immediately to specific port. 
      */
     listen(port?: number | string): Promise<Server>
 }
