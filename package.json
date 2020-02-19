@@ -41,7 +41,7 @@
 		"faker": "^4.1.0",
 		"pre-push": "^0.1.1",
 		"reflect-metadata": "^0.1.13",
-		"ts-jest": "^24.3.0",
+		"ts-jest": "^25.2.1",
 		"tslint": "^6.0.0",
 		"typescript": "^3.7.5",
 		"autocannon": "^4.5.2",
