@@ -1,7 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Force HTTPS Should not redirect if not define 1`] = `Array []`;
-
 exports[`Force HTTPS Should not redirect when already requested https 1`] = `
 ActionResult {
   "body": "not processed",

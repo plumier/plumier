@@ -298,6 +298,15 @@ describe("Force HTTPS", () => {
         expect(resp.header["location"]).toMatchSnapshot()
     })
 
+    it("Should priorities code vs configuration when provided falsy", async () => {
+        process.env.PLUM_FORCE_HTTPS = "true"
+        const app = await fixture(false)
+            .initialize()
+        const resp = await Supertest(app.callback())
+            .get("/animal/index")
+            .expect(200)
+    })
+
     it("Should not redirect when already requested https", async () => {
         process.env.NODE_ENV = "production"
         const mdw = new ForceHttpsMiddleware()
@@ -313,17 +322,5 @@ describe("Force HTTPS", () => {
         })
         delete process.env.NODE_ENV
         expect(result).toMatchSnapshot()
-    })
-
-    it("Should not redirect if not define", async () => {
-        consoleLog.startMock()
-        const app = await fixture()
-            .initialize()
-        await Supertest(app.callback())
-            .get("/animal/index")
-            .expect(200)
-        const log = console.log as jest.Mock
-        consoleLog.clearMock()
-        expect(log.mock.calls).toMatchSnapshot()
     })
 })
