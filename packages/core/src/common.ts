@@ -42,6 +42,14 @@ function hasKeyOf<T>(opt: any, key: string): opt is T {
     return !!opt[key]
 }
 
+function toBoolean(val:string){
+    const list: { [key: string]: boolean | undefined } = {
+        on: true, true: true, "1": true, yes: true,
+        off: false, false: false, "0": false, no: false
+    }
+    return list[val.toLowerCase()] ?? false
+}
+
 function isCustomClass(type: Function | Function[]) {
     switch (type && (type as any)[0] || type) {
         case undefined:
@@ -98,4 +106,4 @@ function findFilesRecursive(path: string): string[] {
     else return [path]
 }
 
-export { getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, memoize };
+export { toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, memoize };

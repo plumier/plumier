@@ -246,21 +246,56 @@ describe("Force HTTPS", () => {
         }
     }
 
-    function fixture(forceHttps: boolean) {
+    function fixture(forceHttps?: boolean) {
         return new Plumier()
             .set(new WebApiFacility({ forceHttps, controller: AnimalController }))
             .set({ mode: "production" })
     }
 
     it("Should redirect to https when enabled", async () => {
-        process.env.NODE_ENV = "production"
         const app = await fixture(true)
             .initialize()
         const resp = await Supertest(app.callback())
             .get("/animal/index")
             .expect(302)
         expect(resp.header["location"]).toMatchSnapshot()
-        delete process.env.NODE_ENV
+    })
+
+    it("Should not redirect to https when set to false", async () => {
+        const app = await fixture(false)
+            .initialize()
+        await Supertest(app.callback())
+            .get("/animal/index")
+            .expect(200)
+    })
+
+    it("Should redirect to https when enabled using env variable", async () => {
+        process.env.PLUM_FORCE_HTTPS = "true"
+        const app = await fixture()
+            .initialize()
+        const resp = await Supertest(app.callback())
+            .get("/animal/index")
+            .expect(302)
+        expect(resp.header["location"]).toMatchSnapshot()
+    })
+
+    it("Should not redirect to https when env variable set to false", async () => {
+        process.env.PLUM_FORCE_HTTPS = "false"
+        const app = await fixture()
+            .initialize()
+        await Supertest(app.callback())
+            .get("/animal/index")
+            .expect(200)
+    })
+
+    it("Should priorities code vs configuration", async () => {
+        process.env.PLUM_FORCE_HTTPS = "false"
+        const app = await fixture(true)
+            .initialize()
+        const resp = await Supertest(app.callback())
+            .get("/animal/index")
+            .expect(302)
+        expect(resp.header["location"]).toMatchSnapshot()
     })
 
     it("Should not redirect when already requested https", async () => {
@@ -280,9 +315,9 @@ describe("Force HTTPS", () => {
         expect(result).toMatchSnapshot()
     })
 
-    it("Should not redirect if in debug mode", async () => {
+    it("Should not redirect if not define", async () => {
         consoleLog.startMock()
-        const app = await fixture(true)
+        const app = await fixture()
             .initialize()
         await Supertest(app.callback())
             .get("/animal/index")

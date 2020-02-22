@@ -1,12 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Force HTTPS Should not redirect if in debug mode 1`] = `
-Array [
-  Array [
-    "Force HTTP disabled on debug mode",
-  ],
-]
-`;
+exports[`Force HTTPS Should not redirect if not define 1`] = `Array []`;
 
 exports[`Force HTTPS Should not redirect when already requested https 1`] = `
 ActionResult {
@@ -17,7 +11,11 @@ ActionResult {
 }
 `;
 
+exports[`Force HTTPS Should priorities code vs configuration 1`] = `"https://127.0.0.1/animal/index"`;
+
 exports[`Force HTTPS Should redirect to https when enabled 1`] = `"https://127.0.0.1/animal/index"`;
+
+exports[`Force HTTPS Should redirect to https when enabled using env variable 1`] = `"https://127.0.0.1/animal/index"`;
 
 exports[`Listen Should show server info when in debug mode 1`] = `"Server ready http://localhost/"`;
 
