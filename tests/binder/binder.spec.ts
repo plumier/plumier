@@ -665,6 +665,39 @@ describe("Parameter Binding", () => {
         })
     })
 
+    describe("Request raw body parameter binding", () => {
+        @domain()
+        class AnimalModel {
+            constructor(
+                public id: number,
+                public name: string,
+                public deceased: boolean,
+                public birthday: Date
+            ) { }
+        }
+
+        function fixture(controller:Class){
+            return new Plumier()
+                .set({mode: "production"})
+                .set(new WebApiFacility({controller, bodyParser: { includeUnparsed:true }}))
+        }
+
+        it("Should bind raw body", async () => {
+            class AnimalController {
+                @route.post()
+                save(@bind.rawBody() b: any) {
+                    expect(typeof b).toBe("string")
+                    return b
+                }
+            }
+            await Supertest((await fixture(AnimalController).initialize()).callback())
+                .post("/animal/save")
+                .send({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
+                .expect(200)
+        })
+
+    })
+
     describe("Request header parameter binding", () => {
         it("Should bind request header", async () => {
             class AnimalController {

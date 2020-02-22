@@ -13,6 +13,7 @@ export {
 } from "@plumier/core"
 export * from "./facility"
 import "./validator"
+import "./binder"
 
 import { Plumier } from "./application"
 export default Plumier
