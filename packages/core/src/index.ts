@@ -8,7 +8,7 @@ export { response } from "./response";
 export { generateRoutes } from "./route-generator";
 export { analyzeRoutes, printAnalysis } from "./route-analyzer";
 export { router } from "./router";
-export { Class, consoleLog, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass } from "./common";
+export { Class, consoleLog, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass, toBoolean } from "./common";
 export { AuthDecoratorImpl, authorize } from "./decorator.authorize";
 export { bind } from "./decorator.bind";
 export { domain, middleware } from "./decorator";

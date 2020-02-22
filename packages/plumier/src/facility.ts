@@ -1,5 +1,5 @@
 import Cors from "@koa/cors"
-import { Class, DefaultDependencyResolver, DefaultFacility, PlumierApplication, DependencyResolver, CustomMiddleware, Invocation, ActionResult, response } from "@plumier/core"
+import { Class, DefaultDependencyResolver, DefaultFacility, PlumierApplication, DependencyResolver, CustomMiddleware, Invocation, ActionResult, response, toBoolean } from "@plumier/core"
 import BodyParser from "koa-body"
 import { Context } from 'koa'
 
@@ -27,10 +27,7 @@ export class WebApiFacility extends DefaultFacility {
 
     setup(app: Readonly<PlumierApplication>) {
         const option: WebApiFacilityOption = { ...this.opt }
-        if(option.forceHttps){
-            if (process.env.NODE_ENV !== "production") {
-                console.log("Force HTTP disabled on debug mode")
-            }
+        if(option.forceHttps ?? toBoolean(process.env.PLUM_FORCE_HTTPS || "__none")){
             app.use(new ForceHttpsMiddleware())
         }
         app.koa.use(BodyParser(option.bodyParser))
@@ -70,9 +67,6 @@ export class RestfulApiFacility extends WebApiFacility {
 
 export class ForceHttpsMiddleware implements CustomMiddleware {
     async execute(i: Readonly<Invocation<Context>>): Promise<ActionResult> {
-        if (process.env.NODE_ENV !== "production") {
-            return i.proceed()
-        }
         const req = i.ctx.request
         if(req.protocol === "http")
             return response.redirect(`https://${req.hostname}${req.originalUrl}`)
