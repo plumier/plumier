@@ -98,4 +98,49 @@ function findFilesRecursive(path: string): string[] {
     else return [path]
 }
 
-export { getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, memoize };
+
+// --------------------------------------------------------------------- //
+// ---------------------------- PRINT TABLE ---------------------------- //
+// --------------------------------------------------------------------- //
+
+interface ColumnMeta {
+    margin?: "left" | "right",
+    property: string | ((x: any) => string),
+    paddingLeft?: number,
+    paddingRight?: number
+}
+
+function printTable(meta: (ColumnMeta | string)[], data: any[]) {
+    const getText = (col: ColumnMeta, row: any): string => {
+        if (typeof col.property === "string")
+            return (row[col.property] ?? "" + "")
+        else
+            return col.property(row)
+    }
+    const metaData = meta.map(x => typeof x === "string" ? <ColumnMeta>{ property: x } : x)
+        .map(x => {
+            const lengths = data.map(row => getText(x, row).length)
+            const length = Math.max(...lengths)
+            return {
+                ...x, margin: x.margin || "left", length,
+                paddingLeft: x.paddingLeft || 0,
+                paddingRight: x.paddingRight || 1
+            }
+        })
+    for (const [i, row] of data.entries()) {
+        let text = `${(i + 1).toString().padStart(data.length.toString().length)}. `
+        for (const [idx, col] of metaData.entries()) {
+            const colText = getText(col, row)
+            if (col.margin === "right")
+                text += colText.padStart(col.length)
+            else
+                text += colText.padEnd(col.length)
+            if (idx < metaData.length - 1)
+                text = text.padEnd(text.length + col.paddingRight)
+                    .padStart(text.length + col.paddingLeft)
+        }
+        console.log(text)
+    }
+}
+
+export { getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, memoize, printTable };
