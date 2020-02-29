@@ -105,41 +105,46 @@ function findFilesRecursive(path: string): string[] {
 
 interface ColumnMeta {
     margin?: "left" | "right",
-    property: string | ((x: any) => string),
-    paddingLeft?: number,
-    paddingRight?: number
+    property: string | ((x: any) => string)
 }
 
-function printTable(meta: (ColumnMeta | string)[], data: any[]) {
+interface TableOption<T> {
+    onPrintRow?: (row:string, data:T) => string
+}
+
+function printTable<T>(meta: (ColumnMeta | string | undefined)[], data: T[], option?: TableOption<T>) {
     const getText = (col: ColumnMeta, row: any): string => {
         if (typeof col.property === "string")
             return (row[col.property] ?? "" + "")
         else
             return col.property(row)
     }
-    const metaData = meta.map(x => typeof x === "string" ? <ColumnMeta>{ property: x } : x)
+    const metaData = meta.filter((x): x is ColumnMeta | string => !!x).map(x => typeof x === "string" ? <ColumnMeta>{ property: x } : x)
         .map(x => {
             const lengths = data.map(row => getText(x, row).length)
             const length = Math.max(...lengths)
             return {
                 ...x, margin: x.margin || "left", length,
-                paddingLeft: x.paddingLeft || 0,
-                paddingRight: x.paddingRight || 1
             }
         })
+    const opt:Required<TableOption<T>> = { onPrintRow: x => x, ...option}
     for (const [i, row] of data.entries()) {
         let text = `${(i + 1).toString().padStart(data.length.toString().length)}. `
         for (const [idx, col] of metaData.entries()) {
+            const exceptLast = idx < metaData.length - 1
             const colText = getText(col, row)
+            // margin
             if (col.margin === "right")
                 text += colText.padStart(col.length)
-            else
+            else if (exceptLast)
                 text += colText.padEnd(col.length)
-            if (idx < metaData.length - 1)
-                text = text.padEnd(text.length + col.paddingRight)
-                    .padStart(text.length + col.paddingLeft)
+            else
+                text += colText
+            //padding
+            if (exceptLast)
+                text += " "
         }
-        console.log(text)
+        console.log(opt.onPrintRow(text, row))
     }
 }
 

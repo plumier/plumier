@@ -33,7 +33,7 @@ declare module "@plumier/core" {
     }
 
     interface RouteDecoratorImpl {
-        historyApiFallback(): (target: any, name: string) => void
+        historyApiFallback(): MethodDecorator
     }
 
     export interface Configuration {

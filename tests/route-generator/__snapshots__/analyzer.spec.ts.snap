@@ -1,0 +1,117 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Route Analyzer Should be able to extends the route analyzer 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "[31m1. AnimalController.method() -> GET /animal/method[39m
+[31m - error PLUM1005: Just an error[39m",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify duplicate route 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "[31m1. AnimalController.method(a) -> GET /beast/method[39m
+[31m - error PLUM1003: Duplicate route found in AnimalController.method(a) BeastController.method(a)[39m",
+  ],
+  Array [
+    "[31m2. BeastController.method(a)  -> GET /beast/method[39m
+[31m - error PLUM1003: Duplicate route found in AnimalController.method(a) BeastController.method(a)[39m",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify if array doesn't have type information for parameter binding 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "[33m1. AnimalController.method(a) -> POST /animal/method[39m
+[33m - warning PLUM1006: Parameter binding skipped because array field without @array() decorator found in (AnimalController.method.a)[39m",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify if model doesn't have type information for parameter binding 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "[33m1. AnimalController.method(a) -> POST /animal/method[39m
+[33m - warning PLUM1005: Parameter binding skipped because  AnimalModel doesn't have @domain() decorator[39m",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify if model doesn't have type information for parameter binding recursive 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "[33m1. AnimalController.method(a) -> POST /animal/method[39m
+[33m - warning PLUM1005: Parameter binding skipped because  TagModel doesn't have @domain() decorator[39m",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify missing backing parameter 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "[31m1. AnimalController.method(a, b) -> GET /animal/:c[39m
+[31m - error PLUM1000: Route parameters (c) doesn't have appropriate backing parameter[39m",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify missing backing parameter on root decorator 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "[31m1. AnimalController.method(a, b) -> GET /beast/:type/:a[39m
+[31m - error PLUM1000: Route parameters (type) doesn't have appropriate backing parameter[39m",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify missing type information for data binding 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "[33m1. AnimalController.method(a) -> GET /animal/method[39m
+[33m - warning PLUM1001: Parameter binding skipped because action doesn't have @route decorator[39m",
+  ],
+  Array [],
+]
+`;

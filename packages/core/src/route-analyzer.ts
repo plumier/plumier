@@ -140,16 +140,23 @@ function printAnalysis(results: TestResult[]) {
       const issues = x.issues.map(issue => ` - ${issue.type} ${issue!.message}`)
       return { method, url: x.route.url, action, issues, access: x.route.access }
    })
+   const hasAccess = data.every(x => !!x.access)
    console.log()
    console.log("Route Analysis Report")
    if (data.length == 0) console.log("No controller found")
    printTable([
       "action",
-      { property: x => `->`, },
-      { property: "access", paddingRight: 0 },
+      { property: x => `->` },
+      hasAccess ? "access" : undefined,
       "method",
       "url"
-   ], data)
+   ], data, {
+      onPrintRow: (row, data) => {
+         const log = data.issues.length === 0 ? (x:string) => x : 
+            data.issues.some(x => x.indexOf("- error") > 0) ? chalk.red : chalk.yellow
+         return log([row, ...data.issues].join("\n"))
+      }
+   })
    if (data.length > 0) console.log()
 }
 

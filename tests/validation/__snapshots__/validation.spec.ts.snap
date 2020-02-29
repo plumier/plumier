@@ -190,6 +190,10 @@ Object {
         "method": "post",
         "name": "Route",
         "url": undefined,
+        Symbol(tinspector:decoratorOption): Object {
+          "allowMultiple": true,
+          "inherit": true,
+        },
       },
     ],
     "kind": "Method",
@@ -200,6 +204,10 @@ Object {
           Object {
             "type": "ValidatorDecorator",
             "validator": customValidator,
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
           },
         ],
         "kind": "Parameter",
@@ -227,6 +235,10 @@ Object {
             "method": "post",
             "name": "Route",
             "url": undefined,
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
           },
         ],
         "kind": "Method",
@@ -237,6 +249,10 @@ Object {
               Object {
                 "type": "ValidatorDecorator",
                 "validator": customValidator,
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
               },
             ],
             "kind": "Parameter",

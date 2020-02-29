@@ -119,7 +119,7 @@ describe("History Api Fallback", () => {
         consoleLog.startMock()
         await app.set(new ServeStaticFacility({ root: join(__dirname, "./assets") }))
             .initialize()
-        expect((console.log as any).mock.calls[3][0]).toContain("error PLUM1021: History api fallback should have GET http method, in AnimalController.get(b)")
+        expect((console.log as any).mock.calls).toMatchSnapshot()
         consoleLog.clearMock()
     })
 

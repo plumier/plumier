@@ -1,5 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`History Api Fallback Should analyze if @route.historyApiFallback() combined with non GET method 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "[31m1. AnimalController.get(b) -> POST /animal/get[39m
+[31m - error PLUM1021: History api fallback should have GET http method, in AnimalController.get(b)[39m",
+  ],
+  Array [],
+]
+`;
+
 exports[`History Api Fallback Should fallback if requested by provide accept header html 1`] = `
 "<!DOCTYPE html>
 <html>
