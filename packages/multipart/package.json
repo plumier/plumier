@@ -16,7 +16,7 @@
   "dependencies": {
     "@plumier/core": "1.0.0-rc.1",
     "@types/formidable": "^1.0.31",
-    "formidable": "^1.2.1"
+    "formidable": "^1.2.2"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"
