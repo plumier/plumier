@@ -1,4 +1,4 @@
-import { consoleLog, RouteAnalyzerFunction, RouteInfo } from "@plumier/core"
+import { consoleLog, RouteAnalyzerFunction, RouteInfo, cleanupConsole } from "@plumier/core"
 import Plumier, { domain, RestfulApiFacility, route } from "plumier"
 import reflect from "tinspector"
 
@@ -12,12 +12,12 @@ describe("Route Analyzer", () => {
             @route.get(":c")
             method(@reflect.array(Domain) a: Domain[], b: number) { }
         }
-        consoleLog.startMock()
+        const mock = consoleLog.startMock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls).toMatchSnapshot()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
 
@@ -27,12 +27,12 @@ describe("Route Analyzer", () => {
             @route.get(":a")
             method(a: number, b: number) { }
         }
-        consoleLog.startMock()
+        const mock = consoleLog.startMock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls).toMatchSnapshot()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
 
@@ -40,12 +40,12 @@ describe("Route Analyzer", () => {
         class AnimalController {
             method(a: number) { }
         }
-        consoleLog.startMock()
+        const mock = consoleLog.startMock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls).toMatchSnapshot()//("PLUM1001")
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//("PLUM1001")
         consoleLog.clearMock()
     })
 
@@ -53,12 +53,12 @@ describe("Route Analyzer", () => {
         class AnimalController {
             method() { }
         }
-        consoleLog.startMock()
+        const mock = consoleLog.startMock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls.length).toBe(4)
+        expect(cleanupConsole(mock.mock.calls).length).toBe(4)
         consoleLog.clearMock()
     })
 
@@ -72,12 +72,12 @@ describe("Route Analyzer", () => {
             @route.get()
             method(a: number) { }
         }
-        consoleLog.startMock()
+        const mock = consoleLog.startMock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController, BeastController] })
             .initialize()
-        expect((console.log as any).mock.calls).toMatchSnapshot()//.toContain("PLUM1003")
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1003")
         consoleLog.clearMock()
     })
 
@@ -92,12 +92,12 @@ describe("Route Analyzer", () => {
             @route.post()
             method(a: AnimalModel) { }
         }
-        consoleLog.startMock()
+        const mock = consoleLog.startMock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls).toMatchSnapshot()//.toContain("PLUM1005")
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1005")
         consoleLog.clearMock()
     })
 
@@ -120,12 +120,12 @@ describe("Route Analyzer", () => {
             @route.post()
             method(a: AnimalModel) { }
         }
-        consoleLog.startMock()
+        const mock = consoleLog.startMock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls).toMatchSnapshot()//.toContain("PLUM1005")
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1005")
         consoleLog.clearMock()
     })
 
@@ -141,12 +141,12 @@ describe("Route Analyzer", () => {
             @route.post()
             method(a: AnimalModel[]) { }
         }
-        consoleLog.startMock()
+        const mock = consoleLog.startMock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls).toMatchSnapshot()//.toContain("PLUM1006")
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1006")
         consoleLog.clearMock()
     })
 
@@ -155,14 +155,14 @@ describe("Route Analyzer", () => {
             @route.get()
             method() { }
         }
-        consoleLog.startMock()
+        const mock = consoleLog.startMock()
         const analyzer: RouteAnalyzerFunction = (route: RouteInfo, allRoutes: RouteInfo[]) => ({ type: "error", message: "PLUM1005: Just an error" })
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ analyzers: [analyzer] })
             .set({ controller: [AnimalController] })
             .initialize()
-        expect((console.log as any).mock.calls).toMatchSnapshot()//.toContain("PLUM1005: Just an error")
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1005: Just an error")
         consoleLog.clearMock()
     })
 })

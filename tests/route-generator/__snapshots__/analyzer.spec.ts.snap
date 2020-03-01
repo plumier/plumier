@@ -7,8 +7,8 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "[31m1. AnimalController.method() -> GET /animal/method[39m
-[31m - error PLUM1005: Just an error[39m",
+    "1. AnimalController.method() -> GET /animal/method
+ - error PLUM1005: Just an error",
   ],
   Array [],
 ]
@@ -21,12 +21,12 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "[31m1. AnimalController.method(a) -> GET /beast/method[39m
-[31m - error PLUM1003: Duplicate route found in AnimalController.method(a) BeastController.method(a)[39m",
+    "1. AnimalController.method(a) -> GET /beast/method
+ - error PLUM1003: Duplicate route found in AnimalController.method(a) BeastController.method(a)",
   ],
   Array [
-    "[31m2. BeastController.method(a)  -> GET /beast/method[39m
-[31m - error PLUM1003: Duplicate route found in AnimalController.method(a) BeastController.method(a)[39m",
+    "2. BeastController.method(a)  -> GET /beast/method
+ - error PLUM1003: Duplicate route found in AnimalController.method(a) BeastController.method(a)",
   ],
   Array [],
 ]
@@ -39,8 +39,8 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "[33m1. AnimalController.method(a) -> POST /animal/method[39m
-[33m - warning PLUM1006: Parameter binding skipped because array field without @array() decorator found in (AnimalController.method.a)[39m",
+    "1. AnimalController.method(a) -> POST /animal/method
+ - warning PLUM1006: Parameter binding skipped because array field without @array() decorator found in (AnimalController.method.a)",
   ],
   Array [],
 ]
@@ -53,8 +53,8 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "[33m1. AnimalController.method(a) -> POST /animal/method[39m
-[33m - warning PLUM1005: Parameter binding skipped because  AnimalModel doesn't have @domain() decorator[39m",
+    "1. AnimalController.method(a) -> POST /animal/method
+ - warning PLUM1005: Parameter binding skipped because  AnimalModel doesn't have @domain() decorator",
   ],
   Array [],
 ]
@@ -67,8 +67,8 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "[33m1. AnimalController.method(a) -> POST /animal/method[39m
-[33m - warning PLUM1005: Parameter binding skipped because  TagModel doesn't have @domain() decorator[39m",
+    "1. AnimalController.method(a) -> POST /animal/method
+ - warning PLUM1005: Parameter binding skipped because  TagModel doesn't have @domain() decorator",
   ],
   Array [],
 ]
@@ -81,8 +81,8 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "[31m1. AnimalController.method(a, b) -> GET /animal/:c[39m
-[31m - error PLUM1000: Route parameters (c) doesn't have appropriate backing parameter[39m",
+    "1. AnimalController.method(a, b) -> GET /animal/:c
+ - error PLUM1000: Route parameters (c) doesn't have appropriate backing parameter",
   ],
   Array [],
 ]
@@ -95,8 +95,8 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "[31m1. AnimalController.method(a, b) -> GET /beast/:type/:a[39m
-[31m - error PLUM1000: Route parameters (type) doesn't have appropriate backing parameter[39m",
+    "1. AnimalController.method(a, b) -> GET /beast/:type/:a
+ - error PLUM1000: Route parameters (type) doesn't have appropriate backing parameter",
   ],
   Array [],
 ]
@@ -109,8 +109,8 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "[33m1. AnimalController.method(a) -> GET /animal/method[39m
-[33m - warning PLUM1001: Parameter binding skipped because action doesn't have @route decorator[39m",
+    "1. AnimalController.method(a) -> GET /animal/method
+ - warning PLUM1001: Parameter binding skipped because action doesn't have @route decorator",
   ],
   Array [],
 ]

@@ -7,8 +7,8 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "[31m1. AnimalController.get(b) -> POST /animal/get[39m
-[31m - error PLUM1021: History api fallback should have GET http method, in AnimalController.get(b)[39m",
+    "1. AnimalController.get(b) -> POST /animal/get
+ - error PLUM1021: History api fallback should have GET http method, in AnimalController.get(b)",
   ],
   Array [],
 ]

@@ -1,4 +1,4 @@
-import { consoleLog, response, route } from "@plumier/core"
+import { consoleLog, response, route, cleanupConsole } from "@plumier/core"
 import { ServeStaticFacility } from "@plumier/serve-static"
 import { join } from "path"
 import supertest = require("supertest")
@@ -116,10 +116,10 @@ describe("History Api Fallback", () => {
             }
         }
         const app = fixture(AnimalController, { mode: "debug" })
-        consoleLog.startMock()
+        const mock = consoleLog.startMock()
         await app.set(new ServeStaticFacility({ root: join(__dirname, "./assets") }))
             .initialize()
-        expect((console.log as any).mock.calls).toMatchSnapshot()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
 
