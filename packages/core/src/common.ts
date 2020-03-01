@@ -71,7 +71,9 @@ const log = console.log;
 
 namespace consoleLog {
     export function startMock() {
-        console.log = jest.fn(message => { })
+        const fn = jest.fn(message => { })
+        console.log = fn
+        return fn
     }
     export function clearMock() {
         console.log = log

@@ -12,6 +12,7 @@ import { errorMessage, HttpMethod, RouteInfo } from "./types"
 // --------------------------------------------------------------------- //
 
 interface RouteDecorator { name: "Route", method: HttpMethod, url?: string }
+interface VirtualRouteDecorator { name: "VirtualRoute", method: HttpMethod, url: string, access: string }
 interface IgnoreDecorator { name: "Ignore" }
 interface RootDecorator { name: "Root", url: string }
 interface TransformOption { root?: string }
@@ -143,5 +144,5 @@ function generateRoutes(executionPath: string, controller: string | Class[] | Cl
 }
 
 
-export { generateRoutes, RouteDecorator, IgnoreDecorator, RootDecorator }
+export { generateRoutes, RouteDecorator, IgnoreDecorator, RootDecorator, VirtualRouteDecorator }
 

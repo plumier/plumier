@@ -13,6 +13,7 @@ import {
     printAnalysis,
     RouteInfo,
     router,
+    printVirtualRoutes,
 } from "@plumier/core"
 import Koa from "koa"
 import { dirname } from "path"
@@ -67,7 +68,10 @@ export class Plumier implements PlumierApplication {
             for (const facility of this.config.facilities) {
                 await facility.initialize(this, routes)
             }
-            if (this.config.mode === "debug") printAnalysis(analyzeRoutes(routes, this.config))
+            if (this.config.mode === "debug") {
+                printAnalysis(analyzeRoutes(routes, this.config))
+                printVirtualRoutes(this.config.middlewares, this.config.dependencyResolver)
+            }
             this.koa.use(router(routes, this.config))
             this.koa.proxy = this.config.trustProxyHeader
             return this.koa

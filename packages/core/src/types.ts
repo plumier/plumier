@@ -94,16 +94,9 @@ export interface RouteInfo {
     access?: string
 }
 
-export interface VirtualRouteInfo {
-    url: string,
-    method: HttpMethod,
-    access: string,
-    facility:string
-}
 
 export interface RouteAnalyzerIssue { type: "error" | "warning" | "success", message?: string }
 export type RouteAnalyzerFunction = (route: RouteInfo, allRoutes: RouteInfo[]) => RouteAnalyzerIssue
-export interface VirtualRouteInfoDecorator { type: "VirtualRoute", info: VirtualRouteInfo }
 
 // --------------------------------------------------------------------- //
 // ------------------------------ FACILITY ----------------------------- //
