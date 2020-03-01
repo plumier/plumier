@@ -171,6 +171,25 @@ Array [
 ]
 `;
 
+exports[`Virtual Route Should not included middleware function 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.get()   -> GET /animal/get",
+  ],
+  Array [
+    "2. BeastController.get()    -> GET /beast/get",
+  ],
+  Array [
+    "3. CreatureController.get() -> GET /creature/get",
+  ],
+  Array [],
+]
+`;
+
 exports[`Virtual Route Should not print anything if no virtual route found 1`] = `
 Array [
   Array [],

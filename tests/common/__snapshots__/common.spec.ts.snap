@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PrintTable Should able to print table 1`] = `
+Array [
+  Array [
+    "1. John Subaru 60",
+  ],
+  Array [
+    "2. John Subaru 60",
+  ],
+  Array [
+    "3. John Subaru 60",
+  ],
+]
+`;
+
+exports[`PrintTable Should able to print table with algin right 1`] = `
+Array [
+  Array [
+    "1. John Subaru  60",
+  ],
+  Array [
+    "2. John Subaru 160",
+  ],
+  Array [
+    "3. John Subaru  60",
+  ],
+]
+`;
+
+exports[`PrintTable Should not error when provided undefined value 1`] = `
+Array [
+  Array [
+    "1. John Subaru 60",
+  ],
+  Array [
+    "2. John Subaru   ",
+  ],
+  Array [
+    "3. John Subaru 60",
+  ],
+]
+`;

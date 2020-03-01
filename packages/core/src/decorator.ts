@@ -1,6 +1,7 @@
-import reflect, { decorate, decorateClass } from "tinspector"
+import reflect, { decorate } from "tinspector"
 
-import { MiddlewareDecorator, MiddlewareFunction, Middleware, HttpMethod, VirtualRouteInfo, VirtualRouteInfoDecorator } from "./types"
+import { Middleware, MiddlewareDecorator, MiddlewareFunction } from "./types"
+
 
 // --------------------------------------------------------------------- //
 // ------------------------------- DOMAIN ------------------------------ //
@@ -21,13 +22,6 @@ namespace middleware {
         const value: MiddlewareDecorator = { name: "Middleware", value: middleware }
         return decorate(value, ["Class", "Method"])
     }
-}
-
-function virtualRoute(info: { method: HttpMethod, url: string, access?: string }) {
-    return decorateClass(x => <VirtualRouteInfoDecorator>{
-        type: "VirtualRoute",
-        info: <VirtualRouteInfo>{ ...info, access: info.access || "Public", facility: x.name }
-    })
 }
 
 export { middleware, domain }

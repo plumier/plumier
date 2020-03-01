@@ -106,7 +106,7 @@ function findFilesRecursive(path: string): string[] {
 // --------------------------------------------------------------------- //
 
 interface ColumnMeta {
-    margin?: "left" | "right",
+    align?: "left" | "right",
     property: string | ((x: any) => string)
 }
 
@@ -117,7 +117,7 @@ interface TableOption<T> {
 function printTable<T>(meta: (ColumnMeta | string | undefined)[], data: T[], option?: TableOption<T>) {
     const getText = (col: ColumnMeta, row: any): string => {
         if (typeof col.property === "string")
-            return (row[col.property] ?? "" + "")
+            return (row[col.property] ?? "") + ""
         else
             return col.property(row)
     }
@@ -126,11 +126,12 @@ function printTable<T>(meta: (ColumnMeta | string | undefined)[], data: T[], opt
             const lengths = data.map(row => getText(x, row).length)
             const length = Math.max(...lengths)
             return {
-                ...x, margin: x.margin || "left", length,
+                ...x, margin: x.align || "left", length,
             }
         })
     const opt:Required<TableOption<T>> = { onPrintRow: x => x, ...option}
     for (const [i, row] of data.entries()) {
+        // row number
         let text = `${(i + 1).toString().padStart(data.length.toString().length)}. `
         for (const [idx, col] of metaData.entries()) {
             const exceptLast = idx < metaData.length - 1
@@ -138,7 +139,8 @@ function printTable<T>(meta: (ColumnMeta | string | undefined)[], data: T[], opt
             // margin
             if (col.margin === "right")
                 text += colText.padStart(col.length)
-            else if (exceptLast)
+            else 
+            if (exceptLast)
                 text += colText.padEnd(col.length)
             else
                 text += colText

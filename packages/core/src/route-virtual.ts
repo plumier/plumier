@@ -33,8 +33,8 @@ function getVirtualRoutes(middlewares: Middleware[]) {
 
 function printVirtualRoutes(middlewares: (string | symbol | Middleware | MiddlewareFunction)[], resolver: DependencyResolver) {
     const cleansedMdw = getMiddlewares(middlewares, resolver)
-    if (cleansedMdw.length === 0) return
     const routes = getVirtualRoutes(cleansedMdw)
+    if (routes.length === 0) return
     console.log("Virtual Routes")
     console.log("These route might changed dynamically at runtime")
     printTable(["middleware", { property: x => "->" }, "access", "method", "url"], routes)

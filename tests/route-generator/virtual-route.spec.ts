@@ -17,6 +17,7 @@ describe("Virtual Route", () => {
             .use(new MyMiddleware())
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
     })
 
     it("Should able to assigned multiple virtual route", async () => {
@@ -32,6 +33,7 @@ describe("Virtual Route", () => {
             .use(new MyMiddleware())
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
     })
 
     it("Should able print route that middleware registered by Facility on setup", async () => {
@@ -51,6 +53,7 @@ describe("Virtual Route", () => {
             .set(new MyFacility())
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
     })
 
     it("Should able print route that middleware registered by Facility on initialize", async () => {
@@ -70,6 +73,7 @@ describe("Virtual Route", () => {
             .set(new MyFacility())
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
     })
 
     it("Should able print route registered using string (DI)", async () => {
@@ -88,6 +92,7 @@ describe("Virtual Route", () => {
             .use(name)
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
     })
 
     it("Should able print route registered using symbol (DI)", async () => {
@@ -106,6 +111,17 @@ describe("Virtual Route", () => {
             .use(name)
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+
+
+    it("Should not included middleware function", async () => {
+        const mock = consoleLog.startMock()
+        await new Plumier()
+            .use(x => x.proceed())
+            .initialize()
+        expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
     })
 
     it("Should not print anything if no virtual route found", async () => {
@@ -113,5 +129,6 @@ describe("Virtual Route", () => {
         await new Plumier()
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
     })
 })
