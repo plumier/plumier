@@ -10,6 +10,7 @@ import {
     PlumierApplication,
     response,
     RouteInfo,
+    VirtualRouteInfo
 } from "@plumier/core"
 import Axios, { AxiosError } from "axios"
 import crypto from "crypto"
@@ -19,7 +20,6 @@ import { Context } from "koa"
 import OAuth from "oauth-1.0a"
 import qs from "querystring"
 import { decorateMethod } from "tinspector"
-import { VirtualRouteInfo } from 'core/src/types'
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //

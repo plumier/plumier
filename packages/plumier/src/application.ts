@@ -14,10 +14,10 @@ import {
     RouteInfo,
     router,
     printVirtualRoutes,
+    VirtualRouteInfo
 } from "@plumier/core"
 import Koa from "koa"
 import { dirname } from "path"
-import { VirtualRouteInfo } from 'core/src/types';
 
 
 

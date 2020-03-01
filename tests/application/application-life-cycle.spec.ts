@@ -1,6 +1,5 @@
-import { middleware, route, bind, MiddlewareFunction, AuthorizerFunction, authorize, val } from "@plumier/core"
+import { middleware, route, bind, MiddlewareFunction, CustomValidatorFunction, AuthorizerFunction, authorize, val } from "@plumier/core"
 import { Context } from 'koa'
-import { CustomValidatorFunction } from 'core/src/types'
 import Plumier, { WebApiFacility } from '@plumier/plumier'
 import supertest = require('supertest')
 import { sign } from 'jsonwebtoken'
