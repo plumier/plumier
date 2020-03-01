@@ -9,21 +9,24 @@ import { fixture } from "../helper"
 import { error, getLoginUrl, params, portRegex, runServer } from "./helper"
 import { FakeOAuth2Facility, oAuth20Server } from "./oauth20-server"
 import { oAuth10aServer, FakeOAuth10aFacility } from './oauth10a-server'
+import { consoleLog } from '@plumier/core'
 
 
 /**
  * Run 2 fake oauth servers and a single oauth consumer server.
  */
-async function appStub(controller: Class, mazeOpt?: OAuthProviderOption, googolOpt?: OAuthProviderOption, teeterOpt?:OAuthProviderOption) {
+async function appStub(controller: Class, mazeOpt?: OAuthProviderOption, googolOpt?: OAuthProviderOption, teeterOpt?: OAuthProviderOption, debugMode?: boolean) {
     // run fake oauth servers 
     const mazeServer = await runServer(await oAuth20Server())
     const googolServer = await runServer(await oAuth20Server())
     const teeterServer = await runServer(await oAuth10aServer())
+    const debug = debugMode ? "debug" : "production"
     // run oauth consumer server on another port
     const koa = await fixture(controller)
         .set(new FakeOAuth2Facility("MazeBook", mazeServer.origin, mazeOpt))
         .set(new FakeOAuth2Facility("Googol", googolServer.origin, googolOpt))
         .set(new FakeOAuth10aFacility("Teeter", teeterServer.origin, teeterOpt))
+        .set({ mode: debug })
         .initialize()
     const consumer = await runServer(koa)
     return {
@@ -242,6 +245,14 @@ describe("OAuth 1.0a", () => {
     })
 })
 
+describe("Virtual Routes", () => {
+    it("Should print virtual routes properly", async () => {
+        const mock = consoleLog.startMock()
+        const servers = await appStub(AuthController, opt, opt, opt, true)
+        expect(mock.mock.calls).toMatchSnapshot()
+        servers.close()
+    })
+})
 
 describe("Durability", () => {
     it("Should use default environment variable", async () => {
