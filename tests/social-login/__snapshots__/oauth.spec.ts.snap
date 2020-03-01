@@ -214,3 +214,28 @@ Object {
 exports[`OAuth 2.0 Should save CSRF secret on cookie and CSRF token on state parameter 1`] = `"plum-oauth:csrf-secret=; path=/; httponly"`;
 
 exports[`OAuth 2.0 Should save provider on cookie 1`] = `"plum-oauth:provider=MazeBook; path=/; httponly"`;
+
+exports[`Virtual Routes Should print virtual routes properly 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AuthController.callback(user) -> GET /auth/callback",
+  ],
+  Array [],
+  Array [
+    "Virtual Routes",
+  ],
+  Array [
+    "1. FakeOAuth2Facility   -> Public GET /auth/mazebook/login",
+  ],
+  Array [
+    "2. FakeOAuth2Facility   -> Public GET /auth/googol/login",
+  ],
+  Array [
+    "3. FakeOAuth10aFacility -> Public GET /auth/teeter/login",
+  ],
+]
+`;

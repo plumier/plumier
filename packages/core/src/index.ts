@@ -23,5 +23,5 @@ export {
     Middleware, MiddlewareFunction, MiddlewareDecorator, MiddlewareUtil, PlumierApplication, PlumierConfiguration, RedirectActionResult,
     ActionContext, RouteInfo, RouteAnalyzerFunction, RouteAnalyzerIssue, ValidatorDecorator, CustomValidatorFunction,
     ValidatorContext, ValidationError, errorMessage, AsyncValidatorResult, DefaultDependencyResolver,
-    CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie
+    CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie, VirtualRouteInfo
 } from "./types";

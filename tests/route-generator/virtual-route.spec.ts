@@ -1,8 +1,7 @@
 
 import Plumier, { route, CustomMiddleware, Invocation, ActionResult } from "plumier"
 import { Context } from "koa"
-import { consoleLog, DefaultFacility, PlumierApplication, DefaultDependencyResolver, RouteInfo } from '@plumier/core'
-import { VirtualRouteInfo } from 'core/src/types'
+import { consoleLog, DefaultFacility, PlumierApplication, DefaultDependencyResolver, RouteInfo, VirtualRouteInfo } from '@plumier/core'
 
 describe("Virtual Route", () => {
 
