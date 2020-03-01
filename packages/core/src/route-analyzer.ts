@@ -2,7 +2,7 @@ import chalk from "chalk"
 import { ClassReflection, ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
 import { updateRouteAuthorizationAccess } from "./authorization"
-import { Class, isCustomClass } from "./common"
+import { Class, isCustomClass, printTable } from "./common"
 import { Configuration, errorMessage, RouteAnalyzerFunction, RouteAnalyzerIssue, RouteInfo } from "./types"
 
 
@@ -123,7 +123,7 @@ function analyzeRoute(route: RouteInfo, tests: RouteAnalyzerFunction[], allRoute
    return { route, issues }
 }
 
-function analyzeRoutes(routes:RouteInfo[], config:Configuration) {
+function analyzeRoutes(routes: RouteInfo[], config: Configuration) {
    const tests: RouteAnalyzerFunction[] = [
       backingParameterTest, metadataTypeTest,
       duplicateRouteTest, modelTypeInfoTest,
@@ -140,26 +140,22 @@ function printAnalysis(results: TestResult[]) {
       const issues = x.issues.map(issue => ` - ${issue.type} ${issue!.message}`)
       return { method, url: x.route.url, action, issues, access: x.route.access }
    })
+   const hasAccess = data.every(x => !!x.access)
    console.log()
    console.log("Route Analysis Report")
    if (data.length == 0) console.log("No controller found")
-   const paddings = {
-      number: data.length.toString().length,
-      action: Math.max(...data.map(x => x.action.length)),
-      method: Math.max(...data.map(x => x.method.length)),
-      access: Math.max(...data.map(x => x.access && x.access.length || 0)),
-   }
-   data.forEach((x, i) => {
-      const num = (i + 1).toString().padStart(paddings.number)
-      const action = x.action.padEnd(paddings.action)
-      const method = x.method.padEnd(paddings.method)
-      const access = x.access && (" " + x.access.padEnd(paddings.access)) || ""
-      const color = x.issues.length === 0 ? (x: string) => x : x.issues.some(x => x.startsWith(" - error")) ? chalk.red : chalk.yellow
-      console.log(color(`${num}. ${action} ->${access} ${method} ${x.url}`))
-      x.issues.forEach(x => {
-         const color = x.startsWith(" - warning") ? chalk.yellow : chalk.red
-         console.log(color(x))
-      })
+   printTable([
+      "action",
+      { property: x => `->` },
+      hasAccess ? "access" : undefined,
+      "method",
+      "url"
+   ], data, {
+      onPrintRow: (row, data) => {
+         const log = data.issues.length === 0 ? (x:string) => x : 
+            data.issues.some(x => x.indexOf("- error") > 0) ? chalk.red : chalk.yellow
+         return log([row, ...data.issues].join("\n"))
+      }
    })
    if (data.length > 0) console.log()
 }

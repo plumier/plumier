@@ -1,0 +1,210 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Virtual Route Should able print route registered using string (DI) 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.get()   -> GET /animal/get",
+  ],
+  Array [
+    "2. BeastController.get()    -> GET /beast/get",
+  ],
+  Array [
+    "3. CreatureController.get() -> GET /creature/get",
+  ],
+  Array [],
+  Array [
+    "Virtual Routes",
+  ],
+  Array [
+    "These route might changed dynamically at runtime",
+  ],
+  Array [
+    "1. MyMiddleware -> Public GET /route/route",
+  ],
+]
+`;
+
+exports[`Virtual Route Should able print route registered using symbol (DI) 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.get()   -> GET /animal/get",
+  ],
+  Array [
+    "2. BeastController.get()    -> GET /beast/get",
+  ],
+  Array [
+    "3. CreatureController.get() -> GET /creature/get",
+  ],
+  Array [],
+  Array [
+    "Virtual Routes",
+  ],
+  Array [
+    "These route might changed dynamically at runtime",
+  ],
+  Array [
+    "1. MyMiddleware -> Public GET /route/route",
+  ],
+]
+`;
+
+exports[`Virtual Route Should able print route that middleware registered by Facility on initialize 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.get()   -> GET /animal/get",
+  ],
+  Array [
+    "2. BeastController.get()    -> GET /beast/get",
+  ],
+  Array [
+    "3. CreatureController.get() -> GET /creature/get",
+  ],
+  Array [],
+  Array [
+    "Virtual Routes",
+  ],
+  Array [
+    "These route might changed dynamically at runtime",
+  ],
+  Array [
+    "1. MyMiddleware -> Public GET /route/route",
+  ],
+]
+`;
+
+exports[`Virtual Route Should able print route that middleware registered by Facility on setup 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.get()   -> GET /animal/get",
+  ],
+  Array [
+    "2. BeastController.get()    -> GET /beast/get",
+  ],
+  Array [
+    "3. CreatureController.get() -> GET /creature/get",
+  ],
+  Array [],
+  Array [
+    "Virtual Routes",
+  ],
+  Array [
+    "These route might changed dynamically at runtime",
+  ],
+  Array [
+    "1. MyMiddleware -> Public GET /route/route",
+  ],
+]
+`;
+
+exports[`Virtual Route Should able to assigned multiple virtual route 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.get()   -> GET /animal/get",
+  ],
+  Array [
+    "2. BeastController.get()    -> GET /beast/get",
+  ],
+  Array [
+    "3. CreatureController.get() -> GET /creature/get",
+  ],
+  Array [],
+  Array [
+    "Virtual Routes",
+  ],
+  Array [
+    "These route might changed dynamically at runtime",
+  ],
+  Array [
+    "1. MyMiddleware -> Public GET /route/second-route",
+  ],
+  Array [
+    "2. MyMiddleware -> Public GET /route/route",
+  ],
+]
+`;
+
+exports[`Virtual Route Should able to print virtual route 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.get()   -> GET /animal/get",
+  ],
+  Array [
+    "2. BeastController.get()    -> GET /beast/get",
+  ],
+  Array [
+    "3. CreatureController.get() -> GET /creature/get",
+  ],
+  Array [],
+  Array [
+    "Virtual Routes",
+  ],
+  Array [
+    "These route might changed dynamically at runtime",
+  ],
+  Array [
+    "1. MyMiddleware -> Public GET /route/route",
+  ],
+]
+`;
+
+exports[`Virtual Route Should not included middleware function 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.get()   -> GET /animal/get",
+  ],
+  Array [
+    "2. BeastController.get()    -> GET /beast/get",
+  ],
+  Array [
+    "3. CreatureController.get() -> GET /creature/get",
+  ],
+  Array [],
+]
+`;
+
+exports[`Virtual Route Should not print anything if no virtual route found 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.get()   -> GET /animal/get",
+  ],
+  Array [
+    "2. BeastController.get()    -> GET /beast/get",
+  ],
+  Array [
+    "3. CreatureController.get() -> GET /creature/get",
+  ],
+  Array [],
+]
+`;

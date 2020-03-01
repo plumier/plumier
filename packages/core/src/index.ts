@@ -8,14 +8,15 @@ export { response } from "./response";
 export { generateRoutes } from "./route-generator";
 export { analyzeRoutes, printAnalysis } from "./route-analyzer";
 export { router } from "./router";
-export { Class, consoleLog, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass, toBoolean } from "./common";
+export { Class, consoleLog, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass, printTable, toBoolean, cleanupConsole } from "./common";
 export { AuthDecoratorImpl, authorize } from "./decorator.authorize";
 export { bind } from "./decorator.bind";
 export { domain, middleware } from "./decorator";
 export { route, RouteDecoratorImpl } from "./decorator.route";
-export { rest,  RestDecoratorImpl} from "./decorator.rest";
+export { rest, RestDecoratorImpl } from "./decorator.rest";
 export { HttpStatus } from "./http-status";
 export { validate, ValidatorMiddleware } from "./validator"
+export { printVirtualRoutes } from "./route-virtual"
 export {
     ActionResult, Application, Configuration, DefaultFacility, CustomValidator,
     DependencyResolver, Facility, FileParser, FileUploadInfo, HttpMethod, HttpStatusError, Invocation, KoaMiddleware,

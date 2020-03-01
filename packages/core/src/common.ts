@@ -79,7 +79,9 @@ const log = console.log;
 
 namespace consoleLog {
     export function startMock() {
-        console.log = jest.fn(message => { })
+        const fn = jest.fn(message => { })
+        console.log = fn
+        return fn
     }
     export function clearMock() {
         console.log = log
@@ -106,4 +108,60 @@ function findFilesRecursive(path: string): string[] {
     else return [path]
 }
 
-export { toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, memoize };
+// --------------------------------------------------------------------- //
+// ---------------------------- PRINT TABLE ---------------------------- //
+// --------------------------------------------------------------------- //
+
+interface ColumnMeta {
+    align?: "left" | "right",
+    property: string | ((x: any) => string)
+}
+
+interface TableOption<T> {
+    onPrintRow?: (row:string, data:T) => string
+}
+
+function printTable<T>(meta: (ColumnMeta | string | undefined)[], data: T[], option?: TableOption<T>) {
+    const getText = (col: ColumnMeta, row: any): string => {
+        if (typeof col.property === "string")
+            return (row[col.property] ?? "") + ""
+        else
+            return col.property(row)
+    }
+    const metaData = meta.filter((x): x is ColumnMeta | string => !!x).map(x => typeof x === "string" ? <ColumnMeta>{ property: x } : x)
+        .map(x => {
+            const lengths = data.map(row => getText(x, row).length)
+            const length = Math.max(...lengths)
+            return {
+                ...x, margin: x.align || "left", length,
+            }
+        })
+    const opt:Required<TableOption<T>> = { onPrintRow: x => x, ...option}
+    for (const [i, row] of data.entries()) {
+        // row number
+        let text = `${(i + 1).toString().padStart(data.length.toString().length)}. `
+        for (const [idx, col] of metaData.entries()) {
+            const exceptLast = idx < metaData.length - 1
+            const colText = getText(col, row)
+            // margin
+            if (col.margin === "right")
+                text += colText.padStart(col.length)
+            else 
+            if (exceptLast)
+                text += colText.padEnd(col.length)
+            else
+                text += colText
+            //padding
+            if (exceptLast)
+                text += " "
+        }
+        console.log(opt.onPrintRow(text, row))
+    }
+}
+
+function cleanupConsole(mocks:string[][]){
+    const cleanup = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
+    return mocks.map(x => x.map(y => y.replace(cleanup, "")))
+}
+
+export { toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, memoize, printTable, cleanupConsole };

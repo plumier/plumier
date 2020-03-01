@@ -1,16 +1,16 @@
-import Koa, { Context } from "koa"
-import { ClassReflection, MethodReflection, decorateClass } from "tinspector"
-import { VisitorExtension } from "typedconverter"
-
-import { Class } from "./common"
-import { HttpStatus } from "./http-status"
-import { SetOption } from 'cookies'
-import { RoleField } from './authorization'
-import { domain } from './decorator'
-import { join, extname } from "path"
-import { copyFile, createReadStream } from 'fs'
-import { promisify } from "util"
+import { SetOption } from "cookies"
+import { copyFile } from "fs"
 import { Server } from "http"
+import Koa, { Context } from "koa"
+import { extname, join } from "path"
+import { ClassReflection, decorateClass, MethodReflection } from "tinspector"
+import { VisitorExtension } from "typedconverter"
+import { promisify } from "util"
+
+import { RoleField } from "./authorization"
+import { Class } from "./common"
+import { domain } from "./decorator"
+import { HttpStatus } from "./http-status"
 
 const copyFileAsync = promisify(copyFile)
 
@@ -94,9 +94,9 @@ export interface RouteInfo {
     access?: string
 }
 
+
 export interface RouteAnalyzerIssue { type: "error" | "warning" | "success", message?: string }
 export type RouteAnalyzerFunction = (route: RouteInfo, allRoutes: RouteInfo[]) => RouteAnalyzerIssue
-
 
 // --------------------------------------------------------------------- //
 // ------------------------------ FACILITY ----------------------------- //

@@ -1,0 +1,117 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Route Analyzer Should be able to extends the route analyzer 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method() -> GET /animal/method
+ - error PLUM1005: Just an error",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify duplicate route 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method(a) -> GET /beast/method
+ - error PLUM1003: Duplicate route found in AnimalController.method(a) BeastController.method(a)",
+  ],
+  Array [
+    "2. BeastController.method(a)  -> GET /beast/method
+ - error PLUM1003: Duplicate route found in AnimalController.method(a) BeastController.method(a)",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify if array doesn't have type information for parameter binding 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method(a) -> POST /animal/method
+ - warning PLUM1006: Parameter binding skipped because array field without @array() decorator found in (AnimalController.method.a)",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify if model doesn't have type information for parameter binding 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method(a) -> POST /animal/method
+ - warning PLUM1005: Parameter binding skipped because  AnimalModel doesn't have @domain() decorator",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify if model doesn't have type information for parameter binding recursive 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method(a) -> POST /animal/method
+ - warning PLUM1005: Parameter binding skipped because  TagModel doesn't have @domain() decorator",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify missing backing parameter 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method(a, b) -> GET /animal/:c
+ - error PLUM1000: Route parameters (c) doesn't have appropriate backing parameter",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify missing backing parameter on root decorator 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method(a, b) -> GET /beast/:type/:a
+ - error PLUM1000: Route parameters (type) doesn't have appropriate backing parameter",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify missing type information for data binding 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method(a) -> GET /animal/method
+ - warning PLUM1001: Parameter binding skipped because action doesn't have @route decorator",
+  ],
+  Array [],
+]
+`;
