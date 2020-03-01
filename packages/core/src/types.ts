@@ -94,6 +94,13 @@ export interface RouteInfo {
     access?: string
 }
 
+export interface VirtualRouteInfo {
+    className:string,
+    url:string,
+    method:HttpMethod,
+    access:string
+}
+
 
 export interface RouteAnalyzerIssue { type: "error" | "warning" | "success", message?: string }
 export type RouteAnalyzerFunction = (route: RouteInfo, allRoutes: RouteInfo[]) => RouteAnalyzerIssue
@@ -104,12 +111,12 @@ export type RouteAnalyzerFunction = (route: RouteInfo, allRoutes: RouteInfo[]) =
 
 export interface Facility {
     setup(app: Readonly<PlumierApplication>): void
-    initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[]): Promise<void>
+    initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[], vRoutes:VirtualRouteInfo[]): Promise<void>
 }
 
 export class DefaultFacility implements Facility {
     setup(app: Readonly<PlumierApplication>) { }
-    async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[]) { }
+    async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[], vRoutes:VirtualRouteInfo[]) { }
 }
 
 
