@@ -1,7 +1,8 @@
 
 import Plumier, { route, CustomMiddleware, Invocation, ActionResult } from "plumier"
 import { Context } from "koa"
-import { consoleLog, DefaultFacility, PlumierApplication, DefaultDependencyResolver } from '@plumier/core'
+import { consoleLog, DefaultFacility, PlumierApplication, DefaultDependencyResolver, RouteInfo } from '@plumier/core'
+import { VirtualRouteInfo } from 'core/src/types'
 
 describe("Virtual Route", () => {
 
@@ -66,6 +67,20 @@ describe("Virtual Route", () => {
         class MyFacility extends DefaultFacility {
             async initialize(app: Readonly<PlumierApplication>) {
                 app.use(new MyMiddleware())
+            }
+        }
+        const mock = consoleLog.startMock()
+        await new Plumier()
+            .set(new MyFacility())
+            .initialize()
+        expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+
+    it("Should able register route programmatically", async () => {
+        class MyFacility extends DefaultFacility {
+            async initialize(app: Readonly<PlumierApplication>, routes:RouteInfo[], vroutes:VirtualRouteInfo[]) {
+                vroutes.push({method: "get", url: "/route/route", access: "Public", className: "MyFacility"})
             }
         }
         const mock = consoleLog.startMock()

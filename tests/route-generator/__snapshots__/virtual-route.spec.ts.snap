@@ -20,9 +20,6 @@ Array [
     "Virtual Routes",
   ],
   Array [
-    "These route might changed dynamically at runtime",
-  ],
-  Array [
     "1. MyMiddleware -> Public GET /route/route",
   ],
 ]
@@ -46,9 +43,6 @@ Array [
   Array [],
   Array [
     "Virtual Routes",
-  ],
-  Array [
-    "These route might changed dynamically at runtime",
   ],
   Array [
     "1. MyMiddleware -> Public GET /route/route",
@@ -76,9 +70,6 @@ Array [
     "Virtual Routes",
   ],
   Array [
-    "These route might changed dynamically at runtime",
-  ],
-  Array [
     "1. MyMiddleware -> Public GET /route/route",
   ],
 ]
@@ -104,10 +95,32 @@ Array [
     "Virtual Routes",
   ],
   Array [
-    "These route might changed dynamically at runtime",
+    "1. MyMiddleware -> Public GET /route/route",
+  ],
+]
+`;
+
+exports[`Virtual Route Should able register route programmatically 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
   ],
   Array [
-    "1. MyMiddleware -> Public GET /route/route",
+    "1. AnimalController.get()   -> GET /animal/get",
+  ],
+  Array [
+    "2. BeastController.get()    -> GET /beast/get",
+  ],
+  Array [
+    "3. CreatureController.get() -> GET /creature/get",
+  ],
+  Array [],
+  Array [
+    "Virtual Routes",
+  ],
+  Array [
+    "1. MyFacility -> Public GET /route/route",
   ],
 ]
 `;
@@ -130,9 +143,6 @@ Array [
   Array [],
   Array [
     "Virtual Routes",
-  ],
-  Array [
-    "These route might changed dynamically at runtime",
   ],
   Array [
     "1. MyMiddleware -> Public GET /route/second-route",
@@ -161,9 +171,6 @@ Array [
   Array [],
   Array [
     "Virtual Routes",
-  ],
-  Array [
-    "These route might changed dynamically at runtime",
   ],
   Array [
     "1. MyMiddleware -> Public GET /route/route",

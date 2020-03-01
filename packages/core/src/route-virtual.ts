@@ -1,7 +1,7 @@
 import reflect from "tinspector"
 
 import { Class, printTable } from "./common"
-import { Middleware, MiddlewareFunction, DependencyResolver, } from "./types"
+import { Middleware, MiddlewareFunction, DependencyResolver, VirtualRouteInfo, HttpMethod, } from "./types"
 import { VirtualRouteDecorator } from './route-generator'
 
 
@@ -18,26 +18,26 @@ function getMiddlewares(middlewares: (string | symbol | Middleware | MiddlewareF
     return result
 }
 
-function getVirtualRoutes(middlewares: Middleware[]) {
-    const routes: { middleware: string, method: string, url: string, access: string }[] = []
+function getVirtualRoutes(middlewares: Middleware[]): VirtualRouteInfo[] {
+    const routes: VirtualRouteInfo[] = []
     for (const middleware of middlewares) {
         const meta = reflect(middleware.constructor as Class)
         const infos = meta.decorators.filter((x: VirtualRouteDecorator): x is VirtualRouteDecorator => x.name === "VirtualRoute")
         routes.push(...infos.map(({ access, method, url }) => ({
-            middleware: middleware.constructor.name, access,
-            method: method.toUpperCase(), url: url.toLowerCase()
+            className: middleware.constructor.name, access,
+            method, url: url.toLowerCase()
         })))
     }
     return routes
 }
 
-function printVirtualRoutes(middlewares: (string | symbol | Middleware | MiddlewareFunction)[], resolver: DependencyResolver) {
+function printVirtualRoutes(vRoutes: VirtualRouteInfo[], middlewares: (string | symbol | Middleware | MiddlewareFunction)[], resolver: DependencyResolver) {
     const cleansedMdw = getMiddlewares(middlewares, resolver)
-    const routes = getVirtualRoutes(cleansedMdw)
+    const decorator = getVirtualRoutes(cleansedMdw)
+    const routes = decorator.concat(vRoutes)
     if (routes.length === 0) return
     console.log("Virtual Routes")
-    console.log("These route might changed dynamically at runtime")
-    printTable(["middleware", { property: x => "->" }, "access", "method", "url"], routes)
+    printTable(["className", { property: x => "->" }, "access", { property: x => x.method.toUpperCase() }, "url"], routes)
 }
 
 export { printVirtualRoutes }

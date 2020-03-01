@@ -17,6 +17,7 @@ import {
 } from "@plumier/core"
 import Koa from "koa"
 import { dirname } from "path"
+import { VirtualRouteInfo } from 'core/src/types';
 
 
 
@@ -65,12 +66,13 @@ export class Plumier implements PlumierApplication {
             if (this.config.rootDir === "__UNSET__")
                 (this.config as Configuration).rootDir = dirname(module.parent!.parent!.filename)
             let routes: RouteInfo[] = generateRoutes(this.config.rootDir, this.config.controller)
+            const vRoutes: VirtualRouteInfo[] = []
             for (const facility of this.config.facilities) {
-                await facility.initialize(this, routes)
+                await facility.initialize(this, routes, vRoutes)
             }
             if (this.config.mode === "debug") {
                 printAnalysis(analyzeRoutes(routes, this.config))
-                printVirtualRoutes(this.config.middlewares, this.config.dependencyResolver)
+                printVirtualRoutes(vRoutes, this.config.middlewares, this.config.dependencyResolver)
             }
             this.koa.use(router(routes, this.config))
             this.koa.proxy = this.config.trustProxyHeader
