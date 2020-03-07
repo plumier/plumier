@@ -72,7 +72,8 @@ function modelFactory(store: Map<Class, ModelStore>): ModelFactory {
             const name = option.name ?? type.name
             const definition = getDefinition(type, store)
             store.set(type, { name, definition, option })
-            const schema = option.hook ? option.hook(definition, option) : new mongoose.Schema(definition, option)
+            const schema = new mongoose.Schema(definition, option)
+            if(option.hook) option.hook(schema)
             return mongoose.model<T & mongoose.Document>(name, schema)
         }
     }

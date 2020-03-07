@@ -161,10 +161,10 @@ export function reflectPath(path: string | Class | Class[]): Reflection[] {
         return [reflect(path)]
 }
 
-export function collection(alias?: string) {
-    return mergeDecorator(decorateClass(<MongooseCollectionDecorator>{ type: "MongooseCollectionDecorator", alias }),
-        reflect.parameterProperties());
-}
+// export function collection(alias?: string) {
+//     return mergeDecorator(decorateClass(<MongooseCollectionDecorator>{ type: "MongooseCollectionDecorator", alias }),
+//         reflect.parameterProperties());
+// }
 
 export function getName(opt: ClassReflection | Class) {
     const meta = typeof opt === "function" ? reflect(opt) : opt

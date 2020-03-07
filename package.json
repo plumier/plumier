@@ -62,8 +62,5 @@
 	},
 	"workspaces": [
 		"packages/*"
-	],
-	// "pre-push": [
-	// 	"test"
-	// ]
+	]
 }

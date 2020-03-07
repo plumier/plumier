@@ -1,16 +1,16 @@
-import mongoose, { SchemaOptions } from "mongoose"
+import mongoose, { SchemaOptions, SchemaTypeOpts } from "mongoose"
 import { Class } from '@plumier/core'
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-type GeneratorHook = (def:any, option:NamedSchemaOption) => mongoose.Schema
+type GeneratorHook = (schema:mongoose.Schema) => void 
 type NamedSchemaOption = SchemaOptions & { hook?: GeneratorHook, proxy?: boolean, name?: string }
 type MongooseFacilityOption = { uri?: string }
 type ModelFactory = <T>(type: new (...args: any) => T, opt?: string | GeneratorHook | NamedSchemaOption) => mongoose.Model<T & mongoose.Document, {}>
 interface ClassOptionDecorator { name: "ClassOption", option: NamedSchemaOption }
-interface PropertyOptionDecorator { name: "PropertyOption", option?: SchemaOptions }
+interface PropertyOptionDecorator { name: "PropertyOption", option?: SchemaTypeOpts<any> }
 interface RefDecorator { name: "MongooseRef" }
 
 interface ModelGenerator {
@@ -26,5 +26,5 @@ export {
     ModelFactory, PropertyOptionDecorator, RefDecorator,
     ModelGenerator, MongooseFacilityOption, ClassOptionDecorator,
     ReferenceTypeNotRegistered, CanNotValidateNonProperty,
-    GeneratorHook
+    GeneratorHook, 
 }

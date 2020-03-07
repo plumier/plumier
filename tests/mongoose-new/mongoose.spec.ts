@@ -1,9 +1,12 @@
-import { generator, document } from "@plumier/mongoose"
+import { generator, collection } from "@plumier/mongoose"
 import { domain } from '@plumier/core'
 import mongoose from "mongoose"
 import reflect from "tinspector"
 
 const dbUri = "mongodb://localhost:27017/test-data"
+
+
+const data = new mongoose.Schema({}, {})
 
 describe("Mongoose", () => {
     beforeAll(async () => await mongoose.connect(dbUri))
@@ -13,7 +16,7 @@ describe("Mongoose", () => {
     describe("Schema Generation", () => {
         it("Should work with primitive data", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Dummy {
                 constructor(
                     public stringProp: string,
@@ -36,7 +39,7 @@ describe("Mongoose", () => {
 
         it("Should work with primitive array", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Dummy {
                 constructor(
                     @reflect.type([String])
@@ -63,14 +66,14 @@ describe("Mongoose", () => {
 
         it("Should work with nested model", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Nest {
                 constructor(
                     public stringProp: string,
                     public booleanProp: boolean
                 ) { }
             }
-            @document()
+            @collection()
             class Dummy {
                 constructor(
                     public child: Nest
@@ -90,14 +93,14 @@ describe("Mongoose", () => {
 
         it("Should work with nested array model", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Nest {
                 constructor(
                     public stringProp: string,
                     public booleanProp: boolean
                 ) { }
             }
-            @document()
+            @collection()
             class Dummy {
                 constructor(
                     @reflect.type([Nest])
@@ -118,17 +121,17 @@ describe("Mongoose", () => {
 
         it("Should work with nested model with ref (populate)", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Nest {
                 constructor(
                     public stringProp: string,
                     public booleanProp: boolean
                 ) { }
             }
-            @document()
+            @collection()
             class Dummy {
                 constructor(
-                    @document.ref(Nest)
+                    @collection.ref(Nest)
                     public child: Nest
                 ) { }
             }
@@ -149,17 +152,17 @@ describe("Mongoose", () => {
 
         it("Should work with nested array with ref (populate)", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Nest {
                 constructor(
                     public stringProp: string,
                     public booleanProp: boolean
                 ) { }
             }
-            @document()
+            @collection()
             class Dummy {
                 constructor(
-                    @document.ref([Nest])
+                    @collection.ref([Nest])
                     public children: Nest[]
                 ) { }
             }
@@ -180,17 +183,17 @@ describe("Mongoose", () => {
 
         it("Should throw error when dependent type specified by ref (populate) not registered as model", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Nest {
                 constructor(
                     public stringProp: string,
                     public booleanProp: boolean
                 ) { }
             }
-            @document()
+            @collection()
             class Dummy {
                 constructor(
-                    @document.ref(Nest)
+                    @collection.ref(Nest)
                     public child: Nest
                 ) { }
             }
@@ -199,7 +202,7 @@ describe("Mongoose", () => {
 
         it("Should able to rename collection with different name", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Dummy {
                 constructor(
                     public stringProp: string,
@@ -216,7 +219,7 @@ describe("Mongoose", () => {
 
         it("Should able to rename collection with different name using object configuration", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Dummy {
                 constructor(
                     public stringProp: string,
@@ -233,7 +236,7 @@ describe("Mongoose", () => {
 
         it("Should able to call model factory multiple time on the same model", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Dummy {
                 constructor(
                     public stringProp: string,
@@ -252,7 +255,7 @@ describe("Mongoose", () => {
 
         it("Should able to call model factory multiple time on the same model with custom name", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Dummy {
                 constructor(
                     public stringProp: string,
@@ -277,10 +280,10 @@ describe("Mongoose", () => {
     describe("Schema Configuration", () => {
         it("Should able to specify configuration", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Dummy {
                 constructor(
-                    @document.property({ uppercase: true })
+                    @collection.property({ uppercase: true })
                     public stringProp: string,
                 ) { }
             }
@@ -296,7 +299,7 @@ describe("Mongoose", () => {
         it("Should able to use @schema.property() as noop decorator", async () => {
             const { model } = generator()
             class Dummy {
-                @document.property()
+                @collection.property()
                 public stringProp: string = ""
             }
             const DummyModel = model(Dummy)
@@ -309,10 +312,10 @@ describe("Mongoose", () => {
 
         it("Should able to specify default value", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Dummy {
                 constructor(
-                    @document.default(false)
+                    @collection.property({ default: false })
                     public deleted: boolean,
                     public stringProp: string,
                 ) { }
@@ -328,11 +331,11 @@ describe("Mongoose", () => {
 
         it("Should able to specify multiple configuration decorators", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Dummy {
                 constructor(
-                    @document.property({ uppercase: true })
-                    @document.default("lorem")
+                    @collection.property({ uppercase: true })
+                    @collection.property({ default: "lorem" })
                     public stringProp: string,
                 ) { }
             }
@@ -345,12 +348,12 @@ describe("Mongoose", () => {
 
         it("Should able to specify default value on base class", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Base {
-                @document.default(false)
+                @collection.property({ default: false })
                 deleted: boolean = false
             }
-            @document()
+            @collection()
             class Dummy extends Base {
                 constructor(
                     public stringProp: string,
@@ -367,7 +370,7 @@ describe("Mongoose", () => {
 
         it("Should able specify extra configuration from factory", async () => {
             const { model } = generator()
-            @document()
+            @collection()
             class Dummy {
                 constructor(
                     public stringProp: string,
@@ -384,8 +387,7 @@ describe("Mongoose", () => {
 
         it("Should able to enable timestamps using decorator", async () => {
             const { model } = generator()
-            @document()
-            @document.timestamp()
+            @collection({ timestamps: true })
             class Dummy {
                 constructor(
                     public stringProp: string,
@@ -401,13 +403,12 @@ describe("Mongoose", () => {
 
         it("Should able to enable timestamps using decorator from base class", async () => {
             const { model } = generator()
-            @document()
-            @document.timestamp()
+            @collection({ timestamps: true })
             class Base {
-                @document.default(false)
+                @collection.property({ default: false })
                 deleted: boolean = false
             }
-            @document()
+            @collection()
             class Dummy extends Base {
                 constructor(
                     public stringProp: string,
@@ -423,8 +424,7 @@ describe("Mongoose", () => {
 
         it("Should able to override timestamps decorator from factory", async () => {
             const { model } = generator()
-            @document()
-            @document.timestamp()
+            @collection({ timestamps: true })
             class Dummy {
                 constructor(
                     public stringProp: string,
@@ -441,15 +441,14 @@ describe("Mongoose", () => {
         it("Should able to hook schema generation", async () => {
             const fn = jest.fn()
             const { model } = generator()
-            @document()
+            @collection()
             class Dummy {
                 constructor(
                     public stringProp: string,
                 ) { }
             }
-            const DummyModel = model(Dummy, def => {
-                fn()
-                return new mongoose.Schema(def, { timestamps: true })
+            const DummyModel = model(Dummy, sch => {
+                fn(sch)
             })
             const added = await DummyModel.create({
                 stringProp: "string",

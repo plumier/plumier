@@ -1,11 +1,11 @@
 import { domain, Class } from "@plumier/core"
-import { getDefinition, document, ModelStore } from "@plumier/mongoose"
+import { getDefinition, collection, ModelStore } from "@plumier/mongoose"
 import reflect from "tinspector"
 
 describe("Definition", () => {
     describe("Primitive Data Type", () => {
         it("Should able to extract primitive types definition", () => {
-            @document()
+            @collection()
             class Dummy {
                 constructor(
                     public stringProp: string,
@@ -16,21 +16,21 @@ describe("Definition", () => {
             }
             expect(getDefinition(Dummy, new Map())).toMatchSnapshot()
         })
-    
+
         it("Should able to add schema configuration", () => {
-            @document()
+            @collection()
             class Dummy {
                 constructor(
-                    @document.default("123")
-                    @document.property({ uppercase: true })
+                    @collection.property({ default: "123" })
+                    @collection.property({ uppercase: true })
                     public stringProp: string,
                 ) { }
             }
             expect(getDefinition(Dummy, new Map())).toMatchSnapshot()
         })
-    
+
         it("Should able to extract array of primitive types definition", () => {
-            @document()
+            @collection()
             class Dummy {
                 constructor(
                     @reflect.type([String])
@@ -46,17 +46,17 @@ describe("Definition", () => {
             expect(getDefinition(Dummy, new Map())).toMatchSnapshot()
         })
     })
-    
+
     describe("Nested Data Type", () => {
         it("Should able to extract nested object", () => {
-            @document()
+            @collection()
             class Nest {
                 constructor(
                     public stringProp: string,
                     public dateProp: Date
                 ) { }
             }
-            @document()
+            @collection()
             class Dummy {
                 constructor(
                     child: Nest
@@ -66,16 +66,16 @@ describe("Definition", () => {
         })
 
         it("Should able to extract nested object with schema option", () => {
-            @document()
+            @collection()
             class Nest {
                 constructor(
-                    @document.default("123")
-                    @document.property({uppercase: true})
+                    @collection.property({ default: "123" })
+                    @collection.property({ uppercase: true })
                     public stringProp: string,
                     public dateProp: Date
                 ) { }
             }
-            @document()
+            @collection()
             class Dummy {
                 constructor(
                     child: Nest
@@ -83,19 +83,19 @@ describe("Definition", () => {
             }
             expect(getDefinition(Dummy, new Map())).toMatchSnapshot()
         })
-    
+
         it("Should able to define nested object with ref (populate)", () => {
-            @document()
+            @collection()
             class Nest {
                 constructor(
                     public stringProp: string,
                     public dateProp: Date
                 ) { }
             }
-            @document()
+            @collection()
             class Dummy {
                 constructor(
-                    @document.ref(Nest)
+                    @collection.ref(Nest)
                     child: Nest
                 ) { }
             }
@@ -103,20 +103,20 @@ describe("Definition", () => {
             map.set(Nest, { name: "Nest", definition: {}, option: {} })
             expect(getDefinition(Dummy, map)).toMatchSnapshot()
         })
-    
-    
+
+
         it("Should able to define nested object array with ref (populate)", () => {
-            @document()
+            @collection()
             class Nest {
                 constructor(
                     public stringProp: string,
                     public dateProp: Date
                 ) { }
             }
-            @document()
+            @collection()
             class Dummy {
                 constructor(
-                    @document.ref([Nest])
+                    @collection.ref([Nest])
                     children: Nest[]
                 ) { }
             }
@@ -128,35 +128,35 @@ describe("Definition", () => {
 
     describe("Error Handling", () => {
         it("Should throw error when reference type not registered in nested model", () => {
-            @document()
+            @collection()
             class Nest {
                 constructor(
                     public stringProp: string,
                     public dateProp: Date
                 ) { }
             }
-            @document()
+            @collection()
             class Dummy {
                 constructor(
-                    @document.ref(Nest)
+                    @collection.ref(Nest)
                     child: Nest
                 ) { }
             }
             expect(() => getDefinition(Dummy, new Map())).toThrowErrorMatchingSnapshot()
         })
-    
+
         it("Should throw error when reference type not registered in nested array", () => {
-            @document()
+            @collection()
             class Nest {
                 constructor(
                     public stringProp: string,
                     public dateProp: Date
                 ) { }
             }
-            @document()
+            @collection()
             class Dummy {
                 constructor(
-                    @document.ref([Nest])
+                    @collection.ref([Nest])
                     children: Nest[]
                 ) { }
             }

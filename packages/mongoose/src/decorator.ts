@@ -8,30 +8,22 @@ import { PropertyOptionDecorator, RefDecorator, NamedSchemaOption, ClassOptionDe
 // ----------------------------- DECORATORS ---------------------------- //
 // --------------------------------------------------------------------- //
 
-function document(option?: NamedSchemaOption): ClassDecorator {
+function collection(option?: NamedSchemaOption): ClassDecorator {
     return mergeDecorator( 
         decorateClass(<ClassOptionDecorator>{ name: "ClassOption", option }), 
         reflect.parameterProperties()
     )
 }
 
-document.timestamp = (): ClassDecorator => {
-    return document({ timestamps: true })
-}
-
-document.property = (option?: SchemaTypeOpts<any>) => {
+collection.property = (option?: SchemaTypeOpts<any>) => {
     return decorateProperty(<PropertyOptionDecorator>{ name: "PropertyOption", option })
 }
 
-document.default = (value: {} | (() => {})) => {
-    return document.property({ default: value })
-}
-
-document.ref = (type: Class | Class[]) => {
+collection.ref = (type: Class | Class[]) => {
     return mergeDecorator(
         decorateProperty(<RefDecorator>{ name: "MongooseRef", type }),
         reflect.type(type)
     )
 }
 
-export { document  }
+export { collection  }

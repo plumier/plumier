@@ -35,9 +35,7 @@ exports[`Mongoose Schema Configuration Should able to hook schema generation 1`]
 Object {
   "__v": 0,
   "_id": MONGODB UNIQUE ID,
-  "createdAt": DATE NOW,
   "stringProp": "string",
-  "updatedAt": DATE NOW,
 }
 `;
 
