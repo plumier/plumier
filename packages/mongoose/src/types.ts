@@ -1,0 +1,30 @@
+import mongoose, { SchemaOptions } from "mongoose"
+import { Class } from '@plumier/core'
+
+// --------------------------------------------------------------------- //
+// ------------------------------- TYPES ------------------------------- //
+// --------------------------------------------------------------------- //
+
+type GeneratorHook = (def:any, option:NamedSchemaOption) => mongoose.Schema
+type NamedSchemaOption = SchemaOptions & { hook?: GeneratorHook, proxy?: boolean, name?: string }
+type MongooseFacilityOption = { uri?: string }
+type ModelFactory = <T>(type: new (...args: any) => T, opt?: string | GeneratorHook | NamedSchemaOption) => mongoose.Model<T & mongoose.Document, {}>
+interface ClassOptionDecorator { name: "ClassOption", option: NamedSchemaOption }
+interface PropertyOptionDecorator { name: "PropertyOption", option?: SchemaOptions }
+interface RefDecorator { name: "MongooseRef" }
+
+interface ModelGenerator {
+    model: ModelFactory
+    printAnalysis: () => void
+}
+
+const ReferenceTypeNotRegistered = "MONG1000: Type {0} required type {1} which is not registered as Mongoose model"
+const CanNotValidateNonProperty = `MONG1002: @val.unique() only can be applied on property`
+
+export {
+    NamedSchemaOption,
+    ModelFactory, PropertyOptionDecorator, RefDecorator,
+    ModelGenerator, MongooseFacilityOption, ClassOptionDecorator,
+    ReferenceTypeNotRegistered, CanNotValidateNonProperty,
+    GeneratorHook
+}

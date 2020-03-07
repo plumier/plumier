@@ -63,7 +63,7 @@
 	"workspaces": [
 		"packages/*"
 	],
-	"pre-push": [
-		"test"
-	]
+	// "pre-push": [
+	// 	"test"
+	// ]
 }

@@ -14,6 +14,9 @@ import { ClassReflection, decorateClass, mergeDecorator, PropertyReflection, ref
 import { Result, VisitorInvocation } from "typedconverter"
 import { safeToString } from "typedconverter/lib/converter"
 
+export * from "./generator"
+export * from "./decorator"
+
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------------ TYPES ------------------------------------ */
 /* ------------------------------------------------------------------------------- */
