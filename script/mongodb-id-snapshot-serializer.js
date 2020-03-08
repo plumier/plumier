@@ -1,10 +1,12 @@
 const mongoose = require("mongoose")
 
+const replacement = "MONGODB UNIQUE ID"
+
 module.exports = {
     test(val) {
-        return typeof val === "string" && mongoose.isValidObjectId(val);
+        return val && val.hasOwnProperty('_id') && mongoose.isValidObjectId(val._id) && val._id !== replacement
     },
-    print(val) {
-        return "MONGODB UNIQUE ID";
+    print(val, serializer) {
+        return serializer({ ...val, _id: replacement })
     },
 }

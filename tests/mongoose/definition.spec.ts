@@ -45,6 +45,16 @@ describe("Definition", () => {
             }
             expect(getDefinition(Dummy, new Map())).toMatchSnapshot()
         })
+
+        it("Should use object if no type definition found", () => {
+            @collection()
+            class Dummy {
+                constructor(
+                    public stringProp: string[],
+                ) { }
+            }
+            expect(getDefinition(Dummy, new Map())).toMatchSnapshot()
+        })
     })
 
     describe("Nested Data Type", () => {
@@ -100,7 +110,7 @@ describe("Definition", () => {
                 ) { }
             }
             const map = new Map<Class, ModelStore>()
-            map.set(Nest, { name: "Nest", definition: {}, option: {} })
+            map.set(Nest, { name: "Nest", collectionName: "nests", definition: {}, option: {} })
             expect(getDefinition(Dummy, map)).toMatchSnapshot()
         })
 
@@ -121,7 +131,7 @@ describe("Definition", () => {
                 ) { }
             }
             const map = new Map<Class, ModelStore>()
-            map.set(Nest, { name: "Nest", definition: {}, option: {} })
+            map.set(Nest, { name: "Nest", collectionName: "nests", definition: {}, option: {} })
             expect(getDefinition(Dummy, map)).toMatchSnapshot()
         })
     })

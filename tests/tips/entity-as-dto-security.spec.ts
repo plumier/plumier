@@ -28,7 +28,7 @@ export class UsersController {
 
 const app = new Plumier()
     .set(new WebApiFacility({ controller: __filename }))
-    .set(new MongooseFacility({ uri: "mongodb://localhost:27017/test-data", model: __filename }))
+    .set(new MongooseFacility({ uri: "mongodb://localhost:27017/test-data" }))
     .set(new JwtAuthFacility({ secret: "secret" }))
     .set({ mode: "production" })
 

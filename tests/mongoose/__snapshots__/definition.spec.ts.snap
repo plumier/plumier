@@ -103,3 +103,13 @@ Object {
   },
 }
 `;
+
+exports[`Definition Primitive Data Type Should use object if no type definition found 1`] = `
+Object {
+  "stringProp": Array [
+    Object {
+      "type": Object,
+    },
+  ],
+}
+`;

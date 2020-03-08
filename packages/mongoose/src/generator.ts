@@ -12,6 +12,7 @@ import {
     MongooseFacilityOption,
     GeneratorHook,
     ClassOptionDecorator,
+    ModelStore,
 } from "./types"
 import { createAnalyzer } from './analyzer'
 
@@ -20,7 +21,6 @@ import { createAnalyzer } from './analyzer'
 // --------------------------------------------------------------------- //
 // ----------------------------- GENERATOR ----------------------------- //
 // --------------------------------------------------------------------- //
-interface ModelStore { name: string, definition: any, option: NamedSchemaOption }
 
 
 function getPropertyDefinition(parent: ClassReflection, prop: PropertyReflection, store: Map<Class, ModelStore>): {} | {}[] {
@@ -40,7 +40,7 @@ function getPropertyDefinition(parent: ClassReflection, prop: PropertyReflection
         else
             return { ...getDefinition(prop.type, store), ...option }
     }
-    return { type: prop.type || Object, ...option }
+    return { type: prop.type, ...option }
 }
 
 function getDefinition(type: Class, store: Map<Class, ModelStore>) {
@@ -71,10 +71,11 @@ function modelFactory(store: Map<Class, ModelStore>): ModelFactory {
             const option = getOption(meta, opt)
             const name = option.name ?? type.name
             const definition = getDefinition(type, store)
-            store.set(type, { name, definition, option })
             const schema = new mongoose.Schema(definition, option)
             if(option.hook) option.hook(schema)
-            return mongoose.model<T & mongoose.Document>(name, schema)
+            const mongooseModel = mongoose.model<T & mongoose.Document>(name, schema)
+            store.set(type, { name, collectionName: mongooseModel.collection.name, definition, option })
+            return mongooseModel
         }
     }
 }
@@ -88,45 +89,10 @@ function generator(): ModelGenerator {
     const models = new Map<Class, ModelStore>()
     return {
         model: modelFactory(models),
-        printAnalysis: createAnalyzer(models)
+        getAnalysis: createAnalyzer(models)
     }
 }
 
-const { model, ...globalGenerator } = generator()
+const { model, getAnalysis } = generator()
 
-export class MongooseFacility extends DefaultFacility {
-    option: MongooseFacilityOption
-    constructor(opts?: MongooseFacilityOption) {
-        super()
-        this.option = { ...opts }
-    }
-
-    async initialize(app: Readonly<PlumierApplication>) {
-        //default config 
-    }
-}
-
-export { getDefinition, ModelStore, generator, model }
-
-
-// --------------------------------------------------------------------- //
-// -------------------------------- IMPL ------------------------------- //
-// --------------------------------------------------------------------- //
-
-// const { model, ...generator } = modelGenerator({
-//     timestamps: true,
-//     toJSON: { virtuals: false }
-// })
-
-// generator.printAnalysis()
-
-// class Client {
-
-//     @schema({ default: () => true })
-//     @schema.default(20)
-//     @schema.ref()
-//     data: number = 20
-// }
-// const A = model(Client)
-// const B = model(Client, "Client")
-// const C = model(Client, { name: "Client", timestamps: true })
+export { getDefinition, generator, model, getAnalysis }

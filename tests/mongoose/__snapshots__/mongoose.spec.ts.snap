@@ -1,9 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Mongoose Analyzer Should get simple analysis 1`] = `
+Array [
+  Object {
+    "collection": "db.dummies",
+    "definition": "{ stringProp: { type: [Function: String] }, numberProp: { type: [Function: Number] }, booleanProp: { type: [Function: Boolean] }, dateProp: { type: [Function: Date] } }",
+    "name": "Dummy",
+    "option": "{ timestamps: true }",
+    "typeName": "Dummy",
+  },
+]
+`;
+
+exports[`Mongoose Analyzer Should print analysis 1`] = `
+Array [
+  Array [
+    "1. Dummy        -> Dummy        db.dummies
+{ timestamps: true }",
+  ],
+  Array [
+    "2. User         -> User         db.users",
+  ],
+  Array [
+    "3. UserActivity -> UserActivity db.useractivities
+{ timestamps: true, toObject: { virtuals: true } }",
+  ],
+]
+`;
+
 exports[`Mongoose Schema Configuration Should able specify extra configuration from factory 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "createdAt": DATE NOW,
   "stringProp": "string",
   "updatedAt": DATE NOW,
@@ -13,7 +41,7 @@ Object {
 exports[`Mongoose Schema Configuration Should able to enable timestamps using decorator 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "createdAt": DATE NOW,
   "stringProp": "string",
   "updatedAt": DATE NOW,
@@ -23,7 +51,7 @@ Object {
 exports[`Mongoose Schema Configuration Should able to enable timestamps using decorator from base class 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "createdAt": DATE NOW,
   "deleted": false,
   "stringProp": "string",
@@ -34,7 +62,7 @@ Object {
 exports[`Mongoose Schema Configuration Should able to hook schema generation 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "stringProp": "string",
 }
 `;
@@ -42,7 +70,7 @@ Object {
 exports[`Mongoose Schema Configuration Should able to override timestamps decorator from factory 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "stringProp": "string",
 }
 `;
@@ -50,7 +78,7 @@ Object {
 exports[`Mongoose Schema Configuration Should able to specify configuration 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "stringProp": "STRING",
 }
 `;
@@ -58,7 +86,7 @@ Object {
 exports[`Mongoose Schema Configuration Should able to specify default value 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "deleted": false,
   "stringProp": "string",
 }
@@ -67,7 +95,7 @@ Object {
 exports[`Mongoose Schema Configuration Should able to specify default value on base class 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "deleted": false,
   "stringProp": "string",
 }
@@ -76,7 +104,7 @@ Object {
 exports[`Mongoose Schema Configuration Should able to specify multiple configuration decorators 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "stringProp": "LOREM",
 }
 `;
@@ -84,7 +112,7 @@ Object {
 exports[`Mongoose Schema Configuration Should able to use @schema.property() as noop decorator 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "stringProp": "string",
 }
 `;
@@ -92,7 +120,7 @@ Object {
 exports[`Mongoose Schema Generation Should able to call model factory multiple time on the same model 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "stringProp": "string",
 }
 `;
@@ -100,7 +128,7 @@ Object {
 exports[`Mongoose Schema Generation Should able to call model factory multiple time on the same model 2`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "stringProp": "strong",
 }
 `;
@@ -108,7 +136,7 @@ Object {
 exports[`Mongoose Schema Generation Should able to call model factory multiple time on the same model with custom name 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "stringProp": "string",
 }
 `;
@@ -116,7 +144,7 @@ Object {
 exports[`Mongoose Schema Generation Should able to call model factory multiple time on the same model with custom name 2`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "stringProp": "strong",
 }
 `;
@@ -124,7 +152,7 @@ Object {
 exports[`Mongoose Schema Generation Should able to rename collection with different name 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "stringProp": "string",
 }
 `;
@@ -132,7 +160,7 @@ Object {
 exports[`Mongoose Schema Generation Should able to rename collection with different name using object configuration 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "stringProp": "string",
 }
 `;
@@ -142,10 +170,10 @@ exports[`Mongoose Schema Generation Should throw error when dependent type speci
 exports[`Mongoose Schema Generation Should work with nested array model 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "children": Array [
     Object {
-      "_id": MONGODB UNIQUE ID,
+      "_id": "MONGODB UNIQUE ID",
       "booleanProp": true,
       "stringProp": "string",
     },
@@ -156,11 +184,11 @@ Object {
 exports[`Mongoose Schema Generation Should work with nested array with ref (populate) 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "children": Array [
     Object {
       "__v": 0,
-      "_id": MONGODB UNIQUE ID,
+      "_id": "MONGODB UNIQUE ID",
       "booleanProp": true,
       "stringProp": "string",
     },
@@ -171,7 +199,7 @@ Object {
 exports[`Mongoose Schema Generation Should work with nested model 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "child": Object {
     "booleanProp": true,
     "stringProp": "string",
@@ -182,10 +210,10 @@ Object {
 exports[`Mongoose Schema Generation Should work with nested model with ref (populate) 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "child": Object {
     "__v": 0,
-    "_id": MONGODB UNIQUE ID,
+    "_id": "MONGODB UNIQUE ID",
     "booleanProp": true,
     "stringProp": "string",
   },
@@ -195,7 +223,7 @@ Object {
 exports[`Mongoose Schema Generation Should work with primitive array 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "booleanProp": Array [
     true,
     false,
@@ -218,7 +246,7 @@ Object {
 exports[`Mongoose Schema Generation Should work with primitive data 1`] = `
 Object {
   "__v": 0,
-  "_id": MONGODB UNIQUE ID,
+  "_id": "MONGODB UNIQUE ID",
   "booleanProp": true,
   "dateProp": 2020-2-2,
   "numberProp": 123,
