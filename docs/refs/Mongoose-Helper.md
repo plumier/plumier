@@ -22,45 +22,129 @@ There are several ways to use the mongodb connection:
 2. By providing the environment variable named `PLUM_MONGODB_URI`. This can be achieve using `.env` file or by set the environment variable manually.
 3. If none above provided, connection should be done manually using `mongoose.connect()` function. 
 
-## Mark Domain Model For Schema Generated
-Your domain model and you MongoDB collection is not 1 : 1 relation, means not all domain model will will have an appropriate MongoDB collection. 
+## Domain Model Declaration 
+Plumier Mongoose Helper uses tinspector to extract type metadata on runtime. Currently there are two domain models declaration supported
 
-Mark domain model with `@collection` decorator for auto generated schema.
-
+### Using Property Field 
 ```typescript
-import { collection } from "@plumier/mongoose"
+@collection()
+class Dummy {
+    @collection.property()
+    stringProp: string
+
+    @collection.property()
+    numberProp: number
+
+    @collection.property()
+    booleanProp: boolean
+
+    @collection.property()
+    dateProp: Date
+}
+```
+
+This is the common model declaration when you are familiar with Nest.js or other TypeScript framework. This declaration required `strictPropertyInitialization` disabled on `tsconfig.json` file. Note that the `@collection.property()` is required when there are no decorator applied on the property. 
+
+### Using TypeScript Parameter Properties
+
+```typescript 
+import reflect from "tinspector"
 
 @collection()
-export class User {
+class Dummy {
     constructor(
-        public name: string,
-        public image: string,
-        public address:string,
-        public city:string,
-        public zip:string,
+        public stringProp: string,
+        public numberProp: number,
+        public booleanProp: boolean,
+        public dateProp: Date
     ) { }
 }
 ```
 
-> When using `@collection()` decorator `@domain()` decorator can be omitted, because `@domain()` decorator actually does nothing except just to make TypeScript generate the design type information.
+This declaration good when `tsconfig.json` uses `strict: true` because we unable to use field properties. Using this declaration reduce the need of using `@collection.properties()` on all properties. 
 
-You don't need to specify the ID because mongoose will automatically gives you the `_id` property (actually that make the domain model cleaner)
 
-## Create Model
-`@plumier/mongoose` provided `model` function to create Mongoose model
+## Helper API Overview 
+Plumier Mongoose Helper help you easily map your domain model and create Mongoose model using it. Helper automatically generate schema definition based on your domain model metadata.
 
 ```typescript
-import { model } from "@plumier/mongoose"
+import { model, collection } from "@plumier/mongoose"
 
+// base class, all derived class will inherit the behavior
+@collection({ timestamp: true, toJSON: { virtuals: true } })
+class Domain {
+    @collection.property()
+    id:string
+    @collection.property({ default:false })
+    deleted:boolean
+    @collection.property()
+    createdAt:Date
+    @collection.property()
+    updatedAt:Date
+}
+
+@collection()
+class User extends Domain{
+    constructor(
+        public name:string,
+        @collection.property({ unique:true })
+        public email:string,
+        public dateOfBirth: Date
+    ) { super() }
+}
+
+// create mongoose model
 const UserModel = model(User)
+
+@collection()
+class UserActivity extends Domain {
+    constructor(
+        @collection.ref(User)
+        public user: User,
+        @collection.property({ default: () => new Date() })
+        public date: Date,
+        public browser:string,
+        public os:string,
+        @reflect.types([Number])
+        public latLong: number[]
+    ){ super() }
+}
+
+// create mongoose model
+const UserActivityModel = model(UserActivity)
+``` 
+
+## Helper API
+
+### Basic Schema Generation 
+
+```typescript
+import { model, collection } from "@plumier/mongoose"
+
+@collection()
+class Dummy {
+    constructor(
+        public stringProp: string,
+        public numberProp: number,
+        public booleanProp: boolean,
+        public dateProp: Date
+    ) { }
+}
+// create Mongoose model by using below
+const DummyModel = model(Dummy)
+// example usage
+const result = await DummyModel.findById(<id>)
+// model can be called multiple time to create other model instance
+// for example from inside controller or in other place
+const SecondDummyModel = model(Dummy)
 ```
 
-> You can create model anywhere in your code, but best practice is put them under the domain model class.
-
-## Relational Schema (populate)
-If you defined relational class on your domain model, Mongoose helper will automatically generate a relation with mongoose `ObjectId`
+### Advanced Data Type 
+Array type required extra decorator information. Use `@reflect.type([<type>])` decorator to inform generator about extra type information.
 
 ```typescript
+import { model, collection } from "@plumier/mongoose"
+
 @collection()
 class Child {
     constructor(
@@ -69,109 +153,149 @@ class Child {
 }
 
 @collection()
-class Parent {
+class Dummy {
     constructor(
-        public name:string
-        //1 - 1 relation
-        public child:Child
-    ){}
+        // primitive array
+        @reflect.type([String])
+        public arrayOfPrimitive: string[],
+
+        // nested type 
+        public child: Child,
+
+        // nested array of model 
+        @reflect.type([Child])
+        public children: Child[],
+    ) { }
 }
+
+const DummyModel = model(Dummy)
 ```
 
-Using above code, mongoose facility will generate mongoose schema like below:
-
+### Nested Document With Ref (Populate)
 ```typescript
-//child
-{
-    name: String
-}
+import { model, collection } from "@plumier/mongoose"
 
-//parent
-{
-    name: String,
-    child: { type: Schema.Types.ObjectId, ref: "Parent" }
-}
-```
-
-It also work with collection relation 
-
-```typescript
 @collection()
-class Parent {
+class Child {
     constructor(
         public name:string
-        //collection relation
-        public children:Child[]
     ){}
 }
-```
 
-```typescript
-//parent
-{
-    name: String,
-    child: { type: [Schema.Types.ObjectId], ref: "Child" }
-}
-```
-
-## Custom Mongoose Collection Name
-You can specify a name alias on `@collection()` decorator to specify custom collection name. But keep in mind mongoose will pluralize your model name when creating the collection.
-
-```typescript
-@collection("ParentCollection")
-class Parent {
+@collection()
+class Dummy {
     constructor(
-        public name:string
-        //collection relation
-        public children:Child[]
-    ){}
+        // nested type 
+        @collection.ref(Child)
+        public child: Child,
+
+        // nested array of model 
+        @collection.ref([Child])
+        public children: Child[],
+    ) { }
 }
+
+const ChildModel = model(Child)
+const DummyModel = model(Dummy)
 ```
 
-## Override Schema Generation
-You can override schema generation by providing `SchemaGenerator` callback on the `MongooseFacility`. The signature of `SchemaGenerator` is like below:
+### Configure Properties 
+Extra Mongoose schema configuration can be passed to each decorator 
 
 ```typescript
-(definition:any, meta:ClassReflection) => mongoose.Schema
+import { model, collection } from "@plumier/mongoose"
+
+@collection({ timestamps: true, toJSON: { virtuals: true } })
+class Dummy {
+    constructor(
+        @collection.property({ uppercase:true })
+        public stringProp: string,
+        @collection.property({ unique:true })
+        public email: string,
+        @collection.property({ default:() => new Date() })
+        public dateProp: Date
+    ) { }
+}
+
+const DummyModel = model(Dummy)
 ```
 
-* `definition` is the object column definition generated by Plumier.
-* `meta` is the current class meta data reflection.
-* return instance of mongoose schema
-
-Note that the schema generator callback will be called multiple time on each model.
-
-Example, we will added [timestamp](https://mongoosejs.com/docs/guide.html#timestamps) on each of our models like example below
+### Inheritance 
+Inheritance work naturally, all child document will inherit parent configuration properly. 
 
 ```typescript
-import Mongoose from "mongoose" 
+import { model, collection } from "@plumier/mongoose"
 
-new MongooseFacility({
-    uri: "mongodb://localhost:27017/test-data",
-    schemaGenerator: (def, meta) => {
-        return new Mongoose.Schema(def, {timestamps: true})
-    }
+@collection({ timestamp: true })
+class DomainBase {
+    @collection.property({ default:false })
+    deleted:boolean
+    @collection.property()
+    createdAt:Date
+    @collection.property()
+    updatedAt:Date
+}
+
+@collection()
+class Dummy extends DomainBase{
+    constructor(
+        public stringProp: string,
+        public numberProp: number,
+        public booleanProp: boolean,
+        public dateProp: Date
+    ) { super() }
+}
+
+const DummyModel = model(Dummy)
+```
+
+Using configuration above, all class inherited from `DomainBase` will have `deleted` property with default value `false` and properties `createdAt` and `updatedAt` which automatically populated as timestamps.
+
+### Custom Model Name 
+
+```typescript
+import { model, collection } from "@plumier/mongoose"
+
+@collection()
+class Dummy {
+    constructor(
+        public stringProp: string,
+        public numberProp: number,
+        public booleanProp: boolean,
+        public dateProp: Date
+    ) { }
+}
+// use the second parameter to change the model name
+const DummyModel = model(Dummy, "Empty")
+// calling next model will not require passing name
+const SecondDummyModel = model(Dummy)
+```
+
+### Schema Generation Hook
+
+```typescript
+import { model, collection } from "@plumier/mongoose"
+import mongoose from "mongoose"
+
+@collection()
+class Dummy {
+    constructor(
+        public stringProp: string,
+        public numberProp: number,
+        public booleanProp: boolean,
+        public dateProp: Date
+    ) { }
+}
+// pass function on second parameter to hook schema generation
+const DummyModel = model(Dummy, schema => {
+    schema.pre("save", next => {
+        // do something
+        next()
+    })
 })
+// calling next model will not require passing the hook
+const SecondDummyModel = model(Dummy)
 ```
-
-Above code will apply timestamp to all models. If you want to apply to specific model, you can filter them by using metadata information.
-
-```typescript
-import Mongoose from "mongoose" 
-
-new MongooseFacility({
-    uri: "mongodb://localhost:27017/test-data",
-    schemaGenerator: (def, meta) => {
-        if(meta.name === "Product")
-            return new Mongoose.Schema(def, {timestamps: true})
-        else 
-            return new Mongoose.Schema(def)
-    }
-})
-```
-
-Above code will only apply timestamp to domain named `Product` the rest will be using default schema.
-
 
 ## Unique Validation
 Mongoose helper provided `@val.unique()` that augmented (merged) with `@plumier/validator` module. Means if you install `@plumier/mongoose` `@val` decorator will automatically has `unique()` function.
@@ -198,7 +322,7 @@ export class User {
 ```
 
 ## POST Form With Relational Data
-Mongoose helper provided custom object converter, so it possible to post relational data from HTML Form by providing the ObjectId of the child model.
+Mongoose helper provided custom object converter, so it possible to post relational data (with populate) from HTML Form by providing the ObjectId of the child model.
 
 ```typescript
 //domains
@@ -212,7 +336,7 @@ class Image {
 class Animal {
     constructor(
         public name: string,
-        @array(Image)
+        @collection.ref([Image])
         public images: Image[]
     ) { }
 }
