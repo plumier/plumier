@@ -94,10 +94,7 @@ namespace consoleLog {
 
 function findFilesRecursive(path: string): string[] {
     const removeExtension = (x: string) => x.replace(/\.[^/.]+$/, "")
-    if (existsSync(`${path}.js`)) return [removeExtension(path)]
-    else if (existsSync(`${path}.ts`)) return [removeExtension(path)]
-    //resolve provided path directory or file
-    else if (lstatSync(path).isDirectory()) {
+    if (lstatSync(path).isDirectory()) {
         const files = glob.sync(`${path}/**/*+(.js|.ts)`)
             //take only file in extension list
             .filter(x => [".js", ".ts"].some(ext => extname(x) == ext))

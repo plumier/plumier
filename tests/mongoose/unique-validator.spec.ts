@@ -1,15 +1,14 @@
 import { Class, route, val, HttpMethod } from "@plumier/core"
-import { collection, Constructor, model, MongooseFacility } from "@plumier/mongoose"
+import { collection, model, MongooseFacility } from "@plumier/mongoose"
 import Mongoose from "mongoose"
 import { fixture } from "../helper"
 import supertest = require("supertest")
 import { decorate } from "tinspector"
 
-async function setup<T extends object>({ controller, domain, initUser, testUser, method }: { controller: Class; domain: Constructor<T>; initUser?: T; testUser: T; method?: HttpMethod }) {
+async function setup<T extends object>({ controller, domain, initUser, testUser, method }: { controller: Class; domain: Class; initUser?: T; testUser: T; method?: HttpMethod }) {
     const httpMethod = method || "post"
     const koa = await fixture(controller)
         .set(new MongooseFacility({
-            model: [domain],
             uri: "mongodb://localhost:27017/test-data"
         })).initialize()
     koa.on("error", () => { })
@@ -18,7 +17,7 @@ async function setup<T extends object>({ controller, domain, initUser, testUser,
     await UserModel.deleteMany({})
     if (!!initUser)
         await new UserModel(initUser).save()
-    if(httpMethod !== "post")
+    if (httpMethod !== "post")
         await new UserModel(testUser).save()
     //test
     return await supertest(koa.callback())
@@ -27,7 +26,8 @@ async function setup<T extends object>({ controller, domain, initUser, testUser,
 }
 
 describe("unique validator", () => {
-    afterEach(async () => await Mongoose.disconnect())
+    beforeEach(() => Mongoose.models = {})
+    afterAll(async () => await Mongoose.disconnect())
 
     it("Should return invalid if data already exist", async () => {
         @collection()
@@ -189,12 +189,12 @@ describe("unique validator", () => {
         }
 
         const user = { name: "Ketut", email: "ketut@gmail.com" }
-        const res = await setup({ 
-            controller: UserController, 
-            domain: User, 
-            initUser: user, 
-            testUser: user, 
-            method: "put" 
+        const res = await setup({
+            controller: UserController,
+            domain: User,
+            initUser: user,
+            testUser: user,
+            method: "put"
         })
         expect(res.status).toBe(422)
         expect(res.body).toEqual({ status: 422, message: [{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }] })

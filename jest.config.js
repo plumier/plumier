@@ -21,6 +21,8 @@ module.exports = {
     "^plumier$": "<rootDir>packages/plumier/src/index.ts",
   },
   snapshotSerializers: [
-    "<rootDir>script/function-snapshot-serializer.js"
+    "<rootDir>script/function-snapshot-serializer.js",
+    "<rootDir>script/mongodb-id-snapshot-serializer.js",
+    "<rootDir>script/date-snapshot-serializer.js"
   ]
 };
