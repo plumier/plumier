@@ -12,7 +12,6 @@ packages/**/*.js.snap
 !test.js
 .docs
 .env
-social-login-test
 yarn.lock
 !packages/plumier/test/integration/mongoose/model/jsonly-domain.js
 website/translated_docs

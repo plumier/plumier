@@ -1,0 +1,26 @@
+button {
+    padding: 8px 12px;
+}
+
+.container {
+  width: 500px;
+  margin: 100px auto;
+}
+
+.profile {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 50px;
+}
+
+.profile img {
+  border-radius: 50%;
+  height: 100px;
+  width: 100px;
+  margin-right: 20px;
+}
+
+.profile h2 {
+  margin: 0;
+}

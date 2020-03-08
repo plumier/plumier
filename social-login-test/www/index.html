@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Social Login</title>
+    <meta name="description" content="Simple Social Login">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body class="">
+    <div class="container">
+        <div class="login">
+            <button onclick="modal('/auth/facebook/login')">Login with Facebook</button>
+            <button onclick="modal('/auth/google/login')">Login with Google</button>
+            <button onclick="modal('/auth/github/login')">Login with GitHub</button>
+            <button onclick="modal('/auth/gitlab/login?scope=read_user')">Login with GitLab</button>
+            <button onclick="modal('/auth/twitter/login')">Login with Twitter</button>
+        </div>
+        <div class="profile"></div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        (function() {
+            init()
+        })();
+    </script>
+</body>
+
+</html>
