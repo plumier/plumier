@@ -1,11 +1,12 @@
-import { existsSync } from "fs"
+import { exists } from "fs"
+import { promisify } from "util"
 import { isAbsolute, join } from "path"
 import { ClassReflection, MethodReflection, reflect } from "tinspector"
 
-import { Class, findFilesRecursive } from "./common"
+import { Class, findSourceFilesRecursive } from "./common"
 import { errorMessage, HttpMethod, RouteInfo } from "./types"
 
-
+const existsAsync = promisify(exists)
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -110,9 +111,9 @@ function transformController(object: ClassReflection | Class, opt?: TransformOpt
    return infos
 }
 
-function transformModule(path: string): RouteInfo[] {
+async function transformModule(path: string): Promise<RouteInfo[]> {
    //read all files and get module reflection
-   const files = findFilesRecursive(path)
+   const files = await findSourceFilesRecursive(path)
    const infos: RouteInfo[] = []
    for (const file of files) {
       const root = getRoot(path, file)
@@ -124,14 +125,14 @@ function transformModule(path: string): RouteInfo[] {
    return infos
 }
 
-function generateRoutes(executionPath: string, controller: string | Class[] | Class) {
+async function generateRoutes(executionPath: string, controller: string | Class[] | Class) {
    let routes: RouteInfo[] = []
    if (typeof controller === "string") {
       const path = isAbsolute(controller) ? controller :
          join(executionPath, controller)
-      if (!existsSync(path))
+      if (!await existsAsync(path))
          throw new Error(errorMessage.ControllerPathNotFound.format(path))
-      routes = transformModule(path)
+      routes = await transformModule(path)
    }
    else if (Array.isArray(controller)) {
       routes = controller.map(x => transformController(x))

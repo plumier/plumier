@@ -19,10 +19,8 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@types/glob": "^7.1.1",
     "@types/koa": "^2.11.2",
     "chalk": "^3.0.0",
-    "glob": "^7.1.6",
     "path-to-regexp": "^6.1.0",
     "tinspector": "^2.3.0",
     "tslib": "^1.11.1",

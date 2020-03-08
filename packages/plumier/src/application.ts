@@ -65,7 +65,7 @@ export class Plumier implements PlumierApplication {
             //module.parent.parent.filename -> because Plumier app also exported in plumier/src/index.ts
             if (this.config.rootDir === "__UNSET__")
                 (this.config as Configuration).rootDir = dirname(module.parent!.parent!.filename)
-            let routes: RouteInfo[] = generateRoutes(this.config.rootDir, this.config.controller)
+            let routes: RouteInfo[] = await generateRoutes(this.config.rootDir, this.config.controller)
             const vRoutes: VirtualRouteInfo[] = []
             for (const facility of this.config.facilities) {
                 await facility.initialize(this, routes, vRoutes)
