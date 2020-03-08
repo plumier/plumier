@@ -1,20 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Force HTTPS Should not redirect when already requested https 1`] = `
-ActionResult {
-  "body": "not processed",
-  "cookies": Array [],
-  "headers": Object {},
-  "status": undefined,
-}
-`;
-
-exports[`Force HTTPS Should priorities code vs configuration 1`] = `"https://127.0.0.1/animal/index"`;
-
-exports[`Force HTTPS Should redirect to https when enabled 1`] = `"https://127.0.0.1/animal/index"`;
-
-exports[`Force HTTPS Should redirect to https when enabled using env variable 1`] = `"https://127.0.0.1/animal/index"`;
-
 exports[`Listen Should show server info when in debug mode 1`] = `"Server ready http://localhost/"`;
 
 exports[`Listen Should throw error when provided invalid port number 1`] = `
@@ -23,16 +8,4 @@ Array [
     "Unable to parse port number INVALID NUMBER. Please provide a valid integer number",
   ],
 ]
-`;
-
-exports[`Proxy Headers Should accept protocol when trusted 1`] = `
-Object {
-  "protocol": "https",
-}
-`;
-
-exports[`Proxy Headers Should not accept protocol by default 1`] = `
-Object {
-  "protocol": "http",
-}
 `;
