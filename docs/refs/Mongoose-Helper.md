@@ -63,17 +63,6 @@ class Dummy {
 
 This declaration good when `tsconfig.json` uses `strict: true` because we unable to use field properties. Using this declaration reduce the need of using `@collection.properties()` on all properties. 
 
-## Create Model
-`@plumier/mongoose` provided `model` function to create Mongoose model
-
-```typescript
-import { model } from "@plumier/mongoose"
-
-const UserModel = model(User)
-```
-
-> You can create model anywhere in your code, but best practice is put them under the domain model class.
-
 
 ## Helper API Overview 
 Plumier Mongoose Helper help you easily map your domain model and create Mongoose model using it. Helper automatically generate schema definition based on your domain model metadata.
@@ -333,7 +322,7 @@ export class User {
 ```
 
 ## POST Form With Relational Data
-Mongoose helper provided custom object converter, so it possible to post relational data from HTML Form by providing the ObjectId of the child model.
+Mongoose helper provided custom object converter, so it possible to post relational data (with populate) from HTML Form by providing the ObjectId of the child model.
 
 ```typescript
 //domains
@@ -347,7 +336,7 @@ class Image {
 class Animal {
     constructor(
         public name: string,
-        @array(Image)
+        @collection.ref([Image])
         public images: Image[]
     ) { }
 }
