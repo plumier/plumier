@@ -1,7 +1,9 @@
-import { generator, collection, printAnalysis } from "@plumier/mongoose"
+import { generator, collection, printAnalysis, model as globalModel, MongooseFacility } from "@plumier/mongoose"
 import { domain, consoleLog, } from '@plumier/core'
 import mongoose from "mongoose"
 import reflect from "tinspector"
+import { fixture } from '../helper'
+import supertest from 'supertest'
 
 mongoose.set("useNewUrlParser", true)
 mongoose.set("useUnifiedTopology", true)
@@ -505,6 +507,46 @@ describe("Mongoose", () => {
             model(UserActivity)
             const mock = consoleLog.startMock()
             printAnalysis(getAnalysis())
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
+        })
+
+        it("Should print analysis on global mode and facility", async () => {
+            @collection({ timestamps: true })
+            class Dummy {
+                constructor(
+                    public stringProp: string,
+                    public numberProp: number,
+                    public booleanProp: boolean,
+                    public dateProp: Date
+                ) { }
+            }
+            @collection()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                ) { }
+            }
+            @collection({ timestamps: true, toObject: { virtuals: true } })
+            class UserActivity {
+                constructor(
+                    public name: string,
+                    public email: string,
+                ) { }
+            }
+            globalModel(Dummy)
+            globalModel(User)
+            globalModel(UserActivity)
+            class AnimalController { get() { return { id: 123 } } }
+            const mock = consoleLog.startMock()
+            const app = await fixture(AnimalController)
+                .set({mode: "debug"})
+                .set(new MongooseFacility())
+                .initialize()
+            await supertest(app.callback())
+                .get("/animal/get")
+                .expect(200, { id: 123 })
             expect(mock.mock.calls).toMatchSnapshot()
             consoleLog.clearMock()
         })

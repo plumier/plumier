@@ -28,6 +28,30 @@ Array [
 ]
 `;
 
+exports[`Mongoose Analyzer Should print analysis on global mode and facility 1`] = `
+Array [
+  Array [
+    "1. Dummy        -> Dummy        db.dummies
+{ timestamps: true }",
+  ],
+  Array [
+    "2. User         -> User         db.users",
+  ],
+  Array [
+    "3. UserActivity -> UserActivity db.useractivities
+{ timestamps: true, toObject: { virtuals: true } }",
+  ],
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.get() -> GET /animal/get",
+  ],
+  Array [],
+]
+`;
+
 exports[`Mongoose Schema Configuration Should able specify extra configuration from factory 1`] = `
 Object {
   "__v": 0,
