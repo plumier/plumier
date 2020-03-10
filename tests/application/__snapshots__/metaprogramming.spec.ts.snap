@@ -1,0 +1,721 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Metaprogramming Action Middleware Should able spread invocation object 1`] = `
+Array [
+  Array [
+    "AnimalController",
+  ],
+  Array [
+    "/animal/get?id=1234",
+  ],
+]
+`;
+
+exports[`Metaprogramming Action Middleware Should able to access metadata from action controller 1`] = `
+Array [
+  Array [
+    Metadata {
+      "access": undefined,
+      "action": Object {
+        "decorators": Array [],
+        "kind": "Method",
+        "name": "get",
+        "parameters": Array [
+          Object {
+            "decorators": Array [],
+            "kind": "Parameter",
+            "name": "id",
+            "properties": Object {},
+            "type": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "returnType": undefined,
+        "typeClassification": undefined,
+      },
+      "actionParams": ParameterMetadata {
+        "parameters": Array [
+          "1234",
+        ],
+        "routeInfo": Object {
+          "action": Object {
+            "decorators": Array [],
+            "kind": "Method",
+            "name": "get",
+            "parameters": Array [
+              Object {
+                "decorators": Array [],
+                "kind": "Parameter",
+                "name": "id",
+                "properties": Object {},
+                "type": undefined,
+                "typeClassification": undefined,
+              },
+            ],
+            "returnType": undefined,
+            "typeClassification": undefined,
+          },
+          "controller": Object {
+            "ctor": Object {
+              "kind": "Constructor",
+              "name": "constructor",
+              "parameters": Array [],
+            },
+            "decorators": Array [
+              Object {
+                "name": "Middleware",
+                "value": Array [
+                  ,
+                ],
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
+              },
+            ],
+            "kind": "Class",
+            "methods": Array [
+              Object {
+                "decorators": Array [],
+                "kind": "Method",
+                "name": "get",
+                "parameters": Array [
+                  Object {
+                    "decorators": Array [],
+                    "kind": "Parameter",
+                    "name": "id",
+                    "properties": Object {},
+                    "type": undefined,
+                    "typeClassification": undefined,
+                  },
+                ],
+                "returnType": undefined,
+                "typeClassification": undefined,
+              },
+            ],
+            "name": "AnimalController",
+            "properties": Array [],
+            "type": AnimalController,
+            "typeClassification": "Class",
+          },
+          "method": "get",
+          "url": "/animal/get",
+        },
+      },
+      "controller": Object {
+        "ctor": Object {
+          "kind": "Constructor",
+          "name": "constructor",
+          "parameters": Array [],
+        },
+        "decorators": Array [
+          Object {
+            "name": "Middleware",
+            "value": Array [
+              ,
+            ],
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
+          },
+        ],
+        "kind": "Class",
+        "methods": Array [
+          Object {
+            "decorators": Array [],
+            "kind": "Method",
+            "name": "get",
+            "parameters": Array [
+              Object {
+                "decorators": Array [],
+                "kind": "Parameter",
+                "name": "id",
+                "properties": Object {},
+                "type": undefined,
+                "typeClassification": undefined,
+              },
+            ],
+            "returnType": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "name": "AnimalController",
+        "properties": Array [],
+        "type": AnimalController,
+        "typeClassification": "Class",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Metaprogramming Action Middleware Should able to get all parameter names 1`] = `
+Array [
+  Array [
+    Array [
+      "id",
+      "name",
+    ],
+  ],
+]
+`;
+
+exports[`Metaprogramming Action Middleware Should able to get all parameter values 1`] = `
+Array [
+  Array [
+    Array [
+      "1234",
+      "mimi",
+    ],
+  ],
+]
+`;
+
+exports[`Metaprogramming Action Middleware Should able to get check if has parameter 1`] = `
+Array [
+  Array [
+    true,
+  ],
+  Array [
+    false,
+  ],
+]
+`;
+
+exports[`Metaprogramming Action Middleware Should able to get parameter by name 1`] = `
+Array [
+  Array [
+    "1234",
+  ],
+]
+`;
+
+exports[`Metaprogramming Action Middleware Should able to get parameter by number 1`] = `
+Array [
+  Array [
+    "1234",
+  ],
+]
+`;
+
+exports[`Metaprogramming Action Middleware Should return undefined if provided wrong parameter name 1`] = `
+Array [
+  Array [
+    undefined,
+  ],
+]
+`;
+
+exports[`Metaprogramming Custom Authorizer Should able to access metadata from custom authorizer 1`] = `
+Array [
+  Array [
+    Metadata {
+      "access": undefined,
+      "action": Object {
+        "decorators": Array [
+          Object {
+            "authorize": customAuthorizer,
+            "location": "Method",
+            "tag": "Custom",
+            "type": "plumier-meta:authorize",
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
+          },
+          Object {
+            "method": "get",
+            "name": "Route",
+            "url": undefined,
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
+          },
+        ],
+        "kind": "Method",
+        "name": "get",
+        "parameters": Array [
+          Object {
+            "decorators": Array [],
+            "kind": "Parameter",
+            "name": "id",
+            "properties": Object {},
+            "type": Number,
+            "typeClassification": "Primitive",
+          },
+        ],
+        "returnType": undefined,
+        "typeClassification": undefined,
+      },
+      "actionParams": ParameterMetadata {
+        "parameters": Array [
+          1234,
+        ],
+        "routeInfo": Object {
+          "action": Object {
+            "decorators": Array [
+              Object {
+                "authorize": customAuthorizer,
+                "location": "Method",
+                "tag": "Custom",
+                "type": "plumier-meta:authorize",
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
+              },
+              Object {
+                "method": "get",
+                "name": "Route",
+                "url": undefined,
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
+              },
+            ],
+            "kind": "Method",
+            "name": "get",
+            "parameters": Array [
+              Object {
+                "decorators": Array [],
+                "kind": "Parameter",
+                "name": "id",
+                "properties": Object {},
+                "type": Number,
+                "typeClassification": "Primitive",
+              },
+            ],
+            "returnType": undefined,
+            "typeClassification": undefined,
+          },
+          "controller": Object {
+            "ctor": Object {
+              "kind": "Constructor",
+              "name": "constructor",
+              "parameters": Array [],
+            },
+            "decorators": Array [],
+            "kind": "Class",
+            "methods": Array [
+              Object {
+                "decorators": Array [
+                  Object {
+                    "authorize": customAuthorizer,
+                    "location": "Method",
+                    "tag": "Custom",
+                    "type": "plumier-meta:authorize",
+                    Symbol(tinspector:decoratorOption): Object {
+                      "allowMultiple": true,
+                      "inherit": true,
+                    },
+                  },
+                  Object {
+                    "method": "get",
+                    "name": "Route",
+                    "url": undefined,
+                    Symbol(tinspector:decoratorOption): Object {
+                      "allowMultiple": true,
+                      "inherit": true,
+                    },
+                  },
+                ],
+                "kind": "Method",
+                "name": "get",
+                "parameters": Array [
+                  Object {
+                    "decorators": Array [],
+                    "kind": "Parameter",
+                    "name": "id",
+                    "properties": Object {},
+                    "type": Number,
+                    "typeClassification": "Primitive",
+                  },
+                ],
+                "returnType": undefined,
+                "typeClassification": undefined,
+              },
+            ],
+            "name": "AnimalController",
+            "properties": Array [],
+            "type": AnimalController,
+            "typeClassification": "Class",
+          },
+          "method": "get",
+          "url": "/animal/get",
+        },
+      },
+      "controller": Object {
+        "ctor": Object {
+          "kind": "Constructor",
+          "name": "constructor",
+          "parameters": Array [],
+        },
+        "decorators": Array [],
+        "kind": "Class",
+        "methods": Array [
+          Object {
+            "decorators": Array [
+              Object {
+                "authorize": customAuthorizer,
+                "location": "Method",
+                "tag": "Custom",
+                "type": "plumier-meta:authorize",
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
+              },
+              Object {
+                "method": "get",
+                "name": "Route",
+                "url": undefined,
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
+              },
+            ],
+            "kind": "Method",
+            "name": "get",
+            "parameters": Array [
+              Object {
+                "decorators": Array [],
+                "kind": "Parameter",
+                "name": "id",
+                "properties": Object {},
+                "type": Number,
+                "typeClassification": "Primitive",
+              },
+            ],
+            "returnType": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "name": "AnimalController",
+        "properties": Array [],
+        "type": AnimalController,
+        "typeClassification": "Class",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Metaprogramming Custom Validator Should able to access metadata from custom validator 1`] = `
+Array [
+  Array [
+    Metadata {
+      "access": undefined,
+      "action": Object {
+        "decorators": Array [
+          Object {
+            "method": "get",
+            "name": "Route",
+            "url": undefined,
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
+          },
+        ],
+        "kind": "Method",
+        "name": "get",
+        "parameters": Array [
+          Object {
+            "decorators": Array [
+              Object {
+                "type": "ValidatorDecorator",
+                "validator": greaterThan18,
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
+              },
+            ],
+            "kind": "Parameter",
+            "name": "id",
+            "properties": Object {},
+            "type": Number,
+            "typeClassification": "Primitive",
+          },
+        ],
+        "returnType": undefined,
+        "typeClassification": undefined,
+      },
+      "actionParams": ParameterMetadata {
+        "parameters": Array [
+          "1234",
+        ],
+        "routeInfo": Object {
+          "action": Object {
+            "decorators": Array [
+              Object {
+                "method": "get",
+                "name": "Route",
+                "url": undefined,
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
+              },
+            ],
+            "kind": "Method",
+            "name": "get",
+            "parameters": Array [
+              Object {
+                "decorators": Array [
+                  Object {
+                    "type": "ValidatorDecorator",
+                    "validator": greaterThan18,
+                    Symbol(tinspector:decoratorOption): Object {
+                      "allowMultiple": true,
+                      "inherit": true,
+                    },
+                  },
+                ],
+                "kind": "Parameter",
+                "name": "id",
+                "properties": Object {},
+                "type": Number,
+                "typeClassification": "Primitive",
+              },
+            ],
+            "returnType": undefined,
+            "typeClassification": undefined,
+          },
+          "controller": Object {
+            "ctor": Object {
+              "kind": "Constructor",
+              "name": "constructor",
+              "parameters": Array [],
+            },
+            "decorators": Array [],
+            "kind": "Class",
+            "methods": Array [
+              Object {
+                "decorators": Array [
+                  Object {
+                    "method": "get",
+                    "name": "Route",
+                    "url": undefined,
+                    Symbol(tinspector:decoratorOption): Object {
+                      "allowMultiple": true,
+                      "inherit": true,
+                    },
+                  },
+                ],
+                "kind": "Method",
+                "name": "get",
+                "parameters": Array [
+                  Object {
+                    "decorators": Array [
+                      Object {
+                        "type": "ValidatorDecorator",
+                        "validator": greaterThan18,
+                        Symbol(tinspector:decoratorOption): Object {
+                          "allowMultiple": true,
+                          "inherit": true,
+                        },
+                      },
+                    ],
+                    "kind": "Parameter",
+                    "name": "id",
+                    "properties": Object {},
+                    "type": Number,
+                    "typeClassification": "Primitive",
+                  },
+                ],
+                "returnType": undefined,
+                "typeClassification": undefined,
+              },
+            ],
+            "name": "AnimalController",
+            "properties": Array [],
+            "type": AnimalController,
+            "typeClassification": "Class",
+          },
+          "method": "get",
+          "url": "/animal/get",
+        },
+      },
+      "controller": Object {
+        "ctor": Object {
+          "kind": "Constructor",
+          "name": "constructor",
+          "parameters": Array [],
+        },
+        "decorators": Array [],
+        "kind": "Class",
+        "methods": Array [
+          Object {
+            "decorators": Array [
+              Object {
+                "method": "get",
+                "name": "Route",
+                "url": undefined,
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
+              },
+            ],
+            "kind": "Method",
+            "name": "get",
+            "parameters": Array [
+              Object {
+                "decorators": Array [
+                  Object {
+                    "type": "ValidatorDecorator",
+                    "validator": greaterThan18,
+                    Symbol(tinspector:decoratorOption): Object {
+                      "allowMultiple": true,
+                      "inherit": true,
+                    },
+                  },
+                ],
+                "kind": "Parameter",
+                "name": "id",
+                "properties": Object {},
+                "type": Number,
+                "typeClassification": "Primitive",
+              },
+            ],
+            "returnType": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "name": "AnimalController",
+        "properties": Array [],
+        "type": AnimalController,
+        "typeClassification": "Class",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Metaprogramming Global Middleware Should able to access metadata from global middleware 1`] = `
+Array [
+  Array [
+    Metadata {
+      "access": undefined,
+      "action": Object {
+        "decorators": Array [],
+        "kind": "Method",
+        "name": "get",
+        "parameters": Array [
+          Object {
+            "decorators": Array [],
+            "kind": "Parameter",
+            "name": "id",
+            "properties": Object {},
+            "type": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "returnType": undefined,
+        "typeClassification": undefined,
+      },
+      "actionParams": ParameterMetadata {
+        "parameters": undefined,
+        "routeInfo": Object {
+          "action": Object {
+            "decorators": Array [],
+            "kind": "Method",
+            "name": "get",
+            "parameters": Array [
+              Object {
+                "decorators": Array [],
+                "kind": "Parameter",
+                "name": "id",
+                "properties": Object {},
+                "type": undefined,
+                "typeClassification": undefined,
+              },
+            ],
+            "returnType": undefined,
+            "typeClassification": undefined,
+          },
+          "controller": Object {
+            "ctor": Object {
+              "kind": "Constructor",
+              "name": "constructor",
+              "parameters": Array [],
+            },
+            "decorators": Array [],
+            "kind": "Class",
+            "methods": Array [
+              Object {
+                "decorators": Array [],
+                "kind": "Method",
+                "name": "get",
+                "parameters": Array [
+                  Object {
+                    "decorators": Array [],
+                    "kind": "Parameter",
+                    "name": "id",
+                    "properties": Object {},
+                    "type": undefined,
+                    "typeClassification": undefined,
+                  },
+                ],
+                "returnType": undefined,
+                "typeClassification": undefined,
+              },
+            ],
+            "name": "AnimalController",
+            "properties": Array [],
+            "type": AnimalController,
+            "typeClassification": "Class",
+          },
+          "method": "get",
+          "url": "/animal/get",
+        },
+      },
+      "controller": Object {
+        "ctor": Object {
+          "kind": "Constructor",
+          "name": "constructor",
+          "parameters": Array [],
+        },
+        "decorators": Array [],
+        "kind": "Class",
+        "methods": Array [
+          Object {
+            "decorators": Array [],
+            "kind": "Method",
+            "name": "get",
+            "parameters": Array [
+              Object {
+                "decorators": Array [],
+                "kind": "Parameter",
+                "name": "id",
+                "properties": Object {},
+                "type": undefined,
+                "typeClassification": undefined,
+              },
+            ],
+            "returnType": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "name": "AnimalController",
+        "properties": Array [],
+        "type": AnimalController,
+        "typeClassification": "Class",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Metaprogramming Global Middleware Should return undefined if access virtual route 1`] = `
+Array [
+  Array [
+    undefined,
+  ],
+]
+`;

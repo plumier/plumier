@@ -56,10 +56,9 @@ Context can be accessed from inside controller using parameter binding `@bind.ct
 4. `ctx.cookies` the cookie
 5. `ctx.state.user` the current login user (JWT claim)
 6. `ctx.config` the Plumier application configuration
-7. `ctx.route` the current route information, contains metadata information of current controller or action handles the request. For request doesn't associated with controller the value will be `undefined`.
-8. `ctx.routes` array of all route information used by the route generator. 
+7. `ctx.routes` array of all route information used by the route generator. 
+8. `ctx.route` the current route information, contains metadata information of current controller or action handles the request. For request doesn't associated with controller the value will be `undefined`.
 9. `ctx.parameters` array of value that will be bound to controller's method. The value arranged in a correct order match with methods parameter. This property only available on controller/method middleware
-
 
 For a complete reference about Context and its properties can be found in [Koa documentation](https://github.com/koajs/koa/blob/master/docs/api/context.md). 
 
@@ -80,6 +79,39 @@ All the child process of the Middleware Pipeline is extensible by using custom e
 Note that the execution order of the child process of the middleware pipeline is important. The execution start from left to right so global middleware has more control than the other process. 
 
 The execution order also affect the `ctx.parameters` value which will only available after Parameter Binding process, so global middleware will not be able to access them. 
+
+## Metaprogramming
+One of Plumier key feature is it provide request metadata information for metaprogramming. This metadata information accessible from middleware, custom authorizer and custom validator.  
+
+
+```typescript
+const customMiddleware:CustomMiddlewareFunction = ({ metadata, proceed }) => {
+    if(metadata.controller.name === "AnimalController")
+        return proceed()
+    else 
+        throw new HttpStatusError(404)
+}
+```
+
+Request metadata is specialized class contains metadata of current request such as controller, action and action parameter useful for metaprogramming. It contains some properties: 
+
+1. `actionParams` current action parameters metadata, used to access parameter value, name etc.
+2. `controller` current controller object graph, contains information about controller name, decorators, methods, constructor etc. 
+3. `action` current action object graph, contains information about action name, parameters, decorators etc.
+
+This request metadata usually accessible from `metadata` property from `Invocation` class, `ValidatorContext` class, and `AuthorizerContext` class.
+
+```typescript
+// ValidatorContext
+const customValidation: CustomValidatorFunction = (val, { metadata }) => { 
+    // process metadata
+}
+
+// AuthorizerContext
+const customAuthorizer: CustomAuthorizerFunction = ({ metadata, ctx }) => {
+    // process metadata
+}
+```
 
 ## Custom Middleware
 There are two kind custom middlewares: Global middleware and Controller/method middleware. Technically both are the same but there are some distinction between them: 
@@ -237,13 +269,13 @@ Implementation of the custom authorizer is like below:
 
 ```typescript
 function shopUser(...roles: ("ShopAdmin" | "Staff")[]) {
-    return authorize.custom({ ctx, user }) => {
-        //find the shopId position on the metadata
-        const parIdx = ctx.route.action.parameters.findIndex(x => x.name === "shopId")
-        if (parIdx === -1) 
+    return authorize.custom({ ctx, user, metadata }) => {
+        //check if action/method handles the request has shopId parameter
+        //useful when this custom authorizer applied on wrong method
+        if (metadata.actionParams.hasName("shopId")) 
             throw new Error("Method handle the request doesn't have shopId parameter")
-        //use the index to get the shopId value
-        const shopId = ctx.parameters[parIdx]
+        //get the value assigned for shopId parameter
+        const shopId = metadata.actionParams.get("shopId")
         //get the current login userId
         const userId = ctx.state.user.userId
         //get the user role associated to the shop on the database
@@ -256,7 +288,7 @@ function shopUser(...roles: ("ShopAdmin" | "Staff")[]) {
 
 Above code showing that we create a custom authorizer by directly returned the `@authorize.custom()`, its mean the `shopUser` function is a custom decorator that can be applied on controller or method. 
 
-Above authorizer reads the metadata information of current request to check wether the method has parameter named `shopId` and extract the shopId value from the `ctx.parameters`. By using this trick this decorator can be reuse in any method has parameter named `shopId`.
+Above authorizer reads the metadata information of current request to check wether the method has parameter named `shopId` and extract the shopId value from the `metadata.actionParams`. By using this trick this decorator can be reuse in any method has parameter named `shopId`.
 
 Custom authorizer above can be applied easily on the previous controller.
 
@@ -279,3 +311,7 @@ class ShopsController {
     delete(shopId:number) { }
 }
 ```
+
+Code above showing that we applied our custom authorizer above `modify` and `delete` method. Note that both method has `shopId` parameter. 
+
+By applying authorizer above `modify` method (`PUT /shops/:shopId`) only accessible by `ShopAdmin` and `Staff` other users will not has access to the method. So does the `delete` method only accessible by `ShopAdmin`. 

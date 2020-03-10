@@ -2,7 +2,7 @@ import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import { HttpStatus } from "./http-status"
-import { ActionContext, ActionResult, Configuration, HttpStatusError, Invocation, Middleware, RouteInfo } from "./types"
+import { ActionContext, ActionResult, Configuration, HttpStatusError, Invocation, Middleware, RouteInfo, Metadata } from "./types"
 
 
 // --------------------------------------------------------------------- //
@@ -14,6 +14,7 @@ interface AuthorizationContext {
     role: string[]
     user: any
     ctx: ActionContext
+    metadata: Metadata
 }
 
 type AuthorizerFunction = (info: AuthorizationContext, location: "Class" | "Parameter" | "Method") => boolean | Promise<boolean>
@@ -159,7 +160,7 @@ async function checkAuthorize(ctx: ActionContext) {
         const { route, parameters, state, config } = ctx
         const decorator = getAuthorizeDecorators(route, config.globalAuthorizationDecorators)
         const userRoles = await getRole(state.user, config.roleField)
-        const info = <AuthorizationContext>{ role: userRoles, user: state.user, route, ctx }
+        const info = <AuthorizationContext>{ role: userRoles, user: state.user, route, ctx, metadata: new Metadata(ctx.parameters, ctx.route) }
         //check user access
         await checkUserAccessToRoute(decorator, info)
         //if ok check parameter access

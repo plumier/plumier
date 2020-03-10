@@ -37,11 +37,11 @@ export class AnimalController {
 `AuthorizationContext` members is like below
 
 ```typescript
-export interface AuthorizationContext {
-    role: string[]
-    user:any
-    ctx: Koa.Context
+interface AuthorizationContext {
     value?: any
+    role: string[]
+    user: any
+    ctx: ActionContext
 }
 ```
 

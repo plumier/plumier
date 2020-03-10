@@ -10,6 +10,7 @@ import {
     MiddlewareFunction,
     MiddlewareUtil,
     RouteInfo,
+    Metadata,
 } from "./types"
 import { ParameterBinderMiddleware } from './binder'
 import { ValidatorMiddleware } from "./validator"
@@ -29,37 +30,40 @@ interface Pipe {
 // ---------------------------- INVOCATIONS ---------------------------- //
 // --------------------------------------------------------------------- //
 
-class MiddlewareInvocation implements Invocation {
-    constructor(private middleware: string | symbol | MiddlewareFunction | Middleware, public ctx: Context, private next: Invocation) { }
-    proceed(): Promise<ActionResult> {
-        let middleware: Middleware
-        if (typeof this.middleware === "function") {
-            middleware = { execute: this.middleware }
+function createInvocation(ctx: Context, proceed: () => Promise<ActionResult>): Invocation {
+    return {
+        ctx, proceed,
+        get metadata() {
+            return ctx.route ? new Metadata(ctx.parameters, ctx.route) : undefined
         }
-        else if (hasKeyOf<Middleware>(this.middleware, "execute")) {
-            middleware = this.middleware
+    }
+}
+
+function middlewareInvocation(middleware: string | symbol | MiddlewareFunction | Middleware, ctx: Context, next: Invocation): Invocation {
+    return createInvocation(ctx, async () => {
+        let mdw: Middleware
+        if (typeof middleware === "function") {
+            mdw = { execute: middleware }
+        }
+        else if (hasKeyOf<Middleware>(middleware, "execute")) {
+            mdw = middleware
         }
         else {
-            middleware = this.ctx.config.dependencyResolver.resolve(this.middleware)
+            mdw = ctx.config.dependencyResolver.resolve(middleware)
         }
-        return middleware.execute(this.next)
-    }
+        return mdw.execute(next)
+    })
 }
 
-class NotFoundActionInvocation implements Invocation {
-    constructor(public ctx: Context) { }
-
-    proceed(): Promise<ActionResult> {
-        throw new HttpStatusError(404)
-    }
+function notFoundInvocation(ctx: Context): Invocation {
+    return createInvocation(ctx, async () => { throw new HttpStatusError(404) })
 }
 
-class ActionInvocation implements Invocation {
-    constructor(public ctx: ActionContext) { }
-    async proceed(): Promise<ActionResult> {
-        const controller: any = this.ctx.config.dependencyResolver.resolve(this.ctx.route.controller.type)
-        const result = await (<Function>controller[this.ctx.route.action.name]).apply(controller, this.ctx.parameters)
-        const status = this.ctx.config.responseStatus?.[this.ctx.route.method] ?? 200
+function actionInvocation(ctx: ActionContext): Invocation {
+    return createInvocation(ctx, async () => {
+        const controller: any = ctx.config.dependencyResolver.resolve(ctx.route.controller.type)
+        const result = await (<Function>controller[ctx.route.action.name]).apply(controller, ctx.parameters)
+        const status = ctx.config.responseStatus?.[ctx.route.method] ?? 200
         //if instance of action result, return immediately
         if (result && result.execute) {
             result.status = result.status ?? status
@@ -68,7 +72,7 @@ class ActionInvocation implements Invocation {
         else {
             return new ActionResult(result, status)
         }
-    }
+    })
 }
 
 // --------------------------------------------------------------------- //
@@ -78,19 +82,19 @@ class ActionInvocation implements Invocation {
 class MiddlewarePipe implements Pipe {
     constructor(private middleware: string | symbol | MiddlewareFunction | Middleware, private next: Pipe) { }
     execute(ctx: Context): Invocation<Context> {
-        return new MiddlewareInvocation(this.middleware, ctx, this.next.execute(ctx))
+        return middlewareInvocation(this.middleware, ctx, this.next.execute(ctx))
     }
 }
 
 class ActionPipe implements Pipe {
     execute(ctx: ActionContext): Invocation<Context> {
-        return new ActionInvocation(ctx)
+        return actionInvocation(ctx)
     }
 }
 
 class NotFoundPipe implements Pipe {
     execute(ctx: ActionContext): Invocation<Context> {
-        return new NotFoundActionInvocation(ctx)
+        return notFoundInvocation(ctx)
     }
 }
 

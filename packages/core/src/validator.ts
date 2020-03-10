@@ -13,6 +13,7 @@ import {
     ValidationError,
     ValidatorContext,
     ValidatorDecorator,
+    Metadata,
 } from "./types"
 
 
@@ -45,7 +46,7 @@ interface ValidationResult {
 // Furthermore async validation process doesn't need to do the traversal process because all the required data already provided
 
 const getName = (path: string) => path.indexOf(".") > -1 ? path.substring(path.lastIndexOf(".") + 1) : path
-const emptyObject = (obj:any) => Object.keys(obj).length === 0 && obj.constructor === Object
+const emptyObject = (obj: any) => Object.keys(obj).length === 0 && obj.constructor === Object
 
 //custom visitor extension to gather the CustomValidatorNode
 function customValidatorNodeVisitor(items: CustomValidatorNode[]) {
@@ -65,7 +66,7 @@ function customValidatorNodeVisitor(items: CustomValidatorNode[]) {
 
 async function validateNode(node: CustomValidatorNode, ctx: ActionContext): Promise<AsyncValidatorResult[]> {
     const name = getName(node.path)
-    const info: ValidatorContext = { ctx, name, parent: node.parent }
+    const info: ValidatorContext = { ctx, name, parent: node.parent, metadata: new Metadata(ctx.parameters, ctx.route) }
     if (node.value === undefined || node.value === null || emptyObject(node.value)) return []
     let validator: CustomValidator;
     if (typeof node.validator === "function")
