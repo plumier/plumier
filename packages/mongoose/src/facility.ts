@@ -3,6 +3,8 @@ import Mongoose from "mongoose"
 import { Result, VisitorInvocation } from "typedconverter"
 
 import { MongooseFacilityOption } from "./types"
+import { printAnalysis } from './analyzer'
+import { getAnalysis } from './generator'
 
 
 function safeToString(obj:any){
@@ -31,8 +33,9 @@ export class MongooseFacility extends DefaultFacility {
     }
 
     async initialize(app: Readonly<PlumierApplication>) {
+        if(app.config.mode === "debug")
+            printAnalysis(getAnalysis())
         app.set({ typeConverterVisitors: [relationToObjectIdVisitor] })
-        Mongoose.set("useUnifiedTopology", true)
         const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
         if (uri)
             await Mongoose.connect(uri, { useNewUrlParser: true })
