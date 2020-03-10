@@ -3,7 +3,7 @@ import { copyFile } from "fs"
 import { Server } from "http"
 import Koa, { Context } from "koa"
 import { extname, join } from "path"
-import { ClassReflection, decorateClass, MethodReflection } from "tinspector"
+import { ClassReflection, decorateClass, MethodReflection, PropertyReflection, ParameterReflection } from "tinspector"
 import { VisitorExtension } from "typedconverter"
 import { promisify } from "util"
 
@@ -95,10 +95,10 @@ export interface RouteInfo {
 }
 
 export interface VirtualRouteInfo {
-    className:string,
-    url:string,
-    method:HttpMethod,
-    access:string
+    className: string,
+    url: string,
+    method: HttpMethod,
+    access: string
 }
 
 
@@ -111,12 +111,12 @@ export type RouteAnalyzerFunction = (route: RouteInfo, allRoutes: RouteInfo[]) =
 
 export interface Facility {
     setup(app: Readonly<PlumierApplication>): void
-    initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[], vRoutes:VirtualRouteInfo[]): Promise<void>
+    initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[], vRoutes: VirtualRouteInfo[]): Promise<void>
 }
 
 export class DefaultFacility implements Facility {
     setup(app: Readonly<PlumierApplication>) { }
-    async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[], vRoutes:VirtualRouteInfo[]) { }
+    async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[], vRoutes: VirtualRouteInfo[]) { }
 }
 
 
@@ -126,7 +126,7 @@ export class DefaultFacility implements Facility {
 
 declare module "koa" {
     interface Context {
-        route?: Readonly<RouteInfo>,
+        route?: Readonly<RouteInfo>
         routes: RouteInfo[]
         config: Readonly<Configuration>
     }
@@ -151,10 +151,15 @@ export interface MiddlewareDecorator { name: "Middleware", value: (string | symb
 
 export interface Invocation<T = Context> {
     ctx: Readonly<T>
+    metadata?: Metadata
     proceed(): Promise<ActionResult>
 }
 
-export type MiddlewareFunction<T = Context> = (invocation: Readonly<Invocation<T>>) => Promise<ActionResult>
+export interface ActionInvocation extends Invocation<ActionContext> {
+    metadata: Metadata
+}
+
+export type MiddlewareFunction<T = Context> = (invocation: T extends ActionContext ? Readonly<ActionInvocation> : Readonly<Invocation>) => Promise<ActionResult>
 
 export interface Middleware<T = Context> {
     execute(invocation: Readonly<Invocation<T>>): Promise<ActionResult>
@@ -318,7 +323,8 @@ export interface ValidatorDecorator {
 export interface ValidatorContext {
     name: string,
     ctx: ActionContext,
-    parent?: { value: any, type: Class, decorators: any[] }
+    parent?: { value: any, type: Class, decorators: any[] },
+    metadata: Metadata
 }
 
 export interface AsyncValidatorResult {
@@ -465,6 +471,78 @@ export class ValidationError extends HttpStatusError {
     constructor(public issues: { path: string[], messages: string[] }[]) {
         super(HttpStatus.UnprocessableEntity, JSON.stringify(issues))
         Object.setPrototypeOf(this, ValidationError.prototype);
+    }
+}
+
+// --------------------------------------------------------------------- //
+// -------------------------------- META ------------------------------- //
+// --------------------------------------------------------------------- //
+
+export class ParameterMetadata {
+    constructor(private parameters: any[], private routeInfo: RouteInfo) { }
+
+    /**
+     * Get action parameter value by index
+     * @param index index of parameter
+     */
+    get(index: number): any
+
+    /**
+     * Get action parameter value by parameter name (case insensitive)
+     */
+    get(name: string): any
+    get(nameOrIndex: string | number) {
+        if (typeof nameOrIndex === "number") return this.parameters[nameOrIndex]
+        const idx = this.routeInfo.action.parameters.findIndex(x => x.name.toLowerCase() === nameOrIndex.toLowerCase())
+        if (idx === -1) return
+        return this.parameters[idx]
+    }
+
+    /**
+     * Get all parameter values
+     */
+    values() { return this.parameters }
+
+    /**
+     * Get all action's parameter names
+     */
+    names() { return this.routeInfo.action.parameters.map(x => x.name) }
+
+    /**
+     * Check if action has specified parameter (case insensitive)
+     * @param name name of parameter 
+     */
+    hasName(name: string) {
+        return !!this.routeInfo.action.parameters.find(x => x.name.toLowerCase() === name.toLowerCase())
+    }
+}
+
+export class Metadata {
+    /**
+     * Controller metadata object graph
+     */
+    controller: ClassReflection
+
+    /**
+     * Action metadata object graph
+     */
+    action: MethodReflection
+
+    /**
+     * Current action authorization access visible on route analysis, for example: Public, Authenticated, Admin, User etc
+     */
+    access?: string
+
+    /**
+     * Action's parameters metadata, contains access to parameter values, parameter names etc
+     */
+    actionParams: ParameterMetadata
+
+    constructor(params: any[], routeInfo: RouteInfo) {
+        this.controller = routeInfo.controller
+        this.action = routeInfo.action
+        this.access = routeInfo.access
+        this.actionParams = new ParameterMetadata(params, routeInfo)
     }
 }
 

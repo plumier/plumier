@@ -149,8 +149,8 @@ describe("Middleware", () => {
                 .expect(200, "The Body")
         })
 
-
         it("Should throw error if wrong id provided", async () => {
+            const fn = jest.fn()
             @middleware.use(x => {
                 return x.proceed()
             })
@@ -164,9 +164,11 @@ describe("Middleware", () => {
                 .use(returnError)
                 .use("ipsum")
                 .initialize()
+            app.on("error", e => fn(e))
             await Supertest(app.callback())
                 .get("/animal/get")
-                .expect(500, "PLUM1009: Object with id ipsum not found in Object registry")
+                .expect(500)
+            expect(fn.mock.calls).toMatchSnapshot()
         })
 
         it("Should execute middleware in proper order", async () => {
