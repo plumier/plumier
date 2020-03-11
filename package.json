@@ -13,10 +13,10 @@
 		"publish:canary": "lerna run compile && lerna publish prerelease --exact --canary --preid canary --force-publish --yes",
 		"publish:dev": "lerna run compile && lerna publish prerelease --exact --canary --preid rc1 --force-publish --yes",
 		"publish:prod": "yarn compile && lerna publish && yarn clean",
-		"benchmark": "ts-node -r tsconfig-paths/register benchmark/run",
+		"benchmark": "ts-node -r tsconfig-paths/register tests/manual/benchmark/run",
 		"doc:start": "cd website && yarn start",
 		"doc:build": "cd website && yarn build",
-		"social:start": "ts-node -r tsconfig-paths/register social-login-test/index.ts"
+		"social:start": "ts-node -r tsconfig-paths/register tests/manual/social-login-test/index.ts"
 	},
 	"author": "Ketut Sandiarsa",
 	"devDependencies": {
