@@ -25,36 +25,45 @@ interface Pipe {
     execute(ctx: Context): Invocation
 }
 
-
 // --------------------------------------------------------------------- //
 // ---------------------------- INVOCATIONS ---------------------------- //
 // --------------------------------------------------------------------- //
 
-function createInvocation(ctx: Context, proceed: () => Promise<ActionResult>): Invocation {
-    return {
-        ctx, proceed,
-        get metadata() {
-            return ctx.route ? new Metadata(ctx.parameters, ctx.route) : undefined
-        }
+abstract class DefaultInvocation implements Invocation {
+    constructor(public ctx: Readonly<Context>) { 
+        this.proceed = this.proceed.bind(this)
+    }
+    get metadata(): Metadata | undefined {
+        return this.ctx.route ? new Metadata(this.ctx.parameters, this.ctx.route) : undefined
+    }
+    abstract proceed(): Promise<ActionResult>
+}
+
+class MiddlewareInvocation extends DefaultInvocation {
+    constructor(private middleware: string | symbol | Middleware, ctx: Context, private next: Invocation) {
+        super(ctx)
+    }
+    proceed() {
+        const mdw = typeof this.middleware === "object" ? this.middleware : this.ctx.config.dependencyResolver.resolve(this.middleware)
+        return mdw.execute(this.next)
     }
 }
 
-function middlewareInvocation(middleware: string | symbol | Middleware, ctx: Context, next: Invocation): Invocation {
-    return createInvocation(ctx, () => {
-        const mdw = typeof middleware === "object" ? middleware : ctx.config.dependencyResolver.resolve(middleware)
-        return mdw.execute(next)
-    })
+class NotFoundInvocation extends DefaultInvocation {
+    constructor(ctx: Context) {
+        super(ctx)
+    }
+    proceed(): Promise<ActionResult> { throw new HttpStatusError(404) }
 }
 
-function notFoundInvocation(ctx: Context): Invocation {
-    return createInvocation(ctx, () => { throw new HttpStatusError(404) })
-}
-
-function actionInvocation(ctx: ActionContext): Invocation {
-    return createInvocation(ctx, async () => {
-        const controller: any = ctx.config.dependencyResolver.resolve(ctx.route.controller.type)
-        const result = await (<Function>controller[ctx.route.action.name]).apply(controller, ctx.parameters)
-        const status = ctx.config.responseStatus?.[ctx.route.method] ?? 200
+class ActionInvocation extends DefaultInvocation {
+    constructor(public ctx: ActionContext) {
+        super(ctx)
+    }
+    async proceed(): Promise<ActionResult> {
+        const controller: any = this.ctx.config.dependencyResolver.resolve(this.ctx.route.controller.type)
+        const result = await (<Function>controller[this.ctx.route.action.name]).apply(controller, this.ctx.parameters)
+        const status = this.ctx.config.responseStatus?.[this.ctx.route.method] ?? 200
         //if instance of action result, return immediately
         if (result && result.execute) {
             result.status = result.status ?? status
@@ -63,8 +72,9 @@ function actionInvocation(ctx: ActionContext): Invocation {
         else {
             return new ActionResult(result, status)
         }
-    })
+    }
 }
+
 
 // --------------------------------------------------------------------- //
 // ------------------------------- PIPES ------------------------------- //
@@ -76,19 +86,19 @@ class MiddlewarePipe implements Pipe {
         this.mdw = typeof middleware === "function" ? { execute: middleware } : middleware
     }
     execute(ctx: Context): Invocation<Context> {
-        return middlewareInvocation(this.mdw, ctx, this.next.execute(ctx))
+        return new MiddlewareInvocation(this.mdw, ctx, this.next.execute(ctx))
     }
 }
 
 class ActionPipe implements Pipe {
     execute(ctx: ActionContext): Invocation<Context> {
-        return actionInvocation(ctx)
+        return new ActionInvocation(ctx)
     }
 }
 
 class NotFoundPipe implements Pipe {
     execute(ctx: ActionContext): Invocation<Context> {
-        return notFoundInvocation(ctx)
+        return new NotFoundInvocation(ctx)
     }
 }
 
