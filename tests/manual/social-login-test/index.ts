@@ -12,7 +12,7 @@ import dotenv from "dotenv"
 import { join } from "path"
 import Plumier, { bind, response, route, WebApiFacility } from "plumier"
 
-dotenv.config()
+dotenv.config({ path: join(__dirname, "../../../.env")})
 
 export class AuthController {
     @route.get("/")
