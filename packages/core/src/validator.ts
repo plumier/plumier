@@ -66,7 +66,7 @@ function customValidatorNodeVisitor(items: CustomValidatorNode[]) {
 
 async function validateNode(node: CustomValidatorNode, ctx: ActionContext): Promise<AsyncValidatorResult[]> {
     const name = getName(node.path)
-    const info: ValidatorContext = { ctx, name, parent: node.parent, metadata: new Metadata(ctx.parameters, ctx.route) }
+    const info: ValidatorContext = { ctx, name, parent: node.parent, metadata: () => new Metadata(ctx.parameters, ctx.route) }
     if (node.value === undefined || node.value === null || emptyObject(node.value)) return []
     let validator: CustomValidator;
     if (typeof node.validator === "function")

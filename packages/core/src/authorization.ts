@@ -14,7 +14,7 @@ interface AuthorizationContext {
     role: string[]
     user: any
     ctx: ActionContext
-    metadata: Metadata
+    metadata: () => Metadata
 }
 
 type AuthorizerFunction = (info: AuthorizationContext, location: "Class" | "Parameter" | "Method") => boolean | Promise<boolean>
@@ -160,7 +160,7 @@ async function checkAuthorize(ctx: ActionContext) {
         const { route, parameters, state, config } = ctx
         const decorator = getAuthorizeDecorators(route, config.globalAuthorizationDecorators)
         const userRoles = await getRole(state.user, config.roleField)
-        const info = <AuthorizationContext>{ role: userRoles, user: state.user, route, ctx, metadata: new Metadata(ctx.parameters, ctx.route) }
+        const info = <AuthorizationContext>{ role: userRoles, user: state.user, route, ctx, metadata: () => new Metadata(ctx.parameters, ctx.route) }
         //check user access
         await checkUserAccessToRoute(decorator, info)
         //if ok check parameter access

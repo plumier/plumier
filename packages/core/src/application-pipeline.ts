@@ -33,7 +33,7 @@ interface Pipe {
 function createInvocation(ctx: Context, proceed: () => Promise<ActionResult>): Invocation {
     return {
         ctx, proceed,
-        get metadata() {
+        metadata: () => {
             return ctx.route ? new Metadata(ctx.parameters, ctx.route) : undefined
         }
     }

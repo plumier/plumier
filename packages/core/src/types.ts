@@ -151,12 +151,12 @@ export interface MiddlewareDecorator { name: "Middleware", value: (string | symb
 
 export interface Invocation<T = Context> {
     ctx: Readonly<T>
-    metadata?: Metadata
+    metadata: () => Metadata | undefined
     proceed(): Promise<ActionResult>
 }
 
 export interface ActionInvocation extends Invocation<ActionContext> {
-    metadata: Metadata
+    metadata: () => Metadata 
 }
 
 export type MiddlewareFunction<T = Context> = (invocation: T extends ActionContext ? Readonly<ActionInvocation> : Readonly<Invocation>) => Promise<ActionResult>
@@ -324,7 +324,7 @@ export interface ValidatorContext {
     name: string,
     ctx: ActionContext,
     parent?: { value: any, type: Class, decorators: any[] },
-    metadata: Metadata
+    metadata: () => Metadata
 }
 
 export interface AsyncValidatorResult {
