@@ -5,8 +5,6 @@ import supertest from "supertest"
 
 import { fixture } from "../helper"
 
-
-
 describe("Metaprogramming", () => {
     describe("Global Middleware", () => {
         it("Should able to access metadata from global middleware", async () => {
