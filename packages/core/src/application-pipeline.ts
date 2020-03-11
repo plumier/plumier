@@ -39,24 +39,15 @@ function createInvocation(ctx: Context, proceed: () => Promise<ActionResult>): I
     }
 }
 
-function middlewareInvocation(middleware: string | symbol | MiddlewareFunction | Middleware, ctx: Context, next: Invocation): Invocation {
-    return createInvocation(ctx, async () => {
-        let mdw: Middleware
-        if (typeof middleware === "function") {
-            mdw = { execute: middleware }
-        }
-        else if (hasKeyOf<Middleware>(middleware, "execute")) {
-            mdw = middleware
-        }
-        else {
-            mdw = ctx.config.dependencyResolver.resolve(middleware)
-        }
+function middlewareInvocation(middleware: string | symbol | Middleware, ctx: Context, next: Invocation): Invocation {
+    return createInvocation(ctx, () => {
+        const mdw = typeof middleware === "object" ? middleware : ctx.config.dependencyResolver.resolve(middleware)
         return mdw.execute(next)
     })
 }
 
 function notFoundInvocation(ctx: Context): Invocation {
-    return createInvocation(ctx, async () => { throw new HttpStatusError(404) })
+    return createInvocation(ctx, () => { throw new HttpStatusError(404) })
 }
 
 function actionInvocation(ctx: ActionContext): Invocation {
@@ -80,9 +71,12 @@ function actionInvocation(ctx: ActionContext): Invocation {
 // --------------------------------------------------------------------- //
 
 class MiddlewarePipe implements Pipe {
-    constructor(private middleware: string | symbol | MiddlewareFunction | Middleware, private next: Pipe) { }
+    private mdw: string | symbol | Middleware
+    constructor(middleware: string | symbol | MiddlewareFunction | Middleware, private next: Pipe) {
+        this.mdw = typeof middleware === "function" ? { execute: middleware } : middleware
+    }
     execute(ctx: Context): Invocation<Context> {
-        return middlewareInvocation(this.middleware, ctx, this.next.execute(ctx))
+        return middlewareInvocation(this.mdw, ctx, this.next.execute(ctx))
     }
 }
 
