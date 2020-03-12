@@ -14,6 +14,9 @@ import { HttpStatus } from "./http-status"
 
 const copyFileAsync = promisify(copyFile)
 
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
 // --------------------------------------------------------------------- //
 // --------------------------- ACTION RESULT --------------------------- //
 // --------------------------------------------------------------------- //
@@ -145,13 +148,15 @@ export interface ActionContext extends Context {
 // ----------------------------- MIDDLEWARE ---------------------------- //
 // --------------------------------------------------------------------- //
 
+export const MiddlewareTargetId = Symbol("middleware-target")
+
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>
 
-export interface MiddlewareDecorator { name: "Middleware", value: (string | symbol | MiddlewareFunction | Middleware)[] }
+export interface MiddlewareDecorator { name: "Middleware", value: (string | symbol | MiddlewareFunction | Middleware)[], target: "Controller" | "Action" }
 
 export interface Invocation<T = Context> {
     ctx: Readonly<T>
-    metadata?: Metadata
+    metadata?: GlobalMetadata
     proceed(): Promise<ActionResult>
 }
 
@@ -167,6 +172,8 @@ export interface Middleware<T = Context> {
 
 export type CustomMiddleware = Middleware
 export type CustomMiddlewareFunction = MiddlewareFunction
+export type MiddlewareType = string | symbol | MiddlewareFunction | Middleware
+export interface MiddlewareMeta<T = MiddlewareType> { middleware: T, target?: "Controller" | "Action" }
 
 export namespace MiddlewareUtil {
     export function fromKoa(middleware: KoaMiddleware): Middleware {
@@ -180,17 +187,17 @@ export namespace MiddlewareUtil {
             }
         }
     }
-    export function extractDecorators(route: RouteInfo): (string | symbol | MiddlewareFunction | Middleware)[] {
-        const middlewares: (string | symbol | MiddlewareFunction | Middleware)[] = []
+    export function extractDecorators(route: RouteInfo) {
+        const middlewares: MiddlewareMeta[] = []
         for (let i = route.controller.decorators.length; i--;) {
             const dec: MiddlewareDecorator = route.controller.decorators[i];
             if (dec.name === "Middleware")
-                middlewares.push(...dec.value)
+                middlewares.push(...dec.value.map(middleware => ({ middleware, target: dec.target })))
         }
         for (let i = route.action.decorators.length; i--;) {
             const dec: MiddlewareDecorator = route.action.decorators[i];
             if (dec.name === "Middleware")
-                middlewares.push(...dec.value)
+                middlewares.push(...dec.value.map(middleware => ({ middleware, target: dec.target })))
         }
         return middlewares
     }
@@ -478,8 +485,20 @@ export class ValidationError extends HttpStatusError {
 // -------------------------------- META ------------------------------- //
 // --------------------------------------------------------------------- //
 
+
+export type CurrentMetadataType = (PropertyReflection | ParameterReflection | MethodReflection | ClassReflection) & { parent?: Class }
+export interface Metadata {
+    controller: ClassReflection
+    action: MethodReflection
+    access?: string
+    actionParams: ParameterMetadata
+    current?: CurrentMetadataType
+}
+
+export type GlobalMetadata = Omit<Metadata, "actionParams">
+
 export class ParameterMetadata {
-    constructor(private parameters: any[], private routeInfo: RouteInfo) { }
+    constructor(private parameters: any[], private meta: ParameterReflection[]) { }
 
     /**
      * Get action parameter value by index
@@ -493,7 +512,7 @@ export class ParameterMetadata {
     get(name: string): any
     get(nameOrIndex: string | number) {
         if (typeof nameOrIndex === "number") return this.parameters[nameOrIndex]
-        const idx = this.routeInfo.action.parameters.findIndex(x => x.name.toLowerCase() === nameOrIndex.toLowerCase())
+        const idx = this.meta.findIndex(x => x.name.toLowerCase() === nameOrIndex.toLowerCase())
         if (idx === -1) return
         return this.parameters[idx]
     }
@@ -506,18 +525,18 @@ export class ParameterMetadata {
     /**
      * Get all action's parameter names
      */
-    names() { return this.routeInfo.action.parameters.map(x => x.name) }
+    names() { return this.meta.map(x => x.name) }
 
     /**
      * Check if action has specified parameter (case insensitive)
      * @param name name of parameter 
      */
     hasName(name: string) {
-        return !!this.routeInfo.action.parameters.find(x => x.name.toLowerCase() === name.toLowerCase())
+        return !!this.meta.find(x => x.name.toLowerCase() === name.toLowerCase())
     }
 }
 
-export class Metadata {
+export class MetadataImpl {
     /**
      * Controller metadata object graph
      */
@@ -529,22 +548,32 @@ export class Metadata {
     action: MethodReflection
 
     /**
-     * Current action authorization access visible on route analysis, for example: Public, Authenticated, Admin, User etc
+     * Current action authorization access visible on route analysis, for example Public, Authenticated, Admin, User etc
      */
     access?: string
 
     /**
-     * Action's parameters metadata, contains access to parameter values, parameter names etc
+     * Action's parameters metadata, contains access to parameter values, parameter names etc. 
+     * This property not available on Custom Parameter Binder and Global Middleware
      */
-    actionParams: ParameterMetadata
+    actionParams?: ParameterMetadata
 
-    constructor(params: any[], routeInfo: RouteInfo) {
+    /**
+     * Metadata information where target (Validator/Authorizer/Middleware) applied, can be a Property, Parameter, Method, Class. 
+     */
+    current?: CurrentMetadataType
+
+    constructor(params: any[] | undefined, routeInfo: RouteInfo, current?: CurrentMetadataType) {
         this.controller = routeInfo.controller
         this.action = routeInfo.action
         this.access = routeInfo.access
-        this.actionParams = new ParameterMetadata(params, routeInfo)
+        if (params)
+            this.actionParams = new ParameterMetadata(params, routeInfo.action.parameters)
+        this.current = current
     }
 }
+
+
 
 // --------------------------------------------------------------------- //
 // --------------------------- ERROR MESSAGE --------------------------- //

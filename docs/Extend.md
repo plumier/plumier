@@ -98,6 +98,7 @@ Request metadata is specialized class contains metadata of current request such 
 1. `actionParams` current action parameters metadata, used to access parameter value, name etc.
 2. `controller` current controller object graph, contains information about controller name, decorators, methods, constructor etc. 
 3. `action` current action object graph, contains information about action name, parameters, decorators etc.
+4. `current` metadata information where the appropriate decorator applied, can be Class metadata, Method metadata, Property metadata or Parameter metadata. For global middleware the `current` property will be `undefined`.
 
 This request metadata usually accessible from `metadata` property from `Invocation` class, `ValidatorContext` class, and `AuthorizerContext` class.
 

@@ -10,7 +10,8 @@ import {
     MiddlewareFunction,
     MiddlewareUtil,
     RouteInfo,
-    Metadata,
+    MetadataImpl,
+    MiddlewareMeta,
 } from "./types"
 import { ParameterBinderMiddleware } from './binder'
 import { ValidatorMiddleware } from "./validator"
@@ -30,21 +31,23 @@ interface Pipe {
 // --------------------------------------------------------------------- //
 
 abstract class DefaultInvocation implements Invocation {
-    constructor(public ctx: Readonly<Context>) { 
+    target?: "Controller" | "Action"
+    constructor(public ctx: Readonly<Context>) {
         this.proceed = this.proceed.bind(this)
     }
-    get metadata(): Metadata | undefined {
-        return this.ctx.route ? new Metadata(this.ctx.parameters, this.ctx.route) : undefined
+    get metadata(): MetadataImpl | undefined {
+        const current = this.target === "Controller" ? this.ctx.route!.controller : this.ctx.route?.action
+        return this.ctx.route ? new MetadataImpl(this.ctx.parameters, this.ctx.route, current) : undefined
     }
     abstract proceed(): Promise<ActionResult>
 }
 
 class MiddlewareInvocation extends DefaultInvocation {
-    constructor(private middleware: string | symbol | Middleware, ctx: Context, private next: Invocation) {
+    constructor(private meta: MiddlewareMeta<string | symbol | Middleware>, ctx: Context, private next: Invocation) {
         super(ctx)
     }
     proceed() {
-        const mdw = typeof this.middleware === "object" ? this.middleware : this.ctx.config.dependencyResolver.resolve(this.middleware)
+        const mdw = typeof this.meta.middleware === "object" ? this.meta.middleware : this.ctx.config.dependencyResolver.resolve(this.meta.middleware)
         return mdw.execute(this.next)
     }
 }
@@ -81,12 +84,15 @@ class ActionInvocation extends DefaultInvocation {
 // --------------------------------------------------------------------- //
 
 class MiddlewarePipe implements Pipe {
-    private mdw: string | symbol | Middleware
-    constructor(middleware: string | symbol | MiddlewareFunction | Middleware, private next: Pipe) {
-        this.mdw = typeof middleware === "function" ? { execute: middleware } : middleware
+    private mdw: MiddlewareMeta<string | symbol | Middleware>
+    constructor({ middleware, target }: MiddlewareMeta, private next: Pipe) {
+        this.mdw = typeof middleware === "function" ? { middleware: { execute: middleware }, target } : { middleware, target }
     }
     execute(ctx: Context): Invocation<Context> {
-        return new MiddlewareInvocation(this.mdw, ctx, this.next.execute(ctx))
+        //pass current middleware target into the invocation.. thus the metadata current will work properly
+        const next = this.next.execute(ctx) as DefaultInvocation
+        next.target = this.mdw.target
+        return new MiddlewareInvocation(this.mdw, ctx, next)
     }
 }
 
@@ -106,7 +112,7 @@ class NotFoundPipe implements Pipe {
 // ------------------------------ PIPELINE ----------------------------- //
 // --------------------------------------------------------------------- //
 
-function link(middlewares: (string | symbol | MiddlewareFunction | Middleware)[], topNode: Pipe) {
+function link(middlewares: MiddlewareMeta[], topNode: Pipe) {
     for (let i = middlewares.length; i--;) {
         topNode = new MiddlewarePipe(middlewares[i], topNode)
     }
@@ -114,16 +120,17 @@ function link(middlewares: (string | symbol | MiddlewareFunction | Middleware)[]
 }
 
 function createPipes(context: Context | ActionContext) {
+    const globalMdw = context.config.middlewares.map(m => ({ middleware: m }))
     if (hasKeyOf<ActionContext>(context, "route")) {
         const middlewares = [
             // 1. global middlewares
-            ...context.config.middlewares,
+            ...globalMdw,
             // 2. parameter binding
-            new ParameterBinderMiddleware(),
+            { middleware: new ParameterBinderMiddleware() },
             // 3. validation
-            new ValidatorMiddleware(),
+            { middleware: new ValidatorMiddleware() },
             // 4. authorization
-            new AuthorizerMiddleware(),
+            { middleware: new AuthorizerMiddleware() },
             // 5. action middlewares
             ...MiddlewareUtil.extractDecorators(context.route)
         ]
@@ -131,7 +138,7 @@ function createPipes(context: Context | ActionContext) {
     }
     else {
         // unhandled request
-        return link(context.config.middlewares, new NotFoundPipe())
+        return link(globalMdw, new NotFoundPipe())
     }
 }
 

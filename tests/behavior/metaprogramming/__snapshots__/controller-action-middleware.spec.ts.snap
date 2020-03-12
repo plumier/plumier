@@ -1,0 +1,286 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Action Middleware Should able spread invocation object 1`] = `
+Array [
+  Array [
+    "AnimalController",
+  ],
+  Array [
+    "/animal/get?id=1234",
+  ],
+]
+`;
+
+exports[`Action Middleware Should able to access metadata from action controller 1`] = `
+Array [
+  Array [
+    MetadataImpl {
+      "access": undefined,
+      "action": Object {
+        "decorators": Array [],
+        "kind": "Method",
+        "name": "get",
+        "parameters": Array [
+          Object {
+            "decorators": Array [],
+            "kind": "Parameter",
+            "name": "id",
+            "properties": Object {},
+            "type": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "returnType": undefined,
+        "typeClassification": undefined,
+      },
+      "actionParams": ParameterMetadata {
+        "meta": Array [
+          Object {
+            "decorators": Array [],
+            "kind": "Parameter",
+            "name": "id",
+            "properties": Object {},
+            "type": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "parameters": Array [
+          "1234",
+        ],
+      },
+      "controller": Object {
+        "ctor": Object {
+          "kind": "Constructor",
+          "name": "constructor",
+          "parameters": Array [],
+        },
+        "decorators": Array [
+          Object {
+            "name": "Middleware",
+            "target": "Controller",
+            "value": Array [
+              ,
+            ],
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
+          },
+        ],
+        "kind": "Class",
+        "methods": Array [
+          Object {
+            "decorators": Array [],
+            "kind": "Method",
+            "name": "get",
+            "parameters": Array [
+              Object {
+                "decorators": Array [],
+                "kind": "Parameter",
+                "name": "id",
+                "properties": Object {},
+                "type": undefined,
+                "typeClassification": undefined,
+              },
+            ],
+            "returnType": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "name": "AnimalController",
+        "properties": Array [],
+        "type": AnimalController,
+        "typeClassification": "Class",
+      },
+      "current": Object {
+        "ctor": Object {
+          "kind": "Constructor",
+          "name": "constructor",
+          "parameters": Array [],
+        },
+        "decorators": Array [
+          Object {
+            "name": "Middleware",
+            "target": "Controller",
+            "value": Array [
+              ,
+            ],
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
+          },
+        ],
+        "kind": "Class",
+        "methods": Array [
+          Object {
+            "decorators": Array [],
+            "kind": "Method",
+            "name": "get",
+            "parameters": Array [
+              Object {
+                "decorators": Array [],
+                "kind": "Parameter",
+                "name": "id",
+                "properties": Object {},
+                "type": undefined,
+                "typeClassification": undefined,
+              },
+            ],
+            "returnType": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "name": "AnimalController",
+        "properties": Array [],
+        "type": AnimalController,
+        "typeClassification": "Class",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Action Middleware Should able to get all parameter names 1`] = `
+Array [
+  Array [
+    Array [
+      "id",
+      "name",
+    ],
+  ],
+]
+`;
+
+exports[`Action Middleware Should able to get all parameter values 1`] = `
+Array [
+  Array [
+    Array [
+      "1234",
+      "mimi",
+    ],
+  ],
+]
+`;
+
+exports[`Action Middleware Should able to get check if has parameter 1`] = `
+Array [
+  Array [
+    true,
+  ],
+  Array [
+    false,
+  ],
+]
+`;
+
+exports[`Action Middleware Should able to get current metadata info when applied on controller 1`] = `
+Array [
+  Array [
+    Object {
+      "ctor": Object {
+        "kind": "Constructor",
+        "name": "constructor",
+        "parameters": Array [],
+      },
+      "decorators": Array [
+        Object {
+          "name": "Middleware",
+          "target": "Controller",
+          "value": Array [
+            ,
+          ],
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "inherit": true,
+          },
+        },
+      ],
+      "kind": "Class",
+      "methods": Array [
+        Object {
+          "decorators": Array [],
+          "kind": "Method",
+          "name": "get",
+          "parameters": Array [
+            Object {
+              "decorators": Array [],
+              "kind": "Parameter",
+              "name": "id",
+              "properties": Object {},
+              "type": undefined,
+              "typeClassification": undefined,
+            },
+          ],
+          "returnType": undefined,
+          "typeClassification": undefined,
+        },
+      ],
+      "name": "AnimalController",
+      "properties": Array [],
+      "type": AnimalController,
+      "typeClassification": "Class",
+    },
+  ],
+]
+`;
+
+exports[`Action Middleware Should able to get current metadata info when applied on method 1`] = `
+Array [
+  Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "name": "Middleware",
+          "target": "Action",
+          "value": Array [
+            ,
+          ],
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "inherit": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "get",
+      "parameters": Array [
+        Object {
+          "decorators": Array [],
+          "kind": "Parameter",
+          "name": "id",
+          "properties": Object {},
+          "type": String,
+          "typeClassification": "Primitive",
+        },
+      ],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+]
+`;
+
+exports[`Action Middleware Should able to get parameter by name 1`] = `
+Array [
+  Array [
+    "1234",
+  ],
+]
+`;
+
+exports[`Action Middleware Should able to get parameter by number 1`] = `
+Array [
+  Array [
+    "1234",
+  ],
+]
+`;
+
+exports[`Action Middleware Should return undefined if provided wrong parameter name 1`] = `
+Array [
+  Array [
+    undefined,
+  ],
+]
+`;
