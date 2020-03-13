@@ -1,0 +1,196 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Custom Validator Should able to access actionParams 1`] = `
+Array [
+  Array [
+    ParameterMetadata {
+      "meta": Array [
+        Object {
+          "decorators": Array [
+            Object {
+              "type": "ValidatorDecorator",
+              "validator": greaterThan18,
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": true,
+                "inherit": true,
+              },
+            },
+          ],
+          "kind": "Parameter",
+          "name": "id",
+          "properties": Object {},
+          "type": Number,
+          "typeClassification": "Primitive",
+        },
+      ],
+      "parameters": Array [
+        "1234",
+      ],
+    },
+  ],
+]
+`;
+
+exports[`Custom Validator Should able to access current from nested property 1`] = `
+Array [
+  Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "type": "ValidatorDecorator",
+          "validator": greaterThan18,
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "inherit": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "age",
+      "parent": Human,
+      "set": undefined,
+      "type": Number,
+    },
+  ],
+]
+`;
+
+exports[`Custom Validator Should able to access metadata from custom validator 1`] = `
+Array [
+  Array [
+    MetadataImpl {
+      "access": undefined,
+      "action": Object {
+        "decorators": Array [
+          Object {
+            "method": "get",
+            "name": "Route",
+            "url": undefined,
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
+          },
+        ],
+        "kind": "Method",
+        "name": "get",
+        "parameters": Array [
+          Object {
+            "decorators": Array [
+              Object {
+                "type": "ValidatorDecorator",
+                "validator": greaterThan18,
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
+              },
+            ],
+            "kind": "Parameter",
+            "name": "id",
+            "properties": Object {},
+            "type": Number,
+            "typeClassification": "Primitive",
+          },
+        ],
+        "returnType": undefined,
+        "typeClassification": undefined,
+      },
+      "actionParams": ParameterMetadata {
+        "meta": Array [
+          Object {
+            "decorators": Array [
+              Object {
+                "type": "ValidatorDecorator",
+                "validator": greaterThan18,
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
+              },
+            ],
+            "kind": "Parameter",
+            "name": "id",
+            "properties": Object {},
+            "type": Number,
+            "typeClassification": "Primitive",
+          },
+        ],
+        "parameters": Array [
+          "1234",
+        ],
+      },
+      "controller": Object {
+        "ctor": Object {
+          "kind": "Constructor",
+          "name": "constructor",
+          "parameters": Array [],
+        },
+        "decorators": Array [],
+        "kind": "Class",
+        "methods": Array [
+          Object {
+            "decorators": Array [
+              Object {
+                "method": "get",
+                "name": "Route",
+                "url": undefined,
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
+              },
+            ],
+            "kind": "Method",
+            "name": "get",
+            "parameters": Array [
+              Object {
+                "decorators": Array [
+                  Object {
+                    "type": "ValidatorDecorator",
+                    "validator": greaterThan18,
+                    Symbol(tinspector:decoratorOption): Object {
+                      "allowMultiple": true,
+                      "inherit": true,
+                    },
+                  },
+                ],
+                "kind": "Parameter",
+                "name": "id",
+                "properties": Object {},
+                "type": Number,
+                "typeClassification": "Primitive",
+              },
+            ],
+            "returnType": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "name": "AnimalController",
+        "properties": Array [],
+        "type": AnimalController,
+        "typeClassification": "Class",
+      },
+      "current": Object {
+        "decorators": Array [
+          Object {
+            "type": "ValidatorDecorator",
+            "validator": greaterThan18,
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
+          },
+        ],
+        "kind": "Parameter",
+        "name": "id",
+        "parent": AnimalController,
+        "properties": Object {},
+        "type": Number,
+        "typeClassification": "Primitive",
+      },
+    },
+  ],
+]
+`;

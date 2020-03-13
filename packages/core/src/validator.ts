@@ -13,6 +13,7 @@ import {
     ValidationError,
     ValidatorContext,
     ValidatorDecorator,
+    MetadataImpl,
     Metadata,
 } from "./types"
 
@@ -64,9 +65,19 @@ function customValidatorNodeVisitor(items: CustomValidatorNode[]) {
     }
 }
 
+function getCurrentMetadata(node: CustomValidatorNode, ctx: ActionContext) {
+    if (node.parent) {
+        return reflect(node.parent.type).properties.find(x => x.name === getName(node.path))!
+    }
+    else {
+        return ctx.route.action.parameters.find(x => x.name === getName(node.path))!
+    }
+}
+
 async function validateNode(node: CustomValidatorNode, ctx: ActionContext): Promise<AsyncValidatorResult[]> {
     const name = getName(node.path)
-    const info: ValidatorContext = { ctx, name, parent: node.parent, metadata: new Metadata(ctx.parameters, ctx.route) }
+    const currentMeta = { ...getCurrentMetadata(node, ctx), parent: node.parent?.type || ctx.route.controller.type }
+    const info: ValidatorContext = { ctx, name, parent: node.parent, metadata: new MetadataImpl(ctx.parameters, ctx.route, currentMeta) as Metadata }
     if (node.value === undefined || node.value === null || emptyObject(node.value)) return []
     let validator: CustomValidator;
     if (typeof node.validator === "function")

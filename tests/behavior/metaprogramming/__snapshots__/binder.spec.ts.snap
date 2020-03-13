@@ -1,0 +1,119 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Parameter Binder Should able to access metadata from custom parameter binder 1`] = `
+Array [
+  Array [
+    MetadataImpl {
+      "access": undefined,
+      "action": Object {
+        "decorators": Array [
+          Object {
+            "method": "get",
+            "name": "Route",
+            "url": undefined,
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
+          },
+        ],
+        "kind": "Method",
+        "name": "get",
+        "parameters": Array [
+          Object {
+            "decorators": Array [
+              Object {
+                "name": "custom",
+                "process": customBinder,
+                "type": "ParameterBinding",
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
+              },
+            ],
+            "kind": "Parameter",
+            "name": "id",
+            "properties": Object {},
+            "type": Number,
+            "typeClassification": "Primitive",
+          },
+        ],
+        "returnType": undefined,
+        "typeClassification": undefined,
+      },
+      "controller": Object {
+        "ctor": Object {
+          "kind": "Constructor",
+          "name": "constructor",
+          "parameters": Array [],
+        },
+        "decorators": Array [],
+        "kind": "Class",
+        "methods": Array [
+          Object {
+            "decorators": Array [
+              Object {
+                "method": "get",
+                "name": "Route",
+                "url": undefined,
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
+              },
+            ],
+            "kind": "Method",
+            "name": "get",
+            "parameters": Array [
+              Object {
+                "decorators": Array [
+                  Object {
+                    "name": "custom",
+                    "process": customBinder,
+                    "type": "ParameterBinding",
+                    Symbol(tinspector:decoratorOption): Object {
+                      "allowMultiple": true,
+                      "inherit": true,
+                    },
+                  },
+                ],
+                "kind": "Parameter",
+                "name": "id",
+                "properties": Object {},
+                "type": Number,
+                "typeClassification": "Primitive",
+              },
+            ],
+            "returnType": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "name": "AnimalController",
+        "properties": Array [],
+        "type": AnimalController,
+        "typeClassification": "Class",
+      },
+      "current": Object {
+        "decorators": Array [
+          Object {
+            "name": "custom",
+            "process": customBinder,
+            "type": "ParameterBinding",
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
+          },
+        ],
+        "kind": "Parameter",
+        "name": "id",
+        "parent": AnimalController,
+        "properties": Object {},
+        "type": Number,
+        "typeClassification": "Primitive",
+      },
+    },
+  ],
+]
+`;

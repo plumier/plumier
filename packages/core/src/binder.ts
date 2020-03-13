@@ -3,17 +3,17 @@ import { Context, Request } from "koa"
 import { ParameterReflection } from "tinspector"
 
 import { isCustomClass } from "./common"
-import { ActionContext, ActionResult, Invocation, Middleware } from "./types"
+import { ActionContext, ActionResult, Invocation, Middleware, MetadataImpl, GlobalMetadata } from "./types"
 
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- // 
 
-interface BindingDecorator { type: "ParameterBinding", process: CustomBinderFunction, name:string }
+interface BindingDecorator { type: "ParameterBinding", process: CustomBinderFunction, name: string }
 type RequestPart = keyof Request
 type HeaderPart = keyof IncomingHttpHeaders
-type CustomBinderFunction = (ctx:Context) => any
+type CustomBinderFunction = (ctx: Context, metadata: GlobalMetadata) => any
 
 declare module "koa" {
     interface Request {
@@ -42,14 +42,14 @@ function bindBody(ctx: Context, par: ParameterReflection): any {
 function bindDecorator(ctx: Context, par: ParameterReflection): any {
     const decorator: BindingDecorator = par.decorators.find((x: BindingDecorator) => x.type == "ParameterBinding")
     if (!decorator) return NEXT
-    return decorator.process(ctx)
+    return decorator.process(ctx, new MetadataImpl(undefined, ctx.route!, { ...par, parent: ctx.route!.controller.type }))
 }
 
 function bindByName(ctx: Context, par: ParameterReflection): any {
-    return getProperty(ctx.request.query, par.name) 
-    || getProperty(ctx.request.body, par.name) 
-    || getProperty((ctx.request as any).files, par.name)
-    || NEXT
+    return getProperty(ctx.request.query, par.name)
+        || getProperty(ctx.request.body, par.name)
+        || getProperty((ctx.request as any).files, par.name)
+        || NEXT
 }
 
 function chain(...binder: Binder[]) {
@@ -59,7 +59,7 @@ function chain(...binder: Binder[]) {
 
 const binderChain = chain(bindDecorator, bindByName, bindBody)
 
-function binder(ctx:ActionContext){
+function binder(ctx: ActionContext) {
     return ctx.route.action.parameters.map(x => binderChain(ctx, x))
 }
 

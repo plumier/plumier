@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Global Middleware Should able to access metadata from global middleware 1`] = `
+Array [
+  Array [
+    MetadataImpl {
+      "access": undefined,
+      "action": Object {
+        "decorators": Array [],
+        "kind": "Method",
+        "name": "get",
+        "parameters": Array [
+          Object {
+            "decorators": Array [],
+            "kind": "Parameter",
+            "name": "id",
+            "properties": Object {},
+            "type": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "returnType": undefined,
+        "typeClassification": undefined,
+      },
+      "controller": Object {
+        "ctor": Object {
+          "kind": "Constructor",
+          "name": "constructor",
+          "parameters": Array [],
+        },
+        "decorators": Array [],
+        "kind": "Class",
+        "methods": Array [
+          Object {
+            "decorators": Array [],
+            "kind": "Method",
+            "name": "get",
+            "parameters": Array [
+              Object {
+                "decorators": Array [],
+                "kind": "Parameter",
+                "name": "id",
+                "properties": Object {},
+                "type": undefined,
+                "typeClassification": undefined,
+              },
+            ],
+            "returnType": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "name": "AnimalController",
+        "properties": Array [],
+        "type": AnimalController,
+        "typeClassification": "Class",
+      },
+      "current": Object {
+        "decorators": Array [],
+        "kind": "Method",
+        "name": "get",
+        "parameters": Array [
+          Object {
+            "decorators": Array [],
+            "kind": "Parameter",
+            "name": "id",
+            "properties": Object {},
+            "type": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "returnType": undefined,
+        "typeClassification": undefined,
+      },
+    },
+  ],
+]
+`;
+
+exports[`Global Middleware Should return undefined if access virtual route 1`] = `
+Array [
+  Array [
+    undefined,
+  ],
+]
+`;

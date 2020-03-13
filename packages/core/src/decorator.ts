@@ -1,6 +1,7 @@
-import reflect, { decorate } from "tinspector"
+import reflect, { decorate, ClassReflection } from "tinspector"
 
 import { Middleware, MiddlewareDecorator, MiddlewareFunction, ActionContext } from "./types"
+import { Class } from './common'
 
 
 // --------------------------------------------------------------------- //
@@ -19,8 +20,14 @@ namespace middleware {
     export function use(id: string): (...args: any[]) => void
     export function use(id: symbol): (...args: any[]) => void
     export function use(...middleware: (string | symbol | MiddlewareFunction<ActionContext> | Middleware)[]) {
-        const value: MiddlewareDecorator = { name: "Middleware", value: middleware as any}
-        return decorate(value, ["Class", "Method"])
+        const value = { name: "Middleware", value: middleware as any }
+        return decorate((...args: any[]) => {
+            if (args.length === 1)
+                return <MiddlewareDecorator>{ ...value, target: "Controller" }
+            else {
+                return <MiddlewareDecorator>{ ...value, target: "Action" }
+            }
+        }, ["Class", "Method"])
     }
 }
 
