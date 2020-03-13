@@ -64,7 +64,7 @@ declare module "@plumier/core" {
 bind.file = () => {
     return decorateParameter(<BindingDecorator>{
         type: "ParameterBinding",
-        process: ctx => {
+        process: (ctx, meta) => {
             return ctx.config.fileParser!(ctx)
         }
     })

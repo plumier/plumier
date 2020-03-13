@@ -148,8 +148,6 @@ export interface ActionContext extends Context {
 // ----------------------------- MIDDLEWARE ---------------------------- //
 // --------------------------------------------------------------------- //
 
-export const MiddlewareTargetId = Symbol("middleware-target")
-
 export type KoaMiddleware = (ctx: Context, next: () => Promise<void>) => Promise<any>
 
 export interface MiddlewareDecorator { name: "Middleware", value: (string | symbol | MiddlewareFunction | Middleware)[], target: "Controller" | "Action" }
