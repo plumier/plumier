@@ -502,12 +502,12 @@ export class ParameterMetadata {
      * Get action parameter value by index
      * @param index index of parameter
      */
-    get(index: number): any
+    get<T = any>(index: number): T | undefined
 
     /**
      * Get action parameter value by parameter name (case insensitive)
      */
-    get(name: string): any
+    get<T = any>(name: string): T | undefined
     get(nameOrIndex: string | number) {
         if (typeof nameOrIndex === "number") return this.parameters[nameOrIndex]
         const idx = this.meta.findIndex(x => x.name.toLowerCase() === nameOrIndex.toLowerCase())

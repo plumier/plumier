@@ -24,7 +24,7 @@ describe("Action Middleware", () => {
     it("Should able to get parameter by name", async () => {
         const fn = jest.fn()
         @middleware.use(x => {
-            fn(x.metadata.actionParams.get("id"))
+            fn(x.metadata.actionParams.get<string>("id"))
             return x.proceed()
         })
         class AnimalController {
