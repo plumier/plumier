@@ -60,8 +60,8 @@ import { db } from "../../../model/db"
 import { Todo } from "../../../model/domain"
 
 function ownerOrAdmin() {
-    return authorize.custom(async ({role, ctx, user}) => {
-        const todo: Todo = await db("Todo").where({ id: ctx.parameters[0] }).first()
+    return authorize.custom(async ({role, metadata, user}) => {
+        const todo: Todo = await db("Todo").where({ id: metadata.actionParams.get("id") }).first()
         return role.some(x => x === "Admin") || todo && todo.userId === user.userId
     }, "Admin|Owner")
 }
@@ -109,8 +109,8 @@ Navigate to `users-controller.ts` file and add the following code before `UsersC
 import { authorize } from "plumier"
 
 function ownerOrAdmin() {
-    return authorize.custom(async ({ role, user, ctx }) => {
-        return role.some(x => x === "Admin") || ctx.parameters[0] === user.userId
+    return authorize.custom(async ({ role, user, metadata }) => {
+        return role.some(x => x === "Admin") || metadata.actionParams.get("id") === user.userId
     }, "Admin|Owner")
 }
 ```
