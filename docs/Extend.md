@@ -81,7 +81,7 @@ Note that the execution order of the child process of the middleware pipeline is
 The execution order also affect the `ctx.parameters` value which will only available after Parameter Binding process, so global middleware will not be able to access them. 
 
 ## Metaprogramming
-One of Plumier key feature is it provide request metadata information for metaprogramming. This metadata information accessible from middleware, custom authorizer and custom validator.  
+One of Plumier key feature is it provide metadata information for metaprogramming. This metadata information accessible from all custom extensions.  
 
 
 ```typescript
@@ -278,11 +278,11 @@ function shopUser(...roles: ("ShopAdmin" | "Staff")[]) {
         //get the value assigned for shopId parameter
         const shopId = metadata.actionParams.get("shopId")
         //get the current login userId
-        const userId = ctx.state.user.userId
+        const userId = user.userId
         //get the user role associated to the shop on the database
-        const shopUser = await ShopUserModel.find({ shopId, userId })
+        const shopUser = await ShopUserModel.findOne({ shopId, userId })
         //check if the role match any of the authorized roles
-        return roles.some(x => x === shopUser.role)
+        return roles.some(x => x === shopUser?.role)
     })
 }
 ```

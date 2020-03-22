@@ -25,6 +25,7 @@
       "refs/controller-invoker",
       "refs/testing-tips",
       "refs/static-analysis",
+      "refs/metaprogramming",
       "refs/application-lifecycle"
     ],
     "Extend": [
