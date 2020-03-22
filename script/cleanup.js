@@ -16,11 +16,7 @@ const list = [
     "tests/**/*.d.ts",
     "tests/**/*.d.ts.map",
 
-    "benchmark/**/*.js",
-    "benchmark/**/*.js.map",
-    "benchmark/**/*.d.ts",
-    "benchmark/**/*.d.ts.map",
-
-    "!benchmark/autocannon.d.ts"
+    "!tests/manual/benchmark/autocannon.d.ts",
+    "!tests/manual/social-login-test/www/script.js"
 ];
 del.sync(list);
