@@ -13,7 +13,10 @@ const dbUri = "mongodb://localhost:27017/test-data"
 describe("Mongoose", () => {
     beforeAll(async () => await mongoose.connect(dbUri))
     afterAll(async () => await mongoose.disconnect())
-    beforeEach(() => mongoose.models = {})
+    beforeEach(() => {
+        mongoose.models = {}
+        mongoose.connection.models = {}
+    })
 
     describe("Schema Generation", () => {
         it("Should work with primitive data", async () => {

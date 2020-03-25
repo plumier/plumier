@@ -27,6 +27,8 @@ Plumier Mongoose Helper uses tinspector to extract type metadata on runtime. Cur
 
 ### Using Property Field 
 ```typescript
+import {collection } from "@plumier/mongoose"
+
 @collection()
 class Dummy {
     @collection.property()
@@ -48,7 +50,7 @@ This is the common model declaration when you are familiar with Nest.js or other
 ### Using TypeScript Parameter Properties
 
 ```typescript 
-import reflect from "tinspector"
+import {collection } from "@plumier/mongoose"
 
 @collection()
 class Dummy {
@@ -360,3 +362,30 @@ POST /animal/save
 payload:
 {name: "Mimi", images: ["507f191e810c19729de860ea", "507f191e810c19729de239ca"]}
 ```
+
+## Dockify
+`Dockify<T>` is an advanced TypeScript type, it converts all Property of `T` inherit from `Object` into mongoose `Document`. For example: 
+
+```typescript 
+class Child {
+    constructor(
+        public name:string
+    ){}
+}
+
+class Parent {
+    constructor(
+        public child:Child
+    ){}
+}
+
+let parent:Dockify<Parent>
+// child property converted into `Child & mongoose.Document` 
+// thus its possible access document properties/method like below
+parent.child._id
+parent.child.save()
+```
+
+`Dockify<T>` provide syntax sugar to access ref (populate) properties, while keep entity definition POJO (clean from Mongoose specific types). 
+
+> **CAVEAT**: Dockify will treat all properties with custom type as Document, thus for non ref (populate) property will keep inferred as `Document`. 

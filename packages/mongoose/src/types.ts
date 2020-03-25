@@ -5,14 +5,21 @@ import { Class } from '@plumier/core'
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
+type Dockify<T> = {
+    [K in keyof T]: T[K] extends Date ? Date :
+    T[K] extends any[] ? DockifyArray<T[K]> :
+    T[K] extends object ? Dockify<T[K]> : T[K]
+} & mongoose.Document
+type DockifyArray<T> = T extends Date[] ? Date[] :
+    T extends object[] ? Dockify<T[number]>[] : T
 type GeneratorHook = (schema: mongoose.Schema) => void
 type NamedSchemaOption = SchemaOptions & { hook?: GeneratorHook, proxy?: boolean, name?: string }
 type MongooseFacilityOption = { uri?: string }
-type ModelFactory = <T>(type: new (...args: any) => T, opt?: string | GeneratorHook | NamedSchemaOption) => mongoose.Model<T & mongoose.Document, {}>
+type ModelFactory = <T>(type: new (...args: any) => T, opt?: string | GeneratorHook | NamedSchemaOption) => mongoose.Model<Dockify<T>, {}>
 interface ClassOptionDecorator { name: "ClassOption", option: NamedSchemaOption }
 interface PropertyOptionDecorator { name: "PropertyOption", option?: SchemaTypeOpts<any> }
 interface RefDecorator { name: "MongooseRef" }
-interface ModelStore { name: string, collectionName:string, definition: any, option: NamedSchemaOption }
+interface ModelStore { name: string, collectionName: string, definition: any, option: NamedSchemaOption }
 interface AnalysisResult { name: string, collection: string, option: string, definition: string }
 interface ModelGenerator {
     model: ModelFactory
@@ -27,5 +34,6 @@ export {
     ModelFactory, PropertyOptionDecorator, RefDecorator,
     ModelGenerator, MongooseFacilityOption, ClassOptionDecorator,
     ReferenceTypeNotRegistered, CanNotValidateNonProperty,
-    GeneratorHook, ModelStore, AnalysisResult
+    GeneratorHook, ModelStore, AnalysisResult, Dockify , DockifyArray 
 }
+

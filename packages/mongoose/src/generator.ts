@@ -1,20 +1,20 @@
-import { Class, isCustomClass, DefaultFacility, PlumierApplication } from "@plumier/core"
-import mongoose, { SchemaTypeOpts } from "mongoose"
-import reflect, { ClassReflection, decorateProperty, mergeDecorator, PropertyReflection } from "tinspector"
+import { Class, isCustomClass } from "@plumier/core"
+import mongoose from "mongoose"
+import reflect, { ClassReflection, PropertyReflection } from "tinspector"
 
+import { createAnalyzer } from "./analyzer"
 import {
+    ClassOptionDecorator,
+    Dockify,
+    GeneratorHook,
     ModelFactory,
     ModelGenerator,
+    ModelStore,
     NamedSchemaOption,
     PropertyOptionDecorator,
     RefDecorator,
     ReferenceTypeNotRegistered,
-    MongooseFacilityOption,
-    GeneratorHook,
-    ClassOptionDecorator,
-    ModelStore,
 } from "./types"
-import { createAnalyzer } from './analyzer'
 
 
 
@@ -64,7 +64,7 @@ function modelFactory(store: Map<Class, ModelStore>): ModelFactory {
     return <T>(type: new (...args: any) => T, opt?: string | GeneratorHook | NamedSchemaOption) => {
         const storedModel = store.get(type)
         if (storedModel) {
-            return mongoose.model<T & mongoose.Document>(storedModel.name)
+            return mongoose.model(storedModel.name)
         }
         else {
             const meta = reflect(type)
@@ -73,7 +73,7 @@ function modelFactory(store: Map<Class, ModelStore>): ModelFactory {
             const definition = getDefinition(type, store)
             const schema = new mongoose.Schema(definition, option)
             if(option.hook) option.hook(schema)
-            const mongooseModel = mongoose.model<T & mongoose.Document>(name, schema)
+            const mongooseModel = mongoose.model<Dockify<T>>(name, schema)
             store.set(type, { name, collectionName: mongooseModel.collection.name, definition, option })
             return mongooseModel
         }
