@@ -9,8 +9,15 @@
 ![npm (latest)](https://img.shields.io/npm/v/plumier/latest)
 
 
+
 ## Description
 Plumier Mongoose Helper help you easily map your domain model and create Mongoose model using it. Helper automatically generate schema definition based on your domain model metadata.
+
+- [x] Pure POJO, used conditional type to increase type inference on nested documents.
+- [x] Same schema configuration used by mongoose
+- [x] Inheritance
+- [x] Field properties or parameter properties declaration
+- [x] Model analysis
 
 ```typescript
 import { model, collection } from "@plumier/mongoose"
@@ -85,7 +92,7 @@ This is the common model declaration when you are familiar with Nest.js or other
 ### Using TypeScript Parameter Properties
 
 ```typescript 
-import reflect from "tinspector"
+import { collection } from "@plumier/mongoose"
 
 @collection()
 class Dummy {
@@ -183,6 +190,10 @@ class Dummy {
 
 const ChildModel = model(Child)
 const DummyModel = model(Dummy)
+
+const dummy = await DummyModel.findById("").populate("child")
+// child inferred as Document, so its possible to call Document related props/methods
+dummy.child.id
 ```
 
 ### Configure Properties 
@@ -282,3 +293,54 @@ const DummyModel = model(Dummy, schema => {
 // calling next model will not require passing the hook
 const SecondDummyModel = model(Dummy)
 ```
+
+### Model Analysis 
+Mongoose helper has built-in model analysis contains information about model, configuration and their appropriate MongoDB collection, use it like below
+
+
+```typescript
+import { model, collection, printAnalysis, getAnalysis } from "@plumier/mongoose"
+
+@collection()
+class Dummy {
+    constructor(
+        public stringProp: string,
+        public numberProp: number,
+        public booleanProp: boolean,
+        public dateProp: Date
+    ) { }
+}
+const DummyModel = model(Dummy)
+
+// somewhere when your code starting
+printAnalysis(getAnalysis())
+```
+
+## Dockify
+`Dockify<T>` is an advanced TypeScript type, it converts all Property of `T` inherit from `Object` into mongoose `Document`. For example: 
+
+```typescript 
+class Child {
+    constructor(
+        public name:string
+    ){}
+}
+
+class Parent {
+    constructor(
+        public child:Child
+    ){}
+}
+
+let parent:Dockify<Parent>
+// child property converted into `Child & mongoose.Document` 
+// thus its possible access document properties/method like below
+parent.child._id
+parent.child.save()
+```
+
+`Dockify<T>` provide syntax sugar to access ref (populate) properties, while keep entity definition POJO (clean from Mongoose specific types). 
+
+> **CAVEAT**: Dockify will treat all properties with custom type as Document, thus for non ref (populate) property will keep inferred as `Document`. 
+
+
