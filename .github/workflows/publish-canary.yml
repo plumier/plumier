@@ -27,4 +27,4 @@ jobs:
     - name: Publish
       run: |
         printf "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
-        yarn publish:dev
+        yarn publish:canary

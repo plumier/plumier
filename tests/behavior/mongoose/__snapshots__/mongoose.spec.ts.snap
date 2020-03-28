@@ -1,5 +1,88 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Dockify Should convert nested array ref type 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "child": Array [
+    Object {
+      "__v": 0,
+      "_id": "MONGODB UNIQUE ID",
+      "stringProp": "string",
+    },
+  ],
+}
+`;
+
+exports[`Dockify Should convert nested nested array ref type 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "child": Array [
+    Object {
+      "__v": 0,
+      "_id": "MONGODB UNIQUE ID",
+      "child": Array [
+        Object {
+          "__v": 0,
+          "_id": "MONGODB UNIQUE ID",
+          "stringProp": "string",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`Dockify Should convert nested nested ref type 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "child": Object {
+    "__v": 0,
+    "_id": "MONGODB UNIQUE ID",
+    "child": Object {
+      "__v": 0,
+      "_id": "MONGODB UNIQUE ID",
+      "stringProp": "string",
+    },
+  },
+}
+`;
+
+exports[`Dockify Should convert nested ref type 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "child": Object {
+    "__v": 0,
+    "_id": "MONGODB UNIQUE ID",
+    "stringProp": "string",
+  },
+}
+`;
+
+exports[`Dockify Should convert nested type 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "child": Object {
+    "stringProp": "string",
+  },
+}
+`;
+
+exports[`Dockify Should not convert primitive types 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "booleanProp": true,
+  "dateProp": 2020-2-2,
+  "numberProp": 123,
+  "stringProp": "string",
+}
+`;
+
 exports[`Mongoose Analyzer Should get simple analysis 1`] = `
 Array [
   Object {
