@@ -198,6 +198,9 @@ Object {
     ],
     "kind": "Method",
     "name": "save",
+    "owner": Array [
+      UserController,
+    ],
     "parameters": Array [
       Object {
         "decorators": Array [
@@ -210,9 +213,13 @@ Object {
             },
           },
         ],
+        "fields": Object {},
+        "index": 0,
         "kind": "Parameter",
         "name": "data",
-        "properties": Object {},
+        "owner": Array [
+          UserController,
+        ],
         "type": String,
         "typeClassification": "Primitive",
       },
@@ -243,6 +250,9 @@ Object {
         ],
         "kind": "Method",
         "name": "save",
+        "owner": Array [
+          UserController,
+        ],
         "parameters": Array [
           Object {
             "decorators": Array [
@@ -255,9 +265,13 @@ Object {
                 },
               },
             ],
+            "fields": Object {},
+            "index": 0,
             "kind": "Parameter",
             "name": "data",
-            "properties": Object {},
+            "owner": Array [
+              UserController,
+            ],
             "type": String,
             "typeClassification": "Primitive",
           },
@@ -267,7 +281,12 @@ Object {
       },
     ],
     "name": "UserController",
+    "owner": Array [
+      Object,
+      UserController,
+    ],
     "properties": Array [],
+    "super": Object,
     "type": UserController,
     "typeClassification": "Class",
   },
