@@ -9,12 +9,19 @@ Array [
         "decorators": Array [],
         "kind": "Method",
         "name": "get",
+        "owner": Array [
+          AnimalController,
+        ],
         "parameters": Array [
           Object {
             "decorators": Array [],
+            "fields": Object {},
+            "index": 0,
             "kind": "Parameter",
             "name": "id",
-            "properties": Object {},
+            "owner": Array [
+              AnimalController,
+            ],
             "type": undefined,
             "typeClassification": undefined,
           },
@@ -35,12 +42,19 @@ Array [
             "decorators": Array [],
             "kind": "Method",
             "name": "get",
+            "owner": Array [
+              AnimalController,
+            ],
             "parameters": Array [
               Object {
                 "decorators": Array [],
+                "fields": Object {},
+                "index": 0,
                 "kind": "Parameter",
                 "name": "id",
-                "properties": Object {},
+                "owner": Array [
+                  AnimalController,
+                ],
                 "type": undefined,
                 "typeClassification": undefined,
               },
@@ -50,7 +64,12 @@ Array [
           },
         ],
         "name": "AnimalController",
+        "owner": Array [
+          Object,
+          AnimalController,
+        ],
         "properties": Array [],
+        "super": Object,
         "type": AnimalController,
         "typeClassification": "Class",
       },
@@ -58,12 +77,19 @@ Array [
         "decorators": Array [],
         "kind": "Method",
         "name": "get",
+        "owner": Array [
+          AnimalController,
+        ],
         "parameters": Array [
           Object {
             "decorators": Array [],
+            "fields": Object {},
+            "index": 0,
             "kind": "Parameter",
             "name": "id",
-            "properties": Object {},
+            "owner": Array [
+              AnimalController,
+            ],
             "type": undefined,
             "typeClassification": undefined,
           },

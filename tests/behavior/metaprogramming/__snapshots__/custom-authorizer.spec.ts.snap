@@ -7,9 +7,13 @@ Array [
       "meta": Array [
         Object {
           "decorators": Array [],
+          "fields": Object {},
+          "index": 0,
           "kind": "Parameter",
           "name": "id",
-          "properties": Object {},
+          "owner": Array [
+            AnimalController,
+          ],
           "type": Number,
           "typeClassification": "Primitive",
         },
@@ -59,12 +63,19 @@ Array [
           ],
           "kind": "Method",
           "name": "get",
+          "owner": Array [
+            AnimalController,
+          ],
           "parameters": Array [
             Object {
               "decorators": Array [],
+              "fields": Object {},
+              "index": 0,
               "kind": "Parameter",
               "name": "id",
-              "properties": Object {},
+              "owner": Array [
+                AnimalController,
+              ],
               "type": Number,
               "typeClassification": "Primitive",
             },
@@ -74,7 +85,12 @@ Array [
         },
       ],
       "name": "AnimalController",
+      "owner": Array [
+        Object,
+        AnimalController,
+      ],
       "properties": Array [],
+      "super": Object,
       "type": AnimalController,
       "typeClassification": "Class",
     },
@@ -109,12 +125,19 @@ Array [
       ],
       "kind": "Method",
       "name": "get",
+      "owner": Array [
+        AnimalController,
+      ],
       "parameters": Array [
         Object {
           "decorators": Array [],
+          "fields": Object {},
+          "index": 0,
           "kind": "Parameter",
           "name": "id",
-          "properties": Object {},
+          "owner": Array [
+            AnimalController,
+          ],
           "type": Number,
           "typeClassification": "Primitive",
         },
@@ -143,10 +166,14 @@ Array [
           },
         },
       ],
+      "fields": Object {},
+      "index": 0,
       "kind": "Parameter",
       "name": "id",
+      "owner": Array [
+        AnimalController,
+      ],
       "parent": AnimalController,
-      "properties": Object {},
       "type": Number,
       "typeClassification": "Primitive",
     },
@@ -168,14 +195,24 @@ Array [
             "allowMultiple": true,
             "inherit": true,
           },
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "inherit": true,
+          },
         },
       ],
       "get": undefined,
+      "index": 0,
+      "isParameter": true,
       "kind": "Property",
       "name": "name",
+      "owner": Array [
+        Animal,
+      ],
       "parent": Animal,
       "set": undefined,
       "type": String,
+      "typeClassification": "Primitive",
     },
   ],
 ]
@@ -210,12 +247,19 @@ Array [
         ],
         "kind": "Method",
         "name": "get",
+        "owner": Array [
+          AnimalController,
+        ],
         "parameters": Array [
           Object {
             "decorators": Array [],
+            "fields": Object {},
+            "index": 0,
             "kind": "Parameter",
             "name": "id",
-            "properties": Object {},
+            "owner": Array [
+              AnimalController,
+            ],
             "type": Number,
             "typeClassification": "Primitive",
           },
@@ -227,9 +271,13 @@ Array [
         "meta": Array [
           Object {
             "decorators": Array [],
+            "fields": Object {},
+            "index": 0,
             "kind": "Parameter",
             "name": "id",
-            "properties": Object {},
+            "owner": Array [
+              AnimalController,
+            ],
             "type": Number,
             "typeClassification": "Primitive",
           },
@@ -271,12 +319,19 @@ Array [
             ],
             "kind": "Method",
             "name": "get",
+            "owner": Array [
+              AnimalController,
+            ],
             "parameters": Array [
               Object {
                 "decorators": Array [],
+                "fields": Object {},
+                "index": 0,
                 "kind": "Parameter",
                 "name": "id",
-                "properties": Object {},
+                "owner": Array [
+                  AnimalController,
+                ],
                 "type": Number,
                 "typeClassification": "Primitive",
               },
@@ -286,7 +341,12 @@ Array [
           },
         ],
         "name": "AnimalController",
+        "owner": Array [
+          Object,
+          AnimalController,
+        ],
         "properties": Array [],
+        "super": Object,
         "type": AnimalController,
         "typeClassification": "Class",
       },
@@ -314,12 +374,19 @@ Array [
         ],
         "kind": "Method",
         "name": "get",
+        "owner": Array [
+          AnimalController,
+        ],
         "parameters": Array [
           Object {
             "decorators": Array [],
+            "fields": Object {},
+            "index": 0,
             "kind": "Parameter",
             "name": "id",
-            "properties": Object {},
+            "owner": Array [
+              AnimalController,
+            ],
             "type": Number,
             "typeClassification": "Primitive",
           },
