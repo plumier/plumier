@@ -6,7 +6,7 @@ import supertest from "supertest"
 import reflect from "tinspector"
 import { fixture } from "../helper"
 
-
+const timeout = 10000;
 mongoose.set("useNewUrlParser", true)
 mongoose.set("useUnifiedTopology", true)
 
@@ -301,7 +301,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should able to use @schema.property() as noop decorator", async () => {
             const { model } = generator()
@@ -315,7 +315,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should able to specify default value", async () => {
             const { model } = generator()
@@ -334,7 +334,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should able to specify multiple configuration decorators", async () => {
             const { model } = generator()
@@ -351,7 +351,7 @@ describe("Mongoose", () => {
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
 
-        })
+        }, timeout)
 
         it("Should able to specify default value on base class", async () => {
             const { model } = generator()
@@ -373,7 +373,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should able specify extra configuration from factory", async () => {
             const { model } = generator()
@@ -390,7 +390,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should able to enable timestamps using decorator", async () => {
             const { model } = generator()
@@ -406,7 +406,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should able to enable timestamps using decorator from base class", async () => {
             const { model } = generator()
@@ -427,7 +427,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should able to override timestamps decorator from factory", async () => {
             const { model } = generator()
@@ -443,7 +443,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should able to hook schema generation", async () => {
             const fn = jest.fn()
@@ -463,7 +463,7 @@ describe("Mongoose", () => {
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
             expect(fn).toBeCalled()
-        })
+        }, timeout)
     })
 
     describe("Analyzer", () => {
@@ -480,7 +480,7 @@ describe("Mongoose", () => {
             }
             model(Dummy)
             expect(getAnalysis()).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should print analysis", async () => {
             const { model, getAnalysis } = generator()
@@ -514,7 +514,7 @@ describe("Mongoose", () => {
             printAnalysis(getAnalysis())
             expect(mock.mock.calls).toMatchSnapshot()
             consoleLog.clearMock()
-        })
+        }, timeout)
 
         it("Should print analysis on global mode and facility", async () => {
             @collection({ timestamps: true })
@@ -554,7 +554,7 @@ describe("Mongoose", () => {
                 .expect(200, { id: 123 })
             expect(mock.mock.calls).toMatchSnapshot()
             consoleLog.clearMock()
-        })
+        }, timeout)
     })
 })
 
@@ -586,7 +586,7 @@ describe("Dockify", () => {
             dateProp: new Date(Date.UTC(2020, 2, 2))
         })
         expect(result).toMatchSnapshot()
-    })
+    }, timeout)
 
     it("Should convert nested type", async () => {
         const { model } = generator()
@@ -610,7 +610,7 @@ describe("Dockify", () => {
         const result = await DummyModel.findById(dummy._id)
         expect(result!.child.id).toBeUndefined()
         expect(result).toMatchSnapshot()
-    })
+    }, timeout)
 
     it("Should convert nested ref type", async () => {
         const { model } = generator()
@@ -637,7 +637,7 @@ describe("Dockify", () => {
         const result = await DummyModel.findById(dummy._id).populate("child")
         expect(result!.child.id).toBe(child._id.toString())
         expect(result).toMatchSnapshot()
-    })
+    }, timeout)
 
     it("Should convert nested nested ref type", async () => {
         const { model } = generator()
@@ -677,7 +677,7 @@ describe("Dockify", () => {
         expect(result!.child.id).toBe(child._id.toString())
         expect(result!.child.child.id).toBe(grandChild._id.toString())
         expect(result).toMatchSnapshot()
-    })
+    }, timeout)
 
     it("Should convert nested array ref type", async () => {
         const { model } = generator()
@@ -704,7 +704,7 @@ describe("Dockify", () => {
         const result = await DummyModel.findById(dummy._id).populate("child")
         expect(result!.child[0].id).toBe(child._id.toString())
         expect(result).toMatchSnapshot()
-    })
+    }, timeout)
 
     it("Should convert nested nested array ref type", async () => {
         const { model } = generator()
@@ -744,7 +744,7 @@ describe("Dockify", () => {
         expect(result!.child[0].id).toBe(child._id.toString())
         expect(result!.child[0].child[0].id).toBe(grandChild._id.toString())
         expect(result).toMatchSnapshot()
-    })
+    }, timeout)
 })
 
 
@@ -800,7 +800,7 @@ describe("Facility", () => {
                 .populate("images")
             expect(result!.images[0].name).toBe("Image1.jpg")
             expect(result!.images[1].name).toBe("Image2.jpg")
-        })
+        }, timeout)
     
         it("Should work properly on nested object", async () => {
             @collection()
@@ -836,7 +836,7 @@ describe("Facility", () => {
             const result = await AnimalModel.findById(response.body)
                 .populate("image")
             expect(result!.image.name).toBe("Image1.jpg")
-        })
+        }, timeout)
     
         it("Should not convert non relational data", async () => {
             @collection()
@@ -859,7 +859,7 @@ describe("Facility", () => {
                 .get("/animal/" + mongoose.Types.ObjectId())
                 .expect(200)
             expect(fn.mock.calls[0][0]).toBe("string")
-        })
+        }, timeout)
     })
     
     describe("Default MongoDB Uri", () => {
@@ -879,7 +879,7 @@ describe("Facility", () => {
                 .initialize()
             expect(mongoose.connect).not.toBeCalled()
             mongoose.connect = connect
-        })
+        }, timeout)
     
         it("Should check for PLUM_MONGODB_URI environment variable", async () => {
             process.env.PLUM_MONGODB_URI = "mongodb://localhost:27017/lorem"
@@ -888,7 +888,7 @@ describe("Facility", () => {
                 .initialize()
             expect(mongoose.connection.readyState).toBe(1)
             expect(mongoose.connection.db.databaseName).toBe("lorem")
-        })
+        }, timeout)
     
     })
 })

@@ -1,8 +1,0 @@
-test
-src
-.npmignore
-tsconfig.json
-package-lock.json
-tsconfig.build.json
-yarn-error.log
-yarn.lock
