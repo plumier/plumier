@@ -1,8 +1,8 @@
 # Plumier
 Delightful Node.js Rest Framework
 
-[![Build Status](https://travis-ci.org/plumier/plumier.svg?branch=master)](https://travis-ci.org/plumier/plumier)
-[![Build status](https://ci.appveyor.com/api/projects/status/6carp7h4q50v4pj6?svg=true)](https://ci.appveyor.com/project/ktutnik/plumier-isghw)
+[![Build Status](https://github.com/plumier/plumier/workflows/ubuntu/badge.svg)](https://github.com/plumier/plumier/actions?query=workflow%3Aubuntu)
+[![Build status](https://github.com/plumier/plumier/workflows/windows/badge.svg)](https://github.com/plumier/plumier/actions?query=workflow%3Awindows)
 [![Coverage Status](https://coveralls.io/repos/github/plumier/plumier/badge.svg?branch=master)](https://coveralls.io/github/plumier/plumier?branch=master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/plumier/plumier.svg)](https://greenkeeper.io/)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)

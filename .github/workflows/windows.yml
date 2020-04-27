@@ -1,19 +1,20 @@
-name: ubuntu
+name: windows
 
 on: [push, pull_request]
 
 jobs:
   node:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     strategy:
       matrix:
         node-version: [10.x, 12.x, 13.x]
-    services:
-      mongodb:
-        image: mongo:3.4.23
-        ports:
-          - 27017:27017
+
     steps:
+    - name: Start MongoDB
+      run: |
+        choco install mongodb --version=4.2.3
+        mkdir C:\data\db
+        "C:\Program Files\MongoDB\Server\4.2\bin\mongod.exe"
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
@@ -27,7 +28,3 @@ jobs:
       run: yarn test
       env: 
         CI: true
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}

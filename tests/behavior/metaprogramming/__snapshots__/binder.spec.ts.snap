@@ -19,6 +19,9 @@ Array [
         ],
         "kind": "Method",
         "name": "get",
+        "owner": Array [
+          AnimalController,
+        ],
         "parameters": Array [
           Object {
             "decorators": Array [
@@ -32,9 +35,13 @@ Array [
                 },
               },
             ],
+            "fields": Object {},
+            "index": 0,
             "kind": "Parameter",
             "name": "id",
-            "properties": Object {},
+            "owner": Array [
+              AnimalController,
+            ],
             "type": Number,
             "typeClassification": "Primitive",
           },
@@ -65,6 +72,9 @@ Array [
             ],
             "kind": "Method",
             "name": "get",
+            "owner": Array [
+              AnimalController,
+            ],
             "parameters": Array [
               Object {
                 "decorators": Array [
@@ -78,9 +88,13 @@ Array [
                     },
                   },
                 ],
+                "fields": Object {},
+                "index": 0,
                 "kind": "Parameter",
                 "name": "id",
-                "properties": Object {},
+                "owner": Array [
+                  AnimalController,
+                ],
                 "type": Number,
                 "typeClassification": "Primitive",
               },
@@ -90,7 +104,12 @@ Array [
           },
         ],
         "name": "AnimalController",
+        "owner": Array [
+          Object,
+          AnimalController,
+        ],
         "properties": Array [],
+        "super": Object,
         "type": AnimalController,
         "typeClassification": "Class",
       },
@@ -106,10 +125,14 @@ Array [
             },
           },
         ],
+        "fields": Object {},
+        "index": 0,
         "kind": "Parameter",
         "name": "id",
+        "owner": Array [
+          AnimalController,
+        ],
         "parent": AnimalController,
-        "properties": Object {},
         "type": Number,
         "typeClassification": "Primitive",
       },
