@@ -5,6 +5,7 @@ import { fixture } from "../helper"
 import supertest = require("supertest")
 import { decorate } from "tinspector"
 
+const timeout = 10000;
 async function setup<T extends object>({ controller, domain, initUser, testUser, method }: { controller: Class; domain: Class; initUser?: T; testUser: T; method?: HttpMethod }) {
     const httpMethod = method || "post"
     const koa = await fixture(controller)
@@ -47,7 +48,7 @@ describe("unique validator", () => {
         const res = await setup({ controller: UserController, domain: User, initUser: user, testUser: user })
         expect(res.status).toBe(422)
         expect(res.body).toEqual({ status: 422, message: [{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }] })
-    })
+    }, timeout)
 
     it("Should return invalid if data already exist", async () => {
         @collection()
@@ -70,7 +71,7 @@ describe("unique validator", () => {
         const res = await setup({ controller: UserController, domain: User, initUser: user, testUser: user })
         expect(res.status).toBe(422)
         expect(res.body).toEqual({ status: 422, message: [{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }] })
-    })
+    }, timeout)
 
     it("Should check data with case insensitive", async () => {
         @collection()
@@ -92,7 +93,7 @@ describe("unique validator", () => {
         })
         expect(res.status).toBe(422)
         expect(res.body).toEqual({ status: 422, message: [{ messages: ["KETUT@gmail.com already exists"], path: ["user", "email"] }] })
-    })
+    }, timeout)
 
     it("Should return valid if data not exist", async () => {
         @collection()
@@ -112,7 +113,7 @@ describe("unique validator", () => {
             testUser: { name: "Ketut", email: "ketut@gmail.com" }
         })
         expect(res.status).toBe(200)
-    })
+    }, timeout)
 
     it("Should return valid if data not exist but other data exists", async () => {
         @collection()
@@ -133,7 +134,7 @@ describe("unique validator", () => {
             testUser: { name: "Ketut", email: "m.ketut@gmail.com" }
         })
         expect(res.status).toBe(200)
-    })
+    }, timeout)
 
     it("Should return valid if data is optional and provided undefined", async () => {
         @collection()
@@ -153,7 +154,7 @@ describe("unique validator", () => {
             testUser: { name: "Ketut", email: undefined }
         })
         expect(res.status).toBe(200)
-    })
+    }, timeout)
 
     it("Should throw error if applied outside class", async () => {
         @collection()
@@ -172,7 +173,7 @@ describe("unique validator", () => {
             testUser: { email: "ketut@gmail.com" }
         })
         expect(res.status).toBe(500)
-    })
+    }, timeout)
 
     it("Should check on PUT method", async () => {
         @collection()
@@ -198,7 +199,7 @@ describe("unique validator", () => {
         })
         expect(res.status).toBe(422)
         expect(res.body).toEqual({ status: 422, message: [{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }] })
-    })
+    }, timeout)
 
     it("Should check on PATCH method", async () => {
         @collection()
@@ -218,5 +219,5 @@ describe("unique validator", () => {
         const res = await setup({ controller: UserController, domain: User, initUser: user, testUser: user, method: "patch" })
         expect(res.status).toBe(422)
         expect(res.body).toEqual({ status: 422, message: [{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }] })
-    })
+    }, timeout)
 })
