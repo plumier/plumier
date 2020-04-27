@@ -42,7 +42,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should work with primitive array", async () => {
             const { model } = generator()
@@ -69,7 +69,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should work with nested model", async () => {
             const { model } = generator()
@@ -96,7 +96,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should work with nested array model", async () => {
             const { model } = generator()
@@ -124,7 +124,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should work with nested model with ref (populate)", async () => {
             const { model } = generator()
@@ -155,7 +155,7 @@ describe("Mongoose", () => {
             const saved = await DummyModel.findById(added._id)
                 .populate("child")
             expect(saved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should work with nested array with ref (populate)", async () => {
             const { model } = generator()
@@ -186,7 +186,7 @@ describe("Mongoose", () => {
             const saved = await DummyModel.findById(added._id)
                 .populate("children")
             expect(saved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should throw error when dependent type specified by ref (populate) not registered as model", async () => {
             const { model } = generator()
@@ -205,7 +205,7 @@ describe("Mongoose", () => {
                 ) { }
             }
             expect(() => model(Dummy)).toThrowErrorMatchingSnapshot()
-        })
+        }, timeout)
 
         it("Should able to rename collection with different name", async () => {
             const { model } = generator()
@@ -222,7 +222,7 @@ describe("Mongoose", () => {
             expect(mongoose.models.Dummy).toBeUndefined()
             expect(typeof mongoose.models.lorem).toBe("function")
             expect(DummyModel.collection.name).toBe("lorems")
-        })
+        }, timeout)
 
         it("Should able to rename collection with different name using object configuration", async () => {
             const { model } = generator()
@@ -239,7 +239,7 @@ describe("Mongoose", () => {
             expect(mongoose.models.Dummy).toBeUndefined()
             expect(typeof mongoose.models.lorem).toBe("function")
             expect(DummyModel.collection.name).toBe("lorems")
-        })
+        }, timeout)
 
         it("Should able to call model factory multiple time on the same model", async () => {
             const { model } = generator()
@@ -258,7 +258,7 @@ describe("Mongoose", () => {
             const otherAdded = await OtherDummyModel.create(<Dummy>{ stringProp: "strong" })
             const otherSaved = await OtherDummyModel.findById(otherAdded._id)
             expect(otherSaved).toMatchSnapshot()
-        })
+        }, timeout)
 
         it("Should able to call model factory multiple time on the same model with custom name", async () => {
             const { model } = generator()
@@ -281,7 +281,7 @@ describe("Mongoose", () => {
             expect(typeof mongoose.models.lorem).toBe("function")
             expect(DummyModel.collection.name).toBe("lorems")
             expect(OtherDummyModel.collection.name).toBe("lorems")
-        })
+        }, timeout)
     })
 
     describe("Schema Configuration", () => {
