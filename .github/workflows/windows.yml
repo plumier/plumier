@@ -13,7 +13,7 @@ jobs:
     - name: Install MongoDB 
       shell: pwsh
       run: |
-        .\.github\workflows\mongodb.ps1
+        .\mongodb.ps1
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
