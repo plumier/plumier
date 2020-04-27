@@ -10,8 +10,11 @@ jobs:
         node-version: [10.x, 12.x, 13.x]
 
     steps:
+    - name: Echo
+      run: echo ${env:PATH}
+      shell: powershell
     - name: Install MongoDB 
-      run: .\github\workflows\mongodb.ps
+      run: .\mongodb.ps
       shell: powershell
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
