@@ -1,0 +1,30 @@
+name: windows
+
+on: [push]
+
+jobs:
+  node:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 13.x]
+
+    steps:
+    - name: Start MongoDB
+      run: |
+        choco install mongodb --version=4.2.3
+        mkdir C:\data\db
+        "C:\Program Files\MongoDB\Server\4.2\bin\mongod.exe"
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install yarn
+      run: curl -o- -L https://yarnpkg.com/install.sh | bash
+    - name: Install dependencies
+      run: yarn install
+    - name: Run tests 
+      run: yarn test
+      env: 
+        CI: true
