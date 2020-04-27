@@ -11,8 +11,9 @@ jobs:
 
     steps:
     - name: Install MongoDB 
-      run: .\.github\workflows\mongodb.ps1
-      shell: powershell
+      shell: pwsh
+      run: |
+        .\.github\workflows\mongodb.ps1
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
