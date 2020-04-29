@@ -47,10 +47,6 @@ Array [
             "allowMultiple": true,
             "inherit": true,
           },
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
         },
       ],
       "get": undefined,
