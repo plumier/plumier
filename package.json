@@ -46,7 +46,7 @@
 		"faker": "^4.1.0",
 		"fs-extra": "^9.0.0",
 		"get-port": "5.1.1",
-		"jest": "^25.4.0",
+		"jest": "^25.5.2",
 		"joi": "^14.3.1",
 		"jsonwebtoken": "^8.5.1",
 		"koa-better-body": "^3.3.9",
@@ -59,7 +59,7 @@
 		"ts-jest": "^25.4.0",
 		"ts-node": "^8.9.1",
 		"tsconfig-paths": "^3.9.0",
-		"tslint": "^6.1.1",
+		"tslint": "^6.1.2",
 		"typescript": "^3.8.3"
 	},
 	"workspaces": [
