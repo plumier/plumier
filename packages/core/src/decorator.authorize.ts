@@ -4,9 +4,10 @@ import { AuthorizerFunction, AuthorizeDecorator, Authorizer } from "./authorizat
 import { errorMessage } from "./types"
 
 type AccessModifier = "get" | "set" | "all"
+interface AuthorizeOption { access: AccessModifier, role: string | string[] }
 
 class AuthDecoratorImpl {
-    
+
     /**
      * Authorize controller or action or property or parameter and specify the custom logic
      * @param authorize custom authorizer
@@ -38,7 +39,7 @@ class AuthDecoratorImpl {
      * @param role user role allowed
      * @param modifier access kind
      */
-    role(role: string, modifier: AccessModifier): PropertyDecorator | ParameterDecorator
+    role(option: AuthorizeOption): PropertyDecorator | ParameterDecorator
 
     /**
      * Auhtorize property or parameter property accessible by specific role
@@ -46,13 +47,14 @@ class AuthDecoratorImpl {
      */
     role(role: string): (...args: any[]) => void
     role(...roles: string[]): (...args: any[]) => void
-    role(...roles: string[]) {
-        const modifier = roles.length === 2 && ["get", "set", "all"].some(x => roles[1] === x) ? roles[1] as AccessModifier : undefined
+    role(option: AuthorizeOption | string, ...roles: string[]) {
+        const allRoles = typeof option === "string" ? [option, ...roles] : Array.isArray(option.role) ? option.role : [option.role]
+        const modifier = typeof option === 'string' ? "all" : option.access
         return this.custom(async (info, location) => {
             const { role, value } = info
-            const isAuthorized = roles.some(x => role.some(y => x === y))
+            const isAuthorized = allRoles.some(x => role.some(y => x === y))
             return location === "Parameter" ? !!value && isAuthorized : isAuthorized
-        }, modifier, roles.join("|"))
+        }, modifier, allRoles.join("|"))
     }
 }
 

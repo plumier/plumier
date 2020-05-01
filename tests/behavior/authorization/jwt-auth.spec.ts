@@ -937,121 +937,6 @@ describe("JwtAuth", () => {
 
     })
 
-    describe.only("Parameter Authorization Access Modifier", () => {
-
-        it("Should authorize with set modifier", async () => {
-            class AnimalController {
-                @route.post()
-                save(@authorize.role("admin", "set")
-                id: number | undefined) { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .post("/animal/save")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .send({ id: "123" })
-                .expect(200)
-            await Supertest(app.callback())
-                .post("/animal/save")
-                .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .send({ id: "123" })
-                .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (id)" })
-        })
-
-        it("Should authorize with all modifier", async () => {
-            class AnimalController {
-                @route.post()
-                save(@authorize.role("admin", "all")
-                id: number | undefined) { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .post("/animal/save")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .send({ id: "123" })
-                .expect(200)
-            await Supertest(app.callback())
-                .post("/animal/save")
-                .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .send({ id: "123" })
-                .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (id)" })
-        })
-
-        it("Should authorize if not specified", async () => {
-            class AnimalController {
-                @route.post()
-                save(@authorize.role("admin")
-                id: number | undefined) { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .post("/animal/save")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .send({ id: "123" })
-                .expect(200)
-            await Supertest(app.callback())
-                .post("/animal/save")
-                .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .send({ id: "123" })
-                .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (id)" })
-        })
-
-        it("Should ignore with get modifier", async () => {
-            class AnimalController {
-                @route.post()
-                save(@authorize.role("admin", "get")
-                id: number | undefined) { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .post("/animal/save")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .send({ id: "123" })
-                .expect(200)
-            await Supertest(app.callback())
-                .post("/animal/save")
-                .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .send({ id: "123" })
-                .expect(200)
-        })
-
-        it("Should able to use multiple", async () => {
-            class AnimalController {
-                @route.post()
-                save(
-                    @authorize.role("admin")
-                    @authorize.role("user")
-                    id: number | undefined) { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .post("/animal/save")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .send({ id: "123" })
-                .expect(401)
-            await Supertest(app.callback())
-                .post("/animal/save")
-                .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .send({ id: "123" })
-                .expect(401)
-        })
-    })
-
     describe("Separate Decorator And Implementation with Object Registry", () => {
         const OTHER_USER_TOKEN = sign({ email: "other-ketut@gmail.com", role: "user" }, SECRET)
         const resolver = new DefaultDependencyResolver()
@@ -1290,5 +1175,563 @@ describe("JwtAuth", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
     })
+
+    describe("Parameter Authorization Access Modifier", () => {
+        describe("Simple parameter", () => {
+            it("Should authorize with set modifier", async () => {
+                class AnimalController {
+                    @route.post()
+                    save(@authorize.role({ access: "set", role: "admin" })
+                    id: number | undefined) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (id)" })
+            })
+
+            it("Should authorize with all modifier", async () => {
+                class AnimalController {
+                    @route.post()
+                    save(@authorize.role({ access: "all", role: "admin" })
+                    id: number | undefined) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (id)" })
+            })
+
+            it("Should authorize if not specified", async () => {
+                class AnimalController {
+                    @route.post()
+                    save(@authorize.role("admin")
+                    id: number | undefined) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (id)" })
+            })
+
+            it("Should ignore with get modifier", async () => {
+                class AnimalController {
+                    @route.post()
+                    save(@authorize.role({ access: "get", role: "admin" })
+                    id: number | undefined) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(200)
+            })
+
+            it("Should able to use multiple", async () => {
+                class AnimalController {
+                    @route.post()
+                    save(
+                        @authorize.role("admin")
+                        @authorize.role("user")
+                        id: number | undefined) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(401)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(401)
+            })
+        })
+        describe("Object parameter", () => {
+            it("Should authorize with set modifier", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role({ access: "set", role: "admin" })
+                        public id: number | undefined) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(data: Entity) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id)" })
+            })
+
+            it("Should authorize with all modifier", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role({ access: "all", role: "admin" })
+                        public id: number | undefined) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(data: Entity) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id)" })
+            })
+
+            it("Should authorize if not specified", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role("admin")
+                        public id: number | undefined) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(data: Entity) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id)" })
+            })
+
+            it("Should ignore with get modifier", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role({ access: "get", role: "admin" })
+                        public id: number | undefined) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(data: Entity) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(200)
+            })
+
+            it("Should able to use multiple", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role("admin")
+                        @authorize.role("user")
+                        public id: number | undefined) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(data: Entity) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(401)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ id: "123" })
+                    .expect(401)
+            })
+        })
+        describe("Nested Object parameter", () => {
+            it("Should authorize with set modifier", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role({ access: "set", role: "admin" })
+                        public id: number | undefined) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(
+                        public entity: Entity
+                    ) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(data: Parent) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ entity: { id: "123" } })
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ entity: { id: "123" } })
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.entity.id)" })
+            })
+
+            it("Should authorize with all modifier", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role({ access: "all", role: "admin" })
+                        public id: number | undefined) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(
+                        public entity: Entity
+                    ) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(data: Parent) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ entity: { id: "123" } })
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ entity: { id: "123" } })
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.entity.id)" })
+            })
+
+            it("Should authorize if not specified", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role("admin")
+                        public id: number | undefined) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(
+                        public entity: Entity
+                    ) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(data: Parent) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ entity: { id: "123" } })
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ entity: { id: "123" } })
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.entity.id)" })
+            })
+
+            it("Should ignore with get modifier", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role({ access: "get", role: "admin" })
+                        public id: number | undefined) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(
+                        public entity: Entity
+                    ) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(data: Parent) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ entity: { id: "123" } })
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ entity: { id: "123" } })
+                    .expect(200)
+            })
+
+            it("Should able to use multiple", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role("admin")
+                        @authorize.role("user")
+                        public id: number | undefined) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(
+                        public entity: Entity
+                    ) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(data: Parent) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send({ entity: { id: "123" } })
+                    .expect(401)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ entity: { id: "123" } })
+                    .expect(401)
+            })
+        })
+        describe("Array of Object parameter", () => {
+            it("Should authorize with set modifier", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role({ access: "set", role: "admin" })
+                        public id: number | undefined) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(@reflect.type([Entity]) data: Entity[]) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send([{ id: "123" }])
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send([{ id: "123" }])
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.0.id)" })
+            })
+
+            it("Should authorize with all modifier", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role({ access: "all", role: "admin" })
+                        public id: number | undefined) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(@reflect.type([Entity]) data: Entity[]) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send([{ id: "123" }])
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send([{ id: "123" }])
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.0.id)" })
+            })
+
+            it("Should authorize if not specified", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role("admin")
+                        public id: number | undefined) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(@reflect.type([Entity]) data: Entity[]) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send([{ id: "123" }])
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send([{ id: "123" }])
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.0.id)" })
+            })
+
+            it("Should ignore with get modifier", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role({ access: "get", role: "admin" })
+                        public id: number | undefined) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(@reflect.type([Entity]) data: Entity[]) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send([{ id: "123" }])
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send([{ id: "123" }])
+                    .expect(200)
+            })
+
+            it("Should able to use multiple", async () => {
+                @domain()
+                class Entity {
+                    constructor(
+                        @authorize.role("admin")
+                        @authorize.role("user")
+                        public id: number | undefined) { }
+                }
+                class AnimalController {
+                    @route.post()
+                    save(@reflect.type([Entity]) data: Entity[]) { return "Hello" }
+                }
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .send([{ id: "123" }])
+                    .expect(401)
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send([{ id: "123" }])
+                    .expect(401)
+            })
+        })
+    })
+
 
 })
