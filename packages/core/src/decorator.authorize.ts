@@ -14,11 +14,12 @@ class AuthDecoratorImpl {
      * @param modifier modifier access (for property and parameter authorizer)
      * @param tag authorizer name visible on route generator
      */
-    custom(authorize: symbol | string | AuthorizerFunction | Authorizer, modifier: AccessModifier = "all", tag: string = "Custom") {
+    custom(authorize: symbol | string | AuthorizerFunction | Authorizer, tag: string | { tag?: string, access?: AccessModifier } = "Custom") {
         return decorate((...args: any[]) => {
+            const option = typeof tag === "string" ? { tag, access: "all" } : { tag: "Custom", access: "all", ...tag }
             const location = args.length === 1 ? "Class" : args.length === 2 ? "Method" : "Parameter"
             return <AuthorizeDecorator>{
-                type: "plumier-meta:authorize", tag, authorize, location, modifier
+                type: "plumier-meta:authorize", tag: option.tag, authorize, location, access: option.access
             }
         }, ["Class", "Parameter", "Method", "Property"])
     }
@@ -49,12 +50,26 @@ class AuthDecoratorImpl {
     role(...roles: string[]): (...args: any[]) => void
     role(option: AuthorizeOption | string, ...roles: string[]) {
         const allRoles = typeof option === "string" ? [option, ...roles] : Array.isArray(option.role) ? option.role : [option.role]
-        const modifier = typeof option === 'string' ? "all" : option.access
-        return this.custom(async (info, location) => {
-            const { role, value } = info
-            const isAuthorized = allRoles.some(x => role.some(y => x === y))
-            return location === "Parameter" ? !!value && isAuthorized : isAuthorized
-        }, modifier, allRoles.join("|"))
+        const access = typeof option === 'string' ? "all" : option.access
+        return this.custom(async (info) => {
+            return allRoles.some(x => info.role.some(y => x === y))
+        }, { access, tag: allRoles.join("|") })
+    }
+
+    /**
+     * Authorize role to access property of a domain
+     * @param roles Roles allowed
+     */
+    get(...roles: string[]) {
+        return this.role({ access: "get", role: roles })
+    }
+
+    /**
+     * Authorize role to set property of a domain
+     * @param roles Roles allowed
+     */
+    set(...roles: string[]) {
+        return this.role({ access: "set", role: roles })
     }
 }
 

@@ -1733,5 +1733,470 @@ describe("JwtAuth", () => {
         })
     })
 
+    describe("Authorization Filter", () => {
+        describe("Simple Object", () => {
+            it("Should able to filter by role", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.get("admin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type(User)
+                    get() {
+                        return new User("admin", "secret")
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { name: "admin", password: "secret" })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { name: "admin" })
+            })
+            it("Should able to filter by multiple roles", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.get("superadmin")
+                        @authorize.get("admin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type(User)
+                    get() {
+                        return new User("admin", "secret")
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
+                    .expect(200, { name: "admin", password: "secret" })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { name: "admin", password: "secret" })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { name: "admin" })
+            })
+            it("Should able to filter by multiple roles in single decorator", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.get("admin", "superadmin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type(User)
+                    get() {
+                        return new User("admin", "secret")
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
+                    .expect(200, { name: "admin", password: "secret" })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { name: "admin", password: "secret" })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { name: "admin" })
+            })
+            it("Should not affect set authorizer", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.set("admin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type(User)
+                    get() {
+                        return new User("admin", "secret")
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { name: "admin", password: "secret" })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { name: "admin", password: "secret" })
+            })
+
+            it("Should able to use role authorizer", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.role("admin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type(User)
+                    get() {
+                        return new User("admin", "secret")
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { name: "admin", password: "secret" })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { name: "admin" })
+            })
+        })
+
+        describe("Array Of Object", () => {
+            it("Should able to filter by role", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.get("admin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type([User])
+                    get() {
+                        return [new User("admin", "secret"), new User("user", "secret")]
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, [{ name: "admin", password: "secret" }, { name: "user", password: "secret" }])
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, [{ name: "admin" }, { name: "user" }])
+            })
+            it("Should able to filter by multiple roles", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.get("superadmin")
+                        @authorize.get("admin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type([User])
+                    get() {
+                        return [new User("admin", "secret"), new User("user", "secret")]
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
+                    .expect(200, [{ name: "admin", password: "secret" }, { name: "user", password: "secret" }])
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, [{ name: "admin", password: "secret" }, { name: "user", password: "secret" }])
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, [{ name: "admin" }, { name: "user" }])
+            })
+            it("Should able to filter by multiple roles in single decorator", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.get("admin", "superadmin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type([User])
+                    get() {
+                        return [new User("admin", "secret"), new User("user", "secret")]
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
+                    .expect(200, [{ name: "admin", password: "secret" }, { name: "user", password: "secret" }])
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, [{ name: "admin", password: "secret" }, { name: "user", password: "secret" }])
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, [{ name: "admin" }, { name: "user" }])
+            })
+            it("Should not affect set authorizer", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.set("admin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type([User])
+                    get() {
+                        return [new User("admin", "secret"), new User("user", "secret")]
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, [{ name: "admin", password: "secret" }, { name: "user", password: "secret" }])
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, [{ name: "admin", password: "secret" }, { name: "user", password: "secret" }])
+            })
+
+            it("Should able to use role authorizer", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.role("admin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type([User])
+                    get() {
+                        return [new User("admin", "secret"), new User("user", "secret")]
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, [{ name: "admin", password: "secret" }, { name: "user", password: "secret" }])
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, [{ name: "admin" }, { name: "user" }])
+            })
+        })
+
+        describe("Nested Object", () => {
+            it("Should able to filter by role", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.get("admin")
+                        public password: string
+                    ) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(public user: User) { }
+                }
+                class UsersController {
+                    @reflect.type(Parent)
+                    get() {
+                        return new Parent(new User("admin", "secret"))
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { user: { name: "admin", password: "secret" } })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { user: { name: "admin" } })
+            })
+            it("Should able to filter by multiple roles", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.get("superadmin")
+                        @authorize.get("admin")
+                        public password: string
+                    ) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(public user: User) { }
+                }
+                class UsersController {
+                    @reflect.type(Parent)
+                    get() {
+                        return new Parent(new User("admin", "secret"))
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
+                    .expect(200, { user: { name: "admin", password: "secret" } })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { user: { name: "admin", password: "secret" } })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { user: { name: "admin" } })
+            })
+            it("Should able to filter by multiple roles in single decorator", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.get("admin", "superadmin")
+                        public password: string
+                    ) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(public user: User) { }
+                }
+                class UsersController {
+                    @reflect.type(Parent)
+                    get() {
+                        return new Parent(new User("admin", "secret"))
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
+                    .expect(200, { user: { name: "admin", password: "secret" } })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { user: { name: "admin", password: "secret" } })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { user: { name: "admin" } })
+            })
+            it("Should not affect set authorizer", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.set("admin")
+                        public password: string
+                    ) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(public user: User) { }
+                }
+                class UsersController {
+                    @reflect.type(Parent)
+                    get() {
+                        return new Parent(new User("admin", "secret"))
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { user: { name: "admin", password: "secret" } })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { user: { name: "admin", password: "secret" } })
+            })
+
+            it("Should able to use role authorizer", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.role("admin")
+                        public password: string
+                    ) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(public user: User) { }
+                }
+                class UsersController {
+                    @reflect.type(Parent)
+                    get() {
+                        return new Parent(new User("admin", "secret"))
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { user: { name: "admin", password: "secret" } })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { user: { name: "admin" } })
+            })
+        })
+    })
 
 })

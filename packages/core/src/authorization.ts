@@ -1,4 +1,5 @@
 import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
+import { convert, VisitorExtension, Result } from "typedconverter"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import { HttpStatus } from "./http-status"
@@ -22,7 +23,7 @@ type AuthorizerFunction = (info: AuthorizationContext, location: "Class" | "Para
 interface AuthorizeDecorator {
     type: "plumier-meta:authorize",
     authorize: string | AuthorizerFunction | Authorizer
-    modifier: "get" | "set" | "all"
+    access: "get" | "set" | "all"
     tag: string,
     location: "Class" | "Parameter" | "Method"
 }
@@ -54,8 +55,8 @@ function executeDecorator(decorator: AuthorizeDecorator, info: AuthorizationCont
     return instance.authorize(info, decorator.location)
 }
 
-function isAuthDecorator(decorator: AuthorizeDecorator) {
-    return decorator.type === "plumier-meta:authorize"
+function createDecoratorFilter(predicate: (x: AuthorizeDecorator) => boolean = x => true) {
+    return (x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize" && predicate(x)
 }
 
 function getGlobalDecorators(globalDecorator?: (...args: any[]) => void) {
@@ -63,17 +64,24 @@ function getGlobalDecorators(globalDecorator?: (...args: any[]) => void) {
         @globalDecorator
         class DummyClass { }
         const meta = reflect(DummyClass)
-        return meta.decorators.filter((x): x is AuthorizeDecorator => isAuthDecorator(x))
+        return meta.decorators.filter(createDecoratorFilter())
     }
     else return []
 }
 
 function getAuthorizeDecorators(info: RouteInfo, globalDecorator?: (...args: any[]) => void) {
-    const actionDecs = info.action.decorators.filter((x: any): x is AuthorizeDecorator => isAuthDecorator(x))
+    const actionDecs = info.action.decorators.filter(createDecoratorFilter())
     if (actionDecs.length > 0) return actionDecs
-    const controllerDecs = info.controller.decorators.filter((x: any): x is AuthorizeDecorator => isAuthDecorator(x))
+    const controllerDecs = info.controller.decorators.filter(createDecoratorFilter())
     if (controllerDecs.length > 0) return controllerDecs
     return getGlobalDecorators(globalDecorator)
+}
+
+
+async function createAuthContext(ctx: ActionContext): Promise<AuthorizationContext> {
+    const { route, parameters, state, config } = ctx
+    const userRoles = await getRole(state.user, config.roleField)
+    return <AuthorizationContext>{ role: userRoles, user: state.user, route, ctx, metadata: new MetadataImpl(ctx.parameters, ctx.route, {} as any) }
 }
 
 // --------------------------------------------------------------------- //
@@ -123,10 +131,10 @@ async function checkParameter(path: string[], meta: PropertyReflection | Paramet
         return checkParameters(path, classMeta.properties, values, info, meta.type)
     }
     else {
-        const decorators = meta.decorators.filter((x): x is AuthorizeDecorator => isAuthDecorator(x))
+        const decorators = meta.decorators.filter(createDecoratorFilter())
         const result: string[] = []
         for (const dec of decorators) {
-            if (dec.modifier === "get") continue;
+            if (dec.access === "get") continue;
             info.metadata.current = { ...meta, parent }
             const allowed = await executeDecorator(dec, { ...info, value })
             if (!allowed)
@@ -152,10 +160,9 @@ async function checkUserAccessToParameters(meta: ParameterReflection[], values: 
         throw new HttpStatusError(401, `Unauthorized to populate parameter paths (${unauthorizedPaths.join(", ")})`)
 }
 
-
-/* ------------------------------------------------------------------------------- */
-/* --------------------------- MAIN IMPLEMENTATION ------------------------------- */
-/* ------------------------------------------------------------------------------- */
+// --------------------------------------------------------------------- //
+// --------------------------- AUTHORIZATION --------------------------- //
+// --------------------------------------------------------------------- //
 
 function updateRouteAuthorizationAccess(routes: RouteInfo[], config: Configuration) {
     if (config.enableAuthorization) {
@@ -179,12 +186,12 @@ async function getRole(user: any, roleField: RoleField): Promise<string[]> {
     }
 }
 
+
 async function checkAuthorize(ctx: ActionContext) {
     if (ctx.config.enableAuthorization) {
-        const { route, parameters, state, config } = ctx
+        const { route, parameters, config } = ctx
+        const info = await createAuthContext(ctx)
         const decorator = getAuthorizeDecorators(route, config.globalAuthorizationDecorators)
-        const userRoles = await getRole(state.user, config.roleField)
-        const info = <AuthorizationContext>{ role: userRoles, user: state.user, route, ctx, metadata: new MetadataImpl(ctx.parameters, ctx.route, {} as any) }
         //check user access
         await checkUserAccessToRoute(decorator, info)
         //if ok check parameter access
@@ -192,10 +199,94 @@ async function checkAuthorize(ctx: ActionContext) {
     }
 }
 
+
+// --------------------------------------------------------------------- //
+// ------------------------ AUTHORIZATION FILTER ----------------------- //
+// --------------------------------------------------------------------- //
+
+type FilterNode = ArrayNode | ClassNode | ValueNode
+
+interface ValueNode {
+    kind: "Value"
+}
+
+interface ArrayNode {
+    kind: "Array"
+    child: FilterNode
+}
+
+interface ClassNode {
+    kind: "Class"
+    properties: { name: string, authorized: boolean, type: FilterNode }[]
+}
+
+async function createPropertyNode(prop: PropertyReflection, ctx: ActionContext) {
+    const decorators = prop.decorators.filter(createDecoratorFilter(x => x.access === "get" || x.access === "all"))
+    const info = await createAuthContext(ctx)
+    // if no authorize decorator then always allow to access
+    let authorized = decorators.length === 0
+    for (const dec of decorators) {
+        authorized = await executeDecorator(dec, info)
+        if (authorized) break
+    }
+    return { name: prop.name, authorized }
+}
+
+async function compileType(type: Class | Class[], ctx: ActionContext): Promise<FilterNode> {
+    if (Array.isArray(type)) {
+        return { kind: "Array", child: await compileType(type[0], ctx) }
+    }
+    else if (isCustomClass(type)) {
+        const meta = reflect(type)
+        const properties = []
+        for (const prop of meta.properties) {
+            const propNode = await createPropertyNode(prop, ctx)
+            properties.push({ ...propNode, type: await compileType(prop.type, ctx) })
+        }
+        return { kind: "Class", properties }
+    }
+    else return { kind: "Value" }
+}
+
+
+function filterType(raw:any, node:FilterNode){
+    if(node.kind === "Array"){
+        return raw.map((x:any) => filterType(x, node.child))
+    }
+    else if(node.kind === "Class"){
+        return node.properties.reduce((a, b) => {
+            if(b.authorized) {
+                a[b.name] = filterType(raw[b.name], b.type)
+            }
+            return a
+        }, {} as any)
+    }
+    else return raw
+}
+
+async function filterResult(raw: ActionResult, ctx: ActionContext): Promise<ActionResult> {
+    const type = ctx.route.action.returnType
+    if (type !== Promise && type && raw.status === 200 && raw.body) {
+        const node = await compileType(type, ctx)
+        raw.body = filterType(raw.body, node)
+        return raw
+    }
+    else {
+        return raw;
+    }
+}
+
+
+// --------------------------------------------------------------------- //
+// ----------------------------- MIDDLEWARE ---------------------------- //
+// --------------------------------------------------------------------- //
+
+
 class AuthorizerMiddleware implements Middleware {
     async execute(invocation: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
         await checkAuthorize(invocation.ctx)
-        return invocation.proceed()
+        const result = await invocation.proceed()
+        return filterResult(result, invocation.ctx)
     }
 }
 
