@@ -165,7 +165,7 @@ describe("Middleware", () => {
                 .initialize()
             await Supertest(app.callback())
                 .get("/animal/get")
-                .expect(500, "PLUM1009: Object with id ipsum not found in Object registry")
+                .expect(500, "PLUM1003: Object with id ipsum not found in Object registry")
         })
 
         it("Should execute middleware in proper order", async () => {

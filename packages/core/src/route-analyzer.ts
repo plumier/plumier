@@ -66,7 +66,7 @@ function metadataTypeTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyz
    if (!hasTypeInfo && route.action.parameters.length > 0) {
       return {
          type: "warning",
-         message: errorMessage.ActionDoesNotHaveTypeInfo
+         message: errorMessage.ActionParameterDoesNotHaveTypeInfo
       }
    }
    else return { type: "success" }
