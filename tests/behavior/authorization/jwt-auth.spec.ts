@@ -698,7 +698,7 @@ describe("JwtAuth", () => {
                 }
             }
             catch (e) {
-                expect(e.message).toContain("PLUM1008")
+                expect(e.message).toContain("PLUM1007")
             }
         })
     })

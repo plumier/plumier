@@ -134,12 +134,12 @@ describe("Error Handling", () => {
 
     it("Should show correct error if provided controller folder not found", async () => {
         const koa = fixture(join(__dirname, "controller"))
-        expect(koa.initialize()).rejects.toThrow("PLUM1004")
+        expect(koa.initialize()).rejects.toThrow("PLUM1002")
     })
 
     it("Should show correct error if provided controller file not found", async () => {
         const koa = fixture(join(__dirname, "controller/animal-controller.ts"))
-        expect(koa.initialize()).rejects.toThrow("PLUM1004")
+        expect(koa.initialize()).rejects.toThrow("PLUM1002")
     })
 })
 

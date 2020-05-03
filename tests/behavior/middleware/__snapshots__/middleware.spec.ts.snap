@@ -3,7 +3,7 @@
 exports[`Middleware Action Middleware Should throw error if wrong id provided 1`] = `
 Array [
   Array [
-    [Error: PLUM1009: Object with id ipsum not found in Object registry],
+    [Error: PLUM1003: Object with id ipsum not found in Object registry],
   ],
 ]
 `;
@@ -11,7 +11,7 @@ Array [
 exports[`Middleware Controller Middleware Should throw error if wrong id provided 1`] = `
 Array [
   Array [
-    [Error: PLUM1009: Object with id ipsum not found in Object registry],
+    [Error: PLUM1003: Object with id ipsum not found in Object registry],
   ],
 ]
 `;

@@ -22,11 +22,11 @@ Array [
   ],
   Array [
     "1. AnimalController.method(a) -> GET /beast/method
- - error PLUM1003: Duplicate route found in AnimalController.method(a) BeastController.method(a)",
+ - error PLUM1001: Duplicate route found in AnimalController.method(a) BeastController.method(a)",
   ],
   Array [
     "2. BeastController.method(a)  -> GET /beast/method
- - error PLUM1003: Duplicate route found in AnimalController.method(a) BeastController.method(a)",
+ - error PLUM1001: Duplicate route found in AnimalController.method(a) BeastController.method(a)",
   ],
   Array [],
 ]
@@ -40,7 +40,7 @@ Array [
   ],
   Array [
     "1. AnimalController.method(a) -> POST /animal/method
- - warning PLUM1006: Parameter binding skipped because array field without @array() decorator found in (AnimalController.method.a)",
+ - warning PLUM1006: Parameter binding skipped because array doesn't have element type information in (AnimalController.method.a)",
   ],
   Array [],
 ]
@@ -54,7 +54,7 @@ Array [
   ],
   Array [
     "1. AnimalController.method(a) -> POST /animal/method
- - warning PLUM1005: Parameter binding skipped because  AnimalModel doesn't have @domain() decorator",
+ - warning PLUM1005: Parameter binding skipped because AnimalModel doesn't have type information on its properties",
   ],
   Array [],
 ]
@@ -68,7 +68,7 @@ Array [
   ],
   Array [
     "1. AnimalController.method(a) -> POST /animal/method
- - warning PLUM1005: Parameter binding skipped because  TagModel doesn't have @domain() decorator",
+ - warning PLUM1005: Parameter binding skipped because TagModel doesn't have type information on its properties",
   ],
   Array [],
 ]
@@ -110,7 +110,7 @@ Array [
   ],
   Array [
     "1. AnimalController.method(a) -> GET /animal/method
- - warning PLUM1001: Parameter binding skipped because action doesn't have @route decorator",
+ - warning PLUM1004: Parameter binding skipped because action parameters doesn't have type information",
   ],
   Array [],
 ]

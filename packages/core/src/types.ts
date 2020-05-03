@@ -580,15 +580,14 @@ export class MetadataImpl {
 export namespace errorMessage {
     //PLUM1XXX User configuration error
     export const RouteDoesNotHaveBackingParam = "PLUM1000: Route parameters ({0}) doesn't have appropriate backing parameter"
-    export const ActionDoesNotHaveTypeInfo = "PLUM1001: Parameter binding skipped because action doesn't have @route decorator"
-    export const DuplicateRouteFound = "PLUM1003: Duplicate route found in {0}"
-    export const ControllerPathNotFound = "PLUM1004: Controller file or directory {0} not found"
-    export const ModelWithoutTypeInformation = "PLUM1005: Parameter binding skipped because  {0} doesn't have @domain() decorator"
-    export const ArrayWithoutTypeInformation = "PLUM1006: Parameter binding skipped because array field without @array() decorator found in ({0})"
-    export const ModelNotFound = "PLUM1007: Domain model not found, no class decorated with @domain() on provided classes"
-    export const ModelPathNotFound = "PLUM1007: Domain model not found, no class decorated with @domain() on path {0}"
-    export const PublicNotInParameter = "PLUM1008: @authorize.public() can not be applied to parameter"
-    export const ObjectNotFound = "PLUM1009: Object with id {0} not found in Object registry"
+    export const DuplicateRouteFound = "PLUM1001: Duplicate route found in {0}"
+    export const ControllerPathNotFound = "PLUM1002: Controller file or directory {0} not found"
+    export const ObjectNotFound = "PLUM1003: Object with id {0} not found in Object registry"
+
+    export const ActionParameterDoesNotHaveTypeInfo = "PLUM1004: Parameter binding skipped because action parameters doesn't have type information"
+    export const ModelWithoutTypeInformation = "PLUM1005: Parameter binding skipped because {0} doesn't have type information on its properties"
+    export const ArrayWithoutTypeInformation = "PLUM1006: Parameter binding skipped because array doesn't have element type information in ({0})"
+    export const PublicNotInParameter = "PLUM1007: @authorize.public() can not be applied to parameter"
 
     //PLUM2XXX internal app error
     export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate {0}. Domain model should not throw error inside constructor`
