@@ -37,6 +37,7 @@ Array [
       },
       "decorators": Array [
         Object {
+          "access": "all",
           "authorize": customAuthorizer,
           "location": "Class",
           "tag": "Custom",
@@ -104,6 +105,7 @@ Array [
     Object {
       "decorators": Array [
         Object {
+          "access": "all",
           "authorize": customAuthorizer,
           "location": "Method",
           "tag": "Custom",
@@ -156,6 +158,7 @@ Array [
     Object {
       "decorators": Array [
         Object {
+          "access": "all",
           "authorize": customAuthorizer,
           "location": "Parameter",
           "tag": "Custom",
@@ -187,6 +190,7 @@ Array [
     Object {
       "decorators": Array [
         Object {
+          "access": "all",
           "authorize": customAuthorizer,
           "location": "Parameter",
           "tag": "Custom",
@@ -222,6 +226,7 @@ Array [
       "action": Object {
         "decorators": Array [
           Object {
+            "access": "all",
             "authorize": customAuthorizer,
             "location": "Method",
             "tag": "Custom",
@@ -294,6 +299,7 @@ Array [
           Object {
             "decorators": Array [
               Object {
+                "access": "all",
                 "authorize": customAuthorizer,
                 "location": "Method",
                 "tag": "Custom",
@@ -349,6 +355,7 @@ Array [
       "current": Object {
         "decorators": Array [
           Object {
+            "access": "all",
             "authorize": customAuthorizer,
             "location": "Method",
             "tag": "Custom",

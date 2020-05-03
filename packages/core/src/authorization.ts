@@ -1,4 +1,5 @@
 import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
+import { convert, VisitorExtension, Result } from "typedconverter"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import { HttpStatus } from "./http-status"
@@ -22,6 +23,7 @@ type AuthorizerFunction = (info: AuthorizationContext, location: "Class" | "Para
 interface AuthorizeDecorator {
     type: "plumier-meta:authorize",
     authorize: string | AuthorizerFunction | Authorizer
+    access: "get" | "set" | "all"
     tag: string,
     location: "Class" | "Parameter" | "Method"
 }
@@ -53,8 +55,8 @@ function executeDecorator(decorator: AuthorizeDecorator, info: AuthorizationCont
     return instance.authorize(info, decorator.location)
 }
 
-function isAuthDecorator(decorator: AuthorizeDecorator) {
-    return decorator.type === "plumier-meta:authorize"
+function createDecoratorFilter(predicate: (x: AuthorizeDecorator) => boolean = x => true) {
+    return (x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize" && predicate(x)
 }
 
 function getGlobalDecorators(globalDecorator?: (...args: any[]) => void) {
@@ -62,56 +64,29 @@ function getGlobalDecorators(globalDecorator?: (...args: any[]) => void) {
         @globalDecorator
         class DummyClass { }
         const meta = reflect(DummyClass)
-        return meta.decorators.filter((x): x is AuthorizeDecorator => isAuthDecorator(x))
+        return meta.decorators.filter(createDecoratorFilter())
     }
     else return []
 }
 
 function getAuthorizeDecorators(info: RouteInfo, globalDecorator?: (...args: any[]) => void) {
-    const actionDecs = info.action.decorators.filter((x: any): x is AuthorizeDecorator => isAuthDecorator(x))
+    const actionDecs = info.action.decorators.filter(createDecoratorFilter())
     if (actionDecs.length > 0) return actionDecs
-    const controllerDecs = info.controller.decorators.filter((x: any): x is AuthorizeDecorator => isAuthDecorator(x))
+    const controllerDecs = info.controller.decorators.filter(createDecoratorFilter())
     if (controllerDecs.length > 0) return controllerDecs
     return getGlobalDecorators(globalDecorator)
 }
 
-async function checkParameter(path: string[], meta: PropertyReflection | ParameterReflection, value: any, info: AuthorizationContext, parent: Class) {
-    if (value === undefined) return []
-    else if (Array.isArray(meta.type)) {
-        const newMeta = { ...meta, type: meta.type[0] };
-        const result: string[] = []
-        for (let i = 0; i < value.length; i++) {
-            const val = value[i];
-            result.push(...await checkParameter(path.concat(i.toString()), newMeta, val, info, parent))
-        }
-        return result
-    }
-    else if (isCustomClass(meta.type)) {
-        const classMeta = reflect(<Class>meta.type)
-        const values = classMeta.properties.map(x => value[x.name])
-        return checkParameters(path, classMeta.properties, values, info, meta.type)
-    }
-    else {
-        const decorators = meta.decorators.filter((x): x is AuthorizeDecorator => isAuthDecorator(x))
-        const result: string[] = []
-        for (const dec of decorators) {
-            info.metadata.current = { ...meta, parent }
-            if (!await executeDecorator(dec, { ...info, value }))
-                result.push(path.join("."))
-        }
-        return result
-    }
+
+async function createAuthContext(ctx: ActionContext): Promise<AuthorizationContext> {
+    const { route, parameters, state, config } = ctx
+    const userRoles = await getRole(state.user, config.roleField)
+    return <AuthorizationContext>{ role: userRoles, user: state.user, route, ctx, metadata: new MetadataImpl(ctx.parameters, ctx.route, {} as any) }
 }
 
-async function checkParameters(path: string[], meta: (PropertyReflection | ParameterReflection)[], value: any[], info: AuthorizationContext, parent: Class) {
-    const result: string[] = []
-    for (let i = 0; i < meta.length; i++) {
-        const prop = meta[i];
-        const issues = await checkParameter(path.concat(prop.name), prop, value[i], info, parent)
-        result.push(...issues)
-    }
-    return result
-}
+// --------------------------------------------------------------------- //
+// ----------------- CONTROLLER OR ACTION AUTHORIZATION ---------------- //
+// --------------------------------------------------------------------- //
 
 function fixContext(decorator: AuthorizeDecorator, info: AuthorizerContext) {
     if (decorator.location === "Class") {
@@ -133,25 +108,61 @@ async function checkUserAccessToRoute(decorators: AuthorizeDecorator[], info: Au
         throw new HttpStatusError(HttpStatus.Unauthorized, "Unauthorized")
 }
 
+
+// --------------------------------------------------------------------- //
+// ---------------------- PARAMETER AUTHORIZATION ---------------------- //
+// --------------------------------------------------------------------- //
+
+
+async function checkParameter(path: string[], meta: PropertyReflection | ParameterReflection, value: any, info: AuthorizationContext, parent: Class) {
+    if (value === undefined) return []
+    else if (Array.isArray(meta.type)) {
+        const newMeta = { ...meta, type: meta.type[0] };
+        const result: string[] = []
+        for (let i = 0; i < value.length; i++) {
+            const val = value[i];
+            result.push(...await checkParameter(path.concat(i.toString()), newMeta, val, info, parent))
+        }
+        return result
+    }
+    else if (isCustomClass(meta.type)) {
+        const classMeta = reflect(<Class>meta.type)
+        const values = classMeta.properties.map(x => value[x.name])
+        return checkParameters(path, classMeta.properties, values, info, meta.type)
+    }
+    else {
+        const decorators = meta.decorators.filter(createDecoratorFilter())
+        const result: string[] = []
+        for (const dec of decorators) {
+            if (dec.access === "get") continue;
+            info.metadata.current = { ...meta, parent }
+            const allowed = await executeDecorator(dec, { ...info, value })
+            if (!allowed)
+                result.push(path.join("."))
+        }
+        return result
+    }
+}
+
+async function checkParameters(path: string[], meta: (PropertyReflection | ParameterReflection)[], value: any[], info: AuthorizationContext, parent: Class) {
+    const result: string[] = []
+    for (let i = 0; i < meta.length; i++) {
+        const prop = meta[i];
+        const issues = await checkParameter(path.concat(prop.name), prop, value[i], info, parent)
+        result.push(...issues)
+    }
+    return result
+}
+
 async function checkUserAccessToParameters(meta: ParameterReflection[], values: any[], info: AuthorizationContext) {
     const unauthorizedPaths = await checkParameters([], meta, values, info, info.ctx.route.controller.type)
     if (unauthorizedPaths.length > 0)
         throw new HttpStatusError(401, `Unauthorized to populate parameter paths (${unauthorizedPaths.join(", ")})`)
 }
 
-async function getRole(user: any, roleField: RoleField): Promise<string[]> {
-    if (!user) return []
-    if (typeof roleField === "function")
-        return await roleField(user)
-    else {
-        const role = user[roleField]
-        return Array.isArray(role) ? role : [role]
-    }
-}
-
-/* ------------------------------------------------------------------------------- */
-/* --------------------------- MAIN IMPLEMENTATION ------------------------------- */
-/* ------------------------------------------------------------------------------- */
+// --------------------------------------------------------------------- //
+// --------------------------- AUTHORIZATION --------------------------- //
+// --------------------------------------------------------------------- //
 
 function updateRouteAuthorizationAccess(routes: RouteInfo[], config: Configuration) {
     if (config.enableAuthorization) {
@@ -165,12 +176,22 @@ function updateRouteAuthorizationAccess(routes: RouteInfo[], config: Configurati
     }
 }
 
+async function getRole(user: any, roleField: RoleField): Promise<string[]> {
+    if (!user) return []
+    if (typeof roleField === "function")
+        return await roleField(user)
+    else {
+        const role = user[roleField]
+        return Array.isArray(role) ? role : [role]
+    }
+}
+
+
 async function checkAuthorize(ctx: ActionContext) {
     if (ctx.config.enableAuthorization) {
-        const { route, parameters, state, config } = ctx
+        const { route, parameters, config } = ctx
+        const info = await createAuthContext(ctx)
         const decorator = getAuthorizeDecorators(route, config.globalAuthorizationDecorators)
-        const userRoles = await getRole(state.user, config.roleField)
-        const info = <AuthorizationContext>{ role: userRoles, user: state.user, route, ctx, metadata: new MetadataImpl(ctx.parameters, ctx.route, {} as any) }
         //check user access
         await checkUserAccessToRoute(decorator, info)
         //if ok check parameter access
@@ -178,10 +199,94 @@ async function checkAuthorize(ctx: ActionContext) {
     }
 }
 
+
+// --------------------------------------------------------------------- //
+// ------------------------ AUTHORIZATION FILTER ----------------------- //
+// --------------------------------------------------------------------- //
+
+type FilterNode = ArrayNode | ClassNode | ValueNode
+
+interface ValueNode {
+    kind: "Value"
+}
+
+interface ArrayNode {
+    kind: "Array"
+    child: FilterNode
+}
+
+interface ClassNode {
+    kind: "Class"
+    properties: { name: string, authorized: boolean, type: FilterNode }[]
+}
+
+async function createPropertyNode(prop: PropertyReflection, ctx: ActionContext) {
+    const decorators = prop.decorators.filter(createDecoratorFilter(x => x.access === "get" || x.access === "all"))
+    const info = await createAuthContext(ctx)
+    // if no authorize decorator then always allow to access
+    let authorized = decorators.length === 0
+    for (const dec of decorators) {
+        authorized = await executeDecorator(dec, info)
+        if (authorized) break
+    }
+    return { name: prop.name, authorized }
+}
+
+async function compileType(type: Class | Class[], ctx: ActionContext): Promise<FilterNode> {
+    if (Array.isArray(type)) {
+        return { kind: "Array", child: await compileType(type[0], ctx) }
+    }
+    else if (isCustomClass(type)) {
+        const meta = reflect(type)
+        const properties = []
+        for (const prop of meta.properties) {
+            const propNode = await createPropertyNode(prop, ctx)
+            properties.push({ ...propNode, type: await compileType(prop.type, ctx) })
+        }
+        return { kind: "Class", properties }
+    }
+    else return { kind: "Value" }
+}
+
+
+function filterType(raw:any, node:FilterNode){
+    if(node.kind === "Array"){
+        return raw.map((x:any) => filterType(x, node.child))
+    }
+    else if(node.kind === "Class"){
+        return node.properties.reduce((a, b) => {
+            if(b.authorized) {
+                a[b.name] = filterType(raw[b.name], b.type)
+            }
+            return a
+        }, {} as any)
+    }
+    else return raw
+}
+
+async function filterResult(raw: ActionResult, ctx: ActionContext): Promise<ActionResult> {
+    const type = ctx.route.action.returnType
+    if (type !== Promise && type && raw.status === 200 && raw.body) {
+        const node = await compileType(type, ctx)
+        raw.body = filterType(raw.body, node)
+        return raw
+    }
+    else {
+        return raw;
+    }
+}
+
+
+// --------------------------------------------------------------------- //
+// ----------------------------- MIDDLEWARE ---------------------------- //
+// --------------------------------------------------------------------- //
+
+
 class AuthorizerMiddleware implements Middleware {
     async execute(invocation: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
         await checkAuthorize(invocation.ctx)
-        return invocation.proceed()
+        const result = await invocation.proceed()
+        return filterResult(result, invocation.ctx)
     }
 }
 
