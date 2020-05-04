@@ -176,17 +176,14 @@ export class ProductsController {
 ## Parameter Authorization
 Grant access to pass value to parameter to specific role. This feature useful when you want to restrict the API consumer to set some property of your domain without creating a new domain/method.
 
-> Parameter authorization only affect on how the end user send/provided the data. It will not affect how the data will be retrieved. Means **it will not** automatically filter some property based on role on the JSON result.
-
-
 ```typescript
 @domain()
 export class User {
     constructor(
-        name: string,
+        public name: string,
         //only admin can send deceased
         @authorize.role("admin")
-        disabled: boolean | undefined
+        public disabled: boolean | undefined
     ) { }
 }
 
@@ -199,6 +196,62 @@ export class UsersController {
 ```
 
 Using above code, only admin can disabled the user, if user doesn't have admin role Plumier will return 401 with informative error result.
+
+## Authorization Filter 
+Applying authorize decorator on a domain property automatically filter data returned based on client role like example below
+
+```typescript
+import reflect from "tinspector"
+import { domain, authorize, route } from "plumier"
+
+@domain()
+export class Item {
+    constructor(
+        public name: string,
+        // basePrice only can be set by admin and viewed by admin
+        @authorize.role("admin")
+        public basePrice: number,
+        public price:number
+    ) { }
+}
+
+export class UsersController {
+    @route.get(":id")
+    @reflect.type(Item)
+    get(id:number): Item {   
+        // return single Item from db
+    }
+}
+```
+
+By using code above, the `basePrice` data will only visible if client has `admin` role, other than that will return `undefined`. 
+
+> Note that the `@reflect.type()` is required to describe the return type of the action.
+
+
+### Access Modifier 
+Its possible to control the access of the authorization to only get (read) or write (set) by specifying the proper decorator like below
+
+```typescript
+import reflect from "tinspector"
+import { domain, authorize, route } from "plumier"
+
+@domain()
+export class Item {
+    constructor(
+        public name: string,
+        @authorize.set("admin")
+        @authorize.get("admin", "staff")
+        public basePrice: number,
+        public price:number
+    ) { }
+}
+```
+
+Using above code `basePrice` will only can be set by `admin` and retrieved by both `staff` and `admin`. 
+
+> Note that `@authorize.role("admin")` is the same as provide `@authorize.get("admin")` and `@authorize.set("admin")`
+
 
 ## Global Authorization
 As mentioned above, by default all routes is secured when `JwtAuthFacility` applied, you can override this default behavior by applying `authorize` on the `JwtAuthFacility` configuration like below:
