@@ -108,10 +108,10 @@ export namespace bind {
     /**
      * Bind file upload into parameter
      *    
-     *     method(@bind.file("file") cookie:FormFile){}
+     *     method(@bind.formFile("file") cookie:FormFile){}
      */
     export function formFile(name: string) {
-        return bind.custom(ctx => (ctx.request as any).files?.[name])
+        return bind.custom(ctx => (ctx.request as any).files?.[name], "formFile")
     }
 
     /**

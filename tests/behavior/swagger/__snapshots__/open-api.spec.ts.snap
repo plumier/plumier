@@ -1,0 +1,1558 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Open API 3.0 Generation Component Schema Should able to mix registered an non registered object 1`] = `
+Object {
+  ".DefaultErrorMessage": Object {
+    "properties": Object {
+      "message": Object {
+        "type": "string",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  ".ValidationError": Object {
+    "properties": Object {
+      "message": Object {
+        "items": Object {
+          "properties": Object {
+            "messages": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "path": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "Animal": Object {
+    "properties": Object {
+      "name": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "tag": Object {
+        "properties": Object {
+          "animal": Object {
+            "$ref": "#/components/schemas/Animal",
+            "type": "object",
+          },
+          "tag": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should detect nested array of object component 1`] = `
+Object {
+  ".DefaultErrorMessage": Object {
+    "properties": Object {
+      "message": Object {
+        "type": "string",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  ".ValidationError": Object {
+    "properties": Object {
+      "message": Object {
+        "items": Object {
+          "properties": Object {
+            "messages": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "path": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "tag": Object {
+        "items": Object {
+          "properties": Object {
+            "tag": Object {
+              "type": "string",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should detect nested object component 1`] = `
+Object {
+  ".DefaultErrorMessage": Object {
+    "properties": Object {
+      "message": Object {
+        "type": "string",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  ".ValidationError": Object {
+    "properties": Object {
+      "message": Object {
+        "items": Object {
+          "properties": Object {
+            "messages": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "path": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "tag": Object {
+        "properties": Object {
+          "tag": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should detect object component 1`] = `
+Object {
+  ".DefaultErrorMessage": Object {
+    "properties": Object {
+      "message": Object {
+        "type": "string",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  ".ValidationError": Object {
+    "properties": Object {
+      "message": Object {
+        "items": Object {
+          "properties": Object {
+            "messages": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "path": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Durability Should transform if method return type not specified 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "type": "object",
+        },
+      },
+    },
+    "description": "Response body",
+  },
+  "422": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "$ref": "#/components/schemas/.ValidationError",
+        },
+      },
+    },
+    "description": "Validation error",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Durability Should transform if no parameter type specified 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "id",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Info Should able to override spec info 1`] = `
+Object {
+  "description": "Lorem ipsum",
+  "title": "Pet Api Explorer",
+  "version": "1.0.0",
+}
+`;
+
+exports[`Open API 3.0 Generation Info Should able to provide spec info 1`] = `
+Object {
+  "title": "Api Explorer",
+  "version": "1.0.0",
+}
+`;
+
+exports[`Open API 3.0 Generation Parameter Should detect cookie parameter with @bind.cookie() 1`] = `
+Array [
+  Object {
+    "in": "cookie",
+    "name": "id",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should detect header parameter with @bind.header() 1`] = `
+Array [
+  Object {
+    "in": "header",
+    "name": "id",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should detect header parameter with @bind.header() of type object 1`] = `
+Array [
+  Object {
+    "in": "header",
+    "name": "str",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "header",
+    "name": "num",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should detect name binding and model binding on post method 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "type",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should detect name binding on post method as body 1`] = `Array []`;
+
+exports[`Open API 3.0 Generation Parameter Should detect path parameter 1`] = `
+Array [
+  Object {
+    "in": "path",
+    "name": "id",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should detect path parameter with required 1`] = `
+Array [
+  Object {
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should detect query parameter 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "str",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "num",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "bool",
+    "required": false,
+    "schema": Object {
+      "type": "boolean",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "date",
+    "required": false,
+    "schema": Object {
+      "format": "date-time",
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should detect query parameter with @bind.query() 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "id",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should detect query parameter with @bind.query() of type object 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "str",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "num",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should detect query parameter with @bind.query() of type object with required 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "str",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "num",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should detect query parameter with required 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "str",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should ignore @bind.body() parameter 1`] = `Array []`;
+
+exports[`Open API 3.0 Generation Parameter Should ignore @bind.ctx() parameter 1`] = `Array []`;
+
+exports[`Open API 3.0 Generation Parameter Should ignore @bind.custom() parameter 1`] = `Array []`;
+
+exports[`Open API 3.0 Generation Parameter Should ignore @bind.fromFile() parameter 1`] = `Array []`;
+
+exports[`Open API 3.0 Generation Parameter Should ignore @bind.request() parameter 1`] = `Array []`;
+
+exports[`Open API 3.0 Generation Parameter Should ignore @bind.user() parameter 1`] = `Array []`;
+
+exports[`Open API 3.0 Generation Path Should combine path based on resource 1`] = `
+Object {
+  "components": Object {
+    "schemas": Object {
+      ".DefaultErrorMessage": Object {
+        "properties": Object {
+          "message": Object {
+            "type": "string",
+          },
+          "status": Object {
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
+      ".ValidationError": Object {
+        "properties": Object {
+          "message": Object {
+            "items": Object {
+              "properties": Object {
+                "messages": Object {
+                  "items": Object {
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+                "path": Object {
+                  "items": Object {
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+              },
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "status": Object {
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
+    },
+    "securitySchemes": Object {},
+  },
+  "info": Object {
+    "title": "Api Explorer",
+    "version": "1.0.0",
+  },
+  "openapi": "3.0.0",
+  "paths": Object {
+    "/users": Object {
+      "get": Object {
+        "parameters": Array [],
+        "responses": Object {
+          "200": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Response body",
+          },
+        },
+        "tags": Array [
+          "Users",
+        ],
+      },
+      "post": Object {
+        "parameters": Array [],
+        "responses": Object {
+          "200": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Response body",
+          },
+        },
+        "tags": Array [
+          "Users",
+        ],
+      },
+    },
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Path Should combine path using different controllers 1`] = `
+Object {
+  "components": Object {
+    "schemas": Object {
+      ".DefaultErrorMessage": Object {
+        "properties": Object {
+          "message": Object {
+            "type": "string",
+          },
+          "status": Object {
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
+      ".ValidationError": Object {
+        "properties": Object {
+          "message": Object {
+            "items": Object {
+              "properties": Object {
+                "messages": Object {
+                  "items": Object {
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+                "path": Object {
+                  "items": Object {
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+              },
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "status": Object {
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
+    },
+    "securitySchemes": Object {},
+  },
+  "info": Object {
+    "title": "Api Explorer",
+    "version": "1.0.0",
+  },
+  "openapi": "3.0.0",
+  "paths": Object {
+    "/users": Object {
+      "get": Object {
+        "parameters": Array [],
+        "responses": Object {
+          "200": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Response body",
+          },
+        },
+        "tags": Array [
+          "UsersEx",
+        ],
+      },
+      "post": Object {
+        "parameters": Array [],
+        "responses": Object {
+          "200": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Response body",
+          },
+        },
+        "tags": Array [
+          "Users",
+        ],
+      },
+    },
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Path Should convert path properly 1`] = `
+Object {
+  "/users/{id}/{type}/{index}": Object {
+    "get": Object {
+      "parameters": Array [
+        Object {
+          "in": "path",
+          "name": "id",
+          "required": false,
+          "schema": Object {
+            "type": "string",
+          },
+        },
+        Object {
+          "in": "path",
+          "name": "type",
+          "required": false,
+          "schema": Object {
+            "type": "string",
+          },
+        },
+        Object {
+          "in": "path",
+          "name": "index",
+          "required": false,
+          "schema": Object {
+            "type": "number",
+          },
+        },
+      ],
+      "responses": Object {
+        "200": Object {
+          "content": Object {
+            "application/json": Object {
+              "schema": Object {
+                "type": "object",
+              },
+            },
+          },
+          "description": "Response body",
+        },
+        "422": Object {
+          "content": Object {
+            "application/json": Object {
+              "schema": Object {
+                "$ref": "#/components/schemas/.ValidationError",
+              },
+            },
+          },
+          "description": "Validation error",
+        },
+      },
+      "tags": Array [
+        "Users",
+      ],
+    },
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body Should detect @bind.body() 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/User",
+        "type": "object",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/User",
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body Should detect @bind.body() with array element 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/User",
+        },
+        "type": "array",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/User",
+        },
+        "type": "array",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body Should detect @bind.body() with array element with required 1`] = `
+Object {
+  ".DefaultErrorMessage": Object {
+    "properties": Object {
+      "message": Object {
+        "type": "string",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  ".ValidationError": Object {
+    "properties": Object {
+      "message": Object {
+        "items": Object {
+          "properties": Object {
+            "messages": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "path": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "required": Array [
+      "userName",
+    ],
+    "type": "object",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body Should detect @bind.body() with required 1`] = `
+Object {
+  ".DefaultErrorMessage": Object {
+    "properties": Object {
+      "message": Object {
+        "type": "string",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  ".ValidationError": Object {
+    "properties": Object {
+      "message": Object {
+        "items": Object {
+          "properties": Object {
+            "messages": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "path": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "required": Array [
+      "userName",
+    ],
+    "type": "object",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body Should detect model binding 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/User",
+        "type": "object",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/User",
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body Should detect model binding with array 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/User",
+        },
+        "type": "array",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/User",
+        },
+        "type": "array",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body Should detect model binding with array with required 1`] = `
+Object {
+  ".DefaultErrorMessage": Object {
+    "properties": Object {
+      "message": Object {
+        "type": "string",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  ".ValidationError": Object {
+    "properties": Object {
+      "message": Object {
+        "items": Object {
+          "properties": Object {
+            "messages": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "path": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "required": Array [
+      "userName",
+    ],
+    "type": "object",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body Should detect model binding with required 1`] = `
+Object {
+  ".DefaultErrorMessage": Object {
+    "properties": Object {
+      "message": Object {
+        "type": "string",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  ".ValidationError": Object {
+    "properties": Object {
+      "message": Object {
+        "items": Object {
+          "properties": Object {
+            "messages": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "path": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "required": Array [
+      "userName",
+    ],
+    "type": "object",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body Should detect name binding 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "properties": Object {
+          "password": Object {
+            "type": "string",
+          },
+          "userName": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "properties": Object {
+          "password": Object {
+            "type": "string",
+          },
+          "userName": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body Should detect name binding with required 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "properties": Object {
+          "password": Object {
+            "type": "string",
+          },
+          "userName": Object {
+            "type": "string",
+          },
+        },
+        "required": Array [
+          "userName",
+        ],
+        "type": "object",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "properties": Object {
+          "password": Object {
+            "type": "string",
+          },
+          "userName": Object {
+            "type": "string",
+          },
+        },
+        "required": Array [
+          "userName",
+        ],
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Response Should detect array object response 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/User",
+        },
+        "type": "array",
+      },
+    },
+  },
+  "description": "Response body",
+}
+`;
+
+exports[`Open API 3.0 Generation Response Should detect array object response 2`] = `
+Object {
+  ".DefaultErrorMessage": Object {
+    "properties": Object {
+      "message": Object {
+        "type": "string",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  ".ValidationError": Object {
+    "properties": Object {
+      "message": Object {
+        "items": Object {
+          "properties": Object {
+            "messages": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "path": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Response Should detect nested object array response 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/User",
+        "type": "object",
+      },
+    },
+  },
+  "description": "Response body",
+}
+`;
+
+exports[`Open API 3.0 Generation Response Should detect nested object array response 2`] = `
+Object {
+  ".DefaultErrorMessage": Object {
+    "properties": Object {
+      "message": Object {
+        "type": "string",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  ".ValidationError": Object {
+    "properties": Object {
+      "message": Object {
+        "items": Object {
+          "properties": Object {
+            "messages": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "path": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "tag": Object {
+        "items": Object {
+          "properties": Object {
+            "tag": Object {
+              "type": "string",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Response Should detect nested object response 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/User",
+        "type": "object",
+      },
+    },
+  },
+  "description": "Response body",
+}
+`;
+
+exports[`Open API 3.0 Generation Response Should detect nested object response 2`] = `
+Object {
+  ".DefaultErrorMessage": Object {
+    "properties": Object {
+      "message": Object {
+        "type": "string",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  ".ValidationError": Object {
+    "properties": Object {
+      "message": Object {
+        "items": Object {
+          "properties": Object {
+            "messages": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "path": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "tag": Object {
+        "properties": Object {
+          "tag": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Response Should detect object response 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/User",
+        "type": "object",
+      },
+    },
+  },
+  "description": "Response body",
+}
+`;
+
+exports[`Open API 3.0 Generation Response Should detect object response 2`] = `
+Object {
+  ".DefaultErrorMessage": Object {
+    "properties": Object {
+      "message": Object {
+        "type": "string",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  ".ValidationError": Object {
+    "properties": Object {
+      "message": Object {
+        "items": Object {
+          "properties": Object {
+            "messages": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "path": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Security Should apply security on secured operation 1`] = `
+Array [
+  Object {
+    "bearer": Array [],
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Security Should apply security on secured operation by role 1`] = `
+Array [
+  Object {
+    "bearer": Array [],
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Security Should apply security response on secured operation by role 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "type": "object",
+        },
+      },
+    },
+    "description": "Response body",
+  },
+  "401": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "$ref": "#/components/schemas/.DefaultErrorMessage",
+        },
+      },
+    },
+    "description": "Unauthorized error",
+  },
+  "403": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "$ref": "#/components/schemas/.DefaultErrorMessage",
+        },
+      },
+    },
+    "description": "Forbidden error",
+  },
+  "422": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "$ref": "#/components/schemas/.ValidationError",
+        },
+      },
+    },
+    "description": "Validation error",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Security Should generate security component if authorization is activated 1`] = `
+Object {
+  "bearer": Object {
+    "bearerFormat": "JWT",
+    "scheme": "bearer",
+    "type": "http",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Security Should not apply security on public operation 1`] = `undefined`;
+
+exports[`Open API 3.0 Generation Security Should not apply security response on public operation 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "type": "object",
+        },
+      },
+    },
+    "description": "Response body",
+  },
+  "422": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "$ref": "#/components/schemas/.ValidationError",
+        },
+      },
+    },
+    "description": "Validation error",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Security Should not generate security component if authorization is not activated 1`] = `Object {}`;
