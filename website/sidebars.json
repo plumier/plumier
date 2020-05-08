@@ -20,6 +20,7 @@
       "refs/error-handling",
       "refs/serve-static",
       "refs/file-upload",
+      "refs/swagger",
       "refs/mongoose-helper",
       "refs/social-login",
       "refs/controller-invoker",
