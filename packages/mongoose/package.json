@@ -15,9 +15,9 @@
   "license": "MIT",
   "dependencies": {
     "@plumier/core": "1.0.0-rc.2",
-    "@types/mongoose": "^5.7.14",
+    "@types/mongoose": "^5.7.15",
     "chalk": "^4.0.0",
-    "mongoose": "^5.9.10"
+    "mongoose": "^5.9.12"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"
