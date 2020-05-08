@@ -32,12 +32,14 @@ function transformComponent(ctx: TransformContext): ComponentsObject {
     const getRef = refFactory(ctx.map)
     const types = Array.from(ctx.map.keys())
     const bearer: SecuritySchemeObject = { type: "http", scheme: "bearer", bearerFormat: "JWT" }
-    return {
+    const result:ComponentsObject = {
         schemas: types.reduce((a, b) => {
             return { ...a, [getRef(b)!]: transformObject(b, ctx) }
         }, defaultSchemas),
-        securitySchemes: ctx.config.enableAuthorization ? { bearer } : {}
     }
+    if(ctx.config.enableAuthorization)
+        result.securitySchemes = { bearer }
+    return result
 }
 
 export { transformComponent }
