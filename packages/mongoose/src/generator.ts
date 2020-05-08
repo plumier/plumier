@@ -5,7 +5,6 @@ import reflect, { ClassReflection, PropertyReflection } from "tinspector"
 import { createAnalyzer } from "./analyzer"
 import {
     ClassOptionDecorator,
-    Dockify,
     GeneratorHook,
     ModelFactory,
     ModelGenerator,
@@ -73,7 +72,7 @@ function modelFactory(store: Map<Class, ModelStore>): ModelFactory {
             const definition = getDefinition(type, store)
             const schema = new mongoose.Schema(definition, option)
             if(option.hook) option.hook(schema)
-            const mongooseModel = mongoose.model<Dockify<T>>(name, schema)
+            const mongooseModel = mongoose.model<T & mongoose.Document>(name, schema)
             store.set(type, { name, collectionName: mongooseModel.collection.name, definition, option })
             return mongooseModel
         }
