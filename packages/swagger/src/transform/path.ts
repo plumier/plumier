@@ -1,11 +1,10 @@
-import { HttpMethod, RouteInfo } from "@plumier/core"
+import { HttpMethod, RouteInfo, AuthorizeDecorator } from "@plumier/core"
 import { OperationObject, PathItemObject, PathObject, SecurityRequirementObject } from "openapi3-ts"
 
 import { transformBody } from "./body"
 import { transformParameters } from "./parameter"
 import { transformResponses } from "./response"
 import { TransformContext } from "./shared"
-import { AuthorizeDecorator } from 'core/src/authorization'
 
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
