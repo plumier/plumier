@@ -34,3 +34,6 @@ describe("PrintTable", () => {
         consoleLog.clearMock()
     })
 })
+
+
+

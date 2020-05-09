@@ -10,7 +10,7 @@ import { ActionContext, ActionResult, Invocation, Middleware, MetadataImpl, Glob
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- // 
 
-interface BindingDecorator { type: "ParameterBinding", process: CustomBinderFunction, name: string }
+interface BindingDecorator { type: "ParameterBinding", process: CustomBinderFunction, name: string, tag?:any }
 type RequestPart = keyof Request
 type HeaderPart = keyof IncomingHttpHeaders
 type CustomBinderFunction = (ctx: Context, metadata: GlobalMetadata) => any

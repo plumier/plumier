@@ -1,6 +1,9 @@
-import { ComponentsObject, SecuritySchemeObject, SchemaObject } from "openapi3-ts"
+import { Class, isCustomClass } from "@plumier/core"
+import { ComponentsObject, ReferenceObject, SchemaObject, SecuritySchemeObject } from "openapi3-ts"
+import reflect from "tinspector"
 
-import { refFactory, TransformContext, transformObject } from "./shared"
+import { refFactory, transformType } from "./schema"
+import { isRequired, TransformContext } from "./shared"
 
 const defaultSchemas: { [key: string]: SchemaObject } = {
     ".ValidationError": {
@@ -26,6 +29,33 @@ const defaultSchemas: { [key: string]: SchemaObject } = {
             message: { type: "string" }
         }
     }
+}
+
+function transformArray(obj: Class[], ctx: TransformContext): SchemaObject {
+    return {
+        type: "array",
+        items: transformObject(obj[0], ctx)
+    }
+}
+
+function transformObject(obj: Class | Class[], ctx: TransformContext): SchemaObject {
+    if (Array.isArray(obj)) return transformArray(obj, ctx)
+    const meta = reflect(obj)
+    const types = Array.from(ctx.map.keys())
+    const required = []
+    const properties = {} as { [propertyName: string]: (SchemaObject | ReferenceObject); }
+    for (const prop of meta.properties) {
+        const isReq = !!prop.decorators.find(isRequired)
+        if (isReq) required.push(prop.name)
+        // if the type is not registered then make inline object
+        if (isCustomClass(prop.type) && !types.some(x => x === prop.type))
+            properties[prop.name] = transformObject(prop.type, ctx)
+        else
+            properties[prop.name] = transformType(prop.type, ctx)
+    }
+    const result: SchemaObject = { type: "object", properties }
+    if (required.length > 0) result.required = required
+    return result
 }
 
 function transformComponent(ctx: TransformContext): ComponentsObject {

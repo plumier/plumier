@@ -1,4 +1,4 @@
-import { domain, route, val, authorize } from "@plumier/core"
+import { domain, route, val, authorize, FormFile } from "@plumier/core"
 import { SwaggerFacility } from "@plumier/swagger"
 import Plumier, { WebApiFacility } from "plumier"
 import { JwtAuthFacility } from '@plumier/jwt'
@@ -24,6 +24,9 @@ export class UsersController {
     @authorize.public()
     @route.get(":id")
     get(id: string) { }
+
+    @route.post("upload")
+    upload(user: FormFile) { }
 }
 
 new Plumier()

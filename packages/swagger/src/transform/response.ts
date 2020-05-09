@@ -1,7 +1,8 @@
 import { RouteInfo } from "@plumier/core"
 import { ResponseObject, ResponsesObject } from "openapi3-ts"
 
-import { TransformContext, transformTypeRef } from "./shared"
+import { transformType } from "./schema"
+import { TransformContext } from "./shared"
 
 function validationResponse(): ResponsesObject {
     return {
@@ -26,7 +27,7 @@ function securityResponse(description: string): ResponseObject {
 }
 
 function successResponse(route: RouteInfo, ctx: TransformContext) {
-    return !!route.action.returnType ? { schema: transformTypeRef(route.action.returnType, ctx) } : { schema: { type: "object" } }
+    return !!route.action.returnType ? { schema: transformType(route.action.returnType, ctx) } : { schema: { type: "object" } }
 }
 
 function transformResponses(route: RouteInfo, ctx: TransformContext, isPublic: boolean): { [status: string]: ResponseObject } {

@@ -1,11 +1,10 @@
 import { RouteInfo } from "@plumier/core"
-import { OpenApiBuilder, InfoObject } from "openapi3-ts"
+import { InfoObject, OpenApiBuilder } from "openapi3-ts"
 
 import { transformComponent } from "./component"
 import { transformPaths } from "./path"
+import { refFactory } from "./schema"
 import { TransformContext } from "./shared"
-import { refFactory } from "./shared"
-
 
 function transform(routes: RouteInfo[], ctx: TransformContext, info?: InfoObject) {
     const paths = transformPaths(routes, ctx)
