@@ -3,7 +3,7 @@ import { ParameterObject } from "openapi3-ts"
 import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
 
 import { transformType } from "./schema"
-import { isRequired, TransformContext } from "./shared"
+import { isBind, isName, isRequired, TransformContext, isDescription } from "./shared"
 
 interface ParameterNode {
     kind: "path" | "query" | "header" | "cookie" | "bodyCandidate"
@@ -16,7 +16,7 @@ interface ParameterNode {
 }
 
 function describeParameter(par: ParameterReflection, route: RouteInfo) {
-    const isBind = (dec: BindingDecorator): dec is BindingDecorator => dec.type === "ParameterBinding"
+
     const obj = <ParameterNode>{ kind: "bodyCandidate", name: par.name, typeName: par.typeClassification!, required: false, type: par.type, meta: par }
     const urlParams = route.url.split("/").filter(x => x.startsWith(":")).map(x => x.substr(1))
     if (urlParams.some(x => x === par.name)) {
@@ -24,6 +24,7 @@ function describeParameter(par: ParameterReflection, route: RouteInfo) {
     }
     for (const dec of par.decorators) {
         if (isRequired(dec)) obj.required = true
+        if (isName(dec)) obj.name = dec.alias
         else if (isBind(dec)) {
             obj.binding = dec
             if (dec.name === "query" || dec.name === "header" || dec.name === "cookie")
@@ -40,16 +41,20 @@ function describeParameters(route: RouteInfo) {
 function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObject[] {
     if (node.typeName === "Class") {
         const meta = reflect(node.type as Class)
-        return meta.properties.map(x => (<ParameterObject>{
-            name: x.name, in: node.kind, required: !!x.decorators.find(isRequired),
-            schema: transformType(x.type, ctx)
-        }))
+        return meta.properties.map(x => {
+            return (<ParameterObject>{
+                name: x.name, in: node.kind, required: !!x.decorators.find(isRequired),
+                schema: transformType(x.type, ctx, x.decorators),
+            })
+        })
     }
     else {
+        const desc = node.meta.decorators.find(isDescription)
         return [<ParameterObject>{
             name: node.name, in: node.kind,
             required: node.required,
-            schema: transformType(node.type, ctx)
+            schema: transformType(node.type, ctx, node.meta.decorators),
+            description: desc?.desc
         }]
     }
 }

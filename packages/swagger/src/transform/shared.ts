@@ -1,11 +1,15 @@
-import { Class, Configuration } from "@plumier/core"
-import { RequiredValidator, ValidatorDecorator } from "typedconverter"
+import { ApiRequiredDecorator, Class, Configuration, BindingDecorator, ApiFieldNameDecorator, ApiDescriptionDecorator, ApiResponseDecorator, ApiEnumDecorator } from "@plumier/core"
 
-const isRequired = (dec: ValidatorDecorator): dec is ValidatorDecorator => dec.type === "tc:validator" && dec.validator === RequiredValidator
+const isRequired = (dec: ApiRequiredDecorator): dec is ApiRequiredDecorator => dec.kind === "ApiRequired"
+const isBind = (dec: BindingDecorator): dec is BindingDecorator => dec.type === "ParameterBinding"
+const isName = (dec: ApiFieldNameDecorator): dec is ApiFieldNameDecorator => dec.kind === "ApiFieldName"
+const isDescription = (dec: ApiDescriptionDecorator): dec is ApiDescriptionDecorator => dec.kind === "ApiDescription"
+const isResponse = (dec: ApiResponseDecorator): dec is ApiResponseDecorator => dec.kind === "ApiResponse"
+const isEnums = (dec: ApiEnumDecorator): dec is ApiEnumDecorator => dec.kind === "ApiEnum"
 
 interface TransformContext {
     map: Map<Class, string>
     config: Configuration
 }
 
-export {isRequired, TransformContext}
+export { isRequired, isBind, isName, isDescription, isResponse, isEnums, TransformContext }

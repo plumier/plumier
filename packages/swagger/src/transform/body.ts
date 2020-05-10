@@ -24,19 +24,19 @@ function transformJsonBody(nodes: ParameterNode[], ctx: TransformContext): Reque
     // decorator binding
     const body = nodes.find(x => x.binding?.name === "body")
     if (body) {
-        const schema = transformType(body.type, ctx)
+        const schema = transformType(body.type, ctx, [])
         return { required: true, content: transformJsonContent(schema) }
     }
     // name binding
     const primitives = nodes.filter(x => x.typeName === "Primitive")
     if (primitives.length > 0 && primitives.length === nodes.length) {
-        const schema = transformType(primitives.map(x => x.meta), ctx)
+        const schema = transformType(primitives.map(x => x.meta), ctx, [])
         return { required: true, content: transformJsonContent(schema) }
     }
     // model binding
     const model = nodes.find(x => x.typeName === "Array" || x.typeName === "Class")
     if (model) {
-        const schema = transformType(model.type, ctx)
+        const schema = transformType(model.type, ctx, model.meta.decorators)
         return { required: true, content: transformJsonContent(schema) }
     }
 }
@@ -47,14 +47,13 @@ function transformFileBody(nodes: ParameterNode[], ctx: TransformContext): Reque
         // decorator binding
         if (node.binding?.name === "formFile") {
             // get field name from tag and force the type even if not specified in parameter
-            const fieldName = node.binding.tag
             const type = Array.isArray(node.type) ? [FormFile] : FormFile
-            params.push({ ...node.meta, name: fieldName, type })
+            params.push({ ...node.meta, name: node.name, type })
         }
         else
             params.push(node.meta)
     }
-    const schema = transformType(params, ctx)
+    const schema = transformType(params, ctx, [])
     return { required: true, content: transformFileContent(schema) }
 }
 

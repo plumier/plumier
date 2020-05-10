@@ -1,4 +1,4 @@
-import { bind, Class, domain, route, val, authorize, FormFile } from "@plumier/core"
+import { bind, Class, domain, route, val, authorize, FormFile, api, response, ActionResult } from "@plumier/core"
 import { refFactory, SwaggerFacility } from "@plumier/swagger"
 import { IncomingMessage } from "http"
 import { Context } from "koa"
@@ -987,6 +987,146 @@ describe("Open API 3.0 Generation", () => {
                 }
             }
             const app = await createSecureApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.responses).toMatchSnapshot()
+        })
+    })
+
+    describe("Decorators", () => {
+        it("Should able to mark required", async () => {
+            class UsersController {
+                @route.get("")
+                get(@api.params.required() id: string) {
+                    return {} as any
+                }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
+        })
+        it("Should able to rename field", async () => {
+            class UsersController {
+                @route.get("")
+                get(@api.params.name("data") id: string) {
+                    return {} as any
+                }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
+        })
+        it("Should able add enums information", async () => {
+            class UsersController {
+                @route.get("")
+                get(@api.params.enums("a", "b") id: "a" | "b") {
+                    return {} as any
+                }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
+        })
+        it("Should able add enums information with @val.enums()", async () => {
+            class UsersController {
+                @route.get("")
+                get(@val.enums({ enums: ["a", "b"] }) id: "a" | "b") {
+                    return {} as any
+                }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
+        })
+        it("Should able add enums information in object property", async () => {
+            @domain()
+            class User{
+                constructor(@val.enums({ enums: ["a", "b"] }) public id: "a" | "b"){}
+            }
+            class UsersController {
+                @route.post("")
+                save(user:User) {
+                    return {} as any
+                }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should able add enums information in name binding", async () => {
+            class UsersController {
+                @route.post("")
+                save(@val.enums({ enums: ["a", "b"] }) id: "a" | "b", name:string) {
+                    return {} as any
+                }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should able to add description on action", async () => {
+            class UsersController {
+                @route.post("")
+                @api.description("Lorem ipsum dolor sit amet")
+                save(name:string) {
+                    return {} as any
+                }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.description).toMatchSnapshot()
+        })
+        it("Should able to add description on parameter", async () => {
+            class UsersController {
+                @route.get("")
+                save(@api.description("Lorem ipsum dolor sit amet") name:string) {
+                    return {} as any
+                }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
+        })
+        it("Should able to change response type", async () => {
+            class UsersController {
+                @route.get("")
+                @api.response(200, "text/html", String)
+                save() {
+                    return new ActionResult("<div>hello</div>").setHeader("Content-Type", "text/html")
+                }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.responses).toMatchSnapshot()
+        })
+        it("Should provide html response on History Api Fallback", async () => {
+            class UsersController {
+                @route.get("")
+                @route.historyApiFallback()
+                save() {
+                    return new ActionResult("<div>hello</div>").setHeader("Content-Type", "text/html")
+                }
+            }
+            const app = await createApp(UsersController)
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)

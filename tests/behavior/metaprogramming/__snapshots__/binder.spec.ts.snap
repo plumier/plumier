@@ -28,7 +28,6 @@ Array [
               Object {
                 "name": "custom",
                 "process": customBinder,
-                "tag": undefined,
                 "type": "ParameterBinding",
                 Symbol(tinspector:decoratorOption): Object {
                   "allowMultiple": true,
@@ -82,7 +81,6 @@ Array [
                   Object {
                     "name": "custom",
                     "process": customBinder,
-                    "tag": undefined,
                     "type": "ParameterBinding",
                     Symbol(tinspector:decoratorOption): Object {
                       "allowMultiple": true,
@@ -120,7 +118,6 @@ Array [
           Object {
             "name": "custom",
             "process": customBinder,
-            "tag": undefined,
             "type": "ParameterBinding",
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,

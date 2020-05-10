@@ -259,6 +259,169 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Decorators Should able add enums information 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "id",
+    "required": false,
+    "schema": Object {
+      "enum": Array [
+        "a",
+        "b",
+      ],
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able add enums information in name binding 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "properties": Object {
+          "id": Object {
+            "enum": Array [
+              "a",
+              "b",
+            ],
+            "type": "string",
+          },
+          "name": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "properties": Object {
+          "id": Object {
+            "enum": Array [
+              "a",
+              "b",
+            ],
+            "type": "string",
+          },
+          "name": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able add enums information in object property 1`] = `
+Object {
+  "properties": Object {
+    "id": Object {
+      "enum": Array [
+        "a",
+        "b",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able add enums information with @val.enums() 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "id",
+    "required": false,
+    "schema": Object {
+      "enum": Array [
+        "a",
+        "b",
+      ],
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able to add description on action 1`] = `"Lorem ipsum dolor sit amet"`;
+
+exports[`Open API 3.0 Generation Decorators Should able to add description on parameter 1`] = `
+Array [
+  Object {
+    "description": "Lorem ipsum dolor sit amet",
+    "in": "query",
+    "name": "name",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able to change response type 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "text/html": Object {
+        "schema": Object {
+          "type": "string",
+        },
+      },
+    },
+    "description": "",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able to mark required 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able to rename field 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "data",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Decorators Should provide html response on History Api Fallback 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "text/html": Object {
+        "schema": Object {
+          "type": "string",
+        },
+      },
+    },
+    "description": "",
+  },
+}
+`;
+
 exports[`Open API 3.0 Generation Durability Should transform if method return type not specified 1`] = `
 Object {
   "200": Object {
