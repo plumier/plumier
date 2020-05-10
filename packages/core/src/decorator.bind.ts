@@ -111,7 +111,7 @@ export namespace bind {
      *     method(@bind.formFile("file") cookie:FormFile){}
      */
     export function formFile(name: string) {
-        return bind.custom(ctx => (ctx.request as any).files?.[name], "formFile")
+        return bind.custom(ctx => (ctx.request as any).files?.[name], "formFile", name)
     }
 
     /**
@@ -133,8 +133,8 @@ export namespace bind {
      * 
      * @param process callback function to process the Koa context
      */
-    export function custom(process: CustomBinderFunction, name: string = "custom") {
-        return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", process, name })
+    export function custom(process: CustomBinderFunction, name: string = "custom", tag?:any) {
+        return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", process, name, tag})
     }
 }
 

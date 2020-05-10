@@ -1,4 +1,4 @@
-import { bind, Class, domain, route, val, authorize } from "@plumier/core"
+import { bind, Class, domain, route, val, authorize, FormFile } from "@plumier/core"
 import { refFactory, SwaggerFacility } from "@plumier/swagger"
 import { IncomingMessage } from "http"
 import { Context } from "koa"
@@ -520,6 +520,75 @@ describe("Open API 3.0 Generation", () => {
             class UsersController {
                 @route.post("")
                 save(@val.required() userName: string, password: string) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+    })
+
+    describe("File Body Request", () => {
+        it("Should detect single name binding", async () => {
+            class UsersController {
+                @route.post("")
+                save(file: FormFile) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should detect name binding", async () => {
+            class UsersController {
+                @route.post("")
+                save(file: FormFile, type: string, count: number) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should detect decorator binding", async () => {
+            class UsersController {
+                @route.post("")
+                save(@bind.formFile("file") data: FormFile, type: string, count: number) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should detect decorator binding with array", async () => {
+            class UsersController {
+                @route.post("")
+                save(@bind.formFile("file") data: FormFile[]) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should detect decorator binding without FormFile type", async () => {
+            class UsersController {
+                @route.post("")
+                save(@bind.formFile("file") data: any) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should detect decorator binding without FormFile type but with array", async () => {
+            class UsersController {
+                @route.post("")
+                save(@bind.formFile("file") data: any[]) { }
             }
             const app = await createApp(UsersController)
             const { body } = await supertest(app.callback())

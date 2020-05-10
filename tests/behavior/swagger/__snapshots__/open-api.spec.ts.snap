@@ -297,6 +297,138 @@ Array [
 ]
 `;
 
+exports[`Open API 3.0 Generation File Body Request Should detect decorator binding 1`] = `
+Object {
+  "content": Object {
+    "multipart/form-data": Object {
+      "schema": Object {
+        "properties": Object {
+          "count": Object {
+            "type": "number",
+          },
+          "file": Object {
+            "format": "binary",
+            "type": "string",
+          },
+          "type": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation File Body Request Should detect decorator binding with array 1`] = `
+Object {
+  "content": Object {
+    "multipart/form-data": Object {
+      "schema": Object {
+        "properties": Object {
+          "file": Object {
+            "items": Object {
+              "format": "binary",
+              "type": "string",
+            },
+            "type": "array",
+          },
+        },
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation File Body Request Should detect decorator binding without FormFile type 1`] = `
+Object {
+  "content": Object {
+    "multipart/form-data": Object {
+      "schema": Object {
+        "properties": Object {
+          "file": Object {
+            "format": "binary",
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation File Body Request Should detect decorator binding without FormFile type but with array 1`] = `
+Object {
+  "content": Object {
+    "multipart/form-data": Object {
+      "schema": Object {
+        "properties": Object {
+          "file": Object {
+            "items": Object {
+              "format": "binary",
+              "type": "string",
+            },
+            "type": "array",
+          },
+        },
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation File Body Request Should detect name binding 1`] = `
+Object {
+  "content": Object {
+    "multipart/form-data": Object {
+      "schema": Object {
+        "properties": Object {
+          "count": Object {
+            "type": "number",
+          },
+          "file": Object {
+            "format": "binary",
+            "type": "string",
+          },
+          "type": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation File Body Request Should detect single name binding 1`] = `
+Object {
+  "content": Object {
+    "multipart/form-data": Object {
+      "schema": Object {
+        "properties": Object {
+          "file": Object {
+            "format": "binary",
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
 exports[`Open API 3.0 Generation Info Should able to override spec info 1`] = `
 Object {
   "description": "Lorem ipsum",
@@ -791,6 +923,7 @@ Object {
       "schema": Object {
         "items": Object {
           "$ref": "#/components/schemas/User",
+          "type": "object",
         },
         "type": "array",
       },
@@ -799,6 +932,7 @@ Object {
       "schema": Object {
         "items": Object {
           "$ref": "#/components/schemas/User",
+          "type": "object",
         },
         "type": "array",
       },
@@ -951,6 +1085,7 @@ Object {
       "schema": Object {
         "items": Object {
           "$ref": "#/components/schemas/User",
+          "type": "object",
         },
         "type": "array",
       },
@@ -959,6 +1094,7 @@ Object {
       "schema": Object {
         "items": Object {
           "$ref": "#/components/schemas/User",
+          "type": "object",
         },
         "type": "array",
       },
@@ -1165,6 +1301,7 @@ Object {
       "schema": Object {
         "items": Object {
           "$ref": "#/components/schemas/User",
+          "type": "object",
         },
         "type": "array",
       },
