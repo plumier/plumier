@@ -79,7 +79,7 @@ function transformParameters(route: RouteInfo, ctx: TransformContext) {
         }
     }
     // if in POST or PUT if all candidates is primitive type then its a name binding for body, return immediately
-    if ((route.method === "post" || route.method == "put") && bodyCandidates.every(x => x.typeName === "Primitive")) return result
+    if ((route.method === "post" || route.method === "put" || route.method === "patch") && bodyCandidates.every(x => x.typeName === "Primitive")) return result
     result.push(...transformNodes(bodyCandidates.filter(x => x.typeName === "Primitive" || !x.type).map(x => ({ ...x, kind: "query" })), ctx))
     return result
 }

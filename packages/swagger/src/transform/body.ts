@@ -60,7 +60,7 @@ function transformFileBody(nodes: ParameterNode[], ctx: TransformContext): Reque
 
 function transformBody(route: RouteInfo, ctx: TransformContext): RequestBodyObject | undefined {
     const isForm = (par: ParameterNode) => (Array.isArray(par.type) && par.type[0] === FormFile) || par.type === FormFile || par.binding?.name === "formFile"
-    if (route.method !== "post" && route.method !== "put") return
+    if (route.method !== "post" && route.method !== "put" && route.method !== "patch") return
     const pars = describeParameters(route).filter(x => x.kind === "bodyCandidate")
     if (pars.some(x => isForm(x)))
         return transformFileBody(pars, ctx)

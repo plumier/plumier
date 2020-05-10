@@ -429,6 +429,44 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation File Body Request Should detect single name binding with PATCH method 1`] = `
+Object {
+  "content": Object {
+    "multipart/form-data": Object {
+      "schema": Object {
+        "properties": Object {
+          "file": Object {
+            "format": "binary",
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation File Body Request Should detect single name binding with PUT method 1`] = `
+Object {
+  "content": Object {
+    "multipart/form-data": Object {
+      "schema": Object {
+        "properties": Object {
+          "file": Object {
+            "format": "binary",
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
 exports[`Open API 3.0 Generation Info Should able to override spec info 1`] = `
 Object {
   "description": "Lorem ipsum",
@@ -897,6 +935,46 @@ Object {
 `;
 
 exports[`Open API 3.0 Generation Request Body Should detect @bind.body() 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/User",
+        "type": "object",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/User",
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body Should detect @bind.body() with PATCH method 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/User",
+        "type": "object",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/User",
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body Should detect @bind.body() with PUT method 1`] = `
 Object {
   "content": Object {
     "application/json": Object {
