@@ -4,7 +4,7 @@ import { OperationObject, PathItemObject, PathObject } from "openapi3-ts"
 import { transformBody } from "./body"
 import { transformParameters } from "./parameter"
 import { transformResponses } from "./response"
-import { TransformContext } from './shared'
+import { TransformContext, isDescription } from './shared'
 
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
@@ -48,6 +48,7 @@ function transformPath(path: string, route: RouteInfo[], ctx: TransformContext):
 
 function transformOperation(route: RouteInfo, ctx: TransformContext): [HttpMethod, OperationObject] {
     const isPublic = !!route.action.decorators.find((x:AuthorizeDecorator) => x.type === "plumier-meta:authorize" && x.tag === "Public")
+    const desc = route.action.decorators.find(isDescription)
     const secured = ctx.config.enableAuthorization && !isPublic
     const bearer: any[] = []
     const parameters = transformParameters(route, ctx)
@@ -55,7 +56,7 @@ function transformOperation(route: RouteInfo, ctx: TransformContext): [HttpMetho
     const operation: OperationObject = {
         responses: transformResponses(route, ctx, isPublic),
         tags: [route.controller.name.replace("Controller", "")],
-        parameters, requestBody,
+        parameters, requestBody, description: desc?.desc
     }
     if (secured) operation.security = [{ bearer }]
     return [route.method, operation]

@@ -11,13 +11,14 @@ import {
     route,
     RouteAnalyzerIssue,
     RouteInfo,
+    api,
 } from "@plumier/core"
 import { exists, existsSync } from "fs"
 import { Context } from "koa"
 import send from "koa-send"
 import mime from "mime-types"
 import { extname } from "path"
-import { decorateMethod } from "tinspector"
+import { decorateMethod, mergeDecorator } from "tinspector"
 import { promisify } from "util"
 import { isAbsolute, join } from "path"
 
@@ -99,7 +100,7 @@ export class FileActionResult extends ActionResult {
 response.file = (path: string, opt?: ServeStaticOptions) => new FileActionResult(path, opt)
 
 route.historyApiFallback = () => {
-    return decorateMethod({ type: "HistoryApiFallback" })
+    return mergeDecorator(decorateMethod({ type: "HistoryApiFallback" }), api.response(200, "text/html", String))
 }
 
 

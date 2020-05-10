@@ -53,3 +53,20 @@ new Plumier()
             } 
         }))
 ```
+<!-- 
+## Decorator Customization (Optional)
+Plumier provided decorators to customize the appearance of the swagger UI 
+### Description 
+Description can be applied on the action or parameter like below
+
+```typescript
+import { api } from "plumier"
+
+class UsersController {
+    @api.description("Get user by user id")
+    @route.get(":id")
+    get(id:string){ }
+}
+```
+
+### Response  -->

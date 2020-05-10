@@ -51,7 +51,7 @@ function transformObject(obj: Class | Class[], ctx: TransformContext): SchemaObj
         if (isCustomClass(prop.type) && !types.some(x => x === prop.type))
             properties[prop.name] = transformObject(prop.type, ctx)
         else
-            properties[prop.name] = transformType(prop.type, ctx)
+            properties[prop.name] = transformType(prop.type, ctx, prop.decorators)
     }
     const result: SchemaObject = { type: "object", properties }
     if (required.length > 0) result.required = required
