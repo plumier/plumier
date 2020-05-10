@@ -375,6 +375,42 @@ describe("Open API 3.0 Generation", () => {
                 .expect(200)
             expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
         })
+        it("Should detect @bind.body() with PUT method", async () => {
+            @domain()
+            class User {
+                constructor(
+                    public userName: string,
+                    public password: string
+                ) { }
+            }
+            class UsersController {
+                @route.put("")
+                save(@bind.body() user: User, type: string) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].put.requestBody).toMatchSnapshot()
+        })
+        it("Should detect @bind.body() with PATCH method", async () => {
+            @domain()
+            class User {
+                constructor(
+                    public userName: string,
+                    public password: string
+                ) { }
+            }
+            class UsersController {
+                @route.patch("")
+                save(@bind.body() user: User, type: string) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].patch.requestBody).toMatchSnapshot()
+        })
         it("Should detect @bind.body() with required", async () => {
             @domain()
             class User {
@@ -540,6 +576,28 @@ describe("Open API 3.0 Generation", () => {
                 .post("/swagger/swagger.json")
                 .expect(200)
             expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should detect single name binding with PUT method", async () => {
+            class UsersController {
+                @route.put(":id")
+                save(id: string, file: FormFile) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users/{id}"].put.requestBody).toMatchSnapshot()
+        })
+        it("Should detect single name binding with PATCH method", async () => {
+            class UsersController {
+                @route.patch(":id")
+                save(id: string, file: FormFile) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users/{id}"].patch.requestBody).toMatchSnapshot()
         })
         it("Should detect name binding", async () => {
             class UsersController {
