@@ -7,7 +7,7 @@ import reflect from "tinspector"
 import { fixture } from "../helper"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 
-const timeout = 10000;
+const timeout = 20000;
 mongoose.set("useNewUrlParser", true)
 mongoose.set("useUnifiedTopology", true)
 
