@@ -5,15 +5,17 @@ import Plumier, { WebApiFacility } from "plumier"
 import supertest from "supertest"
 import reflect from "tinspector"
 import { fixture } from "../helper"
+import { MongoMemoryServer } from "mongodb-memory-server-global"
 
 const timeout = 10000;
 mongoose.set("useNewUrlParser", true)
 mongoose.set("useUnifiedTopology", true)
 
-const dbUri = "mongodb://localhost:27017/test-data"
-
 describe("Mongoose", () => {
-    beforeAll(async () => await mongoose.connect(dbUri))
+    beforeAll(async () => {
+        const mongod = new MongoMemoryServer()
+        await mongoose.connect(await mongod.getUri())
+    })
     afterAll(async () => await mongoose.disconnect())
     beforeEach(() => {
         mongoose.models = {}
@@ -546,7 +548,7 @@ describe("Mongoose", () => {
             class AnimalController { get() { return { id: 123 } } }
             const mock = consoleLog.startMock()
             const app = await fixture(AnimalController)
-                .set({mode: "debug"})
+                .set({ mode: "debug" })
                 .set(new MongooseFacility())
                 .initialize()
             await supertest(app.callback())
@@ -558,211 +560,22 @@ describe("Mongoose", () => {
     })
 })
 
-
-// describe("Dockify", () => {
-//     beforeAll(async () => await mongoose.connect(dbUri))
-//     afterAll(async () => await mongoose.disconnect())
-//     beforeEach(() => {
-//         mongoose.models = {}
-//         mongoose.connection.models = {}
-//     })
-
-//     it("Should not convert primitive types", async () => {
-//         const { model } = generator()
-//         @collection()
-//         class Dummy {
-//             constructor(
-//                 public stringProp: string,
-//                 public numberProp: number,
-//                 public booleanProp: boolean,
-//                 public dateProp: Date,
-//             ) { }
-//         }
-//         const DummyModel = model(Dummy)
-//         const result = await DummyModel.create(<Dummy>{
-//             stringProp: "string",
-//             numberProp: 123,
-//             booleanProp: true,
-//             dateProp: new Date(Date.UTC(2020, 2, 2))
-//         })
-//         expect(result).toMatchSnapshot()
-//     }, timeout)
-
-//     it("Should convert nested type", async () => {
-//         const { model } = generator()
-
-//         @collection()
-//         class Child {
-//             constructor(
-//                 public stringProp: string
-//             ) { }
-//         }
-//         @collection()
-//         class Dummy {
-//             constructor(
-//                 public child: Child
-//             ) { }
-//         }
-//         const DummyModel = model(Dummy)
-//         const dummy = await DummyModel.create(<Dummy>{
-//             child: { stringProp: "string" }
-//         })
-//         const result = await DummyModel.findById(dummy._id)
-//         expect(result!.child.id).toBeUndefined()
-//         expect(result).toMatchSnapshot()
-//     }, timeout)
-
-//     it("Should convert nested ref type", async () => {
-//         const { model } = generator()
-
-//         @collection({ toObject: { virtuals: true } })
-//         class Child {
-//             constructor(
-//                 public stringProp: string
-//             ) { }
-//         }
-//         @collection()
-//         class Dummy {
-//             constructor(
-//                 @collection.ref(Child)
-//                 public child: Child
-//             ) { }
-//         }
-//         const ChildModel = model(Child)
-//         const DummyModel = model(Dummy)
-//         const child = await ChildModel.create(<Child>{ stringProp: "string" })
-//         const dummy = await DummyModel.create(<Dummy>{
-//             child: child._id
-//         })
-//         const result = await DummyModel.findOne({child: child._id}).populate("child")
-//         expect(result!.child.id).toBe(child._id.toString())
-//         expect(result).toMatchSnapshot()
-//     }, timeout)
-
-//     it("Should convert nested nested ref type", async () => {
-//         const { model } = generator()
-
-//         @collection({ toObject: { virtuals: true } })
-//         class GrandChild {
-//             constructor(
-//                 public stringProp: string
-//             ) { }
-//         }
-//         @collection({ toObject: { virtuals: true } })
-//         class Child {
-//             constructor(
-//                 @collection.ref(GrandChild)
-//                 public child: GrandChild
-//             ) { }
-//         }
-//         @collection()
-//         class Dummy {
-//             constructor(
-//                 @collection.ref(Child)
-//                 public child: Child
-//             ) { }
-//         }
-//         const GrandChildModel = model(GrandChild)
-//         const ChildModel = model(Child)
-//         const DummyModel = model(Dummy)
-//         const grandChild = await GrandChildModel.create(<GrandChild>{ stringProp: "string" })
-//         const child = await ChildModel.create(<Child>{ child: grandChild._id })
-//         const dummy = await DummyModel.create(<Dummy>{ child: child._id })
-//         const result = await DummyModel.findById(dummy._id).populate({
-//             path: "child",
-//             populate: {
-//                 path: "child"
-//             }
-//         })
-//         expect(result!.child.id).toBe(child._id.toString())
-//         expect(result!.child.child.id).toBe(grandChild._id.toString())
-//         expect(result).toMatchSnapshot()
-//     }, timeout)
-
-//     it("Should convert nested array ref type", async () => {
-//         const { model } = generator()
-
-//         @collection({ toObject: { virtuals: true } })
-//         class Child {
-//             constructor(
-//                 public stringProp: string
-//             ) { }
-//         }
-//         @collection()
-//         class Dummy {
-//             constructor(
-//                 @collection.ref([Child])
-//                 public child: Child[]
-//             ) { }
-//         }
-//         const ChildModel = model(Child)
-//         const DummyModel = model(Dummy)
-//         const child = await ChildModel.create(<Child>{ stringProp: "string" })
-//         const dummy = await DummyModel.create(<Dummy>{
-//             child: [child._id]
-//         })
-//         const result = await DummyModel.findById(dummy._id).populate("child")
-//         expect(result!.child[0].id).toBe(child._id.toString())
-//         expect(result).toMatchSnapshot()
-//     }, timeout)
-
-//     it("Should convert nested nested array ref type", async () => {
-//         const { model } = generator()
-
-//         @collection({ toObject: { virtuals: true } })
-//         class GrandChild {
-//             constructor(
-//                 public stringProp: string
-//             ) { }
-//         }
-//         @collection({ toObject: { virtuals: true } })
-//         class Child {
-//             constructor(
-//                 @collection.ref([GrandChild])
-//                 public child: GrandChild[]
-//             ) { }
-//         }
-//         @collection()
-//         class Dummy {
-//             constructor(
-//                 @collection.ref([Child])
-//                 public child: Child[]
-//             ) { }
-//         }
-//         const GrandChildModel = model(GrandChild)
-//         const ChildModel = model(Child)
-//         const DummyModel = model(Dummy)
-//         const grandChild = await GrandChildModel.create(<GrandChild>{ stringProp: "string" })
-//         const child = await ChildModel.create(<Child>{ child: [grandChild._id] })
-//         const dummy = await DummyModel.create(<Dummy>{ child: [child._id] })
-//         const result = await DummyModel.findById(dummy._id).populate({
-//             path: "child",
-//             populate: {
-//                 path: "child"
-//             }
-//         })
-//         expect(result!.child[0].id).toBe(child._id.toString())
-//         expect(result!.child[0].child[0].id).toBe(grandChild._id.toString())
-//         expect(result).toMatchSnapshot()
-//     }, timeout)
-// })
-
-
 describe("Facility", () => {
     describe("Automatically replace mongodb id into ObjectId on populate data", () => {
-        function createApp(controller: Class, model: Class[]) {
+        async function createApp(controller: Class, model: Class[]) {
+            const mongod = new MongoMemoryServer()
             const app = new Plumier()
             app.set(new WebApiFacility({ controller }))
             app.set(new MongooseFacility({
-                uri: "mongodb://localhost:27017/test-data"
+                uri: await mongod.getUri()
             }))
             app.set({ mode: "production" })
             return app.initialize()
         }
-    
+
         beforeEach(() => mongoose.models = {})
         afterEach(async () => await mongoose.disconnect())
-    
+
         it("Should work properly on Array", async () => {
             @collection()
             class Image {
@@ -801,7 +614,7 @@ describe("Facility", () => {
             expect(result!.images[0].name).toBe("Image1.jpg")
             expect(result!.images[1].name).toBe("Image2.jpg")
         }, timeout)
-    
+
         it("Should work properly on nested object", async () => {
             @collection()
             class Image {
@@ -828,7 +641,7 @@ describe("Facility", () => {
             }
             const koa = await createApp(AnimalController, [Image, Animal])
             const image1 = await new ImageModel({ name: "Image1.jpg" }).save()
-    
+
             const response = await supertest(koa.callback())
                 .post("/animal/save")
                 .send({ name: "Mimi", image: image1._id })
@@ -837,7 +650,7 @@ describe("Facility", () => {
                 .populate("image")
             expect(result!.image.name).toBe("Image1.jpg")
         }, timeout)
-    
+
         it("Should not convert non relational data", async () => {
             @collection()
             class Image {
@@ -854,22 +667,22 @@ describe("Facility", () => {
                 }
             }
             const koa = await createApp(AnimalController, [Image])
-    
+
             await supertest(koa.callback())
                 .get("/animal/" + mongoose.Types.ObjectId())
                 .expect(200)
             expect(fn.mock.calls[0][0]).toBe("string")
         }, timeout)
     })
-    
+
     describe("Default MongoDB Uri", () => {
         beforeEach(() => mongoose.models = {})
         afterEach(async () => await mongoose.disconnect())
-    
+
         class AnimalController {
-            get() {}
+            get() { }
         }
-    
+
         it("Should not connect if no URI provided nor environment variable", async () => {
             const connect = mongoose.connect
             mongoose.connect = jest.fn()
@@ -880,15 +693,16 @@ describe("Facility", () => {
             expect(mongoose.connect).not.toBeCalled()
             mongoose.connect = connect
         }, timeout)
-    
+
         it("Should check for PLUM_MONGODB_URI environment variable", async () => {
-            process.env.PLUM_MONGODB_URI = "mongodb://localhost:27017/lorem"
+            const mongod = new MongoMemoryServer()
+            process.env.PLUM_MONGODB_URI = await mongod.getUri()
             await fixture(AnimalController)
                 .set(new MongooseFacility())
                 .initialize()
             expect(mongoose.connection.readyState).toBe(1)
-            expect(mongoose.connection.db.databaseName).toBe("lorem")
+            expect(mongoose.connection.db.databaseName).toBe(await mongod.getDbName())
         }, timeout)
-    
+
     })
 })

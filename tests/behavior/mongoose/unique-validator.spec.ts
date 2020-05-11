@@ -4,13 +4,15 @@ import Mongoose from "mongoose"
 import { fixture } from "../helper"
 import supertest = require("supertest")
 import { decorate } from "tinspector"
+import { MongoMemoryServer } from 'mongodb-memory-server-global'
 
 const timeout = 10000;
 async function setup<T extends object>({ controller, domain, initUser, testUser, method }: { controller: Class; domain: Class; initUser?: T; testUser: T; method?: HttpMethod }) {
+    const mongod = new MongoMemoryServer()
     const httpMethod = method || "post"
     const koa = await fixture(controller)
         .set(new MongooseFacility({
-            uri: "mongodb://localhost:27017/test-data"
+            uri: await mongod.getUri()
         })).initialize()
     koa.on("error", () => { })
     //setup user
