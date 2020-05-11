@@ -7,9 +7,9 @@ import reflect from "tinspector"
 import { fixture } from "../helper"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 
-const timeout = 20000;
 mongoose.set("useNewUrlParser", true)
 mongoose.set("useUnifiedTopology", true)
+jest.setTimeout(20000)
 
 describe("Mongoose", () => {
     beforeAll(async () => {
@@ -44,7 +44,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should work with primitive array", async () => {
             const { model } = generator()
@@ -71,7 +71,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should work with nested model", async () => {
             const { model } = generator()
@@ -98,7 +98,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should work with nested array model", async () => {
             const { model } = generator()
@@ -126,7 +126,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should work with nested model with ref (populate)", async () => {
             const { model } = generator()
@@ -157,7 +157,7 @@ describe("Mongoose", () => {
             const saved = await DummyModel.findById(added._id)
                 .populate("child")
             expect(saved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should work with nested array with ref (populate)", async () => {
             const { model } = generator()
@@ -188,7 +188,7 @@ describe("Mongoose", () => {
             const saved = await DummyModel.findById(added._id)
                 .populate("children")
             expect(saved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should throw error when dependent type specified by ref (populate) not registered as model", async () => {
             const { model } = generator()
@@ -207,7 +207,7 @@ describe("Mongoose", () => {
                 ) { }
             }
             expect(() => model(Dummy)).toThrowErrorMatchingSnapshot()
-        }, timeout)
+        })
 
         it("Should able to rename collection with different name", async () => {
             const { model } = generator()
@@ -224,7 +224,7 @@ describe("Mongoose", () => {
             expect(mongoose.models.Dummy).toBeUndefined()
             expect(typeof mongoose.models.lorem).toBe("function")
             expect(DummyModel.collection.name).toBe("lorems")
-        }, timeout)
+        })
 
         it("Should able to rename collection with different name using object configuration", async () => {
             const { model } = generator()
@@ -241,7 +241,7 @@ describe("Mongoose", () => {
             expect(mongoose.models.Dummy).toBeUndefined()
             expect(typeof mongoose.models.lorem).toBe("function")
             expect(DummyModel.collection.name).toBe("lorems")
-        }, timeout)
+        })
 
         it("Should able to call model factory multiple time on the same model", async () => {
             const { model } = generator()
@@ -260,7 +260,7 @@ describe("Mongoose", () => {
             const otherAdded = await OtherDummyModel.create(<Dummy>{ stringProp: "strong" })
             const otherSaved = await OtherDummyModel.findById(otherAdded._id)
             expect(otherSaved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should able to call model factory multiple time on the same model with custom name", async () => {
             const { model } = generator()
@@ -283,7 +283,7 @@ describe("Mongoose", () => {
             expect(typeof mongoose.models.lorem).toBe("function")
             expect(DummyModel.collection.name).toBe("lorems")
             expect(OtherDummyModel.collection.name).toBe("lorems")
-        }, timeout)
+        })
     })
 
     describe("Schema Configuration", () => {
@@ -303,7 +303,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should able to use @schema.property() as noop decorator", async () => {
             const { model } = generator()
@@ -317,7 +317,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should able to specify default value", async () => {
             const { model } = generator()
@@ -336,7 +336,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should able to specify multiple configuration decorators", async () => {
             const { model } = generator()
@@ -353,7 +353,7 @@ describe("Mongoose", () => {
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
 
-        }, timeout)
+        })
 
         it("Should able to specify default value on base class", async () => {
             const { model } = generator()
@@ -375,7 +375,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should able specify extra configuration from factory", async () => {
             const { model } = generator()
@@ -392,7 +392,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should able to enable timestamps using decorator", async () => {
             const { model } = generator()
@@ -408,7 +408,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should able to enable timestamps using decorator from base class", async () => {
             const { model } = generator()
@@ -429,7 +429,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should able to override timestamps decorator from factory", async () => {
             const { model } = generator()
@@ -445,7 +445,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should able to hook schema generation", async () => {
             const fn = jest.fn()
@@ -465,7 +465,7 @@ describe("Mongoose", () => {
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
             expect(fn).toBeCalled()
-        }, timeout)
+        })
     })
 
     describe("Analyzer", () => {
@@ -482,7 +482,7 @@ describe("Mongoose", () => {
             }
             model(Dummy)
             expect(getAnalysis()).toMatchSnapshot()
-        }, timeout)
+        })
 
         it("Should print analysis", async () => {
             const { model, getAnalysis } = generator()
@@ -516,7 +516,7 @@ describe("Mongoose", () => {
             printAnalysis(getAnalysis())
             expect(mock.mock.calls).toMatchSnapshot()
             consoleLog.clearMock()
-        }, timeout)
+        })
 
         it("Should print analysis on global mode and facility", async () => {
             @collection({ timestamps: true })
@@ -556,7 +556,7 @@ describe("Mongoose", () => {
                 .expect(200, { id: 123 })
             expect(mock.mock.calls).toMatchSnapshot()
             consoleLog.clearMock()
-        }, timeout)
+        })
     })
 })
 
@@ -613,7 +613,7 @@ describe("Facility", () => {
                 .populate("images")
             expect(result!.images[0].name).toBe("Image1.jpg")
             expect(result!.images[1].name).toBe("Image2.jpg")
-        }, timeout)
+        })
 
         it("Should work properly on nested object", async () => {
             @collection()
@@ -649,7 +649,7 @@ describe("Facility", () => {
             const result = await AnimalModel.findById(response.body)
                 .populate("image")
             expect(result!.image.name).toBe("Image1.jpg")
-        }, timeout)
+        })
 
         it("Should not convert non relational data", async () => {
             @collection()
@@ -672,7 +672,7 @@ describe("Facility", () => {
                 .get("/animal/" + mongoose.Types.ObjectId())
                 .expect(200)
             expect(fn.mock.calls[0][0]).toBe("string")
-        }, timeout)
+        })
     })
 
     describe("Default MongoDB Uri", () => {
@@ -692,7 +692,7 @@ describe("Facility", () => {
                 .initialize()
             expect(mongoose.connect).not.toBeCalled()
             mongoose.connect = connect
-        }, timeout)
+        })
 
         it("Should check for PLUM_MONGODB_URI environment variable", async () => {
             const mongod = new MongoMemoryServer()
@@ -702,7 +702,7 @@ describe("Facility", () => {
                 .initialize()
             expect(mongoose.connection.readyState).toBe(1)
             expect(mongoose.connection.db.databaseName).toBe(await mongod.getDbName())
-        }, timeout)
+        })
 
     })
 })
