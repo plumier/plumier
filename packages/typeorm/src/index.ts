@@ -3,7 +3,7 @@ import { DefaultFacility, Class } from "@plumier/core"
 import { getMetadataArgsStorage, ConnectionOptions, createConnection } from "typeorm"
 import { noop } from "tinspector"
 
-export class TypeOrmFacility extends DefaultFacility {
+export class TypeORMFacility extends DefaultFacility {
     constructor(private option?: ConnectionOptions) { super() }
 
     setup() {
