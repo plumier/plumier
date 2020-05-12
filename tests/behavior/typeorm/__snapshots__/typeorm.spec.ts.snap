@@ -1,0 +1,108 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TypeOrm Facility Should able to reflect entity properties 1`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "num",
+    "type": Number,
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect entity properties with inheritance 1`] = `
+Array [
+  Object {
+    "name": "num",
+    "type": Number,
+  },
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect many to many relation 1`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "parent",
+    "type": Array [
+      Child,
+    ],
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to many relation 1`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "parent",
+    "type": Array [
+      Child,
+    ],
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to many relation 2`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "name",
+    "type": String,
+  },
+  Object {
+    "name": "entity",
+    "type": MyEntity,
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to one relation 1`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "parent",
+    "type": Parent,
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to one relation with inverse relation 1`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "parent",
+    "type": Parent,
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should throw error when no option specified 1`] = `
+Array [
+  Array [
+    [Error: No connection options were found in any of configurations file.],
+  ],
+]
+`;
