@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@plumier/core": "1.0.0-rc.2",
-    "@types/mongoose": "^5.7.15",
+    "@types/mongoose": "^5.7.16",
     "chalk": "^4.0.0",
     "mongoose": "^5.9.13"
   },
