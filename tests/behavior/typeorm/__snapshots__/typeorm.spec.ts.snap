@@ -1,364 +1,108 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`TypeOrm Facility Should able to reflect entity properties 1`] = `
-Object {
-  "ctor": Object {
-    "kind": "Constructor",
-    "name": "constructor",
-    "parameters": Array [],
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
   },
-  "decorators": Array [],
-  "kind": "Class",
-  "methods": Array [],
-  "name": "MyEntity",
-  "owner": Array [
-    Object,
-    MyEntity,
-  ],
-  "properties": Array [
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "kind": "Property",
-      "name": "id",
-      "owner": Array [
-        MyEntity,
-      ],
-      "set": undefined,
-      "type": Number,
-      "typeClassification": "Primitive",
-    },
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "kind": "Property",
-      "name": "num",
-      "owner": Array [
-        MyEntity,
-      ],
-      "set": undefined,
-      "type": Number,
-      "typeClassification": "Primitive",
-    },
-  ],
-  "super": Object,
-  "type": MyEntity,
-  "typeClassification": "Class",
-}
+  Object {
+    "name": "num",
+    "type": Number,
+  },
+]
 `;
 
 exports[`TypeOrm Facility Should able to reflect entity properties with inheritance 1`] = `
-Object {
-  "ctor": Object {
-    "kind": "Constructor",
-    "name": "constructor",
-    "parameters": Array [],
+Array [
+  Object {
+    "name": "num",
+    "type": Number,
   },
-  "decorators": Array [],
-  "kind": "Class",
-  "methods": Array [],
-  "name": "ChildEntity",
-  "owner": Array [
-    Object,
-    MyEntity,
-    ChildEntity,
-  ],
-  "properties": Array [
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "kind": "Property",
-      "name": "num",
-      "owner": Array [
-        ChildEntity,
-      ],
-      "set": undefined,
-      "type": Number,
-      "typeClassification": "Primitive",
-    },
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "kind": "Property",
-      "name": "id",
-      "owner": Array [
-        MyEntity,
-      ],
-      "set": undefined,
-      "type": Number,
-      "typeClassification": "Primitive",
-    },
-  ],
-  "super": MyEntity,
-  "type": ChildEntity,
-  "typeClassification": "Class",
-}
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect many to many relation 1`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "parent",
+    "type": Array [
+      Child,
+    ],
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to many relation 1`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "parent",
+    "type": Array [
+      Child,
+    ],
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to many relation 2`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "name",
+    "type": String,
+  },
+  Object {
+    "name": "entity",
+    "type": MyEntity,
+  },
+]
 `;
 
 exports[`TypeOrm Facility Should able to reflect one to one relation 1`] = `
-Object {
-  "ctor": Object {
-    "kind": "Constructor",
-    "name": "constructor",
-    "parameters": Array [],
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
   },
-  "decorators": Array [],
-  "kind": "Class",
-  "methods": Array [],
-  "name": "MyEntity",
-  "owner": Array [
-    Object,
-    MyEntity,
-  ],
-  "properties": Array [
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "kind": "Property",
-      "name": "id",
-      "owner": Array [
-        MyEntity,
-      ],
-      "set": undefined,
-      "type": Number,
-      "typeClassification": "Primitive",
-    },
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "kind": "Property",
-      "name": "parent",
-      "owner": Array [
-        MyEntity,
-      ],
-      "set": undefined,
-      "type": Parent,
-      "typeClassification": "Class",
-    },
-  ],
-  "super": Object,
-  "type": MyEntity,
-  "typeClassification": "Class",
-}
+  Object {
+    "name": "parent",
+    "type": Parent,
+  },
+]
 `;
 
 exports[`TypeOrm Facility Should able to reflect one to one relation with inverse relation 1`] = `
-Object {
-  "ctor": Object {
-    "kind": "Constructor",
-    "name": "constructor",
-    "parameters": Array [],
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
   },
-  "decorators": Array [],
-  "kind": "Class",
-  "methods": Array [],
-  "name": "MyEntity",
-  "owner": Array [
-    Object,
-    MyEntity,
-  ],
-  "properties": Array [
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "kind": "Property",
-      "name": "id",
-      "owner": Array [
-        MyEntity,
-      ],
-      "set": undefined,
-      "type": Number,
-      "typeClassification": "Primitive",
-    },
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "kind": "Property",
-      "name": "parent",
-      "owner": Array [
-        MyEntity,
-      ],
-      "set": undefined,
-      "type": Parent,
-      "typeClassification": "Class",
-    },
-  ],
-  "super": Object,
-  "type": MyEntity,
-  "typeClassification": "Class",
-}
+  Object {
+    "name": "parent",
+    "type": Parent,
+  },
+]
 `;
 
-exports[`TypeOrm Facility Should work 1`] = `
-Object {
-  "ctor": Object {
-    "kind": "Constructor",
-    "name": "constructor",
-    "parameters": Array [],
-  },
-  "decorators": Array [],
-  "kind": "Class",
-  "methods": Array [],
-  "name": "Vente",
-  "owner": Array [
-    Object,
-    Vente,
+exports[`TypeOrm Facility Should throw error when no option specified 1`] = `
+Array [
+  Array [
+    [Error: No connection options were found in any of configurations file.],
   ],
-  "properties": Array [
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "kind": "Property",
-      "name": "id",
-      "owner": Array [
-        Vente,
-      ],
-      "set": undefined,
-      "type": Object,
-      "typeClassification": "Primitive",
-    },
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "kind": "Property",
-      "name": "numero",
-      "owner": Array [
-        Vente,
-      ],
-      "set": undefined,
-      "type": Object,
-      "typeClassification": "Primitive",
-    },
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "kind": "Property",
-      "name": "date",
-      "owner": Array [
-        Vente,
-      ],
-      "set": undefined,
-      "type": Object,
-      "typeClassification": "Primitive",
-    },
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "kind": "Property",
-      "name": "tva",
-      "owner": Array [
-        Vente,
-      ],
-      "set": undefined,
-      "type": Object,
-      "typeClassification": "Primitive",
-    },
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "kind": "Property",
-      "name": "venteArticles",
-      "owner": Array [
-        Vente,
-      ],
-      "set": undefined,
-      "type": Array,
-      "typeClassification": "Primitive",
-    },
-  ],
-  "super": Object,
-  "type": Vente,
-  "typeClassification": "Class",
-}
+]
 `;

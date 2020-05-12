@@ -24,7 +24,7 @@
     "chalk": "^4.0.0",
     "glob": "^7.1.6",
     "path-to-regexp": "^6.1.0",
-    "tinspector": "^3.0.3",
+    "tinspector": "^3.0.4",
     "tslib": "^1.11.2",
     "typedconverter": "^2.3.2"
   },

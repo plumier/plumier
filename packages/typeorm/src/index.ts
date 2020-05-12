@@ -1,5 +1,5 @@
 
-import { DefaultFacility } from "@plumier/core"
+import { DefaultFacility, Class } from "@plumier/core"
 import { getMetadataArgsStorage, ConnectionOptions, createConnection } from "typeorm"
 import { noop } from "tinspector"
 
@@ -12,12 +12,16 @@ export class TypeOrmFacility extends DefaultFacility {
             Reflect.decorate([noop()], (col.target as Function).prototype, col.propertyName, void 0)
         }
         for (const col of storage.relations) {
-            Reflect.decorate([noop()], (col.target as Function).prototype, col.propertyName, void 0)
+            const rawType: Class = (col.type as Function)()
+            const type = col.relationType === "one-to-many" || col.relationType === "many-to-many" ? [rawType] : rawType
+            Reflect.decorate([noop(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
         }
     }
 
     async initialize() {
         if (this.option)
             await createConnection(this.option)
+        else 
+            await createConnection()
     }
 }
