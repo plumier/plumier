@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, getConnection, OneToMany, OneToOne, JoinColumn, ManyToMany, ManyToOne, JoinTable } from "typeorm"
 import { fixture } from '../helper'
-import { TypeOrmFacility, } from '@plumier/typeorm'
+import { TypeORMFacility, } from '@plumier/typeorm'
 import reflect from "tinspector"
 import { Class } from '@plumier/core'
 
@@ -10,7 +10,7 @@ describe("TypeOrm", () => {
             get() { }
         }
         return fixture(UsersController)
-            .set(new TypeOrmFacility({
+            .set(new TypeORMFacility({
                 type: "sqlite",
                 database: ":memory:",
                 dropSchema: true,
@@ -139,7 +139,7 @@ describe("TypeOrm", () => {
             }
             try {
                 await fixture(UsersController)
-                    .set(new TypeOrmFacility())
+                    .set(new TypeORMFacility())
                     .initialize()
             }
             catch (e) {
