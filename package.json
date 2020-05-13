@@ -52,7 +52,7 @@
 		"jsonwebtoken": "^8.5.1",
 		"koa-better-body": "^3.3.9",
 		"koa-router": "^8.0.8",
-		"lerna": "3.20.2",
+		"lerna": "3.21.0",
 		"mongodb-memory-server-global": "^6.6.0",
 		"pre-push": "^0.1.1",
 		"reflect-metadata": "^0.1.13",
