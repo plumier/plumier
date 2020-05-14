@@ -1,5 +1,5 @@
-import { AuthorizeDecorator, HttpMethod, RouteInfo } from "@plumier/core"
-import { OperationObject, PathItemObject, PathObject } from "openapi3-ts"
+import { AuthorizeDecorator, HttpMethod, RouteInfo, RouteMetadata, VirtualRoute } from "@plumier/core"
+import { OperationObject, PathItemObject, PathObject, PathsObject } from "openapi3-ts"
 
 import { transformBody } from "./body"
 import { transformParameters } from "./parameter"
@@ -27,10 +27,29 @@ function transformUrl(url: string) {
 // ----------------------------- TRANSFORM ----------------------------- //
 // --------------------------------------------------------------------- //
 
-function transformPaths(routes: RouteInfo[], ctx: TransformContext) {
-    const group = groupRoutes(routes)
+function transformVirtualRoutes(routes: VirtualRoute[], ctx: TransformContext): [string, PathItemObject][] {
+    return routes.map(x => {
+        return [x.url, <PathItemObject>{
+            [`${x.method}`]: x.openApiOperation ?? <OperationObject>{
+                responses: {
+                    "200": {
+                        description: "Response body", content: { "application/json": {} }
+                    }
+                },
+                tags: [x.provider.name],
+                parameters: [],
+                requestBody: undefined
+            }
+        }]
+    })
+}
+
+function transformPaths(routes: RouteMetadata[], ctx: TransformContext) {
+    const virtualPaths = transformVirtualRoutes(routes.filter((x): x is VirtualRoute => x.kind === "VirtualRoute"), ctx)
+    const group = groupRoutes(routes.filter((x): x is RouteInfo => x.kind === "ActionRoute"))
     return Object.keys(group)
         .map(x => transformPath(x, group[x], ctx))
+        .concat(virtualPaths)
         .reduce((result, [path, item]) => {
             result[path] = item
             return result
@@ -47,7 +66,7 @@ function transformPath(path: string, route: RouteInfo[], ctx: TransformContext):
 }
 
 function transformOperation(route: RouteInfo, ctx: TransformContext): [HttpMethod, OperationObject] {
-    const isPublic = !!route.action.decorators.find((x:AuthorizeDecorator) => x.type === "plumier-meta:authorize" && x.tag === "Public")
+    const isPublic = !!route.action.decorators.find((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize" && x.tag === "Public")
     const desc = route.action.decorators.find(isDescription)
     const secured = ctx.config.enableAuthorization && !isPublic
     const bearer: any[] = []

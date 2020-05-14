@@ -1,4 +1,4 @@
-import { consoleLog } from "@plumier/core"
+import { consoleLog, DefaultFacility, PlumierApplication, generateRoutes, Class, cleanupConsole, RouteMetadata } from "@plumier/core"
 import { join } from "path"
 import Plumier, { domain, RestfulApiFacility, route } from "plumier"
 import Supertest from "supertest"
@@ -133,6 +133,15 @@ describe("Route Generator", () => {
         await Supertest(app.callback())
             .get("/beast/method")
             .expect(200)
+    })
+
+    it("Should able to set metadata overridable", async () => {
+        @route.root("beast")
+        class AnimalController {
+            method() {
+            }
+        }
+        expect(generateRoutes(AnimalController, { overridable: true })).toMatchSnapshot()
     })
 
     describe("GET route", () => {
@@ -1466,5 +1475,103 @@ describe("Router with external controller", () => {
         expect((console.log as any).mock.calls[2][0]).toContain("No controller found")
         consoleLog.clearMock()
     })
+})
+
+describe("Extend Route Generator", () => {
+    it("Should able to provide ActionRoutes from Facility", async () => {
+        class AnimalController {
+            @route.get()
+            method() { }
+        }
+        class OtherController {
+            @route.get()
+            method() { }
+        }
+        class MyFacility extends DefaultFacility {
+            constructor(private ctl: Class) { super() }
+            async generateRoutes(app: Readonly<PlumierApplication>) {
+                return generateRoutes(this.ctl)
+            }
+        }
+        const mock = consoleLog.startMock()
+        await fixture(AnimalController, { mode: "debug" })
+            .set(new MyFacility(OtherController))
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+    it("Should able to provide VirtualRoutes from Facility", async () => {
+        class AnimalController {
+            @route.get()
+            method() { }
+        }
+        class MyFacility extends DefaultFacility {
+            constructor() { super() }
+            async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> {
+                return [{
+                    kind: "VirtualRoute",
+                    method: "get",
+                    overridable: false,
+                    provider: MyFacility,
+                    url: "/other/get"
+                }]
+            }
+        }
+        const mock = consoleLog.startMock()
+        await fixture(AnimalController, { mode: "debug" })
+            .set(new MyFacility())
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+    it("Should duplicate route if non overridable", async () => {
+        class AnimalController {
+            @route.get()
+            method() { }
+        }
+        class MyFacility extends DefaultFacility {
+            constructor() { super() }
+            async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> {
+                return [{
+                    kind: "VirtualRoute",
+                    method: "get",
+                    overridable: false,
+                    provider: MyFacility,
+                    url: "/animal/method"
+                }]
+            }
+        }
+        const mock = consoleLog.startMock()
+        await fixture(AnimalController, { mode: "debug" })
+            .set(new MyFacility())
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+    it("Should not duplicate route if overridable", async () => {
+        class AnimalController {
+            @route.get()
+            method() { }
+        }
+        class MyFacility extends DefaultFacility {
+            constructor() { super() }
+            async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> {
+                return [{
+                    kind: "VirtualRoute",
+                    method: "get",
+                    overridable: true,
+                    provider: MyFacility,
+                    url: "/animal/method"
+                }]
+            }
+        }
+        const mock = consoleLog.startMock()
+        await fixture(AnimalController, { mode: "debug" })
+            .set(new MyFacility())
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+
 })
 

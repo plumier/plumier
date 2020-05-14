@@ -6,6 +6,7 @@ import {
     PlumierApplication,
     response,
     RouteInfo,
+    RouteMetadata,
 } from "@plumier/core"
 import { ServeStaticMiddleware } from "@plumier/serve-static"
 import { join } from "path"
@@ -42,7 +43,7 @@ export class SwaggerFacility extends DefaultFacility {
             this.opt.endpoint = this.opt.endpoint.substring(0, this.opt.endpoint.length - 6)
     }
 
-    async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[]): Promise<void> {
+    async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]): Promise<void> {
         const path = dist.getAbsoluteFSPath()
         const spec = transform(routes, { map: new Map(), config: app.config }, this.opt.info)
         app.use(new SwaggerMiddleware(spec, this.opt))

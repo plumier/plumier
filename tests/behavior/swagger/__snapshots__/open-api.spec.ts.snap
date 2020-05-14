@@ -1932,3 +1932,36 @@ Object {
 `;
 
 exports[`Open API 3.0 Generation Security Should not generate security component if authorization is not activated 1`] = `undefined`;
+
+exports[`Open API 3.0 Generation Virtual Routes Should able to define custom specification 1`] = `
+Object {
+  "get": Object {
+    "description": "Lorem ipsum",
+    "parameters": Object {
+      "name": Object {
+        "description": "Lorem ipsum",
+        "in": "query",
+      },
+    },
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Virtual Routes Should transform virtual route 1`] = `
+Object {
+  "get": Object {
+    "parameters": Array [],
+    "responses": Object {
+      "200": Object {
+        "content": Object {
+          "application/json": Object {},
+        },
+        "description": "Response body",
+      },
+    },
+    "tags": Array [
+      "MyFacility",
+    ],
+  },
+}
+`;

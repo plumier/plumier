@@ -1,4 +1,4 @@
-import { consoleLog, RouteAnalyzerFunction, RouteInfo, cleanupConsole } from "@plumier/core"
+import { consoleLog, RouteAnalyzerFunction, RouteInfo, cleanupConsole, RouteMetadata, DefaultFacility, VirtualRoute } from "@plumier/core"
 import Plumier, { domain, RestfulApiFacility, route } from "plumier"
 import reflect from "tinspector"
 import { JwtAuthFacility } from '@plumier/jwt'
@@ -82,6 +82,47 @@ describe("Route Analyzer", () => {
         consoleLog.clearMock()
     })
 
+    it("Should identify duplicate route from other facility if not overrideable", async () => {
+        class BeastController {
+            @route.get()
+            method(a: number) { }
+        }
+        class MyFacility extends DefaultFacility {
+            async generateRoutes(): Promise<RouteMetadata[]> {
+                return [<VirtualRoute>{ kind: "VirtualRoute", method: "get", overridable: false, provider: MyFacility, url: "/beast/method" }]
+            }
+        }
+        const mock = consoleLog.startMock()
+        const app = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set(new MyFacility())
+            .set({ controller: [BeastController] })
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+
+    it("Should not detect duplicate route if overridable", async () => {
+        class BeastController {
+            otherMethod(){}
+            @route.get()
+            method(a: number) { }
+        }
+        class MyFacility extends DefaultFacility {
+            async generateRoutes(): Promise<RouteMetadata[]> {
+                return [<VirtualRoute>{ kind: "VirtualRoute", method: "get", overridable: true, provider: MyFacility, url: "/beast/method" }]
+            }
+        }
+        const mock = consoleLog.startMock()
+        const app = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set(new MyFacility())
+            .set({ controller: [BeastController] })
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+
     it("Should identify if model doesn't have type information for parameter binding", async () => {
         class AnimalModel {
             constructor(
@@ -157,7 +198,7 @@ describe("Route Analyzer", () => {
             method() { }
         }
         const mock = consoleLog.startMock()
-        const analyzer: RouteAnalyzerFunction = (route: RouteInfo, allRoutes: RouteInfo[]) => ({ type: "error", message: "PLUM1005: Just an error" })
+        const analyzer: RouteAnalyzerFunction = (route: RouteMetadata, allRoutes: RouteMetadata[]) => ({ type: "error", message: "PLUM1005: Just an error" })
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ analyzers: [analyzer] })

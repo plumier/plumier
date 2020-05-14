@@ -1,9 +1,19 @@
 import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
-import { convert, VisitorExtension, Result } from "typedconverter"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import { HttpStatus } from "./http-status"
-import { ActionContext, ActionResult, Configuration, HttpStatusError, Invocation, Middleware, RouteInfo, MetadataImpl, Metadata } from "./types"
+import {
+    ActionContext,
+    ActionResult,
+    Configuration,
+    HttpStatusError,
+    Invocation,
+    Metadata,
+    MetadataImpl,
+    Middleware,
+    RouteInfo,
+    RouteMetadata,
+} from "./types"
 
 
 // --------------------------------------------------------------------- //
@@ -164,14 +174,16 @@ async function checkUserAccessToParameters(meta: ParameterReflection[], values: 
 // --------------------------- AUTHORIZATION --------------------------- //
 // --------------------------------------------------------------------- //
 
-function updateRouteAuthorizationAccess(routes: RouteInfo[], config: Configuration) {
+function updateRouteAuthorizationAccess(routes: RouteMetadata[], config: Configuration) {
     if (config.enableAuthorization) {
         routes.forEach(x => {
-            const decorators = getAuthorizeDecorators(x, config.globalAuthorizationDecorators)
-            if (decorators.length > 0)
-                x.access = decorators.map(x => x.tag).join("|")
-            else
-                x.access = "Authenticated"
+            if(x.kind === "ActionRoute"){
+                const decorators = getAuthorizeDecorators(x, config.globalAuthorizationDecorators)
+                if (decorators.length > 0)
+                    x.access = decorators.map(x => x.tag).join("|")
+                else
+                    x.access = "Authenticated"
+            } 
         })
     }
 }

@@ -1,0 +1,126 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Extend Route Generator Should able to provide ActionRoutes from Facility 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method() -> GET /animal/method",
+  ],
+  Array [
+    "2. OtherController.method()  -> GET /other/method",
+  ],
+  Array [],
+]
+`;
+
+exports[`Extend Route Generator Should able to provide VirtualRoutes from Facility 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method() -> GET /animal/method",
+  ],
+  Array [
+    "2. MyFacility                -> GET /other/get",
+  ],
+  Array [],
+]
+`;
+
+exports[`Extend Route Generator Should duplicate route if non overridable 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method() -> GET /animal/method
+ - error PLUM1001: Duplicate route found in AnimalController.method() MyFacility",
+  ],
+  Array [
+    "2. MyFacility                -> GET /animal/method
+ - error PLUM1001: Duplicate route found in AnimalController.method() MyFacility",
+  ],
+  Array [],
+]
+`;
+
+exports[`Extend Route Generator Should not duplicate route if overridable 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method() -> GET /animal/method",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Should able to set metadata overridable 1`] = `
+Array [
+  Object {
+    "action": Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "method",
+      "owner": Array [
+        AnimalController,
+      ],
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    "controller": Object {
+      "ctor": Object {
+        "kind": "Constructor",
+        "name": "constructor",
+        "parameters": Array [],
+      },
+      "decorators": Array [
+        Object {
+          "name": "Root",
+          "url": "beast",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "inherit": true,
+          },
+        },
+      ],
+      "kind": "Class",
+      "methods": Array [
+        Object {
+          "decorators": Array [],
+          "kind": "Method",
+          "name": "method",
+          "owner": Array [
+            AnimalController,
+          ],
+          "parameters": Array [],
+          "returnType": undefined,
+          "typeClassification": undefined,
+        },
+      ],
+      "name": "AnimalController",
+      "owner": Array [
+        Object,
+        AnimalController,
+      ],
+      "properties": Array [],
+      "super": Object,
+      "type": AnimalController,
+      "typeClassification": "Class",
+    },
+    "kind": "ActionRoute",
+    "method": "get",
+    "overridable": true,
+    "url": "/beast/method",
+  },
+]
+`;

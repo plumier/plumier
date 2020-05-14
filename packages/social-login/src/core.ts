@@ -10,7 +10,9 @@ import {
     PlumierApplication,
     response,
     RouteInfo,
-    VirtualRouteInfo
+    RouteMetadata,
+    VirtualRoute,
+    Class
 } from "@plumier/core"
 import Axios, { AxiosError } from "axios"
 import crypto from "crypto"
@@ -382,12 +384,30 @@ export class OAuthProviderBaseFacility extends DefaultFacility {
         this.loginEndpoint = opt?.loginEndPoint ?? `/auth/${this.option.provider.toLowerCase()}/login`
     }
 
-    getRedirectUri(routes: RouteInfo[], provider: string) {
-        return routes.find(x => x.action.decorators
+    async generateRoutes(): Promise<VirtualRoute[]> {
+        return [{
+            kind: "VirtualRoute",
+            method: "get",
+            provider: this.constructor as Class,
+            url: this.loginEndpoint,
+            access: "Public",
+            overridable: false,
+            openApiOperation: {
+                description: `Redirect request to ${this.option.provider} login page. This endpoint writes CSRF token on the client required to generate ${this.option.provider} login endpoint`,
+                tags: ["Social Login"],
+                parameters: [
+                    {}
+                ],
+            }
+        }]
+    }
+
+    getRedirectUri(routes: RouteMetadata[], provider: string) {
+        return routes.find((x): x is RouteInfo => x.kind === "ActionRoute" && x.action.decorators
             .some((y: OAuthRedirectUriDecorator) => y.name === "OAuthRedirectUriDecorator" && y.provider === provider))
     }
 
-    async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[], vRoutes: VirtualRouteInfo[]) {
+    async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]) {
         const redirectUriRoute = this.getRedirectUri(routes, this.option.provider) ?? this.getRedirectUri(routes, "General")
         if (!redirectUriRoute) throw new Error(`OAuth: No ${this.option.provider} redirect uri handler found`)
         if (redirectUriRoute.url.search(":") > -1) throw new Error(`OAuth: Parameterized route is not supported on ${this.option.provider} callback uri`)
@@ -399,9 +419,6 @@ export class OAuthProviderBaseFacility extends DefaultFacility {
         const clientSecret = this.option.clientSecret ?? process.env[clientSecretKey]
         if (!clientSecret) throw new Error(`OAuth: Client secret for ${this.option.provider} not provided`)
         const option = { ...this.option, clientId, clientSecret }
-        // virtual route
-        const route = { method: "get" as "get", className: this.constructor.name, access: "Public" }
-        vRoutes.push({ ...route, url: this.loginEndpoint })
         app.use(new OAuthLoginEndPointMiddleware(option, this.loginEndpoint, redirectUriRoute.url))
         app.use(new OAuthRedirectUriMiddleware(option, redirectUriRoute.url))
     }

@@ -33,7 +33,8 @@
       "extends/custom-parameter-binding",
       "extends/custom-validator",
       "extends/custom-authorization",
-      "extends/custom-dependency-resolver"
+      "extends/custom-dependency-resolver",
+      "extends/custom-route-generator"
     ]
   },
   "tutorials": {

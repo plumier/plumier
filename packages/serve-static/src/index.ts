@@ -12,6 +12,7 @@ import {
     RouteAnalyzerIssue,
     RouteInfo,
     api,
+    RouteMetadata,
 } from "@plumier/core"
 import { exists, existsSync } from "fs"
 import { Context } from "koa"
@@ -162,8 +163,9 @@ function getActionName(route: RouteInfo) {
     return `${route.controller.name}.${route.action.name}(${route.action.parameters.map(x => x.name).join(", ")})`
 }
 
-function multipleDecoratorsCheck(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
-    const histories = allRoutes.filter(x => x.action.decorators.some(x => x.type === "HistoryApiFallback"))
+function multipleDecoratorsCheck(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue {
+    if (route.kind === "VirtualRoute") return { type: "success" }
+    const histories = allRoutes.filter((x): x is RouteInfo => x.kind === "ActionRoute" && x.action.decorators.some(x => x.type === "HistoryApiFallback"))
     if (histories.length > 1) {
         const actions = histories.map(x => getActionName(x)).join(", ")
         return { type: "error", message: `PLUM1020: Multiple @route.historyApiFallback() is not allowed, in ${actions}` }
@@ -171,7 +173,8 @@ function multipleDecoratorsCheck(route: RouteInfo, allRoutes: RouteInfo[]): Rout
     else return { type: "success" }
 }
 
-function httpMethodCheck(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
+function httpMethodCheck(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue {
+    if (route.kind === "VirtualRoute") return { type: "success" }
     if (route.method !== "get" && route.action.decorators.some(x => x.type === "HistoryApiFallback"))
         return { type: "error", message: `PLUM1021: History api fallback should have GET http method, in ${getActionName(route)}` }
     else
