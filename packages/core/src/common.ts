@@ -1,7 +1,7 @@
-import { existsSync, lstatSync } from "fs"
+import { lstatSync } from "fs"
 import glob from "glob"
 import { extname } from "path"
-import { useCache } from 'tinspector'
+import { useCache } from "tinspector"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -29,6 +29,15 @@ String.prototype.format = function (this: string, ...args: any[]) {
 
 Array.prototype.flatten = function <T>(this: Array<T>) {
     return this.reduce((a, b) => a.concat(b), <T[]>[])
+}
+
+function ellipsis(str:string, length:number){
+    if(str.length > length){
+        const leftPart = str.substring(0, length - 9)
+        const rightPart = str.substring(str.length - 6)
+        return `${leftPart}...${rightPart}`
+    }
+    else return str
 }
 
 function getChildValue(object: any, path: string) {
@@ -161,4 +170,4 @@ function cleanupConsole(mocks:string[][]){
     return mocks.map(x => x.map(y => y.replace(cleanup, "")))
 }
 
-export { toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, memoize, printTable, cleanupConsole };
+export { ellipsis, toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, memoize, printTable, cleanupConsole };

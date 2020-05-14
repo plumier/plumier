@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Module Export Should export module properly 1`] = `
+Object {
+  "TypeORMFacility": TypeORMFacility,
+}
+`;

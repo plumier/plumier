@@ -1,4 +1,4 @@
-import { consoleLog, printTable } from "@plumier/core"
+import { consoleLog, printTable, ellipsis } from "@plumier/core"
 
 describe("PrintTable", () => {
     it("Should able to print table", () => {
@@ -35,5 +35,17 @@ describe("PrintTable", () => {
     })
 })
 
+describe("Ellipsis", () => {
+    it("Should trim long string", () => {
+        const str = ellipsis("Lorem ipsum dolor sit amet lorem ipsum dolor", 20)
+        expect(str.length).toBe(20)
+        expect(str).toMatchSnapshot()
+    })
+    it("Should not trim string if shorter than expected", () => {
+        const str = ellipsis("Lorem", 20)
+        expect(str.length).toBe(str.length)
+        expect(str).toMatchSnapshot()
+    })
+})
 
 

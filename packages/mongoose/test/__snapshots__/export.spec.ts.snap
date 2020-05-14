@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Module Export Should export module properly 1`] = `
+Object {
+  "CanNotValidateNonProperty": "MONG1002: @val.unique() only can be applied on property",
+  "MongooseFacility": MongooseFacility,
+  "ReferenceTypeNotRegistered": "MONG1000: Type {0} required type {1} which is not registered as Mongoose model",
+  "collection": collection,
+  "createAnalyzer": createAnalyzer,
+  "default": ,
+  "generator": generator,
+  "getAnalysis": ,
+  "getDefinition": getDefinition,
+  "model": ,
+  "printAnalysis": printAnalysis,
+}
+`;

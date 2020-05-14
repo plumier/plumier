@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Module Export Should export module properly 1`] = `
+Object {
+  "CookieName": Object {
+    "csrfSecret": "plum-oauth:csrf-secret",
+    "provider": "plum-oauth:provider",
+  },
+  "FacebookOAuthFacility": FacebookOAuthFacility,
+  "GitHubOAuthFacility": GitHubOAuthFacility,
+  "GitLabOAuthFacility": GitLabOAuthFacility,
+  "GoogleOAuthFacility": GoogleOAuthFacility,
+  "OAuthProviderBaseFacility": OAuthProviderBaseFacility,
+  "TwitterOAuthFacility": TwitterOAuthFacility,
+  "redirectUri": redirectUri,
+  "splitName": splitName,
+}
+`;

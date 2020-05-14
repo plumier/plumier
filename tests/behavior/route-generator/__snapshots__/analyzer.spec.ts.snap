@@ -1,5 +1,53 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Analyzer Report Should not trim if short enough to fit 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.get(very, long)  -> GET  /users",
+  ],
+  Array [
+    "2. UsersController.save(very, long) -> POST /users",
+  ],
+  Array [],
+]
+`;
+
+exports[`Analyzer Report Should only trim parameters if still long 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.get  -> GET  /users",
+  ],
+  Array [
+    "2. UsersController.save -> POST /users",
+  ],
+  Array [],
+]
+`;
+
+exports[`Analyzer Report Should trim long controller report 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AveryVeryVeryVer...roller.aVerry...Method -> Authenticated GET /averyveryveryveryverylongnamed/averryverryverryver...method",
+  ],
+  Array [
+    "2. AveryVeryVeryVer...roller.anothe...Method -> Authenticated GET /averyveryveryveryverylongnamed/anotherverryverryve...method",
+  ],
+  Array [],
+]
+`;
+
 exports[`Route Analyzer Should be able to extends the route analyzer 1`] = `
 Array [
   Array [],
