@@ -1,5 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Ellipsis Should not trim string if shorter than expected 1`] = `"Lorem"`;
+
+exports[`Ellipsis Should trim long string 1`] = `"Lorem ipsum... dolor"`;
+
 exports[`PrintTable Should able to print table 1`] = `
 Array [
   Array [

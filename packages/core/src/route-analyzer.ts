@@ -2,7 +2,7 @@ import chalk from "chalk"
 import { ClassReflection, ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
 import { updateRouteAuthorizationAccess } from "./authorization"
-import { Class, isCustomClass, printTable } from "./common"
+import { Class, isCustomClass, printTable, ellipsis } from "./common"
 import { Configuration, errorMessage, RouteAnalyzerFunction, RouteAnalyzerIssue, RouteInfo } from "./types"
 
 
@@ -118,6 +118,15 @@ function getActionName(route: RouteInfo) {
    return `${route.controller.name}.${route.action.name}(${route.action.parameters.map(x => x.name).join(", ")})`
 }
 
+function getActionNameForReport(route: RouteInfo) {
+   const origin = getActionName(route)
+   if (origin.length > 40)
+      return `${ellipsis(route.controller.name, 25)}.${ellipsis(route.action.name, 15)}`
+   else 
+      return origin
+}
+
+
 function analyzeRoute(route: RouteInfo, tests: RouteAnalyzerFunction[], allRoutes: RouteInfo[]): TestResult {
    const issues = tests.map(test => test(route, allRoutes)).filter(x => x.type != "success")
    return { route, issues }
@@ -136,9 +145,9 @@ function analyzeRoutes(routes: RouteInfo[], config: Configuration) {
 function printAnalysis(results: TestResult[]) {
    const data = results.map(x => {
       const method = x.route.method.toUpperCase()
-      const action = getActionName(x.route)
+      const action = getActionNameForReport(x.route)
       const issues = x.issues.map(issue => ` - ${issue.type} ${issue!.message}`)
-      return { method, url: x.route.url, action, issues, access: x.route.access }
+      return { method, url: ellipsis(x.route.url, 60), action, issues, access: x.route.access }
    })
    const hasAccess = data.every(x => !!x.access)
    console.log()
@@ -152,7 +161,7 @@ function printAnalysis(results: TestResult[]) {
       "url"
    ], data, {
       onPrintRow: (row, data) => {
-         const log = data.issues.length === 0 ? (x:string) => x : 
+         const log = data.issues.length === 0 ? (x: string) => x :
             data.issues.some(x => x.indexOf("- error") > 0) ? chalk.red : chalk.yellow
          return log([row, ...data.issues].join("\n"))
       }

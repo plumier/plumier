@@ -1,6 +1,7 @@
 import { consoleLog, RouteAnalyzerFunction, RouteInfo, cleanupConsole } from "@plumier/core"
 import Plumier, { domain, RestfulApiFacility, route } from "plumier"
 import reflect from "tinspector"
+import { JwtAuthFacility } from '@plumier/jwt'
 
 describe("Route Analyzer", () => {
     it("Should identify missing backing parameter", async () => {
@@ -163,6 +164,55 @@ describe("Route Analyzer", () => {
             .set({ controller: [AnimalController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1005: Just an error")
+        consoleLog.clearMock()
+    })
+})
+
+describe("Analyzer Report", () => {
+    it("Should trim long controller report", async () => {
+        class AveryVeryVeryVeryVeryLongNamedController {
+            @route.get()
+            aVerryVerryVerryVerryVerryLongNamedMethod(very: string, long: string, list: string, of: string, method: string, parameters: string) { }
+            @route.get()
+            anotherVerryVerryVerryVerryVerryLongNamedMethod(very: string, long: string, list: string, of: string, method: string, parameters: string) { }
+        }
+        const mock = consoleLog.startMock()
+        const app = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set(new JwtAuthFacility({ secret: "lorem" }))
+            .set({ controller: [AveryVeryVeryVeryVeryLongNamedController] })
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+    it("Should only trim parameters if still long", async () => {
+        class UsersController {
+            @route.get("")
+            get(very: string, long: string, list: string, of: string, method: string, parameters: string) { }
+            @route.post("")
+            save(very: string, long: string, list: string, of: string, method: string, parameters: string) { }
+        }
+        const mock = consoleLog.startMock()
+        const app = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set({ controller: [UsersController] })
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+    it("Should not trim if short enough to fit", async () => {
+        class UsersController {
+            @route.get("")
+            get(very: string, long: string) { }
+            @route.post("")
+            save(very: string, long: string) { }
+        }
+        const mock = consoleLog.startMock()
+        const app = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set({ controller: [UsersController] })
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
 })
