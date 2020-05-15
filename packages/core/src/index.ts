@@ -17,13 +17,12 @@ export { route, RouteDecoratorImpl } from "./decorator.route";
 export { rest, RestDecoratorImpl } from "./decorator.rest";
 export { HttpStatus } from "./http-status";
 export { validate, ValidatorMiddleware } from "./validator"
-export { printVirtualRoutes } from "./route-virtual"
 export {
     ActionResult, Application, Configuration, DefaultFacility, CustomValidator,
     DependencyResolver, Facility, FileParser, FileUploadInfo, HttpMethod, HttpStatusError, Invocation, KoaMiddleware,
     Middleware, MiddlewareFunction, MiddlewareDecorator, MiddlewareUtil, PlumierApplication, PlumierConfiguration, RedirectActionResult,
     ActionContext, RouteInfo, RouteAnalyzerFunction, RouteAnalyzerIssue, ValidatorDecorator, CustomValidatorFunction,
     ValidatorContext, ValidationError, errorMessage, AsyncValidatorResult, DefaultDependencyResolver,
-    CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie, VirtualRouteInfo, 
-    Metadata, GlobalMetadata, Omit, Optional
+    CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie, 
+    Metadata, GlobalMetadata, Omit, Optional, RouteMetadata, VirtualRoute
 } from "./types";

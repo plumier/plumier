@@ -13,13 +13,10 @@ import {
     printAnalysis,
     RouteInfo,
     router,
-    printVirtualRoutes,
-    VirtualRouteInfo
+    RouteMetadata
 } from "@plumier/core"
 import Koa from "koa"
 import { dirname } from "path"
-
-
 
 export class Plumier implements PlumierApplication {
     readonly config: Readonly<PlumierConfiguration>;
@@ -35,7 +32,7 @@ export class Plumier implements PlumierApplication {
             facilities: [],
             roleField: "role",
             enableAuthorization: false,
-            rootDir: "__UNSET__", 
+            rootDir: "__UNSET__",
             trustProxyHeader: false
         }
     }
@@ -65,16 +62,28 @@ export class Plumier implements PlumierApplication {
             //module.parent.parent.filename -> because Plumier app also exported in plumier/src/index.ts
             if (this.config.rootDir === "__UNSET__")
                 (this.config as Configuration).rootDir = dirname(module.parent!.parent!.filename)
-            let routes: RouteInfo[] = generateRoutes(this.config.rootDir, this.config.controller)
-            const vRoutes: VirtualRouteInfo[] = []
+            //generate routes 
+            const routes: RouteMetadata[] = []
+            const map: { [key: string]: boolean } = {}
             for (const facility of this.config.facilities) {
-                await facility.initialize(this, routes, vRoutes)
+                const genRoutes = await facility.generateRoutes(this)
+                for (const route of genRoutes) {
+                    const key = `${route.method} ${route.url}`
+                    const exists = map[key]
+                    if(!(exists && route.overridable))
+                        routes.push(route)
+                    map[key] = true
+                }
+            }
+            //run initialize
+            for (const facility of this.config.facilities) {
+                await facility.initialize(this, routes)
             }
             if (this.config.mode === "debug") {
                 printAnalysis(analyzeRoutes(routes, this.config))
-                printVirtualRoutes(vRoutes, this.config.middlewares, this.config.dependencyResolver)
             }
-            this.koa.use(router(routes, this.config))
+            const actionRoutes = routes.filter((x):x is RouteInfo => x.kind === "ActionRoute")
+            this.koa.use(router(actionRoutes, this.config))
             this.koa.proxy = this.config.trustProxyHeader
             return this.koa
         }
@@ -86,12 +95,12 @@ export class Plumier implements PlumierApplication {
     async listen(port?: number | string) {
         const app = await this.initialize()
         let envPort: number | undefined;
-        if(typeof port === "string"){
+        if (typeof port === "string") {
             const result = parseInt(port)
-            if(isNaN(result)) throw Error(`Unable to parse port number ${port}. Please provide a valid integer number`)
+            if (isNaN(result)) throw Error(`Unable to parse port number ${port}. Please provide a valid integer number`)
             envPort = result
         }
-        else 
+        else
             envPort = port
         if (this.config.mode === "debug")
             console.log(`Server ready http://localhost:${envPort}/`)

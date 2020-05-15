@@ -3,7 +3,7 @@ import { ClassReflection, ParameterReflection, PropertyReflection, reflect } fro
 
 import { updateRouteAuthorizationAccess } from "./authorization"
 import { Class, isCustomClass, printTable, ellipsis } from "./common"
-import { Configuration, errorMessage, RouteAnalyzerFunction, RouteAnalyzerIssue, RouteInfo } from "./types"
+import { Configuration, errorMessage, RouteAnalyzerFunction, RouteAnalyzerIssue, RouteMetadata, RouteInfo } from "./types"
 
 
 
@@ -13,7 +13,7 @@ import { Configuration, errorMessage, RouteAnalyzerFunction, RouteAnalyzerIssue,
 
 
 type PropOrParamReflection = PropertyReflection | ParameterReflection
-interface TestResult { route: RouteInfo, issues: RouteAnalyzerIssue[] }
+interface TestResult { route: RouteMetadata, issues: RouteAnalyzerIssue[] }
 
 
 /* ------------------------------------------------------------------------------- */
@@ -46,7 +46,8 @@ function traverseArray(parent: string, par: PropOrParamReflection[]): string[] {
       .map(x => `${parent}.${x.name}`)
 }
 
-function backingParameterTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
+function backingParameterTest(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue {
+   if (route.kind === "VirtualRoute") return { type: "success" }
    const ids = route.url.split("/")
       .filter(x => x.startsWith(":"))
       .map(x => x.substring(1).toLowerCase())
@@ -60,7 +61,8 @@ function backingParameterTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAn
    else return { type: "success" }
 }
 
-function metadataTypeTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
+function metadataTypeTest(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue {
+   if (route.kind === "VirtualRoute") return { type: "success" }
    const hasTypeInfo = route.action
       .parameters.some(x => Boolean(x.type))
    if (!hasTypeInfo && route.action.parameters.length > 0) {
@@ -72,7 +74,7 @@ function metadataTypeTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyz
    else return { type: "success" }
 }
 
-function duplicateRouteTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
+function duplicateRouteTest(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue {
    const dup = allRoutes.filter(x => x.url == route.url && x.method == route.method)
    if (dup.length > 1) {
       return {
@@ -83,7 +85,8 @@ function duplicateRouteTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnal
    else return { type: "success" }
 }
 
-function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
+function modelTypeInfoTest(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue {
+   if (route.kind === "VirtualRoute") return { type: "success" }
    const classes = traverseModel(route.action.parameters)
       .filter(x => x.properties.every(par => typeof par.type == "undefined"))
       .map(x => x.type)
@@ -98,7 +101,8 @@ function modelTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnaly
    else return { type: "success" }
 }
 
-function arrayTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnalyzerIssue {
+function arrayTypeInfoTest(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue {
+   if (route.kind === "VirtualRoute") return { type: "success" }
    const issues = traverseArray(`${route.controller.name}.${route.action.name}`, route.action.parameters)
    const array = Array.from(new Set(issues))
    if (array.length > 0) {
@@ -114,25 +118,32 @@ function arrayTypeInfoTest(route: RouteInfo, allRoutes: RouteInfo[]): RouteAnaly
 /* -------------------------------- ANALYZER ------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function getActionName(route: RouteInfo) {
-   return `${route.controller.name}.${route.action.name}(${route.action.parameters.map(x => x.name).join(", ")})`
+function getActionName(route: RouteMetadata) {
+   if (route.kind === "ActionRoute")
+      return `${route.controller.name}.${route.action.name}(${route.action.parameters.map(x => x.name).join(", ")})`
+   else
+      return `${route.provider.name}`
 }
 
-function getActionNameForReport(route: RouteInfo) {
+function getActionNameForReport(route: RouteMetadata) {
    const origin = getActionName(route)
-   if (origin.length > 40)
-      return `${ellipsis(route.controller.name, 25)}.${ellipsis(route.action.name, 15)}`
-   else 
-      return origin
+   if (route.kind === "ActionRoute") {
+      if (origin.length > 40)
+         return `${ellipsis(route.controller.name, 25)}.${ellipsis(route.action.name, 15)}`
+      else
+         return origin
+   }
+   else {
+      return ellipsis(origin, 40)
+   }
 }
 
-
-function analyzeRoute(route: RouteInfo, tests: RouteAnalyzerFunction[], allRoutes: RouteInfo[]): TestResult {
+function analyzeRoute(route: RouteMetadata, tests: RouteAnalyzerFunction[], allRoutes: RouteMetadata[]): TestResult {
    const issues = tests.map(test => test(route, allRoutes)).filter(x => x.type != "success")
    return { route, issues }
 }
 
-function analyzeRoutes(routes: RouteInfo[], config: Configuration) {
+function analyzeRoutes(routes: RouteMetadata[], config: Configuration) {
    const tests: RouteAnalyzerFunction[] = [
       backingParameterTest, metadataTypeTest,
       duplicateRouteTest, modelTypeInfoTest,

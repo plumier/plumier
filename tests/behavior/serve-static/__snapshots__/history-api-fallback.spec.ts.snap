@@ -1,5 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`History Api Fallback Analyzer should not error when provided VirtualRoute 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method() -> GET /animal/method",
+  ],
+  Array [
+    "2. MyFacility                -> GET /other/get",
+  ],
+  Array [],
+]
+`;
+
 exports[`History Api Fallback Should analyze if @route.historyApiFallback() combined with non GET method 1`] = `
 Array [
   Array [],

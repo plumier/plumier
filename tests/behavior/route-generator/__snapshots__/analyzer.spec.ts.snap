@@ -80,6 +80,24 @@ Array [
 ]
 `;
 
+exports[`Route Analyzer Should identify duplicate route from other facility if not overrideable 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. BeastController.method(a) -> GET /beast/method
+ - error PLUM1001: Duplicate route found in BeastController.method(a) MyFacility",
+  ],
+  Array [
+    "2. MyFacility                -> GET /beast/method
+ - error PLUM1001: Duplicate route found in BeastController.method(a) MyFacility",
+  ],
+  Array [],
+]
+`;
+
 exports[`Route Analyzer Should identify if array doesn't have type information for parameter binding 1`] = `
 Array [
   Array [],
@@ -159,6 +177,22 @@ Array [
   Array [
     "1. AnimalController.method(a) -> GET /animal/method
  - warning PLUM1004: Parameter binding skipped because action parameters doesn't have type information",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should not detect duplicate route if overridable 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. BeastController.otherMethod() -> GET /beast/othermethod",
+  ],
+  Array [
+    "2. BeastController.method(a)     -> GET /beast/method",
   ],
   Array [],
 ]

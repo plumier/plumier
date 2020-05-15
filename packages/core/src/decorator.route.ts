@@ -1,7 +1,7 @@
 import { decorateClass, decorateMethod } from "tinspector"
 
 import { HttpMethod } from "./types"
-import { IgnoreDecorator, RootDecorator, RouteDecorator, VirtualRouteDecorator } from "./route-generator"
+import { IgnoreDecorator, RootDecorator, RouteDecorator } from "./route-generator"
 
 
 class RouteDecoratorImpl {
@@ -275,16 +275,6 @@ class RouteDecoratorImpl {
     ```
     */
    ignore() { return decorateMethod(<IgnoreDecorator>{ name: "Ignore" }) }
-
-
-   /**
-    * Mark middleware that it handles route virtually (without controller)
-    * @param method The http method
-    * @param url The url
-    */
-   virtual({ method, url, access }: { method: HttpMethod; url: string; access: string }) {
-      return decorateClass(<VirtualRouteDecorator>{ name: "VirtualRoute", method, url, access })
-   }
 }
 
 const route = new RouteDecoratorImpl()

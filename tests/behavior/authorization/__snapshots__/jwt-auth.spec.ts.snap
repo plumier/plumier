@@ -1,5 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`JwtAuth Analyzer Message Should print access on virtual route 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method() -> Authenticated GET /animal/method",
+  ],
+  Array [
+    "2. MyFacility                -> Public        GET /other/get",
+  ],
+  Array [],
+]
+`;
+
 exports[`JwtAuth Default Configuration Should throw error when no secret provided nor environment variable 1`] = `
 Array [
   Array [

@@ -198,7 +198,6 @@ Object {
   },
   "printAnalysis": printAnalysis,
   "printTable": printTable,
-  "printVirtualRoutes": printVirtualRoutes,
   "response": Object {
     "json": json,
     "redirect": redirect,

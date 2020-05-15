@@ -290,7 +290,9 @@ Object {
     "type": UserController,
     "typeClassification": "Class",
   },
+  "kind": "ActionRoute",
   "method": "post",
+  "overridable": false,
   "url": "/user/save",
 }
 `;

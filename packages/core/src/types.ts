@@ -89,37 +89,47 @@ export class RedirectActionResult extends ActionResult {
 
 export type HttpMethod = "post" | "get" | "put" | "delete" | "patch" | "head" | "trace" | "options"
 
+export type RouteMetadata = RouteInfo | VirtualRoute
+
 export interface RouteInfo {
+    kind: "ActionRoute"
     url: string,
     method: HttpMethod
     action: MethodReflection
     controller: ClassReflection
+    overridable: boolean
     access?: string
 }
 
-export interface VirtualRouteInfo {
-    className: string,
+export interface VirtualRoute {
+    kind: "VirtualRoute"
     url: string,
-    method: HttpMethod,
-    access: string
+    method: HttpMethod
+    provider: Class 
+    overridable: boolean
+    access?: string,
+    openApiOperation?: any
 }
 
-
 export interface RouteAnalyzerIssue { type: "error" | "warning" | "success", message?: string }
-export type RouteAnalyzerFunction = (route: RouteInfo, allRoutes: RouteInfo[]) => RouteAnalyzerIssue
+export type RouteAnalyzerFunction = (route: RouteMetadata, allRoutes: RouteMetadata[]) => RouteAnalyzerIssue
 
 // --------------------------------------------------------------------- //
 // ------------------------------ FACILITY ----------------------------- //
 // --------------------------------------------------------------------- //
 
+export interface SetupResult { routes: RouteMetadata[] }
+
 export interface Facility {
-    setup(app: Readonly<PlumierApplication>): void
-    initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[], vRoutes: VirtualRouteInfo[]): Promise<void>
+    generateRoutes(app: Readonly<PlumierApplication>): Promise< RouteMetadata[]>
+    setup(app: Readonly<PlumierApplication>): void 
+    initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]): Promise<void>
 }
 
 export class DefaultFacility implements Facility {
-    setup(app: Readonly<PlumierApplication>) { }
-    async initialize(app: Readonly<PlumierApplication>, routes: RouteInfo[], vRoutes: VirtualRouteInfo[]) { }
+    async generateRoutes(app: Readonly<PlumierApplication>): Promise< RouteMetadata[]>{ return [] }
+    setup(app: Readonly<PlumierApplication>) {}
+    async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]) { }
 }
 
 

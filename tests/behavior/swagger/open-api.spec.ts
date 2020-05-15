@@ -1,4 +1,4 @@
-import { bind, Class, domain, route, val, authorize, FormFile, api, response, ActionResult } from "@plumier/core"
+import { bind, Class, domain, route, val, authorize, FormFile, api, response, ActionResult, DefaultFacility, PlumierApplication, RouteMetadata, consoleLog, cleanupConsole, Facility, CustomMiddleware, CustomMiddlewareFunction, generateRoutes } from "@plumier/core"
 import { refFactory, SwaggerFacility } from "@plumier/swagger"
 import { IncomingMessage } from "http"
 import { Context } from "koa"
@@ -7,6 +7,7 @@ import reflect from "tinspector"
 
 import { fixture } from "../helper"
 import { JwtAuthFacility } from '@plumier/jwt'
+import { ServeStaticFacility } from '@plumier/serve-static'
 
 describe("getRef", () => {
     class User { }
@@ -1049,12 +1050,12 @@ describe("Open API 3.0 Generation", () => {
         })
         it("Should able add enums information in object property", async () => {
             @domain()
-            class User{
-                constructor(@val.enums({ enums: ["a", "b"] }) public id: "a" | "b"){}
+            class User {
+                constructor(@val.enums({ enums: ["a", "b"] }) public id: "a" | "b") { }
             }
             class UsersController {
                 @route.post("")
-                save(user:User) {
+                save(user: User) {
                     return {} as any
                 }
             }
@@ -1067,7 +1068,7 @@ describe("Open API 3.0 Generation", () => {
         it("Should able add enums information in name binding", async () => {
             class UsersController {
                 @route.post("")
-                save(@val.enums({ enums: ["a", "b"] }) id: "a" | "b", name:string) {
+                save(@val.enums({ enums: ["a", "b"] }) id: "a" | "b", name: string) {
                     return {} as any
                 }
             }
@@ -1081,7 +1082,7 @@ describe("Open API 3.0 Generation", () => {
             class UsersController {
                 @route.post("")
                 @api.description("Lorem ipsum dolor sit amet")
-                save(name:string) {
+                save(name: string) {
                     return {} as any
                 }
             }
@@ -1094,7 +1095,7 @@ describe("Open API 3.0 Generation", () => {
         it("Should able to add description on parameter", async () => {
             class UsersController {
                 @route.get("")
-                save(@api.description("Lorem ipsum dolor sit amet") name:string) {
+                save(@api.description("Lorem ipsum dolor sit amet") name: string) {
                     return {} as any
                 }
             }
@@ -1133,4 +1134,69 @@ describe("Open API 3.0 Generation", () => {
             expect(body.paths["/users"].get.responses).toMatchSnapshot()
         })
     })
+
+    describe("Virtual Routes", () => {
+        function createApp(facility: Facility) {
+            class AnimalController {
+                @route.get()
+                method() { }
+            }
+            return fixture(AnimalController)
+                .set(new SwaggerFacility())
+                .set(facility)
+                .initialize()
+        }
+
+        it("Should transform virtual route", async () => {
+            class MyFacility extends DefaultFacility {
+                constructor() { super() }
+                async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> {
+                    return [{
+                        kind: "VirtualRoute",
+                        method: "get",
+                        overridable: false,
+                        provider: MyFacility,
+                        url: "/other/get",
+                        access: "Public"
+                    }]
+                }
+            }
+            const app = await createApp(new MyFacility())
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/other/get"]).toMatchSnapshot()
+        })
+        it("Should able to define custom specification", async () => {
+            class MyFacility extends DefaultFacility {
+                constructor() { super() }
+                async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> {
+                    return [{
+                        kind: "VirtualRoute",
+                        method: "get",
+                        overridable: false,
+                        provider: MyFacility,
+                        url: "/other/get",
+                        access: "Public",
+                        openApiOperation: {
+                            description: "Lorem ipsum",
+                            parameters: {
+                                name: {
+                                    in: "query",
+                                    description: "Lorem ipsum"
+                                }
+                            }
+                        }
+                    }]
+                }
+            }
+            const app = await createApp(new MyFacility())
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/other/get"]).toMatchSnapshot()
+        })
+    })
 })
+
+

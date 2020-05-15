@@ -11,6 +11,7 @@ import {
 import dotenv from "dotenv"
 import { join } from "path"
 import Plumier, { bind, response, route, WebApiFacility } from "plumier"
+import { SwaggerFacility } from '@plumier/swagger'
 
 dotenv.config({ path: join(__dirname, "../../../.env")})
 
@@ -34,5 +35,6 @@ new Plumier()
     .set(new GitHubOAuthFacility())
     .set(new GitLabOAuthFacility())
     .set(new TwitterOAuthFacility())
+    .set(new SwaggerFacility())
     .listen(3000)
     .catch(console.error)

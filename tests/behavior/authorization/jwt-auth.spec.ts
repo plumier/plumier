@@ -1,4 +1,4 @@
-import { consoleLog, Authorizer, AuthorizationContext, DefaultDependencyResolver } from "@plumier/core"
+import { consoleLog, Authorizer, AuthorizationContext, DefaultDependencyResolver, DefaultFacility, PlumierApplication, RouteMetadata, cleanupConsole } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { sign } from "jsonwebtoken"
 import { authorize, domain, route, val } from "plumier"
@@ -1135,6 +1135,33 @@ describe("JwtAuth", () => {
                 '4. AnimalController.user()          -> GET /animal/user',
                 '5. AnimalController.mix()           -> GET /animal/mix'
             ])
+            consoleLog.clearMock()
+        })
+
+        it("Should print access on virtual route", async () => {
+            class AnimalController {
+                @route.get()
+                method() { }
+            }
+            class MyFacility extends DefaultFacility {
+                constructor() { super() }
+                async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> {
+                    return [{
+                        kind: "VirtualRoute",
+                        method: "get",
+                        overridable: false,
+                        provider: MyFacility,
+                        url: "/other/get",
+                        access: "Public"
+                    }]
+                }
+            }
+            const mock = consoleLog.startMock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: "lorem" }))
+                .set(new MyFacility())
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             consoleLog.clearMock()
         })
     })

@@ -1,7 +1,8 @@
 import Cors from "@koa/cors"
-import { Class, DefaultDependencyResolver, DefaultFacility, PlumierApplication, DependencyResolver, CustomMiddleware, Invocation, ActionResult, response, toBoolean } from "@plumier/core"
+import { Class, DefaultDependencyResolver, DefaultFacility, PlumierApplication, DependencyResolver, CustomMiddleware, Invocation, ActionResult, response, toBoolean, generateRoutes, Configuration } from "@plumier/core"
 import BodyParser from "koa-body"
 import { Context } from 'koa'
+import { dirname } from "path"
 
 
 export interface WebApiFacilityOption {
@@ -9,7 +10,7 @@ export interface WebApiFacilityOption {
     bodyParser?: BodyParser.IKoaBodyOptions,
     cors?: Cors.Options | boolean,
     trustProxyHeader?: boolean,
-    forceHttps?:boolean,
+    forceHttps?: boolean,
     dependencyResolver?: DependencyResolver
 }
 
@@ -25,9 +26,13 @@ export interface WebApiFacilityOption {
 export class WebApiFacility extends DefaultFacility {
     constructor(private opt?: WebApiFacilityOption) { super() }
 
+    async generateRoutes(app: Readonly<PlumierApplication>) {
+        return generateRoutes(app.config.controller, app.config.rootDir)
+    }
+
     setup(app: Readonly<PlumierApplication>) {
         const option: WebApiFacilityOption = { ...this.opt }
-        if(option.forceHttps ?? toBoolean(process.env.PLUM_FORCE_HTTPS || "__none")){
+        if (option.forceHttps ?? toBoolean(process.env.PLUM_FORCE_HTTPS || "__none")) {
             app.use(new ForceHttpsMiddleware())
         }
         app.koa.use(BodyParser(option.bodyParser))
@@ -68,9 +73,9 @@ export class RestfulApiFacility extends WebApiFacility {
 export class ForceHttpsMiddleware implements CustomMiddleware {
     async execute(i: Readonly<Invocation<Context>>): Promise<ActionResult> {
         const req = i.ctx.request
-        if(req.protocol === "http")
+        if (req.protocol === "http")
             return response.redirect(`https://${req.hostname}${req.originalUrl}`)
-        else 
+        else
             return i.proceed()
     }
 }

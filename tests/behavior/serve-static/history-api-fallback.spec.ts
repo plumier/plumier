@@ -1,9 +1,10 @@
-import { consoleLog, response, route, cleanupConsole } from "@plumier/core"
+import { consoleLog, response, route, cleanupConsole, DefaultFacility, PlumierApplication, RouteMetadata } from "@plumier/core"
 import { ServeStaticFacility } from "@plumier/serve-static"
 import { join } from "path"
 import supertest = require("supertest")
 
 import { fixture } from "../helper"
+import { JwtAuthFacility } from '@plumier/jwt'
 
 
 
@@ -136,6 +137,33 @@ describe("History Api Fallback", () => {
         await app.set(new ServeStaticFacility({ root: join(__dirname, "./assets") }))
             .initialize()
         expect((console.log as any).mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+
+    it("Analyzer should not error when provided VirtualRoute", async () => {
+        class AnimalController {
+            @route.get()
+            method() { }
+        }
+        class MyFacility extends DefaultFacility {
+            constructor() { super() }
+            async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> {
+                return [{
+                    kind: "VirtualRoute",
+                    method: "get",
+                    overridable: false,
+                    provider: MyFacility,
+                    url: "/other/get",
+                    access: "Public"
+                }]
+            }
+        }
+        const mock = consoleLog.startMock()
+        await fixture(AnimalController, { mode: "debug" })
+            .set(new ServeStaticFacility({ root: join(__dirname, "./assets") }))
+            .set(new MyFacility())
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
 })

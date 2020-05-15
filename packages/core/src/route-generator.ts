@@ -3,7 +3,7 @@ import { isAbsolute, join } from "path"
 import { ClassReflection, MethodReflection, reflect } from "tinspector"
 
 import { Class, findFilesRecursive } from "./common"
-import { errorMessage, HttpMethod, RouteInfo } from "./types"
+import { errorMessage, HttpMethod, RouteInfo, RouteMetadata } from "./types"
 
 
 
@@ -12,7 +12,6 @@ import { errorMessage, HttpMethod, RouteInfo } from "./types"
 // --------------------------------------------------------------------- //
 
 interface RouteDecorator { name: "Route", method: HttpMethod, url?: string }
-interface VirtualRouteDecorator { name: "VirtualRoute", method: HttpMethod, url: string, access: string }
 interface IgnoreDecorator { name: "Ignore" }
 interface RootDecorator { name: "Root", url: string }
 interface TransformOption { root?: string }
@@ -69,9 +68,9 @@ function transformDecorator(root: string, actionName: string, actionDecorator: {
    }
 }
 
-function transformMethodWithDecorator(root: string, controller: ClassReflection, method: MethodReflection): RouteInfo[] {
+function transformMethodWithDecorator(root: string, controller: ClassReflection, method: MethodReflection, overridable: boolean): RouteInfo[] {
    if (method.decorators.some((x: IgnoreDecorator) => x.name == "Ignore")) return []
-   const result = <RouteInfo>{ action: method, controller }
+   const result = { kind: "ActionRoute" as "ActionRoute", action: method, controller, overridable }
    const infos: RouteInfo[] = []
    for (const decorator of (method.decorators.slice().reverse() as RouteDecorator[])) {
       if (decorator.name === "Route")
@@ -84,16 +83,18 @@ function transformMethodWithDecorator(root: string, controller: ClassReflection,
    return infos
 }
 
-function transformMethod(root: string, controller: ClassReflection, method: MethodReflection): RouteInfo[] {
-   return [<RouteInfo>{
+function transformMethod(root: string, controller: ClassReflection, method: MethodReflection, overridable: boolean): RouteInfo[] {
+   return [{
+      kind: "ActionRoute",
       method: "get",
       url: createRoute(root, method.name),
       controller,
       action: method,
+      overridable
    }]
 }
 
-function transformController(object: ClassReflection | Class, opt?: TransformOption) {
+function transformController(object: ClassReflection | Class, overridable: boolean, opt?: TransformOption) {
    const controller = typeof object === "function" ? reflect(object) : object
    if (!controller.name.toLowerCase().endsWith("controller")) return []
    const controllerRoutes = getControllerRoutes(opt && opt.root || "", controller)
@@ -102,15 +103,15 @@ function transformController(object: ClassReflection | Class, opt?: TransformOpt
    for (const ctl of controllerRoutes) {
       for (const method of controller.methods) {
          if (method.decorators.some((x: IgnoreDecorator | RouteDecorator) => x.name == "Ignore" || x.name == "Route"))
-            infos.push(...transformMethodWithDecorator(ctl, controller, method))
+            infos.push(...transformMethodWithDecorator(ctl, controller, method, overridable))
          else
-            infos.push(...transformMethod(ctl, controller, method))
+            infos.push(...transformMethod(ctl, controller, method, overridable))
       }
    }
    return infos
 }
 
-function transformModule(path: string): RouteInfo[] {
+function transformModule(path: string, overridable: boolean): RouteInfo[] {
    //read all files and get module reflection
    const files = findFilesRecursive(path)
    const infos: RouteInfo[] = []
@@ -118,31 +119,34 @@ function transformModule(path: string): RouteInfo[] {
       const root = getRoot(path, file)
       for (const member of (reflect(file).members as ClassReflection[])) {
          if (member.kind === "Class" && member.name.toLocaleLowerCase().endsWith("controller"))
-            infos.push(...transformController(member, { root }))
+            infos.push(...transformController(member, overridable, { root }))
       }
    }
    return infos
 }
 
-function generateRoutes(executionPath: string, controller: string | Class[] | Class) {
+function generateRoutes(controller: string | Class[] | Class, option?: string | { overridable?: boolean, executionPath?: string }): RouteMetadata[] {
+   const opt = !option ? { overridable: false, executionPath: "" } :
+      typeof option === "string" ? { overridable: false, executionPath: option } : 
+      { overridable: false, ...option }
    let routes: RouteInfo[] = []
    if (typeof controller === "string") {
       const path = isAbsolute(controller) ? controller :
-         join(executionPath, controller)
+         join(opt.executionPath!, controller)
       if (!existsSync(path))
          throw new Error(errorMessage.ControllerPathNotFound.format(path))
-      routes = transformModule(path)
+      routes = transformModule(path, opt.overridable)
    }
    else if (Array.isArray(controller)) {
-      routes = controller.map(x => transformController(x))
+      routes = controller.map(x => transformController(x, opt.overridable))
          .flatten()
    }
    else {
-      routes = transformController(controller)
+      routes = transformController(controller, opt.overridable)
    }
    return routes
 }
 
 
-export { generateRoutes, RouteDecorator, IgnoreDecorator, RootDecorator, VirtualRouteDecorator }
+export { generateRoutes, RouteDecorator, IgnoreDecorator, RootDecorator }
 

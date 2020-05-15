@@ -224,18 +224,39 @@ Array [
   Array [
     "1. AuthController.callback(user) -> GET /auth/callback",
   ],
+  Array [
+    "2. FakeOAuth2Facility            -> GET /auth/mazebook/login",
+  ],
+  Array [
+    "3. FakeOAuth2Facility            -> GET /auth/googol/login",
+  ],
+  Array [
+    "4. FakeOAuth10aFacility          -> GET /auth/teeter/login",
+  ],
   Array [],
+]
+`;
+
+exports[`Virtual Routes Should provide proper route information for swagger 1`] = `
+Array [
   Array [
-    "Virtual Routes",
-  ],
-  Array [
-    "1. FakeOAuth2Facility   -> Public GET /auth/mazebook/login",
-  ],
-  Array [
-    "2. FakeOAuth2Facility   -> Public GET /auth/googol/login",
-  ],
-  Array [
-    "3. FakeOAuth10aFacility -> Public GET /auth/teeter/login",
+    Object {
+      "access": "Public",
+      "kind": "VirtualRoute",
+      "method": "get",
+      "openApiOperation": Object {
+        "description": "Redirect request to MazeBook login page. This endpoint writes CSRF token on the client required to generate MazeBook login endpoint",
+        "parameters": Array [
+          Object {},
+        ],
+        "tags": Array [
+          "Social Login",
+        ],
+      },
+      "overridable": false,
+      "provider": FakeOAuth2Facility,
+      "url": "/auth/mazebook/login",
+    },
   ],
 ]
 `;

@@ -13,11 +13,13 @@ Facility is a class that implements `Facility`, the signature of `Facility` is l
 ```typescript
 export interface Facility {
     setup(app: Readonly<PlumierApplication>): void
-    initialize(app: Readonly<PlumierApplication>, routes:RouteInfo:[]): Promise<void>
+    generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]>
+    initialize(app: Readonly<PlumierApplication>, routes:RouteMetadata:[]): Promise<void>
 }
 ```
 
 * `setup` called during setup process. This method usually used for registering configurations and middlewares
+* `generateRoutes` called during initialization process before the `initialize` method. This method provides list of routes produced by Facility. 
 * `initialize` called during initialization process. This method usually used for some preparation required before application run, and possible to call promised functions
 
 ## Develop Your Own Facility 

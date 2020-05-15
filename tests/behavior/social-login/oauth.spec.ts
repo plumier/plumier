@@ -9,7 +9,7 @@ import { fixture } from "../helper"
 import { error, getLoginUrl, params, portRegex, runServer } from "./helper"
 import { FakeOAuth2Facility, oAuth20Server } from "./oauth20-server"
 import { oAuth10aServer, FakeOAuth10aFacility } from './oauth10a-server'
-import { consoleLog } from '@plumier/core'
+import { consoleLog, DefaultFacility, PlumierApplication, RouteMetadata } from '@plumier/core'
 
 
 /**
@@ -251,6 +251,25 @@ describe("Virtual Routes", () => {
         const servers = await appStub(AuthController, opt, opt, opt, true)
         expect(mock.mock.calls).toMatchSnapshot()
         servers.close()
+    })
+    it("Should provide proper route information for swagger", async () => {
+        const fn = jest.fn()
+        class MyFacility extends DefaultFacility {
+            async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]) {
+                fn(routes.find(x => x.kind === "VirtualRoute"))
+            }
+        }
+        const mazeServer = await runServer(await oAuth20Server())
+        // run oauth consumer server on another port
+        const koa = await fixture(AuthController)
+            .set(new FakeOAuth2Facility("MazeBook", mazeServer.origin, { clientSecret: "super secret", clientId: "1234" }))
+            .set(new MyFacility())
+            .set({ mode: "production" })
+            .initialize()
+        const consumer = await runServer(koa)
+        expect(fn.mock.calls).toMatchSnapshot()
+        mazeServer.server.close();
+        consumer.server.close()
     })
 })
 
