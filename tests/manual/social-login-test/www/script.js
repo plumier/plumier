@@ -23,9 +23,6 @@ function render(user) {
 }
 
 function init() {
-    // load the csrf secret for social login dialog
-    fetch("/auth/csrf-secret")
-
     // message sent by server response.postMessage() received here
     window.addEventListener("message", evt => {
         if (evt.origin === location.origin && evt.data.status === "Success") {

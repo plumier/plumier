@@ -1,0 +1,78 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Logger Should log 404 request 1`] = `
+Array [
+  Array [
+    "GET 404 /users-data 123ms",
+  ],
+]
+`;
+
+exports[`Logger Should log action without status 1`] = `
+Array [
+  Array [
+    "GET 200 /users/custom 123ms",
+  ],
+]
+`;
+
+exports[`Logger Should log internal error request 1`] = `
+Array [
+  Array [
+    "GET 500 /users/error 123ms",
+  ],
+  Array [
+    "Lorem ipsum dolor",
+  ],
+]
+`;
+
+exports[`Logger Should log invalid validation request 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Invalid email address",
+      ],
+      "path": Array [
+        "email",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Logger Should log invalid validation request 2`] = `
+Array [
+  Array [
+    "POST 422 /users 123ms",
+  ],
+  Array [
+    "[{\\"path\\":[\\"email\\"],\\"messages\\":[\\"Invalid email address\\"]}]",
+  ],
+]
+`;
+
+exports[`Logger Should log post request 1`] = `
+Object {
+  "email": "mimi.cute@gmail.com",
+  "name": "Mimi",
+}
+`;
+
+exports[`Logger Should log post request 2`] = `
+Array [
+  Array [
+    "POST 200 /users 123ms",
+  ],
+]
+`;
+
+exports[`Logger Should log success request 1`] = `
+Array [
+  Array [
+    "GET 200 /users/123 123ms",
+  ],
+]
+`;
