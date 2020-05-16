@@ -1,8 +1,9 @@
 import Cors from "@koa/cors"
-import { Class, DefaultDependencyResolver, DefaultFacility, PlumierApplication, DependencyResolver, CustomMiddleware, Invocation, ActionResult, response, toBoolean, generateRoutes, Configuration } from "@plumier/core"
+import { Class, DefaultDependencyResolver, DefaultFacility, PlumierApplication, DependencyResolver, CustomMiddleware, Invocation, ActionResult, response, toBoolean, generateRoutes, Configuration, consoleLog, ValidationError, HttpStatusError } from "@plumier/core"
 import BodyParser from "koa-body"
 import { Context } from 'koa'
 import { dirname } from "path"
+import chalk from "chalk"
 
 
 export interface WebApiFacilityOption {
@@ -77,5 +78,35 @@ export class ForceHttpsMiddleware implements CustomMiddleware {
             return response.redirect(`https://${req.hostname}${req.originalUrl}`)
         else
             return i.proceed()
+    }
+}
+
+export class LoggerFacility extends DefaultFacility {
+    setup(app: Readonly<PlumierApplication>) {
+        app.use(new LoggerMiddleware())
+    }
+}
+
+class LoggerMiddleware implements CustomMiddleware {
+    async execute(i: Readonly<Invocation<Context>>): Promise<ActionResult> {
+        const start = new Date()
+        const getTime = () => `${(new Date().getTime() - start.getTime())}ms`
+        try {
+            const result = await i.proceed()
+            console.log(chalk.green(`${i.ctx.method} ${result.status || 200} ${i.ctx.url} ${getTime()}`))
+            return result;
+        }
+        catch (e) {
+            if (e instanceof HttpStatusError) {
+                console.log(chalk.yellow(`${i.ctx.method} ${e.status} ${i.ctx.url} ${getTime()}`))
+                if (e.message)
+                    console.log(chalk.yellow(e.message))
+            }
+            else {
+                console.log(chalk.red(`${i.ctx.method} 500 ${i.ctx.url} ${getTime()}`))
+                console.log(chalk.red(e.message))
+            }
+            throw e
+        }
     }
 }

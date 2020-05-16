@@ -10,7 +10,7 @@ import {
 } from "@plumier/social-login"
 import dotenv from "dotenv"
 import { join } from "path"
-import Plumier, { bind, response, route, WebApiFacility } from "plumier"
+import Plumier, { bind, response, route, WebApiFacility, LoggerFacility } from "plumier"
 import { SwaggerFacility } from '@plumier/swagger'
 
 dotenv.config({ path: join(__dirname, "../../../.env")})
@@ -29,6 +29,7 @@ export class AuthController {
 
 new Plumier()
     .set(new WebApiFacility({ controller: __filename, bodyParser: { multipart: true } }))
+    .set(new LoggerFacility())
     .set(new ServeStaticFacility())
     .set(new FacebookOAuthFacility())
     .set(new GoogleOAuthFacility())

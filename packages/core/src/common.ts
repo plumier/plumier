@@ -167,7 +167,8 @@ function printTable<T>(meta: (ColumnMeta | string | undefined)[], data: T[], opt
 
 function cleanupConsole(mocks:string[][]){
     const cleanup = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
-    return mocks.map(x => x.map(y => y.replace(cleanup, "")))
+    const millisecond = /\d*ms/g
+    return mocks.map(x => x.map(y => y.replace(cleanup, "").replace(millisecond, "123ms")))
 }
 
 export { ellipsis, toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, memoize, printTable, cleanupConsole };

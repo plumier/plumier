@@ -132,6 +132,7 @@ Object {
     "VariantAlsoNegotiates": 506,
   },
   "HttpStatusError": HttpStatusError,
+  "LoggerFacility": LoggerFacility,
   "MiddlewareUtil": Object {
     "extractDecorators": extractDecorators,
     "fromKoa": fromKoa,
