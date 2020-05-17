@@ -151,7 +151,7 @@ function analyzeRoutes(routes: RouteMetadata[], config: Configuration) {
    ]
    updateRouteAuthorizationAccess(routes, config)
    return routes.map(x => analyzeRoute(x, tests.concat(config.analyzers || []), routes))
-}
+}  
 
 function printAnalysis(results: TestResult[]) {
    const data = results.map(x => {
