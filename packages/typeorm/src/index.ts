@@ -42,11 +42,23 @@ export class CRUDTypeORMFacility extends TypeORMFacility {
 // --------------------------------------------------------------------- //
 
 function createController(entity:Class){
-    const Controller = generic.create(GenericCRUDBaseController, entity)
+    const Controller = createGenericController(GenericCRUDBaseController, entity)
     const name = entity.name.replace(/entity$/i, "").replace(/model$/i, "")
     // add root decorator
     Reflect.decorate([route.root(name)], Controller)
     return Controller
+}
+
+function createGenericController(parent:Class, ...params: Class[]) {
+    const Type = (() => {
+        class GenericController {
+        }
+        return GenericController;
+    })();
+    Object.setPrototypeOf(Type.prototype, parent.prototype);
+    Object.setPrototypeOf(Type, parent);
+    Reflect.decorate([generic.type(...params)], Type);
+    return Type;
 }
 
 // --------------------------------------------------------------------- //

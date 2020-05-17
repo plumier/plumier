@@ -1,5 +1,79 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`TypeOrm CRUD Should generate routes from multiple entities 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. GenericController.list(offset, limit) -> GET    /user",
+  ],
+  Array [
+    " 2. GenericController.save(data)          -> POST   /user",
+  ],
+  Array [
+    " 3. GenericController.get(id)             -> GET    /user/:id",
+  ],
+  Array [
+    " 4. GenericController.modify(id, data)    -> PUT    /user/:id",
+  ],
+  Array [
+    " 5. GenericController.modify(id, data)    -> PATCH  /user/:id",
+  ],
+  Array [
+    " 6. GenericController.delete(id)          -> DELETE /user/:id",
+  ],
+  Array [
+    " 7. GenericController.list(offset, limit) -> GET    /seconduser",
+  ],
+  Array [
+    " 8. GenericController.save(data)          -> POST   /seconduser",
+  ],
+  Array [
+    " 9. GenericController.get(id)             -> GET    /seconduser/:id",
+  ],
+  Array [
+    "10. GenericController.modify(id, data)    -> PUT    /seconduser/:id",
+  ],
+  Array [
+    "11. GenericController.modify(id, data)    -> PATCH  /seconduser/:id",
+  ],
+  Array [
+    "12. GenericController.delete(id)          -> DELETE /seconduser/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`TypeOrm CRUD Should generate routes properly 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. GenericController.list(offset, limit) -> GET    /user",
+  ],
+  Array [
+    "2. GenericController.save(data)          -> POST   /user",
+  ],
+  Array [
+    "3. GenericController.get(id)             -> GET    /user/:id",
+  ],
+  Array [
+    "4. GenericController.modify(id, data)    -> PUT    /user/:id",
+  ],
+  Array [
+    "5. GenericController.modify(id, data)    -> PATCH  /user/:id",
+  ],
+  Array [
+    "6. GenericController.delete(id)          -> DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`TypeOrm Facility Should able to reflect entity properties 1`] = `
 Array [
   Object {

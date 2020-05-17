@@ -163,9 +163,33 @@ describe("TypeOrm", () => {
                 }))
                 .initialize()
         }
-        it.only("Should generate routes properly", async () => {
+        it("Should generate routes properly", async () => {
             @Entity()
             class User {
+                @PrimaryGeneratedColumn()
+                id:number 
+                @Column()
+                email:string 
+                @Column()
+                name:string
+            }
+            const mock = consoleLog.startMock()
+            await createApp([User])
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
+        })
+        it.only("Should generate routes from multiple entities", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id:number 
+                @Column()
+                email:string 
+                @Column()
+                name:string
+            }
+            @Entity()
+            class SecondUser {
                 @PrimaryGeneratedColumn()
                 id:number 
                 @Column()
