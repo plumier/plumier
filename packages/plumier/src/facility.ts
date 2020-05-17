@@ -1,9 +1,25 @@
 import Cors from "@koa/cors"
-import { Class, DefaultDependencyResolver, DefaultFacility, PlumierApplication, DependencyResolver, CustomMiddleware, Invocation, ActionResult, response, toBoolean, generateRoutes, Configuration, consoleLog, ValidationError, HttpStatusError } from "@plumier/core"
-import BodyParser from "koa-body"
-import { Context } from 'koa'
-import { dirname } from "path"
+import {
+    ActionResult,
+    Class,
+    CustomMiddleware,
+    DefaultFacility,
+    DependencyResolver,
+    generateRoutes,
+    HttpStatusError,
+    Invocation,
+    PlumierApplication,
+    response,
+    toBoolean,
+} from "@plumier/core"
 import chalk from "chalk"
+import { Context } from "koa"
+import BodyParser from "koa-body"
+import { exists } from "fs"
+import { promisify } from "util"
+import { isAbsolute, join } from "path"
+
+const existsAsync = promisify(exists)
 
 
 export interface WebApiFacilityOption {
@@ -28,7 +44,10 @@ export class WebApiFacility extends DefaultFacility {
     constructor(private opt?: WebApiFacilityOption) { super() }
 
     async generateRoutes(app: Readonly<PlumierApplication>) {
-        return generateRoutes(app.config.controller, app.config.rootDir)
+        const { controller, rootDir } = app.config
+        let ctl = typeof controller === "string" && !isAbsolute(controller) ? join(rootDir, controller) : controller
+        if (typeof ctl === "string" && !await existsAsync(ctl)) return []
+        return generateRoutes(ctl, { overridable: false })
     }
 
     setup(app: Readonly<PlumierApplication>) {

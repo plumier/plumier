@@ -1,5 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Error Handling Should show correct error if provided controller file not found 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "No controller found",
+  ],
+]
+`;
+
+exports[`Error Handling Should show correct error if provided controller folder not found 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "No controller found",
+  ],
+]
+`;
+
 exports[`Global Error Handling Should able handle HttpStatusError properly 1`] = `
 Object {
   "customError": Object {
