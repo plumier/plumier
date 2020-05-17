@@ -1,8 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn, getConnection, OneToMany, OneToOne, JoinColumn, ManyToMany, ManyToOne, JoinTable } from "typeorm"
 import { fixture } from '../helper'
-import { TypeORMFacility, } from '@plumier/typeorm'
+import { TypeORMFacility, CRUDTypeORMFacility, } from '@plumier/typeorm'
 import reflect from "tinspector"
-import { Class } from '@plumier/core'
+import { Class, consoleLog } from '@plumier/core'
+import Plumier, { WebApiFacility } from '@plumier/plumier'
 
 describe("TypeOrm", () => {
     function createApp(entities: Function[]) {
@@ -146,6 +147,36 @@ describe("TypeOrm", () => {
                 fn(e)
             }
             expect(fn.mock.calls).toMatchSnapshot()
+        })
+    })
+    describe("CRUD", () => {
+        function createApp(entities: Function[]) {
+            return new Plumier()
+                .set(new WebApiFacility())
+                .set(new CRUDTypeORMFacility({
+                    type: "sqlite",
+                    database: ":memory:",
+                    dropSchema: true,
+                    entities: entities,
+                    synchronize: true,
+                    logging: false
+                }))
+                .initialize()
+        }
+        it.only("Should generate routes properly", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id:number 
+                @Column()
+                email:string 
+                @Column()
+                name:string
+            }
+            const mock = consoleLog.startMock()
+            await createApp([User])
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
         })
     })
 })
