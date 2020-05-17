@@ -30,7 +30,7 @@ function createRoute(...args: string[]): string {
 }
 
 function striveController(name: string) {
-   return name.substring(0, name.lastIndexOf("Controller")).toLowerCase()
+   return name.replace(/controller$/i, "")
 }
 
 function getControllerRoutes(root: string, controller: ClassReflection): string[] {
@@ -93,9 +93,13 @@ function transformMethod(root: string, controller: ClassReflection, method: Meth
    }]
 }
 
+function isController(meta: ClassReflection) {
+   return !!meta.name.match(/controller$/i) || !!meta.decorators.find((x: RootDecorator) => x.name === "Root")
+}
+
 function transformController(object: ClassReflection | Class, overridable: boolean, opt?: TransformOption) {
    const controller = typeof object === "function" ? reflect(object) : object
-   if (!controller.name.toLowerCase().endsWith("controller")) return []
+   if (!isController(controller)) return []
    const controllerRoutes = getControllerRoutes(opt && opt.root || "", controller)
    const infos: RouteInfo[] = []
 
@@ -117,7 +121,7 @@ function transformModule(path: string, overridable: boolean): RouteInfo[] {
    for (const file of files) {
       const root = getRoot(path, file)
       for (const member of (reflect(file).members as ClassReflection[])) {
-         if (member.kind === "Class" && member.name.toLocaleLowerCase().endsWith("controller"))
+         if (member.kind === "Class" && isController(member))
             infos.push(...transformController(member, overridable, { root }))
       }
    }

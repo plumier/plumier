@@ -42,6 +42,21 @@ describe("Route Generator", () => {
             .expect(404)
     })
 
+    it("Should transform if controller name does not end with controller but has root decorator", async () => {
+        @route.root("animal")
+        class AnimalClass {
+            method() { }
+        }
+        const app = await fixture(AnimalClass)
+            .initialize()
+        await Supertest(app.callback())
+            .get("/animal/method")
+            .expect(200)
+        await Supertest(app.callback())
+            .get("/animalclass/method")
+            .expect(404)
+    })
+
     it("Should transform action with multiple routes", async () => {
         class AnimalController {
             @route.get("/home")
