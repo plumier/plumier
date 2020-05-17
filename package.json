@@ -28,7 +28,7 @@
 		"@types/faker": "^4.1.12",
 		"@types/fs-extra": "^9.0.0",
 		"@types/jest": "^25.2.2",
-		"@types/joi": "^14.3.4",
+		"@types/hapi__joi": "^17.1.0",
 		"@types/jsonwebtoken": "^8.5.0",
 		"@types/koa-router": "^7.4.1",
 		"@types/rimraf": "^3.0.0",

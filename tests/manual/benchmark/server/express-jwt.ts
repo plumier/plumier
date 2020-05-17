@@ -1,5 +1,5 @@
 import Cors from "cors"
-import Joi from "joi"
+import Joi from "@hapi/joi"
 import express from "express"
 import bodyParser from "body-parser"
 import jwt from "express-jwt"
