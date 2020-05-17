@@ -1,5 +1,4 @@
 import { existsSync } from "fs"
-import { isAbsolute, join } from "path"
 import { ClassReflection, MethodReflection, reflect } from "tinspector"
 
 import { Class, findFilesRecursive } from "./common"
@@ -125,17 +124,10 @@ function transformModule(path: string, overridable: boolean): RouteInfo[] {
    return infos
 }
 
-function generateRoutes(controller: string | Class[] | Class, option?: string | { overridable?: boolean, executionPath?: string }): RouteMetadata[] {
-   const opt = !option ? { overridable: false, executionPath: "" } :
-      typeof option === "string" ? { overridable: false, executionPath: option } : 
-      { overridable: false, ...option }
+function generateRoutes(controller: string | Class[] | Class, opt: { overridable: boolean } = { overridable: false }): RouteMetadata[] {
    let routes: RouteInfo[] = []
    if (typeof controller === "string") {
-      const path = isAbsolute(controller) ? controller :
-         join(opt.executionPath!, controller)
-      if (!existsSync(path))
-         throw new Error(errorMessage.ControllerPathNotFound.format(path))
-      routes = transformModule(path, opt.overridable)
+      routes = transformModule(controller, opt.overridable)
    }
    else if (Array.isArray(controller)) {
       routes = controller.map(x => transformController(x, opt.overridable))
