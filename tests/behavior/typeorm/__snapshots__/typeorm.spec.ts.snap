@@ -1,5 +1,97 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`TypeOrm CRUD Route Generator Should able to override route 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.get(id)         -> GET    /users/:id",
+  ],
+  Array [
+    "2. DynamicType.list(offset, limit) -> GET    /users",
+  ],
+  Array [
+    "3. DynamicType.save(data)          -> POST   /users",
+  ],
+  Array [
+    "4. DynamicType.modify(id, data)    -> PUT    /users/:id",
+  ],
+  Array [
+    "5. DynamicType.modify(id, data)    -> PATCH  /users/:id",
+  ],
+  Array [
+    "6. DynamicType.delete(id)          -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`TypeOrm CRUD Route Generator Should generate nested routes 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. DynamicType.list(offset, limit)        -> GET    /users",
+  ],
+  Array [
+    " 2. DynamicType.save(data)                 -> POST   /users",
+  ],
+  Array [
+    " 3. DynamicType.get(id)                    -> GET    /users/:id",
+  ],
+  Array [
+    " 4. DynamicType.modify(id, data)           -> PUT    /users/:id",
+  ],
+  Array [
+    " 5. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+  ],
+  Array [
+    " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
+  ],
+  Array [
+    " 7. DynamicType.list                       -> GET    /users/:parentid/animals",
+  ],
+  Array [
+    " 8. DynamicType.save(parentId, data)       -> POST   /users/:parentid/animals",
+  ],
+  Array [
+    " 9. DynamicType.get(parentId, id)          -> GET    /users/:parentid/animals/:id",
+  ],
+  Array [
+    "10. DynamicType.modify(parentId, id, data) -> PUT    /users/:parentid/animals/:id",
+  ],
+  Array [
+    "11. DynamicType.modify(parentId, id, data) -> PATCH  /users/:parentid/animals/:id",
+  ],
+  Array [
+    "12. DynamicType.delete(parentId, id)       -> DELETE /users/:parentid/animals/:id",
+  ],
+  Array [
+    "13. DynamicType.list(offset, limit)        -> GET    /animals",
+  ],
+  Array [
+    "14. DynamicType.save(data)                 -> POST   /animals",
+  ],
+  Array [
+    "15. DynamicType.get(id)                    -> GET    /animals/:id",
+  ],
+  Array [
+    "16. DynamicType.modify(id, data)           -> PUT    /animals/:id",
+  ],
+  Array [
+    "17. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+  ],
+  Array [
+    "18. DynamicType.delete(id)                 -> DELETE /animals/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`TypeOrm CRUD Route Generator Should generate routes from inheritance 1`] = `
 Array [
   Array [],

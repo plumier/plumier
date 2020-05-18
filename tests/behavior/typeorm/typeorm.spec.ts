@@ -1,10 +1,26 @@
-import { Entity, Column, PrimaryGeneratedColumn, getConnection, OneToMany, OneToOne, JoinColumn, ManyToMany, ManyToOne, JoinTable, getMetadataArgsStorage, getManager } from "typeorm"
-import { fixture } from '../helper'
-import { TypeORMFacility, CRUDTypeORMFacility, } from '@plumier/typeorm'
+import { Class, Configuration, consoleLog, route } from "@plumier/core"
+import Plumier, { WebApiFacility } from "@plumier/plumier"
+import { CRUDTypeORMFacility, TypeORMFacility } from "@plumier/typeorm"
+import supertest from "supertest"
 import reflect from "tinspector"
-import { Class, consoleLog, Configuration } from '@plumier/core'
-import Plumier, { WebApiFacility } from '@plumier/plumier'
-import supertest from 'supertest'
+import {
+    Column,
+    Entity,
+    getConnection,
+    getManager,
+    getMetadataArgsStorage,
+    JoinColumn,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    Repository,
+} from "typeorm"
+
+import { fixture } from "../helper"
+
 
 describe("TypeOrm", () => {
     function createApp(entities: Function[]) {
@@ -226,6 +242,67 @@ describe("TypeOrm", () => {
                 expect(mock.mock.calls).toMatchSnapshot()
                 consoleLog.clearMock()
             })
+            it.only("Should generate nested routes", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals:Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user:User
+                }
+                const mock = consoleLog.startMock()
+                await createApp([User, Animal])
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to override route", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                class UsersController {
+                    readonly repo: Repository<User>
+                    constructor() {
+                        this.repo = getManager().getRepository(User)
+                    }
+                    @route.get(":id")
+                    get(id: number) {
+                        return this.repo.findOne(id)
+                    }
+                }
+                const mock = consoleLog.startMock()
+                await new Plumier()
+                    .set(new WebApiFacility({ controller: UsersController }))
+                    .set(new CRUDTypeORMFacility({
+                        type: "sqlite",
+                        database: ":memory:",
+                        dropSchema: true,
+                        entities: [User],
+                        synchronize: true,
+                        logging: false
+                    }))
+                    .initialize()
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
         })
         describe("CRUD Function", () => {
             it("Should serve GET /users?offset&limit", async () => {
@@ -238,7 +315,7 @@ describe("TypeOrm", () => {
                     @Column()
                     name: string
                 }
-                const app = await createApp([User], {mode: "production"})
+                const app = await createApp([User], { mode: "production" })
                 const repo = getManager().getRepository(User)
                 await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
                 const { body } = await supertest(app.callback())
@@ -256,7 +333,7 @@ describe("TypeOrm", () => {
                     @Column()
                     name: string
                 }
-                const app = await createApp([User], {mode: "production"})
+                const app = await createApp([User], { mode: "production" })
                 const repo = getManager().getRepository(User)
                 await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
                 const { body } = await supertest(app.callback())
@@ -274,7 +351,7 @@ describe("TypeOrm", () => {
                     @Column()
                     name: string
                 }
-                const app = await createApp([User], {mode: "production"})
+                const app = await createApp([User], { mode: "production" })
                 const repo = getManager().getRepository(User)
                 const { body } = await supertest(app.callback())
                     .post("/users")
@@ -294,7 +371,7 @@ describe("TypeOrm", () => {
                     @Column()
                     name: string
                 }
-                const app = await createApp([User], {mode: "production"})
+                const app = await createApp([User], { mode: "production" })
                 const repo = getManager().getRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
@@ -313,12 +390,12 @@ describe("TypeOrm", () => {
                     @Column()
                     name: string
                 }
-                const app = await createApp([User], {mode: "production"})
+                const app = await createApp([User], { mode: "production" })
                 const repo = getManager().getRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
                     .put(`/users/${data.raw}`)
-                    .send({ name: "Jane Doe"})
+                    .send({ name: "Jane Doe" })
                     .expect(200)
                 const modified = await repo.findOne(body.id)
                 expect(modified!.email).toBe("john.doe@gmail.com")
@@ -334,12 +411,12 @@ describe("TypeOrm", () => {
                     @Column()
                     name: string
                 }
-                const app = await createApp([User], {mode: "production"})
+                const app = await createApp([User], { mode: "production" })
                 const repo = getManager().getRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
                     .patch(`/users/${data.raw}`)
-                    .send({ name: "Jane Doe"})
+                    .send({ name: "Jane Doe" })
                     .expect(200)
                 const modified = await repo.findOne(body.id)
                 expect(modified!.email).toBe("john.doe@gmail.com")
@@ -355,7 +432,7 @@ describe("TypeOrm", () => {
                     @Column()
                     name: string
                 }
-                const app = await createApp([User], {mode: "production"})
+                const app = await createApp([User], { mode: "production" })
                 const repo = getManager().getRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
