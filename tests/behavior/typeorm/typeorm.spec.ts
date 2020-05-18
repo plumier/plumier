@@ -1,9 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, getConnection, OneToMany, OneToOne, JoinColumn, ManyToMany, ManyToOne, JoinTable } from "typeorm"
+import { Entity, Column, PrimaryGeneratedColumn, getConnection, OneToMany, OneToOne, JoinColumn, ManyToMany, ManyToOne, JoinTable, getMetadataArgsStorage, getManager } from "typeorm"
 import { fixture } from '../helper'
 import { TypeORMFacility, CRUDTypeORMFacility, } from '@plumier/typeorm'
 import reflect from "tinspector"
-import { Class, consoleLog } from '@plumier/core'
+import { Class, consoleLog, Configuration } from '@plumier/core'
 import Plumier, { WebApiFacility } from '@plumier/plumier'
+import supertest from 'supertest'
 
 describe("TypeOrm", () => {
     function createApp(entities: Function[]) {
@@ -23,6 +24,10 @@ describe("TypeOrm", () => {
     }
     afterEach(async () => {
         let conn = getConnection();
+        const storage = getMetadataArgsStorage();
+        (storage as any).tables = [];
+        (storage as any).columns = [];
+        (storage as any).relations = [];
         if (conn.isConnected)
             await conn.close();
     });
@@ -150,7 +155,7 @@ describe("TypeOrm", () => {
         })
     })
     describe("CRUD", () => {
-        function createApp(entities: Function[]) {
+        function createApp(entities: Function[], option?: Partial<Configuration>) {
             return new Plumier()
                 .set(new WebApiFacility())
                 .set(new CRUDTypeORMFacility({
@@ -161,46 +166,204 @@ describe("TypeOrm", () => {
                     synchronize: true,
                     logging: false
                 }))
+                .set(option || {})
                 .initialize()
         }
-        it("Should generate routes properly", async () => {
-            @Entity()
-            class User {
-                @PrimaryGeneratedColumn()
-                id:number 
-                @Column()
-                email:string 
-                @Column()
-                name:string
-            }
-            const mock = consoleLog.startMock()
-            await createApp([User])
-            expect(mock.mock.calls).toMatchSnapshot()
-            consoleLog.clearMock()
+        describe("Route Generator", () => {
+            it("Should generate routes properly", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const mock = consoleLog.startMock()
+                await createApp([User])
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should generate routes from multiple entities", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                @Entity()
+                class SecondUser {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const mock = consoleLog.startMock()
+                await createApp([User])
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should generate routes from inheritance", async () => {
+                class EntityBase {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                }
+                @Entity()
+                class User extends EntityBase {
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const mock = consoleLog.startMock()
+                await createApp([User])
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
         })
-        it.only("Should generate routes from multiple entities", async () => {
-            @Entity()
-            class User {
-                @PrimaryGeneratedColumn()
-                id:number 
-                @Column()
-                email:string 
-                @Column()
-                name:string
-            }
-            @Entity()
-            class SecondUser {
-                @PrimaryGeneratedColumn()
-                id:number 
-                @Column()
-                email:string 
-                @Column()
-                name:string
-            }
-            const mock = consoleLog.startMock()
-            await createApp([User])
-            expect(mock.mock.calls).toMatchSnapshot()
-            consoleLog.clearMock()
+        describe("CRUD Function", () => {
+            it("Should serve GET /users?offset&limit", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const app = await createApp([User], {mode: "production"})
+                const repo = getManager().getRepository(User)
+                await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+                const { body } = await supertest(app.callback())
+                    .get("/users?offset=0&limit=20")
+                    .expect(200)
+                expect(body.length).toBe(20)
+            })
+            it("Should serve GET /users?offset&limit with default value", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const app = await createApp([User], {mode: "production"})
+                const repo = getManager().getRepository(User)
+                await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+                const { body } = await supertest(app.callback())
+                    .get("/users")
+                    .expect(200)
+                expect(body.length).toBe(50)
+            })
+            it("Should serve POST /users", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const app = await createApp([User], {mode: "production"})
+                const repo = getManager().getRepository(User)
+                const { body } = await supertest(app.callback())
+                    .post("/users")
+                    .send({ email: "john.doe@gmail.com", name: "John Doe" })
+                    .expect(200)
+                const inserted = await repo.findOne(body.id)
+                expect(inserted!.email).toBe("john.doe@gmail.com")
+                expect(inserted!.name).toBe("John Doe")
+            })
+            it("Should serve GET /users/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const app = await createApp([User], {mode: "production"})
+                const repo = getManager().getRepository(User)
+                const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${data.raw}`)
+                    .expect(200)
+                expect(body.email).toBe("john.doe@gmail.com")
+                expect(body.name).toBe("John Doe")
+            })
+            it("Should serve PUT /users/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const app = await createApp([User], {mode: "production"})
+                const repo = getManager().getRepository(User)
+                const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+                const { body } = await supertest(app.callback())
+                    .put(`/users/${data.raw}`)
+                    .send({ name: "Jane Doe"})
+                    .expect(200)
+                const modified = await repo.findOne(body.id)
+                expect(modified!.email).toBe("john.doe@gmail.com")
+                expect(modified!.name).toBe("Jane Doe")
+            })
+            it("Should serve PATCH /users/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const app = await createApp([User], {mode: "production"})
+                const repo = getManager().getRepository(User)
+                const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+                const { body } = await supertest(app.callback())
+                    .patch(`/users/${data.raw}`)
+                    .send({ name: "Jane Doe"})
+                    .expect(200)
+                const modified = await repo.findOne(body.id)
+                expect(modified!.email).toBe("john.doe@gmail.com")
+                expect(modified!.name).toBe("Jane Doe")
+            })
+            it("Should serve DELETE /users/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const app = await createApp([User], {mode: "production"})
+                const repo = getManager().getRepository(User)
+                const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+                const { body } = await supertest(app.callback())
+                    .delete(`/users/${data.raw}`)
+                    .expect(200)
+                const modified = await repo.findOne(body.id)
+                expect(modified).toBeUndefined()
+            })
         })
     })
 })

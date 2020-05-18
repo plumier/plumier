@@ -1,26 +1,24 @@
 
 import { DefaultFacility, Class, route, val, domain, RouteMetadata, generateRoutes } from "@plumier/core"
-import { getMetadataArgsStorage, ConnectionOptions, createConnection, Repository, getManager } from "typeorm"
+import { getMetadataArgsStorage, ConnectionOptions, createConnection, Repository, getManager,  } from "typeorm"
 import reflect, { noop, generic, GenericTypeDecorator } from "tinspector"
+import pluralize from "pluralize"
 
 export class TypeORMFacility extends DefaultFacility {
     protected entities: Class[] = []
     constructor(private option?: ConnectionOptions) { super() }
 
     setup() {
-        const entitiesSet = new Set<Class>()
         const storage = getMetadataArgsStorage();
         for (const col of storage.columns) {
             Reflect.decorate([noop()], (col.target as Function).prototype, col.propertyName, void 0)
-            entitiesSet.add(col.target as Class)
         }
         for (const col of storage.relations) {
             const rawType: Class = (col.type as Function)()
             const type = col.relationType === "one-to-many" || col.relationType === "many-to-many" ? [rawType] : rawType
             Reflect.decorate([noop(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
-            entitiesSet.add(rawType)
         }
-        this.entities = Array.from(entitiesSet)
+        this.entities = storage.tables.filter(x => typeof x.target !== "string").map(x => x.target as Class)
     }
 
     async initialize() {
@@ -42,23 +40,11 @@ export class CRUDTypeORMFacility extends TypeORMFacility {
 // --------------------------------------------------------------------- //
 
 function createController(entity:Class){
-    const Controller = createGenericController(GenericCRUDBaseController, entity)
+    const Controller = generic.create(GenericCRUDBaseController, entity)
     const name = entity.name.replace(/entity$/i, "").replace(/model$/i, "")
     // add root decorator
-    Reflect.decorate([route.root(name)], Controller)
+    Reflect.decorate([route.root(pluralize.plural(name))], Controller)
     return Controller
-}
-
-function createGenericController(parent:Class, ...params: Class[]) {
-    const Type = (() => {
-        class GenericController {
-        }
-        return GenericController;
-    })();
-    Object.setPrototypeOf(Type.prototype, parent.prototype);
-    Object.setPrototypeOf(Type, parent);
-    Reflect.decorate([generic.type(...params)], Type);
-    return Type;
 }
 
 // --------------------------------------------------------------------- //
@@ -92,7 +78,7 @@ export class GenericCRUDBaseController<T> {
     @reflect.type(IdentifierResult)
     async save(@reflect.type("T") data: T) {
         const result = await this.repo.insert(data)
-        return new IdentifierResult(result.identifiers[0] as any)
+        return new IdentifierResult(result.raw as any)
     }
 
     @route.get(":id")

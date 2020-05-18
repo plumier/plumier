@@ -1,74 +1,102 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TypeOrm CRUD Should generate routes from multiple entities 1`] = `
+exports[`TypeOrm CRUD Route Generator Should generate routes from inheritance 1`] = `
 Array [
   Array [],
   Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. GenericController.list(offset, limit) -> GET    /user",
+    "1. DynamicType.list(offset, limit) -> GET    /users",
   ],
   Array [
-    " 2. GenericController.save(data)          -> POST   /user",
+    "2. DynamicType.save(data)          -> POST   /users",
   ],
   Array [
-    " 3. GenericController.get(id)             -> GET    /user/:id",
+    "3. DynamicType.get(id)             -> GET    /users/:id",
   ],
   Array [
-    " 4. GenericController.modify(id, data)    -> PUT    /user/:id",
+    "4. DynamicType.modify(id, data)    -> PUT    /users/:id",
   ],
   Array [
-    " 5. GenericController.modify(id, data)    -> PATCH  /user/:id",
+    "5. DynamicType.modify(id, data)    -> PATCH  /users/:id",
   ],
   Array [
-    " 6. GenericController.delete(id)          -> DELETE /user/:id",
-  ],
-  Array [
-    " 7. GenericController.list(offset, limit) -> GET    /seconduser",
-  ],
-  Array [
-    " 8. GenericController.save(data)          -> POST   /seconduser",
-  ],
-  Array [
-    " 9. GenericController.get(id)             -> GET    /seconduser/:id",
-  ],
-  Array [
-    "10. GenericController.modify(id, data)    -> PUT    /seconduser/:id",
-  ],
-  Array [
-    "11. GenericController.modify(id, data)    -> PATCH  /seconduser/:id",
-  ],
-  Array [
-    "12. GenericController.delete(id)          -> DELETE /seconduser/:id",
+    "6. DynamicType.delete(id)          -> DELETE /users/:id",
   ],
   Array [],
 ]
 `;
 
-exports[`TypeOrm CRUD Should generate routes properly 1`] = `
+exports[`TypeOrm CRUD Route Generator Should generate routes from multiple entities 1`] = `
 Array [
   Array [],
   Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. GenericController.list(offset, limit) -> GET    /user",
+    " 1. DynamicType.list(offset, limit) -> GET    /users",
   ],
   Array [
-    "2. GenericController.save(data)          -> POST   /user",
+    " 2. DynamicType.save(data)          -> POST   /users",
   ],
   Array [
-    "3. GenericController.get(id)             -> GET    /user/:id",
+    " 3. DynamicType.get(id)             -> GET    /users/:id",
   ],
   Array [
-    "4. GenericController.modify(id, data)    -> PUT    /user/:id",
+    " 4. DynamicType.modify(id, data)    -> PUT    /users/:id",
   ],
   Array [
-    "5. GenericController.modify(id, data)    -> PATCH  /user/:id",
+    " 5. DynamicType.modify(id, data)    -> PATCH  /users/:id",
   ],
   Array [
-    "6. GenericController.delete(id)          -> DELETE /user/:id",
+    " 6. DynamicType.delete(id)          -> DELETE /users/:id",
+  ],
+  Array [
+    " 7. DynamicType.list(offset, limit) -> GET    /secondusers",
+  ],
+  Array [
+    " 8. DynamicType.save(data)          -> POST   /secondusers",
+  ],
+  Array [
+    " 9. DynamicType.get(id)             -> GET    /secondusers/:id",
+  ],
+  Array [
+    "10. DynamicType.modify(id, data)    -> PUT    /secondusers/:id",
+  ],
+  Array [
+    "11. DynamicType.modify(id, data)    -> PATCH  /secondusers/:id",
+  ],
+  Array [
+    "12. DynamicType.delete(id)          -> DELETE /secondusers/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`TypeOrm CRUD Route Generator Should generate routes properly 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DynamicType.list(offset, limit) -> GET    /users",
+  ],
+  Array [
+    "2. DynamicType.save(data)          -> POST   /users",
+  ],
+  Array [
+    "3. DynamicType.get(id)             -> GET    /users/:id",
+  ],
+  Array [
+    "4. DynamicType.modify(id, data)    -> PUT    /users/:id",
+  ],
+  Array [
+    "5. DynamicType.modify(id, data)    -> PATCH  /users/:id",
+  ],
+  Array [
+    "6. DynamicType.delete(id)          -> DELETE /users/:id",
   ],
   Array [],
 ]
