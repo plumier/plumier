@@ -1,8 +1,17 @@
-import { consoleLog, DefaultFacility, PlumierApplication, generateRoutes, Class, cleanupConsole, RouteMetadata } from "@plumier/core"
+import {
+    Class,
+    cleanupConsole,
+    consoleLog,
+    DefaultFacility,
+    generateRoutes,
+    PlumierApplication,
+    RouteMetadata,
+    mergeRoutes,
+    RouteInfo
+} from "@plumier/core"
 import { join } from "path"
-import Plumier, { domain, RestfulApiFacility, route } from "plumier"
+import Plumier, { RestfulApiFacility, route } from "plumier"
 import Supertest from "supertest"
-import reflect from "tinspector"
 
 import { fixture } from "../helper"
 
@@ -1588,5 +1597,34 @@ describe("Extend Route Generator", () => {
         consoleLog.clearMock()
     })
 
+})
+
+describe("Route Merging", () => {
+    it("Should merge route properly", () => {
+        const routes = mergeRoutes([
+            <RouteInfo>{ kind: "ActionRoute", method: "post", url: "/users" },
+            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:id" },
+            <RouteInfo>{ kind: "ActionRoute", method: "put", url: "/users/:id" },
+            <RouteInfo>{ kind: "ActionRoute", method: "patch", url: "/users/:id" },
+            <RouteInfo>{ kind: "ActionRoute", method: "delete", url: "/users/:id" },
+        ])
+        expect(routes).toMatchSnapshot()
+    })
+    it("Should merge overridable route and maintain position", () => {
+        const routes = mergeRoutes([
+            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:id", access: "Public" },
+            <RouteInfo>{ kind: "ActionRoute", method: "post", url: "/users" },
+            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:id", overridable: true },
+        ])
+        expect(routes).toMatchSnapshot()
+    })
+    it("Should keep duplicate if not overridable", () => {
+        const routes = mergeRoutes([
+            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:id", access: "Public" },
+            <RouteInfo>{ kind: "ActionRoute", method: "post", url: "/users" },
+            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:id" },
+        ])
+        expect(routes).toMatchSnapshot()
+    })
 })
 

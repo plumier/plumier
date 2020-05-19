@@ -242,7 +242,7 @@ describe("TypeOrm", () => {
                 expect(mock.mock.calls).toMatchSnapshot()
                 consoleLog.clearMock()
             })
-            it.only("Should generate nested routes", async () => {
+            it("Should generate nested routes", async () => {
                 @Entity()
                 class User {
                     @PrimaryGeneratedColumn()

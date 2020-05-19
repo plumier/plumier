@@ -7,13 +7,13 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. UsersController.get(id)         -> GET    /users/:id",
+    "1. DynamicType.list(offset, limit) -> GET    /users",
   ],
   Array [
-    "2. DynamicType.list(offset, limit) -> GET    /users",
+    "2. DynamicType.save(data)          -> POST   /users",
   ],
   Array [
-    "3. DynamicType.save(data)          -> POST   /users",
+    "3. UsersController.get(id)         -> GET    /users/:id",
   ],
   Array [
     "4. DynamicType.modify(id, data)    -> PUT    /users/:id",
