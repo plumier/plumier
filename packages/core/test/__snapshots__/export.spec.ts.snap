@@ -193,6 +193,7 @@ Object {
   "hasKeyOf": hasKeyOf,
   "invoke": invoke,
   "isCustomClass": isCustomClass,
+  "mergeRoutes": mergeRoutes,
   "middleware": Object {
     "use": use,
   },

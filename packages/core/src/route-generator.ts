@@ -143,6 +143,32 @@ function generateRoutes(controller: string | Class[] | Class, opt: { overridable
    return routes
 }
 
+function findDupe(routes: RouteMetadata[], key: string, margin: number): RouteMetadata | undefined {
+   for (let i = 0; i < margin; i++) {
+      const route = routes[i]
+      const curKey = `${route.method}${route.url}`
+      if (curKey === key) return route;
+   }
+}
 
-export { generateRoutes, RouteDecorator, IgnoreDecorator, RootDecorator }
+function mergeRoutes(routes: RouteMetadata[]) {
+   const skip: { [key: string]: true } = {}
+   const result = []
+   for (let i = routes.length - 1; i >= 0; i--) {
+      const route = routes[i]
+      const curKey = `${route.method}${route.url}`
+      if (skip[curKey]) continue;
+      if (route.overridable) {
+         const replace = findDupe(routes, curKey, i)
+         if (replace) skip[curKey] = true
+         result.unshift(replace ?? route)
+      }
+      else {
+         result.unshift(route)
+      }
+   }
+   return result
+}
+
+export { generateRoutes, RouteDecorator, IgnoreDecorator, RootDecorator, mergeRoutes }
 
