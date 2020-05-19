@@ -13,7 +13,8 @@ import {
     printAnalysis,
     RouteInfo,
     router,
-    RouteMetadata
+    RouteMetadata,
+    mergeRoutes
 } from "@plumier/core"
 import Koa from "koa"
 import { dirname } from "path"
@@ -63,18 +64,12 @@ export class Plumier implements PlumierApplication {
             if (this.config.rootDir === "__UNSET__")
                 (this.config as Configuration).rootDir = dirname(module.parent!.parent!.filename)
             //generate routes 
-            const routes: RouteMetadata[] = []
-            const map: { [key: string]: boolean } = {}
+            const rawRoutes: RouteMetadata[] = []
             for (const facility of this.config.facilities) {
                 const genRoutes = await facility.generateRoutes(this)
-                for (const route of genRoutes) {
-                    const key = `${route.method} ${route.url}`
-                    const exists = map[key]
-                    if(!(exists && route.overridable))
-                        routes.push(route)
-                    map[key] = true
-                }
+                rawRoutes.push(...genRoutes)
             }
+            const routes = mergeRoutes(rawRoutes)
             //run initialize
             for (const facility of this.config.facilities) {
                 await facility.initialize(this, routes)
