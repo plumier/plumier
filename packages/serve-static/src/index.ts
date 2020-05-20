@@ -163,22 +163,22 @@ function getActionName(route: RouteInfo) {
     return `${route.controller.name}.${route.action.name}(${route.action.parameters.map(x => x.name).join(", ")})`
 }
 
-function multipleDecoratorsCheck(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue {
-    if (route.kind === "VirtualRoute") return { type: "success" }
+function multipleDecoratorsCheck(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue[] {
+    if (route.kind === "VirtualRoute") return [{ type: "success" }]
     const histories = allRoutes.filter((x): x is RouteInfo => x.kind === "ActionRoute" && x.action.decorators.some(x => x.type === "HistoryApiFallback"))
     if (histories.length > 1) {
         const actions = histories.map(x => getActionName(x)).join(", ")
-        return { type: "error", message: `PLUM1020: Multiple @route.historyApiFallback() is not allowed, in ${actions}` }
+        return [{ type: "error", message: `PLUM1020: Multiple @route.historyApiFallback() is not allowed, in ${actions}` }]
     }
-    else return { type: "success" }
+    else return [{ type: "success" }]
 }
 
-function httpMethodCheck(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue {
-    if (route.kind === "VirtualRoute") return { type: "success" }
+function httpMethodCheck(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue[] {
+    if (route.kind === "VirtualRoute") return [{ type: "success" }]
     if (route.method !== "get" && route.action.decorators.some(x => x.type === "HistoryApiFallback"))
-        return { type: "error", message: `PLUM1021: History api fallback should have GET http method, in ${getActionName(route)}` }
+        return [{ type: "error", message: `PLUM1021: History api fallback should have GET http method, in ${getActionName(route)}` }]
     else
-        return { type: "success" }
+        return [{ type: "success" }]
 }
 
 
