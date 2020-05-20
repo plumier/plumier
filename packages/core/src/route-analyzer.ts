@@ -2,7 +2,7 @@ import chalk from "chalk"
 import { ClassReflection, ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
 import { updateRouteAuthorizationAccess } from "./authorization"
-import { Class, isCustomClass, printTable, ellipsis } from "./common"
+import { Class, isCustomClass, printTable, ellipsis, analyzeModel, AnalysisMessage } from "./common"
 import { Configuration, errorMessage, RouteAnalyzerFunction, RouteAnalyzerIssue, RouteMetadata, RouteInfo } from "./types"
 
 
@@ -20,99 +20,57 @@ interface TestResult { route: RouteMetadata, issues: RouteAnalyzerIssue[] }
 /* --------------------------- ANALYZER FUNCTION --------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-//------ Analyzer Helpers
-function getModelsInParameters(par: PropOrParamReflection[]) {
-   return par
-      .map((x, i) => ({ type: x.type, index: i }))
-      .filter(x => x.type && isCustomClass(x.type))
-      .map(x => ({ meta: reflect((Array.isArray(x.type) ? x.type[0] : x.type) as Class), index: x.index }))
-}
-
-function traverseModel(par: PropOrParamReflection[]): ClassReflection[] {
-   const models = getModelsInParameters(par).map(x => x.meta)
-   const child = models.map(x => traverseModel(x.properties))
-      .filter((x): x is ClassReflection[] => Boolean(x))
-      .reduce((a, b) => a!.concat(b!), [] as ClassReflection[])
-   return models.concat(child)
-}
-
-function traverseArray(parent: string, par: PropOrParamReflection[]): string[] {
-   const models = getModelsInParameters(par)
-   if (models.length > 0) {
-      return models.map((x, i) => traverseArray(x.meta.name, x.meta.properties))
-         .flatten()
-   }
-   return par.filter(x => Array.isArray(x.type) && x.type[0] === Object)
-      .map(x => `${parent}.${x.name}`)
-}
-
-function backingParameterTest(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue {
-   if (route.kind === "VirtualRoute") return { type: "success" }
+function backingParameterTest(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue[] {
+   if (route.kind === "VirtualRoute") return [{ type: "success" }]
    const ids = route.url.split("/")
       .filter(x => x.startsWith(":"))
       .map(x => x.substring(1).toLowerCase())
    const missing = ids.filter(id => route.action.parameters.map(x => x.name.toLowerCase()).indexOf(id) === -1)
    if (missing.length > 0) {
-      return {
+      return [{
          type: "error",
          message: errorMessage.RouteDoesNotHaveBackingParam.format(missing.join(", "))
-      }
+      }]
    }
-   else return { type: "success" }
+   else return [{ type: "success" }]
 }
 
-function metadataTypeTest(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue {
-   if (route.kind === "VirtualRoute") return { type: "success" }
-   const hasTypeInfo = route.action
-      .parameters.some(x => Boolean(x.type))
-   if (!hasTypeInfo && route.action.parameters.length > 0) {
-      return {
-         type: "warning",
-         message: errorMessage.ActionParameterDoesNotHaveTypeInfo
-      }
-   }
-   else return { type: "success" }
-}
-
-function duplicateRouteTest(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue {
+function duplicateRouteTest(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue[] {
    const dup = allRoutes.filter(x => x.url == route.url && x.method == route.method)
    if (dup.length > 1) {
-      return {
+      return [{
          type: "error",
          message: errorMessage.DuplicateRouteFound.format(dup.map(x => getActionName(x)).join(" "))
-      }
+      }]
    }
-   else return { type: "success" }
+   else return [{ type: "success" }]
 }
 
-function modelTypeInfoTest(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue {
-   if (route.kind === "VirtualRoute") return { type: "success" }
-   const classes = traverseModel(route.action.parameters)
-      .filter(x => x.properties.every(par => typeof par.type == "undefined"))
-      .map(x => x.type)
-   //get only unique type
-   const noTypeInfo = Array.from(new Set(classes))
-   if (noTypeInfo.length > 0) {
-      return {
-         type: "warning",
-         message: errorMessage.ModelWithoutTypeInformation.format(noTypeInfo.map(x => x.name).join(", "))
+function typeInfoTest(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue[] {
+   const toRouteAnalyzerIssue = (x: AnalysisMessage) => {
+      if (x.issue === "NoProperties") return { type: "warning" as "warning", message: errorMessage.ModelWithoutTypeInformation.format(x.location) }
+      if (x.issue === "ArrayTypeMissing") return { type: "warning" as "warning", message: errorMessage.ArrayWithoutTypeInformation.format(x.location) }
+      return { type: "warning" as "warning", message: errorMessage.PropertyWithoutTypeInformation.format(x.location) }
+   }
+   if (route.kind === "VirtualRoute") return [{ type: "success" }]
+   const issues: RouteAnalyzerIssue[] = []
+   for (const prop of route.action.parameters) {
+      if (prop.typeClassification === "Primitive") continue
+      const location = `${route.controller.name}.${route.action.name}.${prop.name}`
+      if (prop.type === Object || prop.type === undefined)
+         issues.push({ type: "warning", message: errorMessage.ActionParameterDoesNotHaveTypeInfo.format(location) })
+      else if (Array.isArray(prop.type) && prop.type[0] === Object)
+         issues.push({ type: "warning", message: errorMessage.ActionParameterDoesNotHaveTypeInfo.format(location) })
+      else {
+         const iss = analyzeModel(prop.type).map(x => toRouteAnalyzerIssue(x))
+         issues.push(...iss)
       }
    }
-   else return { type: "success" }
+   if (issues.length > 0)
+      return issues
+   else return [{ type: "success" }]
 }
 
-function arrayTypeInfoTest(route: RouteMetadata, allRoutes: RouteMetadata[]): RouteAnalyzerIssue {
-   if (route.kind === "VirtualRoute") return { type: "success" }
-   const issues = traverseArray(`${route.controller.name}.${route.action.name}`, route.action.parameters)
-   const array = Array.from(new Set(issues))
-   if (array.length > 0) {
-      return {
-         type: "warning",
-         message: errorMessage.ArrayWithoutTypeInformation.format(array.join(", "))
-      }
-   }
-   else return { type: 'success' }
-}
 
 /* ------------------------------------------------------------------------------- */
 /* -------------------------------- ANALYZER ------------------------------------- */
@@ -139,19 +97,21 @@ function getActionNameForReport(route: RouteMetadata) {
 }
 
 function analyzeRoute(route: RouteMetadata, tests: RouteAnalyzerFunction[], allRoutes: RouteMetadata[]): TestResult {
-   const issues = tests.map(test => test(route, allRoutes)).filter(x => x.type != "success")
+   const issues = []
+   for (const test of tests) {
+      const result = test(route, allRoutes).filter(x => x.type !== "success")
+      issues.push(...result)
+   }
    return { route, issues }
 }
 
 function analyzeRoutes(routes: RouteMetadata[], config: Configuration) {
    const tests: RouteAnalyzerFunction[] = [
-      backingParameterTest, metadataTypeTest,
-      duplicateRouteTest, modelTypeInfoTest,
-      arrayTypeInfoTest
+      backingParameterTest, duplicateRouteTest, typeInfoTest,
    ]
    updateRouteAuthorizationAccess(routes, config)
    return routes.map(x => analyzeRoute(x, tests.concat(config.analyzers || []), routes))
-}  
+}
 
 function printAnalysis(results: TestResult[]) {
    const data = results.map(x => {

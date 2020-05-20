@@ -106,7 +106,21 @@ Array [
   ],
   Array [
     "1. AnimalController.method(a) -> POST /animal/method
- - warning PLUM1006: Parameter binding skipped because array doesn't have element type information in (AnimalController.method.a)",
+ - warning PLUM1004: Parameter binding skipped because action parameters doesn't have type information in (AnimalController.method.a)",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify if array property doesn't have type information for parameter binding 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method(a) -> POST /animal/method
+ - warning PLUM1006: Parameter binding skipped because array element doesn't have type information in (AnimalModel.name)",
   ],
   Array [],
 ]
@@ -135,6 +149,20 @@ Array [
   Array [
     "1. AnimalController.method(a) -> POST /animal/method
  - warning PLUM1005: Parameter binding skipped because TagModel doesn't have type information on its properties",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should identify if model property doesn't have type information for parameter binding 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method(a) -> POST /animal/method
+ - warning PLUM1008: Parameter binding skipped because property doesn't have type information in (AnimalModel.name)",
   ],
   Array [],
 ]
@@ -176,7 +204,7 @@ Array [
   ],
   Array [
     "1. AnimalController.method(a) -> GET /animal/method
- - warning PLUM1004: Parameter binding skipped because action parameters doesn't have type information",
+ - warning PLUM1004: Parameter binding skipped because action parameters doesn't have type information in (AnimalController.method.a)",
   ],
   Array [],
 ]
@@ -193,6 +221,19 @@ Array [
   ],
   Array [
     "2. BeastController.method(a)     -> GET /beast/method",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Analyzer Should not error when analyzing cross reference model 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.method(a) -> POST /animal/method",
   ],
   Array [],
 ]

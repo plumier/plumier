@@ -112,7 +112,7 @@ export interface VirtualRoute {
 }
 
 export interface RouteAnalyzerIssue { type: "error" | "warning" | "success", message?: string }
-export type RouteAnalyzerFunction = (route: RouteMetadata, allRoutes: RouteMetadata[]) => RouteAnalyzerIssue
+export type RouteAnalyzerFunction = (route: RouteMetadata, allRoutes: RouteMetadata[]) => RouteAnalyzerIssue[]
 
 // --------------------------------------------------------------------- //
 // ------------------------------ FACILITY ----------------------------- //
@@ -594,9 +594,10 @@ export namespace errorMessage {
     export const ControllerPathNotFound = "PLUM1002: Controller file or directory {0} not found"
     export const ObjectNotFound = "PLUM1003: Object with id {0} not found in Object registry"
 
-    export const ActionParameterDoesNotHaveTypeInfo = "PLUM1004: Parameter binding skipped because action parameters doesn't have type information"
+    export const ActionParameterDoesNotHaveTypeInfo = "PLUM1004: Parameter binding skipped because action parameters doesn't have type information in ({0})"
     export const ModelWithoutTypeInformation = "PLUM1005: Parameter binding skipped because {0} doesn't have type information on its properties"
-    export const ArrayWithoutTypeInformation = "PLUM1006: Parameter binding skipped because array doesn't have element type information in ({0})"
+    export const ArrayWithoutTypeInformation = "PLUM1006: Parameter binding skipped because array element doesn't have type information in ({0})"
+    export const PropertyWithoutTypeInformation = "PLUM1008: Parameter binding skipped because property doesn't have type information in ({0})"
     export const PublicNotInParameter = "PLUM1007: @authorize.public() can not be applied to parameter"
 
     //PLUM2XXX internal app error

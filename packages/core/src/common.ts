@@ -1,7 +1,7 @@
 import { lstatSync } from "fs"
 import glob from "glob"
 import { extname } from "path"
-import { useCache } from "tinspector"
+import reflect, { useCache } from "tinspector"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -31,8 +31,8 @@ Array.prototype.flatten = function <T>(this: Array<T>) {
     return this.reduce((a, b) => a.concat(b), <T[]>[])
 }
 
-function ellipsis(str:string, length:number){
-    if(str.length > length){
+function ellipsis(str: string, length: number) {
+    if (str.length > length) {
         const leftPart = str.substring(0, length - 9)
         const rightPart = str.substring(str.length - 6)
         return `${leftPart}...${rightPart}`
@@ -51,7 +51,7 @@ function hasKeyOf<T>(opt: any, key: string): opt is T {
     return !!opt[key]
 }
 
-function toBoolean(val:string){
+function toBoolean(val: string) {
     const list: { [key: string]: boolean | undefined } = {
         on: true, true: true, "1": true, yes: true,
         off: false, false: false, "0": false, no: false
@@ -97,6 +97,12 @@ namespace consoleLog {
     }
 }
 
+function cleanupConsole(mocks: string[][]) {
+    const cleanup = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
+    const millisecond = /\d*ms/g
+    return mocks.map(x => x.map(y => y.replace(cleanup, "").replace(millisecond, "123ms")))
+}
+
 // --------------------------------------------------------------------- //
 // ---------------------------- FILE SYSTEM ---------------------------- //
 // --------------------------------------------------------------------- //
@@ -124,7 +130,7 @@ interface ColumnMeta {
 }
 
 interface TableOption<T> {
-    onPrintRow?: (row:string, data:T) => string
+    onPrintRow?: (row: string, data: T) => string
 }
 
 function printTable<T>(meta: (ColumnMeta | string | undefined)[], data: T[], option?: TableOption<T>) {
@@ -142,7 +148,7 @@ function printTable<T>(meta: (ColumnMeta | string | undefined)[], data: T[], opt
                 ...x, margin: x.align || "left", length,
             }
         })
-    const opt:Required<TableOption<T>> = { onPrintRow: x => x, ...option}
+    const opt: Required<TableOption<T>> = { onPrintRow: x => x, ...option }
     for (const [i, row] of data.entries()) {
         // row number
         let text = `${(i + 1).toString().padStart(data.length.toString().length)}. `
@@ -152,11 +158,11 @@ function printTable<T>(meta: (ColumnMeta | string | undefined)[], data: T[], opt
             // margin
             if (col.margin === "right")
                 text += colText.padStart(col.length)
-            else 
-            if (exceptLast)
-                text += colText.padEnd(col.length)
             else
-                text += colText
+                if (exceptLast)
+                    text += colText.padEnd(col.length)
+                else
+                    text += colText
             //padding
             if (exceptLast)
                 text += " "
@@ -165,10 +171,46 @@ function printTable<T>(meta: (ColumnMeta | string | undefined)[], data: T[], opt
     }
 }
 
-function cleanupConsole(mocks:string[][]){
-    const cleanup = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
-    const millisecond = /\d*ms/g
-    return mocks.map(x => x.map(y => y.replace(cleanup, "").replace(millisecond, "123ms")))
+
+// --------------------------------------------------------------------- //
+// ----------------------------- REFLECTION ---------------------------- //
+// --------------------------------------------------------------------- //
+
+interface TraverseContext<T> {
+    path: string[],
+    parentPath: Class[]
 }
 
-export { ellipsis, toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, memoize, printTable, cleanupConsole };
+interface AnalysisMessage {
+    issue: "NoProperties" | "TypeMissing" | "ArrayTypeMissing"
+    location: string
+}
+
+function analyzeModel<T>(type: Class | Class[], ctx: TraverseContext<T> = { path: [], parentPath: [] }): AnalysisMessage[] {
+    const parentType = ctx.parentPath[ctx.parentPath.length - 1]
+    const propName = ctx.path[ctx.path.length - 1]
+    const location = `${parentType?.name}.${propName}`
+    if (Array.isArray(type)) {
+        if (type[0] === Object) return [{ location, issue: "ArrayTypeMissing" }]
+        return analyzeModel(type[0], ctx)
+    }
+    if (isCustomClass(type)) {
+        // CIRCULAR: check if type already in path, skip immediately
+        if (ctx.parentPath.some(x => x === type)) return []
+        const meta = reflect(type)
+        if (meta.properties.length === 0) return [{ location: type.name, issue: "NoProperties" }]
+        const result = []
+        for (const prop of meta.properties) {
+            const path = ctx.path.concat(prop.name)
+            const typePath = ctx.parentPath.concat(type)
+            const msgs = analyzeModel(prop.type, { ...ctx, path, parentPath: typePath })
+            result.push(...msgs)
+        }
+        return result
+    }
+    if (type === Object) return [{ location, issue: "TypeMissing" }]
+    return []
+}
+
+
+export { ellipsis, toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, memoize, printTable, cleanupConsole, analyzeModel, AnalysisMessage };
