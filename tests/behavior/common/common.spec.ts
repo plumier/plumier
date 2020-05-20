@@ -1,4 +1,5 @@
-import { consoleLog, printTable, ellipsis } from "@plumier/core"
+import { consoleLog, printTable, ellipsis, analyzeModel, domain } from "@plumier/core"
+import reflect from "tinspector"
 
 describe("PrintTable", () => {
     it("Should able to print table", () => {
@@ -45,6 +46,100 @@ describe("Ellipsis", () => {
         const str = ellipsis("Lorem", 20)
         expect(str.length).toBe(str.length)
         expect(str).toMatchSnapshot()
+    })
+})
+
+describe("Model Analyser", () => {
+    it("Should analyze missing properties", () => {
+        class MyModel {
+            constructor(
+                public name: string,
+                public date: Date
+            ) { }
+        }
+        expect(analyzeModel(MyModel)).toMatchSnapshot()
+    })
+    it("Should analyze missing property type", () => {
+        @domain()
+        class MyModel {
+            constructor(
+                public name: string,
+                public date: Readonly<Date>
+            ) { }
+        }
+        expect(analyzeModel(MyModel)).toMatchSnapshot()
+    })
+    it("Should analyze missing array type", () => {
+        @domain()
+        class MyModel {
+            constructor(
+                public name: string,
+                public dates: Date[]
+            ) { }
+        }
+        expect(analyzeModel(MyModel)).toMatchSnapshot()
+    })
+    it("Should analyze missing property type in nested model", () => {
+        @domain()
+        class ParentModel {
+            constructor(
+                public name: string,
+                public date: Readonly<Date>
+            ) { }
+        }
+        @domain()
+        class MyModel {
+            constructor(
+                public parent:ParentModel
+            ){}
+        }
+        expect(analyzeModel(MyModel)).toMatchSnapshot()
+    })
+    it("Should analyze missing property in array type", () => {
+        @domain()
+        class MyModel {
+            constructor(
+                public name: string,
+                public date: Readonly<Date>
+            ) { }
+        }
+        expect(analyzeModel([MyModel])).toMatchSnapshot()
+    })
+    it("Should analyze missing property type in nested array model", () => {
+        @domain()
+        class ParentModel {
+            constructor(
+                public name: string,
+                public date: Readonly<Date>
+            ) { }
+        }
+        @domain()
+        class MyModel {
+            constructor(
+                @reflect.type([ParentModel])
+                public parent:ParentModel[]
+            ){}
+        }
+        expect(analyzeModel(MyModel)).toMatchSnapshot()
+    })
+    it("Should skip cross reference type", () => {
+        @domain()
+        class ParentModel {
+            constructor(
+                public name: string,
+                public date: Readonly<Date>,
+                @reflect.type(x => [MyModel])
+                public children:MyModel[]
+            ) { }
+        }
+        @domain()
+        class MyModel {
+            constructor(
+                @reflect.type([ParentModel])
+                public parent:ParentModel[]
+            ){}
+        }
+        expect(analyzeModel(MyModel)).toMatchSnapshot()
     })
 })
 

@@ -104,7 +104,7 @@ describe("Route Analyzer", () => {
 
     it("Should not detect duplicate route if overridable", async () => {
         class BeastController {
-            otherMethod(){}
+            otherMethod() { }
             @route.get()
             method(a: number) { }
         }
@@ -128,6 +128,27 @@ describe("Route Analyzer", () => {
             constructor(
                 public id: number,
                 public name: string
+            ) { }
+        }
+        class AnimalController {
+            @route.post()
+            method(a: AnimalModel) { }
+        }
+        const mock = consoleLog.startMock()
+        const app = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set({ controller: [AnimalController] })
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1005")
+        consoleLog.clearMock()
+    })
+
+    it("Should identify if model property doesn't have type information for parameter binding", async () => {
+        @domain()
+        class AnimalModel {
+            constructor(
+                public id: number,
+                public name: any
             ) { }
         }
         class AnimalController {
@@ -192,13 +213,60 @@ describe("Route Analyzer", () => {
         consoleLog.clearMock()
     })
 
+    it("Should identify if array property doesn't have type information for parameter binding", async () => {
+        @domain()
+        class AnimalModel {
+            constructor(
+                public id: number,
+                public name: number[]
+            ) { }
+        }
+        class AnimalController {
+            @route.post()
+            method(a: AnimalModel) { }
+        }
+        const mock = consoleLog.startMock()
+        const app = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set({ controller: [AnimalController] })
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1005")
+        consoleLog.clearMock()
+    })
+
+    it("Should not error when analyzing cross reference model", async () => {
+        class Client {
+            @reflect.noop()
+            id: number
+            @reflect.noop(x => Animal)
+            animals: any
+        }
+        class Animal {
+            @reflect.noop()
+            id: number
+            @reflect.noop(x => Client)
+            name: any
+        }
+        class AnimalController {
+            @route.post()
+            method(a: Animal) { }
+        }
+        const mock = consoleLog.startMock()
+        const app = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set({ controller: [AnimalController] })
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+
     it("Should be able to extends the route analyzer", async () => {
         class AnimalController {
             @route.get()
             method() { }
         }
         const mock = consoleLog.startMock()
-        const analyzer: RouteAnalyzerFunction = (route: RouteMetadata, allRoutes: RouteMetadata[]) => ({ type: "error", message: "PLUM1005: Just an error" })
+        const analyzer: RouteAnalyzerFunction = (route: RouteMetadata, allRoutes: RouteMetadata[]) => ([{ type: "error", message: "PLUM1005: Just an error" }])
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ analyzers: [analyzer] })

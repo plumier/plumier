@@ -4,6 +4,69 @@ exports[`Ellipsis Should not trim string if shorter than expected 1`] = `"Lorem"
 
 exports[`Ellipsis Should trim long string 1`] = `"Lorem ipsum... dolor"`;
 
+exports[`Model Analyser Should analyze missing array type 1`] = `
+Array [
+  Object {
+    "issue": "ArrayTypeMissing",
+    "location": "MyModel.dates",
+  },
+]
+`;
+
+exports[`Model Analyser Should analyze missing properties 1`] = `
+Array [
+  Object {
+    "issue": "NoProperties",
+    "location": "MyModel",
+  },
+]
+`;
+
+exports[`Model Analyser Should analyze missing property in array type 1`] = `
+Array [
+  Object {
+    "issue": "TypeMissing",
+    "location": "MyModel.date",
+  },
+]
+`;
+
+exports[`Model Analyser Should analyze missing property type 1`] = `
+Array [
+  Object {
+    "issue": "TypeMissing",
+    "location": "MyModel.date",
+  },
+]
+`;
+
+exports[`Model Analyser Should analyze missing property type in nested array model 1`] = `
+Array [
+  Object {
+    "issue": "TypeMissing",
+    "location": "ParentModel.date",
+  },
+]
+`;
+
+exports[`Model Analyser Should analyze missing property type in nested model 1`] = `
+Array [
+  Object {
+    "issue": "TypeMissing",
+    "location": "ParentModel.date",
+  },
+]
+`;
+
+exports[`Model Analyser Should skip cross reference type 1`] = `
+Array [
+  Object {
+    "issue": "TypeMissing",
+    "location": "ParentModel.date",
+  },
+]
+`;
+
 exports[`PrintTable Should able to print table 1`] = `
 Array [
   Array [
