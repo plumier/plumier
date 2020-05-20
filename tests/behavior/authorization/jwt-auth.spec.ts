@@ -2191,7 +2191,6 @@ describe("JwtAuth", () => {
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .expect(200, { user: { name: "admin", password: "secret" } })
             })
-
             it("Should able to use role authorizer", async () => {
                 @domain()
                 class User {
@@ -2222,6 +2221,39 @@ describe("JwtAuth", () => {
                     .get("/users/get")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .expect(200, { user: { name: "admin" } })
+            })
+            it("Should allow nested type with cross dependency", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.role("admin")
+                        public password: string,
+                        @reflect.type(x => Parent)
+                        public parent: any
+                    ) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(public user: User) { }
+                }
+                class UsersController {
+                    @reflect.type(Parent)
+                    get() {
+                        return new Parent(new User("admin", "secret", { user: undefined }))
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { user: { name: "admin", password: "secret", parent: {} } })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { user: { name: "admin", parent: {} } })
             })
         })
     })

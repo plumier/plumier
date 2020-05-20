@@ -5,7 +5,6 @@
     "strict": true,
     "importHelpers": true,
     "esModuleInterop": true,
-    "strictPropertyInitialization": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   }

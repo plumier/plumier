@@ -1,7 +1,7 @@
 
-import { DefaultFacility, Class, route, val, domain, RouteMetadata, generateRoutes } from "@plumier/core"
-import { getMetadataArgsStorage, ConnectionOptions, createConnection, Repository, getManager, } from "typeorm"
-import reflect, { noop, generic, GenericTypeDecorator } from "tinspector"
+import { DefaultFacility, Class, route, val, domain, RouteMetadata, generateRoutes, HttpStatusError } from "@plumier/core"
+import { getMetadataArgsStorage, ConnectionOptions, createConnection, Repository, getManager } from "typeorm"
+import reflect, { noop, generic, GenericTypeDecorator, PropertyReflection, decorateClass, metadata } from "tinspector"
 import pluralize from "pluralize"
 
 export class TypeORMFacility extends DefaultFacility {
@@ -14,7 +14,7 @@ export class TypeORMFacility extends DefaultFacility {
             Reflect.decorate([noop()], (col.target as Function).prototype, col.propertyName, void 0)
         }
         for (const col of storage.relations) {
-            const rawType: Class = (col.type as Function)()
+            const rawType: Class = (col as any).type()
             const type = col.relationType === "one-to-many" || col.relationType === "many-to-many" ? [rawType] : rawType
             Reflect.decorate([noop(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
         }
@@ -32,13 +32,13 @@ export class TypeORMFacility extends DefaultFacility {
 export class CRUDTypeORMFacility extends TypeORMFacility {
     async generateRoutes(): Promise<RouteMetadata[]> {
         const controllers = []
+        const relations = getMetadataArgsStorage().relations
         for (const entity of this.entities) {
             controllers.push(createController(entity))
             const meta = reflect(entity)
             for (const prop of meta.properties) {
-                if(Array.isArray(prop.type)){
-                    const childType = prop.type[0]
-                    controllers.push(createNestedController(entity, childType))
+                if (relations.find(x => x.target === entity && x.propertyName === prop.name && x.relationType === "one-to-many")) {
+                    controllers.push(createNestedController(entity, prop))
                 }
             }
         }
@@ -50,7 +50,7 @@ export class CRUDTypeORMFacility extends TypeORMFacility {
 // ------------------------------ HELPERS ------------------------------ //
 // --------------------------------------------------------------------- //
 
-function createControllerName(entity:Class){
+function createControllerName(entity: Class) {
     const name = entity.name.replace(/entity$/i, "").replace(/model$/i, "")
     return pluralize.plural(name)
 }
@@ -63,26 +63,34 @@ function createController(entity: Class) {
     return Controller
 }
 
-function createNestedController(parent:Class, child:Class){
-    const Controller = generic.create(NestedGenericController, parent, child)
+function createNestedController(parent: Class, prop: PropertyReflection) {
+    const Controller = generic.create(NestedGenericController, parent, prop.type[0])
     const parentName = createControllerName(parent)
-    const childName = createControllerName(child)
-    Reflect.decorate([route.root(`${parentName}/:parentId/${childName}`)], Controller)
+    Reflect.decorate([
+        route.root(`${parentName}/:parentId/${prop.name}`),
+        decorateClass(<NestedGenericControllerDecorator>{ kind: "NestedGenericControllerDecorator", propName: prop.name })],
+        Controller)
     return Controller
 }
 
 function getGenericTypeParameters(instance: object) {
     const meta = reflect(instance.constructor as Class)
     const genericDecorator = meta.decorators
-        .find((x: GenericTypeDecorator):x is GenericTypeDecorator => x.kind == "GenericType" && x.target === instance.constructor)
-    if(!genericDecorator)
-        throw new Error(`${instance.constructor.name} require @generic.type(), but not provided`)
-    return genericDecorator.types.map(x => Array.isArray(x) ? x[0] : x)
+        .find((x: GenericTypeDecorator): x is GenericTypeDecorator => x.kind == "GenericType" && x.target === instance.constructor)
+    return {
+        types: genericDecorator!.types.map(x => x as Class),
+        meta
+    }
 }
 
 // --------------------------------------------------------------------- //
 // ------------------------ GENERIC CONTROLLERS ------------------------ //
 // --------------------------------------------------------------------- //
+
+interface NestedGenericControllerDecorator {
+    kind: "NestedGenericControllerDecorator"
+    propName: string
+}
 
 @domain()
 export class IdentifierResult {
@@ -95,7 +103,7 @@ export class IdentifierResult {
 export class GenericController<T> {
     private readonly repo: Repository<T>
     constructor() {
-        const genericParameters = getGenericTypeParameters(this)
+        const { types: genericParameters } = getGenericTypeParameters(this)
         this.repo = getManager().getRepository(genericParameters[0])
     }
 
@@ -111,17 +119,24 @@ export class GenericController<T> {
         const result = await this.repo.insert(data)
         return new IdentifierResult(result.raw as any)
     }
+    @route.ignore()
+    protected async findOneOrThrowNotFound(id: number) {
+        const data = await this.repo.findOne(id)
+        if (!data) throw new HttpStatusError(404)
+        return data
+    }
 
     @route.get(":id")
     @reflect.type("T")
     get(@val.required() id: number) {
-        return this.repo.findOne(id)
+        return this.findOneOrThrowNotFound(id)
     }
 
     @route.put(":id")
     @route.patch(":id")
     @reflect.type(IdentifierResult)
     async modify(@val.required() id: number, @reflect.type("T") data: T) {
+        await this.findOneOrThrowNotFound(id)
         await this.repo.update(id, data)
         return new IdentifierResult(id)
     }
@@ -129,53 +144,73 @@ export class GenericController<T> {
     @route.delete(":id")
     @reflect.type(IdentifierResult)
     async delete(@val.required() id: number) {
+        await this.findOneOrThrowNotFound(id)
         await this.repo.delete(id)
         return new IdentifierResult(id)
     }
 }
 
 @generic.template("P", "T")
-class NestedGenericController<P, T> {
-    private readonly repo: Repository<T>
-    private readonly parentRepo:Repository<P>
+export class NestedGenericController<P, T> {
+    protected readonly repo: Repository<T>
+    protected readonly parentRepo: Repository<P>
+    protected propertyName: string
+    protected inversePropertyName: string
     constructor() {
-        const genericParameters = getGenericTypeParameters(this)
-        if(!genericParameters[1])
-            throw new Error(`${this.constructor.name} require generic parameter T but not provided`)
-        this.repo = getManager().getRepository(genericParameters[0])
-        this.parentRepo = getManager().getRepository(genericParameters[1])
+        const { types: genericParameters, meta } = getGenericTypeParameters(this)
+        this.parentRepo = getManager().getRepository(genericParameters[0])
+        this.repo = getManager().getRepository(genericParameters[1])
+        const decorator: NestedGenericControllerDecorator = meta.decorators.find((x: NestedGenericControllerDecorator) => x.kind === "NestedGenericControllerDecorator")
+        this.propertyName = decorator.propName
+        const join = this.parentRepo.metadata.relations.find(x => x.propertyName === this.propertyName)
+        this.inversePropertyName = join!.inverseSidePropertyPath;
     }
 
     @route.get("")
     @reflect.type(["T"])
-    list(@val.required() parentId:number, offset: number = 0, limit: number = 50): Promise<T[]> {
-        return this.repo.find({ skip: offset, take: limit })
+    list(@val.required() parentId: number, offset: number = 0, limit: number = 50): Promise<T[]> {
+        return this.repo.find({ where: { [this.inversePropertyName]: parentId }, skip: offset, take: limit })
     }
 
     @route.post("")
     @reflect.type(IdentifierResult)
-    async save(@val.required() parentId:number, @reflect.type("T") data: T) {
-        const result = await this.repo.insert(data)
-        return new IdentifierResult(result.raw as any)
+    async save(@val.required() parentId: number, @reflect.type("T") data: T) {
+        const parent = await this.parentRepo.findOne(parentId)
+        if (!parent) throw new HttpStatusError(404, `Parent not found`)
+        const inserted = await this.repo.insert(data);
+        await this.parentRepo.createQueryBuilder()
+            .relation(this.propertyName)
+            .of(parent)
+            .add(inserted.raw)
+        return new IdentifierResult(inserted.raw)
+    }
+
+    @route.ignore()
+    protected async findOneOrThrowNotFound(id: number) {
+        const data = await this.repo.findOne(id)
+        if (!data) throw new HttpStatusError(404)
+        return data
     }
 
     @route.get(":id")
     @reflect.type("T")
-    get(@val.required() parentId:number, @val.required() id: number) {
-        return this.repo.findOne(id)
+    get(@val.required() parentId: number, @val.required() id: number) {
+        return this.findOneOrThrowNotFound(id)
     }
 
     @route.put(":id")
     @route.patch(":id")
     @reflect.type(IdentifierResult)
-    async modify(@val.required() parentId:number, @val.required() id: number, @reflect.type("T") data: T) {
+    async modify(@val.required() parentId: number, @val.required() id: number, @reflect.type("T") data: T) {
+        await this.findOneOrThrowNotFound(id)
         await this.repo.update(id, data)
         return new IdentifierResult(id)
     }
 
     @route.delete(":id")
     @reflect.type(IdentifierResult)
-    async delete(@val.required() parentId:number, @val.required() id: number) {
+    async delete(@val.required() parentId: number, @val.required() id: number) {
+        await this.findOneOrThrowNotFound(id)
         await this.repo.delete(id)
         return new IdentifierResult(id)
     }

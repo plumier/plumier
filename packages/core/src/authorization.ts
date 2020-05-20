@@ -177,13 +177,13 @@ async function checkUserAccessToParameters(meta: ParameterReflection[], values: 
 function updateRouteAuthorizationAccess(routes: RouteMetadata[], config: Configuration) {
     if (config.enableAuthorization) {
         routes.forEach(x => {
-            if(x.kind === "ActionRoute"){
+            if (x.kind === "ActionRoute") {
                 const decorators = getAuthorizeDecorators(x, config.globalAuthorizationDecorators)
                 if (decorators.length > 0)
                     x.access = decorators.map(x => x.tag).join("|")
                 else
                     x.access = "Authenticated"
-            } 
+            }
         })
     }
 }
@@ -244,16 +244,18 @@ async function createPropertyNode(prop: PropertyReflection, ctx: ActionContext) 
     return { name: prop.name, authorized }
 }
 
-async function compileType(type: Class | Class[], ctx: ActionContext): Promise<FilterNode> {
+async function compileType(type: Class | Class[], ctx: ActionContext, parentTypes: Class[]): Promise<FilterNode> {
     if (Array.isArray(type)) {
-        return { kind: "Array", child: await compileType(type[0], ctx) }
+        return { kind: "Array", child: await compileType(type[0], ctx, parentTypes) }
     }
     else if (isCustomClass(type)) {
+        // CIRCULAR: just return basic node if circular dependency happened
+        if (parentTypes.some(x => x === type)) return { kind: "Class", properties: [] }
         const meta = reflect(type)
         const properties = []
         for (const prop of meta.properties) {
             const propNode = await createPropertyNode(prop, ctx)
-            properties.push({ ...propNode, type: await compileType(prop.type, ctx) })
+            properties.push({ ...propNode, type: await compileType(prop.type, ctx, parentTypes.concat(type)) })
         }
         return { kind: "Class", properties }
     }
@@ -261,13 +263,14 @@ async function compileType(type: Class | Class[], ctx: ActionContext): Promise<F
 }
 
 
-function filterType(raw:any, node:FilterNode){
-    if(node.kind === "Array"){
-        return raw.map((x:any) => filterType(x, node.child))
+function filterType(raw: any, node: FilterNode) {
+    if(raw === undefined || raw === null) return undefined
+    if (node.kind === "Array") {
+        return raw.map((x: any) => filterType(x, node.child))
     }
-    else if(node.kind === "Class"){
+    else if (node.kind === "Class") {
         return node.properties.reduce((a, b) => {
-            if(b.authorized) {
+            if (b.authorized) {
                 a[b.name] = filterType(raw[b.name], b.type)
             }
             return a
@@ -279,7 +282,7 @@ function filterType(raw:any, node:FilterNode){
 async function filterResult(raw: ActionResult, ctx: ActionContext): Promise<ActionResult> {
     const type = ctx.route.action.returnType
     if (type !== Promise && type && raw.status === 200 && raw.body) {
-        const node = await compileType(type, ctx)
+        const node = await compileType(type, ctx, [])
         raw.body = filterType(raw.body, node)
         return raw
     }
