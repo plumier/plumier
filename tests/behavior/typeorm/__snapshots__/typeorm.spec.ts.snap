@@ -204,7 +204,7 @@ Array [
 exports[`TypeOrm Facility Should throw error when no option specified 1`] = `
 Array [
   Array [
-    [Error: No connection options were found in any of configurations file.],
+    [Error: No connection options were found in any orm configuration files.],
   ],
 ]
 `;
