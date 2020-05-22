@@ -3,8 +3,9 @@
 exports[`Module Export Should export module properly 1`] = `
 Object {
   "CRUDTypeORMFacility": CRUDTypeORMFacility,
-  "GenericCRUDBaseController": GenericCRUDBaseController,
+  "GenericController": GenericController,
   "IdentifierResult": IdentifierResult,
+  "NestedGenericController": NestedGenericController,
   "TypeORMFacility": TypeORMFacility,
 }
 `;

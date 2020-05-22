@@ -1,10 +1,26 @@
-import { Entity, Column, PrimaryGeneratedColumn, getConnection, OneToMany, OneToOne, JoinColumn, ManyToMany, ManyToOne, JoinTable, getMetadataArgsStorage, getManager } from "typeorm"
-import { fixture } from '../helper'
-import { TypeORMFacility, CRUDTypeORMFacility, } from '@plumier/typeorm'
+import { Class, Configuration, consoleLog, route } from "@plumier/core"
+import Plumier, { WebApiFacility } from "@plumier/plumier"
+import { CRUDTypeORMFacility, TypeORMFacility } from "@plumier/typeorm"
+import supertest from "supertest"
 import reflect from "tinspector"
-import { Class, consoleLog, Configuration } from '@plumier/core'
-import Plumier, { WebApiFacility } from '@plumier/plumier'
-import supertest from 'supertest'
+import {
+    Column,
+    Entity,
+    getConnection,
+    getManager,
+    getMetadataArgsStorage,
+    JoinColumn,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    Repository,
+} from "typeorm"
+
+import { fixture } from "../helper"
+
 
 describe("TypeOrm", () => {
     function createApp(entities: Function[]) {
@@ -44,6 +60,25 @@ describe("TypeOrm", () => {
                 num: number = 200
             }
             await createApp([MyEntity])
+            const repo = getManager().getRepository(MyEntity)
+            const inserted = await repo.insert({ num: 123 })
+            const result = await repo.findOne(inserted.raw)
+            expect(result).toMatchSnapshot()
+            expect(extract(MyEntity)).toMatchSnapshot()
+        })
+        it("Should able to reflect entity properties with type overridden", async () => {
+            @Entity()
+            class MyEntity {
+                @PrimaryGeneratedColumn()
+                id: number = 123
+                @Column({ type: Number })
+                num: number = 200
+            }
+            await createApp([MyEntity])
+            const repo = getManager().getRepository(MyEntity)
+            const inserted = await repo.insert({ num: 123 })
+            const result = await repo.findOne(inserted.raw)
+            expect(result).toMatchSnapshot()
             expect(extract(MyEntity)).toMatchSnapshot()
         })
         it("Should able to reflect entity properties with inheritance", async () => {
@@ -58,53 +93,52 @@ describe("TypeOrm", () => {
                 num: number = 200
             }
             await createApp([ChildEntity, MyEntity])
+            const repo = getManager().getRepository(ChildEntity)
+            const inserted = await repo.insert({ num: 123 })
+            const result = await repo.findOne(inserted.raw)
+            expect(result).toMatchSnapshot()
             expect(extract(ChildEntity)).toMatchSnapshot()
         })
         it("Should able to reflect one to one relation", async () => {
             @Entity()
             class Parent {
                 @PrimaryGeneratedColumn()
-                id: number = 123
+                id: number
                 @Column()
-                name: string = "mimi"
+                name: string
+                @OneToOne(x => MyEntity, x => x.parent)
+                entity: any
             }
             @Entity()
             class MyEntity {
                 @PrimaryGeneratedColumn()
-                id: number = 123
-                @OneToOne(x => Parent)
-                @JoinColumn()
-                parent: Parent = {} as any
-            }
-            await createApp([MyEntity, Parent])
-            expect(extract(MyEntity)).toMatchSnapshot()
-        })
-        it("Should able to reflect one to one relation with inverse relation", async () => {
-            @Entity()
-            class Parent {
-                @PrimaryGeneratedColumn()
-                id: number = 123
+                id: number
                 @Column()
-                name: string = "mimi"
-            }
-            @Entity()
-            class MyEntity {
-                @PrimaryGeneratedColumn()
-                id: number = 123
+                name: string
                 @OneToOne(x => Parent)
                 @JoinColumn()
                 parent: Parent
             }
-            await createApp([Parent, MyEntity])
+            await createApp([MyEntity, Parent])
+            const parentRepo = getManager().getRepository(Parent)
+            const repo = getManager().getRepository(MyEntity)
+            const parent = await parentRepo.insert({ name: "Mimi" })
+            const inserted = await repo.insert({ name: "Poo" })
+            await parentRepo.createQueryBuilder().relation("entity").of(parent.raw).set(inserted.raw)
+            const result = await parentRepo.findOne(parent.raw, { relations: ["entity"] })
+            expect(result).toMatchSnapshot()
             expect(extract(MyEntity)).toMatchSnapshot()
+            expect(extract(Parent)).toMatchSnapshot()
         })
         it("Should able to reflect one to many relation", async () => {
             @Entity()
             class MyEntity {
                 @PrimaryGeneratedColumn()
                 id: number = 123
+                @Column()
+                name: string
                 @OneToMany(x => Child, x => x.entity)
-                parent: Child[]
+                children: Child[]
             }
             @Entity()
             class Child {
@@ -112,10 +146,17 @@ describe("TypeOrm", () => {
                 id: number
                 @Column()
                 name: string
-                @ManyToOne(x => MyEntity, x => x.parent)
+                @ManyToOne(x => MyEntity, x => x.children)
                 entity: MyEntity
             }
             await createApp([MyEntity, Child])
+            const parentRepo = getManager().getRepository(MyEntity)
+            const repo = getManager().getRepository(Child)
+            const parent = await parentRepo.insert({ name: "Mimi" })
+            const inserted = await repo.insert({ name: "Poo" })
+            await parentRepo.createQueryBuilder().relation("children").of(parent.raw).add(inserted.raw)
+            const result = await parentRepo.findOne(parent.raw, { relations: ["children"] })
+            expect(result).toMatchSnapshot()
             expect(extract(MyEntity)).toMatchSnapshot()
             expect(extract(Child)).toMatchSnapshot()
         })
@@ -124,9 +165,11 @@ describe("TypeOrm", () => {
             class MyEntity {
                 @PrimaryGeneratedColumn()
                 id: number = 123
-                @ManyToMany(x => Child)
+                @Column()
+                name: string
+                @ManyToMany(x => Child, x => x.parents)
                 @JoinTable()
-                parent: Child[]
+                children: Child[]
             }
             @Entity()
             class Child {
@@ -134,9 +177,19 @@ describe("TypeOrm", () => {
                 id: number
                 @Column()
                 name: string
+                @ManyToMany(x => MyEntity, x => x.children)
+                parents: MyEntity[]
             }
             await createApp([MyEntity, Child])
+            const parentRepo = getManager().getRepository(MyEntity)
+            const repo = getManager().getRepository(Child)
+            const parent = await parentRepo.insert({ name: "Mimi" })
+            const inserted = await repo.insert({ name: "Poo" })
+            await parentRepo.createQueryBuilder().relation("children").of(parent.raw).add(inserted.raw)
+            const result = await parentRepo.findOne(parent.raw, { relations: ["children"] })
+            expect(result).toMatchSnapshot()
             expect(extract(MyEntity)).toMatchSnapshot()
+            expect(extract(Child)).toMatchSnapshot()
         })
         it("Should throw error when no option specified", async () => {
             const fn = jest.fn()
@@ -226,6 +279,94 @@ describe("TypeOrm", () => {
                 expect(mock.mock.calls).toMatchSnapshot()
                 consoleLog.clearMock()
             })
+            it("Should generate one to many routes", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const mock = consoleLog.startMock()
+                await createApp([User, Animal])
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should not generate many to many routes", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @ManyToMany(x => Animal, x => x.user)
+                    @JoinTable()
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToMany(x => User, x => x.animals)
+                    user: User[]
+                }
+                const mock = consoleLog.startMock()
+                await createApp([User, Animal])
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to override route", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                class UsersController {
+                    readonly repo: Repository<User>
+                    constructor() {
+                        this.repo = getManager().getRepository(User)
+                    }
+                    @route.get(":id")
+                    get(id: number) {
+                        return this.repo.findOne(id)
+                    }
+                }
+                const mock = consoleLog.startMock()
+                await new Plumier()
+                    .set(new WebApiFacility({ controller: UsersController }))
+                    .set(new CRUDTypeORMFacility({
+                        type: "sqlite",
+                        database: ":memory:",
+                        dropSchema: true,
+                        entities: [User],
+                        synchronize: true,
+                        logging: false
+                    }))
+                    .initialize()
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
         })
         describe("CRUD Function", () => {
             it("Should serve GET /users?offset&limit", async () => {
@@ -238,7 +379,7 @@ describe("TypeOrm", () => {
                     @Column()
                     name: string
                 }
-                const app = await createApp([User], {mode: "production"})
+                const app = await createApp([User], { mode: "production" })
                 const repo = getManager().getRepository(User)
                 await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
                 const { body } = await supertest(app.callback())
@@ -256,7 +397,7 @@ describe("TypeOrm", () => {
                     @Column()
                     name: string
                 }
-                const app = await createApp([User], {mode: "production"})
+                const app = await createApp([User], { mode: "production" })
                 const repo = getManager().getRepository(User)
                 await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
                 const { body } = await supertest(app.callback())
@@ -274,7 +415,7 @@ describe("TypeOrm", () => {
                     @Column()
                     name: string
                 }
-                const app = await createApp([User], {mode: "production"})
+                const app = await createApp([User], { mode: "production" })
                 const repo = getManager().getRepository(User)
                 const { body } = await supertest(app.callback())
                     .post("/users")
@@ -294,7 +435,7 @@ describe("TypeOrm", () => {
                     @Column()
                     name: string
                 }
-                const app = await createApp([User], {mode: "production"})
+                const app = await createApp([User], { mode: "production" })
                 const repo = getManager().getRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
@@ -302,6 +443,21 @@ describe("TypeOrm", () => {
                     .expect(200)
                 expect(body.email).toBe("john.doe@gmail.com")
                 expect(body.name).toBe("John Doe")
+            })
+            it("Should throw 404 if not found GET /users/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const app = await createApp([User], { mode: "production" })
+                await supertest(app.callback())
+                    .get(`/users/123`)
+                    .expect(404)
             })
             it("Should serve PUT /users/:id", async () => {
                 @Entity()
@@ -313,16 +469,32 @@ describe("TypeOrm", () => {
                     @Column()
                     name: string
                 }
-                const app = await createApp([User], {mode: "production"})
+                const app = await createApp([User], { mode: "production" })
                 const repo = getManager().getRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
                     .put(`/users/${data.raw}`)
-                    .send({ name: "Jane Doe"})
+                    .send({ name: "Jane Doe" })
                     .expect(200)
                 const modified = await repo.findOne(body.id)
                 expect(modified!.email).toBe("john.doe@gmail.com")
                 expect(modified!.name).toBe("Jane Doe")
+            })
+            it("Should throw 404 if not found PUT /users/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const app = await createApp([User], { mode: "production" })
+                await supertest(app.callback())
+                    .put(`/users/123`)
+                    .send({ name: "Jane Doe" })
+                    .expect(404)
             })
             it("Should serve PATCH /users/:id", async () => {
                 @Entity()
@@ -334,16 +506,32 @@ describe("TypeOrm", () => {
                     @Column()
                     name: string
                 }
-                const app = await createApp([User], {mode: "production"})
+                const app = await createApp([User], { mode: "production" })
                 const repo = getManager().getRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
                     .patch(`/users/${data.raw}`)
-                    .send({ name: "Jane Doe"})
+                    .send({ name: "Jane Doe" })
                     .expect(200)
                 const modified = await repo.findOne(body.id)
                 expect(modified!.email).toBe("john.doe@gmail.com")
                 expect(modified!.name).toBe("Jane Doe")
+            })
+            it("Should throw 404 if not found PATCH /users/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const app = await createApp([User], { mode: "production" })
+                await supertest(app.callback())
+                    .patch(`/users/123`)
+                    .send({ name: "Jane Doe" })
+                    .expect(404)
             })
             it("Should serve DELETE /users/:id", async () => {
                 @Entity()
@@ -355,7 +543,7 @@ describe("TypeOrm", () => {
                     @Column()
                     name: string
                 }
-                const app = await createApp([User], {mode: "production"})
+                const app = await createApp([User], { mode: "production" })
                 const repo = getManager().getRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
@@ -363,6 +551,387 @@ describe("TypeOrm", () => {
                     .expect(200)
                 const modified = await repo.findOne(body.id)
                 expect(modified).toBeUndefined()
+            })
+            it("Should throw 404 if not found DELETE /users/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const app = await createApp([User], { mode: "production" })
+                await supertest(app.callback())
+                    .delete(`/users/123`)
+                    .expect(404)
+            })
+        })
+        describe("Nested CRUD One to Many Function", () => {
+            async function createUser<T>(type: Class<T>): Promise<T> {
+                const userRepo = getManager().getRepository<T>(type)
+                const inserted = await userRepo.insert({ email: "john.doe@gmail.com", name: "John Doe" } as any)
+                const saved = await userRepo.findOne(inserted.raw)
+                return saved!
+            }
+            it("Should serve GET /users/:parentId/animals?offset&limit", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                const animalRepo = getManager().getRepository(Animal)
+                await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${user.id}/animals?offset=0&limit=20`)
+                    .expect(200)
+                expect(body.length).toBe(20)
+            })
+            it("Should serve GET /users/:parentId/animals?offset&limit with default value", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                const animalRepo = getManager().getRepository(Animal)
+                await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${user.id}/animals`)
+                    .expect(200)
+                expect(body.length).toBe(50)
+            })
+            it("Should serve POST /users/:parentId/animals", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                const parentRepo = getManager().getRepository(User)
+                await supertest(app.callback())
+                    .post(`/users/${user.id}/animals`)
+                    .send({ name: "Mimi" })
+                    .expect(200)
+                await supertest(app.callback())
+                    .post(`/users/${user.id}/animals`)
+                    .send({ name: "Mimi" })
+                    .expect(200)
+                const inserted = await parentRepo.findOne(user.id, { relations: ["animals"] })
+                expect(inserted).toMatchSnapshot()
+            })
+            it("Should throw 404 if parent not found POST /users/:parentId/animals", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                await supertest(app.callback())
+                    .post(`/users/123/animals`)
+                    .send({ name: "Mimi" })
+                    .expect(404)
+            })
+            it("Should serve GET /users/:parentId/animals/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                const animalRepo = getManager().getRepository(Animal)
+                const inserted = await animalRepo.insert({ name: `Mimi`, user })
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${user.id}/animals/${inserted.raw}`)
+                    .expect(200)
+                expect(body).toMatchSnapshot()
+            })
+            it("Should throw 404 if not found GET /users/:parentId/animals/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                await supertest(app.callback())
+                    .get(`/users/${user.id}/animals/123`)
+                    .expect(404)
+            })
+            it("Should serve PUT /users/:parentId/animals/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                const animalRepo = getManager().getRepository(Animal)
+                const inserted = await animalRepo.insert({ name: `Mimi`, user })
+                const { body } = await supertest(app.callback())
+                    .put(`/users/${user.id}/animals/${inserted.raw}`)
+                    .send({ name: "Poe" })
+                    .expect(200)
+                const modified = await animalRepo.findOne(body.id)
+                expect(modified).toMatchSnapshot()
+            })
+            it("Should throw 404 if not found PUT /users/:parentId/animals/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                await supertest(app.callback())
+                    .put(`/users/${user.id}/animals/123`)
+                    .send({ name: "Poe" })
+                    .expect(404)
+            })
+            it("Should serve PATCH /users/:parentId/animals/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                const animalRepo = getManager().getRepository(Animal)
+                const inserted = await animalRepo.insert({ name: `Mimi`, user })
+                const { body } = await supertest(app.callback())
+                    .patch(`/users/${user.id}/animals/${inserted.raw}`)
+                    .send({ name: "Poe" })
+                    .expect(200)
+                const modified = await animalRepo.findOne(body.id)
+                expect(modified).toMatchSnapshot()
+            })
+            it("Should throw 404 if not found PATCH /users/:parentId/animals/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                await supertest(app.callback())
+                    .patch(`/users/${user.id}/animals/123`)
+                    .send({ name: "Poe" })
+                    .expect(404)
+            })
+            it("Should serve DELETE /users/:parentId/animals/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                const animalRepo = getManager().getRepository(Animal)
+                const inserted = await animalRepo.insert({ name: `Mimi`, user })
+                const { body } = await supertest(app.callback())
+                    .delete(`/users/${user.id}/animals/${inserted.raw}`)
+                    .expect(200)
+                const modified = await animalRepo.findOne(body.id)
+                expect(modified).toBeUndefined()
+            })
+            it("Should throw 404 if not found DELETE /users/:parentId/animals/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                await supertest(app.callback())
+                    .delete(`/users/${user.id}/animals/123`)
+                    .expect(404)
             })
         })
     })

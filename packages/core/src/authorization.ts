@@ -264,6 +264,7 @@ async function compileType(type: Class | Class[], ctx: ActionContext, parentType
 
 
 function filterType(raw: any, node: FilterNode) {
+    if(raw === undefined || raw === null) return undefined
     if (node.kind === "Array") {
         return raw.map((x: any) => filterType(x, node.child))
     }

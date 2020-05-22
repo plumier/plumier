@@ -24,5 +24,10 @@ module.exports = {
     "<rootDir>script/function-snapshot-serializer.js",
     "<rootDir>script/mongodb-id-snapshot-serializer.js",
     "<rootDir>script/date-snapshot-serializer.js"
-  ]
+  ],
+  globals: {
+      'ts-jest': {
+          tsConfig: '<rootDir>tests/behavior/tsconfig.json'
+      }
+  }
 };

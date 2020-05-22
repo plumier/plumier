@@ -1,5 +1,136 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`TypeOrm CRUD Nested CRUD One to Many Function Should serve GET /users/:parentId/animals/:id 1`] = `
+Object {
+  "id": 1,
+  "name": "Mimi",
+}
+`;
+
+exports[`TypeOrm CRUD Nested CRUD One to Many Function Should serve PATCH /users/:parentId/animals/:id 1`] = `
+Animal {
+  "id": 1,
+  "name": "Poe",
+}
+`;
+
+exports[`TypeOrm CRUD Nested CRUD One to Many Function Should serve POST /users/:parentId/animals 1`] = `
+User {
+  "animals": Array [
+    Animal {
+      "id": 1,
+      "name": "Mimi",
+    },
+    Animal {
+      "id": 2,
+      "name": "Mimi",
+    },
+  ],
+  "email": "john.doe@gmail.com",
+  "id": 1,
+  "name": "John Doe",
+}
+`;
+
+exports[`TypeOrm CRUD Nested CRUD One to Many Function Should serve PUT /users/:parentId/animals/:id 1`] = `
+Animal {
+  "id": 1,
+  "name": "Poe",
+}
+`;
+
+exports[`TypeOrm CRUD Route Generator Should able to override route 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DynamicType.list(offset, limit) -> GET    /users",
+  ],
+  Array [
+    "2. DynamicType.save(data)          -> POST   /users",
+  ],
+  Array [
+    "3. UsersController.get(id)         -> GET    /users/:id",
+  ],
+  Array [
+    "4. DynamicType.modify(id, data)    -> PUT    /users/:id",
+  ],
+  Array [
+    "5. DynamicType.modify(id, data)    -> PATCH  /users/:id",
+  ],
+  Array [
+    "6. DynamicType.delete(id)          -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`TypeOrm CRUD Route Generator Should generate one to many routes 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. DynamicType.list(offset, limit)        -> GET    /users",
+  ],
+  Array [
+    " 2. DynamicType.save(data)                 -> POST   /users",
+  ],
+  Array [
+    " 3. DynamicType.get(id)                    -> GET    /users/:id",
+  ],
+  Array [
+    " 4. DynamicType.modify(id, data)           -> PUT    /users/:id",
+  ],
+  Array [
+    " 5. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+  ],
+  Array [
+    " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
+  ],
+  Array [
+    " 7. DynamicType.list                       -> GET    /users/:parentid/animals",
+  ],
+  Array [
+    " 8. DynamicType.save(parentId, data)       -> POST   /users/:parentid/animals",
+  ],
+  Array [
+    " 9. DynamicType.get(parentId, id)          -> GET    /users/:parentid/animals/:id",
+  ],
+  Array [
+    "10. DynamicType.modify(parentId, id, data) -> PUT    /users/:parentid/animals/:id",
+  ],
+  Array [
+    "11. DynamicType.modify(parentId, id, data) -> PATCH  /users/:parentid/animals/:id",
+  ],
+  Array [
+    "12. DynamicType.delete(parentId, id)       -> DELETE /users/:parentid/animals/:id",
+  ],
+  Array [
+    "13. DynamicType.list(offset, limit)        -> GET    /animals",
+  ],
+  Array [
+    "14. DynamicType.save(data)                 -> POST   /animals",
+  ],
+  Array [
+    "15. DynamicType.get(id)                    -> GET    /animals/:id",
+  ],
+  Array [
+    "16. DynamicType.modify(id, data)           -> PUT    /animals/:id",
+  ],
+  Array [
+    "17. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+  ],
+  Array [
+    "18. DynamicType.delete(id)                 -> DELETE /animals/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`TypeOrm CRUD Route Generator Should generate routes from inheritance 1`] = `
 Array [
   Array [],
@@ -102,7 +233,60 @@ Array [
 ]
 `;
 
+exports[`TypeOrm CRUD Route Generator Should not generate many to many routes 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. DynamicType.list(offset, limit) -> GET    /users",
+  ],
+  Array [
+    " 2. DynamicType.save(data)          -> POST   /users",
+  ],
+  Array [
+    " 3. DynamicType.get(id)             -> GET    /users/:id",
+  ],
+  Array [
+    " 4. DynamicType.modify(id, data)    -> PUT    /users/:id",
+  ],
+  Array [
+    " 5. DynamicType.modify(id, data)    -> PATCH  /users/:id",
+  ],
+  Array [
+    " 6. DynamicType.delete(id)          -> DELETE /users/:id",
+  ],
+  Array [
+    " 7. DynamicType.list(offset, limit) -> GET    /animals",
+  ],
+  Array [
+    " 8. DynamicType.save(data)          -> POST   /animals",
+  ],
+  Array [
+    " 9. DynamicType.get(id)             -> GET    /animals/:id",
+  ],
+  Array [
+    "10. DynamicType.modify(id, data)    -> PUT    /animals/:id",
+  ],
+  Array [
+    "11. DynamicType.modify(id, data)    -> PATCH  /animals/:id",
+  ],
+  Array [
+    "12. DynamicType.delete(id)          -> DELETE /animals/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`TypeOrm Facility Should able to reflect entity properties 1`] = `
+MyEntity {
+  "id": 1,
+  "num": 123,
+}
+`;
+
+exports[`TypeOrm Facility Should able to reflect entity properties 2`] = `
 Array [
   Object {
     "name": "id",
@@ -116,6 +300,13 @@ Array [
 `;
 
 exports[`TypeOrm Facility Should able to reflect entity properties with inheritance 1`] = `
+ChildEntity {
+  "id": 1,
+  "num": 123,
+}
+`;
+
+exports[`TypeOrm Facility Should able to reflect entity properties with inheritance 2`] = `
 Array [
   Object {
     "name": "num",
@@ -128,29 +319,102 @@ Array [
 ]
 `;
 
-exports[`TypeOrm Facility Should able to reflect many to many relation 1`] = `
+exports[`TypeOrm Facility Should able to reflect entity properties with type overridden 1`] = `
+MyEntity {
+  "id": 1,
+  "num": 123,
+}
+`;
+
+exports[`TypeOrm Facility Should able to reflect entity properties with type overridden 2`] = `
 Array [
   Object {
     "name": "id",
     "type": Number,
   },
   Object {
-    "name": "parent",
+    "name": "num",
+    "type": Number,
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect many to many relation 1`] = `
+MyEntity {
+  "children": Array [
+    Child {
+      "id": 1,
+      "name": "Poo",
+    },
+  ],
+  "id": 1,
+  "name": "Mimi",
+}
+`;
+
+exports[`TypeOrm Facility Should able to reflect many to many relation 2`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "name",
+    "type": String,
+  },
+  Object {
+    "name": "children",
     "type": Array [
       Child,
+    ],
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect many to many relation 3`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "name",
+    "type": String,
+  },
+  Object {
+    "name": "parents",
+    "type": Array [
+      MyEntity,
     ],
   },
 ]
 `;
 
 exports[`TypeOrm Facility Should able to reflect one to many relation 1`] = `
+MyEntity {
+  "children": Array [
+    Child {
+      "id": 1,
+      "name": "Poo",
+    },
+  ],
+  "id": 1,
+  "name": "Mimi",
+}
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to many relation 2`] = `
 Array [
   Object {
     "name": "id",
     "type": Number,
   },
   Object {
-    "name": "parent",
+    "name": "name",
+    "type": String,
+  },
+  Object {
+    "name": "children",
     "type": Array [
       Child,
     ],
@@ -158,7 +422,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm Facility Should able to reflect one to many relation 2`] = `
+exports[`TypeOrm Facility Should able to reflect one to many relation 3`] = `
 Array [
   Object {
     "name": "id",
@@ -176,10 +440,25 @@ Array [
 `;
 
 exports[`TypeOrm Facility Should able to reflect one to one relation 1`] = `
+Parent {
+  "entity": MyEntity {
+    "id": 1,
+    "name": "Poo",
+  },
+  "id": 1,
+  "name": "Mimi",
+}
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to one relation 2`] = `
 Array [
   Object {
     "name": "id",
     "type": Number,
+  },
+  Object {
+    "name": "name",
+    "type": String,
   },
   Object {
     "name": "parent",
@@ -188,15 +467,19 @@ Array [
 ]
 `;
 
-exports[`TypeOrm Facility Should able to reflect one to one relation with inverse relation 1`] = `
+exports[`TypeOrm Facility Should able to reflect one to one relation 3`] = `
 Array [
   Object {
     "name": "id",
     "type": Number,
   },
   Object {
-    "name": "parent",
-    "type": Parent,
+    "name": "name",
+    "type": String,
+  },
+  Object {
+    "name": "entity",
+    "type": MyEntity,
   },
 ]
 `;
