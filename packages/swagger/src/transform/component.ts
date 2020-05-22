@@ -1,4 +1,4 @@
-import { Class, isCustomClass } from "@plumier/core"
+import { Class, isCustomClass, consoleLog } from "@plumier/core"
 import { ComponentsObject, ReferenceObject, SchemaObject, SecuritySchemeObject } from "openapi3-ts"
 import reflect from "tinspector"
 
@@ -34,7 +34,7 @@ const defaultSchemas: { [key: string]: SchemaObject } = {
 function transformArray(obj: Class[], ctx: TransformContext): SchemaObject {
     return {
         type: "array",
-        items: transformObject(obj[0], ctx)
+        items: transformType(obj[0], ctx)
     }
 }
 

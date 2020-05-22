@@ -759,6 +759,38 @@ describe("Open API 3.0 Generation", () => {
                 .expect(200)
             expect(body.components.schemas).toMatchSnapshot()
         })
+        it("Should able to generate object with cross reference", async () => {
+            @domain()
+            class User {
+                constructor(
+                    public userName: string,
+                    public password: string,
+                    @reflect.type(x => [Tag])
+                    public tags: Tag[]
+                ) { }
+            }
+            @domain()
+            class Tag {
+                constructor(
+                    public tag: string,
+                    @reflect.type(x => [User])
+                    public users:User[]
+                ) { }
+            }
+            class UsersController {
+                @route.get("")
+                get():User { return {} as any}
+            }
+            class TagsController {
+                @route.get("")
+                get():Tag { return {} as any}
+            }
+            const app = await createApp([UsersController, TagsController])
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas).toMatchSnapshot()
+        })
     })
 
     describe("Response", () => {

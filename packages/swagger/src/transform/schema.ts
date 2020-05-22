@@ -24,7 +24,7 @@ function refFactory(map: Map<Class, string>) {
 // --------------------------- TRANSFORM TYPE -------------------------- //
 // --------------------------------------------------------------------- //
 
-function transformType(type: Class | Class[] | undefined | (PropertyReflection | ParameterReflection)[], ctx: TransformContext, decorators: any[]) {
+function transformType(type: Class | Class[] | undefined | (PropertyReflection | ParameterReflection)[], ctx: TransformContext, decorators: any[] = []) {
     const isProp = (type: any): type is (PropertyReflection | ParameterReflection)[] => Array.isArray(type) && !!type[0].kind
     if (isProp(type)) {
         return transformProperties(type, ctx)
