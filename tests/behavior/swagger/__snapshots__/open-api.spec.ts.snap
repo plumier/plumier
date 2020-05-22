@@ -1,5 +1,82 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Open API 3.0 Generation Component Schema Should able to generate object with cross reference 1`] = `
+Object {
+  ".DefaultErrorMessage": Object {
+    "properties": Object {
+      "message": Object {
+        "type": "string",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  ".ValidationError": Object {
+    "properties": Object {
+      "message": Object {
+        "items": Object {
+          "properties": Object {
+            "messages": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "path": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "Tag": Object {
+    "properties": Object {
+      "tag": Object {
+        "type": "string",
+      },
+      "users": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/User",
+          "type": "object",
+        },
+        "type": "array",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "tags": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/Tag",
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
 exports[`Open API 3.0 Generation Component Schema Should able to mix registered an non registered object 1`] = `
 Object {
   ".DefaultErrorMessage": Object {
@@ -123,11 +200,7 @@ Object {
       },
       "tag": Object {
         "items": Object {
-          "properties": Object {
-            "tag": Object {
-              "type": "string",
-            },
-          },
+          "$ref": "#/components/schemas/Tag",
           "type": "object",
         },
         "type": "array",
@@ -1669,11 +1742,7 @@ Object {
       },
       "tag": Object {
         "items": Object {
-          "properties": Object {
-            "tag": Object {
-              "type": "string",
-            },
-          },
+          "$ref": "#/components/schemas/Tag",
           "type": "object",
         },
         "type": "array",
