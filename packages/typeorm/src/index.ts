@@ -67,7 +67,7 @@ function createNestedController(parent: Class, prop: PropertyReflection) {
     const Controller = generic.create(NestedGenericController, parent, prop.type[0])
     const parentName = createControllerName(parent)
     Reflect.decorate([
-        route.root(`${parentName}/:parentId/${prop.name}`),
+        route.root(`${parentName}/:pid/${prop.name}`),
         decorateClass(<NestedGenericControllerDecorator>{ kind: "NestedGenericControllerDecorator", propName: prop.name })],
         Controller)
     return Controller
@@ -168,14 +168,14 @@ export class NestedGenericController<P, T> {
 
     @route.get("")
     @reflect.type(["T"])
-    list(@val.required() parentId: number, offset: number = 0, limit: number = 50): Promise<T[]> {
-        return this.repo.find({ where: { [this.inversePropertyName]: parentId }, skip: offset, take: limit })
+    list(@val.required() pid: number, offset: number = 0, limit: number = 50): Promise<T[]> {
+        return this.repo.find({ where: { [this.inversePropertyName]: pid }, skip: offset, take: limit })
     }
 
     @route.post("")
     @reflect.type(IdentifierResult)
-    async save(@val.required() parentId: number, @reflect.type("T") data: T) {
-        const parent = await this.parentRepo.findOne(parentId)
+    async save(@val.required() pid: number, @reflect.type("T") data: T) {
+        const parent = await this.parentRepo.findOne(pid)
         if (!parent) throw new HttpStatusError(404, `Parent not found`)
         const inserted = await this.repo.insert(data);
         await this.parentRepo.createQueryBuilder()
@@ -194,14 +194,14 @@ export class NestedGenericController<P, T> {
 
     @route.get(":id")
     @reflect.type("T")
-    get(@val.required() parentId: number, @val.required() id: number) {
+    get(@val.required() pid: number, @val.required() id: number) {
         return this.findOneOrThrowNotFound(id)
     }
 
     @route.put(":id")
     @route.patch(":id")
     @reflect.type(IdentifierResult)
-    async modify(@val.required() parentId: number, @val.required() id: number, @reflect.type("T") data: T) {
+    async modify(@val.required() pid: number, @val.required() id: number, @reflect.type("T") data: T) {
         await this.findOneOrThrowNotFound(id)
         await this.repo.update(id, data)
         return new IdentifierResult(id)
@@ -209,7 +209,7 @@ export class NestedGenericController<P, T> {
 
     @route.delete(":id")
     @reflect.type(IdentifierResult)
-    async delete(@val.required() parentId: number, @val.required() id: number) {
+    async delete(@val.required() pid: number, @val.required() id: number) {
         await this.findOneOrThrowNotFound(id)
         await this.repo.delete(id)
         return new IdentifierResult(id)
