@@ -20,9 +20,6 @@ Array [
           "index": 0,
           "kind": "Parameter",
           "name": "id",
-          "owner": Array [
-            AnimalController,
-          ],
           "type": Number,
           "typeClassification": "Primitive",
         },
@@ -54,9 +51,6 @@ Array [
       "isParameter": true,
       "kind": "Property",
       "name": "age",
-      "owner": Array [
-        Human,
-      ],
       "parent": Human,
       "set": undefined,
       "type": Number,
@@ -85,9 +79,6 @@ Array [
         ],
         "kind": "Method",
         "name": "get",
-        "owner": Array [
-          AnimalController,
-        ],
         "parameters": Array [
           Object {
             "decorators": Array [
@@ -104,9 +95,6 @@ Array [
             "index": 0,
             "kind": "Parameter",
             "name": "id",
-            "owner": Array [
-              AnimalController,
-            ],
             "type": Number,
             "typeClassification": "Primitive",
           },
@@ -131,9 +119,6 @@ Array [
             "index": 0,
             "kind": "Parameter",
             "name": "id",
-            "owner": Array [
-              AnimalController,
-            ],
             "type": Number,
             "typeClassification": "Primitive",
           },
@@ -165,9 +150,6 @@ Array [
             ],
             "kind": "Method",
             "name": "get",
-            "owner": Array [
-              AnimalController,
-            ],
             "parameters": Array [
               Object {
                 "decorators": Array [
@@ -184,9 +166,6 @@ Array [
                 "index": 0,
                 "kind": "Parameter",
                 "name": "id",
-                "owner": Array [
-                  AnimalController,
-                ],
                 "type": Number,
                 "typeClassification": "Primitive",
               },
@@ -196,10 +175,6 @@ Array [
           },
         ],
         "name": "AnimalController",
-        "owner": Array [
-          Object,
-          AnimalController,
-        ],
         "properties": Array [],
         "super": Object,
         "type": AnimalController,
@@ -220,9 +195,6 @@ Array [
         "index": 0,
         "kind": "Parameter",
         "name": "id",
-        "owner": Array [
-          AnimalController,
-        ],
         "parent": AnimalController,
         "type": Number,
         "typeClassification": "Primitive",

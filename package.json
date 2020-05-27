@@ -26,8 +26,8 @@
 		"@types/express": "^4.17.6",
 		"@types/express-jwt": "^0.0.42",
 		"@types/faker": "^4.1.12",
-		"@types/fs-extra": "^9.0.0",
-		"@types/jest": "^25.2.2",
+		"@types/fs-extra": "^9.0.1",
+		"@types/jest": "^25.2.3",
 		"@types/hapi__joi": "^17.1.0",
 		"@types/jsonwebtoken": "^8.5.0",
 		"@types/koa-router": "^7.4.1",
@@ -51,8 +51,8 @@
 		"jsonwebtoken": "^8.5.1",
 		"koa-better-body": "^3.3.9",
 		"koa-router": "^8.0.8",
-		"lerna": "3.21.0",
-		"mongodb-memory-server-global": "^6.6.0",
+		"lerna": "3.22.0",
+		"mongodb-memory-server-global": "^6.6.1",
 		"pre-push": "^0.1.1",
 		"reflect-metadata": "^0.1.13",
 		"rimraf": "^3.0.2",
@@ -62,7 +62,7 @@
 		"ts-node": "^8.10.1",
 		"tsconfig-paths": "^3.9.0",
 		"tslint": "^6.1.2",
-		"typescript": "^3.9.2"
+		"typescript": "^3.9.3"
 	},
 	"workspaces": [
 		"packages/*"
