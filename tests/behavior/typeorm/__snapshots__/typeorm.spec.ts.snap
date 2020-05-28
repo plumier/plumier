@@ -46,22 +46,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.list(offset, limit) -> GET    /users",
+    "1. DynamicType.list(offset, limit, query) -> GET    /users",
   ],
   Array [
-    "2. DynamicType.save(data)          -> POST   /users",
+    "2. DynamicType.save(data)                 -> POST   /users",
   ],
   Array [
-    "3. UsersController.get(id)         -> GET    /users/:id",
+    "3. UsersController.get(id)                -> GET    /users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)    -> PUT    /users/:id",
+    "4. DynamicType.modify(id, data)           -> PUT    /users/:id",
   ],
   Array [
-    "5. DynamicType.modify(id, data)    -> PATCH  /users/:id",
+    "5. DynamicType.modify(id, data)           -> PATCH  /users/:id",
   ],
   Array [
-    "6. DynamicType.delete(id)          -> DELETE /users/:id",
+    "6. DynamicType.delete(id)                 -> DELETE /users/:id",
   ],
   Array [],
 ]
@@ -74,58 +74,58 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit)      -> GET    /users",
+    " 1. DynamicType.list(offset, limit, query) -> GET    /users",
   ],
   Array [
-    " 2. DynamicType.save(data)               -> POST   /users",
+    " 2. DynamicType.save(data)                 -> POST   /users",
   ],
   Array [
-    " 3. DynamicType.get(id)                  -> GET    /users/:id",
+    " 3. DynamicType.get(id)                    -> GET    /users/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)         -> PUT    /users/:id",
+    " 4. DynamicType.modify(id, data)           -> PUT    /users/:id",
   ],
   Array [
-    " 5. DynamicType.modify(id, data)         -> PATCH  /users/:id",
+    " 5. DynamicType.modify(id, data)           -> PATCH  /users/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)               -> DELETE /users/:id",
+    " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
   ],
   Array [
-    " 7. DynamicType.list(pid, offset, limit) -> GET    /users/:pid/animals",
+    " 7. DynamicType.list                       -> GET    /users/:pid/animals",
   ],
   Array [
-    " 8. DynamicType.save(pid, data)          -> POST   /users/:pid/animals",
+    " 8. DynamicType.save(pid, data)            -> POST   /users/:pid/animals",
   ],
   Array [
-    " 9. DynamicType.get(pid, id)             -> GET    /users/:pid/animals/:id",
+    " 9. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
   ],
   Array [
-    "10. DynamicType.modify(pid, id, data)    -> PUT    /users/:pid/animals/:id",
+    "10. DynamicType.modify(pid, id, data)      -> PUT    /users/:pid/animals/:id",
   ],
   Array [
-    "11. DynamicType.modify(pid, id, data)    -> PATCH  /users/:pid/animals/:id",
+    "11. DynamicType.modify(pid, id, data)      -> PATCH  /users/:pid/animals/:id",
   ],
   Array [
-    "12. DynamicType.delete(pid, id)          -> DELETE /users/:pid/animals/:id",
+    "12. DynamicType.delete(pid, id)            -> DELETE /users/:pid/animals/:id",
   ],
   Array [
-    "13. DynamicType.list(offset, limit)      -> GET    /animals",
+    "13. DynamicType.list(offset, limit, query) -> GET    /animals",
   ],
   Array [
-    "14. DynamicType.save(data)               -> POST   /animals",
+    "14. DynamicType.save(data)                 -> POST   /animals",
   ],
   Array [
-    "15. DynamicType.get(id)                  -> GET    /animals/:id",
+    "15. DynamicType.get(id)                    -> GET    /animals/:id",
   ],
   Array [
-    "16. DynamicType.modify(id, data)         -> PUT    /animals/:id",
+    "16. DynamicType.modify(id, data)           -> PUT    /animals/:id",
   ],
   Array [
-    "17. DynamicType.modify(id, data)         -> PATCH  /animals/:id",
+    "17. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
   ],
   Array [
-    "18. DynamicType.delete(id)               -> DELETE /animals/:id",
+    "18. DynamicType.delete(id)                 -> DELETE /animals/:id",
   ],
   Array [],
 ]
@@ -138,22 +138,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.list(offset, limit) -> GET    /users",
+    "1. DynamicType.list(offset, limit, query) -> GET    /users",
   ],
   Array [
-    "2. DynamicType.save(data)          -> POST   /users",
+    "2. DynamicType.save(data)                 -> POST   /users",
   ],
   Array [
-    "3. DynamicType.get(id)             -> GET    /users/:id",
+    "3. DynamicType.get(id)                    -> GET    /users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)    -> PUT    /users/:id",
+    "4. DynamicType.modify(id, data)           -> PUT    /users/:id",
   ],
   Array [
-    "5. DynamicType.modify(id, data)    -> PATCH  /users/:id",
+    "5. DynamicType.modify(id, data)           -> PATCH  /users/:id",
   ],
   Array [
-    "6. DynamicType.delete(id)          -> DELETE /users/:id",
+    "6. DynamicType.delete(id)                 -> DELETE /users/:id",
   ],
   Array [],
 ]
@@ -166,40 +166,40 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit) -> GET    /users",
+    " 1. DynamicType.list(offset, limit, query) -> GET    /users",
   ],
   Array [
-    " 2. DynamicType.save(data)          -> POST   /users",
+    " 2. DynamicType.save(data)                 -> POST   /users",
   ],
   Array [
-    " 3. DynamicType.get(id)             -> GET    /users/:id",
+    " 3. DynamicType.get(id)                    -> GET    /users/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)    -> PUT    /users/:id",
+    " 4. DynamicType.modify(id, data)           -> PUT    /users/:id",
   ],
   Array [
-    " 5. DynamicType.modify(id, data)    -> PATCH  /users/:id",
+    " 5. DynamicType.modify(id, data)           -> PATCH  /users/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)          -> DELETE /users/:id",
+    " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
   ],
   Array [
-    " 7. DynamicType.list(offset, limit) -> GET    /secondusers",
+    " 7. DynamicType.list(offset, limit, query) -> GET    /secondusers",
   ],
   Array [
-    " 8. DynamicType.save(data)          -> POST   /secondusers",
+    " 8. DynamicType.save(data)                 -> POST   /secondusers",
   ],
   Array [
-    " 9. DynamicType.get(id)             -> GET    /secondusers/:id",
+    " 9. DynamicType.get(id)                    -> GET    /secondusers/:id",
   ],
   Array [
-    "10. DynamicType.modify(id, data)    -> PUT    /secondusers/:id",
+    "10. DynamicType.modify(id, data)           -> PUT    /secondusers/:id",
   ],
   Array [
-    "11. DynamicType.modify(id, data)    -> PATCH  /secondusers/:id",
+    "11. DynamicType.modify(id, data)           -> PATCH  /secondusers/:id",
   ],
   Array [
-    "12. DynamicType.delete(id)          -> DELETE /secondusers/:id",
+    "12. DynamicType.delete(id)                 -> DELETE /secondusers/:id",
   ],
   Array [],
 ]
@@ -212,22 +212,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.list(offset, limit) -> GET    /users",
+    "1. DynamicType.list(offset, limit, query) -> GET    /users",
   ],
   Array [
-    "2. DynamicType.save(data)          -> POST   /users",
+    "2. DynamicType.save(data)                 -> POST   /users",
   ],
   Array [
-    "3. DynamicType.get(id)             -> GET    /users/:id",
+    "3. DynamicType.get(id)                    -> GET    /users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)    -> PUT    /users/:id",
+    "4. DynamicType.modify(id, data)           -> PUT    /users/:id",
   ],
   Array [
-    "5. DynamicType.modify(id, data)    -> PATCH  /users/:id",
+    "5. DynamicType.modify(id, data)           -> PATCH  /users/:id",
   ],
   Array [
-    "6. DynamicType.delete(id)          -> DELETE /users/:id",
+    "6. DynamicType.delete(id)                 -> DELETE /users/:id",
   ],
   Array [],
 ]
@@ -240,40 +240,40 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit) -> GET    /users",
+    " 1. DynamicType.list(offset, limit, query) -> GET    /users",
   ],
   Array [
-    " 2. DynamicType.save(data)          -> POST   /users",
+    " 2. DynamicType.save(data)                 -> POST   /users",
   ],
   Array [
-    " 3. DynamicType.get(id)             -> GET    /users/:id",
+    " 3. DynamicType.get(id)                    -> GET    /users/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)    -> PUT    /users/:id",
+    " 4. DynamicType.modify(id, data)           -> PUT    /users/:id",
   ],
   Array [
-    " 5. DynamicType.modify(id, data)    -> PATCH  /users/:id",
+    " 5. DynamicType.modify(id, data)           -> PATCH  /users/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)          -> DELETE /users/:id",
+    " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
   ],
   Array [
-    " 7. DynamicType.list(offset, limit) -> GET    /animals",
+    " 7. DynamicType.list(offset, limit, query) -> GET    /animals",
   ],
   Array [
-    " 8. DynamicType.save(data)          -> POST   /animals",
+    " 8. DynamicType.save(data)                 -> POST   /animals",
   ],
   Array [
-    " 9. DynamicType.get(id)             -> GET    /animals/:id",
+    " 9. DynamicType.get(id)                    -> GET    /animals/:id",
   ],
   Array [
-    "10. DynamicType.modify(id, data)    -> PUT    /animals/:id",
+    "10. DynamicType.modify(id, data)           -> PUT    /animals/:id",
   ],
   Array [
-    "11. DynamicType.modify(id, data)    -> PATCH  /animals/:id",
+    "11. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
   ],
   Array [
-    "12. DynamicType.delete(id)          -> DELETE /animals/:id",
+    "12. DynamicType.delete(id)                 -> DELETE /animals/:id",
   ],
   Array [],
 ]

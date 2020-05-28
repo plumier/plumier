@@ -21,7 +21,6 @@ import {
 
 import { fixture } from "../helper"
 
-
 describe("TypeOrm", () => {
     function createApp(entities: Function[]) {
         class UsersController {

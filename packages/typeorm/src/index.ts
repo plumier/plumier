@@ -14,7 +14,6 @@ import pluralize from "pluralize"
 import reflect, { generic, noop } from "tinspector"
 import { ConnectionOptions, createConnection, getManager, getMetadataArgsStorage, Repository } from "typeorm"
 
-
 export class TypeORMFacility extends DefaultFacility {
     protected entities: Class[] = []
     constructor(private option?: ConnectionOptions) { super() }
@@ -30,7 +29,7 @@ export class TypeORMFacility extends DefaultFacility {
         for (const col of storage.relations) {
             const rawType: Class = (col as any).type()
             const type = col.relationType === "one-to-many" || col.relationType === "many-to-many" ? [rawType] : rawType
-            Reflect.decorate([noop(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
+            Reflect.decorate([reflect.type(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
             if (col.relationType === "one-to-many")
                 Reflect.decorate([entity.oneToMany(col.propertyName, rawType)], (col.target as Function).prototype, col.propertyName, void 0)
         }
@@ -56,8 +55,8 @@ export class CRUDTypeORMFacility extends TypeORMFacility {
 // ------------------------ GENERIC CONTROLLERS ------------------------ //
 // --------------------------------------------------------------------- //
 
-
 @generic.template("T", "TID")
+@generic.type("T", "TID")
 export class TypeOrmGenericController<T, TID> extends GenericController<T, TID>{
     private readonly repo: Repository<T>
     constructor() {
@@ -66,10 +65,11 @@ export class TypeOrmGenericController<T, TID> extends GenericController<T, TID>{
     }
 
     list(offset: number = 0, limit: number = 50, query: T): Promise<T[]> {
-        return this.repo.find({ skip: offset, take: limit })
+        return this.repo.find({ skip: offset, take: limit, where: { ...query } })
     }
 
-    async save(@reflect.type("T") data: T): Promise<IdentifierResult<TID>> {
+
+    async save(data: T): Promise<IdentifierResult<TID>> {
         const result = await this.repo.insert(data)
         return new IdentifierResult(result.raw as any)
     }
@@ -99,6 +99,7 @@ export class TypeOrmGenericController<T, TID> extends GenericController<T, TID>{
 }
 
 @generic.template("P", "T", "PID", "TID")
+@generic.type("P", "T", "PID", "TID")
 export class TypeOrmGenericOneToManyController<P, T, PID, TID> extends GenericOneToManyController<P, T, PID, TID> {
     protected readonly repo: Repository<T>
     protected readonly parentRepo: Repository<P>
@@ -126,6 +127,7 @@ export class TypeOrmGenericOneToManyController<P, T, PID, TID> extends GenericOn
         return new IdentifierResult(inserted.raw)
     }
 
+    @route.ignore()
     protected async findOneOrThrowNotFound(id: TID) {
         const data = await this.repo.findOne(id)
         if (!data) throw new HttpStatusError(404)

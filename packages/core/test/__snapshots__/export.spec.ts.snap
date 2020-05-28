@@ -7,6 +7,8 @@ Object {
   "DefaultDependencyResolver": DefaultDependencyResolver,
   "DefaultFacility": DefaultFacility,
   "FormFile": FormFile,
+  "GenericController": GenericController,
+  "GenericOneToManyController": GenericOneToManyController,
   "HttpStatus": Object {
     "100": "Continue",
     "101": "SwitchingProtocols",
@@ -132,6 +134,7 @@ Object {
     "VariantAlsoNegotiates": 506,
   },
   "HttpStatusError": HttpStatusError,
+  "IdentifierResult": IdentifierResult,
   "MiddlewareUtil": Object {
     "extractDecorators": extractDecorators,
     "fromKoa": fromKoa,
@@ -172,8 +175,13 @@ Object {
     "clearMock": clearMock,
     "startMock": startMock,
   },
+  "createRoutesFromEntities": createRoutesFromEntities,
   "domain": domain,
   "ellipsis": ellipsis,
+  "entity": Object {
+    "id": id,
+    "oneToMany": oneToMany,
+  },
   "errorMessage": Object {
     "ActionParameterDoesNotHaveTypeInfo": "PLUM1004: Parameter binding skipped because action parameters doesn't have type information in ({0})",
     "ArrayWithoutTypeInformation": "PLUM1006: Parameter binding skipped because array element doesn't have type information in ({0})",

@@ -289,7 +289,7 @@ describe("Parameter Binding", () => {
         it("Should bind array of number", async () => {
             class AnimalController {
                 @route.post()
-                save(@reflect.array(Number) b: number[]) {
+                save(@reflect.type([Number]) b: number[]) {
                     return b
                 }
             }
@@ -302,7 +302,7 @@ describe("Parameter Binding", () => {
         it("Should bind array of number using url encoded", async () => {
             class AnimalController {
                 @route.post()
-                save(@reflect.array(Number) b: number[]) {
+                save(@reflect.type([Number]) b: number[]) {
                     return b
                 }
             }
@@ -317,7 +317,7 @@ describe("Parameter Binding", () => {
         it("Should allow single value on url encoded as array", async () => {
             class AnimalController {
                 @route.post()
-                save(@reflect.array(Number) b: number[]) {
+                save(@reflect.type([Number]) b: number[]) {
                     return b
                 }
             }
@@ -343,7 +343,7 @@ describe("Parameter Binding", () => {
         it("Should bind array of boolean", async () => {
             class AnimalController {
                 @route.post()
-                save(@reflect.array(Boolean) b: boolean[]) {
+                save(@reflect.type([Boolean]) b: boolean[]) {
                     return b
                 }
             }
@@ -356,7 +356,7 @@ describe("Parameter Binding", () => {
         it("Should bind array of Date", async () => {
             class AnimalController {
                 @route.post()
-                save(@reflect.array(Date) b: Date[]) {
+                save(@reflect.type([Date]) b: Date[]) {
                     return b
                 }
             }
@@ -375,7 +375,7 @@ describe("Parameter Binding", () => {
             }
             class AnimalController {
                 @route.post()
-                save(@reflect.array(AnimalModel) b: AnimalModel[]) {
+                save(@reflect.type([AnimalModel]) b: AnimalModel[]) {
                     return b
                 }
             }
@@ -388,7 +388,7 @@ describe("Parameter Binding", () => {
         it("Should return 422 if provided invalid value", async () => {
             class AnimalController {
                 @route.post()
-                save(@reflect.array(Boolean) b: boolean[]) {
+                save(@reflect.type([Boolean]) b: boolean[]) {
                     return b
                 }
             }
@@ -414,7 +414,7 @@ describe("Parameter Binding", () => {
                 public name: string,
                 public deceased: boolean,
                 public birthday: Date,
-                @reflect.array(TagModel)
+                @reflect.type([TagModel])
                 public tags: TagModel[]
             ) { }
         }
@@ -441,7 +441,7 @@ describe("Parameter Binding", () => {
         it("Should bind nested array inside array", async () => {
             class AnimalController {
                 @route.post()
-                save(@reflect.array(AnimalModel) b: AnimalModel[]) {
+                save(@reflect.type([AnimalModel]) b: AnimalModel[]) {
                     return b
                 }
             }
@@ -466,7 +466,7 @@ describe("Parameter Binding", () => {
         it("Should return 422 if provided unconvertible value", async () => {
             class AnimalController {
                 @route.post()
-                save(@reflect.array(AnimalModel) b: AnimalModel[]) {
+                save(@reflect.type([AnimalModel]) b: AnimalModel[]) {
                     return b
                 }
             }
@@ -482,7 +482,7 @@ describe("Parameter Binding", () => {
         it("Should return 422 if provided unconvertible value", async () => {
             class AnimalController {
                 @route.post()
-                save(@reflect.array(AnimalModel) b: AnimalModel[]) {
+                save(@reflect.type([AnimalModel]) b: AnimalModel[]) {
                     return b
                 }
             }
