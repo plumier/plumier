@@ -1,0 +1,626 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Generic Controller Should able to use Number id 1`] = `
+Array [
+  Object {
+    "name": "list",
+    "pars": Array [
+      Object {
+        "name": "offset",
+        "type": Number,
+      },
+      Object {
+        "name": "limit",
+        "type": Number,
+      },
+      Object {
+        "name": "query",
+        "type": User,
+      },
+    ],
+    "type": Array [
+      User,
+    ],
+  },
+  Object {
+    "name": "save",
+    "pars": Array [
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "get",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+    ],
+    "type": User,
+  },
+  Object {
+    "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+    ],
+    "type": DynamicType,
+  },
+]
+`;
+
+exports[`Generic Controller Should able to use Number id 2`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+]
+`;
+
+exports[`Generic Controller Should able to use String id 1`] = `
+Array [
+  Object {
+    "name": "list",
+    "pars": Array [
+      Object {
+        "name": "offset",
+        "type": Number,
+      },
+      Object {
+        "name": "limit",
+        "type": Number,
+      },
+      Object {
+        "name": "query",
+        "type": User,
+      },
+    ],
+    "type": Array [
+      User,
+    ],
+  },
+  Object {
+    "name": "save",
+    "pars": Array [
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "get",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": String,
+      },
+    ],
+    "type": User,
+  },
+  Object {
+    "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": String,
+      },
+    ],
+    "type": DynamicType,
+  },
+]
+`;
+
+exports[`Generic Controller Should able to use String id 2`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": String,
+  },
+]
+`;
+
+exports[`Generic One To Many Controller Should able to use Number id 1`] = `
+Array [
+  Object {
+    "name": "list",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "offset",
+        "type": Number,
+      },
+      Object {
+        "name": "limit",
+        "type": Number,
+      },
+      Object {
+        "name": "query",
+        "type": Animal,
+      },
+    ],
+    "type": Array [
+      Animal,
+    ],
+  },
+  Object {
+    "name": "save",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "get",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+    ],
+    "type": Animal,
+  },
+  Object {
+    "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+    ],
+    "type": DynamicType,
+  },
+]
+`;
+
+exports[`Generic One To Many Controller Should able to use Number id 2`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+]
+`;
+
+exports[`Generic One To Many Controller Should able to use Number pid 1`] = `
+Array [
+  Object {
+    "name": "list",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "offset",
+        "type": Number,
+      },
+      Object {
+        "name": "limit",
+        "type": Number,
+      },
+      Object {
+        "name": "query",
+        "type": Animal,
+      },
+    ],
+    "type": Array [
+      Animal,
+    ],
+  },
+  Object {
+    "name": "save",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "get",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+    ],
+    "type": Animal,
+  },
+  Object {
+    "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+    ],
+    "type": DynamicType,
+  },
+]
+`;
+
+exports[`Generic One To Many Controller Should able to use Number pid 2`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+]
+`;
+
+exports[`Generic One To Many Controller Should able to use String id 1`] = `
+Array [
+  Object {
+    "name": "list",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "offset",
+        "type": Number,
+      },
+      Object {
+        "name": "limit",
+        "type": Number,
+      },
+      Object {
+        "name": "query",
+        "type": Animal,
+      },
+    ],
+    "type": Array [
+      Animal,
+    ],
+  },
+  Object {
+    "name": "save",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "get",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": String,
+      },
+    ],
+    "type": Animal,
+  },
+  Object {
+    "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": String,
+      },
+    ],
+    "type": DynamicType,
+  },
+]
+`;
+
+exports[`Generic One To Many Controller Should able to use String id 2`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": String,
+  },
+]
+`;
+
+exports[`Generic One To Many Controller Should able to use String pid 1`] = `
+Array [
+  Object {
+    "name": "list",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": String,
+      },
+      Object {
+        "name": "offset",
+        "type": Number,
+      },
+      Object {
+        "name": "limit",
+        "type": Number,
+      },
+      Object {
+        "name": "query",
+        "type": Animal,
+      },
+    ],
+    "type": Array [
+      Animal,
+    ],
+  },
+  Object {
+    "name": "save",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": String,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "get",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": String,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+    ],
+    "type": Animal,
+  },
+  Object {
+    "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": String,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": String,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+    ],
+    "type": DynamicType,
+  },
+]
+`;
+
+exports[`Generic One To Many Controller Should able to use String pid 2`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+]
+`;
+
+exports[`Rote Generator Should generate routes properly 1`] = `
+Array [
+  Object {
+    "method": "get",
+    "path": "/user",
+  },
+  Object {
+    "method": "post",
+    "path": "/user",
+  },
+  Object {
+    "method": "get",
+    "path": "/user/:id",
+  },
+  Object {
+    "method": "put",
+    "path": "/user/:id",
+  },
+  Object {
+    "method": "patch",
+    "path": "/user/:id",
+  },
+  Object {
+    "method": "delete",
+    "path": "/user/:id",
+  },
+  Object {
+    "method": "get",
+    "path": "/user/:pid/animals",
+  },
+  Object {
+    "method": "post",
+    "path": "/user/:pid/animals",
+  },
+  Object {
+    "method": "get",
+    "path": "/user/:pid/animals/:id",
+  },
+  Object {
+    "method": "put",
+    "path": "/user/:pid/animals/:id",
+  },
+  Object {
+    "method": "patch",
+    "path": "/user/:pid/animals/:id",
+  },
+  Object {
+    "method": "delete",
+    "path": "/user/:pid/animals/:id",
+  },
+  Object {
+    "method": "get",
+    "path": "/animal",
+  },
+  Object {
+    "method": "post",
+    "path": "/animal",
+  },
+  Object {
+    "method": "get",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "put",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "patch",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "delete",
+    "path": "/animal/:id",
+  },
+]
+`;

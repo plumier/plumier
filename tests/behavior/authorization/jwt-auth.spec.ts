@@ -790,7 +790,7 @@ describe("JwtAuth", () => {
 
         class AnimalController {
             @route.post()
-            save(@reflect.array(Animal) data: Animal[]) { return "Hello" }
+            save(@reflect.type([Animal]) data: Animal[]) { return "Hello" }
         }
 
         it("Should be able to authorize parameter", async () => {
@@ -833,7 +833,7 @@ describe("JwtAuth", () => {
             class AnimalController {
                 @authorize.public()
                 @route.post()
-                save(@reflect.array(Animal) data: Animal[]) { return "Hello" }
+                save(@reflect.type([Animal]) data: Animal[]) { return "Hello" }
             }
 
             const app = await fixture(AnimalController)
@@ -851,7 +851,7 @@ describe("JwtAuth", () => {
             @authorize.public()
             class AnimalController {
                 @route.post()
-                save(@reflect.array(Animal) data: Animal[]) { return "Hello" }
+                save(@reflect.type([Animal]) data: Animal[]) { return "Hello" }
             }
 
             const app = await fixture(AnimalController)
@@ -868,7 +868,7 @@ describe("JwtAuth", () => {
         it("Should check for parameter authorization even if the controller access is public", async () => {
             class AnimalController {
                 @route.post()
-                save(@reflect.array(Animal) data: Animal[]) { return "Hello" }
+                save(@reflect.type([Animal]) data: Animal[]) { return "Hello" }
             }
 
             const app = await fixture(AnimalController)

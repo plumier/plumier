@@ -11,7 +11,7 @@ describe("Route Analyzer", () => {
         }
         class AnimalController {
             @route.get(":c")
-            method(@reflect.array(Domain) a: Domain[], b: number) { }
+            method(@reflect.type([Domain]) a: Domain[], b: number) { }
         }
         const mock = consoleLog.startMock()
         const app = await new Plumier()
@@ -238,13 +238,13 @@ describe("Route Analyzer", () => {
         class Client {
             @reflect.noop()
             id: number
-            @reflect.noop(x => Animal)
+            @reflect.type(x => Animal)
             animals: any
         }
         class Animal {
             @reflect.noop()
             id: number
-            @reflect.noop(x => Client)
+            @reflect.type(x => Client)
             name: any
         }
         class AnimalController {
