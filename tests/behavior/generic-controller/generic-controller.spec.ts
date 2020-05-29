@@ -1,5 +1,5 @@
-import { GenericController, Class, GenericOneToManyController, entity, createRoutesFromEntities } from "@plumier/core"
-import reflect, { generic, metadata } from "tinspector"
+import { GenericController, Class, GenericOneToManyController, entity, createRoutesFromEntities, OneToManyDecorator } from "@plumier/core"
+import reflect, { generic, metadata, decorateClass } from "tinspector"
 
 describe("Generic Controller", () => {
     class User {
@@ -71,7 +71,6 @@ describe("Generic One To Many Controller", () => {
     }
     it("Should able to use Number id", () => {
         @generic.type(User, Animal, Number, Number)
-        @entity.oneToMany("animals", Animal)
         class UsersController extends GenericOneToManyController<User, Animal, Number, Number> { }
         const meta = reflect(UsersController)
         expect(metadata.getMethods(meta)).toMatchSnapshot()
@@ -80,7 +79,6 @@ describe("Generic One To Many Controller", () => {
     })
     it("Should able to use String id", () => {
         @generic.type(User, Animal, Number, String)
-        @entity.oneToMany("animals", Animal)
         class UsersController extends GenericOneToManyController<User, Animal, Number, String> { }
         const meta = reflect(UsersController)
         expect(metadata.getMethods(meta)).toMatchSnapshot()
@@ -89,7 +87,6 @@ describe("Generic One To Many Controller", () => {
     })
     it("Should able to use Number pid", () => {
         @generic.type(User, Animal, Number, Number)
-        @entity.oneToMany("animals", Animal)
         class UsersController extends GenericOneToManyController<User, Animal, Number, Number> { }
         const meta = reflect(UsersController)
         expect(metadata.getMethods(meta)).toMatchSnapshot()
@@ -98,7 +95,6 @@ describe("Generic One To Many Controller", () => {
     })
     it("Should able to use String pid", () => {
         @generic.type(User, Animal, String, Number)
-        @entity.oneToMany("animals", Animal)
         class UsersController extends GenericOneToManyController<User, Animal, String, Number> { }
         const meta = reflect(UsersController)
         expect(metadata.getMethods(meta)).toMatchSnapshot()
@@ -107,7 +103,7 @@ describe("Generic One To Many Controller", () => {
     })
     it("Should invocable", () => {
         @generic.type(User, Animal, Number, Number)
-        @entity.oneToMany("animals", Animal)
+        @decorateClass(<OneToManyDecorator>{ propertyName: "animals", parentType: User, kind: "GenericDecoratorOneToMany", type: x => UsersController })
         class UsersController extends GenericOneToManyController<User, Animal, Number, Number> {
             list(pid: number, offset: number = 0, limit: number = 50, query: User) {
                 return super.list(pid, offset, limit, query)
@@ -133,6 +129,27 @@ describe("Generic One To Many Controller", () => {
         ctl.modify(1, 1, {} as User)
         ctl.delete(1, 1)
     })
+    it("Should throw error when no OneToManyDecorator provided", () => {
+        @generic.type(User, Animal, Number, Number)
+        class UsersController extends GenericOneToManyController<User, Animal, Number, Number> {
+            list(pid: number, offset: number = 0, limit: number = 50, query: User) {
+                return super.list(pid, offset, limit, query)
+            }
+            async save(pid: number, data: Animal) {
+                return super.save(pid, data)
+            }
+            get(pid: number, id: number) {
+                return super.get(pid, id)
+            }
+            async modify(pid: number, id: number, data: Animal) {
+                return super.modify(pid, id, data)
+            }
+            async delete(pid: number, id: number) {
+                return super.delete(pid, id)
+            }
+        }
+        expect(() => new UsersController()).toThrowErrorMatchingSnapshot()
+    })
 })
 
 describe("Rote Generator", () => {
@@ -147,7 +164,7 @@ describe("Rote Generator", () => {
         @reflect.noop()
         email: string
 
-        @entity.oneToMany("animals", Animal)
+        @entity.oneToMany(x => Animal)
         @reflect.type(x => [Animal])
         animals: Animal[]
     }
@@ -157,7 +174,6 @@ describe("Rote Generator", () => {
         class UsersController<T, TID> extends GenericController<T, TID> { }
         @generic.template("P", "T", "PID", "TID")
         @generic.type("P", "T", "PID", "TID")
-        @entity.oneToMany("animals", Animal)
         class UsersAnimalsController<P, T, PID, TID> extends GenericOneToManyController<P, T, PID, TID> { }
         const routes = createRoutesFromEntities([User, Animal], UsersController, UsersAnimalsController, x => x)
         expect(routes.map(x => ({ method: x.method, path: x.url }))).toMatchSnapshot()

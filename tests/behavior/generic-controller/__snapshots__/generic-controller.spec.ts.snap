@@ -548,6 +548,8 @@ Array [
 ]
 `;
 
+exports[`Generic One To Many Controller Should throw error when no OneToManyDecorator provided 1`] = `"Configuration Error: UsersController doesn't decorated with OneToManyDecorator @decorateClass(<OneToManyDecorator>)"`;
+
 exports[`Rote Generator Should generate routes properly 1`] = `
 Array [
   Object {
