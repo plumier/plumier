@@ -1,9 +1,10 @@
 import "./validator"
 
 import { model } from "./generator"
-export { getAnalysis, model, generator, getDefinition } from "./generator"
+export { getAnalysis, model, generator, getDefinition, models } from "./generator"
 export { collection } from "./decorator"
-export { MongooseFacility } from "./facility"
+export { MongooseFacility, CRUDMongooseFacility } from "./facility"
 export { printAnalysis, createAnalyzer } from "./analyzer"
+export { MongooseGenericController, MongooseGenericOneToManyController, Repository, OneToManyRepository } from "./generic-controller"
 export * from "./types"
 export default model;

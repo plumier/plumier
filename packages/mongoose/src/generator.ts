@@ -88,10 +88,11 @@ function generator(): ModelGenerator {
     const models = new Map<Class, ModelStore>()
     return {
         model: modelFactory(models),
-        getAnalysis: createAnalyzer(models)
+        getAnalysis: createAnalyzer(models),
+        models
     }
 }
 
-const { model, getAnalysis } = generator()
+const { model, getAnalysis, models } = generator()
 
-export { getDefinition, generator, model, getAnalysis }
+export { getDefinition, generator, model, getAnalysis, models }

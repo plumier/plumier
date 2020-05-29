@@ -17,7 +17,8 @@ interface ModelStore { name: string, collectionName: string, definition: any, op
 interface AnalysisResult { name: string, collection: string, option: string, definition: string }
 interface ModelGenerator {
     model: ModelFactory
-    getAnalysis: () => AnalysisResult[]
+    getAnalysis: () => AnalysisResult[],
+    models: Map<Class, ModelStore>
 }
 
 const ReferenceTypeNotRegistered = "MONG1000: Type {0} required type {1} which is not registered as Mongoose model"
