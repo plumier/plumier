@@ -31,7 +31,7 @@ export class TypeORMFacility extends DefaultFacility {
             const type = col.relationType === "one-to-many" || col.relationType === "many-to-many" ? [rawType] : rawType
             Reflect.decorate([reflect.type(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
             if (col.relationType === "one-to-many")
-                Reflect.decorate([entity.oneToMany(col.propertyName, rawType)], (col.target as Function).prototype, col.propertyName, void 0)
+                Reflect.decorate([entity.oneToMany(x => rawType)], (col.target as Function).prototype, col.propertyName, void 0)
         }
         this.entities = storage.tables.filter(x => typeof x.target !== "string").map(x => x.target as Class)
     }

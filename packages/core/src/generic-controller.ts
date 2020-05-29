@@ -14,7 +14,7 @@ import { generateRoutes } from './route-generator'
 interface OneToManyDecorator {
     kind: "GenericDecoratorOneToMany"
     propertyName: string,
-    type: Class,
+    type: (x:any) => Class,
     parentType: Class
 }
 
@@ -28,8 +28,8 @@ interface IdentifierDecorator {
 // --------------------------------------------------------------------- //
 
 namespace entity {
-    export function oneToMany(propertyName: string, type: Class) {
-        return decorate((target: any) => <OneToManyDecorator>{ kind: "GenericDecoratorOneToMany", propertyName, type, parentType: target })
+    export function oneToMany(type: (x:any) => Class) {
+        return decorateProperty((target: any, propertyName) => <OneToManyDecorator>{ kind: "GenericDecoratorOneToMany", propertyName, type, parentType: target })
     }
 
     export function id() {
@@ -76,9 +76,9 @@ function createNestedController(dec: OneToManyDecorator, controller: typeof Gene
     // get type of ID column on parent entity
     const parentIdType = getIdType(dec.parentType)
     // get type of ID column on entity
-    const idType = getIdType(dec.type)
+    const idType = getIdType(dec.type({}))
     // create controller 
-    const Controller = generic.create(controller, dec.parentType, dec.type, parentIdType, idType)
+    const Controller = generic.create(controller, dec.parentType, dec.type({}), parentIdType, idType)
     // add root decorator
     const name = nameConversion(dec.parentType.name)
     Reflect.decorate([
@@ -159,7 +159,8 @@ class GenericOneToManyController<P, T, PID, TID>{
         const { types, meta } = getGenericTypeParameters(this)
         this.parentEntityType = types[0]
         this.entityType = types[1]
-        const oneToMany = meta.decorators.find((x: OneToManyDecorator): x is OneToManyDecorator => x.kind === "GenericDecoratorOneToMany")!
+        const oneToMany = meta.decorators.find((x: OneToManyDecorator): x is OneToManyDecorator => x.kind === "GenericDecoratorOneToMany")
+        if(!oneToMany) throw new Error(`Configuration Error: ${this.constructor.name} doesn't decorated with OneToManyDecorator @decorateClass(<OneToManyDecorator>)`)
         this.propertyName = oneToMany.propertyName
     }
 
@@ -187,4 +188,4 @@ class GenericOneToManyController<P, T, PID, TID>{
     delete(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID): Promise<IdentifierResult<TID>> { return {} as any }
 }
 
-export { entity, createRoutesFromEntities, GenericController, GenericOneToManyController, IdentifierResult }
+export { entity, createRoutesFromEntities, GenericController, GenericOneToManyController, IdentifierResult, OneToManyDecorator }
