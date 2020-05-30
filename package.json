@@ -50,7 +50,7 @@
 		"jest": "^26.0.1",
 		"jsonwebtoken": "^8.5.1",
 		"koa-better-body": "^3.3.9",
-		"koa-router": "^8.0.8",
+		"koa-router": "^9.0.1",
 		"lerna": "3.22.0",
 		"mongodb-memory-server-global": "^6.6.1",
 		"pre-push": "^0.1.1",
