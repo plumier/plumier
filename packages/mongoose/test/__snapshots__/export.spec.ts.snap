@@ -2,9 +2,14 @@
 
 exports[`Module Export Should export module properly 1`] = `
 Object {
+  "CRUDMongooseFacility": CRUDMongooseFacility,
   "CanNotValidateNonProperty": "MONG1002: @val.unique() only can be applied on property",
   "MongooseFacility": MongooseFacility,
+  "MongooseGenericController": MongooseGenericController,
+  "MongooseGenericOneToManyController": MongooseGenericOneToManyController,
+  "OneToManyRepository": OneToManyRepository,
   "ReferenceTypeNotRegistered": "MONG1000: Type {0} required type {1} which is not registered as Mongoose model",
+  "Repository": Repository,
   "collection": collection,
   "createAnalyzer": createAnalyzer,
   "default": ,
@@ -12,6 +17,7 @@ Object {
   "getAnalysis": ,
   "getDefinition": getDefinition,
   "model": ,
+  "models": Map {},
   "printAnalysis": printAnalysis,
 }
 `;

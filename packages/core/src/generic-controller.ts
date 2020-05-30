@@ -1,4 +1,4 @@
-import reflect, { generic, GenericTypeDecorator, decorateClass, decorate, decorateProperty, PropertyReflection } from 'tinspector'
+import reflect, { generic, GenericTypeDecorator, decorateClass, decorate, decorateProperty, PropertyReflection, metadata } from 'tinspector'
 import { domain } from './decorator'
 import { route } from './decorator.route'
 import { val } from 'typedconverter'
@@ -14,7 +14,7 @@ import { generateRoutes } from './route-generator'
 interface OneToManyDecorator {
     kind: "GenericDecoratorOneToMany"
     propertyName: string,
-    type: (x:any) => Class,
+    type: Class | Class[] | ((x: any) => Class | Class[]),
     parentType: Class
 }
 
@@ -28,7 +28,7 @@ interface IdentifierDecorator {
 // --------------------------------------------------------------------- //
 
 namespace entity {
-    export function oneToMany(type: (x:any) => Class) {
+    export function oneToMany(type: Class | Class[] | ((x: any) => Class | Class[])) {
         return decorateProperty((target: any, propertyName) => <OneToManyDecorator>{ kind: "GenericDecoratorOneToMany", propertyName, type, parentType: target })
     }
 
@@ -73,12 +73,14 @@ function createController(entity: Class, controller: typeof GenericController, n
 }
 
 function createNestedController(dec: OneToManyDecorator, controller: typeof GenericOneToManyController, nameConversion: (x: string) => string) {
+    const decType = metadata.isCallback(dec.type) ? dec.type({}) : dec.type
+    const realType = Array.isArray(decType) ? decType[0] : decType
     // get type of ID column on parent entity
     const parentIdType = getIdType(dec.parentType)
     // get type of ID column on entity
-    const idType = getIdType(dec.type({}))
+    const idType = getIdType(realType)
     // create controller 
-    const Controller = generic.create(controller, dec.parentType, dec.type({}), parentIdType, idType)
+    const Controller = generic.create(controller, dec.parentType, realType, parentIdType, idType)
     // add root decorator
     const name = nameConversion(dec.parentType.name)
     Reflect.decorate([
@@ -160,7 +162,7 @@ class GenericOneToManyController<P, T, PID, TID>{
         this.parentEntityType = types[0]
         this.entityType = types[1]
         const oneToMany = meta.decorators.find((x: OneToManyDecorator): x is OneToManyDecorator => x.kind === "GenericDecoratorOneToMany")
-        if(!oneToMany) throw new Error(`Configuration Error: ${this.constructor.name} doesn't decorated with OneToManyDecorator @decorateClass(<OneToManyDecorator>)`)
+        if (!oneToMany) throw new Error(`Configuration Error: ${this.constructor.name} doesn't decorated with OneToManyDecorator @decorateClass(<OneToManyDecorator>)`)
         this.propertyName = oneToMany.propertyName
     }
 
