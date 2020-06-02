@@ -4,7 +4,7 @@ import { OperationObject, PathItemObject, PathObject, PathsObject } from "openap
 import { transformBody } from "./body"
 import { transformParameters } from "./parameter"
 import { transformResponses } from "./response"
-import { TransformContext, isDescription } from './shared'
+import { TransformContext, isDescription, isTag } from './shared'
 
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
@@ -68,14 +68,15 @@ function transformPath(path: string, route: RouteInfo[], ctx: TransformContext):
 function transformOperation(route: RouteInfo, ctx: TransformContext): [HttpMethod, OperationObject] {
     const isPublic = !!route.action.decorators.find((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize" && x.tag === "Public")
     const desc = route.action.decorators.find(isDescription)
+    const tags = route.action.decorators.filter(isTag).map(x => x.tag)
+    if (tags.length === 0) tags.push(route.controller.name.replace(/controller$/i, ""))
     const secured = ctx.config.enableAuthorization && !isPublic
     const bearer: any[] = []
     const parameters = transformParameters(route, ctx)
     const requestBody = transformBody(route, ctx)
     const operation: OperationObject = {
         responses: transformResponses(route, ctx, isPublic),
-        tags: [route.controller.name.replace("Controller", "")],
-        parameters, requestBody, description: desc?.desc
+        tags, parameters, requestBody, description: desc?.desc
     }
     if (secured) operation.security = [{ bearer }]
     return [route.method, operation]
