@@ -6,6 +6,7 @@ interface ApiResponseDecorator { kind: "ApiResponse", status: number, mime: stri
 interface ApiFieldNameDecorator { kind: "ApiFieldName", alias: string }
 interface ApiEnumDecorator { kind: "ApiEnum", enums: string[] }
 interface ApiDescriptionDecorator { kind: "ApiDescription", desc: string }
+interface ApiTagDecorator { kind: "ApiTag", tag: string, description?: string, externalDoc?: string }
 namespace api {
 
     /**
@@ -24,6 +25,10 @@ namespace api {
      */
     export function description(desc: string) {
         return decorate(<ApiDescriptionDecorator>{ kind: "ApiDescription", desc })
+    }
+
+    export function tag(tag: string) {
+        return decorateMethod(<ApiTagDecorator>{ kind: "ApiTag", tag })
     }
 
     export namespace params {
@@ -53,4 +58,4 @@ namespace api {
 
 }
 
-export { ApiRequiredDecorator, ApiResponseDecorator, ApiFieldNameDecorator, ApiEnumDecorator, ApiDescriptionDecorator, api}
+export { ApiRequiredDecorator, ApiResponseDecorator, ApiFieldNameDecorator, ApiEnumDecorator, ApiDescriptionDecorator, ApiTagDecorator, api }

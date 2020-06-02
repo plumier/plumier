@@ -151,6 +151,7 @@ Object {
       "required": required,
     },
     "response": response,
+    "tag": tag,
   },
   "authorize": AuthDecoratorImpl {},
   "bind": Object {

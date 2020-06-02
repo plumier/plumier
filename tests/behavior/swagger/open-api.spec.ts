@@ -1165,6 +1165,35 @@ describe("Open API 3.0 Generation", () => {
                 .expect(200)
             expect(body.paths["/users"].get.responses).toMatchSnapshot()
         })
+        it("Should able to add tags on action", async () => {
+            class UsersController {
+                @route.post("")
+                @api.tag("Lorem")
+                save(name: string) {
+                    return {} as any
+                }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post).toMatchSnapshot()
+        })
+        it("Should able to add multiple tags on action", async () => {
+            class UsersController {
+                @route.post("")
+                @api.tag("Lorem")
+                @api.tag("Ipsum")
+                save(name: string) {
+                    return {} as any
+                }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post).toMatchSnapshot()
+        })
     })
 
     describe("Virtual Routes", () => {
