@@ -1,10 +1,12 @@
-import reflect, { generic, GenericTypeDecorator, decorateClass, decorate, decorateProperty, PropertyReflection, metadata } from 'tinspector'
-import { domain } from './decorator'
-import { route } from './decorator.route'
-import { val } from 'typedconverter'
-import { bind } from './decorator.bind'
-import { Class } from './common'
-import { generateRoutes } from './route-generator'
+import reflect, { decorateClass, decorateProperty, generic, GenericTypeDecorator, metadata } from "tinspector"
+import { val } from "typedconverter"
+
+import { Class } from "./common"
+import { domain } from "./decorator"
+import { api } from "./decorator.api"
+import { bind } from "./decorator.bind"
+import { route } from "./decorator.route"
+import { generateRoutes } from "./route-generator"
 
 
 // --------------------------------------------------------------------- //
@@ -61,6 +63,7 @@ function getGenericTypeParameters(instance: object) {
     }
 }
 
+
 function createController(entity: Class, controller: typeof GenericController, nameConversion: (x: string) => string) {
     // get type of ID column on entity
     const idType = getIdType(entity)
@@ -69,6 +72,7 @@ function createController(entity: Class, controller: typeof GenericController, n
     // add root decorator
     const name = nameConversion(entity.name)
     Reflect.decorate([route.root(name)], Controller)
+    Reflect.decorate([api.tag(entity.name)], Controller)
     return Controller
 }
 
@@ -88,6 +92,7 @@ function createNestedController(dec: OneToManyDecorator, controller: typeof Gene
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
         decorateClass(dec)],
         Controller)
+    Reflect.decorate([api.tag(dec.parentType.name)], Controller)
     return Controller
 }
 

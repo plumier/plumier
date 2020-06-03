@@ -16,6 +16,7 @@ class User {
     ) { }
 }
 
+@api.tag("Lorem")
 export class UsersController {
 
     @route.post("")
@@ -27,7 +28,6 @@ export class UsersController {
 
     @api.description("Lorem ipsum dolor")
     @route.post("upload")
-    @api.tag("Lorem")
     upload( user: FormFile) { }
 }
 

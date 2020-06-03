@@ -626,3 +626,334 @@ Array [
   },
 ]
 `;
+
+exports[`Swagger Generic Controller Should generate DELETE /animal/:id properly 1`] = `
+Array [
+  Object {
+    "description": undefined,
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Swagger Generic Controller Should generate DELETE /animal/:id properly 2`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Swagger Generic Controller Should generate GET /animal properly 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "name",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "description": undefined,
+    "in": "query",
+    "name": "offset",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+  Object {
+    "description": undefined,
+    "in": "query",
+    "name": "limit",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+]
+`;
+
+exports[`Swagger Generic Controller Should generate GET /animal properly 2`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Swagger Generic Controller Should generate GET /animal/:id properly 1`] = `
+Array [
+  Object {
+    "description": undefined,
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Swagger Generic Controller Should generate GET /animal/:id properly 2`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Swagger Generic Controller Should generate PATCH /animal/:id properly 1`] = `
+Array [
+  Object {
+    "description": undefined,
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Swagger Generic Controller Should generate PATCH /animal/:id properly 2`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Swagger Generic Controller Should generate POST /animal properly 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/Animal",
+        "type": "object",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/Animal",
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Swagger Generic Controller Should generate POST /animal properly 2`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Swagger Generic Controller Should generate PUT /animal/:id properly 1`] = `
+Array [
+  Object {
+    "description": undefined,
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Swagger Generic Controller Should generate PUT /animal/:id properly 2`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Swagger One To Many Generic Controller Should generate DELETE /animal/:id properly 1`] = `
+Array [
+  Object {
+    "description": undefined,
+    "in": "path",
+    "name": "pid",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "description": undefined,
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Swagger One To Many Generic Controller Should generate DELETE /animal/:id properly 2`] = `
+Array [
+  "Client",
+]
+`;
+
+exports[`Swagger One To Many Generic Controller Should generate GET /animal properly 1`] = `
+Array [
+  Object {
+    "description": undefined,
+    "in": "path",
+    "name": "pid",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "name",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "description": undefined,
+    "in": "query",
+    "name": "offset",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+  Object {
+    "description": undefined,
+    "in": "query",
+    "name": "limit",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+]
+`;
+
+exports[`Swagger One To Many Generic Controller Should generate GET /animal properly 2`] = `
+Array [
+  "Client",
+]
+`;
+
+exports[`Swagger One To Many Generic Controller Should generate GET /animal/:id properly 1`] = `
+Array [
+  Object {
+    "description": undefined,
+    "in": "path",
+    "name": "pid",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "description": undefined,
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Swagger One To Many Generic Controller Should generate GET /animal/:id properly 2`] = `
+Array [
+  "Client",
+]
+`;
+
+exports[`Swagger One To Many Generic Controller Should generate PATCH /animal/:id properly 1`] = `
+Array [
+  Object {
+    "description": undefined,
+    "in": "path",
+    "name": "pid",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "description": undefined,
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Swagger One To Many Generic Controller Should generate PATCH /animal/:id properly 2`] = `
+Array [
+  "Client",
+]
+`;
+
+exports[`Swagger One To Many Generic Controller Should generate POST /animal properly 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/Animal",
+        "type": "object",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/Animal",
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Swagger One To Many Generic Controller Should generate POST /animal properly 2`] = `
+Array [
+  "Client",
+]
+`;
+
+exports[`Swagger One To Many Generic Controller Should generate PUT /animal/:id properly 1`] = `
+Array [
+  Object {
+    "description": undefined,
+    "in": "path",
+    "name": "pid",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "description": undefined,
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Swagger One To Many Generic Controller Should generate PUT /animal/:id properly 2`] = `
+Array [
+  "Client",
+]
+`;
