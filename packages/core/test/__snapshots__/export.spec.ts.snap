@@ -177,12 +177,12 @@ Object {
     "startMock": startMock,
   },
   "createRoutesFromEntities": createRoutesFromEntities,
-  "domain": domain,
-  "ellipsis": ellipsis,
-  "entity": Object {
+  "crud": Object {
     "id": id,
     "oneToMany": oneToMany,
   },
+  "domain": domain,
+  "ellipsis": ellipsis,
   "errorMessage": Object {
     "ActionParameterDoesNotHaveTypeInfo": "PLUM1004: Parameter binding skipped because action parameters doesn't have type information in ({0})",
     "ArrayWithoutTypeInformation": "PLUM1006: Parameter binding skipped because array element doesn't have type information in ({0})",
