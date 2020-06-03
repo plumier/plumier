@@ -1,10 +1,12 @@
-import { Configuration, consoleLog, route, Class } from "@plumier/core"
-import model, { collection, CRUDMongooseFacility, Repository, models, OneToManyRepository } from "@plumier/mongoose"
+import { Class, Configuration, consoleLog, route } from "@plumier/core"
+import model, { collection, CRUDMongooseFacility, models, OneToManyRepository, Repository } from "@plumier/mongoose"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import supertest from "supertest"
 import reflect from "tinspector"
+
+jest.setTimeout(20000)
 
 describe("TypeOrm", () => {
     beforeAll(async () => {
@@ -94,7 +96,28 @@ describe("TypeOrm", () => {
                 expect(mock.mock.calls).toMatchSnapshot()
                 consoleLog.clearMock()
             })
-
+            it("Should generate one to many with parameter properties", async () => {
+                @collection()
+                class Animal {
+                    constructor(
+                        public name: string
+                    ) { }
+                }
+                @collection()
+                class User {
+                    constructor(
+                        public name: string,
+                        @collection.ref(x => [Animal])
+                        public animals: Animal[]
+                    ) { }
+                }
+                model(Animal)
+                model(User)
+                const mock = consoleLog.startMock()
+                await createApp()
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
             it("Should generate one to many routes without callback", async () => {
                 class Animal {
                     @reflect.noop()
@@ -115,7 +138,6 @@ describe("TypeOrm", () => {
                 expect(mock.mock.calls).toMatchSnapshot()
                 consoleLog.clearMock()
             })
-
             it("Should able to override route", async () => {
                 class User {
                     @reflect.noop()
@@ -618,5 +640,3 @@ describe("TypeOrm", () => {
         })
     })
 })
-
-
