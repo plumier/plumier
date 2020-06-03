@@ -5,6 +5,7 @@ import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import supertest from "supertest"
 import reflect from "tinspector"
+import { SwaggerFacility } from '@plumier/swagger'
 
 describe("TypeOrm", () => {
     beforeAll(async () => {
@@ -94,7 +95,28 @@ describe("TypeOrm", () => {
                 expect(mock.mock.calls).toMatchSnapshot()
                 consoleLog.clearMock()
             })
-
+            it("Should generate one to many with parameter properties", async () => {
+                @collection()
+                class Animal {
+                    constructor(
+                        public name: string
+                    ) { }
+                }
+                @collection()
+                class User {
+                    constructor(
+                        public name: string,
+                        @collection.ref(x => [Animal])
+                        public animals: Animal[]
+                    ) { }
+                }
+                model(Animal)
+                model(User)
+                const mock = consoleLog.startMock()
+                await createApp()
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
             it("Should generate one to many routes without callback", async () => {
                 class Animal {
                     @reflect.noop()
@@ -115,7 +137,6 @@ describe("TypeOrm", () => {
                 expect(mock.mock.calls).toMatchSnapshot()
                 consoleLog.clearMock()
             })
-
             it("Should able to override route", async () => {
                 class User {
                     @reflect.noop()
@@ -618,5 +639,3 @@ describe("TypeOrm", () => {
         })
     })
 })
-
-

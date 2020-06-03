@@ -279,6 +279,76 @@ Array [
 ]
 `;
 
+exports[`TypeOrm CRUD Route Generator Should generate one to many with parameter properties 1`] = `
+Array [
+  Array [
+    "1. Animal -> Animal db.animals",
+  ],
+  Array [
+    "2. User   -> User   db.users",
+  ],
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. DynamicType.list(offset, limit, query) -> GET    /animals",
+  ],
+  Array [
+    " 2. DynamicType.save(data)                 -> POST   /animals",
+  ],
+  Array [
+    " 3. DynamicType.get(id)                    -> GET    /animals/:id",
+  ],
+  Array [
+    " 4. DynamicType.modify(id, data)           -> PUT    /animals/:id",
+  ],
+  Array [
+    " 5. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+  ],
+  Array [
+    " 6. DynamicType.delete(id)                 -> DELETE /animals/:id",
+  ],
+  Array [
+    " 7. DynamicType.list(offset, limit, query) -> GET    /users",
+  ],
+  Array [
+    " 8. DynamicType.save(data)                 -> POST   /users",
+  ],
+  Array [
+    " 9. DynamicType.get(id)                    -> GET    /users/:id",
+  ],
+  Array [
+    "10. DynamicType.modify(id, data)           -> PUT    /users/:id",
+  ],
+  Array [
+    "11. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+  ],
+  Array [
+    "12. DynamicType.delete(id)                 -> DELETE /users/:id",
+  ],
+  Array [
+    "13. DynamicType.list                       -> GET    /users/:pid/animals",
+  ],
+  Array [
+    "14. DynamicType.save(pid, data)            -> POST   /users/:pid/animals",
+  ],
+  Array [
+    "15. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "16. DynamicType.modify(pid, id, data)      -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "17. DynamicType.modify(pid, id, data)      -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "18. DynamicType.delete(pid, id)            -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`TypeOrm CRUD Route Generator Should generate routes from inheritance 1`] = `
 Array [
   Array [

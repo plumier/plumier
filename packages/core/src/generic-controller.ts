@@ -31,7 +31,7 @@ interface IdentifierDecorator {
 
 namespace entity {
     export function oneToMany(type: Class | Class[] | ((x: any) => Class | Class[])) {
-        return decorateProperty((target: any, propertyName) => <OneToManyDecorator>{ kind: "GenericDecoratorOneToMany", propertyName, type, parentType: target })
+        return decorateProperty((target: any, propertyName) => <OneToManyDecorator>{ kind: "GenericDecoratorOneToMany", type, parentType: target })
     }
 
     export function id() {
@@ -104,7 +104,7 @@ function createRoutesFromEntities(entities: Class[], controller: typeof GenericC
         for (const prop of meta.properties) {
             const oneToMany = prop.decorators.find((x: OneToManyDecorator): x is OneToManyDecorator => x.kind === "GenericDecoratorOneToMany")
             if (oneToMany) {
-                controllers.push(createNestedController(oneToMany, oneToManyController, nameConversion))
+                controllers.push(createNestedController({ ...oneToMany, propertyName: prop.name }, oneToManyController, nameConversion))
             }
         }
     }
