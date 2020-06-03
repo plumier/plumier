@@ -1,4 +1,4 @@
-import { Class, createRoutesFromEntities, DefaultFacility, entity, RouteMetadata } from "@plumier/core"
+import { Class, createRoutesFromEntities, DefaultFacility, crud, RouteMetadata } from "@plumier/core"
 import pluralize from "pluralize"
 import reflect, { noop } from "tinspector"
 import { ConnectionOptions, createConnection, getMetadataArgsStorage } from "typeorm"
@@ -12,7 +12,7 @@ class TypeORMFacility extends DefaultFacility {
     setup() {
         const storage = getMetadataArgsStorage();
         for (const col of storage.generations) {
-            Reflect.decorate([entity.id()], (col.target as Function).prototype, col.propertyName, void 0)
+            Reflect.decorate([crud.id()], (col.target as Function).prototype, col.propertyName, void 0)
         }
         for (const col of storage.columns) {
             Reflect.decorate([noop()], (col.target as Function).prototype, col.propertyName, void 0)
@@ -22,7 +22,7 @@ class TypeORMFacility extends DefaultFacility {
             const type = col.relationType === "one-to-many" || col.relationType === "many-to-many" ? [rawType] : rawType
             Reflect.decorate([reflect.type(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
             if (col.relationType === "one-to-many")
-                Reflect.decorate([entity.oneToMany(x => rawType)], (col.target as Function).prototype, col.propertyName, void 0)
+                Reflect.decorate([crud.oneToMany(x => rawType)], (col.target as Function).prototype, col.propertyName, void 0)
         }
         this.entities = storage.tables.filter(x => typeof x.target !== "string").map(x => x.target as Class)
     }
