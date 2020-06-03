@@ -1166,9 +1166,9 @@ describe("Open API 3.0 Generation", () => {
             expect(body.paths["/users"].get.responses).toMatchSnapshot()
         })
         it("Should able to add tags on action", async () => {
+            @api.tag("Lorem")
             class UsersController {
                 @route.post("")
-                @api.tag("Lorem")
                 save(name: string) {
                     return {} as any
                 }
@@ -1180,10 +1180,10 @@ describe("Open API 3.0 Generation", () => {
             expect(body.paths["/users"].post).toMatchSnapshot()
         })
         it("Should able to add multiple tags on action", async () => {
+            @api.tag("Lorem")
+            @api.tag("Ipsum")
             class UsersController {
                 @route.post("")
-                @api.tag("Lorem")
-                @api.tag("Ipsum")
                 save(name: string) {
                     return {} as any
                 }

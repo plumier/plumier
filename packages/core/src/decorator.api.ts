@@ -1,4 +1,4 @@
-import reflect, { decorateProperty, decorate, decorateMethod } from 'tinspector';
+import reflect, { decorateProperty, decorate, decorateMethod, DecoratorId, decorateClass } from 'tinspector';
 import { Class } from './common';
 
 interface ApiRequiredDecorator { kind: "ApiRequired" }
@@ -28,7 +28,7 @@ namespace api {
     }
 
     export function tag(tag: string) {
-        return decorateMethod(<ApiTagDecorator>{ kind: "ApiTag", tag })
+        return decorateClass(<ApiTagDecorator>{ kind: "ApiTag", tag })
     }
 
     export namespace params {

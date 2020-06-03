@@ -1,5 +1,6 @@
-import { GenericController, Class, GenericOneToManyController, entity, createRoutesFromEntities, OneToManyDecorator } from "@plumier/core"
+import { GenericController, Class, GenericOneToManyController, entity, createRoutesFromEntities, OneToManyDecorator, RouteInfo, route } from "@plumier/core"
 import reflect, { generic, metadata, decorateClass } from "tinspector"
+import { transform } from "@plumier/swagger"
 
 describe("Generic Controller", () => {
     class User {
@@ -177,5 +178,174 @@ describe("Rote Generator", () => {
         class UsersAnimalsController<P, T, PID, TID> extends GenericOneToManyController<P, T, PID, TID> { }
         const routes = createRoutesFromEntities([User, Animal], UsersController, UsersAnimalsController, x => x)
         expect(routes.map(x => ({ method: x.method, path: x.url }))).toMatchSnapshot()
+    })
+})
+
+describe("Swagger", () => {
+    describe("Generic Controller", () => {
+        it("Should generate GET /animal properly", () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            const routes = createRoutesFromEntities([Animal], GenericController, GenericOneToManyController, x => x)
+            const spec = transform(routes, { map: new Map(), config: {} as any })
+            expect(spec.paths["/animal"].get.parameters).toMatchSnapshot()
+            expect(spec.paths["/animal"].get.tags).toMatchSnapshot()
+        })
+        it("Should generate POST /animal properly", () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            const routes = createRoutesFromEntities([Animal], GenericController, GenericOneToManyController, x => x)
+            const spec = transform(routes, { map: new Map(), config: {} as any })
+            expect(spec.paths["/animal"].post.requestBody).toMatchSnapshot()
+            expect(spec.paths["/animal"].post.tags).toMatchSnapshot()
+        })
+        it("Should generate GET /animal/:id properly", () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            const routes = createRoutesFromEntities([Animal], GenericController, GenericOneToManyController, x => x)
+            const spec = transform(routes, { map: new Map(), config: {} as any })
+            expect(spec.paths["/animal/{id}"].get.parameters).toMatchSnapshot()
+            expect(spec.paths["/animal/{id}"].get.tags).toMatchSnapshot()
+        })
+        it("Should generate DELETE /animal/:id properly", () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            const routes = createRoutesFromEntities([Animal], GenericController, GenericOneToManyController, x => x)
+            const spec = transform(routes, { map: new Map(), config: {} as any })
+            expect(spec.paths["/animal/{id}"].delete.parameters).toMatchSnapshot()
+            expect(spec.paths["/animal/{id}"].delete.tags).toMatchSnapshot()
+        })
+        it("Should generate PUT /animal/:id properly", () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            const routes = createRoutesFromEntities([Animal], GenericController, GenericOneToManyController, x => x)
+            const spec = transform(routes, { map: new Map(), config: {} as any })
+            expect(spec.paths["/animal/{id}"].put.parameters).toMatchSnapshot()
+            expect(spec.paths["/animal/{id}"].put.tags).toMatchSnapshot()
+        })
+        it("Should generate PATCH /animal/:id properly", () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            const routes = createRoutesFromEntities([Animal], GenericController, GenericOneToManyController, x => x)
+            const spec = transform(routes, { map: new Map(), config: {} as any })
+            expect(spec.paths["/animal/{id}"].put.parameters).toMatchSnapshot()
+            expect(spec.paths["/animal/{id}"].put.tags).toMatchSnapshot()
+        })
+    })
+    describe("One To Many Generic Controller", () => {
+        it("Should generate GET /animal properly", () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            class Client {
+                @reflect.noop()
+                name:string
+                @entity.oneToMany(x => Animal)
+                @reflect.type(x => [Animal])
+                animals: Animal[]
+            }
+            const routes = createRoutesFromEntities([Animal, Client], GenericController, GenericOneToManyController, x => x)
+            const spec = transform(routes, { map: new Map(), config: {} as any })
+            expect(spec.paths["/client/{pid}/animals"].get.parameters).toMatchSnapshot()
+            expect(spec.paths["/client/{pid}/animals"].get.tags).toMatchSnapshot()
+        })
+        it("Should generate POST /animal properly", () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            class Client {
+                @reflect.noop()
+                name:string
+                @entity.oneToMany(x => Animal)
+                @reflect.type(x => [Animal])
+                animals: Animal[]
+            }
+            const routes = createRoutesFromEntities([Animal, Client], GenericController, GenericOneToManyController, x => x)
+            const spec = transform(routes, { map: new Map(), config: {} as any })
+            expect(spec.paths["/client/{pid}/animals"].post.requestBody).toMatchSnapshot()
+            expect(spec.paths["/client/{pid}/animals"].post.tags).toMatchSnapshot()
+        })
+        it("Should generate GET /animal/:id properly", () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            class Client {
+                @reflect.noop()
+                name:string
+                @entity.oneToMany(x => Animal)
+                @reflect.type(x => [Animal])
+                animals: Animal[]
+            }
+            const routes = createRoutesFromEntities([Animal, Client], GenericController, GenericOneToManyController, x => x)
+            const spec = transform(routes, { map: new Map(), config: {} as any })
+            expect(spec.paths["/client/{pid}/animals/{id}"].get.parameters).toMatchSnapshot()
+            expect(spec.paths["/client/{pid}/animals/{id}"].get.tags).toMatchSnapshot()
+        })
+        it("Should generate DELETE /animal/:id properly", () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            class Client {
+                @reflect.noop()
+                name:string
+                @entity.oneToMany(x => Animal)
+                @reflect.type(x => [Animal])
+                animals: Animal[]
+            }
+            const routes = createRoutesFromEntities([Animal, Client], GenericController, GenericOneToManyController, x => x)
+            const spec = transform(routes, { map: new Map(), config: {} as any })
+            expect(spec.paths["/client/{pid}/animals/{id}"].delete.parameters).toMatchSnapshot()
+            expect(spec.paths["/client/{pid}/animals/{id}"].delete.tags).toMatchSnapshot()
+        })
+        it("Should generate PUT /animal/:id properly", () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            class Client {
+                @reflect.noop()
+                name:string
+                @entity.oneToMany(x => Animal)
+                @reflect.type(x => [Animal])
+                animals: Animal[]
+            }
+            const routes = createRoutesFromEntities([Animal, Client], GenericController, GenericOneToManyController, x => x)
+            const spec = transform(routes, { map: new Map(), config: {} as any })
+            expect(spec.paths["/client/{pid}/animals/{id}"].put.parameters).toMatchSnapshot()
+            expect(spec.paths["/client/{pid}/animals/{id}"].put.tags).toMatchSnapshot()
+        })
+        it("Should generate PATCH /animal/:id properly", () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            class Client {
+                @reflect.noop()
+                name:string
+                @entity.oneToMany(x => Animal)
+                @reflect.type(x => [Animal])
+                animals: Animal[]
+            }
+            const routes = createRoutesFromEntities([Animal, Client], GenericController, GenericOneToManyController, x => x)
+            const spec = transform(routes, { map: new Map(), config: {} as any })
+            expect(spec.paths["/client/{pid}/animals/{id}"].put.parameters).toMatchSnapshot()
+            expect(spec.paths["/client/{pid}/animals/{id}"].put.tags).toMatchSnapshot()
+        })
     })
 })

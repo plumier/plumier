@@ -20,6 +20,7 @@ import {
 } from "typeorm"
 
 import { fixture } from "../helper"
+import { SwaggerFacility } from '@plumier/swagger'
 
 describe("TypeOrm", () => {
     function createApp(entities: Function[]) {
