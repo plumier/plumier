@@ -1,4 +1,4 @@
-import { GenericController, Class, GenericOneToManyController, entity, createRoutesFromEntities, OneToManyDecorator, RouteInfo, route } from "@plumier/core"
+import { GenericController, Class, GenericOneToManyController, crud, createRoutesFromEntities, OneToManyDecorator, RouteInfo, route } from "@plumier/core"
 import reflect, { generic, metadata, decorateClass } from "tinspector"
 import { transform } from "@plumier/swagger"
 
@@ -165,7 +165,7 @@ describe("Rote Generator", () => {
         @reflect.noop()
         email: string
 
-        @entity.oneToMany(x => Animal)
+        @crud.oneToMany(x => Animal)
         @reflect.type(x => [Animal])
         animals: Animal[]
     }
@@ -253,7 +253,7 @@ describe("Swagger", () => {
             class Client {
                 @reflect.noop()
                 name:string
-                @entity.oneToMany(x => Animal)
+                @crud.oneToMany(x => Animal)
                 @reflect.type(x => [Animal])
                 animals: Animal[]
             }
@@ -270,7 +270,7 @@ describe("Swagger", () => {
             class Client {
                 @reflect.noop()
                 name:string
-                @entity.oneToMany(x => Animal)
+                @crud.oneToMany(x => Animal)
                 @reflect.type(x => [Animal])
                 animals: Animal[]
             }
@@ -287,7 +287,7 @@ describe("Swagger", () => {
             class Client {
                 @reflect.noop()
                 name:string
-                @entity.oneToMany(x => Animal)
+                @crud.oneToMany(x => Animal)
                 @reflect.type(x => [Animal])
                 animals: Animal[]
             }
@@ -304,7 +304,7 @@ describe("Swagger", () => {
             class Client {
                 @reflect.noop()
                 name:string
-                @entity.oneToMany(x => Animal)
+                @crud.oneToMany(x => Animal)
                 @reflect.type(x => [Animal])
                 animals: Animal[]
             }
@@ -321,7 +321,7 @@ describe("Swagger", () => {
             class Client {
                 @reflect.noop()
                 name:string
-                @entity.oneToMany(x => Animal)
+                @crud.oneToMany(x => Animal)
                 @reflect.type(x => [Animal])
                 animals: Animal[]
             }
@@ -338,7 +338,7 @@ describe("Swagger", () => {
             class Client {
                 @reflect.noop()
                 name:string
-                @entity.oneToMany(x => Animal)
+                @crud.oneToMany(x => Animal)
                 @reflect.type(x => [Animal])
                 animals: Animal[]
             }

@@ -29,7 +29,7 @@ interface IdentifierDecorator {
 // ----------------------------- DECORATOR ----------------------------- //
 // --------------------------------------------------------------------- //
 
-namespace entity {
+namespace crud {
     export function oneToMany(type: Class | Class[] | ((x: any) => Class | Class[])) {
         return decorateProperty((target: any, propertyName) => <OneToManyDecorator>{ kind: "GenericDecoratorOneToMany", type, parentType: target })
     }
@@ -195,4 +195,4 @@ class GenericOneToManyController<P, T, PID, TID>{
     delete(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID): Promise<IdentifierResult<TID>> { return {} as any }
 }
 
-export { entity, createRoutesFromEntities, GenericController, GenericOneToManyController, IdentifierResult, OneToManyDecorator }
+export { crud, createRoutesFromEntities, GenericController, GenericOneToManyController, IdentifierResult, OneToManyDecorator }
