@@ -1,11 +1,12 @@
-import { Configuration, consoleLog, route, Class } from "@plumier/core"
-import model, { collection, CRUDMongooseFacility, Repository, models, OneToManyRepository } from "@plumier/mongoose"
+import { Class, Configuration, consoleLog, route } from "@plumier/core"
+import model, { collection, CRUDMongooseFacility, models, OneToManyRepository, Repository } from "@plumier/mongoose"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import supertest from "supertest"
 import reflect from "tinspector"
-import { SwaggerFacility } from '@plumier/swagger'
+
+jest.setTimeout(20000)
 
 describe("TypeOrm", () => {
     beforeAll(async () => {
