@@ -109,8 +109,11 @@ describe("Validation", () => {
         @domain()
         class AnimalModel {
             constructor(
+                @val.required()
                 public id: number,
+                @val.required()
                 public name: string,
+                @val.required()
                 public deceased: boolean
             ) { }
         }

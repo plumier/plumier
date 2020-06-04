@@ -74,6 +74,39 @@ Object {
     },
     "type": "object",
   },
+  "~Tag": Object {
+    "properties": Object {
+      "tag": Object {
+        "type": "string",
+      },
+      "users": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/User",
+          "type": "object",
+        },
+        "type": "array",
+      },
+    },
+    "type": "object",
+  },
+  "~User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "tags": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/Tag",
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
 }
 `;
 
@@ -149,6 +182,37 @@ Object {
     },
     "type": "object",
   },
+  "~Animal": Object {
+    "properties": Object {
+      "name": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "~User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "tag": Object {
+        "properties": Object {
+          "animal": Object {
+            "$ref": "#/components/schemas/~Animal",
+            "type": "object",
+          },
+          "tag": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
 }
 `;
 
@@ -194,6 +258,24 @@ Object {
     "type": "object",
   },
   "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "tag": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/Tag",
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "~User": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
@@ -274,54 +356,18 @@ Object {
     },
     "type": "object",
   },
-}
-`;
-
-exports[`Open API 3.0 Generation Component Schema Should detect object component 1`] = `
-Object {
-  ".DefaultErrorMessage": Object {
-    "properties": Object {
-      "message": Object {
-        "type": "string",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  ".ValidationError": Object {
-    "properties": Object {
-      "message": Object {
-        "items": Object {
-          "properties": Object {
-            "messages": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-            "path": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-          },
-          "type": "object",
-        },
-        "type": "array",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "User": Object {
+  "~User": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
+      },
+      "tag": Object {
+        "properties": Object {
+          "tag": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
       },
       "userName": Object {
         "type": "string",
@@ -329,6 +375,51 @@ Object {
     },
     "type": "object",
   },
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should detect object component 1`] = `
+Object {
+  "properties": Object {
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should detect object component with required property 1`] = `
+Object {
+  "properties": Object {
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "required": Array [
+    "userName",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should include partial object component 1`] = `
+Object {
+  "properties": Object {
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
 }
 `;
 
@@ -1037,6 +1128,27 @@ exports[`Open API 3.0 Generation Parameter Should ignore @bind.request() paramet
 
 exports[`Open API 3.0 Generation Parameter Should ignore @bind.user() parameter 1`] = `Array []`;
 
+exports[`Open API 3.0 Generation Parameter Should ignore all required properties when provided @val.partial() on @bind.query() 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "str",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "num",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+]
+`;
+
 exports[`Open API 3.0 Generation Path Should combine path based on resource 1`] = `
 Object {
   "components": Object {
@@ -1424,6 +1536,17 @@ Object {
     ],
     "type": "object",
   },
+  "~User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
 }
 `;
 
@@ -1480,6 +1603,17 @@ Object {
     "required": Array [
       "userName",
     ],
+    "type": "object",
+  },
+  "~User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
     "type": "object",
   },
 }
@@ -1586,6 +1720,17 @@ Object {
     ],
     "type": "object",
   },
+  "~User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
 }
 `;
 
@@ -1642,6 +1787,17 @@ Object {
     "required": Array [
       "userName",
     ],
+    "type": "object",
+  },
+  "~User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
     "type": "object",
   },
 }
@@ -1721,6 +1877,46 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Request Body Should ignore required field when @val.partial() specified 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/~User",
+        "type": "object",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/~User",
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body Should ignore required field when @val.partial() specified on model binding 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/~User",
+        "type": "object",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/~User",
+        "type": "object",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
 exports[`Open API 3.0 Generation Response Should detect array object response 1`] = `
 Object {
   "content": Object {
@@ -1790,6 +1986,17 @@ Object {
     },
     "type": "object",
   },
+  "~User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
 }
 `;
 
@@ -1849,6 +2056,24 @@ Object {
     "type": "object",
   },
   "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "tag": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/Tag",
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "~User": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
@@ -1943,6 +2168,25 @@ Object {
     },
     "type": "object",
   },
+  "~User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "tag": Object {
+        "properties": Object {
+          "tag": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
 }
 `;
 
@@ -2002,6 +2246,17 @@ Object {
     "type": "object",
   },
   "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "~User": Object {
     "properties": Object {
       "password": Object {
         "type": "string",

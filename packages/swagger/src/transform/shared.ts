@@ -9,6 +9,7 @@ import {
     Class,
     Configuration,
 } from "@plumier/core"
+import {ValidatorDecorator, PartialValidator} from "typedconverter"
 
 const isRequired = (dec: ApiRequiredDecorator): dec is ApiRequiredDecorator => dec.kind === "ApiRequired"
 const isBind = (dec: BindingDecorator): dec is BindingDecorator => dec.type === "ParameterBinding"
@@ -17,10 +18,11 @@ const isDescription = (dec: ApiDescriptionDecorator): dec is ApiDescriptionDecor
 const isResponse = (dec: ApiResponseDecorator): dec is ApiResponseDecorator => dec.kind === "ApiResponse"
 const isEnums = (dec: ApiEnumDecorator): dec is ApiEnumDecorator => dec.kind === "ApiEnum"
 const isTag = (dec: ApiTagDecorator): dec is ApiTagDecorator => dec.kind === "ApiTag"
+const isPartialValidator = (x: ValidatorDecorator) => x.type === "tc:validator" && x.validator === PartialValidator
 
 interface TransformContext {
     map: Map<Class, string>
     config: Configuration
 }
 
-export { isRequired, isBind, isName, isDescription, isResponse, isEnums, isTag, TransformContext }
+export { isRequired, isBind, isName, isDescription, isResponse, isEnums, isTag, isPartialValidator, TransformContext }

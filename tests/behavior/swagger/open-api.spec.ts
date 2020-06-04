@@ -1,4 +1,19 @@
-import { bind, Class, domain, route, val, authorize, FormFile, api, response, ActionResult, DefaultFacility, PlumierApplication, RouteMetadata, consoleLog, cleanupConsole, Facility, CustomMiddleware, CustomMiddlewareFunction, generateRoutes } from "@plumier/core"
+import {
+    ActionResult,
+    api,
+    authorize,
+    bind,
+    Class,
+    DefaultFacility,
+    domain,
+    Facility,
+    FormFile,
+    PlumierApplication,
+    route,
+    RouteMetadata,
+    val,
+} from "@plumier/core"
+import { JwtAuthFacility } from "@plumier/jwt"
 import { refFactory, SwaggerFacility } from "@plumier/swagger"
 import { IncomingMessage } from "http"
 import { Context } from "koa"
@@ -6,8 +21,6 @@ import supertest from "supertest"
 import reflect from "tinspector"
 
 import { fixture } from "../helper"
-import { JwtAuthFacility } from '@plumier/jwt'
-import { ServeStaticFacility } from '@plumier/serve-static'
 
 describe("getRef", () => {
     class User { }
@@ -355,6 +368,27 @@ describe("Open API 3.0 Generation", () => {
                 .expect(200)
             expect(body.paths["/users"].post.parameters).toMatchSnapshot()
         })
+
+        it("Should ignore all required properties when provided @val.partial() on @bind.query()", async () => {
+            @domain()
+            class Parameters {
+                constructor(
+                    @val.required()
+                    public str: string,
+                    @val.required()
+                    public num: number
+                ) { }
+            }
+            class UsersController {
+                @route.get("")
+                get(@bind.query() @val.partial(Parameters) params: Parameters) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
+        })
     })
 
     describe("Request Body", () => {
@@ -564,6 +598,46 @@ describe("Open API 3.0 Generation", () => {
                 .expect(200)
             expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
         })
+        it("Should ignore required field when @val.partial() specified", async () => {
+            @domain()
+            class User {
+                constructor(
+                    @val.required()
+                    public userName: string,
+                    @val.required()
+                    public password: string
+                ) { }
+            }
+            class UsersController {
+                @route.put("")
+                save(@bind.body() @val.partial(User) user: User, type: string) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].put.requestBody).toMatchSnapshot()
+        })
+        it("Should ignore required field when @val.partial() specified on model binding", async () => {
+            @domain()
+            class User {
+                constructor(
+                    @val.required()
+                    public userName: string,
+                    @val.required()
+                    public password: string
+                ) { }
+            }
+            class UsersController {
+                @route.put("")
+                save(@val.partial(User) user: User, type: string) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].put.requestBody).toMatchSnapshot()
+        })
     })
 
     describe("File Body Request", () => {
@@ -674,7 +748,46 @@ describe("Open API 3.0 Generation", () => {
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.components.schemas).toMatchSnapshot()
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should detect object component with required property", async () => {
+            @domain()
+            class User {
+                constructor(
+                    @val.required()
+                    public userName: string,
+                    public password: string
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should include partial object component", async () => {
+            @domain()
+            class User {
+                constructor(
+                    @val.required()
+                    public userName: string,
+                    @val.required()
+                    public password: string
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas["~User"]).toMatchSnapshot()
         })
         it("Should detect nested object component", async () => {
             @domain()

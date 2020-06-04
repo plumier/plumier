@@ -4,7 +4,7 @@ import { ParameterReflection, PropertyReflection } from "tinspector"
 
 import { describeParameters, ParameterNode } from "./parameter"
 import { transformType } from "./schema"
-import { TransformContext } from "./shared"
+import { TransformContext, isPartialValidator } from "./shared"
 
 
 function transformJsonContent(schema: SchemaObject): ContentObject {
@@ -24,19 +24,21 @@ function transformJsonBody(nodes: ParameterNode[], ctx: TransformContext): Reque
     // decorator binding
     const body = nodes.find(x => x.binding?.name === "body")
     if (body) {
-        const schema = transformType(body.type, ctx, [])
+        const isPartial = !!body.meta.decorators.find(isPartialValidator)
+        const schema = transformType(body.type, ctx, { isPartial })
         return { required: true, content: transformJsonContent(schema) }
     }
     // name binding
     const primitives = nodes.filter(x => x.typeName === "Primitive")
     if (primitives.length > 0 && primitives.length === nodes.length) {
-        const schema = transformType(primitives.map(x => x.meta), ctx, [])
+        const schema = transformType(primitives.map(x => x.meta), ctx)
         return { required: true, content: transformJsonContent(schema) }
     }
     // model binding
     const model = nodes.find(x => x.typeName === "Array" || x.typeName === "Class")
     if (model) {
-        const schema = transformType(model.type, ctx, model.meta.decorators)
+        const isPartial = !!model.meta.decorators.find(isPartialValidator)
+        const schema = transformType(model.type, ctx, { decorators: model.meta.decorators, isPartial })
         return { required: true, content: transformJsonContent(schema) }
     }
 }
@@ -53,7 +55,7 @@ function transformFileBody(nodes: ParameterNode[], ctx: TransformContext): Reque
         else
             params.push(node.meta)
     }
-    const schema = transformType(params, ctx, [])
+    const schema = transformType(params, ctx)
     return { required: true, content: transformFileContent(schema) }
 }
 
