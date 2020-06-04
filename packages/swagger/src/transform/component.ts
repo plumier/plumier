@@ -38,7 +38,7 @@ function transformArray(obj: Class[], ctx: TransformContext): SchemaObject {
     }
 }
 
-function transformObject(obj: Class | Class[], ctx: TransformContext): SchemaObject {
+function transformObject(obj: Class | Class[], ctx: TransformContext, isPartial: boolean = false): SchemaObject {
     if (Array.isArray(obj)) return transformArray(obj, ctx)
     const meta = reflect(obj)
     const types = Array.from(ctx.map.keys())
@@ -49,25 +49,31 @@ function transformObject(obj: Class | Class[], ctx: TransformContext): SchemaObj
         if (isReq) required.push(prop.name)
         // if the type is not registered then make inline object
         if (isCustomClass(prop.type) && !types.some(x => x === prop.type))
-            properties[prop.name] = transformObject(prop.type, ctx)
+            properties[prop.name] = transformObject(prop.type, ctx, isPartial)
         else
-            properties[prop.name] = transformType(prop.type, ctx, prop.decorators)
+            properties[prop.name] = transformType(prop.type, ctx, { decorators: prop.decorators, isPartial })
     }
     const result: SchemaObject = { type: "object", properties }
-    if (required.length > 0) result.required = required
+    if (required.length > 0 && !isPartial) result.required = required
     return result
 }
+
+type SchemaType = { [key: string]: SchemaObject | ReferenceObject }
 
 function transformComponent(ctx: TransformContext): ComponentsObject {
     const getRef = refFactory(ctx.map)
     const types = Array.from(ctx.map.keys())
     const bearer: SecuritySchemeObject = { type: "http", scheme: "bearer", bearerFormat: "JWT" }
-    const result:ComponentsObject = {
-        schemas: types.reduce((a, b) => {
-            return { ...a, [getRef(b)!]: transformObject(b, ctx) }
-        }, defaultSchemas),
-    }
-    if(ctx.config.enableAuthorization)
+    // generate partial schemas
+    const partialSchemas: SchemaType = types.reduce((a, b) => {
+        return { ...a, [`~${getRef(b)!}`]: transformObject(b, ctx, true) }
+    }, defaultSchemas)
+    // add type schemas
+    const schemas = types.reduce((a, b) => {
+        return { ...a, [getRef(b)!]: transformObject(b, ctx) }
+    }, partialSchemas)
+    const result: ComponentsObject = { schemas }
+    if (ctx.config.enableAuthorization)
         result.securitySchemes = { bearer }
     return result
 }

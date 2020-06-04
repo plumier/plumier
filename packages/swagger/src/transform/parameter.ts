@@ -3,9 +3,10 @@ import { ParameterObject } from "openapi3-ts"
 import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
 
 import { transformType } from "./schema"
-import { isBind, isName, isRequired, TransformContext, isDescription } from "./shared"
+import { isBind, isDescription, isName, isPartialValidator, isRequired, TransformContext } from "./shared"
 
 interface ParameterNode {
+    // bodyCandidate: assume that all non decorated parameters can be body request
     kind: "path" | "query" | "header" | "cookie" | "bodyCandidate"
     name: string,
     required: boolean
@@ -16,7 +17,6 @@ interface ParameterNode {
 }
 
 function describeParameter(par: ParameterReflection, route: RouteInfo) {
-
     const obj = <ParameterNode>{ kind: "bodyCandidate", name: par.name, typeName: par.typeClassification!, required: false, type: par.type, meta: par }
     const urlParams = route.url.split("/").filter(x => x.startsWith(":")).map(x => x.substr(1))
     if (urlParams.some(x => x === par.name)) {
@@ -41,10 +41,11 @@ function describeParameters(route: RouteInfo) {
 function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObject[] {
     if (node.typeName === "Class") {
         const meta = reflect(node.type as Class)
+        const isPartial = !!node.meta.decorators.find(isPartialValidator)
         return meta.properties.map(x => {
             return (<ParameterObject>{
-                name: x.name, in: node.kind, required: !!x.decorators.find(isRequired),
-                schema: transformType(x.type, ctx, x.decorators),
+                name: x.name, in: node.kind, required: isPartial ? false : !!x.decorators.find(isRequired),
+                schema: transformType(x.type, ctx, { decorators: x.decorators }),
             })
         })
     }
@@ -53,7 +54,7 @@ function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObj
         return [<ParameterObject>{
             name: node.name, in: node.kind,
             required: node.required,
-            schema: transformType(node.type, ctx, node.meta.decorators),
+            schema: transformType(node.type, ctx, { decorators: node.meta.decorators }),
             description: desc?.desc
         }]
     }
