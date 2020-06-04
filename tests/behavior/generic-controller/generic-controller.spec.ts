@@ -1,4 +1,4 @@
-import { GenericController, Class, GenericOneToManyController, crud, createRoutesFromEntities, OneToManyDecorator, RouteInfo, route } from "@plumier/core"
+import { GenericController, Class, GenericOneToManyController, crud, createRoutesFromEntities, OneToManyDecorator, RouteInfo, route, IdentifierResult } from "@plumier/core"
 import reflect, { generic, metadata, decorateClass } from "tinspector"
 import { transform } from "@plumier/swagger"
 
@@ -26,33 +26,8 @@ describe("Generic Controller", () => {
         const idResult = reflect(meta.methods.find(x => x.name === "save")!.returnType as Class)
         expect(metadata.getProperties(idResult)).toMatchSnapshot()
     })
-    it("Should invocable", () => {
-        @generic.type(User, Number)
-        class TypeOrmGenericController extends GenericController<User, Number>{
-            list(offset: number = 0, limit: number = 50, query: User) {
-                return super.list(offset, limit, query)
-            }
-            async save(data: User) {
-                return super.save(data)
-            }
-            get(id: number) {
-                return super.get(id)
-            }
-            async modify(id: number, data: User) {
-                return super.modify(id, data)
-            }
-            async delete(id: number) {
-                return super.delete(id)
-            }
-        }
-        const ctl = new TypeOrmGenericController()
-        ctl.list(1, 10, {} as User)
-        ctl.list(undefined, undefined, {} as User)
-        ctl.save({} as User)
-        ctl.get(1)
-        ctl.modify(1, {} as User)
-        ctl.replace(1, {} as User)
-        ctl.delete(1)
+    it("Should able to instantiate IdentifierResult", () => {
+        expect(new IdentifierResult(20).id).toBe(20)
     })
 })
 
@@ -103,35 +78,6 @@ describe("Generic One To Many Controller", () => {
         const idResult = reflect(meta.methods.find(x => x.name === "save")!.returnType as Class)
         expect(metadata.getProperties(idResult)).toMatchSnapshot()
     })
-    it("Should invocable", () => {
-        @generic.type(User, Animal, Number, Number)
-        @decorateClass(<OneToManyDecorator>{ propertyName: "animals", parentType: User, kind: "GenericDecoratorOneToMany", type: x => UsersController })
-        class UsersController extends GenericOneToManyController<User, Animal, Number, Number> {
-            list(pid: number, offset: number = 0, limit: number = 50, query: User) {
-                return super.list(pid, offset, limit, query)
-            }
-            async save(pid: number, data: Animal) {
-                return super.save(pid, data)
-            }
-            get(pid: number, id: number) {
-                return super.get(pid, id)
-            }
-            async modify(pid: number, id: number, data: Animal) {
-                return super.modify(pid, id, data)
-            }
-            async delete(pid: number, id: number) {
-                return super.delete(pid, id)
-            }
-        }
-        const ctl = new UsersController()
-        ctl.list(1, 1, 10, {} as User)
-        ctl.list(1, undefined, undefined, {} as User)
-        ctl.save(1, {} as User)
-        ctl.get(1, 1)
-        ctl.modify(1, 1, {} as User)
-        ctl.replace(1, 1, {} as User)
-        ctl.delete(1, 1)
-    })
     it("Should throw error when no OneToManyDecorator provided", () => {
         @generic.type(User, Animal, Number, Number)
         class UsersController extends GenericOneToManyController<User, Animal, Number, Number> {
@@ -151,7 +97,7 @@ describe("Generic One To Many Controller", () => {
                 return super.delete(pid, id)
             }
         }
-        expect(() => new UsersController()).toThrowErrorMatchingSnapshot()
+        expect(() => new UsersController(x => Function as any)).toThrowErrorMatchingSnapshot()
     })
 })
 
@@ -254,7 +200,7 @@ describe("Swagger", () => {
             }
             class Client {
                 @reflect.noop()
-                name:string
+                name: string
                 @crud.oneToMany(x => Animal)
                 @reflect.type(x => [Animal])
                 animals: Animal[]
@@ -271,7 +217,7 @@ describe("Swagger", () => {
             }
             class Client {
                 @reflect.noop()
-                name:string
+                name: string
                 @crud.oneToMany(x => Animal)
                 @reflect.type(x => [Animal])
                 animals: Animal[]
@@ -288,7 +234,7 @@ describe("Swagger", () => {
             }
             class Client {
                 @reflect.noop()
-                name:string
+                name: string
                 @crud.oneToMany(x => Animal)
                 @reflect.type(x => [Animal])
                 animals: Animal[]
@@ -305,7 +251,7 @@ describe("Swagger", () => {
             }
             class Client {
                 @reflect.noop()
-                name:string
+                name: string
                 @crud.oneToMany(x => Animal)
                 @reflect.type(x => [Animal])
                 animals: Animal[]
@@ -322,7 +268,7 @@ describe("Swagger", () => {
             }
             class Client {
                 @reflect.noop()
-                name:string
+                name: string
                 @crud.oneToMany(x => Animal)
                 @reflect.type(x => [Animal])
                 animals: Animal[]
@@ -339,7 +285,7 @@ describe("Swagger", () => {
             }
             class Client {
                 @reflect.noop()
-                name:string
+                name: string
                 @crud.oneToMany(x => Animal)
                 @reflect.type(x => [Animal])
                 animals: Animal[]

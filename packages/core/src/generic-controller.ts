@@ -7,6 +7,7 @@ import { api } from "./decorator.api"
 import { bind } from "./decorator.bind"
 import { route } from "./decorator.route"
 import { generateRoutes } from "./route-generator"
+import { HttpStatusError } from './types'
 
 
 // --------------------------------------------------------------------- //
@@ -22,6 +23,23 @@ interface OneToManyDecorator {
 
 interface IdentifierDecorator {
     kind: "GenericDecoratorId",
+}
+
+interface Repository<T> {
+    find(offset: number, limit: number, query: Partial<T>): Promise<T[]>
+    insert(data: Partial<T>): Promise<{ id: any }>
+    findById(id: any): Promise<T | undefined>
+    update(id: any, data: Partial<T>): Promise<{ id: any }>
+    delete(id: any): Promise<{ id: any }>
+}
+
+interface OneToManyRepository<P, T> {
+    find(pid: any, offset: number, limit: number, query: Partial<T>): Promise<T[]>
+    insert(pid: any, data: Partial<T>): Promise<{ id: any }>
+    findParentById(id: any): Promise<P | undefined>
+    findById(id: any): Promise<T | undefined>
+    update(id: any, data: Partial<T>): Promise<{ id: any }>
+    delete(id: any): Promise<{ id: any }>
 }
 
 
@@ -127,78 +145,139 @@ class IdentifierResult<TID> {
 @generic.template("T", "TID")
 class GenericController<T, TID>{
     protected readonly entityType: Class<T>
-    constructor() {
+    protected readonly repo: Repository<T>
+    constructor(fac: ((x: Class<T>) => Repository<T>)) {
         const { types } = getGenericTypeParameters(this)
         this.entityType = types[0]
+        this.repo = fac(this.entityType)
+    }
+
+    @route.ignore()
+    private async findByIdOrNotFound(id: TID): Promise<T> {
+        const saved = await this.repo.findById(id)
+        if (!saved) throw new HttpStatusError(404, `Record with ID ${id} not found`)
+        return saved
     }
 
     @route.get("")
     @reflect.type(["T"])
-    list(offset: number, limit: number, @reflect.type("T") @bind.query() @val.partial("T") query: T): Promise<T[]> {
-        return {} as any
+    list(offset: number = 0, limit: number = 50, @reflect.type("T") @bind.query() @val.partial("T") query: T): Promise<T[]> {
+        return this.repo.find(offset, limit, query)
     }
 
     @route.post("")
     @reflect.type(IdentifierResult, "TID")
-    save(@reflect.type("T") data: T): Promise<IdentifierResult<TID>> { return {} as any }
+    save(@reflect.type("T") data: T): Promise<IdentifierResult<TID>> {
+        return this.repo.insert(data)
+    }
 
     @route.get(":id")
     @reflect.type("T")
-    get(@val.required() @reflect.type("TID") id: TID): Promise<T> { return {} as any }
+    get(@val.required() @reflect.type("TID") id: TID): Promise<T> {
+        return this.findByIdOrNotFound(id)
+    }
 
     @route.patch(":id")
     @reflect.type(IdentifierResult, "TID")
-    modify(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") @val.partial("T") data: T): Promise<IdentifierResult<TID>> { return {} as any }
+    async modify(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") @val.partial("T") data: T): Promise<IdentifierResult<TID>> {
+        await this.findByIdOrNotFound(id)
+        return this.repo.update(id, data)
+    }
 
     @route.put(":id")
     @reflect.type(IdentifierResult, "TID")
-    replace(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T): Promise<IdentifierResult<TID>> { return {} as any }
+    async replace(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T): Promise<IdentifierResult<TID>> {
+        await this.findByIdOrNotFound(id)
+        return this.repo.update(id, data)
+    }
 
     @route.delete(":id")
     @reflect.type(IdentifierResult, "TID")
-    delete(@val.required() @reflect.type("TID") id: TID): Promise<IdentifierResult<TID>> { return {} as any }
+    async delete(@val.required() @reflect.type("TID") id: TID): Promise<IdentifierResult<TID>> {
+        await this.findByIdOrNotFound(id)
+        return this.repo.delete(id)
+    }
 }
 
 @generic.template("P", "T", "PID", "TID")
 class GenericOneToManyController<P, T, PID, TID>{
     protected readonly entityType: Class<T>
     protected readonly parentEntityType: Class<P>
-    protected readonly propertyName: string
+    protected readonly relation: string
+    protected readonly repo: OneToManyRepository<P, T>
 
-    constructor() {
+    constructor(fac: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
         const { types, meta } = getGenericTypeParameters(this)
         this.parentEntityType = types[0]
         this.entityType = types[1]
         const oneToMany = meta.decorators.find((x: OneToManyDecorator): x is OneToManyDecorator => x.kind === "GenericDecoratorOneToMany")
         if (!oneToMany) throw new Error(`Configuration Error: ${this.constructor.name} doesn't decorated with OneToManyDecorator @decorateClass(<OneToManyDecorator>)`)
-        this.propertyName = oneToMany.propertyName
+        this.relation = oneToMany.propertyName
+        this.repo = fac(this.parentEntityType, this.entityType, this.relation)
+    }
+
+    @route.ignore()
+    private async findByIdOrNotFound(id: TID): Promise<T> {
+        const saved = await this.repo.findById(id)
+        if (!saved) throw new HttpStatusError(404, `Record with ID ${id} not found`)
+        return saved
+    }
+
+    @route.ignore()
+    private async findParentByIdOrNotFound(id: PID): Promise<P> {
+        const saved = await this.repo.findParentById(id)
+        if (!saved) throw new HttpStatusError(404, `Parent record with ID ${id} not found`)
+        return saved
     }
 
     @route.get("")
     @reflect.type(["T"])
-    list(@val.required() @reflect.type("PID") pid: PID, offset: number, limit: number, @reflect.type("T") @bind.query() @val.partial("T") query: T): Promise<T[]> {
-        return {} as any
+    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @bind.query() @val.partial("T") query: T): Promise<T[]> {
+        await this.findParentByIdOrNotFound(pid)
+        return this.repo.find(pid, offset, limit, query)
     }
 
     @route.post("")
     @reflect.type(IdentifierResult, "TID")
-    save(@val.required() @reflect.type("PID") pid: PID, @reflect.type("T") data: T): Promise<IdentifierResult<TID>> { return {} as any }
+    async save(@val.required() @reflect.type("PID") pid: PID, @reflect.type("T") data: T): Promise<IdentifierResult<TID>> {
+        await this.findParentByIdOrNotFound(pid)
+        return this.repo.insert(pid, data)
+    }
 
     @route.get(":id")
     @reflect.type("T")
-    get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID): Promise<T> { return {} as any }
+    async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID): Promise<T> {
+        await this.findParentByIdOrNotFound(pid)
+        return this.findByIdOrNotFound(id)
+    }
 
     @route.patch(":id")
     @reflect.type(IdentifierResult, "TID")
-    modify(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @reflect.type("T") @val.partial("T") data: T): Promise<IdentifierResult<TID>> { return {} as any }
+    async modify(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @val.partial("T") data: T): Promise<IdentifierResult<TID>> {
+        await this.findParentByIdOrNotFound(pid)
+        await this.findByIdOrNotFound(id)
+        return this.repo.update(id, data)
+    }
 
     @route.put(":id")
     @reflect.type(IdentifierResult, "TID")
-    replace(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T): Promise<IdentifierResult<TID>> { return {} as any }
+    async replace(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T): Promise<IdentifierResult<TID>> {
+        await this.findParentByIdOrNotFound(pid)
+        await this.findByIdOrNotFound(id)
+        return this.repo.update(id, data)
+    }
 
     @route.delete(":id")
     @reflect.type(IdentifierResult, "TID")
-    delete(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID): Promise<IdentifierResult<TID>> { return {} as any }
+    async delete(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID): Promise<IdentifierResult<TID>> {
+        await this.findParentByIdOrNotFound(pid)
+        await this.findByIdOrNotFound(id)
+        return this.repo.delete(id)
+    }
 }
 
-export { crud, createRoutesFromEntities, GenericController, GenericOneToManyController, IdentifierResult, OneToManyDecorator }
+export {
+    crud, createRoutesFromEntities, GenericController,
+    GenericOneToManyController, IdentifierResult, OneToManyDecorator,
+    Repository, OneToManyRepository
+}
