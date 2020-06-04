@@ -42,6 +42,10 @@ class TypeOrmGenericController<T, TID> extends GenericController<T, TID>{
         return new IdentifierResult(id)
     }
 
+    replace(id: TID, data: T): Promise<IdentifierResult<TID>> {
+        return this.modify(id, data)
+    }
+
     async delete(id: TID): Promise<IdentifierResult<TID>> {
         await this.findOneOrThrowNotFound(id)
         await this.repo.delete(id)
@@ -92,6 +96,10 @@ class TypeOrmGenericOneToManyController<P, T, PID, TID> extends GenericOneToMany
         await this.findOneOrThrowNotFound(id)
         await this.repo.update(id, data)
         return new IdentifierResult(id)
+    }
+
+    replace(pid: PID, id: TID, data: T): Promise<IdentifierResult<TID>> {
+        return this.modify(pid, id, data)
     }
 
     async delete(pid: PID, id: TID): Promise<IdentifierResult<TID>> {

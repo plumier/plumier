@@ -7,7 +7,7 @@ import {
     route,
     val,
 } from "@plumier/core"
-import { Document, Model } from "mongoose"
+import mongoose, { Document, Model } from "mongoose"
 import { generic } from "tinspector"
 
 import { model } from "./generator"
@@ -18,7 +18,7 @@ class Repository<T> {
         this.Model = model(type)
     }
 
-    find(offset:number, limit:number, query: Partial<T>) {
+    find(offset: number, limit: number, query: Partial<T>) {
         return this.Model.find(query as any).skip(offset).limit(limit)
     }
 
@@ -51,13 +51,7 @@ class OneToManyRepository<P, T>  {
     }
 
     async find(pid: string, offset: number, limit: number, query: Partial<T>) {
-        const parent = await this.ParentModel.findById(pid).populate({
-            path: this.relation,
-            options: {
-                skip: offset, limit,
-                match: query
-            }
-        })
+        const parent = await this.ParentModel.findById(pid).populate(this.relation, null, query, { skip: offset, limit })
         return (parent as any)[this.relation]
     }
     async insert(pid: string, doc: Partial<T>): Promise<{ id: any }> {
@@ -121,6 +115,10 @@ class MongooseGenericController<T, TID> extends GenericController<T, TID>{
         return new IdentifierResult(id)
     }
 
+    async replace(@val.mongoId() id: TID, data: T) {
+        return this.modify(id, data)
+    }
+
     async delete(@val.mongoId() id: TID) {
         await this.findOneOrThrowNotFound(id)
         await this.repo.delete(id)
@@ -171,6 +169,10 @@ class MongooseGenericOneToManyController<P, T, PID, TID> extends GenericOneToMan
         await this.findOneOrThrowNotFound(id)
         await this.repo.update(id, data)
         return new IdentifierResult(id)
+    }
+
+    replace(@val.mongoId() pid: PID, @val.mongoId() id: TID, data: T) {
+        return this.modify(pid, id, data)
     }
 
     async delete(@val.mongoId() pid: PID, @val.mongoId() id: TID) {

@@ -1,4 +1,4 @@
-import { Class, Configuration, consoleLog, route } from "@plumier/core"
+import { Class, Configuration, consoleLog, route, val } from "@plumier/core"
 import model, { collection, CRUDMongooseFacility, models, OneToManyRepository, Repository } from "@plumier/mongoose"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
@@ -198,6 +198,41 @@ describe("TypeOrm", () => {
                     .expect(200)
                 expect(body.length).toBe(50)
             })
+            it("Should able to query by property GET /users?offset&limit&name", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                }
+                model(User)
+                const app = await createApp({ mode: "production" })
+                const repo = new Repository(User)
+                await repo.insert({ email: "jean.doe@gmail.com", name: "Jean Doe" })
+                await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+                const { body } = await supertest(app.callback())
+                    .get("/users?email=jean.doe@gmail.com")
+                    .expect(200)
+                expect(body).toMatchSnapshot()
+            })
+            it("Should set partial validation on query GET /users?offset&limit&name", async () => {
+                class User {
+                    @val.required()
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                }
+                model(User)
+                const app = await createApp({ mode: "production" })
+                const repo = new Repository(User)
+                await repo.insert({ email: "jean.doe@gmail.com", name: "Juan Doe" })
+                await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+                const { body } = await supertest(app.callback())
+                    .get("/users?name=Juan+Doe")
+                    .expect(200)
+                expect(body).toMatchSnapshot()
+            })
             it("Should serve POST /users", async () => {
                 class User {
                     @reflect.noop()
@@ -281,6 +316,26 @@ describe("TypeOrm", () => {
             })
             it("Should serve PATCH /users/:id", async () => {
                 class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                }
+                model(User)
+                const app = await createApp({ mode: "production" })
+                const repo = new Repository(User)
+                const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+                const { body } = await supertest(app.callback())
+                    .patch(`/users/${data.id}`)
+                    .send({ name: "Jane Doe" })
+                    .expect(200)
+                const modified = await repo.findById(body.id)
+                expect(modified!.email).toBe("john.doe@gmail.com")
+                expect(modified!.name).toBe("Jane Doe")
+            })
+            it("Should set partial validation on PATCH /users/:id", async () => {
+                class User {
+                    @val.required()
                     @reflect.noop()
                     email: string
                     @reflect.noop()
@@ -398,6 +453,59 @@ describe("TypeOrm", () => {
                     .get(`/users/${user._id}/animals`)
                     .expect(200)
                 expect(body.length).toBe(50)
+            })
+            it("Should find by name GET /users/:parentId/animals?offset&limit ", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                    @collection.ref(x => [Animal])
+                    animals: Animal[]
+                }
+                class Animal {
+                    @reflect.noop()
+                    name: string
+                }
+                model(Animal)
+                model(User)
+                const app = await createApp({ mode: "production" })
+                const user = await createUser(User)
+                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                await animalRepo.insert(user._id.toHexString(), { name: `Jojo` })
+                await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${user._id}/animals?name=Jojo`)
+                    .expect(200)
+                expect(body).toMatchSnapshot()
+            })
+            it("Should set partial validation on query on GET /users/:parentId/animals?offset&limit", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                    @collection.ref(x => [Animal])
+                    animals: Animal[]
+                }
+                class Animal {
+                    @val.required()
+                    @reflect.noop()
+                    name: string
+                    @reflect.noop()
+                    age: number
+                }
+                model(Animal)
+                model(User)
+                const app = await createApp({ mode: "production" })
+                const user = await createUser(User)
+                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                await animalRepo.insert(user._id.toHexString(), { name: `Jojo`, age: 5 })
+                await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}`, age: 4 })))
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${user._id}/animals?age=5`)
+                    .expect(200)
+                expect(body).toMatchSnapshot()
             })
             it("Should serve POST /users/:parentId/animals", async () => {
                 class User {
@@ -562,6 +670,35 @@ describe("TypeOrm", () => {
                 const user = await createUser(User)
                 const animalRepo = new OneToManyRepository(User, Animal, "animals")
                 const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
+                const { body } = await supertest(app.callback())
+                    .patch(`/users/${user._id}/animals/${inserted.id}`)
+                    .send({ name: "Poe" })
+                    .expect(200)
+                const modified = await animalRepo.findById(body.id)
+                expect(modified).toMatchSnapshot()
+            })
+            it("Should set partial validation on PATCH /users/:parentId/animals/:id", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                    @collection.ref(x => [Animal])
+                    animals: Animal[]
+                }
+                class Animal {
+                    @reflect.noop()
+                    name: string
+                    @val.required()
+                    @reflect.noop()
+                    age:number
+                }
+                model(Animal)
+                model(User)
+                const app = await createApp({ mode: "production" })
+                const user = await createUser(User)
+                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi`, age: 4 })
                 const { body } = await supertest(app.callback())
                     .patch(`/users/${user._id}/animals/${inserted.id}`)
                     .send({ name: "Poe" })

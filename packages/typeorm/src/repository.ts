@@ -44,7 +44,7 @@ class OneToManyRepository<P, T>  {
     }
 
     async find(pid: any, offset: number, limit: number, query: Partial<T>) {
-        return this.nativeRepository.find({ where: { [this.inversePropertyName]: pid }, skip: offset, take: limit })
+        return this.nativeRepository.find({ where: { [this.inversePropertyName]: pid, ...query }, skip: offset, take: limit })
     }
     async insert(pid: any, doc: QueryDeepPartialEntity<T>): Promise<{ id: any }> {
         const parent = await this.nativeParentRepository.findOne(pid)

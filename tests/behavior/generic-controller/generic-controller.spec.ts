@@ -51,6 +51,7 @@ describe("Generic Controller", () => {
         ctl.save({} as User)
         ctl.get(1)
         ctl.modify(1, {} as User)
+        ctl.replace(1, {} as User)
         ctl.delete(1)
     })
 })
@@ -128,6 +129,7 @@ describe("Generic One To Many Controller", () => {
         ctl.save(1, {} as User)
         ctl.get(1, 1)
         ctl.modify(1, 1, {} as User)
+        ctl.replace(1, 1, {} as User)
         ctl.delete(1, 1)
     })
     it("Should throw error when no OneToManyDecorator provided", () => {

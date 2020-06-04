@@ -134,7 +134,7 @@ class GenericController<T, TID>{
 
     @route.get("")
     @reflect.type(["T"])
-    list(offset: number, limit: number, @reflect.type("T") @bind.query() query: T): Promise<T[]> {
+    list(offset: number, limit: number, @reflect.type("T") @bind.query() @val.partial("T") query: T): Promise<T[]> {
         return {} as any
     }
 
@@ -146,10 +146,13 @@ class GenericController<T, TID>{
     @reflect.type("T")
     get(@val.required() @reflect.type("TID") id: TID): Promise<T> { return {} as any }
 
-    @route.put(":id")
     @route.patch(":id")
     @reflect.type(IdentifierResult, "TID")
-    modify(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T): Promise<IdentifierResult<TID>> { return {} as any }
+    modify(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") @val.partial("T") data: T): Promise<IdentifierResult<TID>> { return {} as any }
+
+    @route.put(":id")
+    @reflect.type(IdentifierResult, "TID")
+    replace(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T): Promise<IdentifierResult<TID>> { return {} as any }
 
     @route.delete(":id")
     @reflect.type(IdentifierResult, "TID")
@@ -173,7 +176,7 @@ class GenericOneToManyController<P, T, PID, TID>{
 
     @route.get("")
     @reflect.type(["T"])
-    list(@val.required() @reflect.type("PID") pid: PID, offset: number, limit: number, @reflect.type("T") @bind.query() query: T): Promise<T[]> {
+    list(@val.required() @reflect.type("PID") pid: PID, offset: number, limit: number, @reflect.type("T") @bind.query() @val.partial("T") query: T): Promise<T[]> {
         return {} as any
     }
 
@@ -185,10 +188,13 @@ class GenericOneToManyController<P, T, PID, TID>{
     @reflect.type("T")
     get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID): Promise<T> { return {} as any }
 
-    @route.put(":id")
     @route.patch(":id")
     @reflect.type(IdentifierResult, "TID")
-    modify(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T): Promise<IdentifierResult<TID>> { return {} as any }
+    modify(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @reflect.type("T") @val.partial("T") data: T): Promise<IdentifierResult<TID>> { return {} as any }
+
+    @route.put(":id")
+    @reflect.type(IdentifierResult, "TID")
+    replace(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T): Promise<IdentifierResult<TID>> { return {} as any }
 
     @route.delete(":id")
     @reflect.type(IdentifierResult, "TID")

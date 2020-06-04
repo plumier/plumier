@@ -57,6 +57,20 @@ Array [
     "type": DynamicType,
   },
   Object {
+    "name": "replace",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
     "name": "delete",
     "pars": Array [
       Object {
@@ -122,6 +136,20 @@ Array [
   },
   Object {
     "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "replace",
     "pars": Array [
       Object {
         "name": "id",
@@ -212,6 +240,24 @@ Array [
   },
   Object {
     "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "replace",
     "pars": Array [
       Object {
         "name": "pid",
@@ -327,6 +373,24 @@ Array [
     "type": DynamicType,
   },
   Object {
+    "name": "replace",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
     "name": "delete",
     "pars": Array [
       Object {
@@ -408,6 +472,24 @@ Array [
   },
   Object {
     "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "replace",
     "pars": Array [
       Object {
         "name": "pid",
@@ -523,6 +605,24 @@ Array [
     "type": DynamicType,
   },
   Object {
+    "name": "replace",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": String,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
     "name": "delete",
     "pars": Array [
       Object {
@@ -565,11 +665,11 @@ Array [
     "path": "/user/:id",
   },
   Object {
-    "method": "put",
+    "method": "patch",
     "path": "/user/:id",
   },
   Object {
-    "method": "patch",
+    "method": "put",
     "path": "/user/:id",
   },
   Object {
@@ -589,11 +689,11 @@ Array [
     "path": "/user/:pid/animals/:id",
   },
   Object {
-    "method": "put",
+    "method": "patch",
     "path": "/user/:pid/animals/:id",
   },
   Object {
-    "method": "patch",
+    "method": "put",
     "path": "/user/:pid/animals/:id",
   },
   Object {
@@ -613,11 +713,11 @@ Array [
     "path": "/animal/:id",
   },
   Object {
-    "method": "put",
+    "method": "patch",
     "path": "/animal/:id",
   },
   Object {
-    "method": "patch",
+    "method": "put",
     "path": "/animal/:id",
   },
   Object {
