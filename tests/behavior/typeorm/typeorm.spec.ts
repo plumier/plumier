@@ -1,4 +1,4 @@
-import { Class, Configuration, consoleLog, route } from "@plumier/core"
+import { Class, Configuration, consoleLog, route, val } from "@plumier/core"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { CRUDTypeORMFacility, TypeORMFacility } from "@plumier/typeorm"
 import supertest from "supertest"
@@ -405,6 +405,46 @@ describe("TypeOrm", () => {
                     .expect(200)
                 expect(body.length).toBe(50)
             })
+            it("Should find by query GET /users?offset&limit", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                const app = await createApp([User], { mode: "production" })
+                const repo = getManager().getRepository(User)
+                await repo.insert({ email: "jane.doe@gmail.com", name: "John Doe" })
+                await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+                const { body } = await supertest(app.callback())
+                    .get("/users?email=jane.doe@gmail.com")
+                    .expect(200)
+                expect(body).toMatchSnapshot()
+            })
+            it("Should set partial validation on GET /users?offset&limit", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    @val.required()
+                    email: string
+                    @Column()
+                    @val.required()
+                    name: string
+                }
+                const app = await createApp([User], { mode: "production" })
+                const repo = getManager().getRepository(User)
+                await repo.insert({ email: "jane.dane@gmail.com", name: "John Doe" })
+                await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+                const { body } = await supertest(app.callback())
+                    .get("/users?email=jane.dane@gmail.com")
+                    .expect(200)
+                expect(body).toMatchSnapshot()
+            })
             it("Should serve POST /users", async () => {
                 @Entity()
                 class User {
@@ -504,6 +544,29 @@ describe("TypeOrm", () => {
                     @Column()
                     email: string
                     @Column()
+                    name: string
+                }
+                const app = await createApp([User], { mode: "production" })
+                const repo = getManager().getRepository(User)
+                const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+                const { body } = await supertest(app.callback())
+                    .patch(`/users/${data.raw}`)
+                    .send({ name: "Jane Doe" })
+                    .expect(200)
+                const modified = await repo.findOne(body.id)
+                expect(modified!.email).toBe("john.doe@gmail.com")
+                expect(modified!.name).toBe("Jane Doe")
+            })
+            it("Should set partial validation on PATCH /users/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    @val.required()
+                    email: string
+                    @Column()
+                    @val.required()
                     name: string
                 }
                 const app = await createApp([User], { mode: "production" })
@@ -634,6 +697,69 @@ describe("TypeOrm", () => {
                     .get(`/users/${user.id}/animals`)
                     .expect(200)
                 expect(body.length).toBe(50)
+            })
+            it("Should find by query GET /users/:parentId/animals?offset&limit", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                const animalRepo = getManager().getRepository(Animal)
+                animalRepo.insert({ name: `Jojo`, user })
+                await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${user.id}/animals?name=Jojo`)
+                    .expect(200)
+                expect(body).toMatchSnapshot()
+            })
+            it("Should set partial validation GET /users/:parentId/animals?offset&limit", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    @val.required()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                const animalRepo = getManager().getRepository(Animal)
+                animalRepo.insert({ name: `Jeje`, user })
+                await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${user.id}/animals?name=Jeje`)
+                    .expect(200)
+                expect(body).toMatchSnapshot()
             })
             it("Should serve POST /users/:parentId/animals", async () => {
                 @Entity()
@@ -830,6 +956,39 @@ describe("TypeOrm", () => {
                 @Entity()
                 class Animal {
                     @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                const app = await createApp([User, Animal], { mode: "production" })
+                const user = await createUser(User)
+                const animalRepo = getManager().getRepository(Animal)
+                const inserted = await animalRepo.insert({ name: `Mimi`, user })
+                const { body } = await supertest(app.callback())
+                    .patch(`/users/${user.id}/animals/${inserted.raw}`)
+                    .send({ name: "Poe" })
+                    .expect(200)
+                const modified = await animalRepo.findOne(body.id)
+                expect(modified).toMatchSnapshot()
+            })
+            it("Should set partial validation on PATCH /users/:parentId/animals/:id", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    @val.required()
                     id: number
                     @Column()
                     name: string

@@ -1,5 +1,34 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`TypeOrm CRUD CRUD Function Should find by query GET /users?offset&limit 1`] = `
+Array [
+  Object {
+    "email": "jane.doe@gmail.com",
+    "id": 1,
+    "name": "John Doe",
+  },
+]
+`;
+
+exports[`TypeOrm CRUD CRUD Function Should set partial validation on GET /users?offset&limit 1`] = `
+Array [
+  Object {
+    "email": "jane.dane@gmail.com",
+    "id": 1,
+    "name": "John Doe",
+  },
+]
+`;
+
+exports[`TypeOrm CRUD Nested CRUD One to Many Function Should find by query GET /users/:parentId/animals?offset&limit 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "name": "Jojo",
+  },
+]
+`;
+
 exports[`TypeOrm CRUD Nested CRUD One to Many Function Should serve GET /users/:parentId/animals/:id 1`] = `
 Object {
   "id": 1,
@@ -39,6 +68,22 @@ Animal {
 }
 `;
 
+exports[`TypeOrm CRUD Nested CRUD One to Many Function Should set partial validation GET /users/:parentId/animals?offset&limit 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "name": "Jeje",
+  },
+]
+`;
+
+exports[`TypeOrm CRUD Nested CRUD One to Many Function Should set partial validation on PATCH /users/:parentId/animals/:id 1`] = `
+Animal {
+  "id": 1,
+  "name": "Poe",
+}
+`;
+
 exports[`TypeOrm CRUD Route Generator Should able to override route 1`] = `
 Array [
   Array [],
@@ -55,10 +100,10 @@ Array [
     "3. UsersController.get(id)                -> GET    /users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)           -> PUT    /users/:id",
+    "4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
   ],
   Array [
-    "5. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "5. DynamicType.replace(id, data)          -> PUT    /users/:id",
   ],
   Array [
     "6. DynamicType.delete(id)                 -> DELETE /users/:id",
@@ -83,10 +128,10 @@ Array [
     " 3. DynamicType.get(id)                    -> GET    /users/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PUT    /users/:id",
+    " 4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
   ],
   Array [
-    " 5. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    " 5. DynamicType.replace(id, data)          -> PUT    /users/:id",
   ],
   Array [
     " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
@@ -101,10 +146,10 @@ Array [
     " 9. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
   ],
   Array [
-    "10. DynamicType.modify(pid, id, data)      -> PUT    /users/:pid/animals/:id",
+    "10. DynamicType.modify(pid, id, data)      -> PATCH  /users/:pid/animals/:id",
   ],
   Array [
-    "11. DynamicType.modify(pid, id, data)      -> PATCH  /users/:pid/animals/:id",
+    "11. DynamicType.replace(pid, id, data)     -> PUT    /users/:pid/animals/:id",
   ],
   Array [
     "12. DynamicType.delete(pid, id)            -> DELETE /users/:pid/animals/:id",
@@ -119,10 +164,10 @@ Array [
     "15. DynamicType.get(id)                    -> GET    /animals/:id",
   ],
   Array [
-    "16. DynamicType.modify(id, data)           -> PUT    /animals/:id",
+    "16. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
   ],
   Array [
-    "17. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+    "17. DynamicType.replace(id, data)          -> PUT    /animals/:id",
   ],
   Array [
     "18. DynamicType.delete(id)                 -> DELETE /animals/:id",
@@ -147,10 +192,10 @@ Array [
     "3. DynamicType.get(id)                    -> GET    /users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)           -> PUT    /users/:id",
+    "4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
   ],
   Array [
-    "5. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "5. DynamicType.replace(id, data)          -> PUT    /users/:id",
   ],
   Array [
     "6. DynamicType.delete(id)                 -> DELETE /users/:id",
@@ -175,10 +220,10 @@ Array [
     " 3. DynamicType.get(id)                    -> GET    /users/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PUT    /users/:id",
+    " 4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
   ],
   Array [
-    " 5. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    " 5. DynamicType.replace(id, data)          -> PUT    /users/:id",
   ],
   Array [
     " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
@@ -193,10 +238,10 @@ Array [
     " 9. DynamicType.get(id)                    -> GET    /secondusers/:id",
   ],
   Array [
-    "10. DynamicType.modify(id, data)           -> PUT    /secondusers/:id",
+    "10. DynamicType.modify(id, data)           -> PATCH  /secondusers/:id",
   ],
   Array [
-    "11. DynamicType.modify(id, data)           -> PATCH  /secondusers/:id",
+    "11. DynamicType.replace(id, data)          -> PUT    /secondusers/:id",
   ],
   Array [
     "12. DynamicType.delete(id)                 -> DELETE /secondusers/:id",
@@ -221,10 +266,10 @@ Array [
     "3. DynamicType.get(id)                    -> GET    /users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)           -> PUT    /users/:id",
+    "4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
   ],
   Array [
-    "5. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "5. DynamicType.replace(id, data)          -> PUT    /users/:id",
   ],
   Array [
     "6. DynamicType.delete(id)                 -> DELETE /users/:id",
@@ -249,10 +294,10 @@ Array [
     " 3. DynamicType.get(id)                    -> GET    /users/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PUT    /users/:id",
+    " 4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
   ],
   Array [
-    " 5. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    " 5. DynamicType.replace(id, data)          -> PUT    /users/:id",
   ],
   Array [
     " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
@@ -267,10 +312,10 @@ Array [
     " 9. DynamicType.get(id)                    -> GET    /animals/:id",
   ],
   Array [
-    "10. DynamicType.modify(id, data)           -> PUT    /animals/:id",
+    "10. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
   ],
   Array [
-    "11. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+    "11. DynamicType.replace(id, data)          -> PUT    /animals/:id",
   ],
   Array [
     "12. DynamicType.delete(id)                 -> DELETE /animals/:id",
