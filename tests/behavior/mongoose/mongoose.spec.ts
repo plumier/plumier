@@ -68,7 +68,7 @@ describe("Mongoose", () => {
                 numberProp: [123, 456],
                 booleanProp: [true, false],
                 dateProp: [new Date(Date.UTC(2020, 2, 2)), new Date(Date.UTC(2020, 2, 3))]
-            })
+            } as any)
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
         })
@@ -300,7 +300,7 @@ describe("Mongoose", () => {
             const added = await DummyModel.create({
                 excess: "lorem ipsum",
                 stringProp: "string",
-            })
+            } as any)
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
         })
@@ -333,7 +333,7 @@ describe("Mongoose", () => {
             const added = await DummyModel.create({
                 excess: "lorem ipsum",
                 stringProp: "string",
-            })
+            } as any)
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
         })
@@ -349,7 +349,7 @@ describe("Mongoose", () => {
                 ) { }
             }
             const DummyModel = model(Dummy)
-            const added = await DummyModel.create({})
+            const added = await DummyModel.create({} as any)
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
 
@@ -372,7 +372,7 @@ describe("Mongoose", () => {
             const added = await DummyModel.create({
                 excess: "lorem ipsum",
                 stringProp: "string",
-            })
+            } as any)
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
         })
@@ -389,7 +389,7 @@ describe("Mongoose", () => {
             const added = await DummyModel.create({
                 excess: "lorem ipsum",
                 stringProp: "string",
-            })
+            } as any)
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
         })
@@ -426,7 +426,7 @@ describe("Mongoose", () => {
             const DummyModel = model(Dummy)
             const added = await DummyModel.create({
                 stringProp: "string",
-            })
+            } as any)
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
         })
