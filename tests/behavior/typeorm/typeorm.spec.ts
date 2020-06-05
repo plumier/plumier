@@ -22,6 +22,8 @@ import {
 
 import { fixture } from "../helper"
 
+jest.setTimeout(20000)
+
 function getConn(entities: Function[]): ConnectionOptions {
     return {
         type: "sqlite",
