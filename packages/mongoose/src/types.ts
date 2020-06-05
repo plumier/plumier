@@ -1,5 +1,5 @@
 import mongoose, { SchemaOptions, SchemaTypeOpts } from "mongoose"
-import { Class } from '@plumier/core'
+import { Class, GenericController, GenericOneToManyController } from '@plumier/core'
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -8,7 +8,12 @@ import { Class } from '@plumier/core'
 
 type GeneratorHook = (schema: mongoose.Schema) => void
 type NamedSchemaOption = SchemaOptions & { hook?: GeneratorHook, proxy?: boolean, name?: string }
-type MongooseFacilityOption = { uri?: string }
+interface MongooseFacilityOption { uri?: string }
+interface CRUDMongooseFacilityOption extends MongooseFacilityOption {
+    rootPath: string
+    genericController: Class<GenericController<any, any>>
+    genericOneToManyController: Class<GenericOneToManyController<any, any, any, any>>
+}
 type ModelFactory = <T>(type: new (...args: any) => T, opt?: string | GeneratorHook | NamedSchemaOption) => mongoose.Model<T & mongoose.Document, {}>
 interface ClassOptionDecorator { name: "ClassOption", option: NamedSchemaOption }
 interface PropertyOptionDecorator { name: "PropertyOption", option?: SchemaTypeOpts<any> }
@@ -29,6 +34,6 @@ export {
     ModelFactory, PropertyOptionDecorator, RefDecorator,
     ModelGenerator, MongooseFacilityOption, ClassOptionDecorator,
     ReferenceTypeNotRegistered, CanNotValidateNonProperty,
-    GeneratorHook, ModelStore, AnalysisResult
+    GeneratorHook, ModelStore, AnalysisResult, CRUDMongooseFacilityOption
 }
 

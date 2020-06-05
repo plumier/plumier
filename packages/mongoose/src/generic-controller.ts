@@ -1,4 +1,4 @@
-import { Class, GenericController, GenericOneToManyController, Repository, OneToManyRepository } from "@plumier/core"
+import { Class, RepoBaseGenericOneToManyController, RepoBaseGenericController, Repository, OneToManyRepository } from "@plumier/core"
 import mongoose, { Document, Model } from "mongoose"
 import { generic } from "tinspector"
 
@@ -75,7 +75,7 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
 
 @generic.template("T", "TID")
 @generic.type("T", "TID")
-class MongooseGenericController<T, TID> extends GenericController<T, TID>{
+class MongooseGenericController<T, TID> extends RepoBaseGenericController<T, TID>{
     constructor() {
         super(x => new MongooseRepository(x))
     }
@@ -83,7 +83,7 @@ class MongooseGenericController<T, TID> extends GenericController<T, TID>{
 
 @generic.template("P", "T", "PID", "TID")
 @generic.type("P", "T", "PID", "TID")
-class MongooseGenericOneToManyController<P, T, PID, TID> extends GenericOneToManyController<P, T, PID, TID> {
+class MongooseGenericOneToManyController<P, T, PID, TID> extends RepoBaseGenericOneToManyController<P, T, PID, TID> {
     constructor() {
         super((p, t, rel) => new MongooseOneToManyRepository(p, t, rel))
     }

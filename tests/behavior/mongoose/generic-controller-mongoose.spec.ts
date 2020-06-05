@@ -1,12 +1,32 @@
-import { Class, Configuration, consoleLog, route, val } from "@plumier/core"
-import model, { collection, CRUDMongooseFacility, models, MongooseOneToManyRepository, MongooseRepository } from "@plumier/mongoose"
+import {
+    Class,
+    Configuration,
+    consoleLog,
+    GenericController,
+    GenericOneToManyController,
+    RepoBaseGenericController,
+    RepoBaseGenericOneToManyController,
+    route,
+    val,
+} from "@plumier/core"
+import model, {
+    collection,
+    CRUDMongooseFacility,
+    models,
+    MongooseOneToManyRepository,
+    MongooseRepository,
+} from "@plumier/mongoose"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import supertest from "supertest"
-import reflect from "tinspector"
+import reflect, { generic } from "tinspector"
 
 jest.setTimeout(20000)
+
+mongoose.set("useNewUrlParser", true)
+mongoose.set("useUnifiedTopology", true)
+mongoose.set("useFindAndModify", false)
 
 describe("TypeOrm", () => {
     beforeAll(async () => {
@@ -160,6 +180,38 @@ describe("TypeOrm", () => {
                 await new Plumier()
                     .set(new WebApiFacility({ controller: UsersController }))
                     .set(new CRUDMongooseFacility())
+                    .initialize()
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to change rootPath", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                }
+                model(User)
+                const mock = consoleLog.startMock()
+                await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ rootPath: "api/v1" }))
+                    .initialize()
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to change rootPath with extra slash", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                }
+                model(User)
+                const mock = consoleLog.startMock()
+                await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ rootPath: "/api/v1/" }))
                     .initialize()
                 expect(mock.mock.calls).toMatchSnapshot()
                 consoleLog.clearMock()
@@ -691,7 +743,7 @@ describe("TypeOrm", () => {
                     name: string
                     @val.required()
                     @reflect.noop()
-                    age:number
+                    age: number
                 }
                 model(Animal)
                 model(User)
@@ -773,6 +825,205 @@ describe("TypeOrm", () => {
                 await supertest(app.callback())
                     .delete(`/users/${user._id}/animals/5099803df3f4948bd2f98391`)
                     .expect(404)
+            })
+        })
+        describe("Custom Generic Controller", () => {
+            it("Should able to change generic controller by extending repo base generic controller", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                }
+                const UserModel = model(User)
+                @generic.template("T", "TID")
+                @generic.type("T", "TID")
+                class MyGenericController<T, TID> extends RepoBaseGenericController<T, TID> {
+                    constructor() {
+                        super(x => new MongooseRepository(x))
+                    }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ genericController: MyGenericController }))
+                    .initialize()
+                const data = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe" }).save()
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${data._id}`)
+                    .expect(200)
+                expect(mock.mock.calls).toMatchSnapshot()
+                expect(body).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to ignore action by extending repo base generic controller", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                }
+                model(User)
+                @generic.template("T", "TID")
+                @generic.type("T", "TID")
+                class MyGenericController<T, TID> extends RepoBaseGenericController<T, TID> {
+                    constructor() {
+                        super(x => new MongooseRepository(x))
+                    }
+                    @route.ignore()
+                    list() { return {} as any }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ genericController: MyGenericController }))
+                    .initialize()
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to change generic controller using custom controller", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                }
+                const UserModel = model(User)
+                @generic.template("T", "TID")
+                class MyGenericController<T, TID> extends GenericController<T, TID> {
+                    model: mongoose.Model<T & mongoose.Document>
+                    constructor() {
+                        super()
+                        this.model = model(this.entityType)
+                    }
+                    @route.get(":id")
+                    get(id: string) {
+                        return this.model.findById(id)
+                    }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ genericController: MyGenericController }))
+                    .initialize()
+                const data = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe" }).save()
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${data._id}`)
+                    .expect(200)
+                expect(mock.mock.calls).toMatchSnapshot()
+                expect(body).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+        })
+        describe("Custom Generic One To Many Controller", () => {
+            it("Should able to change generic controller by extending repo base generic controller", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                    @collection.ref(x => [Animal])
+                    animals: Animal[]
+                }
+                class Animal {
+                    @reflect.noop()
+                    name: string
+                }
+                const AnimalModel = model(Animal)
+                const UserModel = model(User)
+                @generic.template("P", "T", "PID", "TID")
+                @generic.type("P", "T", "PID", "TID")
+                class MyGenericController<P, T, PID, TID> extends RepoBaseGenericOneToManyController<P, T, PID, TID> {
+                    constructor() {
+                        super((p, x, r) => new MongooseOneToManyRepository(p, x, r))
+                    }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ genericOneToManyController: MyGenericController }))
+                    .initialize()
+                const animal = await new AnimalModel({ name: "Mimi" }).save()
+                const user = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe", animals: [animal._id] }).save()
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${user._id}/animals/${animal._id}`)
+                    .expect(200)
+                expect(mock.mock.calls).toMatchSnapshot()
+                expect(body).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to ignore action by extending repo base generic controller", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                    @collection.ref(x => [Animal])
+                    animals: Animal[]
+                }
+                class Animal {
+                    @reflect.noop()
+                    name: string
+                }
+                model(Animal)
+                model(User)
+                @generic.template("P", "T", "PID", "TID")
+                @generic.type("P", "T", "PID", "TID")
+                class MyGenericController<P, T, PID, TID> extends RepoBaseGenericOneToManyController<P, T, PID, TID> {
+                    constructor() {
+                        super((p, x, r) => new MongooseOneToManyRepository(p, x, r))
+                    }
+                    @route.ignore()
+                    list() { return {} as any }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ genericOneToManyController: MyGenericController }))
+                    .initialize()
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to change generic controller using custom controller", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                    @collection.ref(x => [Animal])
+                    animals: Animal[]
+                }
+                class Animal {
+                    @reflect.noop()
+                    name: string
+                }
+                const AnimalModel = model(Animal)
+                const UserModel = model(User)
+                @generic.template("P", "T", "PID", "TID")
+                class MyGenericController<P, T, PID, TID> extends GenericOneToManyController<P, T, PID, TID> {
+                    model: mongoose.Model<T & mongoose.Document>
+                    constructor() {
+                        super()
+                        this.model = model(this.entityType)
+                    }
+                    @route.get(":id")
+                    get(pid: string, id: string) {
+                        return this.model.findById(id)
+                    }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ genericOneToManyController: MyGenericController }))
+                    .initialize()
+                const animal = await new AnimalModel({ name: "Mimi" }).save()
+                const user = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe", animals: [animal._id] }).save()
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${user._id}/animals/${animal._id}`)
+                    .expect(200)
+                expect(mock.mock.calls).toMatchSnapshot()
+                expect(body).toMatchSnapshot()
+                consoleLog.clearMock()
             })
         })
     })

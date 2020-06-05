@@ -9,6 +9,8 @@ import { MongoMemoryServer } from "mongodb-memory-server-global"
 
 mongoose.set("useNewUrlParser", true)
 mongoose.set("useUnifiedTopology", true)
+mongoose.set("useFindAndModify", false)
+
 jest.setTimeout(20000)
 
 describe("Mongoose", () => {

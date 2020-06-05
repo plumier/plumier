@@ -1,4 +1,4 @@
-import { GenericController, GenericOneToManyController, HttpStatusError, IdentifierResult, route } from "@plumier/core"
+import { RepoBaseGenericController, RepoBaseGenericOneToManyController, HttpStatusError, IdentifierResult, route } from "@plumier/core"
 import reflect, { generic } from "tinspector"
 import { TypeORMRepository, TypeORMOneToManyRepository } from './repository'
 
@@ -8,7 +8,7 @@ import { TypeORMRepository, TypeORMOneToManyRepository } from './repository'
 
 @generic.template("T", "TID")
 @generic.type("T", "TID")
-class TypeOrmGenericController<T, TID> extends GenericController<T, TID>{
+class TypeOrmGenericController<T, TID> extends RepoBaseGenericController<T, TID>{
     constructor(){
         super(x => new TypeORMRepository(x))
     }
@@ -16,7 +16,7 @@ class TypeOrmGenericController<T, TID> extends GenericController<T, TID>{
 
 @generic.template("P", "T", "PID", "TID")
 @generic.type("P", "T", "PID", "TID")
-class TypeOrmGenericOneToManyController<P, T, PID, TID> extends GenericOneToManyController<P, T, PID, TID> {
+class TypeOrmGenericOneToManyController<P, T, PID, TID> extends RepoBaseGenericOneToManyController<P, T, PID, TID> {
     constructor(){
         super((p, t, rel) => new TypeORMOneToManyRepository(p, t, rel))
     }

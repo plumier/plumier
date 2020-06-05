@@ -1,10 +1,11 @@
-import { Class, Configuration, consoleLog, route, val } from "@plumier/core"
+import { Class, Configuration, consoleLog, GenericController, RepoBaseGenericController, route, val, RepoBaseGenericOneToManyController, GenericOneToManyController } from "@plumier/core"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
-import { CRUDTypeORMFacility, TypeORMFacility } from "@plumier/typeorm"
+import { CRUDTypeORMFacility, TypeORMFacility, TypeORMRepository, TypeORMOneToManyRepository } from "@plumier/typeorm"
 import supertest from "supertest"
-import reflect from "tinspector"
+import reflect, { generic } from "tinspector"
 import {
     Column,
+    ConnectionOptions,
     Entity,
     getConnection,
     getManager,
@@ -20,7 +21,19 @@ import {
 } from "typeorm"
 
 import { fixture } from "../helper"
-import { SwaggerFacility } from '@plumier/swagger'
+
+jest.setTimeout(20000)
+
+function getConn(entities: Function[]): ConnectionOptions {
+    return {
+        type: "sqlite",
+        database: ":memory:",
+        dropSchema: true,
+        entities: entities,
+        synchronize: true,
+        logging: false
+    }
+}
 
 describe("TypeOrm", () => {
     function createApp(entities: Function[]) {
@@ -28,14 +41,7 @@ describe("TypeOrm", () => {
             get() { }
         }
         return fixture(UsersController)
-            .set(new TypeORMFacility({
-                type: "sqlite",
-                database: ":memory:",
-                dropSchema: true,
-                entities: entities,
-                synchronize: true,
-                logging: false
-            }))
+            .set(new TypeORMFacility({ connection: getConn(entities) }))
             .initialize()
     }
     afterEach(async () => {
@@ -212,12 +218,7 @@ describe("TypeOrm", () => {
             return new Plumier()
                 .set(new WebApiFacility())
                 .set(new CRUDTypeORMFacility({
-                    type: "sqlite",
-                    database: ":memory:",
-                    dropSchema: true,
-                    entities: entities,
-                    synchronize: true,
-                    logging: false
+                    connection: getConn(entities)
                 }))
                 .set(option || {})
                 .initialize()
@@ -356,12 +357,14 @@ describe("TypeOrm", () => {
                 await new Plumier()
                     .set(new WebApiFacility({ controller: UsersController }))
                     .set(new CRUDTypeORMFacility({
-                        type: "sqlite",
-                        database: ":memory:",
-                        dropSchema: true,
-                        entities: [User],
-                        synchronize: true,
-                        logging: false
+                        connection: {
+                            type: "sqlite",
+                            database: ":memory:",
+                            dropSchema: true,
+                            entities: [User],
+                            synchronize: true,
+                            logging: false
+                        }
                     }))
                     .initialize()
                 expect(mock.mock.calls).toMatchSnapshot()
@@ -1091,6 +1094,235 @@ describe("TypeOrm", () => {
                 await supertest(app.callback())
                     .delete(`/users/${user.id}/animals/123`)
                     .expect(404)
+            })
+        })
+        describe("Custom Generic Controller", () => {
+            it("Should able to change generic controller by extending repo base generic controller", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                @generic.template("T", "TID")
+                @generic.type("T", "TID")
+                class MyGenericController<T, TID> extends RepoBaseGenericController<T, TID> {
+                    constructor() {
+                        super(x => new TypeORMRepository(x))
+                    }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDTypeORMFacility({ genericController: MyGenericController, connection: getConn([User]) }))
+                    .initialize()
+                const repo = getManager().getRepository(User)
+                const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${data.raw}`)
+                    .expect(200)
+                expect(mock.mock.calls).toMatchSnapshot()
+                expect(body).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to ignore action by extending repo base generic controller", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                @generic.template("T", "TID")
+                @generic.type("T", "TID")
+                class MyGenericController<T, TID> extends RepoBaseGenericController<T, TID> {
+                    constructor() {
+                        super(x => new TypeORMRepository(x))
+                    }
+                    @route.ignore()
+                    list() { return {} as any }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDTypeORMFacility({ genericController: MyGenericController, connection: getConn([User]) }))
+                    .initialize()
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to change generic controller using custom controller", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                }
+                @generic.template("T", "TID")
+                class MyGenericController<T, TID> extends GenericController<T, TID> {
+                    repo: Repository<T>
+                    constructor() {
+                        super()
+                        this.repo = getManager().getRepository(this.entityType)
+                    }
+                    @route.get(":id")
+                    get(id: number) {
+                        return this.repo.findOne(id)
+                    }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDTypeORMFacility({ genericController: MyGenericController, connection: getConn([User]) }))
+                    .initialize()
+                const repo = getManager().getRepository(User)
+                const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${data.raw}`)
+                    .expect(200)
+                expect(mock.mock.calls).toMatchSnapshot()
+                expect(body).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+        })
+        describe("Custom Generic One To Many Controller", () => {
+            it("Should able to change generic controller by extending repo base generic controller", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                @generic.template("P", "T", "PID", "TID")
+                @generic.type("P", "T", "PID", "TID")
+                class MyGenericController<P, T, PID, TID> extends RepoBaseGenericOneToManyController<P, T, PID, TID> {
+                    constructor() {
+                        super((p, x, r) => new TypeORMOneToManyRepository(p, x, r))
+                    }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDTypeORMFacility({ connection: getConn([User, Animal]), genericOneToManyController: MyGenericController }))
+                    .initialize()
+                const parentRepo = getManager().getRepository(User)
+                const repo = getManager().getRepository(Animal)
+                const user = await parentRepo.save({ email: "john.doe@gmail.com", name: "John Doe" })
+                const animal = await repo.insert({ name: "Mimi", user })
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${user.id}/animals/${animal.raw}`)
+                    .expect(200)
+                expect(mock.mock.calls).toMatchSnapshot()
+                expect(body).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to ignore action by extending repo base generic controller", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                @generic.template("P", "T", "PID", "TID")
+                @generic.type("P", "T", "PID", "TID")
+                class MyGenericController<P, T, PID, TID> extends RepoBaseGenericOneToManyController<P, T, PID, TID> {
+                    constructor() {
+                        super((p, x, r) => new TypeORMOneToManyRepository(p, x, r))
+                    }
+                    @route.ignore()
+                    list() { return {} as any }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDTypeORMFacility({ connection: getConn([User, Animal]), genericOneToManyController: MyGenericController }))
+                    .initialize()
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to change generic controller using custom controller", async () => {
+                @Entity()
+                class User {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    email: string
+                    @Column()
+                    name: string
+                    @OneToMany(x => Animal, x => x.user)
+                    animals: Animal[]
+                }
+                @Entity()
+                class Animal {
+                    @PrimaryGeneratedColumn()
+                    id: number
+                    @Column()
+                    name: string
+                    @ManyToOne(x => User, x => x.animals)
+                    user: User
+                }
+                @generic.template("P", "T", "PID", "TID")
+                class MyGenericController<P, T, PID, TID> extends GenericOneToManyController<P, T, PID, TID> {
+                    repo: Repository<T>
+                    constructor() {
+                        super()
+                        this.repo = getManager().getRepository(this.entityType)
+                    }
+                    @route.get(":id")
+                    get(pid: string, id: string) {
+                        return this.repo.findOne(id)
+                    }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDTypeORMFacility({ connection: getConn([User, Animal]), genericOneToManyController: MyGenericController }))
+                    .initialize()
+                const parentRepo = getManager().getRepository(User)
+                const repo = getManager().getRepository(Animal)
+                const user = await parentRepo.save({ email: "john.doe@gmail.com", name: "John Doe" })
+                const animal = await repo.insert({ name: "Mimi", user })
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${user.id}/animals/${animal.raw}`)
+                    .expect(200)
+                expect(mock.mock.calls).toMatchSnapshot()
+                expect(body).toMatchSnapshot()
+                consoleLog.clearMock()
             })
         })
     })

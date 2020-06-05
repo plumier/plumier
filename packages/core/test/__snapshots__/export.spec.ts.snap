@@ -141,6 +141,8 @@ Object {
   },
   "ParameterBinderMiddleware": ParameterBinderMiddleware,
   "RedirectActionResult": RedirectActionResult,
+  "RepoBaseGenericController": RepoBaseGenericController,
+  "RepoBaseGenericOneToManyController": RepoBaseGenericOneToManyController,
   "RestDecoratorImpl": RestDecoratorImpl,
   "RouteDecoratorImpl": RouteDecoratorImpl,
   "ValidationError": ValidationError,
