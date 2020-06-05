@@ -1,8 +1,7 @@
-import { existsSync } from "fs"
 import { ClassReflection, MethodReflection, reflect } from "tinspector"
 
 import { Class, findFilesRecursive } from "./common"
-import { errorMessage, HttpMethod, RouteInfo, RouteMetadata } from "./types"
+import { HttpMethod, RouteInfo, RouteMetadata } from "./types"
 
 
 

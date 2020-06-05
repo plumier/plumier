@@ -1,13 +1,13 @@
-import reflect, { decorateClass, decorateProperty, generic, GenericTypeDecorator, metadata } from "tinspector"
+import reflect, { decorateClass, generic, GenericTypeDecorator, metadata } from "tinspector"
 import { val } from "typedconverter"
 
 import { Class } from "./common"
-import { domain } from "./decorator"
-import { api } from "./decorator.api"
-import { bind } from "./decorator.bind"
-import { route } from "./decorator.route"
-import { generateRoutes, appendRoute } from "./route-generator"
-import { HttpStatusError } from './types'
+import { api } from "./decorator/api"
+import { bind } from "./decorator/bind"
+import { domain } from "./decorator/common"
+import { route } from "./decorator/route"
+import { appendRoute, generateRoutes } from "./route-generator"
+import { HttpStatusError } from "./types"
 
 
 // --------------------------------------------------------------------- //
@@ -23,6 +23,10 @@ interface OneToManyDecorator {
 
 interface IdentifierDecorator {
     kind: "GenericDecoratorId",
+}
+
+interface InversePropertyDecorator {
+    kind: "GenericInverseProperty"
 }
 
 interface Repository<T> {
@@ -64,19 +68,7 @@ class GenericOneToManyController<P, T, PID, TID>{
         this.relation = oneToMany.propertyName
     }
 }
-// --------------------------------------------------------------------- //
-// ----------------------------- DECORATOR ----------------------------- //
-// --------------------------------------------------------------------- //
 
-namespace crud {
-    export function oneToMany(type: Class | Class[] | ((x: any) => Class | Class[])) {
-        return decorateProperty((target: any, propertyName) => <OneToManyDecorator>{ kind: "GenericDecoratorOneToMany", type, parentType: target })
-    }
-
-    export function id() {
-        return decorateProperty(<IdentifierDecorator>{ kind: "GenericDecoratorId" })
-    }
-}
 
 
 // --------------------------------------------------------------------- //
@@ -290,7 +282,8 @@ class RepoBaseGenericOneToManyController<P, T, PID, TID> extends GenericOneToMan
 }
 
 export {
-    crud, createRoutesFromEntities, GenericController,
+    createRoutesFromEntities, GenericController,
     GenericOneToManyController, IdentifierResult, OneToManyDecorator, IdentifierDecorator,
-    Repository, OneToManyRepository, RepoBaseGenericController, RepoBaseGenericOneToManyController
+    Repository, OneToManyRepository, RepoBaseGenericController, RepoBaseGenericOneToManyController,
+    InversePropertyDecorator
 }
