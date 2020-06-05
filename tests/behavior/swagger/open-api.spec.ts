@@ -12,6 +12,7 @@ import {
     route,
     RouteMetadata,
     val,
+    crud,
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { refFactory, SwaggerFacility } from "@plumier/swagger"
@@ -382,6 +383,74 @@ describe("Open API 3.0 Generation", () => {
             class UsersController {
                 @route.get("")
                 get(@bind.query() @val.partial(Parameters) params: Parameters) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
+        })
+
+        it("Should ignore nested model on query parameter", async () => {
+            @domain()
+            class Other {
+                constructor(
+                    public name:string
+                ){}
+            }
+            @domain()
+            class Parameters {
+                constructor(
+                    public str: string,
+                    public num: number,
+                    public other:Other
+                ) { }
+            }
+            class UsersController {
+                @route.get("")
+                get(@bind.query() params: Parameters) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
+        })
+
+        it("Should ignore nested array on query parameter", async () => {
+            @domain()
+            class Parameters {
+                constructor(
+                    public str: string,
+                    public num: number,
+                    @reflect.type([String])
+                    public other:string[]
+                ) { }
+            }
+            class UsersController {
+                @route.get("")
+                get(@bind.query() params: Parameters) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
+        })
+
+        it("Should ignore Generic Identifier on query parameter", async () => {
+            @domain()
+            class Parameters {
+                constructor(
+                    @crud.id()
+                    public id:number,
+                    public str: string,
+                    public num: number,
+                ) { }
+            }
+            class UsersController {
+                @route.get("")
+                get(@bind.query() params: Parameters) { }
             }
             const app = await createApp(UsersController)
             const { body } = await supertest(app.callback())

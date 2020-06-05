@@ -3,7 +3,7 @@ import { ParameterObject } from "openapi3-ts"
 import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
 
 import { transformType } from "./schema"
-import { isBind, isDescription, isName, isPartialValidator, isRequired, TransformContext } from "./shared"
+import { isBind, isDescription, isName, isPartialValidator, isRequired, TransformContext, isGenericId } from "./shared"
 
 interface ParameterNode {
     // bodyCandidate: assume that all non decorated parameters can be body request
@@ -42,12 +42,18 @@ function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObj
     if (node.typeName === "Class") {
         const meta = reflect(node.type as Class)
         const isPartial = !!node.meta.decorators.find(isPartialValidator)
-        return meta.properties.map(x => {
-            return (<ParameterObject>{
-                name: x.name, in: node.kind, required: isPartial ? false : !!x.decorators.find(isRequired),
-                schema: transformType(x.type, ctx, { decorators: x.decorators }),
+        const result = []
+        for (const prop of meta.properties) {
+            // skip nested models on query parameters
+            if(prop.typeClassification !== "Primitive") continue
+            // skip ID parameter on query parameter 
+            if(prop.decorators.find(isGenericId)) continue
+            result.push(<ParameterObject>{
+                name: prop.name, in: node.kind, required: isPartial ? false : !!prop.decorators.find(isRequired),
+                schema: transformType(prop.type, ctx, { decorators: prop.decorators }),
             })
-        })
+        }
+        return result
     }
     else {
         const desc = node.meta.decorators.find(isDescription)

@@ -1128,7 +1128,70 @@ exports[`Open API 3.0 Generation Parameter Should ignore @bind.request() paramet
 
 exports[`Open API 3.0 Generation Parameter Should ignore @bind.user() parameter 1`] = `Array []`;
 
+exports[`Open API 3.0 Generation Parameter Should ignore Generic Identifier on query parameter 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "str",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "num",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+]
+`;
+
 exports[`Open API 3.0 Generation Parameter Should ignore all required properties when provided @val.partial() on @bind.query() 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "str",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "num",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should ignore nested array on query parameter 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "str",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "num",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should ignore nested model on query parameter 1`] = `
 Array [
   Object {
     "in": "query",
