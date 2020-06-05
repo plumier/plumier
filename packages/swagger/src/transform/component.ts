@@ -3,7 +3,7 @@ import { ComponentsObject, ReferenceObject, SchemaObject, SecuritySchemeObject }
 import reflect from "tinspector"
 
 import { refFactory, transformType } from "./schema"
-import { isRequired, TransformContext } from "./shared"
+import { isRequired, TransformContext, isOneToMany, isInverseProperty } from "./shared"
 
 const defaultSchemas: { [key: string]: SchemaObject } = {
     ".ValidationError": {
@@ -45,6 +45,11 @@ function transformObject(obj: Class | Class[], ctx: TransformContext, isPartial:
     const required = []
     const properties = {} as { [propertyName: string]: (SchemaObject | ReferenceObject); }
     for (const prop of meta.properties) {
+        // if property is a "one-to-many" or "inverse-property" then skip
+        const isOneMany = !!prop.decorators.find(isOneToMany)
+        const isInverse = !!prop.decorators.find(isInverseProperty)
+        if(isOneMany || isInverse) continue;
+        // collect required properties
         const isReq = !!prop.decorators.find(isRequired)
         if (isReq) required.push(prop.name)
         // if the type is not registered then make inline object

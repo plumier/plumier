@@ -39,6 +39,8 @@ class TypeORMFacility extends DefaultFacility {
             Reflect.decorate([reflect.type(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
             if (col.relationType === "one-to-many")
                 Reflect.decorate([crud.oneToMany(x => rawType)], (col.target as Function).prototype, col.propertyName, void 0)
+            if (col.relationType === "many-to-one")
+                Reflect.decorate([crud.inverseProperty()], (col.target as Function).prototype, col.propertyName, void 0)
         }
         this.entities = storage.tables.filter(x => typeof x.target !== "string").map(x => x.target as Class)
     }

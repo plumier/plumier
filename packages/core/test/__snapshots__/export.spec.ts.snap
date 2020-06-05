@@ -181,6 +181,7 @@ Object {
   "createRoutesFromEntities": createRoutesFromEntities,
   "crud": Object {
     "id": id,
+    "inverseProperty": inverseProperty,
     "oneToMany": oneToMany,
   },
   "domain": domain,
