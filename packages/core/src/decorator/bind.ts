@@ -1,9 +1,9 @@
 import { GetOption } from "cookies"
 import { decorateParameter, mergeDecorator } from "tinspector"
 
-import { BindingDecorator, CustomBinderFunction, HeaderPart, RequestPart } from "./binder"
-import { getChildValue } from "./common"
-import { api } from "./decorator.api"
+import { BindingDecorator, CustomBinderFunction, HeaderPart, RequestPart } from "../binder"
+import { getChildValue } from "../common"
+import { api } from "./api"
 
 
 export namespace bind {

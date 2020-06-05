@@ -2,7 +2,7 @@ import { decorate, mergeDecorator, CustomPropertyDecorator } from "tinspector"
 import * as tc from "typedconverter"
 
 import { AsyncValidatorResult, CustomValidator, CustomValidatorFunction, ValidatorDecorator } from "./types"
-import { api } from './decorator.api'
+import { api } from './decorator/api'
 
 
 declare module "typedconverter" {

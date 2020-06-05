@@ -1,9 +1,9 @@
 import chalk from "chalk"
-import { ClassReflection, ParameterReflection, PropertyReflection, reflect } from "tinspector"
+import { ParameterReflection, PropertyReflection } from "tinspector"
 
 import { updateRouteAuthorizationAccess } from "./authorization"
-import { Class, isCustomClass, printTable, ellipsis, analyzeModel, AnalysisMessage } from "./common"
-import { Configuration, errorMessage, RouteAnalyzerFunction, RouteAnalyzerIssue, RouteMetadata, RouteInfo } from "./types"
+import { AnalysisMessage, analyzeModel, ellipsis, printTable } from "./common"
+import { Configuration, errorMessage, RouteAnalyzerFunction, RouteAnalyzerIssue, RouteMetadata } from "./types"
 
 
 

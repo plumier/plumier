@@ -9,7 +9,7 @@ import { promisify } from "util"
 
 import { RoleField } from "./authorization"
 import { Class } from "./common"
-import { domain } from "./decorator"
+import { domain } from "./decorator/common"
 import { HttpStatus } from "./http-status"
 
 const copyFileAsync = promisify(copyFile)

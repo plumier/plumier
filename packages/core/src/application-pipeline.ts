@@ -1,21 +1,20 @@
 import { Context } from "koa"
 
+import { AuthorizerMiddleware } from "./authorization"
+import { ParameterBinderMiddleware } from "./binder"
 import { hasKeyOf } from "./common"
 import {
     ActionContext,
     ActionResult,
     HttpStatusError,
     Invocation,
+    MetadataImpl,
     Middleware,
-    MiddlewareFunction,
+    MiddlewareMeta,
     MiddlewareUtil,
     RouteInfo,
-    MetadataImpl,
-    MiddlewareMeta,
 } from "./types"
-import { ParameterBinderMiddleware } from './binder'
 import { ValidatorMiddleware } from "./validator"
-import { AuthorizerMiddleware } from './authorization'
 
 
 // --------------------------------------------------------------------- //

@@ -1,7 +1,6 @@
-import reflect, { decorate, ClassReflection } from "tinspector"
+import reflect, { decorate } from "tinspector"
 
-import { Middleware, MiddlewareDecorator, MiddlewareFunction, ActionContext } from "./types"
-import { Class } from './common'
+import { ActionContext, Middleware, MiddlewareDecorator, MiddlewareFunction } from "../types"
 
 
 // --------------------------------------------------------------------- //

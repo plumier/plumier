@@ -1,5 +1,6 @@
-import reflect, { decorateProperty, decorate, decorateMethod, DecoratorId, decorateClass } from 'tinspector';
-import { Class } from './common';
+import { decorate, decorateClass, decorateMethod, decorateProperty } from "tinspector"
+
+import { Class } from "../common"
 
 interface ApiRequiredDecorator { kind: "ApiRequired" }
 interface ApiResponseDecorator { kind: "ApiResponse", status: number, mime: string, type: Class | Class[] }

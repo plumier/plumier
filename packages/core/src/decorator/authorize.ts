@@ -1,7 +1,7 @@
 import { decorate } from "tinspector"
 
-import { AuthorizerFunction, AuthorizeDecorator, Authorizer } from "./authorization"
-import { errorMessage } from "./types"
+import { AuthorizerFunction, AuthorizeDecorator, Authorizer } from "../authorization"
+import { errorMessage } from "../types"
 
 type AccessModifier = "get" | "set" | "all"
 interface AuthorizeOption { access: AccessModifier, role: string | string[] }

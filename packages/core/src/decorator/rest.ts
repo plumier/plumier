@@ -1,4 +1,4 @@
-import { RouteDecoratorImpl } from "./decorator.route";
+import { RouteDecoratorImpl } from "./route";
 
 
 class RestDecoratorImpl extends RouteDecoratorImpl {

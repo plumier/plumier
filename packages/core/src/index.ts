@@ -9,13 +9,14 @@ export { generateRoutes, mergeRoutes } from "./route-generator";
 export { analyzeRoutes, printAnalysis } from "./route-analyzer";
 export { router } from "./router";
 export { Class, consoleLog, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass, printTable, toBoolean, cleanupConsole, ellipsis, analyzeModel, AnalysisMessage } from "./common";
-export { AuthDecoratorImpl, authorize } from "./decorator.authorize";
-export { ApiDescriptionDecorator, ApiEnumDecorator, ApiFieldNameDecorator, ApiRequiredDecorator, ApiResponseDecorator, ApiTagDecorator, api } from "./decorator.api"
-export { bind } from "./decorator.bind";
-export { domain, middleware } from "./decorator";
-export { route, RouteDecoratorImpl } from "./decorator.route";
-export { rest, RestDecoratorImpl } from "./decorator.rest";
-export { GenericController, GenericOneToManyController, IdentifierResult, createRoutesFromEntities, crud, OneToManyDecorator, Repository, OneToManyRepository, RepoBaseGenericController, RepoBaseGenericOneToManyController, IdentifierDecorator } from "./generic-controller"
+export { AuthDecoratorImpl, authorize } from "./decorator/authorize";
+export { ApiDescriptionDecorator, ApiEnumDecorator, ApiFieldNameDecorator, ApiRequiredDecorator, ApiResponseDecorator, ApiTagDecorator, api } from "./decorator/api"
+export { bind } from "./decorator/bind";
+export { domain, middleware } from "./decorator/common";
+export { route, RouteDecoratorImpl } from "./decorator/route";
+export { rest, RestDecoratorImpl } from "./decorator/rest";
+export { crud } from "./decorator/crud";
+export { GenericController, GenericOneToManyController, IdentifierResult, createRoutesFromEntities, OneToManyDecorator, Repository, OneToManyRepository, RepoBaseGenericController, RepoBaseGenericOneToManyController, IdentifierDecorator } from "./generic-controller"
 export { HttpStatus } from "./http-status";
 export { validate, ValidatorMiddleware } from "./validator"
 export {
