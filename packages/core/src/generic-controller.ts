@@ -64,19 +64,19 @@ function getGenericTypeParameters(instance: object) {
 }
 
 
-function createController(entity: Class, controller: typeof GenericController, nameConversion: (x: string) => string) {
+function createController(rootPath: string, entity: Class, controller: typeof GenericController, nameConversion: (x: string) => string) {
     // get type of ID column on entity
     const idType = getIdType(entity)
     // create controller type dynamically 
     const Controller = generic.create(controller, entity, idType)
     // add root decorator
     const name = nameConversion(entity.name)
-    Reflect.decorate([route.root(name)], Controller)
+    Reflect.decorate([route.root(rootPath + name)], Controller)
     Reflect.decorate([api.tag(entity.name)], Controller)
     return Controller
 }
 
-function createNestedController(dec: OneToManyDecorator, controller: typeof GenericOneToManyController, nameConversion: (x: string) => string) {
+function createNestedController(rootPath: string, dec: OneToManyDecorator, controller: typeof GenericOneToManyController, nameConversion: (x: string) => string) {
     const decType = metadata.isCallback(dec.type) ? dec.type({}) : dec.type
     const realType = Array.isArray(decType) ? decType[0] : decType
     // get type of ID column on parent entity
@@ -88,7 +88,7 @@ function createNestedController(dec: OneToManyDecorator, controller: typeof Gene
     // add root decorator
     const name = nameConversion(dec.parentType.name)
     Reflect.decorate([
-        route.root(`${name}/:pid/${dec.propertyName}`),
+        route.root(rootPath + `${name}/:pid/${dec.propertyName}`),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
         decorateClass(dec)],
         Controller)
@@ -96,15 +96,15 @@ function createNestedController(dec: OneToManyDecorator, controller: typeof Gene
     return Controller
 }
 
-function createRoutesFromEntities(entities: Class[], controller: typeof GenericController, oneToManyController: typeof GenericOneToManyController, nameConversion: (x: string) => string) {
+function createRoutesFromEntities(rootPath:string, entities: Class[], controller: typeof GenericController, oneToManyController: typeof GenericOneToManyController, nameConversion: (x: string) => string) {
     const controllers = []
     for (const entity of entities) {
-        controllers.push(createController(entity, controller, nameConversion))
+        controllers.push(createController(rootPath, entity, controller, nameConversion))
         const meta = reflect(entity)
         for (const prop of meta.properties) {
             const oneToMany = prop.decorators.find((x: OneToManyDecorator): x is OneToManyDecorator => x.kind === "GenericDecoratorOneToMany")
             if (oneToMany) {
-                controllers.push(createNestedController({ ...oneToMany, propertyName: prop.name }, oneToManyController, nameConversion))
+                controllers.push(createNestedController(rootPath, { ...oneToMany, propertyName: prop.name }, oneToManyController, nameConversion))
             }
         }
     }

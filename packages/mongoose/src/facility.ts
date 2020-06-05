@@ -3,7 +3,7 @@ import Mongoose from "mongoose"
 import { Result, VisitorInvocation } from "typedconverter"
 import pluralize from "pluralize"
 
-import { MongooseFacilityOption } from "./types"
+import { MongooseFacilityOption, CRUDMongooseFacilityOption } from "./types"
 import { printAnalysis } from './analyzer'
 import { getAnalysis, models } from './generator'
 import { MongooseGenericController, MongooseGenericOneToManyController } from './generic-controller'
@@ -45,9 +45,14 @@ export class MongooseFacility extends DefaultFacility {
 }
 
 export class CRUDMongooseFacility extends MongooseFacility {
+    option: CRUDMongooseFacilityOption
+    constructor(opt?: Partial<CRUDMongooseFacilityOption>) {
+        super(opt)
+        this.option = { rootPath: "", ...opt }
+    }
     async generateRoutes() {
         const entities = Array.from(models.keys())
-        return createRoutesFromEntities(entities, MongooseGenericController,
+        return createRoutesFromEntities(this.option.rootPath, entities, MongooseGenericController,
             MongooseGenericOneToManyController, x => pluralize.plural(x))
     }
 }
