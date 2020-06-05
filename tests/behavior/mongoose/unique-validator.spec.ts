@@ -1,10 +1,15 @@
-import { Class, route, val, HttpMethod } from "@plumier/core"
+import { Class, HttpMethod, route, val } from "@plumier/core"
 import { collection, model, MongooseFacility } from "@plumier/mongoose"
+import { MongoMemoryServer } from "mongodb-memory-server-global"
 import Mongoose from "mongoose"
-import { fixture } from "../helper"
 import supertest = require("supertest")
 import { decorate } from "tinspector"
-import { MongoMemoryServer } from 'mongodb-memory-server-global'
+
+import { fixture } from "../helper"
+
+Mongoose.set("useNewUrlParser", true)
+Mongoose.set("useUnifiedTopology", true)
+Mongoose.set("useFindAndModify", false)
 
 jest.setTimeout(20000)
 

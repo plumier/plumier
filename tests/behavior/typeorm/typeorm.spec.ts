@@ -39,7 +39,7 @@ describe("TypeOrm", () => {
             get() { }
         }
         return fixture(UsersController)
-            .set(new TypeORMFacility(getConn(entities)))
+            .set(new TypeORMFacility({ connection: getConn(entities) }))
             .initialize()
     }
     afterEach(async () => {
@@ -1190,7 +1190,7 @@ describe("TypeOrm", () => {
                 consoleLog.clearMock()
             })
         })
-        describe.only("Custom Generic One To Many Controller", () => {
+        describe("Custom Generic One To Many Controller", () => {
             it("Should able to change generic controller by extending repo base generic controller", async () => {
                 @Entity()
                 class User {
@@ -1251,7 +1251,7 @@ describe("TypeOrm", () => {
                 class Animal {
                     @PrimaryGeneratedColumn()
                     id: number
-                     @Column()
+                    @Column()
                     name: string
                     @ManyToOne(x => User, x => x.animals)
                     user: User
