@@ -18,6 +18,303 @@ Array [
 ]
 `;
 
+exports[`TypeOrm CRUD Custom Generic Controller Should able to change generic controller by extending repo base generic controller 1`] = `
+Array [
+  Array [
+    "1. User -> User db.users",
+  ],
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DynamicType.list(offset, limit, query) -> GET    /users",
+  ],
+  Array [
+    "2. DynamicType.save(data)                 -> POST   /users",
+  ],
+  Array [
+    "3. DynamicType.get(id)                    -> GET    /users/:id",
+  ],
+  Array [
+    "4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+  ],
+  Array [
+    "5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+  ],
+  Array [
+    "6. DynamicType.delete(id)                 -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`TypeOrm CRUD Custom Generic Controller Should able to change generic controller by extending repo base generic controller 2`] = `
+Object {
+  "email": "john.doe@gmail.com",
+  "name": "John Doe",
+}
+`;
+
+exports[`TypeOrm CRUD Custom Generic Controller Should able to change generic controller using custom controller 1`] = `
+Array [
+  Array [
+    "1. User -> User db.users",
+  ],
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DynamicType.get(id) -> GET /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`TypeOrm CRUD Custom Generic Controller Should able to change generic controller using custom controller 2`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "email": "john.doe@gmail.com",
+  "name": "John Doe",
+}
+`;
+
+exports[`TypeOrm CRUD Custom Generic Controller Should able to ignore action by extending repo base generic controller 1`] = `
+Array [
+  Array [
+    "1. User -> User db.users",
+  ],
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DynamicType.save(data)        -> POST   /users",
+  ],
+  Array [
+    "2. DynamicType.get(id)           -> GET    /users/:id",
+  ],
+  Array [
+    "3. DynamicType.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    "4. DynamicType.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    "5. DynamicType.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`TypeOrm CRUD Custom Generic One To Many Controller Should able to change generic controller by extending repo base generic controller 1`] = `
+Array [
+  Array [
+    "1. Animal -> Animal db.animals",
+  ],
+  Array [
+    "2. User   -> User   db.users",
+  ],
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. DynamicType.list(offset, limit, query) -> GET    /animals",
+  ],
+  Array [
+    " 2. DynamicType.save(data)                 -> POST   /animals",
+  ],
+  Array [
+    " 3. DynamicType.get(id)                    -> GET    /animals/:id",
+  ],
+  Array [
+    " 4. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+  ],
+  Array [
+    " 5. DynamicType.replace(id, data)          -> PUT    /animals/:id",
+  ],
+  Array [
+    " 6. DynamicType.delete(id)                 -> DELETE /animals/:id",
+  ],
+  Array [
+    " 7. DynamicType.list(offset, limit, query) -> GET    /users",
+  ],
+  Array [
+    " 8. DynamicType.save(data)                 -> POST   /users",
+  ],
+  Array [
+    " 9. DynamicType.get(id)                    -> GET    /users/:id",
+  ],
+  Array [
+    "10. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+  ],
+  Array [
+    "11. DynamicType.replace(id, data)          -> PUT    /users/:id",
+  ],
+  Array [
+    "12. DynamicType.delete(id)                 -> DELETE /users/:id",
+  ],
+  Array [
+    "13. DynamicType.list                       -> GET    /users/:pid/animals",
+  ],
+  Array [
+    "14. DynamicType.save(pid, data)            -> POST   /users/:pid/animals",
+  ],
+  Array [
+    "15. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "16. DynamicType.modify(pid, id, data)      -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "17. DynamicType.replace(pid, id, data)     -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "18. DynamicType.delete(pid, id)            -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`TypeOrm CRUD Custom Generic One To Many Controller Should able to change generic controller by extending repo base generic controller 2`] = `
+Object {
+  "name": "Mimi",
+}
+`;
+
+exports[`TypeOrm CRUD Custom Generic One To Many Controller Should able to change generic controller using custom controller 1`] = `
+Array [
+  Array [
+    "1. Animal -> Animal db.animals",
+  ],
+  Array [
+    "2. User   -> User   db.users",
+  ],
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. DynamicType.list(offset, limit, query) -> GET    /animals",
+  ],
+  Array [
+    " 2. DynamicType.save(data)                 -> POST   /animals",
+  ],
+  Array [
+    " 3. DynamicType.get(id)                    -> GET    /animals/:id",
+  ],
+  Array [
+    " 4. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+  ],
+  Array [
+    " 5. DynamicType.replace(id, data)          -> PUT    /animals/:id",
+  ],
+  Array [
+    " 6. DynamicType.delete(id)                 -> DELETE /animals/:id",
+  ],
+  Array [
+    " 7. DynamicType.list(offset, limit, query) -> GET    /users",
+  ],
+  Array [
+    " 8. DynamicType.save(data)                 -> POST   /users",
+  ],
+  Array [
+    " 9. DynamicType.get(id)                    -> GET    /users/:id",
+  ],
+  Array [
+    "10. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+  ],
+  Array [
+    "11. DynamicType.replace(id, data)          -> PUT    /users/:id",
+  ],
+  Array [
+    "12. DynamicType.delete(id)                 -> DELETE /users/:id",
+  ],
+  Array [
+    "13. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`TypeOrm CRUD Custom Generic One To Many Controller Should able to change generic controller using custom controller 2`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "name": "Mimi",
+}
+`;
+
+exports[`TypeOrm CRUD Custom Generic One To Many Controller Should able to ignore action by extending repo base generic controller 1`] = `
+Array [
+  Array [
+    "1. Animal -> Animal db.animals",
+  ],
+  Array [
+    "2. User   -> User   db.users",
+  ],
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. DynamicType.list(offset, limit, query) -> GET    /animals",
+  ],
+  Array [
+    " 2. DynamicType.save(data)                 -> POST   /animals",
+  ],
+  Array [
+    " 3. DynamicType.get(id)                    -> GET    /animals/:id",
+  ],
+  Array [
+    " 4. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+  ],
+  Array [
+    " 5. DynamicType.replace(id, data)          -> PUT    /animals/:id",
+  ],
+  Array [
+    " 6. DynamicType.delete(id)                 -> DELETE /animals/:id",
+  ],
+  Array [
+    " 7. DynamicType.list(offset, limit, query) -> GET    /users",
+  ],
+  Array [
+    " 8. DynamicType.save(data)                 -> POST   /users",
+  ],
+  Array [
+    " 9. DynamicType.get(id)                    -> GET    /users/:id",
+  ],
+  Array [
+    "10. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+  ],
+  Array [
+    "11. DynamicType.replace(id, data)          -> PUT    /users/:id",
+  ],
+  Array [
+    "12. DynamicType.delete(id)                 -> DELETE /users/:id",
+  ],
+  Array [
+    "13. DynamicType.save(pid, data)            -> POST   /users/:pid/animals",
+  ],
+  Array [
+    "14. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "15. DynamicType.modify(pid, id, data)      -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "16. DynamicType.replace(pid, id, data)     -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "17. DynamicType.delete(pid, id)            -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`TypeOrm CRUD Nested CRUD One to Many Function Should find by name GET /users/:parentId/animals?offset&limit  1`] = `
 Array [
   Object {
@@ -149,6 +446,68 @@ Array [
     "age": 5,
     "name": "Jojo",
   },
+]
+`;
+
+exports[`TypeOrm CRUD Route Generator Should able to change rootPath 1`] = `
+Array [
+  Array [
+    "1. User -> User db.users",
+  ],
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DynamicType.list(offset, limit, query) -> GET    /api/v1/users",
+  ],
+  Array [
+    "2. DynamicType.save(data)                 -> POST   /api/v1/users",
+  ],
+  Array [
+    "3. DynamicType.get(id)                    -> GET    /api/v1/users/:id",
+  ],
+  Array [
+    "4. DynamicType.modify(id, data)           -> PATCH  /api/v1/users/:id",
+  ],
+  Array [
+    "5. DynamicType.replace(id, data)          -> PUT    /api/v1/users/:id",
+  ],
+  Array [
+    "6. DynamicType.delete(id)                 -> DELETE /api/v1/users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`TypeOrm CRUD Route Generator Should able to change rootPath with extra slash 1`] = `
+Array [
+  Array [
+    "1. User -> User db.users",
+  ],
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DynamicType.list(offset, limit, query) -> GET    /api/v1/users",
+  ],
+  Array [
+    "2. DynamicType.save(data)                 -> POST   /api/v1/users",
+  ],
+  Array [
+    "3. DynamicType.get(id)                    -> GET    /api/v1/users/:id",
+  ],
+  Array [
+    "4. DynamicType.modify(id, data)           -> PATCH  /api/v1/users/:id",
+  ],
+  Array [
+    "5. DynamicType.replace(id, data)          -> PUT    /api/v1/users/:id",
+  ],
+  Array [
+    "6. DynamicType.delete(id)                 -> DELETE /api/v1/users/:id",
+  ],
+  Array [],
 ]
 `;
 

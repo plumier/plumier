@@ -1,4 +1,4 @@
-import { DefaultFacility, isCustomClass, PlumierApplication, createRoutesFromEntities } from "@plumier/core"
+import { DefaultFacility, isCustomClass, PlumierApplication, createRoutesFromEntities, GenericController } from "@plumier/core"
 import Mongoose from "mongoose"
 import { Result, VisitorInvocation } from "typedconverter"
 import pluralize from "pluralize"
@@ -48,11 +48,16 @@ export class CRUDMongooseFacility extends MongooseFacility {
     option: CRUDMongooseFacilityOption
     constructor(opt?: Partial<CRUDMongooseFacilityOption>) {
         super(opt)
-        this.option = { rootPath: "", ...opt }
+        this.option = {
+            rootPath: "",
+            genericController: MongooseGenericController,
+            genericOneToManyController: MongooseGenericOneToManyController,
+            ...opt
+        }
     }
     async generateRoutes() {
         const entities = Array.from(models.keys())
-        return createRoutesFromEntities(this.option.rootPath, entities, MongooseGenericController,
-            MongooseGenericOneToManyController, x => pluralize.plural(x))
+        return createRoutesFromEntities(this.option.rootPath, entities, this.option.genericController,
+            this.option.genericOneToManyController, x => pluralize.plural(x))
     }
 }

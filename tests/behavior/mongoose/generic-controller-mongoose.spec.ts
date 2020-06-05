@@ -1,12 +1,32 @@
-import { Class, Configuration, consoleLog, route, val } from "@plumier/core"
-import model, { collection, CRUDMongooseFacility, models, OneToManyRepository, Repository } from "@plumier/mongoose"
+import {
+    Class,
+    Configuration,
+    consoleLog,
+    GenericController,
+    GenericOneToManyController,
+    RepoBaseGenericController,
+    RepoBaseGenericOneToManyController,
+    route,
+    val,
+} from "@plumier/core"
+import model, {
+    collection,
+    CRUDMongooseFacility,
+    models,
+    MongooseOneToManyRepository,
+    MongooseRepository,
+} from "@plumier/mongoose"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import supertest from "supertest"
-import reflect from "tinspector"
+import reflect, { generic } from "tinspector"
 
 jest.setTimeout(20000)
+
+mongoose.set("useNewUrlParser", true)
+mongoose.set("useUnifiedTopology", true)
+mongoose.set("useFindAndModify", false)
 
 describe("TypeOrm", () => {
     beforeAll(async () => {
@@ -147,9 +167,9 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 class UsersController {
-                    readonly repo: Repository<User>
+                    readonly repo: MongooseRepository<User>
                     constructor() {
-                        this.repo = new Repository(User)
+                        this.repo = new MongooseRepository(User)
                     }
                     @route.get(":id")
                     get(id: number) {
@@ -160,6 +180,38 @@ describe("TypeOrm", () => {
                 await new Plumier()
                     .set(new WebApiFacility({ controller: UsersController }))
                     .set(new CRUDMongooseFacility())
+                    .initialize()
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to change rootPath", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                }
+                model(User)
+                const mock = consoleLog.startMock()
+                await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ rootPath: "api/v1" }))
+                    .initialize()
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to change rootPath with extra slash", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                }
+                model(User)
+                const mock = consoleLog.startMock()
+                await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ rootPath: "/api/v1/" }))
                     .initialize()
                 expect(mock.mock.calls).toMatchSnapshot()
                 consoleLog.clearMock()
@@ -175,7 +227,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
                 const { body } = await supertest(app.callback())
                     .get("/users?offset=0&limit=20")
@@ -191,7 +243,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
                 const { body } = await supertest(app.callback())
                     .get("/users")
@@ -207,7 +259,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 await repo.insert({ email: "jean.doe@gmail.com", name: "Jean Doe" })
                 await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
                 const { body } = await supertest(app.callback())
@@ -225,7 +277,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 await repo.insert({ email: "jean.doe@gmail.com", name: "Juan Doe" })
                 await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
                 const { body } = await supertest(app.callback())
@@ -242,7 +294,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 const { body } = await supertest(app.callback())
                     .post("/users")
                     .send({ email: "john.doe@gmail.com", name: "John Doe" })
@@ -260,7 +312,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
                     .get(`/users/${data.id}`)
@@ -290,7 +342,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
                     .put(`/users/${data.id}`)
@@ -323,7 +375,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
                     .patch(`/users/${data.id}`)
@@ -343,7 +395,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
                     .patch(`/users/${data.id}`)
@@ -376,7 +428,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
                     .delete(`/users/${data.id}`)
@@ -400,7 +452,7 @@ describe("TypeOrm", () => {
         })
         describe("Nested CRUD One to Many Function", () => {
             async function createUser<T>(type: Class<T>) {
-                const userRepo = new Repository(type)
+                const userRepo = new MongooseRepository(type)
                 const inserted = await userRepo.insert({ email: "john.doe@gmail.com", name: "John Doe" } as any)
                 const saved = await userRepo.findById(inserted.id)
                 return saved!
@@ -422,7 +474,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
                 const { body } = await supertest(app.callback())
                     .get(`/users/${user._id}/animals?offset=0&limit=20`)
@@ -447,7 +499,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
                 const { body } = await supertest(app.callback())
                     .get(`/users/${user._id}/animals`)
@@ -471,7 +523,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 await animalRepo.insert(user._id.toHexString(), { name: `Jojo` })
                 await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
                 const { body } = await supertest(app.callback())
@@ -499,7 +551,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 await animalRepo.insert(user._id.toHexString(), { name: `Jojo`, age: 5 })
                 await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}`, age: 4 })))
                 const { body } = await supertest(app.callback())
@@ -524,7 +576,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 await supertest(app.callback())
                     .post(`/users/${user._id}/animals`)
                     .send({ name: "Mimi" })
@@ -533,7 +585,7 @@ describe("TypeOrm", () => {
                     .post(`/users/${user._id}/animals`)
                     .send({ name: "Mimi" })
                     .expect(200)
-                const inserted = await repo.findById(user._id).populate("animals")
+                const inserted = await repo.Model.findById(user._id).populate("animals")
                 expect(inserted).toMatchSnapshot()
             })
             it("Should throw 404 if parent not found POST /users/:parentId/animals", async () => {
@@ -575,7 +627,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
                 const { body } = await supertest(app.callback())
                     .get(`/users/${user._id}/animals/${inserted.id}`)
@@ -620,7 +672,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
                 const { body } = await supertest(app.callback())
                     .put(`/users/${user._id}/animals/${inserted.id}`)
@@ -668,7 +720,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
                 const { body } = await supertest(app.callback())
                     .patch(`/users/${user._id}/animals/${inserted.id}`)
@@ -691,13 +743,13 @@ describe("TypeOrm", () => {
                     name: string
                     @val.required()
                     @reflect.noop()
-                    age:number
+                    age: number
                 }
                 model(Animal)
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi`, age: 4 })
                 const { body } = await supertest(app.callback())
                     .patch(`/users/${user._id}/animals/${inserted.id}`)
@@ -745,7 +797,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
                 const { body } = await supertest(app.callback())
                     .delete(`/users/${user._id}/animals/${inserted.id}`)
@@ -773,6 +825,205 @@ describe("TypeOrm", () => {
                 await supertest(app.callback())
                     .delete(`/users/${user._id}/animals/5099803df3f4948bd2f98391`)
                     .expect(404)
+            })
+        })
+        describe("Custom Generic Controller", () => {
+            it("Should able to change generic controller by extending repo base generic controller", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                }
+                const UserModel = model(User)
+                @generic.template("T", "TID")
+                @generic.type("T", "TID")
+                class MyGenericController<T, TID> extends RepoBaseGenericController<T, TID> {
+                    constructor() {
+                        super(x => new MongooseRepository(x))
+                    }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ genericController: MyGenericController }))
+                    .initialize()
+                const data = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe" }).save()
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${data._id}`)
+                    .expect(200)
+                expect(mock.mock.calls).toMatchSnapshot()
+                expect(body).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to ignore action by extending repo base generic controller", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                }
+                model(User)
+                @generic.template("T", "TID")
+                @generic.type("T", "TID")
+                class MyGenericController<T, TID> extends RepoBaseGenericController<T, TID> {
+                    constructor() {
+                        super(x => new MongooseRepository(x))
+                    }
+                    @route.ignore()
+                    list() { return {} as any }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ genericController: MyGenericController }))
+                    .initialize()
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to change generic controller using custom controller", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                }
+                const UserModel = model(User)
+                @generic.template("T", "TID")
+                class MyGenericController<T, TID> extends GenericController<T, TID> {
+                    model: mongoose.Model<T & mongoose.Document>
+                    constructor() {
+                        super()
+                        this.model = model(this.entityType)
+                    }
+                    @route.get(":id")
+                    get(id: string) {
+                        return this.model.findById(id)
+                    }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ genericController: MyGenericController }))
+                    .initialize()
+                const data = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe" }).save()
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${data._id}`)
+                    .expect(200)
+                expect(mock.mock.calls).toMatchSnapshot()
+                expect(body).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+        })
+        describe("Custom Generic One To Many Controller", () => {
+            it("Should able to change generic controller by extending repo base generic controller", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                    @collection.ref(x => [Animal])
+                    animals: Animal[]
+                }
+                class Animal {
+                    @reflect.noop()
+                    name: string
+                }
+                const AnimalModel = model(Animal)
+                const UserModel = model(User)
+                @generic.template("P", "T", "PID", "TID")
+                @generic.type("P", "T", "PID", "TID")
+                class MyGenericController<P, T, PID, TID> extends RepoBaseGenericOneToManyController<P, T, PID, TID> {
+                    constructor() {
+                        super((p, x, r) => new MongooseOneToManyRepository(p, x, r))
+                    }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ genericOneToManyController: MyGenericController }))
+                    .initialize()
+                const animal = await new AnimalModel({ name: "Mimi" }).save()
+                const user = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe", animals: [animal._id] }).save()
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${user._id}/animals/${animal._id}`)
+                    .expect(200)
+                expect(mock.mock.calls).toMatchSnapshot()
+                expect(body).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to ignore action by extending repo base generic controller", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                    @collection.ref(x => [Animal])
+                    animals: Animal[]
+                }
+                class Animal {
+                    @reflect.noop()
+                    name: string
+                }
+                model(Animal)
+                model(User)
+                @generic.template("P", "T", "PID", "TID")
+                @generic.type("P", "T", "PID", "TID")
+                class MyGenericController<P, T, PID, TID> extends RepoBaseGenericOneToManyController<P, T, PID, TID> {
+                    constructor() {
+                        super((p, x, r) => new MongooseOneToManyRepository(p, x, r))
+                    }
+                    @route.ignore()
+                    list() { return {} as any }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ genericOneToManyController: MyGenericController }))
+                    .initialize()
+                expect(mock.mock.calls).toMatchSnapshot()
+                consoleLog.clearMock()
+            })
+            it("Should able to change generic controller using custom controller", async () => {
+                class User {
+                    @reflect.noop()
+                    email: string
+                    @reflect.noop()
+                    name: string
+                    @collection.ref(x => [Animal])
+                    animals: Animal[]
+                }
+                class Animal {
+                    @reflect.noop()
+                    name: string
+                }
+                const AnimalModel = model(Animal)
+                const UserModel = model(User)
+                @generic.template("P", "T", "PID", "TID")
+                class MyGenericController<P, T, PID, TID> extends GenericOneToManyController<P, T, PID, TID> {
+                    model: mongoose.Model<T & mongoose.Document>
+                    constructor() {
+                        super()
+                        this.model = model(this.entityType)
+                    }
+                    @route.get(":id")
+                    get(pid: string, id: string) {
+                        return this.model.findById(id)
+                    }
+                }
+                const mock = consoleLog.startMock()
+                const app = await new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new CRUDMongooseFacility({ genericOneToManyController: MyGenericController }))
+                    .initialize()
+                const animal = await new AnimalModel({ name: "Mimi" }).save()
+                const user = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe", animals: [animal._id] }).save()
+                const { body } = await supertest(app.callback())
+                    .get(`/users/${user._id}/animals/${animal._id}`)
+                    .expect(200)
+                expect(mock.mock.calls).toMatchSnapshot()
+                expect(body).toMatchSnapshot()
+                consoleLog.clearMock()
             })
         })
     })

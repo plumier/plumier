@@ -1,9 +1,18 @@
-import { Class, createRoutesFromEntities, DefaultFacility, crud, RouteMetadata } from "@plumier/core"
+import { Class, createRoutesFromEntities, DefaultFacility, crud, RouteMetadata, GenericController, GenericOneToManyController } from "@plumier/core"
 import pluralize from "pluralize"
 import reflect, { noop } from "tinspector"
 import { ConnectionOptions, createConnection, getMetadataArgsStorage } from "typeorm"
 
 import { TypeOrmGenericController, TypeOrmGenericOneToManyController } from "."
+
+
+interface CRUDTypeORMFacilityOption {
+    rootPath: string
+    genericController: Class<GenericController<any, any>>
+    genericOneToManyController: Class<GenericOneToManyController<any, any, any, any>>
+    connection?: ConnectionOptions
+}
+
 
 class TypeORMFacility extends DefaultFacility {
     protected entities: Class[] = []
@@ -36,8 +45,21 @@ class TypeORMFacility extends DefaultFacility {
 }
 
 class CRUDTypeORMFacility extends TypeORMFacility {
+    private opt: CRUDTypeORMFacilityOption
+    constructor(opt?: Partial<CRUDTypeORMFacilityOption>) {
+        super(opt?.connection)
+        this.opt = {
+            rootPath: "",
+            genericController: TypeOrmGenericController,
+            genericOneToManyController: TypeOrmGenericOneToManyController,
+            ...opt
+        }
+    }
+
     async generateRoutes(): Promise<RouteMetadata[]> {
-        return createRoutesFromEntities(this.entities, TypeOrmGenericController, TypeOrmGenericOneToManyController, x => pluralize.plural(x))
+        return createRoutesFromEntities(this.opt.rootPath,
+            this.entities, this.opt.genericController,
+            this.opt.genericOneToManyController, x => pluralize.plural(x))
     }
 }
 

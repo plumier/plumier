@@ -15,7 +15,7 @@ export { bind } from "./decorator.bind";
 export { domain, middleware } from "./decorator";
 export { route, RouteDecoratorImpl } from "./decorator.route";
 export { rest, RestDecoratorImpl } from "./decorator.rest";
-export { GenericController, GenericOneToManyController, IdentifierResult, createRoutesFromEntities, crud, OneToManyDecorator } from "./generic-controller"
+export { GenericController, GenericOneToManyController, IdentifierResult, createRoutesFromEntities, crud, OneToManyDecorator, Repository, OneToManyRepository, RepoBaseGenericController, RepoBaseGenericOneToManyController } from "./generic-controller"
 export { HttpStatus } from "./http-status";
 export { validate, ValidatorMiddleware } from "./validator"
 export {

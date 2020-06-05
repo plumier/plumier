@@ -19,7 +19,7 @@ interface TransformOption { root?: string }
 /* ------------------------------- HELPERS --------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function createRoute(...args: string[]): string {
+function appendRoute(...args: string[]): string {
    return "/" + args
       .filter(x => !!x)
       .map(x => x.toLowerCase())
@@ -39,7 +39,7 @@ function getControllerRoutes(root: string, controller: ClassReflection): string[
       return decs.slice().reverse().map(x => transformDecorator(root, "", x))
    }
    else {
-      return [createRoute(root, striveController(controller.name))]
+      return [appendRoute(root, striveController(controller.name))]
    }
 }
 
@@ -47,7 +47,7 @@ function getControllerRoutes(root: string, controller: ClassReflection): string[
 function getRoot(rootPath: string, path: string) {
    const part = path.slice(rootPath.length).split("/").filter(x => !!x)
       .slice(0, -1)
-   return (part.length === 0) ? undefined : createRoute(...part)
+   return (part.length === 0) ? undefined : appendRoute(...part)
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -63,7 +63,7 @@ function transformDecorator(root: string, actionName: string, actionDecorator: {
       return root
    //relative route override
    else {
-      return createRoute(root, actionDecorator.url || actionName.toLowerCase())
+      return appendRoute(root, actionDecorator.url || actionName.toLowerCase())
    }
 }
 
@@ -86,7 +86,7 @@ function transformMethod(root: string, controller: ClassReflection, method: Meth
    return [{
       kind: "ActionRoute",
       method: "get",
-      url: createRoute(root, method.name),
+      url: appendRoute(root, method.name),
       controller,
       action: method,
       overridable
@@ -170,5 +170,5 @@ function mergeRoutes(routes: RouteMetadata[]) {
    return result
 }
 
-export { generateRoutes, RouteDecorator, IgnoreDecorator, RootDecorator, mergeRoutes }
+export { generateRoutes, RouteDecorator, IgnoreDecorator, RootDecorator, mergeRoutes, appendRoute }
 
