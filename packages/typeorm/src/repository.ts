@@ -1,41 +1,41 @@
-import { Class } from "@plumier/core"
+import { Class, Repository, OneToManyRepository } from "@plumier/core"
 import { Repository as NativeRepository, getManager } from "typeorm"
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
 
-class Repository<T> {
+class TypeORMRepository<T> implements Repository<T> {
     protected readonly nativeRepository: NativeRepository<T>
     constructor(type: Class<T>) {
         this.nativeRepository = getManager().getRepository(type)
     }
 
-    find(offset: number, limit: number, query: Partial<T>) {
+    find(offset: number, limit: number, query: Partial<T>): Promise<T[]> {
         return this.nativeRepository.find({ skip: offset, take: limit, where: query })
     }
 
-    async insert(doc: QueryDeepPartialEntity<T>): Promise<{ id: any }> {
+    async insert(doc: T): Promise<{ id: any }> {
         const result = await this.nativeRepository.insert(doc)
         return { id: result.raw }
     }
 
-    findById(id: any) {
+    findById(id: any): Promise<T | undefined> {
         return this.nativeRepository.findOne(id)
     }
 
-    async update(id: any, data: QueryDeepPartialEntity<T>) {
+    async update(id: any, data: T): Promise<{ id: any }> {
         await this.nativeRepository.update(id, data)
         return { id }
     }
 
-    async delete(id: any) {
+    async delete(id: any): Promise<{ id: any }> {
         await this.nativeRepository.delete(id)
         return { id }
     }
 }
 
-class OneToManyRepository<P, T>  {
+class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
     protected readonly nativeRepository: NativeRepository<T>
     protected readonly nativeParentRepository: NativeRepository<P>
-    protected readonly inversePropertyName:string
+    protected readonly inversePropertyName: string
     constructor(parent: Class<P>, type: Class<T>, protected relation: string) {
         this.nativeRepository = getManager().getRepository(type)
         this.nativeParentRepository = getManager().getRepository(parent)
@@ -43,12 +43,13 @@ class OneToManyRepository<P, T>  {
         this.inversePropertyName = join!.inverseSidePropertyPath;
     }
 
-    async find(pid: any, offset: number, limit: number, query: Partial<T>) {
+    async find(pid: any, offset: number, limit: number, query: Partial<T>): Promise<T[]> {
         return this.nativeRepository.find({ where: { [this.inversePropertyName]: pid, ...query }, skip: offset, take: limit })
     }
-    async insert(pid: any, doc: QueryDeepPartialEntity<T>): Promise<{ id: any }> {
+
+    async insert(pid: any, data: T): Promise<{ id: any }> {
         const parent = await this.nativeParentRepository.findOne(pid)
-        const inserted = await this.nativeRepository.insert(doc);
+        const inserted = await this.nativeRepository.insert(data);
         await this.nativeParentRepository.createQueryBuilder()
             .relation(this.relation)
             .of(parent)
@@ -56,23 +57,23 @@ class OneToManyRepository<P, T>  {
         return { id: inserted.raw }
     }
 
-    findParentById(id: any) {
+    findParentById(id: any): Promise<P | undefined> {
         return this.nativeParentRepository.findOne(id)
     }
 
-    findById(id: any) {
+    findById(id: any): Promise<T | undefined> {
         return this.nativeRepository.findOne(id)
     }
 
-    async update(id: any, data: QueryDeepPartialEntity<T>) {
+    async update(id: any, data: T): Promise<{ id: any }> {
         await this.nativeRepository.update(id, data as any)
         return { id }
     }
 
-    async delete(id: any) {
+    async delete(id: any): Promise<{ id: any }> {
         await this.nativeRepository.delete(id)
         return { id }
     }
 }
 
-export {Repository, OneToManyRepository}
+export { TypeORMRepository, TypeORMOneToManyRepository }

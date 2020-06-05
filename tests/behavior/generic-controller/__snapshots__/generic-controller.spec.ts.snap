@@ -3,6 +3,16 @@
 exports[`Generic Controller Should able to use Number id 1`] = `
 Array [
   Object {
+    "name": "findByIdOrNotFound",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Object,
+      },
+    ],
+    "type": Promise,
+  },
+  Object {
     "name": "list",
     "pars": Array [
       Object {
@@ -95,6 +105,16 @@ Array [
 exports[`Generic Controller Should able to use String id 1`] = `
 Array [
   Object {
+    "name": "findByIdOrNotFound",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Object,
+      },
+    ],
+    "type": Promise,
+  },
+  Object {
     "name": "list",
     "pars": Array [
       Object {
@@ -186,6 +206,26 @@ Array [
 
 exports[`Generic One To Many Controller Should able to use Number id 1`] = `
 Array [
+  Object {
+    "name": "findByIdOrNotFound",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Object,
+      },
+    ],
+    "type": Promise,
+  },
+  Object {
+    "name": "findParentByIdOrNotFound",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Object,
+      },
+    ],
+    "type": Promise,
+  },
   Object {
     "name": "list",
     "pars": Array [
@@ -303,6 +343,26 @@ Array [
 exports[`Generic One To Many Controller Should able to use Number pid 1`] = `
 Array [
   Object {
+    "name": "findByIdOrNotFound",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Object,
+      },
+    ],
+    "type": Promise,
+  },
+  Object {
+    "name": "findParentByIdOrNotFound",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Object,
+      },
+    ],
+    "type": Promise,
+  },
+  Object {
     "name": "list",
     "pars": Array [
       Object {
@@ -419,6 +479,26 @@ Array [
 exports[`Generic One To Many Controller Should able to use String id 1`] = `
 Array [
   Object {
+    "name": "findByIdOrNotFound",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Object,
+      },
+    ],
+    "type": Promise,
+  },
+  Object {
+    "name": "findParentByIdOrNotFound",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Object,
+      },
+    ],
+    "type": Promise,
+  },
+  Object {
     "name": "list",
     "pars": Array [
       Object {
@@ -534,6 +614,26 @@ Array [
 
 exports[`Generic One To Many Controller Should able to use String pid 1`] = `
 Array [
+  Object {
+    "name": "findByIdOrNotFound",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Object,
+      },
+    ],
+    "type": Promise,
+  },
+  Object {
+    "name": "findParentByIdOrNotFound",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Object,
+      },
+    ],
+    "type": Promise,
+  },
   Object {
     "name": "list",
     "pars": Array [

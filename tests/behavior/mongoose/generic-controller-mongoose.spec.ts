@@ -1,5 +1,5 @@
 import { Class, Configuration, consoleLog, route, val } from "@plumier/core"
-import model, { collection, CRUDMongooseFacility, models, OneToManyRepository, Repository } from "@plumier/mongoose"
+import model, { collection, CRUDMongooseFacility, models, MongooseOneToManyRepository, MongooseRepository } from "@plumier/mongoose"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
@@ -147,9 +147,9 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 class UsersController {
-                    readonly repo: Repository<User>
+                    readonly repo: MongooseRepository<User>
                     constructor() {
-                        this.repo = new Repository(User)
+                        this.repo = new MongooseRepository(User)
                     }
                     @route.get(":id")
                     get(id: number) {
@@ -175,7 +175,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
                 const { body } = await supertest(app.callback())
                     .get("/users?offset=0&limit=20")
@@ -191,7 +191,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
                 const { body } = await supertest(app.callback())
                     .get("/users")
@@ -207,7 +207,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 await repo.insert({ email: "jean.doe@gmail.com", name: "Jean Doe" })
                 await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
                 const { body } = await supertest(app.callback())
@@ -225,7 +225,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 await repo.insert({ email: "jean.doe@gmail.com", name: "Juan Doe" })
                 await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
                 const { body } = await supertest(app.callback())
@@ -242,7 +242,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 const { body } = await supertest(app.callback())
                     .post("/users")
                     .send({ email: "john.doe@gmail.com", name: "John Doe" })
@@ -260,7 +260,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
                     .get(`/users/${data.id}`)
@@ -290,7 +290,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
                     .put(`/users/${data.id}`)
@@ -323,7 +323,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
                     .patch(`/users/${data.id}`)
@@ -343,7 +343,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
                     .patch(`/users/${data.id}`)
@@ -376,7 +376,7 @@ describe("TypeOrm", () => {
                 }
                 model(User)
                 const app = await createApp({ mode: "production" })
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
                 const { body } = await supertest(app.callback())
                     .delete(`/users/${data.id}`)
@@ -400,7 +400,7 @@ describe("TypeOrm", () => {
         })
         describe("Nested CRUD One to Many Function", () => {
             async function createUser<T>(type: Class<T>) {
-                const userRepo = new Repository(type)
+                const userRepo = new MongooseRepository(type)
                 const inserted = await userRepo.insert({ email: "john.doe@gmail.com", name: "John Doe" } as any)
                 const saved = await userRepo.findById(inserted.id)
                 return saved!
@@ -422,7 +422,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
                 const { body } = await supertest(app.callback())
                     .get(`/users/${user._id}/animals?offset=0&limit=20`)
@@ -447,7 +447,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
                 const { body } = await supertest(app.callback())
                     .get(`/users/${user._id}/animals`)
@@ -471,7 +471,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 await animalRepo.insert(user._id.toHexString(), { name: `Jojo` })
                 await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
                 const { body } = await supertest(app.callback())
@@ -499,7 +499,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 await animalRepo.insert(user._id.toHexString(), { name: `Jojo`, age: 5 })
                 await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}`, age: 4 })))
                 const { body } = await supertest(app.callback())
@@ -524,7 +524,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const repo = new Repository(User)
+                const repo = new MongooseRepository(User)
                 await supertest(app.callback())
                     .post(`/users/${user._id}/animals`)
                     .send({ name: "Mimi" })
@@ -533,7 +533,7 @@ describe("TypeOrm", () => {
                     .post(`/users/${user._id}/animals`)
                     .send({ name: "Mimi" })
                     .expect(200)
-                const inserted = await repo.findById(user._id).populate("animals")
+                const inserted = await repo.Model.findById(user._id).populate("animals")
                 expect(inserted).toMatchSnapshot()
             })
             it("Should throw 404 if parent not found POST /users/:parentId/animals", async () => {
@@ -575,7 +575,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
                 const { body } = await supertest(app.callback())
                     .get(`/users/${user._id}/animals/${inserted.id}`)
@@ -620,7 +620,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
                 const { body } = await supertest(app.callback())
                     .put(`/users/${user._id}/animals/${inserted.id}`)
@@ -668,7 +668,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
                 const { body } = await supertest(app.callback())
                     .patch(`/users/${user._id}/animals/${inserted.id}`)
@@ -697,7 +697,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi`, age: 4 })
                 const { body } = await supertest(app.callback())
                     .patch(`/users/${user._id}/animals/${inserted.id}`)
@@ -745,7 +745,7 @@ describe("TypeOrm", () => {
                 model(User)
                 const app = await createApp({ mode: "production" })
                 const user = await createUser(User)
-                const animalRepo = new OneToManyRepository(User, Animal, "animals")
+                const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
                 const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
                 const { body } = await supertest(app.callback())
                     .delete(`/users/${user._id}/animals/${inserted.id}`)
