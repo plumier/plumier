@@ -291,6 +291,6 @@ class RepoBaseGenericOneToManyController<P, T, PID, TID> extends GenericOneToMan
 
 export {
     crud, createRoutesFromEntities, GenericController,
-    GenericOneToManyController, IdentifierResult, OneToManyDecorator,
+    GenericOneToManyController, IdentifierResult, OneToManyDecorator, IdentifierDecorator,
     Repository, OneToManyRepository, RepoBaseGenericController, RepoBaseGenericOneToManyController
 }
