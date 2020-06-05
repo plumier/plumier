@@ -1,21 +1,15 @@
-name: Conventional Commit Message
+name: "PR Title Lint"
 on:
   pull_request:
     types:
       - opened
-      - reopened
       - edited
       - synchronize
 
 jobs:
-  lint:
+  main:
     runs-on: ubuntu-latest
     steps:
-      - uses: aslafy-z/conventional-pr-title-action@2.2.0
-        with:
-          success-state: Title follows the specification.
-          failure-state: Title does not follow the specification.
-          context-name: conventional-pr-title
-          preset: conventional-changelog-angular@latest
+      - uses: amannn/action-semantic-pull-request@v1.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
