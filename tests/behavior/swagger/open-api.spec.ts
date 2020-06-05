@@ -395,15 +395,15 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Other {
                 constructor(
-                    public name:string
-                ){}
+                    public name: string
+                ) { }
             }
             @domain()
             class Parameters {
                 constructor(
                     public str: string,
                     public num: number,
-                    public other:Other
+                    public other: Other
                 ) { }
             }
             class UsersController {
@@ -424,7 +424,7 @@ describe("Open API 3.0 Generation", () => {
                     public str: string,
                     public num: number,
                     @reflect.type([String])
-                    public other:string[]
+                    public other: string[]
                 ) { }
             }
             class UsersController {
@@ -443,7 +443,7 @@ describe("Open API 3.0 Generation", () => {
             class Parameters {
                 constructor(
                     @crud.id()
-                    public id:number,
+                    public id: number,
                     public str: string,
                     public num: number,
                 ) { }
@@ -956,22 +956,77 @@ describe("Open API 3.0 Generation", () => {
                 constructor(
                     public tag: string,
                     @reflect.type(x => [User])
-                    public users:User[]
+                    public users: User[]
                 ) { }
             }
             class UsersController {
                 @route.get("")
-                get():User { return {} as any}
+                get(): User { return {} as any }
             }
             class TagsController {
                 @route.get("")
-                get():Tag { return {} as any}
+                get(): Tag { return {} as any }
             }
             const app = await createApp([UsersController, TagsController])
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
             expect(body.components.schemas).toMatchSnapshot()
+        })
+        it("Should ignore one to may properties", async () => {
+            @domain()
+            class Tag {
+                constructor(public tag: string) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public userName: string,
+                    public password: string,
+                    @crud.oneToMany(x => [Tag])
+                    @reflect.type(x => [Tag])
+                    public tag: Tag[]
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+            expect(body.components.schemas["~User"]).toMatchSnapshot()
+        })
+        it("Should ignore inverse property", async () => {
+            @domain()
+            class User {
+                constructor(
+                    public userName: string,
+                    public password: string,
+                    @reflect.type(x => [Tag])
+                    public tag: Tag[]
+                ) { }
+            }
+            @domain()
+            class Tag {
+                constructor(
+                    public tag: string,
+                    @crud.inverseProperty()
+                    public user:User
+                ) { }
+            }
+            class TagsController {
+                @route.post("")
+                save(tag: Tag) { }
+            }
+            const app = await createApp(TagsController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.Tag).toMatchSnapshot()
+            expect(body.components.schemas["~Tag"]).toMatchSnapshot()
         })
     })
 

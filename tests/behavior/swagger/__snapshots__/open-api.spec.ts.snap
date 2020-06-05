@@ -409,6 +409,56 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Component Schema Should ignore inverse property 1`] = `
+Object {
+  "properties": Object {
+    "tag": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should ignore inverse property 2`] = `
+Object {
+  "properties": Object {
+    "tag": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should ignore one to may properties 1`] = `
+Object {
+  "properties": Object {
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should ignore one to may properties 2`] = `
+Object {
+  "properties": Object {
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
 exports[`Open API 3.0 Generation Component Schema Should include partial object component 1`] = `
 Object {
   "properties": Object {

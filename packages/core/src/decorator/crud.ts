@@ -7,9 +7,9 @@ namespace crud {
         return decorateProperty((target: any, propertyName) => <OneToManyDecorator>{ kind: "GenericDecoratorOneToMany", type, parentType: target })
     }
 
-    // export function inverseProperty() {
-    //     return decorateProperty(<InversePropertyDecorator>{ kind: "GenericInverseProperty" })
-    // }
+    export function inverseProperty() {
+        return decorateProperty(<InversePropertyDecorator>{ kind: "GenericInverseProperty" })
+    }
 
     export function id() {
         return decorateProperty(<IdentifierDecorator>{ kind: "GenericDecoratorId" })
