@@ -9,10 +9,10 @@ import {
     Class,
     Configuration,
     IdentifierDecorator,
-    OneToManyDecorator
+    OneToManyDecorator,
+    InversePropertyDecorator
 } from "@plumier/core"
 import { ValidatorDecorator, PartialValidator } from "typedconverter"
-import { InversePropertyDecorator } from 'core/src/generic-controller'
 
 const isRequired = (dec: ApiRequiredDecorator): dec is ApiRequiredDecorator => dec.kind === "ApiRequired"
 const isBind = (dec: BindingDecorator): dec is BindingDecorator => dec.type === "ParameterBinding"

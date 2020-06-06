@@ -115,6 +115,43 @@ Array [
 ]
 `;
 
+exports[`Route Ignore Should able to ignore class from route generation 1`] = `Array []`;
+
+exports[`Route Ignore Should able to ignore specific methods from class ignore 1`] = `
+Array [
+  Object {
+    "method": "put",
+    "url": "/users/:id",
+  },
+]
+`;
+
+exports[`Route Ignore Should able to ignore specific methods from class ignore with multiple root route 1`] = `
+Array [
+  Object {
+    "method": "put",
+    "url": "/users/:id",
+  },
+  Object {
+    "method": "put",
+    "url": "/clients/:id",
+  },
+]
+`;
+
+exports[`Route Ignore Should able to ignore specific methods from class ignore with multiple route 1`] = `
+Array [
+  Object {
+    "method": "put",
+    "url": "/users/:id",
+  },
+  Object {
+    "method": "put",
+    "url": "/users/modify",
+  },
+]
+`;
+
 exports[`Route Merging Should keep duplicate if not overridable 1`] = `
 Array [
   Object {

@@ -1,4 +1,4 @@
-import { decorateClass, decorateMethod } from "tinspector"
+import { decorateClass, decorateMethod, decorate, DecoratorId } from "tinspector"
 
 import { HttpMethod } from "../types"
 import { IgnoreDecorator, RootDecorator, RouteDecorator } from "../route-generator"
@@ -274,7 +274,7 @@ class RouteDecoratorImpl {
     //otherMethod not generated
     ```
     */
-   ignore() { return decorateMethod(<IgnoreDecorator>{ name: "Ignore" }) }
+   ignore(...methods:string[]) { return decorate(<IgnoreDecorator>{ [DecoratorId]: "route:ignore", name: "Ignore", methods }, ["Class", "Method", "Property"], { allowMultiple: false }) }
 }
 
 const route = new RouteDecoratorImpl()

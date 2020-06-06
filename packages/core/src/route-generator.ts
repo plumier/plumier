@@ -10,7 +10,7 @@ import { HttpMethod, RouteInfo, RouteMetadata } from "./types"
 // --------------------------------------------------------------------- //
 
 interface RouteDecorator { name: "Route", method: HttpMethod, url?: string }
-interface IgnoreDecorator { name: "Ignore" }
+interface IgnoreDecorator { name: "Ignore", methods: string[] }
 interface RootDecorator { name: "Root", url: string }
 interface TransformOption { root?: string }
 
@@ -32,7 +32,7 @@ function striveController(name: string) {
    return name.replace(/controller$/i, "")
 }
 
-function getControllerRoutes(root: string, controller: ClassReflection): string[] {
+function getRootRoutes(root: string, controller: ClassReflection): string[] {
    const decs: RootDecorator[] = controller.decorators.filter((x: RootDecorator) => x.name == "Root")
    if (decs.length > 0) {
       return decs.slice().reverse().map(x => transformDecorator(root, "", x))
@@ -99,11 +99,18 @@ function isController(meta: ClassReflection) {
 function transformController(object: ClassReflection | Class, overridable: boolean, opt?: TransformOption) {
    const controller = typeof object === "function" ? reflect(object) : object
    if (!isController(controller)) return []
-   const controllerRoutes = getControllerRoutes(opt && opt.root || "", controller)
+   const rootRoutes = getRootRoutes(opt && opt.root || "", controller)
    const infos: RouteInfo[] = []
+   // check for class @route.ignore()
+   const ignoreDecorator = controller.decorators.find((x:IgnoreDecorator): x is IgnoreDecorator => x.name === "Ignore")
+   // if has @route.ignore() (without specify method) than ignore immediately
+   if(ignoreDecorator && ignoreDecorator.methods.length === 0) return []
+   const ignoredMethods = ignoreDecorator?.methods || []
 
-   for (const ctl of controllerRoutes) {
+   for (const ctl of rootRoutes) {
       for (const method of controller.methods) {
+         // if method in ignored list then skip
+         if(ignoredMethods.some(x => x === method.name)) continue
          if (method.decorators.some((x: IgnoreDecorator | RouteDecorator) => x.name == "Ignore" || x.name == "Route"))
             infos.push(...transformMethodWithDecorator(ctl, controller, method, overridable))
          else

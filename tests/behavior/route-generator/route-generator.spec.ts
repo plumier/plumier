@@ -1628,3 +1628,64 @@ describe("Route Merging", () => {
     })
 })
 
+describe("Route Ignore", () => {
+    it("Should able to ignore class from route generation", () => {
+        @route.ignore()
+        class UsersController {
+            @route.get("")
+            get(id: string) { }
+        }
+        const routes = generateRoutes(UsersController)
+        expect(routes).toMatchSnapshot()
+    })
+    it("Should able to ignore specific methods from class ignore", () => {
+        @route.ignore("get", "save")
+        class UsersController {
+            @route.get("")
+            get(id: string) { }
+
+            @route.post("")
+            save() { }
+
+            @route.put(":id")
+            modify(id: string) { }
+        }
+        const routes = generateRoutes(UsersController)
+        expect(routes.map(x => ({ method: x.method, url: x.url }))).toMatchSnapshot()
+    })
+
+    it("Should able to ignore specific methods from class ignore with multiple root route", () => {
+        @route.ignore("get", "save")
+        @route.root("users")
+        @route.root("clients")
+        class UsersController {
+            @route.get("")
+            get(id: string) { }
+
+            @route.post("")
+            save() { }
+
+            @route.put(":id")
+            modify(id: string) { }
+        }
+        const routes = generateRoutes(UsersController)
+        expect(routes.map(x => ({ method: x.method, url: x.url }))).toMatchSnapshot()
+    })
+    it("Should able to ignore specific methods from class ignore with multiple route", () => {
+        @route.ignore("get", "save")
+        class UsersController {
+            @route.get("")
+            @route.get()
+            get(id: string) { }
+
+            @route.post()
+            save() { }
+
+            @route.put(":id")
+            @route.put()
+            modify(id: string) { }
+        }
+        const routes = generateRoutes(UsersController)
+        expect(routes.map(x => ({ method: x.method, url: x.url }))).toMatchSnapshot()
+    })
+})
