@@ -6,7 +6,7 @@ import { api } from "./decorator/api"
 import { bind } from "./decorator/bind"
 import { domain } from "./decorator/common"
 import { route } from "./decorator/route"
-import { appendRoute, generateRoutes } from "./route-generator"
+import { appendRoute, generateRoutes, IgnoreDecorator } from "./route-generator"
 import { HttpStatusError } from "./types"
 
 
@@ -94,6 +94,15 @@ function getGenericTypeParameters(instance: object) {
     }
 }
 
+function getIgnore(entity: Class, property?: string): IgnoreDecorator | undefined {
+    const meta = reflect(entity)
+    if (property) {
+        const prop = meta.properties.find(x => x.name === property)!
+        return prop.decorators.find((x: IgnoreDecorator): x is IgnoreDecorator => x.name === "Ignore")
+    }
+    else
+        return meta.decorators.find((x: IgnoreDecorator): x is IgnoreDecorator => x.name === "Ignore")
+}
 
 function createController(rootPath: string, entity: Class, controller: Class<GenericController<any, any>>, nameConversion: (x: string) => string) {
     // get type of ID column on entity
@@ -103,6 +112,10 @@ function createController(rootPath: string, entity: Class, controller: Class<Gen
     // add root decorator
     const name = nameConversion(entity.name)
     const path = appendRoute(rootPath, name)
+    // copy @route.ignore() on entity to the controller to control route generation
+    const ignore = getIgnore(entity)
+    if (ignore)
+        Reflect.decorate([route.ignore(...ignore.methods)], Controller)
     Reflect.decorate([route.root(path)], Controller)
     Reflect.decorate([api.tag(entity.name)], Controller)
     return Controller
@@ -120,6 +133,10 @@ function createNestedController(rootPath: string, dec: OneToManyDecorator, contr
     // add root decorator
     const name = nameConversion(dec.parentType.name)
     const path = appendRoute(rootPath, `${name}/:pid/${dec.propertyName}`)
+    // copy @route.ignore() on entity to the controller to control route generation
+    const ignore = getIgnore(dec.parentType, dec.propertyName)
+    if (ignore)
+        Reflect.decorate([route.ignore(...ignore.methods)], Controller)
     Reflect.decorate([
         route.root(path),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor

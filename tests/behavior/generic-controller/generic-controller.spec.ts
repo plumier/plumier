@@ -5,6 +5,7 @@ import {
     IdentifierResult,
     RepoBaseGenericController,
     RepoBaseGenericOneToManyController,
+    route,
 } from "@plumier/core"
 import { transform } from "@plumier/swagger"
 import reflect, { generic, metadata } from "tinspector"
@@ -109,22 +110,22 @@ describe("Generic One To Many Controller", () => {
 })
 
 describe("Rote Generator", () => {
-    class Animal {
-        @reflect.noop()
-        name: string
-    }
-    class User {
-        @reflect.noop()
-        name: string
-
-        @reflect.noop()
-        email: string
-
-        @crud.oneToMany(x => Animal)
-        @reflect.type(x => [Animal])
-        animals: Animal[]
-    }
     it("Should generate routes properly", () => {
+        class Animal {
+            @reflect.noop()
+            name: string
+        }
+        class User {
+            @reflect.noop()
+            name: string
+    
+            @reflect.noop()
+            email: string
+    
+            @crud.oneToMany(x => Animal)
+            @reflect.type(x => [Animal])
+            animals: Animal[]
+        }
         @generic.template("T", "TID")
         @generic.type("T", "TID")
         class UsersController<T, TID> extends RepoBaseGenericController<T, TID> { }
@@ -132,6 +133,71 @@ describe("Rote Generator", () => {
         @generic.type("P", "T", "PID", "TID")
         class UsersAnimalsController<P, T, PID, TID> extends RepoBaseGenericOneToManyController<P, T, PID, TID> { }
         const routes = createRoutesFromEntities("", [User, Animal], UsersController, UsersAnimalsController, x => x)
+        expect(routes.map(x => ({ method: x.method, path: x.url }))).toMatchSnapshot()
+    })
+    it("Should able to ignore entity from routes generation", () => {
+        @route.ignore()
+        class Animal {
+            @reflect.noop()
+            name: string
+        }
+        class User {
+            @reflect.noop()
+            name: string
+    
+            @reflect.noop()
+            email: string
+        }
+        const routes = createRoutesFromEntities("", [Animal, User], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+        expect(routes.map(x => ({ method: x.method, path: x.url }))).toMatchSnapshot()
+    })
+    it("Should able to ignore some methods of generated routes", () => {
+        @route.ignore("list", "get", "save", "delete", "replace")
+        class Animal {
+            @reflect.noop()
+            name: string
+        }
+        const routes = createRoutesFromEntities("", [Animal], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+        expect(routes.map(x => ({ method: x.method, path: x.url }))).toMatchSnapshot()
+    })
+    it("Should able to ignore one to many route generation", () => {
+        class Animal {
+            @reflect.noop()
+            name: string
+        }
+        class User {
+            @reflect.noop()
+            name: string
+    
+            @reflect.noop()
+            email: string
+    
+            @route.ignore()
+            @crud.oneToMany(x => Animal)
+            @reflect.type(x => [Animal])
+            animals: Animal[]
+        }
+        const routes = createRoutesFromEntities("", [Animal, User], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+        expect(routes.map(x => ({ method: x.method, path: x.url }))).toMatchSnapshot()
+    })
+    it("Should able to ignore some method on one to many route generation", () => {
+        class Animal {
+            @reflect.noop()
+            name: string
+        }
+        class User {
+            @reflect.noop()
+            name: string
+    
+            @reflect.noop()
+            email: string
+    
+            @route.ignore("list", "get", "save", "delete", "replace")
+            @crud.oneToMany(x => Animal)
+            @reflect.type(x => [Animal])
+            animals: Animal[]
+        }
+        const routes = createRoutesFromEntities("", [Animal, User], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
         expect(routes.map(x => ({ method: x.method, path: x.url }))).toMatchSnapshot()
     })
 })

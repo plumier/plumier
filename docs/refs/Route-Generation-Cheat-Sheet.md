@@ -294,3 +294,57 @@ export class HomeController {
 ```
 
 Above code will generate `GET /home` route instead of `GET /home/index`. `@rest.get("")` and `@rest.get()` will behave the same.
+
+## Ignore Route Generation
+By default Route Generation System will generate all methods inside controller into route. In some case you need to create an helper method inside controller but you don't want the method generated into route.
+
+```typescript
+export class HomeController {
+    @route.ignore()
+    helper(){
+        
+    }
+
+    @route.get()
+    index(){
+        helper()
+        return "My Cool Animal API"
+    }
+}
+```
+
+Above code showing that `helper` method will not be generated because it is marked with `@route.ignore()` 
+
+## Ignore Controller Completely 
+`@route.ignore()` can be applied on controller and make all routes inside controller ignored completely. This feature important on CRUD Route generation, where controller automatically generated and you don't have control to the controller.  
+
+```typescript
+@route.ignore()
+export class HomeController {
+    @rest.get()
+    index(){
+        return "My Cool Animal API"
+    }
+}
+```
+
+Above code will cause all routes inside `HomeController` ignored completely. 
+
+## Ignore Specific Method 
+If you have a controller with inheritance, you can ignore super class routes by specifying method name like below 
+
+```typescript
+export class ControllerBase {
+    @rest.get()
+    get(){ }
+    @rest.post()
+    save(){ }
+    @rest.put()
+    replace(){ }
+}
+
+@route.ignore("save", "replace")
+export class UsersController extends ControllerBase{}
+```
+
+Above code showing that we ignore the `save` and `replace` method which cause only `GET /users/get` will be generated.

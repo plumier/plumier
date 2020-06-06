@@ -750,6 +750,154 @@ Array [
 
 exports[`Generic One To Many Controller Should throw error when no OneToManyDecorator provided 1`] = `"Configuration Error: UsersController doesn't decorated with OneToManyDecorator @decorateClass(<OneToManyDecorator>)"`;
 
+exports[`Rote Generator Should able to ignore entity from routes generation 1`] = `
+Array [
+  Object {
+    "method": "get",
+    "path": "/user",
+  },
+  Object {
+    "method": "post",
+    "path": "/user",
+  },
+  Object {
+    "method": "get",
+    "path": "/user/:id",
+  },
+  Object {
+    "method": "patch",
+    "path": "/user/:id",
+  },
+  Object {
+    "method": "put",
+    "path": "/user/:id",
+  },
+  Object {
+    "method": "delete",
+    "path": "/user/:id",
+  },
+]
+`;
+
+exports[`Rote Generator Should able to ignore one to many route generation 1`] = `
+Array [
+  Object {
+    "method": "get",
+    "path": "/animal",
+  },
+  Object {
+    "method": "post",
+    "path": "/animal",
+  },
+  Object {
+    "method": "get",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "patch",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "put",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "delete",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "get",
+    "path": "/user",
+  },
+  Object {
+    "method": "post",
+    "path": "/user",
+  },
+  Object {
+    "method": "get",
+    "path": "/user/:id",
+  },
+  Object {
+    "method": "patch",
+    "path": "/user/:id",
+  },
+  Object {
+    "method": "put",
+    "path": "/user/:id",
+  },
+  Object {
+    "method": "delete",
+    "path": "/user/:id",
+  },
+]
+`;
+
+exports[`Rote Generator Should able to ignore some method on one to many route generation 1`] = `
+Array [
+  Object {
+    "method": "get",
+    "path": "/animal",
+  },
+  Object {
+    "method": "post",
+    "path": "/animal",
+  },
+  Object {
+    "method": "get",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "patch",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "put",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "delete",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "get",
+    "path": "/user",
+  },
+  Object {
+    "method": "post",
+    "path": "/user",
+  },
+  Object {
+    "method": "get",
+    "path": "/user/:id",
+  },
+  Object {
+    "method": "patch",
+    "path": "/user/:id",
+  },
+  Object {
+    "method": "put",
+    "path": "/user/:id",
+  },
+  Object {
+    "method": "delete",
+    "path": "/user/:id",
+  },
+  Object {
+    "method": "patch",
+    "path": "/user/:pid/animals/:id",
+  },
+]
+`;
+
+exports[`Rote Generator Should able to ignore some methods of generated routes 1`] = `
+Array [
+  Object {
+    "method": "patch",
+    "path": "/animal/:id",
+  },
+]
+`;
+
 exports[`Rote Generator Should generate routes properly 1`] = `
 Array [
   Object {
