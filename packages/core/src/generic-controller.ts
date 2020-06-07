@@ -6,7 +6,7 @@ import { api } from "./decorator/api"
 import { bind } from "./decorator/bind"
 import { domain } from "./decorator/common"
 import { route } from "./decorator/route"
-import { appendRoute, generateRoutes, IgnoreDecorator } from "./route-generator"
+import { appendRoute, generateRoutes, IgnoreDecorator, findControllerRecursive } from "./route-generator"
 import { HttpStatusError } from "./types"
 
 
@@ -29,6 +29,10 @@ interface InversePropertyDecorator {
     kind: "GenericInverseProperty"
 }
 
+interface GenericControllerDecorator {
+    kind: "GenericController"
+}
+
 interface Repository<T> {
     find(offset: number, limit: number, query: Partial<T>): Promise<T[]>
     insert(data: Partial<T>): Promise<{ id: any }>
@@ -46,7 +50,7 @@ interface OneToManyRepository<P, T> {
     delete(id: any): Promise<{ id: any }>
 }
 
-class GenericController<T, TID>{
+class ControllerGeneric<T, TID>{
     protected readonly entityType: Class<T>
     constructor() {
         const { types } = getGenericTypeParameters(this)
@@ -54,7 +58,7 @@ class GenericController<T, TID>{
     }
 }
 
-class GenericOneToManyController<P, T, PID, TID>{
+class OneToManyControllerGeneric<P, T, PID, TID>{
     protected readonly entityType: Class<T>
     protected readonly parentEntityType: Class<P>
     protected readonly relation: string
@@ -69,7 +73,14 @@ class GenericOneToManyController<P, T, PID, TID>{
     }
 }
 
-
+interface CreateRouteFromEntitiesOption {
+    entities: Class[],
+    controllerRootPath: string,
+    controller: Class<ControllerGeneric<any, any>>,
+    oneToManyControllerRootPath: string,
+    oneToManyController: Class<OneToManyControllerGeneric<any, any, any, any>>,
+    nameConversion: (x: string) => string
+}
 
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //
@@ -104,11 +115,11 @@ function getIgnore(entity: Class, property?: string): IgnoreDecorator | undefine
         return meta.decorators.find((x: IgnoreDecorator): x is IgnoreDecorator => x.name === "Ignore")
 }
 
-function createController(rootPath: string, entity: Class, controller: Class<GenericController<any, any>>, nameConversion: (x: string) => string) {
+function createController(rootPath: string, entity: Class, controller: Class<ControllerGeneric<any, any>>, nameConversion: (x: string) => string) {
     // get type of ID column on entity
     const idType = getIdType(entity)
     // create controller type dynamically 
-    const Controller = generic.create(controller, entity, idType)
+    const Controller = generic.create({ parent: controller, name: controller.name }, entity, idType)
     // add root decorator
     const name = nameConversion(entity.name)
     const path = appendRoute(rootPath, name)
@@ -121,7 +132,7 @@ function createController(rootPath: string, entity: Class, controller: Class<Gen
     return Controller
 }
 
-function createNestedController(rootPath: string, dec: OneToManyDecorator, controller: Class<GenericOneToManyController<any, any, any, any>>, nameConversion: (x: string) => string) {
+function createNestedController(rootPath: string, dec: OneToManyDecorator, controller: Class<OneToManyControllerGeneric<any, any, any, any>>, nameConversion: (x: string) => string) {
     const decType = metadata.isCallback(dec.type) ? dec.type({}) : dec.type
     const realType = Array.isArray(decType) ? decType[0] : decType
     // get type of ID column on parent entity
@@ -129,7 +140,7 @@ function createNestedController(rootPath: string, dec: OneToManyDecorator, contr
     // get type of ID column on entity
     const idType = getIdType(realType)
     // create controller 
-    const Controller = generic.create(controller, dec.parentType, realType, parentIdType, idType)
+    const Controller = generic.create({ parent: controller, name: controller.name }, dec.parentType, realType, parentIdType, idType)
     // add root decorator
     const name = nameConversion(dec.parentType.name)
     const path = appendRoute(rootPath, `${name}/:pid/${dec.propertyName}`)
@@ -146,19 +157,39 @@ function createNestedController(rootPath: string, dec: OneToManyDecorator, contr
     return Controller
 }
 
-function createRoutesFromEntities(rootPath: string, entities: Class[], controller: Class<GenericController<any, any>>, oneToManyController: Class<GenericOneToManyController<any, any, any, any>>, nameConversion: (x: string) => string) {
+function createRoutesFromEntities(opt: CreateRouteFromEntitiesOption) {
     const controllers = []
-    for (const entity of entities) {
-        controllers.push(createController(rootPath, entity, controller, nameConversion))
+    for (const entity of opt.entities) {
+        controllers.push(createController(opt.controllerRootPath, entity, opt.controller, opt.nameConversion))
         const meta = reflect(entity)
         for (const prop of meta.properties) {
             const oneToMany = prop.decorators.find((x: OneToManyDecorator): x is OneToManyDecorator => x.kind === "GenericDecoratorOneToMany")
             if (oneToMany) {
-                controllers.push(createNestedController(rootPath, { ...oneToMany, propertyName: prop.name }, oneToManyController, nameConversion))
+                controllers.push(createNestedController(opt.oneToManyControllerRootPath, { ...oneToMany, propertyName: prop.name }, opt.oneToManyController, opt.nameConversion))
             }
         }
     }
     return generateRoutes(controllers, { overridable: true })
+}
+
+function getGenericControllers(rootPath: string | undefined = undefined, controller: string | Class | Class[], defaultController: Class<ControllerGeneric<any, any>>, defaultOneToManyController: Class<OneToManyControllerGeneric<any, any, any, any>>) {
+    const result: { root: string, type: Class }[] = []
+    const root = rootPath ?? ""
+    if (typeof controller === "string") {
+        const isController = (x: Class) => x.name.search(/generic$/i) > -1
+        const controllers = findControllerRecursive(controller, x => isController(x.type))
+            .map(x => ({ ...x, root: rootPath ?? x.root }))
+        result.push(...controllers)
+    }
+    else if (Array.isArray(controller)) {
+        result.push(...controller.map(x => ({ root, type: x })))
+    }
+    else {
+        result.push({ root, type: controller })
+    }
+    const genericController = result.find(x => x.type.prototype instanceof ControllerGeneric) ?? { root, type: defaultController }
+    const genericOneToManyController = result.find(x => x.type.prototype instanceof OneToManyControllerGeneric) ?? { root, type: defaultOneToManyController }
+    return { genericController, genericOneToManyController }
 }
 
 // --------------------------------------------------------------------- //
@@ -175,7 +206,7 @@ class IdentifierResult<TID> {
 }
 
 @generic.template("T", "TID")
-class RepoBaseGenericController<T, TID> extends GenericController<T, TID>{
+class RepoBaseControllerGeneric<T, TID> extends ControllerGeneric<T, TID>{
     protected readonly repo: Repository<T>
     constructor(fac: ((x: Class<T>) => Repository<T>)) {
         super()
@@ -230,7 +261,7 @@ class RepoBaseGenericController<T, TID> extends GenericController<T, TID>{
 }
 
 @generic.template("P", "T", "PID", "TID")
-class RepoBaseGenericOneToManyController<P, T, PID, TID> extends GenericOneToManyController<P, T, PID, TID>{
+class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> extends OneToManyControllerGeneric<P, T, PID, TID>{
     protected readonly repo: OneToManyRepository<P, T>
 
     constructor(fac: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
@@ -299,8 +330,8 @@ class RepoBaseGenericOneToManyController<P, T, PID, TID> extends GenericOneToMan
 }
 
 export {
-    createRoutesFromEntities, GenericController,
-    GenericOneToManyController, IdentifierResult, OneToManyDecorator, IdentifierDecorator,
-    Repository, OneToManyRepository, RepoBaseGenericController, RepoBaseGenericOneToManyController,
-    InversePropertyDecorator
+    createRoutesFromEntities, ControllerGeneric,
+    OneToManyControllerGeneric, IdentifierResult, OneToManyDecorator, IdentifierDecorator,
+    Repository, OneToManyRepository, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
+    InversePropertyDecorator, GenericControllerDecorator, getGenericControllers
 }

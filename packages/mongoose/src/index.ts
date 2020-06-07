@@ -5,6 +5,6 @@ export { getAnalysis, model, generator, getDefinition, models } from "./generato
 export { collection } from "./decorator"
 export { MongooseFacility, CRUDMongooseFacility } from "./facility"
 export { printAnalysis, createAnalyzer } from "./analyzer"
-export { MongooseGenericController, MongooseGenericOneToManyController, MongooseRepository, MongooseOneToManyRepository } from "./generic-controller"
+export { MongooseControllerGeneric, MongooseOneToManyControllerGeneric, MongooseRepository, MongooseOneToManyRepository } from "./generic-controller"
 export * from "./types"
 export default model;

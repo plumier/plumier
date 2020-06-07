@@ -902,6 +902,30 @@ exports[`Rote Generator Should generate routes properly 1`] = `
 Array [
   Object {
     "method": "get",
+    "path": "/animal",
+  },
+  Object {
+    "method": "post",
+    "path": "/animal",
+  },
+  Object {
+    "method": "get",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "patch",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "put",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "delete",
+    "path": "/animal/:id",
+  },
+  Object {
+    "method": "get",
     "path": "/user",
   },
   Object {
@@ -947,30 +971,6 @@ Array [
   Object {
     "method": "delete",
     "path": "/user/:pid/animals/:id",
-  },
-  Object {
-    "method": "get",
-    "path": "/animal",
-  },
-  Object {
-    "method": "post",
-    "path": "/animal",
-  },
-  Object {
-    "method": "get",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "patch",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "put",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "delete",
-    "path": "/animal/:id",
   },
 ]
 `;
@@ -1304,4 +1304,108 @@ exports[`Swagger One To Many Generic Controller Should generate PUT /animal/:id 
 Array [
   "Client",
 ]
+`;
+
+exports[`getGenericControllers Should able only change only one generic controller 1`] = `
+Object {
+  "genericController": Object {
+    "root": "api/v1",
+    "type": MyControllerGeneric,
+  },
+  "genericOneToManyController": Object {
+    "root": "api/v1",
+    "type": OneToManyControllerGeneric,
+  },
+}
+`;
+
+exports[`getGenericControllers Should able to change root path 1`] = `
+Object {
+  "genericController": Object {
+    "root": "api/v1",
+    "type": MyControllerGeneric,
+  },
+  "genericOneToManyController": Object {
+    "root": "api/v1",
+    "type": MyOneToManyControllerGeneric,
+  },
+}
+`;
+
+exports[`getGenericControllers Should able to provide directory path 1`] = `
+Object {
+  "genericController": Object {
+    "root": "",
+    "type": MyControllerGeneric,
+  },
+  "genericOneToManyController": Object {
+    "root": "",
+    "type": MyOneToManyControllerGeneric,
+  },
+}
+`;
+
+exports[`getGenericControllers Should able to provide directory path with nested root 1`] = `
+Object {
+  "genericController": Object {
+    "root": "/api/v1",
+    "type": MyControllerGeneric,
+  },
+  "genericOneToManyController": Object {
+    "root": "/api/v1",
+    "type": MyOneToManyControllerGeneric,
+  },
+}
+`;
+
+exports[`getGenericControllers Should able to provide path to current file 1`] = `
+Object {
+  "genericController": Object {
+    "root": "",
+    "type": MyControllerGeneric,
+  },
+  "genericOneToManyController": Object {
+    "root": "",
+    "type": MyOneToManyControllerGeneric,
+  },
+}
+`;
+
+exports[`getGenericControllers Should able to use default controllers 1`] = `
+Object {
+  "genericController": Object {
+    "root": "root/path",
+    "type": ControllerGeneric,
+  },
+  "genericOneToManyController": Object {
+    "root": "root/path",
+    "type": OneToManyControllerGeneric,
+  },
+}
+`;
+
+exports[`getGenericControllers Should get controller properly when provided classes directly 1`] = `
+Object {
+  "genericController": Object {
+    "root": "",
+    "type": MyControllerGeneric,
+  },
+  "genericOneToManyController": Object {
+    "root": "",
+    "type": MyOneToManyControllerGeneric,
+  },
+}
+`;
+
+exports[`getGenericControllers Should prioritize rootPath on configuration vs nested root 1`] = `
+Object {
+  "genericController": Object {
+    "root": "root/path",
+    "type": MyControllerGeneric,
+  },
+  "genericOneToManyController": Object {
+    "root": "root/path",
+    "type": MyOneToManyControllerGeneric,
+  },
+}
 `;

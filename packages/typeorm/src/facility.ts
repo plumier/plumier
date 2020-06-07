@@ -1,9 +1,18 @@
-import { Class, createRoutesFromEntities, DefaultFacility, crud, RouteMetadata, GenericController, GenericOneToManyController } from "@plumier/core"
+import {
+    Class,
+    createRoutesFromEntities,
+    crud,
+    DefaultFacility,
+    getGenericControllers,
+    PlumierApplication,
+    RouteMetadata,
+} from "@plumier/core"
+import { isAbsolute, join } from "path"
 import pluralize from "pluralize"
 import reflect, { noop } from "tinspector"
 import { ConnectionOptions, createConnection, getMetadataArgsStorage } from "typeorm"
 
-import { TypeOrmGenericController, TypeOrmGenericOneToManyController } from "."
+import { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
 
 
 interface TypeORMFacilityOption {
@@ -11,9 +20,8 @@ interface TypeORMFacilityOption {
 }
 
 interface CRUDTypeORMFacilityOption extends TypeORMFacilityOption {
-    rootPath: string
-    genericController: Class<GenericController<any, any>>
-    genericOneToManyController: Class<GenericOneToManyController<any, any, any, any>>
+    rootPath?: string
+    controller?: string | Class | Class[]
 }
 
 
@@ -59,16 +67,25 @@ class CRUDTypeORMFacility extends TypeORMFacility {
         super(opt)
         this.crudOpt = {
             rootPath: "",
-            genericController: TypeOrmGenericController,
-            genericOneToManyController: TypeOrmGenericOneToManyController,
             ...opt
         }
     }
 
-    async generateRoutes(): Promise<RouteMetadata[]> {
-        return createRoutesFromEntities(this.crudOpt.rootPath,
-            this.entities, this.crudOpt.genericController,
-            this.crudOpt.genericOneToManyController, x => pluralize.plural(x))
+    async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> {
+        const { controller, rootDir } = app.config
+        let ctl = typeof controller === "string" && !isAbsolute(controller) ? join(rootDir, controller) : controller
+        const { genericController, genericOneToManyController } = getGenericControllers(
+            this.crudOpt.rootPath, this.crudOpt.controller ?? ctl,
+            TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric
+        )
+        return createRoutesFromEntities({
+            entities: this.entities,
+            controller: genericController.type,
+            controllerRootPath: genericController.root,
+            oneToManyController: genericOneToManyController.type,
+            oneToManyControllerRootPath: genericOneToManyController.root,
+            nameConversion: x => pluralize.plural(x)
+        })
     }
 }
 

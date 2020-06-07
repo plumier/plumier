@@ -1,12 +1,20 @@
-import { DefaultFacility, isCustomClass, PlumierApplication, createRoutesFromEntities, GenericController } from "@plumier/core"
+import {
+    createRoutesFromEntities,
+    DefaultFacility,
+    getGenericControllers,
+    isCustomClass,
+    PlumierApplication,
+} from "@plumier/core"
 import Mongoose from "mongoose"
-import { Result, VisitorInvocation } from "typedconverter"
+import { isAbsolute, join } from "path"
 import pluralize from "pluralize"
+import { Result, VisitorInvocation } from "typedconverter"
 
-import { MongooseFacilityOption, CRUDMongooseFacilityOption } from "./types"
-import { printAnalysis } from './analyzer'
-import { getAnalysis, models } from './generator'
-import { MongooseGenericController, MongooseGenericOneToManyController } from './generic-controller'
+import { printAnalysis } from "./analyzer"
+import { getAnalysis, models } from "./generator"
+import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
+import { CRUDMongooseFacilityOption, MongooseFacilityOption } from "./types"
+
 
 
 function safeToString(obj: any) {
@@ -46,18 +54,25 @@ export class MongooseFacility extends DefaultFacility {
 
 export class CRUDMongooseFacility extends MongooseFacility {
     option: CRUDMongooseFacilityOption
-    constructor(opt?: Partial<CRUDMongooseFacilityOption>) {
+    constructor(opt?: CRUDMongooseFacilityOption) {
         super(opt)
-        this.option = {
-            rootPath: "",
-            genericController: MongooseGenericController,
-            genericOneToManyController: MongooseGenericOneToManyController,
-            ...opt
-        }
+        this.option = { ...opt }
     }
-    async generateRoutes() {
+    async generateRoutes(app: Readonly<PlumierApplication>) {
+        const { controller, rootDir } = app.config
+        let ctl = typeof controller === "string" && !isAbsolute(controller) ? join(rootDir, controller) : controller
+        const { genericController, genericOneToManyController } = getGenericControllers(
+            this.option.rootPath, this.option.controller ?? ctl,
+            MongooseControllerGeneric, MongooseOneToManyControllerGeneric
+        )
         const entities = Array.from(models.keys())
-        return createRoutesFromEntities(this.option.rootPath, entities, this.option.genericController,
-            this.option.genericOneToManyController, x => pluralize.plural(x))
+        return createRoutesFromEntities({
+            entities,
+            controller: genericController.type,
+            controllerRootPath: genericController.root,
+            oneToManyController: genericOneToManyController.type,
+            oneToManyControllerRootPath: genericOneToManyController.root,
+            nameConversion: x => pluralize.plural(x)
+        })
     }
 }

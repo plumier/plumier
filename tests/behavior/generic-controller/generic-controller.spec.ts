@@ -3,12 +3,16 @@ import {
     createRoutesFromEntities,
     crud,
     IdentifierResult,
-    RepoBaseGenericController,
-    RepoBaseGenericOneToManyController,
+    RepoBaseControllerGeneric,
+    RepoBaseOneToManyControllerGeneric,
     route,
+    getGenericControllers,
+    ControllerGeneric,
+    OneToManyControllerGeneric,
 } from "@plumier/core"
 import { transform } from "@plumier/swagger"
 import reflect, { generic, metadata } from "tinspector"
+import { join } from "path"
 
 describe("Generic Controller", () => {
     class User {
@@ -20,7 +24,7 @@ describe("Generic Controller", () => {
     }
     it("Should able to use Number id", () => {
         @generic.type(User, Number)
-        class UsersController extends RepoBaseGenericController<User, Number> { }
+        class UsersController extends RepoBaseControllerGeneric<User, Number> { }
         const meta = reflect(UsersController)
         expect(metadata.getMethods(meta)).toMatchSnapshot()
         const idResult = reflect(meta.methods.find(x => x.name === "save")!.returnType as Class)
@@ -28,7 +32,7 @@ describe("Generic Controller", () => {
     })
     it("Should able to use String id", () => {
         @generic.type(User, String)
-        class UsersController extends RepoBaseGenericController<User, String> { }
+        class UsersController extends RepoBaseControllerGeneric<User, String> { }
         const meta = reflect(UsersController)
         expect(metadata.getMethods(meta)).toMatchSnapshot()
         const idResult = reflect(meta.methods.find(x => x.name === "save")!.returnType as Class)
@@ -56,7 +60,7 @@ describe("Generic One To Many Controller", () => {
     }
     it("Should able to use Number id", () => {
         @generic.type(User, Animal, Number, Number)
-        class UsersController extends RepoBaseGenericOneToManyController<User, Animal, Number, Number> { }
+        class UsersController extends RepoBaseOneToManyControllerGeneric<User, Animal, Number, Number> { }
         const meta = reflect(UsersController)
         expect(metadata.getMethods(meta)).toMatchSnapshot()
         const idResult = reflect(meta.methods.find(x => x.name === "save")!.returnType as Class)
@@ -64,7 +68,7 @@ describe("Generic One To Many Controller", () => {
     })
     it("Should able to use String id", () => {
         @generic.type(User, Animal, Number, String)
-        class UsersController extends RepoBaseGenericOneToManyController<User, Animal, Number, String> { }
+        class UsersController extends RepoBaseOneToManyControllerGeneric<User, Animal, Number, String> { }
         const meta = reflect(UsersController)
         expect(metadata.getMethods(meta)).toMatchSnapshot()
         const idResult = reflect(meta.methods.find(x => x.name === "save")!.returnType as Class)
@@ -72,7 +76,7 @@ describe("Generic One To Many Controller", () => {
     })
     it("Should able to use Number pid", () => {
         @generic.type(User, Animal, Number, Number)
-        class UsersController extends RepoBaseGenericOneToManyController<User, Animal, Number, Number> { }
+        class UsersController extends RepoBaseOneToManyControllerGeneric<User, Animal, Number, Number> { }
         const meta = reflect(UsersController)
         expect(metadata.getMethods(meta)).toMatchSnapshot()
         const idResult = reflect(meta.methods.find(x => x.name === "save")!.returnType as Class)
@@ -80,7 +84,7 @@ describe("Generic One To Many Controller", () => {
     })
     it("Should able to use String pid", () => {
         @generic.type(User, Animal, String, Number)
-        class UsersController extends RepoBaseGenericOneToManyController<User, Animal, String, Number> { }
+        class UsersController extends RepoBaseOneToManyControllerGeneric<User, Animal, String, Number> { }
         const meta = reflect(UsersController)
         expect(metadata.getMethods(meta)).toMatchSnapshot()
         const idResult = reflect(meta.methods.find(x => x.name === "save")!.returnType as Class)
@@ -88,7 +92,7 @@ describe("Generic One To Many Controller", () => {
     })
     it("Should throw error when no OneToManyDecorator provided", () => {
         @generic.type(User, Animal, Number, Number)
-        class UsersController extends RepoBaseGenericOneToManyController<User, Animal, Number, Number> {
+        class UsersController extends RepoBaseOneToManyControllerGeneric<User, Animal, Number, Number> {
             list(pid: number, offset: number = 0, limit: number = 50, query: User) {
                 return super.list(pid, offset, limit, query)
             }
@@ -118,21 +122,28 @@ describe("Rote Generator", () => {
         class User {
             @reflect.noop()
             name: string
-    
+
             @reflect.noop()
             email: string
-    
+
             @crud.oneToMany(x => Animal)
             @reflect.type(x => [Animal])
             animals: Animal[]
         }
         @generic.template("T", "TID")
         @generic.type("T", "TID")
-        class UsersController<T, TID> extends RepoBaseGenericController<T, TID> { }
+        class UsersController<T, TID> extends RepoBaseControllerGeneric<T, TID> { }
         @generic.template("P", "T", "PID", "TID")
         @generic.type("P", "T", "PID", "TID")
-        class UsersAnimalsController<P, T, PID, TID> extends RepoBaseGenericOneToManyController<P, T, PID, TID> { }
-        const routes = createRoutesFromEntities("", [User, Animal], UsersController, UsersAnimalsController, x => x)
+        class UsersAnimalsController<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> { }
+        const routes = createRoutesFromEntities({
+            entities: [Animal, User],
+            controller: UsersController,
+            controllerRootPath: "",
+            oneToManyController: UsersAnimalsController,
+            oneToManyControllerRootPath: "",
+            nameConversion: x => x
+        })
         expect(routes.map(x => ({ method: x.method, path: x.url }))).toMatchSnapshot()
     })
     it("Should able to ignore entity from routes generation", () => {
@@ -144,11 +155,18 @@ describe("Rote Generator", () => {
         class User {
             @reflect.noop()
             name: string
-    
+
             @reflect.noop()
             email: string
         }
-        const routes = createRoutesFromEntities("", [Animal, User], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+        const routes = createRoutesFromEntities({
+            entities: [Animal, User],
+            controller: RepoBaseControllerGeneric,
+            controllerRootPath: "",
+            oneToManyController: RepoBaseOneToManyControllerGeneric,
+            oneToManyControllerRootPath: "",
+            nameConversion: x => x
+        })
         expect(routes.map(x => ({ method: x.method, path: x.url }))).toMatchSnapshot()
     })
     it("Should able to ignore some methods of generated routes", () => {
@@ -157,7 +175,14 @@ describe("Rote Generator", () => {
             @reflect.noop()
             name: string
         }
-        const routes = createRoutesFromEntities("", [Animal], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+        const routes = createRoutesFromEntities({
+            entities: [Animal],
+            controller: RepoBaseControllerGeneric,
+            controllerRootPath: "",
+            oneToManyController: RepoBaseOneToManyControllerGeneric,
+            oneToManyControllerRootPath: "",
+            nameConversion: x => x
+        })
         expect(routes.map(x => ({ method: x.method, path: x.url }))).toMatchSnapshot()
     })
     it("Should able to ignore one to many route generation", () => {
@@ -168,16 +193,23 @@ describe("Rote Generator", () => {
         class User {
             @reflect.noop()
             name: string
-    
+
             @reflect.noop()
             email: string
-    
+
             @route.ignore()
             @crud.oneToMany(x => Animal)
             @reflect.type(x => [Animal])
             animals: Animal[]
         }
-        const routes = createRoutesFromEntities("", [Animal, User], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+        const routes = createRoutesFromEntities({
+            entities: [Animal, User],
+            controller: RepoBaseControllerGeneric,
+            controllerRootPath: "",
+            oneToManyController: RepoBaseOneToManyControllerGeneric,
+            oneToManyControllerRootPath: "",
+            nameConversion: x => x
+        })
         expect(routes.map(x => ({ method: x.method, path: x.url }))).toMatchSnapshot()
     })
     it("Should able to ignore some method on one to many route generation", () => {
@@ -188,16 +220,23 @@ describe("Rote Generator", () => {
         class User {
             @reflect.noop()
             name: string
-    
+
             @reflect.noop()
             email: string
-    
+
             @route.ignore("list", "get", "save", "delete", "replace")
             @crud.oneToMany(x => Animal)
             @reflect.type(x => [Animal])
             animals: Animal[]
         }
-        const routes = createRoutesFromEntities("", [Animal, User], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+        const routes = createRoutesFromEntities({
+            entities: [Animal, User],
+            controller: RepoBaseControllerGeneric,
+            controllerRootPath: "",
+            oneToManyController: RepoBaseOneToManyControllerGeneric,
+            oneToManyControllerRootPath: "",
+            nameConversion: x => x
+        })
         expect(routes.map(x => ({ method: x.method, path: x.url }))).toMatchSnapshot()
     })
 })
@@ -209,7 +248,14 @@ describe("Swagger", () => {
                 @reflect.noop()
                 name: string
             }
-            const routes = createRoutesFromEntities("", [Animal], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+            const routes = createRoutesFromEntities({
+                entities: [Animal],
+                controller: RepoBaseControllerGeneric,
+                controllerRootPath: "",
+                oneToManyController: RepoBaseOneToManyControllerGeneric,
+                oneToManyControllerRootPath: "",
+                nameConversion: x => x
+            })
             const spec = transform(routes, { map: new Map(), config: {} as any })
             expect(spec.paths["/animal"].get.parameters).toMatchSnapshot()
             expect(spec.paths["/animal"].get.tags).toMatchSnapshot()
@@ -219,7 +265,14 @@ describe("Swagger", () => {
                 @reflect.noop()
                 name: string
             }
-            const routes = createRoutesFromEntities("", [Animal], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+            const routes = createRoutesFromEntities({
+                entities: [Animal],
+                controller: RepoBaseControllerGeneric,
+                controllerRootPath: "",
+                oneToManyController: RepoBaseOneToManyControllerGeneric,
+                oneToManyControllerRootPath: "",
+                nameConversion: x => x
+            })
             const spec = transform(routes, { map: new Map(), config: {} as any })
             expect(spec.paths["/animal"].post.requestBody).toMatchSnapshot()
             expect(spec.paths["/animal"].post.tags).toMatchSnapshot()
@@ -229,7 +282,14 @@ describe("Swagger", () => {
                 @reflect.noop()
                 name: string
             }
-            const routes = createRoutesFromEntities("", [Animal], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+            const routes = createRoutesFromEntities({
+                entities: [Animal],
+                controller: RepoBaseControllerGeneric,
+                controllerRootPath: "",
+                oneToManyController: RepoBaseOneToManyControllerGeneric,
+                oneToManyControllerRootPath: "",
+                nameConversion: x => x
+            })
             const spec = transform(routes, { map: new Map(), config: {} as any })
             expect(spec.paths["/animal/{id}"].get.parameters).toMatchSnapshot()
             expect(spec.paths["/animal/{id}"].get.tags).toMatchSnapshot()
@@ -239,7 +299,14 @@ describe("Swagger", () => {
                 @reflect.noop()
                 name: string
             }
-            const routes = createRoutesFromEntities("", [Animal], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+            const routes = createRoutesFromEntities({
+                entities: [Animal],
+                controller: RepoBaseControllerGeneric,
+                controllerRootPath: "",
+                oneToManyController: RepoBaseOneToManyControllerGeneric,
+                oneToManyControllerRootPath: "",
+                nameConversion: x => x
+            })
             const spec = transform(routes, { map: new Map(), config: {} as any })
             expect(spec.paths["/animal/{id}"].delete.parameters).toMatchSnapshot()
             expect(spec.paths["/animal/{id}"].delete.tags).toMatchSnapshot()
@@ -249,7 +316,14 @@ describe("Swagger", () => {
                 @reflect.noop()
                 name: string
             }
-            const routes = createRoutesFromEntities("", [Animal], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+            const routes = createRoutesFromEntities({
+                entities: [Animal],
+                controller: RepoBaseControllerGeneric,
+                controllerRootPath: "",
+                oneToManyController: RepoBaseOneToManyControllerGeneric,
+                oneToManyControllerRootPath: "",
+                nameConversion: x => x
+            })
             const spec = transform(routes, { map: new Map(), config: {} as any })
             expect(spec.paths["/animal/{id}"].put.parameters).toMatchSnapshot()
             expect(spec.paths["/animal/{id}"].put.tags).toMatchSnapshot()
@@ -259,7 +333,14 @@ describe("Swagger", () => {
                 @reflect.noop()
                 name: string
             }
-            const routes = createRoutesFromEntities("", [Animal], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+            const routes = createRoutesFromEntities({
+                entities: [Animal],
+                controller: RepoBaseControllerGeneric,
+                controllerRootPath: "",
+                oneToManyController: RepoBaseOneToManyControllerGeneric,
+                oneToManyControllerRootPath: "",
+                nameConversion: x => x
+            })
             const spec = transform(routes, { map: new Map(), config: {} as any })
             expect(spec.paths["/animal/{id}"].put.parameters).toMatchSnapshot()
             expect(spec.paths["/animal/{id}"].put.tags).toMatchSnapshot()
@@ -278,7 +359,15 @@ describe("Swagger", () => {
                 @reflect.type(x => [Animal])
                 animals: Animal[]
             }
-            const routes = createRoutesFromEntities("", [Animal, Client], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+
+            const routes = createRoutesFromEntities({
+                entities: [Animal, Client],
+                controller: RepoBaseControllerGeneric,
+                controllerRootPath: "",
+                oneToManyController: RepoBaseOneToManyControllerGeneric,
+                oneToManyControllerRootPath: "",
+                nameConversion: x => x
+            })
             const spec = transform(routes, { map: new Map(), config: {} as any })
             expect(spec.paths["/client/{pid}/animals"].get.parameters).toMatchSnapshot()
             expect(spec.paths["/client/{pid}/animals"].get.tags).toMatchSnapshot()
@@ -295,7 +384,14 @@ describe("Swagger", () => {
                 @reflect.type(x => [Animal])
                 animals: Animal[]
             }
-            const routes = createRoutesFromEntities("", [Animal, Client], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+            const routes = createRoutesFromEntities({
+                entities: [Animal, Client],
+                controller: RepoBaseControllerGeneric,
+                controllerRootPath: "",
+                oneToManyController: RepoBaseOneToManyControllerGeneric,
+                oneToManyControllerRootPath: "",
+                nameConversion: x => x
+            })
             const spec = transform(routes, { map: new Map(), config: {} as any })
             expect(spec.paths["/client/{pid}/animals"].post.requestBody).toMatchSnapshot()
             expect(spec.paths["/client/{pid}/animals"].post.tags).toMatchSnapshot()
@@ -312,7 +408,14 @@ describe("Swagger", () => {
                 @reflect.type(x => [Animal])
                 animals: Animal[]
             }
-            const routes = createRoutesFromEntities("", [Animal, Client], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+            const routes = createRoutesFromEntities({
+                entities: [Animal, Client],
+                controller: RepoBaseControllerGeneric,
+                controllerRootPath: "",
+                oneToManyController: RepoBaseOneToManyControllerGeneric,
+                oneToManyControllerRootPath: "",
+                nameConversion: x => x
+            })
             const spec = transform(routes, { map: new Map(), config: {} as any })
             expect(spec.paths["/client/{pid}/animals/{id}"].get.parameters).toMatchSnapshot()
             expect(spec.paths["/client/{pid}/animals/{id}"].get.tags).toMatchSnapshot()
@@ -329,7 +432,14 @@ describe("Swagger", () => {
                 @reflect.type(x => [Animal])
                 animals: Animal[]
             }
-            const routes = createRoutesFromEntities("", [Animal, Client], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+            const routes = createRoutesFromEntities({
+                entities: [Animal, Client],
+                controller: RepoBaseControllerGeneric,
+                controllerRootPath: "",
+                oneToManyController: RepoBaseOneToManyControllerGeneric,
+                oneToManyControllerRootPath: "",
+                nameConversion: x => x
+            })
             const spec = transform(routes, { map: new Map(), config: {} as any })
             expect(spec.paths["/client/{pid}/animals/{id}"].delete.parameters).toMatchSnapshot()
             expect(spec.paths["/client/{pid}/animals/{id}"].delete.tags).toMatchSnapshot()
@@ -346,7 +456,14 @@ describe("Swagger", () => {
                 @reflect.type(x => [Animal])
                 animals: Animal[]
             }
-            const routes = createRoutesFromEntities("", [Animal, Client], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+            const routes = createRoutesFromEntities({
+                entities: [Animal, Client],
+                controller: RepoBaseControllerGeneric,
+                controllerRootPath: "",
+                oneToManyController: RepoBaseOneToManyControllerGeneric,
+                oneToManyControllerRootPath: "",
+                nameConversion: x => x
+            })
             const spec = transform(routes, { map: new Map(), config: {} as any })
             expect(spec.paths["/client/{pid}/animals/{id}"].put.parameters).toMatchSnapshot()
             expect(spec.paths["/client/{pid}/animals/{id}"].put.tags).toMatchSnapshot()
@@ -363,10 +480,60 @@ describe("Swagger", () => {
                 @reflect.type(x => [Animal])
                 animals: Animal[]
             }
-            const routes = createRoutesFromEntities("", [Animal, Client], RepoBaseGenericController, RepoBaseGenericOneToManyController, x => x)
+            const routes = createRoutesFromEntities({
+                entities: [Animal, Client],
+                controller: RepoBaseControllerGeneric,
+                controllerRootPath: "",
+                oneToManyController: RepoBaseOneToManyControllerGeneric,
+                oneToManyControllerRootPath: "",
+                nameConversion: x => x
+            })
             const spec = transform(routes, { map: new Map(), config: {} as any })
             expect(spec.paths["/client/{pid}/animals/{id}"].put.parameters).toMatchSnapshot()
             expect(spec.paths["/client/{pid}/animals/{id}"].put.tags).toMatchSnapshot()
         })
+    })
+})
+
+@generic.template("T", "TID")
+@generic.type("T", "TID")
+export class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{ }
+
+@generic.template("P", "T", "PID", "TID")
+@generic.type("P", "T", "PID", "TID")
+export class MyOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{ }
+
+describe("getGenericControllers", () => {
+    it("Should get controller properly when provided classes directly", () => {
+        const controllers = getGenericControllers(undefined, [MyControllerGeneric, MyOneToManyControllerGeneric], ControllerGeneric, OneToManyControllerGeneric)
+        expect(controllers).toMatchSnapshot()
+    })
+    it("Should able to change root path", () => {
+        const controllers = getGenericControllers("api/v1", [MyControllerGeneric, MyOneToManyControllerGeneric], ControllerGeneric, OneToManyControllerGeneric)
+        expect(controllers).toMatchSnapshot()
+    })
+    it("Should able only change only one generic controller", () => {
+        const controllers = getGenericControllers("api/v1", [MyControllerGeneric], ControllerGeneric, OneToManyControllerGeneric)
+        expect(controllers).toMatchSnapshot()
+    })
+    it("Should able to provide path to current file", () => {
+        const controllers = getGenericControllers(undefined, __filename, ControllerGeneric, OneToManyControllerGeneric)
+        expect(controllers).toMatchSnapshot()
+    })
+    it("Should able to provide directory path", () => {
+        const controllers = getGenericControllers(undefined, join(__dirname, "controller"), ControllerGeneric, OneToManyControllerGeneric)
+        expect(controllers).toMatchSnapshot()
+    })
+    it("Should able to provide directory path with nested root", () => {
+        const controllers = getGenericControllers(undefined, join(__dirname, "nested"), ControllerGeneric, OneToManyControllerGeneric)
+        expect(controllers).toMatchSnapshot()
+    })
+    it("Should prioritize rootPath on configuration vs nested root", () => {
+        const controllers = getGenericControllers("root/path", join(__dirname, "nested"), ControllerGeneric, OneToManyControllerGeneric)
+        expect(controllers).toMatchSnapshot()
+    })
+    it("Should able to use default controllers", () => {
+        const controllers = getGenericControllers("root/path", [], ControllerGeneric, OneToManyControllerGeneric)
+        expect(controllers).toMatchSnapshot()
     })
 })
