@@ -856,7 +856,7 @@ describe("Open API 3.0 Generation", () => {
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.components.schemas["~User"]).toMatchSnapshot()
+            expect(body.components.schemas["User-Partial"]).toMatchSnapshot()
         })
         it("Should detect nested object component", async () => {
             @domain()
@@ -997,7 +997,7 @@ describe("Open API 3.0 Generation", () => {
                 .post("/swagger/swagger.json")
                 .expect(200)
             expect(body.components.schemas.User).toMatchSnapshot()
-            expect(body.components.schemas["~User"]).toMatchSnapshot()
+            expect(body.components.schemas["User-Partial"]).toMatchSnapshot()
         })
         it("Should ignore inverse property", async () => {
             @domain()
@@ -1026,7 +1026,7 @@ describe("Open API 3.0 Generation", () => {
                 .post("/swagger/swagger.json")
                 .expect(200)
             expect(body.components.schemas.Tag).toMatchSnapshot()
-            expect(body.components.schemas["~Tag"]).toMatchSnapshot()
+            expect(body.components.schemas["Tag-Partial"]).toMatchSnapshot()
         })
     })
 

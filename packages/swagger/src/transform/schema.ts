@@ -5,7 +5,7 @@ import { isRequired, TransformContext, isEnums } from './shared'
 
 function refFactory(map: Map<Class, string>) {
     return (obj: Class, isPartial: boolean = false) => {
-        const getName = (name?: string) => isPartial ? `~${name}` : name
+        const getName = (name?: string) => isPartial ? `${name}-Partial` : name
         const objName = obj.name;
         const typeName = map.get(obj)
         const names = Array.from(map.values()).filter(x => x === objName)

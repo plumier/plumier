@@ -6,7 +6,7 @@ import { refFactory, transformType } from "./schema"
 import { isRequired, TransformContext, isOneToMany, isInverseProperty } from "./shared"
 
 const defaultSchemas: { [key: string]: SchemaObject } = {
-    ".ValidationError": {
+    "System-ValidationError": {
         type: "object",
         properties: {
             status: { type: "number" },
@@ -22,7 +22,7 @@ const defaultSchemas: { [key: string]: SchemaObject } = {
             }
         }
     },
-    ".DefaultErrorMessage": {
+    "System-DefaultErrorMessage": {
         type: "object",
         properties: {
             status: { type: "number" },
@@ -71,7 +71,7 @@ function transformComponent(ctx: TransformContext): ComponentsObject {
     const bearer: SecuritySchemeObject = { type: "http", scheme: "bearer", bearerFormat: "JWT" }
     // generate partial schemas
     const partialSchemas: SchemaType = types.reduce((a, b) => {
-        return { ...a, [`~${getRef(b)!}`]: transformObject(b, ctx, true) }
+        return { ...a, [`${getRef(b)!}-Partial`]: transformObject(b, ctx, true) }
     }, defaultSchemas)
     // add type schemas
     const schemas = types.reduce((a, b) => {
