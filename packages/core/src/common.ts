@@ -1,4 +1,4 @@
-import { lstatSync } from "fs"
+import { lstatSync, existsSync } from "fs"
 import glob from "glob"
 import { extname } from "path"
 import reflect, { useCache } from "tinspector"
@@ -109,6 +109,7 @@ function cleanupConsole(mocks: string[][]) {
 
 function findFilesRecursive(path: string): string[] {
     const removeExtension = (x: string) => x.replace(/\.[^/.]+$/, "")
+    if (!existsSync(path)) return []
     if (lstatSync(path).isDirectory()) {
         const files = glob.sync(`${path}/**/*+(.js|.ts)`)
             //take only file in extension list

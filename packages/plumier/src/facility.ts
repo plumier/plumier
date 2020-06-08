@@ -13,11 +13,11 @@ import {
     toBoolean,
 } from "@plumier/core"
 import chalk from "chalk"
+import { exists } from "fs"
 import { Context } from "koa"
 import BodyParser from "koa-body"
-import { exists } from "fs"
-import { promisify } from "util"
 import { isAbsolute, join } from "path"
+import { promisify } from "util"
 
 const existsAsync = promisify(exists)
 
@@ -46,7 +46,6 @@ export class WebApiFacility extends DefaultFacility {
     async generateRoutes(app: Readonly<PlumierApplication>) {
         const { controller, rootDir } = app.config
         let ctl = typeof controller === "string" && !isAbsolute(controller) ? join(rootDir, controller) : controller
-        if (typeof ctl === "string" && !await existsAsync(ctl)) return []
         return generateRoutes(ctl, { overridable: false })
     }
 

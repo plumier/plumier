@@ -1,10 +1,16 @@
+import { Class, decorateClass, decorateProperty } from "tinspector"
 
-import { Class, decorateProperty } from "tinspector"
-import { OneToManyDecorator, IdentifierDecorator, InversePropertyDecorator } from "../generic-controller"
+import {
+    GenericControllerDecorator,
+    IdentifierDecorator,
+    InversePropertyDecorator,
+    OneToManyDecorator,
+} from "../generic-controller"
+
 
 namespace crud {
     export function oneToMany(type: Class | Class[] | ((x: any) => Class | Class[])) {
-        return decorateProperty((target: any, propertyName) => <OneToManyDecorator>{ kind: "GenericDecoratorOneToMany", type, parentType: target })
+        return decorateProperty((target: any) => <OneToManyDecorator>{ kind: "GenericDecoratorOneToMany", type, parentType: target })
     }
 
     export function inverseProperty() {

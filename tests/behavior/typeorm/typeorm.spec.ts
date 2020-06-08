@@ -1,4 +1,4 @@
-import { Class, Configuration, consoleLog, GenericController, RepoBaseGenericController, route, val, RepoBaseGenericOneToManyController, GenericOneToManyController } from "@plumier/core"
+import { Class, Configuration, consoleLog, ControllerGeneric, RepoBaseControllerGeneric, route, val, RepoBaseOneToManyControllerGeneric, OneToManyControllerGeneric } from "@plumier/core"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { CRUDTypeORMFacility, TypeORMFacility, TypeORMRepository, TypeORMOneToManyRepository } from "@plumier/typeorm"
 import supertest from "supertest"
@@ -1109,7 +1109,7 @@ describe("TypeOrm", () => {
                 }
                 @generic.template("T", "TID")
                 @generic.type("T", "TID")
-                class MyGenericController<T, TID> extends RepoBaseGenericController<T, TID> {
+                class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID> {
                     constructor() {
                         super(x => new TypeORMRepository(x))
                     }
@@ -1117,7 +1117,7 @@ describe("TypeOrm", () => {
                 const mock = consoleLog.startMock()
                 const app = await new Plumier()
                     .set(new WebApiFacility())
-                    .set(new CRUDTypeORMFacility({ genericController: MyGenericController, connection: getConn([User]) }))
+                    .set(new CRUDTypeORMFacility({ controller: MyControllerGeneric, connection: getConn([User]) }))
                     .initialize()
                 const repo = getManager().getRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
@@ -1140,7 +1140,7 @@ describe("TypeOrm", () => {
                 }
                 @generic.template("T", "TID")
                 @generic.type("T", "TID")
-                class MyGenericController<T, TID> extends RepoBaseGenericController<T, TID> {
+                class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID> {
                     constructor() {
                         super(x => new TypeORMRepository(x))
                     }
@@ -1149,8 +1149,8 @@ describe("TypeOrm", () => {
                 }
                 const mock = consoleLog.startMock()
                 const app = await new Plumier()
-                    .set(new WebApiFacility())
-                    .set(new CRUDTypeORMFacility({ genericController: MyGenericController, connection: getConn([User]) }))
+                    .set(new WebApiFacility({ controller: MyControllerGeneric }))
+                    .set(new CRUDTypeORMFacility({ connection: getConn([User]) }))
                     .initialize()
                 expect(mock.mock.calls).toMatchSnapshot()
                 consoleLog.clearMock()
@@ -1166,7 +1166,7 @@ describe("TypeOrm", () => {
                     name: string
                 }
                 @generic.template("T", "TID")
-                class MyGenericController<T, TID> extends GenericController<T, TID> {
+                class MyControllerGeneric<T, TID> extends ControllerGeneric<T, TID> {
                     repo: Repository<T>
                     constructor() {
                         super()
@@ -1179,8 +1179,8 @@ describe("TypeOrm", () => {
                 }
                 const mock = consoleLog.startMock()
                 const app = await new Plumier()
-                    .set(new WebApiFacility())
-                    .set(new CRUDTypeORMFacility({ genericController: MyGenericController, connection: getConn([User]) }))
+                    .set(new WebApiFacility({ controller: MyControllerGeneric }))
+                    .set(new CRUDTypeORMFacility({ connection: getConn([User]) }))
                     .initialize()
                 const repo = getManager().getRepository(User)
                 const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
@@ -1216,15 +1216,15 @@ describe("TypeOrm", () => {
                 }
                 @generic.template("P", "T", "PID", "TID")
                 @generic.type("P", "T", "PID", "TID")
-                class MyGenericController<P, T, PID, TID> extends RepoBaseGenericOneToManyController<P, T, PID, TID> {
+                class MyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
                     constructor() {
                         super((p, x, r) => new TypeORMOneToManyRepository(p, x, r))
                     }
                 }
                 const mock = consoleLog.startMock()
                 const app = await new Plumier()
-                    .set(new WebApiFacility())
-                    .set(new CRUDTypeORMFacility({ connection: getConn([User, Animal]), genericOneToManyController: MyGenericController }))
+                    .set(new WebApiFacility({ controller: MyControllerGeneric }))
+                    .set(new CRUDTypeORMFacility({ connection: getConn([User, Animal]) }))
                     .initialize()
                 const parentRepo = getManager().getRepository(User)
                 const repo = getManager().getRepository(Animal)
@@ -1260,7 +1260,7 @@ describe("TypeOrm", () => {
                 }
                 @generic.template("P", "T", "PID", "TID")
                 @generic.type("P", "T", "PID", "TID")
-                class MyGenericController<P, T, PID, TID> extends RepoBaseGenericOneToManyController<P, T, PID, TID> {
+                class MyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
                     constructor() {
                         super((p, x, r) => new TypeORMOneToManyRepository(p, x, r))
                     }
@@ -1269,8 +1269,8 @@ describe("TypeOrm", () => {
                 }
                 const mock = consoleLog.startMock()
                 const app = await new Plumier()
-                    .set(new WebApiFacility())
-                    .set(new CRUDTypeORMFacility({ connection: getConn([User, Animal]), genericOneToManyController: MyGenericController }))
+                    .set(new WebApiFacility({ controller: MyControllerGeneric }))
+                    .set(new CRUDTypeORMFacility({ connection: getConn([User, Animal]) }))
                     .initialize()
                 expect(mock.mock.calls).toMatchSnapshot()
                 consoleLog.clearMock()
@@ -1297,7 +1297,7 @@ describe("TypeOrm", () => {
                     user: User
                 }
                 @generic.template("P", "T", "PID", "TID")
-                class MyGenericController<P, T, PID, TID> extends GenericOneToManyController<P, T, PID, TID> {
+                class MyControllerGeneric<P, T, PID, TID> extends OneToManyControllerGeneric<P, T, PID, TID> {
                     repo: Repository<T>
                     constructor() {
                         super()
@@ -1310,8 +1310,8 @@ describe("TypeOrm", () => {
                 }
                 const mock = consoleLog.startMock()
                 const app = await new Plumier()
-                    .set(new WebApiFacility())
-                    .set(new CRUDTypeORMFacility({ connection: getConn([User, Animal]), genericOneToManyController: MyGenericController }))
+                    .set(new WebApiFacility({ controller: MyControllerGeneric }))
+                    .set(new CRUDTypeORMFacility({ connection: getConn([User, Animal]) }))
                     .initialize()
                 const parentRepo = getManager().getRepository(User)
                 const repo = getManager().getRepository(Animal)

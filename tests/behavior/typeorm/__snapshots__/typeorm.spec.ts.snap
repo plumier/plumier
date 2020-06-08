@@ -27,22 +27,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.list(offset, limit, query) -> GET    /users",
+    "1. MyControllerGeneric.list              -> GET    /users",
   ],
   Array [
-    "2. DynamicType.save(data)                 -> POST   /users",
+    "2. MyControllerGeneric.save(data)        -> POST   /users",
   ],
   Array [
-    "3. DynamicType.get(id)                    -> GET    /users/:id",
+    "3. MyControllerGeneric.get(id)           -> GET    /users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "4. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
   ],
   Array [
-    "5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    "5. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
   ],
   Array [
-    "6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    "6. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
   ],
   Array [],
 ]
@@ -63,7 +63,7 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.get(id) -> GET /users/:id",
+    "1. MyControllerGeneric.get(id) -> GET /users/:id",
   ],
   Array [],
 ]
@@ -84,19 +84,19 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.save(data)        -> POST   /users",
+    "1. MyControllerGeneric.save(data)        -> POST   /users",
   ],
   Array [
-    "2. DynamicType.get(id)           -> GET    /users/:id",
+    "2. MyControllerGeneric.get(id)           -> GET    /users/:id",
   ],
   Array [
-    "3. DynamicType.modify(id, data)  -> PATCH  /users/:id",
+    "3. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
   ],
   Array [
-    "4. DynamicType.replace(id, data) -> PUT    /users/:id",
+    "4. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
   ],
   Array [
-    "5. DynamicType.delete(id)        -> DELETE /users/:id",
+    "5. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
   ],
   Array [],
 ]
@@ -109,58 +109,58 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit, query) -> GET    /users",
+    " 1. TypeORMControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    " 2. DynamicType.save(data)                 -> POST   /users",
+    " 2. TypeORMControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    " 3. DynamicType.get(id)                    -> GET    /users/:id",
+    " 3. TypeORMControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    " 4. TypeORMControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    " 5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    " 5. TypeORMControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    " 6. TypeORMControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [
-    " 7. DynamicType.list                       -> GET    /users/:pid/animals",
+    " 7. MyControllerGeneric.list            -> GET    /users/:pid/animals",
   ],
   Array [
-    " 8. DynamicType.save(pid, data)            -> POST   /users/:pid/animals",
+    " 8. MyControllerGeneric.save(pid, data) -> POST   /users/:pid/animals",
   ],
   Array [
-    " 9. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
+    " 9. MyControllerGeneric.get(pid, id)    -> GET    /users/:pid/animals/:id",
   ],
   Array [
-    "10. DynamicType.modify(pid, id, data)      -> PATCH  /users/:pid/animals/:id",
+    "10. MyControllerGeneric.modify          -> PATCH  /users/:pid/animals/:id",
   ],
   Array [
-    "11. DynamicType.replace(pid, id, data)     -> PUT    /users/:pid/animals/:id",
+    "11. MyControllerGeneric.replace         -> PUT    /users/:pid/animals/:id",
   ],
   Array [
-    "12. DynamicType.delete(pid, id)            -> DELETE /users/:pid/animals/:id",
+    "12. MyControllerGeneric.delete(pid, id) -> DELETE /users/:pid/animals/:id",
   ],
   Array [
-    "13. DynamicType.list(offset, limit, query) -> GET    /animals",
+    "13. TypeORMControllerGeneric.list       -> GET    /animals",
   ],
   Array [
-    "14. DynamicType.save(data)                 -> POST   /animals",
+    "14. TypeORMControllerGeneric.save(data) -> POST   /animals",
   ],
   Array [
-    "15. DynamicType.get(id)                    -> GET    /animals/:id",
+    "15. TypeORMControllerGeneric.get(id)    -> GET    /animals/:id",
   ],
   Array [
-    "16. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+    "16. TypeORMControllerGeneric.modify     -> PATCH  /animals/:id",
   ],
   Array [
-    "17. DynamicType.replace(id, data)          -> PUT    /animals/:id",
+    "17. TypeORMControllerGeneric.replace    -> PUT    /animals/:id",
   ],
   Array [
-    "18. DynamicType.delete(id)                 -> DELETE /animals/:id",
+    "18. TypeORMControllerGeneric.delete(id) -> DELETE /animals/:id",
   ],
   Array [],
 ]
@@ -180,43 +180,43 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit, query) -> GET    /users",
+    " 1. TypeORMControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    " 2. DynamicType.save(data)                 -> POST   /users",
+    " 2. TypeORMControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    " 3. DynamicType.get(id)                    -> GET    /users/:id",
+    " 3. TypeORMControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    " 4. TypeORMControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    " 5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    " 5. TypeORMControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    " 6. TypeORMControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [
-    " 7. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
+    " 7. MyControllerGeneric.get(pid, id)    -> GET    /users/:pid/animals/:id",
   ],
   Array [
-    " 8. DynamicType.list(offset, limit, query) -> GET    /animals",
+    " 8. TypeORMControllerGeneric.list       -> GET    /animals",
   ],
   Array [
-    " 9. DynamicType.save(data)                 -> POST   /animals",
+    " 9. TypeORMControllerGeneric.save(data) -> POST   /animals",
   ],
   Array [
-    "10. DynamicType.get(id)                    -> GET    /animals/:id",
+    "10. TypeORMControllerGeneric.get(id)    -> GET    /animals/:id",
   ],
   Array [
-    "11. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+    "11. TypeORMControllerGeneric.modify     -> PATCH  /animals/:id",
   ],
   Array [
-    "12. DynamicType.replace(id, data)          -> PUT    /animals/:id",
+    "12. TypeORMControllerGeneric.replace    -> PUT    /animals/:id",
   ],
   Array [
-    "13. DynamicType.delete(id)                 -> DELETE /animals/:id",
+    "13. TypeORMControllerGeneric.delete(id) -> DELETE /animals/:id",
   ],
   Array [],
 ]
@@ -236,55 +236,55 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit, query) -> GET    /users",
+    " 1. TypeORMControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    " 2. DynamicType.save(data)                 -> POST   /users",
+    " 2. TypeORMControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    " 3. DynamicType.get(id)                    -> GET    /users/:id",
+    " 3. TypeORMControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    " 4. TypeORMControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    " 5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    " 5. TypeORMControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    " 6. TypeORMControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [
-    " 7. DynamicType.save(pid, data)            -> POST   /users/:pid/animals",
+    " 7. MyControllerGeneric.save(pid, data) -> POST   /users/:pid/animals",
   ],
   Array [
-    " 8. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
+    " 8. MyControllerGeneric.get(pid, id)    -> GET    /users/:pid/animals/:id",
   ],
   Array [
-    " 9. DynamicType.modify(pid, id, data)      -> PATCH  /users/:pid/animals/:id",
+    " 9. MyControllerGeneric.modify          -> PATCH  /users/:pid/animals/:id",
   ],
   Array [
-    "10. DynamicType.replace(pid, id, data)     -> PUT    /users/:pid/animals/:id",
+    "10. MyControllerGeneric.replace         -> PUT    /users/:pid/animals/:id",
   ],
   Array [
-    "11. DynamicType.delete(pid, id)            -> DELETE /users/:pid/animals/:id",
+    "11. MyControllerGeneric.delete(pid, id) -> DELETE /users/:pid/animals/:id",
   ],
   Array [
-    "12. DynamicType.list(offset, limit, query) -> GET    /animals",
+    "12. TypeORMControllerGeneric.list       -> GET    /animals",
   ],
   Array [
-    "13. DynamicType.save(data)                 -> POST   /animals",
+    "13. TypeORMControllerGeneric.save(data) -> POST   /animals",
   ],
   Array [
-    "14. DynamicType.get(id)                    -> GET    /animals/:id",
+    "14. TypeORMControllerGeneric.get(id)    -> GET    /animals/:id",
   ],
   Array [
-    "15. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+    "15. TypeORMControllerGeneric.modify     -> PATCH  /animals/:id",
   ],
   Array [
-    "16. DynamicType.replace(id, data)          -> PUT    /animals/:id",
+    "16. TypeORMControllerGeneric.replace    -> PUT    /animals/:id",
   ],
   Array [
-    "17. DynamicType.delete(id)                 -> DELETE /animals/:id",
+    "17. TypeORMControllerGeneric.delete(id) -> DELETE /animals/:id",
   ],
   Array [],
 ]
@@ -361,22 +361,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.list(offset, limit, query) -> GET    /users",
+    "1. TypeORMControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    "2. DynamicType.save(data)                 -> POST   /users",
+    "2. TypeORMControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    "3. UsersController.get(id)                -> GET    /users/:id",
+    "3. UsersController.get(id)             -> GET    /users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "4. TypeORMControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    "5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    "5. TypeORMControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    "6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    "6. TypeORMControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [],
 ]
@@ -389,58 +389,58 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit, query) -> GET    /users",
+    " 1. TypeORMControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    " 2. DynamicType.save(data)                 -> POST   /users",
+    " 2. TypeORMControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    " 3. DynamicType.get(id)                    -> GET    /users/:id",
+    " 3. TypeORMControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    " 4. TypeORMControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    " 5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    " 5. TypeORMControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    " 6. TypeORMControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [
-    " 7. DynamicType.list                       -> GET    /users/:pid/animals",
+    " 7. TypeORMOneToMany...eneric.list      -> GET    /users/:pid/animals",
   ],
   Array [
-    " 8. DynamicType.save(pid, data)            -> POST   /users/:pid/animals",
+    " 8. TypeORMOneToMany...eneric.save      -> POST   /users/:pid/animals",
   ],
   Array [
-    " 9. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
+    " 9. TypeORMOneToMany...eneric.get       -> GET    /users/:pid/animals/:id",
   ],
   Array [
-    "10. DynamicType.modify(pid, id, data)      -> PATCH  /users/:pid/animals/:id",
+    "10. TypeORMOneToMany...eneric.modify    -> PATCH  /users/:pid/animals/:id",
   ],
   Array [
-    "11. DynamicType.replace(pid, id, data)     -> PUT    /users/:pid/animals/:id",
+    "11. TypeORMOneToMany...eneric.replace   -> PUT    /users/:pid/animals/:id",
   ],
   Array [
-    "12. DynamicType.delete(pid, id)            -> DELETE /users/:pid/animals/:id",
+    "12. TypeORMOneToMany...eneric.delete    -> DELETE /users/:pid/animals/:id",
   ],
   Array [
-    "13. DynamicType.list(offset, limit, query) -> GET    /animals",
+    "13. TypeORMControllerGeneric.list       -> GET    /animals",
   ],
   Array [
-    "14. DynamicType.save(data)                 -> POST   /animals",
+    "14. TypeORMControllerGeneric.save(data) -> POST   /animals",
   ],
   Array [
-    "15. DynamicType.get(id)                    -> GET    /animals/:id",
+    "15. TypeORMControllerGeneric.get(id)    -> GET    /animals/:id",
   ],
   Array [
-    "16. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+    "16. TypeORMControllerGeneric.modify     -> PATCH  /animals/:id",
   ],
   Array [
-    "17. DynamicType.replace(id, data)          -> PUT    /animals/:id",
+    "17. TypeORMControllerGeneric.replace    -> PUT    /animals/:id",
   ],
   Array [
-    "18. DynamicType.delete(id)                 -> DELETE /animals/:id",
+    "18. TypeORMControllerGeneric.delete(id) -> DELETE /animals/:id",
   ],
   Array [],
 ]
@@ -453,22 +453,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.list(offset, limit, query) -> GET    /users",
+    "1. TypeORMControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    "2. DynamicType.save(data)                 -> POST   /users",
+    "2. TypeORMControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    "3. DynamicType.get(id)                    -> GET    /users/:id",
+    "3. TypeORMControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "4. TypeORMControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    "5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    "5. TypeORMControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    "6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    "6. TypeORMControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [],
 ]
@@ -481,40 +481,40 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit, query) -> GET    /users",
+    " 1. TypeORMControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    " 2. DynamicType.save(data)                 -> POST   /users",
+    " 2. TypeORMControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    " 3. DynamicType.get(id)                    -> GET    /users/:id",
+    " 3. TypeORMControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    " 4. TypeORMControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    " 5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    " 5. TypeORMControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    " 6. TypeORMControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [
-    " 7. DynamicType.list(offset, limit, query) -> GET    /secondusers",
+    " 7. TypeORMControllerGeneric.list       -> GET    /secondusers",
   ],
   Array [
-    " 8. DynamicType.save(data)                 -> POST   /secondusers",
+    " 8. TypeORMControllerGeneric.save(data) -> POST   /secondusers",
   ],
   Array [
-    " 9. DynamicType.get(id)                    -> GET    /secondusers/:id",
+    " 9. TypeORMControllerGeneric.get(id)    -> GET    /secondusers/:id",
   ],
   Array [
-    "10. DynamicType.modify(id, data)           -> PATCH  /secondusers/:id",
+    "10. TypeORMControllerGeneric.modify     -> PATCH  /secondusers/:id",
   ],
   Array [
-    "11. DynamicType.replace(id, data)          -> PUT    /secondusers/:id",
+    "11. TypeORMControllerGeneric.replace    -> PUT    /secondusers/:id",
   ],
   Array [
-    "12. DynamicType.delete(id)                 -> DELETE /secondusers/:id",
+    "12. TypeORMControllerGeneric.delete(id) -> DELETE /secondusers/:id",
   ],
   Array [],
 ]
@@ -527,22 +527,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.list(offset, limit, query) -> GET    /users",
+    "1. TypeORMControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    "2. DynamicType.save(data)                 -> POST   /users",
+    "2. TypeORMControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    "3. DynamicType.get(id)                    -> GET    /users/:id",
+    "3. TypeORMControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "4. TypeORMControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    "5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    "5. TypeORMControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    "6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    "6. TypeORMControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [],
 ]
@@ -555,40 +555,40 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit, query) -> GET    /users",
+    " 1. TypeORMControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    " 2. DynamicType.save(data)                 -> POST   /users",
+    " 2. TypeORMControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    " 3. DynamicType.get(id)                    -> GET    /users/:id",
+    " 3. TypeORMControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    " 4. TypeORMControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    " 5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    " 5. TypeORMControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    " 6. TypeORMControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [
-    " 7. DynamicType.list(offset, limit, query) -> GET    /animals",
+    " 7. TypeORMControllerGeneric.list       -> GET    /animals",
   ],
   Array [
-    " 8. DynamicType.save(data)                 -> POST   /animals",
+    " 8. TypeORMControllerGeneric.save(data) -> POST   /animals",
   ],
   Array [
-    " 9. DynamicType.get(id)                    -> GET    /animals/:id",
+    " 9. TypeORMControllerGeneric.get(id)    -> GET    /animals/:id",
   ],
   Array [
-    "10. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+    "10. TypeORMControllerGeneric.modify     -> PATCH  /animals/:id",
   ],
   Array [
-    "11. DynamicType.replace(id, data)          -> PUT    /animals/:id",
+    "11. TypeORMControllerGeneric.replace    -> PUT    /animals/:id",
   ],
   Array [
-    "12. DynamicType.delete(id)                 -> DELETE /animals/:id",
+    "12. TypeORMControllerGeneric.delete(id) -> DELETE /animals/:id",
   ],
   Array [],
 ]

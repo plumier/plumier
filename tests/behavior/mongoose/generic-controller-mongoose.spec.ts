@@ -2,10 +2,10 @@ import {
     Class,
     Configuration,
     consoleLog,
-    GenericController,
-    GenericOneToManyController,
-    RepoBaseGenericController,
-    RepoBaseGenericOneToManyController,
+    ControllerGeneric,
+    OneToManyControllerGeneric,
+    RepoBaseControllerGeneric,
+    RepoBaseOneToManyControllerGeneric,
     route,
     val,
 } from "@plumier/core"
@@ -838,7 +838,7 @@ describe("TypeOrm", () => {
                 const UserModel = model(User)
                 @generic.template("T", "TID")
                 @generic.type("T", "TID")
-                class MyGenericController<T, TID> extends RepoBaseGenericController<T, TID> {
+                class MyGenericController<T, TID> extends RepoBaseControllerGeneric<T, TID> {
                     constructor() {
                         super(x => new MongooseRepository(x))
                     }
@@ -846,7 +846,7 @@ describe("TypeOrm", () => {
                 const mock = consoleLog.startMock()
                 const app = await new Plumier()
                     .set(new WebApiFacility())
-                    .set(new CRUDMongooseFacility({ genericController: MyGenericController }))
+                    .set(new CRUDMongooseFacility({ controller: MyGenericController }))
                     .initialize()
                 const data = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe" }).save()
                 const { body } = await supertest(app.callback())
@@ -866,7 +866,7 @@ describe("TypeOrm", () => {
                 model(User)
                 @generic.template("T", "TID")
                 @generic.type("T", "TID")
-                class MyGenericController<T, TID> extends RepoBaseGenericController<T, TID> {
+                class MyGenericController<T, TID> extends RepoBaseControllerGeneric<T, TID> {
                     constructor() {
                         super(x => new MongooseRepository(x))
                     }
@@ -876,7 +876,7 @@ describe("TypeOrm", () => {
                 const mock = consoleLog.startMock()
                 const app = await new Plumier()
                     .set(new WebApiFacility())
-                    .set(new CRUDMongooseFacility({ genericController: MyGenericController }))
+                    .set(new CRUDMongooseFacility({ controller: MyGenericController }))
                     .initialize()
                 expect(mock.mock.calls).toMatchSnapshot()
                 consoleLog.clearMock()
@@ -890,7 +890,7 @@ describe("TypeOrm", () => {
                 }
                 const UserModel = model(User)
                 @generic.template("T", "TID")
-                class MyGenericController<T, TID> extends GenericController<T, TID> {
+                class MyGenericController<T, TID> extends ControllerGeneric<T, TID> {
                     model: mongoose.Model<T & mongoose.Document>
                     constructor() {
                         super()
@@ -904,7 +904,7 @@ describe("TypeOrm", () => {
                 const mock = consoleLog.startMock()
                 const app = await new Plumier()
                     .set(new WebApiFacility())
-                    .set(new CRUDMongooseFacility({ genericController: MyGenericController }))
+                    .set(new CRUDMongooseFacility({ controller: MyGenericController }))
                     .initialize()
                 const data = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe" }).save()
                 const { body } = await supertest(app.callback())
@@ -933,7 +933,7 @@ describe("TypeOrm", () => {
                 const UserModel = model(User)
                 @generic.template("P", "T", "PID", "TID")
                 @generic.type("P", "T", "PID", "TID")
-                class MyGenericController<P, T, PID, TID> extends RepoBaseGenericOneToManyController<P, T, PID, TID> {
+                class MyGenericController<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
                     constructor() {
                         super((p, x, r) => new MongooseOneToManyRepository(p, x, r))
                     }
@@ -941,7 +941,7 @@ describe("TypeOrm", () => {
                 const mock = consoleLog.startMock()
                 const app = await new Plumier()
                     .set(new WebApiFacility())
-                    .set(new CRUDMongooseFacility({ genericOneToManyController: MyGenericController }))
+                    .set(new CRUDMongooseFacility({ controller: MyGenericController }))
                     .initialize()
                 const animal = await new AnimalModel({ name: "Mimi" }).save()
                 const user = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe", animals: [animal._id] }).save()
@@ -969,7 +969,7 @@ describe("TypeOrm", () => {
                 model(User)
                 @generic.template("P", "T", "PID", "TID")
                 @generic.type("P", "T", "PID", "TID")
-                class MyGenericController<P, T, PID, TID> extends RepoBaseGenericOneToManyController<P, T, PID, TID> {
+                class MyGenericController<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
                     constructor() {
                         super((p, x, r) => new MongooseOneToManyRepository(p, x, r))
                     }
@@ -979,7 +979,7 @@ describe("TypeOrm", () => {
                 const mock = consoleLog.startMock()
                 const app = await new Plumier()
                     .set(new WebApiFacility())
-                    .set(new CRUDMongooseFacility({ genericOneToManyController: MyGenericController }))
+                    .set(new CRUDMongooseFacility({ controller: MyGenericController }))
                     .initialize()
                 expect(mock.mock.calls).toMatchSnapshot()
                 consoleLog.clearMock()
@@ -1000,7 +1000,7 @@ describe("TypeOrm", () => {
                 const AnimalModel = model(Animal)
                 const UserModel = model(User)
                 @generic.template("P", "T", "PID", "TID")
-                class MyGenericController<P, T, PID, TID> extends GenericOneToManyController<P, T, PID, TID> {
+                class MyGenericController<P, T, PID, TID> extends OneToManyControllerGeneric<P, T, PID, TID> {
                     model: mongoose.Model<T & mongoose.Document>
                     constructor() {
                         super()
@@ -1014,7 +1014,7 @@ describe("TypeOrm", () => {
                 const mock = consoleLog.startMock()
                 const app = await new Plumier()
                     .set(new WebApiFacility())
-                    .set(new CRUDMongooseFacility({ genericOneToManyController: MyGenericController }))
+                    .set(new CRUDMongooseFacility({ controller: MyGenericController }))
                     .initialize()
                 const animal = await new AnimalModel({ name: "Mimi" }).save()
                 const user = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe", animals: [animal._id] }).save()

@@ -28,22 +28,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.list(offset, limit, query) -> GET    /users",
+    "1. MyGenericController.list              -> GET    /users",
   ],
   Array [
-    "2. DynamicType.save(data)                 -> POST   /users",
+    "2. MyGenericController.save(data)        -> POST   /users",
   ],
   Array [
-    "3. DynamicType.get(id)                    -> GET    /users/:id",
+    "3. MyGenericController.get(id)           -> GET    /users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "4. MyGenericController.modify(id, data)  -> PATCH  /users/:id",
   ],
   Array [
-    "5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    "5. MyGenericController.replace(id, data) -> PUT    /users/:id",
   ],
   Array [
-    "6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    "6. MyGenericController.delete(id)        -> DELETE /users/:id",
   ],
   Array [],
 ]
@@ -66,7 +66,7 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.get(id) -> GET /users/:id",
+    "1. MyGenericController.get(id) -> GET /users/:id",
   ],
   Array [],
 ]
@@ -91,19 +91,19 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.save(data)        -> POST   /users",
+    "1. MyGenericController.save(data)        -> POST   /users",
   ],
   Array [
-    "2. DynamicType.get(id)           -> GET    /users/:id",
+    "2. MyGenericController.get(id)           -> GET    /users/:id",
   ],
   Array [
-    "3. DynamicType.modify(id, data)  -> PATCH  /users/:id",
+    "3. MyGenericController.modify(id, data)  -> PATCH  /users/:id",
   ],
   Array [
-    "4. DynamicType.replace(id, data) -> PUT    /users/:id",
+    "4. MyGenericController.replace(id, data) -> PUT    /users/:id",
   ],
   Array [
-    "5. DynamicType.delete(id)        -> DELETE /users/:id",
+    "5. MyGenericController.delete(id)        -> DELETE /users/:id",
   ],
   Array [],
 ]
@@ -122,58 +122,58 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit, query) -> GET    /animals",
+    " 1. MongooseControllerGeneric.list       -> GET    /animals",
   ],
   Array [
-    " 2. DynamicType.save(data)                 -> POST   /animals",
+    " 2. MongooseControllerGeneric.save(data) -> POST   /animals",
   ],
   Array [
-    " 3. DynamicType.get(id)                    -> GET    /animals/:id",
+    " 3. MongooseControllerGeneric.get(id)    -> GET    /animals/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+    " 4. MongooseControllerGeneric.modify     -> PATCH  /animals/:id",
   ],
   Array [
-    " 5. DynamicType.replace(id, data)          -> PUT    /animals/:id",
+    " 5. MongooseControllerGeneric.replace    -> PUT    /animals/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)                 -> DELETE /animals/:id",
+    " 6. MongooseControllerGeneric.delete(id) -> DELETE /animals/:id",
   ],
   Array [
-    " 7. DynamicType.list(offset, limit, query) -> GET    /users",
+    " 7. MongooseControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    " 8. DynamicType.save(data)                 -> POST   /users",
+    " 8. MongooseControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    " 9. DynamicType.get(id)                    -> GET    /users/:id",
+    " 9. MongooseControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    "10. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "10. MongooseControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    "11. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    "11. MongooseControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    "12. DynamicType.delete(id)                 -> DELETE /users/:id",
+    "12. MongooseControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [
-    "13. DynamicType.list                       -> GET    /users/:pid/animals",
+    "13. MyGenericController.list             -> GET    /users/:pid/animals",
   ],
   Array [
-    "14. DynamicType.save(pid, data)            -> POST   /users/:pid/animals",
+    "14. MyGenericController.save(pid, data)  -> POST   /users/:pid/animals",
   ],
   Array [
-    "15. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
+    "15. MyGenericController.get(pid, id)     -> GET    /users/:pid/animals/:id",
   ],
   Array [
-    "16. DynamicType.modify(pid, id, data)      -> PATCH  /users/:pid/animals/:id",
+    "16. MyGenericController.modify           -> PATCH  /users/:pid/animals/:id",
   ],
   Array [
-    "17. DynamicType.replace(pid, id, data)     -> PUT    /users/:pid/animals/:id",
+    "17. MyGenericController.replace          -> PUT    /users/:pid/animals/:id",
   ],
   Array [
-    "18. DynamicType.delete(pid, id)            -> DELETE /users/:pid/animals/:id",
+    "18. MyGenericController.delete(pid, id)  -> DELETE /users/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -198,43 +198,43 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit, query) -> GET    /animals",
+    " 1. MongooseControllerGeneric.list       -> GET    /animals",
   ],
   Array [
-    " 2. DynamicType.save(data)                 -> POST   /animals",
+    " 2. MongooseControllerGeneric.save(data) -> POST   /animals",
   ],
   Array [
-    " 3. DynamicType.get(id)                    -> GET    /animals/:id",
+    " 3. MongooseControllerGeneric.get(id)    -> GET    /animals/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+    " 4. MongooseControllerGeneric.modify     -> PATCH  /animals/:id",
   ],
   Array [
-    " 5. DynamicType.replace(id, data)          -> PUT    /animals/:id",
+    " 5. MongooseControllerGeneric.replace    -> PUT    /animals/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)                 -> DELETE /animals/:id",
+    " 6. MongooseControllerGeneric.delete(id) -> DELETE /animals/:id",
   ],
   Array [
-    " 7. DynamicType.list(offset, limit, query) -> GET    /users",
+    " 7. MongooseControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    " 8. DynamicType.save(data)                 -> POST   /users",
+    " 8. MongooseControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    " 9. DynamicType.get(id)                    -> GET    /users/:id",
+    " 9. MongooseControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    "10. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "10. MongooseControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    "11. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    "11. MongooseControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    "12. DynamicType.delete(id)                 -> DELETE /users/:id",
+    "12. MongooseControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [
-    "13. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
+    "13. MyGenericController.get(pid, id)     -> GET    /users/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -261,55 +261,55 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit, query) -> GET    /animals",
+    " 1. MongooseControllerGeneric.list       -> GET    /animals",
   ],
   Array [
-    " 2. DynamicType.save(data)                 -> POST   /animals",
+    " 2. MongooseControllerGeneric.save(data) -> POST   /animals",
   ],
   Array [
-    " 3. DynamicType.get(id)                    -> GET    /animals/:id",
+    " 3. MongooseControllerGeneric.get(id)    -> GET    /animals/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+    " 4. MongooseControllerGeneric.modify     -> PATCH  /animals/:id",
   ],
   Array [
-    " 5. DynamicType.replace(id, data)          -> PUT    /animals/:id",
+    " 5. MongooseControllerGeneric.replace    -> PUT    /animals/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)                 -> DELETE /animals/:id",
+    " 6. MongooseControllerGeneric.delete(id) -> DELETE /animals/:id",
   ],
   Array [
-    " 7. DynamicType.list(offset, limit, query) -> GET    /users",
+    " 7. MongooseControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    " 8. DynamicType.save(data)                 -> POST   /users",
+    " 8. MongooseControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    " 9. DynamicType.get(id)                    -> GET    /users/:id",
+    " 9. MongooseControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    "10. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "10. MongooseControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    "11. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    "11. MongooseControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    "12. DynamicType.delete(id)                 -> DELETE /users/:id",
+    "12. MongooseControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [
-    "13. DynamicType.save(pid, data)            -> POST   /users/:pid/animals",
+    "13. MyGenericController.save(pid, data)  -> POST   /users/:pid/animals",
   ],
   Array [
-    "14. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
+    "14. MyGenericController.get(pid, id)     -> GET    /users/:pid/animals/:id",
   ],
   Array [
-    "15. DynamicType.modify(pid, id, data)      -> PATCH  /users/:pid/animals/:id",
+    "15. MyGenericController.modify           -> PATCH  /users/:pid/animals/:id",
   ],
   Array [
-    "16. DynamicType.replace(pid, id, data)     -> PUT    /users/:pid/animals/:id",
+    "16. MyGenericController.replace          -> PUT    /users/:pid/animals/:id",
   ],
   Array [
-    "17. DynamicType.delete(pid, id)            -> DELETE /users/:pid/animals/:id",
+    "17. MyGenericController.delete(pid, id)  -> DELETE /users/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -459,22 +459,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.list(offset, limit, query) -> GET    /api/v1/users",
+    "1. MongooseControllerGeneric.list       -> GET    /api/v1/users",
   ],
   Array [
-    "2. DynamicType.save(data)                 -> POST   /api/v1/users",
+    "2. MongooseControllerGeneric.save(data) -> POST   /api/v1/users",
   ],
   Array [
-    "3. DynamicType.get(id)                    -> GET    /api/v1/users/:id",
+    "3. MongooseControllerGeneric.get(id)    -> GET    /api/v1/users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)           -> PATCH  /api/v1/users/:id",
+    "4. MongooseControllerGeneric.modify     -> PATCH  /api/v1/users/:id",
   ],
   Array [
-    "5. DynamicType.replace(id, data)          -> PUT    /api/v1/users/:id",
+    "5. MongooseControllerGeneric.replace    -> PUT    /api/v1/users/:id",
   ],
   Array [
-    "6. DynamicType.delete(id)                 -> DELETE /api/v1/users/:id",
+    "6. MongooseControllerGeneric.delete(id) -> DELETE /api/v1/users/:id",
   ],
   Array [],
 ]
@@ -490,22 +490,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.list(offset, limit, query) -> GET    /api/v1/users",
+    "1. MongooseControllerGeneric.list       -> GET    /api/v1/users",
   ],
   Array [
-    "2. DynamicType.save(data)                 -> POST   /api/v1/users",
+    "2. MongooseControllerGeneric.save(data) -> POST   /api/v1/users",
   ],
   Array [
-    "3. DynamicType.get(id)                    -> GET    /api/v1/users/:id",
+    "3. MongooseControllerGeneric.get(id)    -> GET    /api/v1/users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)           -> PATCH  /api/v1/users/:id",
+    "4. MongooseControllerGeneric.modify     -> PATCH  /api/v1/users/:id",
   ],
   Array [
-    "5. DynamicType.replace(id, data)          -> PUT    /api/v1/users/:id",
+    "5. MongooseControllerGeneric.replace    -> PUT    /api/v1/users/:id",
   ],
   Array [
-    "6. DynamicType.delete(id)                 -> DELETE /api/v1/users/:id",
+    "6. MongooseControllerGeneric.delete(id) -> DELETE /api/v1/users/:id",
   ],
   Array [],
 ]
@@ -521,22 +521,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.list(offset, limit, query) -> GET    /users",
+    "1. MongooseControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    "2. DynamicType.save(data)                 -> POST   /users",
+    "2. MongooseControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    "3. UsersController.get(id)                -> GET    /users/:id",
+    "3. UsersController.get(id)              -> GET    /users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "4. MongooseControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    "5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    "5. MongooseControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    "6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    "6. MongooseControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [],
 ]
@@ -555,58 +555,58 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit, query) -> GET    /animals",
+    " 1. MongooseControllerGeneric.list       -> GET    /animals",
   ],
   Array [
-    " 2. DynamicType.save(data)                 -> POST   /animals",
+    " 2. MongooseControllerGeneric.save(data) -> POST   /animals",
   ],
   Array [
-    " 3. DynamicType.get(id)                    -> GET    /animals/:id",
+    " 3. MongooseControllerGeneric.get(id)    -> GET    /animals/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+    " 4. MongooseControllerGeneric.modify     -> PATCH  /animals/:id",
   ],
   Array [
-    " 5. DynamicType.replace(id, data)          -> PUT    /animals/:id",
+    " 5. MongooseControllerGeneric.replace    -> PUT    /animals/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)                 -> DELETE /animals/:id",
+    " 6. MongooseControllerGeneric.delete(id) -> DELETE /animals/:id",
   ],
   Array [
-    " 7. DynamicType.list(offset, limit, query) -> GET    /users",
+    " 7. MongooseControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    " 8. DynamicType.save(data)                 -> POST   /users",
+    " 8. MongooseControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    " 9. DynamicType.get(id)                    -> GET    /users/:id",
+    " 9. MongooseControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    "10. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "10. MongooseControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    "11. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    "11. MongooseControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    "12. DynamicType.delete(id)                 -> DELETE /users/:id",
+    "12. MongooseControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [
-    "13. DynamicType.list                       -> GET    /users/:pid/animals",
+    "13. MongooseOneToMan...eneric.list       -> GET    /users/:pid/animals",
   ],
   Array [
-    "14. DynamicType.save(pid, data)            -> POST   /users/:pid/animals",
+    "14. MongooseOneToMan...eneric.save       -> POST   /users/:pid/animals",
   ],
   Array [
-    "15. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
+    "15. MongooseOneToMan...eneric.get        -> GET    /users/:pid/animals/:id",
   ],
   Array [
-    "16. DynamicType.modify(pid, id, data)      -> PATCH  /users/:pid/animals/:id",
+    "16. MongooseOneToMan...eneric.modify     -> PATCH  /users/:pid/animals/:id",
   ],
   Array [
-    "17. DynamicType.replace(pid, id, data)     -> PUT    /users/:pid/animals/:id",
+    "17. MongooseOneToMan...eneric.replace    -> PUT    /users/:pid/animals/:id",
   ],
   Array [
-    "18. DynamicType.delete(pid, id)            -> DELETE /users/:pid/animals/:id",
+    "18. MongooseOneToMan...eneric.delete     -> DELETE /users/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -625,58 +625,58 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit, query) -> GET    /animals",
+    " 1. MongooseControllerGeneric.list       -> GET    /animals",
   ],
   Array [
-    " 2. DynamicType.save(data)                 -> POST   /animals",
+    " 2. MongooseControllerGeneric.save(data) -> POST   /animals",
   ],
   Array [
-    " 3. DynamicType.get(id)                    -> GET    /animals/:id",
+    " 3. MongooseControllerGeneric.get(id)    -> GET    /animals/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+    " 4. MongooseControllerGeneric.modify     -> PATCH  /animals/:id",
   ],
   Array [
-    " 5. DynamicType.replace(id, data)          -> PUT    /animals/:id",
+    " 5. MongooseControllerGeneric.replace    -> PUT    /animals/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)                 -> DELETE /animals/:id",
+    " 6. MongooseControllerGeneric.delete(id) -> DELETE /animals/:id",
   ],
   Array [
-    " 7. DynamicType.list(offset, limit, query) -> GET    /users",
+    " 7. MongooseControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    " 8. DynamicType.save(data)                 -> POST   /users",
+    " 8. MongooseControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    " 9. DynamicType.get(id)                    -> GET    /users/:id",
+    " 9. MongooseControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    "10. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "10. MongooseControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    "11. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    "11. MongooseControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    "12. DynamicType.delete(id)                 -> DELETE /users/:id",
+    "12. MongooseControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [
-    "13. DynamicType.list                       -> GET    /users/:pid/animals",
+    "13. MongooseOneToMan...eneric.list       -> GET    /users/:pid/animals",
   ],
   Array [
-    "14. DynamicType.save(pid, data)            -> POST   /users/:pid/animals",
+    "14. MongooseOneToMan...eneric.save       -> POST   /users/:pid/animals",
   ],
   Array [
-    "15. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
+    "15. MongooseOneToMan...eneric.get        -> GET    /users/:pid/animals/:id",
   ],
   Array [
-    "16. DynamicType.modify(pid, id, data)      -> PATCH  /users/:pid/animals/:id",
+    "16. MongooseOneToMan...eneric.modify     -> PATCH  /users/:pid/animals/:id",
   ],
   Array [
-    "17. DynamicType.replace(pid, id, data)     -> PUT    /users/:pid/animals/:id",
+    "17. MongooseOneToMan...eneric.replace    -> PUT    /users/:pid/animals/:id",
   ],
   Array [
-    "18. DynamicType.delete(pid, id)            -> DELETE /users/:pid/animals/:id",
+    "18. MongooseOneToMan...eneric.delete     -> DELETE /users/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -695,58 +695,58 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit, query) -> GET    /animals",
+    " 1. MongooseControllerGeneric.list       -> GET    /animals",
   ],
   Array [
-    " 2. DynamicType.save(data)                 -> POST   /animals",
+    " 2. MongooseControllerGeneric.save(data) -> POST   /animals",
   ],
   Array [
-    " 3. DynamicType.get(id)                    -> GET    /animals/:id",
+    " 3. MongooseControllerGeneric.get(id)    -> GET    /animals/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PATCH  /animals/:id",
+    " 4. MongooseControllerGeneric.modify     -> PATCH  /animals/:id",
   ],
   Array [
-    " 5. DynamicType.replace(id, data)          -> PUT    /animals/:id",
+    " 5. MongooseControllerGeneric.replace    -> PUT    /animals/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)                 -> DELETE /animals/:id",
+    " 6. MongooseControllerGeneric.delete(id) -> DELETE /animals/:id",
   ],
   Array [
-    " 7. DynamicType.list(offset, limit, query) -> GET    /users",
+    " 7. MongooseControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    " 8. DynamicType.save(data)                 -> POST   /users",
+    " 8. MongooseControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    " 9. DynamicType.get(id)                    -> GET    /users/:id",
+    " 9. MongooseControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    "10. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "10. MongooseControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    "11. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    "11. MongooseControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    "12. DynamicType.delete(id)                 -> DELETE /users/:id",
+    "12. MongooseControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [
-    "13. DynamicType.list                       -> GET    /users/:pid/animals",
+    "13. MongooseOneToMan...eneric.list       -> GET    /users/:pid/animals",
   ],
   Array [
-    "14. DynamicType.save(pid, data)            -> POST   /users/:pid/animals",
+    "14. MongooseOneToMan...eneric.save       -> POST   /users/:pid/animals",
   ],
   Array [
-    "15. DynamicType.get(pid, id)               -> GET    /users/:pid/animals/:id",
+    "15. MongooseOneToMan...eneric.get        -> GET    /users/:pid/animals/:id",
   ],
   Array [
-    "16. DynamicType.modify(pid, id, data)      -> PATCH  /users/:pid/animals/:id",
+    "16. MongooseOneToMan...eneric.modify     -> PATCH  /users/:pid/animals/:id",
   ],
   Array [
-    "17. DynamicType.replace(pid, id, data)     -> PUT    /users/:pid/animals/:id",
+    "17. MongooseOneToMan...eneric.replace    -> PUT    /users/:pid/animals/:id",
   ],
   Array [
-    "18. DynamicType.delete(pid, id)            -> DELETE /users/:pid/animals/:id",
+    "18. MongooseOneToMan...eneric.delete     -> DELETE /users/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -762,22 +762,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.list(offset, limit, query) -> GET    /users",
+    "1. MongooseControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    "2. DynamicType.save(data)                 -> POST   /users",
+    "2. MongooseControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    "3. DynamicType.get(id)                    -> GET    /users/:id",
+    "3. MongooseControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "4. MongooseControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    "5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    "5. MongooseControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    "6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    "6. MongooseControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [],
 ]
@@ -796,40 +796,40 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DynamicType.list(offset, limit, query) -> GET    /users",
+    " 1. MongooseControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    " 2. DynamicType.save(data)                 -> POST   /users",
+    " 2. MongooseControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    " 3. DynamicType.get(id)                    -> GET    /users/:id",
+    " 3. MongooseControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    " 4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    " 4. MongooseControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    " 5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    " 5. MongooseControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    " 6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    " 6. MongooseControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [
-    " 7. DynamicType.list(offset, limit, query) -> GET    /secondusers",
+    " 7. MongooseControllerGeneric.list       -> GET    /secondusers",
   ],
   Array [
-    " 8. DynamicType.save(data)                 -> POST   /secondusers",
+    " 8. MongooseControllerGeneric.save(data) -> POST   /secondusers",
   ],
   Array [
-    " 9. DynamicType.get(id)                    -> GET    /secondusers/:id",
+    " 9. MongooseControllerGeneric.get(id)    -> GET    /secondusers/:id",
   ],
   Array [
-    "10. DynamicType.modify(id, data)           -> PATCH  /secondusers/:id",
+    "10. MongooseControllerGeneric.modify     -> PATCH  /secondusers/:id",
   ],
   Array [
-    "11. DynamicType.replace(id, data)          -> PUT    /secondusers/:id",
+    "11. MongooseControllerGeneric.replace    -> PUT    /secondusers/:id",
   ],
   Array [
-    "12. DynamicType.delete(id)                 -> DELETE /secondusers/:id",
+    "12. MongooseControllerGeneric.delete(id) -> DELETE /secondusers/:id",
   ],
   Array [],
 ]
@@ -845,22 +845,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DynamicType.list(offset, limit, query) -> GET    /users",
+    "1. MongooseControllerGeneric.list       -> GET    /users",
   ],
   Array [
-    "2. DynamicType.save(data)                 -> POST   /users",
+    "2. MongooseControllerGeneric.save(data) -> POST   /users",
   ],
   Array [
-    "3. DynamicType.get(id)                    -> GET    /users/:id",
+    "3. MongooseControllerGeneric.get(id)    -> GET    /users/:id",
   ],
   Array [
-    "4. DynamicType.modify(id, data)           -> PATCH  /users/:id",
+    "4. MongooseControllerGeneric.modify     -> PATCH  /users/:id",
   ],
   Array [
-    "5. DynamicType.replace(id, data)          -> PUT    /users/:id",
+    "5. MongooseControllerGeneric.replace    -> PUT    /users/:id",
   ],
   Array [
-    "6. DynamicType.delete(id)                 -> DELETE /users/:id",
+    "6. MongooseControllerGeneric.delete(id) -> DELETE /users/:id",
   ],
   Array [],
 ]
