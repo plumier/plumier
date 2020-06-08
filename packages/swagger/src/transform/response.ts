@@ -9,7 +9,7 @@ function validationResponse(): ResponsesObject {
         description: "Validation error",
         content: {
             "application/json": {
-                schema: { $ref: "#/components/schemas/.ValidationError" }
+                schema: { $ref: "#/components/schemas/System-ValidationError" }
             },
         }
     }
@@ -20,7 +20,7 @@ function securityResponse(description: string): ResponseObject {
         description,
         content: {
             "application/json": {
-                schema: { $ref: "#/components/schemas/.DefaultErrorMessage" }
+                schema: { $ref: "#/components/schemas/System-DefaultErrorMessage" }
             },
         }
     }

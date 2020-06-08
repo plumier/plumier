@@ -2,7 +2,7 @@
 
 exports[`Open API 3.0 Generation Component Schema Should able to generate object with cross reference 1`] = `
 Object {
-  ".DefaultErrorMessage": Object {
+  "System-DefaultErrorMessage": Object {
     "properties": Object {
       "message": Object {
         "type": "string",
@@ -13,7 +13,7 @@ Object {
     },
     "type": "object",
   },
-  ".ValidationError": Object {
+  "System-ValidationError": Object {
     "properties": Object {
       "message": Object {
         "items": Object {
@@ -56,6 +56,21 @@ Object {
     },
     "type": "object",
   },
+  "Tag-Partial": Object {
+    "properties": Object {
+      "tag": Object {
+        "type": "string",
+      },
+      "users": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/User",
+          "type": "object",
+        },
+        "type": "array",
+      },
+    },
+    "type": "object",
+  },
   "User": Object {
     "properties": Object {
       "password": Object {
@@ -74,22 +89,7 @@ Object {
     },
     "type": "object",
   },
-  "~Tag": Object {
-    "properties": Object {
-      "tag": Object {
-        "type": "string",
-      },
-      "users": Object {
-        "items": Object {
-          "$ref": "#/components/schemas/User",
-          "type": "object",
-        },
-        "type": "array",
-      },
-    },
-    "type": "object",
-  },
-  "~User": Object {
+  "User-Partial": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
@@ -112,7 +112,23 @@ Object {
 
 exports[`Open API 3.0 Generation Component Schema Should able to mix registered an non registered object 1`] = `
 Object {
-  ".DefaultErrorMessage": Object {
+  "Animal": Object {
+    "properties": Object {
+      "name": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "Animal-Partial": Object {
+    "properties": Object {
+      "name": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "System-DefaultErrorMessage": Object {
     "properties": Object {
       "message": Object {
         "type": "string",
@@ -123,7 +139,7 @@ Object {
     },
     "type": "object",
   },
-  ".ValidationError": Object {
+  "System-ValidationError": Object {
     "properties": Object {
       "message": Object {
         "items": Object {
@@ -147,14 +163,6 @@ Object {
       },
       "status": Object {
         "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "Animal": Object {
-    "properties": Object {
-      "name": Object {
-        "type": "string",
       },
     },
     "type": "object",
@@ -182,15 +190,7 @@ Object {
     },
     "type": "object",
   },
-  "~Animal": Object {
-    "properties": Object {
-      "name": Object {
-        "type": "string",
-      },
-    },
-    "type": "object",
-  },
-  "~User": Object {
+  "User-Partial": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
@@ -198,7 +198,7 @@ Object {
       "tag": Object {
         "properties": Object {
           "animal": Object {
-            "$ref": "#/components/schemas/~Animal",
+            "$ref": "#/components/schemas/Animal-Partial",
             "type": "object",
           },
           "tag": Object {
@@ -218,7 +218,7 @@ Object {
 
 exports[`Open API 3.0 Generation Component Schema Should detect nested array of object component 1`] = `
 Object {
-  ".DefaultErrorMessage": Object {
+  "System-DefaultErrorMessage": Object {
     "properties": Object {
       "message": Object {
         "type": "string",
@@ -229,7 +229,7 @@ Object {
     },
     "type": "object",
   },
-  ".ValidationError": Object {
+  "System-ValidationError": Object {
     "properties": Object {
       "message": Object {
         "items": Object {
@@ -275,7 +275,7 @@ Object {
     },
     "type": "object",
   },
-  "~User": Object {
+  "User-Partial": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
@@ -298,7 +298,7 @@ Object {
 
 exports[`Open API 3.0 Generation Component Schema Should detect nested object component 1`] = `
 Object {
-  ".DefaultErrorMessage": Object {
+  "System-DefaultErrorMessage": Object {
     "properties": Object {
       "message": Object {
         "type": "string",
@@ -309,7 +309,7 @@ Object {
     },
     "type": "object",
   },
-  ".ValidationError": Object {
+  "System-ValidationError": Object {
     "properties": Object {
       "message": Object {
         "items": Object {
@@ -356,7 +356,7 @@ Object {
     },
     "type": "object",
   },
-  "~User": Object {
+  "User-Partial": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
@@ -623,7 +623,7 @@ Object {
       "content": Object {
         "application/json": Object {
           "schema": Object {
-            "$ref": "#/components/schemas/.ValidationError",
+            "$ref": "#/components/schemas/System-ValidationError",
           },
         },
       },
@@ -680,7 +680,7 @@ Object {
       "content": Object {
         "application/json": Object {
           "schema": Object {
-            "$ref": "#/components/schemas/.ValidationError",
+            "$ref": "#/components/schemas/System-ValidationError",
           },
         },
       },
@@ -765,7 +765,7 @@ Object {
     "content": Object {
       "application/json": Object {
         "schema": Object {
-          "$ref": "#/components/schemas/.ValidationError",
+          "$ref": "#/components/schemas/System-ValidationError",
         },
       },
     },
@@ -1266,7 +1266,7 @@ exports[`Open API 3.0 Generation Path Should combine path based on resource 1`] 
 Object {
   "components": Object {
     "schemas": Object {
-      ".DefaultErrorMessage": Object {
+      "System-DefaultErrorMessage": Object {
         "properties": Object {
           "message": Object {
             "type": "string",
@@ -1277,7 +1277,7 @@ Object {
         },
         "type": "object",
       },
-      ".ValidationError": Object {
+      "System-ValidationError": Object {
         "properties": Object {
           "message": Object {
             "items": Object {
@@ -1359,7 +1359,7 @@ exports[`Open API 3.0 Generation Path Should combine path using different contro
 Object {
   "components": Object {
     "schemas": Object {
-      ".DefaultErrorMessage": Object {
+      "System-DefaultErrorMessage": Object {
         "properties": Object {
           "message": Object {
             "type": "string",
@@ -1370,7 +1370,7 @@ Object {
         },
         "type": "object",
       },
-      ".ValidationError": Object {
+      "System-ValidationError": Object {
         "properties": Object {
           "message": Object {
             "items": Object {
@@ -1493,7 +1493,7 @@ Object {
           "content": Object {
             "application/json": Object {
               "schema": Object {
-                "$ref": "#/components/schemas/.ValidationError",
+                "$ref": "#/components/schemas/System-ValidationError",
               },
             },
           },
@@ -1596,7 +1596,7 @@ Object {
 
 exports[`Open API 3.0 Generation Request Body Should detect @bind.body() with array element with required 1`] = `
 Object {
-  ".DefaultErrorMessage": Object {
+  "System-DefaultErrorMessage": Object {
     "properties": Object {
       "message": Object {
         "type": "string",
@@ -1607,7 +1607,7 @@ Object {
     },
     "type": "object",
   },
-  ".ValidationError": Object {
+  "System-ValidationError": Object {
     "properties": Object {
       "message": Object {
         "items": Object {
@@ -1649,7 +1649,7 @@ Object {
     ],
     "type": "object",
   },
-  "~User": Object {
+  "User-Partial": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
@@ -1665,7 +1665,7 @@ Object {
 
 exports[`Open API 3.0 Generation Request Body Should detect @bind.body() with required 1`] = `
 Object {
-  ".DefaultErrorMessage": Object {
+  "System-DefaultErrorMessage": Object {
     "properties": Object {
       "message": Object {
         "type": "string",
@@ -1676,7 +1676,7 @@ Object {
     },
     "type": "object",
   },
-  ".ValidationError": Object {
+  "System-ValidationError": Object {
     "properties": Object {
       "message": Object {
         "items": Object {
@@ -1718,7 +1718,7 @@ Object {
     ],
     "type": "object",
   },
-  "~User": Object {
+  "User-Partial": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
@@ -1780,7 +1780,7 @@ Object {
 
 exports[`Open API 3.0 Generation Request Body Should detect model binding with array with required 1`] = `
 Object {
-  ".DefaultErrorMessage": Object {
+  "System-DefaultErrorMessage": Object {
     "properties": Object {
       "message": Object {
         "type": "string",
@@ -1791,7 +1791,7 @@ Object {
     },
     "type": "object",
   },
-  ".ValidationError": Object {
+  "System-ValidationError": Object {
     "properties": Object {
       "message": Object {
         "items": Object {
@@ -1833,7 +1833,7 @@ Object {
     ],
     "type": "object",
   },
-  "~User": Object {
+  "User-Partial": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
@@ -1849,7 +1849,7 @@ Object {
 
 exports[`Open API 3.0 Generation Request Body Should detect model binding with required 1`] = `
 Object {
-  ".DefaultErrorMessage": Object {
+  "System-DefaultErrorMessage": Object {
     "properties": Object {
       "message": Object {
         "type": "string",
@@ -1860,7 +1860,7 @@ Object {
     },
     "type": "object",
   },
-  ".ValidationError": Object {
+  "System-ValidationError": Object {
     "properties": Object {
       "message": Object {
         "items": Object {
@@ -1902,7 +1902,7 @@ Object {
     ],
     "type": "object",
   },
-  "~User": Object {
+  "User-Partial": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
@@ -1995,13 +1995,13 @@ Object {
   "content": Object {
     "application/json": Object {
       "schema": Object {
-        "$ref": "#/components/schemas/~User",
+        "$ref": "#/components/schemas/User-Partial",
         "type": "object",
       },
     },
     "application/x-www-form-urlencoded": Object {
       "schema": Object {
-        "$ref": "#/components/schemas/~User",
+        "$ref": "#/components/schemas/User-Partial",
         "type": "object",
       },
     },
@@ -2015,13 +2015,13 @@ Object {
   "content": Object {
     "application/json": Object {
       "schema": Object {
-        "$ref": "#/components/schemas/~User",
+        "$ref": "#/components/schemas/User-Partial",
         "type": "object",
       },
     },
     "application/x-www-form-urlencoded": Object {
       "schema": Object {
-        "$ref": "#/components/schemas/~User",
+        "$ref": "#/components/schemas/User-Partial",
         "type": "object",
       },
     },
@@ -2049,7 +2049,7 @@ Object {
 
 exports[`Open API 3.0 Generation Response Should detect array object response 2`] = `
 Object {
-  ".DefaultErrorMessage": Object {
+  "System-DefaultErrorMessage": Object {
     "properties": Object {
       "message": Object {
         "type": "string",
@@ -2060,7 +2060,7 @@ Object {
     },
     "type": "object",
   },
-  ".ValidationError": Object {
+  "System-ValidationError": Object {
     "properties": Object {
       "message": Object {
         "items": Object {
@@ -2099,7 +2099,7 @@ Object {
     },
     "type": "object",
   },
-  "~User": Object {
+  "User-Partial": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
@@ -2129,7 +2129,7 @@ Object {
 
 exports[`Open API 3.0 Generation Response Should detect nested object array response 2`] = `
 Object {
-  ".DefaultErrorMessage": Object {
+  "System-DefaultErrorMessage": Object {
     "properties": Object {
       "message": Object {
         "type": "string",
@@ -2140,7 +2140,7 @@ Object {
     },
     "type": "object",
   },
-  ".ValidationError": Object {
+  "System-ValidationError": Object {
     "properties": Object {
       "message": Object {
         "items": Object {
@@ -2186,7 +2186,7 @@ Object {
     },
     "type": "object",
   },
-  "~User": Object {
+  "User-Partial": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
@@ -2223,7 +2223,7 @@ Object {
 
 exports[`Open API 3.0 Generation Response Should detect nested object response 2`] = `
 Object {
-  ".DefaultErrorMessage": Object {
+  "System-DefaultErrorMessage": Object {
     "properties": Object {
       "message": Object {
         "type": "string",
@@ -2234,7 +2234,7 @@ Object {
     },
     "type": "object",
   },
-  ".ValidationError": Object {
+  "System-ValidationError": Object {
     "properties": Object {
       "message": Object {
         "items": Object {
@@ -2281,7 +2281,7 @@ Object {
     },
     "type": "object",
   },
-  "~User": Object {
+  "User-Partial": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
@@ -2319,7 +2319,7 @@ Object {
 
 exports[`Open API 3.0 Generation Response Should detect object response 2`] = `
 Object {
-  ".DefaultErrorMessage": Object {
+  "System-DefaultErrorMessage": Object {
     "properties": Object {
       "message": Object {
         "type": "string",
@@ -2330,7 +2330,7 @@ Object {
     },
     "type": "object",
   },
-  ".ValidationError": Object {
+  "System-ValidationError": Object {
     "properties": Object {
       "message": Object {
         "items": Object {
@@ -2369,7 +2369,7 @@ Object {
     },
     "type": "object",
   },
-  "~User": Object {
+  "User-Partial": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
@@ -2415,7 +2415,7 @@ Object {
     "content": Object {
       "application/json": Object {
         "schema": Object {
-          "$ref": "#/components/schemas/.DefaultErrorMessage",
+          "$ref": "#/components/schemas/System-DefaultErrorMessage",
         },
       },
     },
@@ -2425,7 +2425,7 @@ Object {
     "content": Object {
       "application/json": Object {
         "schema": Object {
-          "$ref": "#/components/schemas/.DefaultErrorMessage",
+          "$ref": "#/components/schemas/System-DefaultErrorMessage",
         },
       },
     },
@@ -2435,7 +2435,7 @@ Object {
     "content": Object {
       "application/json": Object {
         "schema": Object {
-          "$ref": "#/components/schemas/.ValidationError",
+          "$ref": "#/components/schemas/System-ValidationError",
         },
       },
     },
@@ -2472,7 +2472,7 @@ Object {
     "content": Object {
       "application/json": Object {
         "schema": Object {
-          "$ref": "#/components/schemas/.ValidationError",
+          "$ref": "#/components/schemas/System-ValidationError",
         },
       },
     },
