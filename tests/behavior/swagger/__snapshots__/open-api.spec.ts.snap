@@ -63,7 +63,7 @@ Object {
       },
       "users": Object {
         "items": Object {
-          "$ref": "#/components/schemas/User",
+          "$ref": "#/components/schemas/User-Partial",
           "type": "object",
         },
         "type": "array",
@@ -96,7 +96,7 @@ Object {
       },
       "tags": Object {
         "items": Object {
-          "$ref": "#/components/schemas/Tag",
+          "$ref": "#/components/schemas/Tag-Partial",
           "type": "object",
         },
         "type": "array",
@@ -282,7 +282,7 @@ Object {
       },
       "tag": Object {
         "items": Object {
-          "$ref": "#/components/schemas/Tag",
+          "$ref": "#/components/schemas/Tag-Partial",
           "type": "object",
         },
         "type": "array",
@@ -2193,7 +2193,7 @@ Object {
       },
       "tag": Object {
         "items": Object {
-          "$ref": "#/components/schemas/Tag",
+          "$ref": "#/components/schemas/Tag-Partial",
           "type": "object",
         },
         "type": "array",

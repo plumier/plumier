@@ -7,6 +7,7 @@ interface ApiResponseDecorator { kind: "ApiResponse", status: number, mime: stri
 interface ApiFieldNameDecorator { kind: "ApiFieldName", alias: string }
 interface ApiEnumDecorator { kind: "ApiEnum", enums: string[] }
 interface ApiDescriptionDecorator { kind: "ApiDescription", desc: string }
+interface ApiHidePropertyDecorator { kind: "ApiHideProperty", location?: "request" | "response" }
 interface ApiTagDecorator { kind: "ApiTag", tag: string, description?: string, externalDoc?: string }
 namespace api {
 
@@ -30,6 +31,14 @@ namespace api {
 
     export function tag(tag: string) {
         return decorateClass(<ApiTagDecorator>{ kind: "ApiTag", tag })
+    }
+
+    /**
+     * Hide property of the type from schema generation
+     * @param location location of the type which property will be hidden
+     */
+    export function hide(location?: "request" | "response") {
+        return decorateProperty(<ApiHidePropertyDecorator>{ kind: "ApiHideProperty", location })
     }
 
     export namespace params {
@@ -59,4 +68,7 @@ namespace api {
 
 }
 
-export { ApiRequiredDecorator, ApiResponseDecorator, ApiFieldNameDecorator, ApiEnumDecorator, ApiDescriptionDecorator, ApiTagDecorator, api }
+export {
+    ApiRequiredDecorator, ApiResponseDecorator, ApiFieldNameDecorator, ApiEnumDecorator,
+    ApiDescriptionDecorator, ApiTagDecorator, api, ApiHidePropertyDecorator
+}
