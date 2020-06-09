@@ -3,7 +3,7 @@ import { Context, Request } from "koa"
 import { ParameterReflection } from "tinspector"
 
 import { isCustomClass } from "./common"
-import { ActionContext, ActionResult, Invocation, Middleware, MetadataImpl, GlobalMetadata } from "./types"
+import { ActionContext, ActionResult, Invocation, Middleware, MetadataImpl, GlobalMetadata, FormFile } from "./types"
 
 
 // --------------------------------------------------------------------- //
@@ -28,6 +28,11 @@ declare module "koa" {
 type Binder = (ctx: Context, par: ParameterReflection) => any
 const NEXT = Symbol("__NEXT")
 
+function isFile(par: ParameterReflection) {
+    const type = Array.isArray(par.type) ? par.type[0] : par.type
+    return type === FormFile
+}
+
 function getProperty(obj: any, parKey: string) {
     for (const key in obj) {
         if (key.toLowerCase() === parKey.toLowerCase())
@@ -36,6 +41,7 @@ function getProperty(obj: any, parKey: string) {
 }
 
 function bindBody(ctx: Context, par: ParameterReflection): any {
+    if (isFile(par)) return
     return isCustomClass(par.type) || !!(par.type && par.type[0]) ? ctx.request.body : undefined
 }
 

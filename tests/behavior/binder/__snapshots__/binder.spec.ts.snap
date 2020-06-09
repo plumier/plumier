@@ -41,6 +41,36 @@ FormFile {
 }
 `;
 
+exports[`Parameter Binding File parameter binding Should able to mix with non file fields 1`] = `
+Array [
+  Object {
+    "name": "clock.jpeg",
+    "type": "image/jpeg",
+  },
+  Object {
+    "name": "lorem ipsum",
+  },
+]
+`;
+
+exports[`Parameter Binding File parameter binding Should able to set optional file array while using other non file field 1`] = `
+Array [
+  Object {},
+  Object {
+    "name": "lorem ipsum",
+  },
+]
+`;
+
+exports[`Parameter Binding File parameter binding Should able to set optional file while using other non file field 1`] = `
+Array [
+  Object {},
+  Object {
+    "name": "lorem ipsum",
+  },
+]
+`;
+
 exports[`Parameter Binding File parameter binding Should not error when provided array of files but received single file 1`] = `
 Array [
   Object {
