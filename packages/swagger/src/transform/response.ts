@@ -29,6 +29,7 @@ function securityResponse(description: string): ResponseObject {
 function successResponse(route: RouteInfo, ctx: TransformContext) {
     return !!route.action.returnType ? { schema: transformType(route.action.returnType, ctx) } : { schema: { type: "object" } }
 }
+
 function responseFromDecorator(dec:ApiResponseDecorator, ctx:TransformContext){
     return {
         [dec.status]: {

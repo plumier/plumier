@@ -1,10 +1,10 @@
-import { Class, FormFile, RouteInfo } from "@plumier/core"
-import { ContentObject, RequestBodyObject, SchemaObject } from "openapi3-ts"
+import { FormFile, RouteInfo } from "@plumier/core"
+import { ContentObject, ReferenceObject, RequestBodyObject, SchemaObject } from "openapi3-ts"
 import { ParameterReflection, PropertyReflection } from "tinspector"
 
 import { describeParameters, ParameterNode } from "./parameter"
 import { transformType } from "./schema"
-import { TransformContext, isPartialValidator } from "./shared"
+import { isPartialValidator, isRequired, TransformContext } from "./shared"
 
 
 function transformJsonContent(schema: SchemaObject): ContentObject {
@@ -20,25 +20,37 @@ function transformFileContent(schema: SchemaObject): ContentObject {
     }
 }
 
+function transformProperties(props: (PropertyReflection | ParameterReflection)[], ctx: TransformContext): SchemaObject {
+    const required = []
+    const properties = {} as { [propertyName: string]: (SchemaObject | ReferenceObject); }
+    for (const prop of props) {
+        const isReq = !!prop.decorators.find(isRequired)
+        if (isReq) required.push(prop.name)
+        properties[prop.name] = transformType(prop.type, ctx, { decorators: prop.decorators })
+    }
+    const result: SchemaObject = { type: "object", properties }
+    if (required.length > 0) result.required = required
+    return result
+}
+
+
 function transformJsonBody(nodes: ParameterNode[], ctx: TransformContext): RequestBodyObject | undefined {
     // decorator binding
     const body = nodes.find(x => x.binding?.name === "body")
     if (body) {
-        const isPartial = !!body.meta.decorators.find(isPartialValidator)
-        const schema = transformType(body.type, ctx, { isPartial })
+        const schema = transformType(body.type, ctx, { decorators: body.meta.decorators })
         return { required: true, content: transformJsonContent(schema) }
     }
     // name binding
     const primitives = nodes.filter(x => x.typeName === "Primitive")
     if (primitives.length > 0 && primitives.length === nodes.length) {
-        const schema = transformType(primitives.map(x => x.meta), ctx)
+        const schema = transformProperties(primitives.map(x => x.meta), ctx)
         return { required: true, content: transformJsonContent(schema) }
     }
     // model binding
     const model = nodes.find(x => x.typeName === "Array" || x.typeName === "Class")
     if (model) {
-        const isPartial = !!model.meta.decorators.find(isPartialValidator)
-        const schema = transformType(model.type, ctx, { decorators: model.meta.decorators, isPartial })
+        const schema = transformType(model.type, ctx, { decorators: model.meta.decorators })
         return { required: true, content: transformJsonContent(schema) }
     }
 }
@@ -55,15 +67,15 @@ function transformFileBody(nodes: ParameterNode[], ctx: TransformContext): Reque
         else
             params.push(node.meta)
     }
-    const schema = transformType(params, ctx)
+    const schema = transformProperties(params, ctx)
     return { required: true, content: transformFileContent(schema) }
 }
 
 function transformBody(route: RouteInfo, ctx: TransformContext): RequestBodyObject | undefined {
-    const isForm = (par: ParameterNode) => (Array.isArray(par.type) && par.type[0] === FormFile) || par.type === FormFile || par.binding?.name === "formFile"
+    const isFormFile = (par: ParameterNode) => (Array.isArray(par.type) && par.type[0] === FormFile) || par.type === FormFile || par.binding?.name === "formFile"
     if (route.method !== "post" && route.method !== "put" && route.method !== "patch") return
     const pars = describeParameters(route).filter(x => x.kind === "bodyCandidate")
-    if (pars.some(x => isForm(x)))
+    if (pars.some(x => isFormFile(x)))
         return transformFileBody(pars, ctx)
     else
         return transformJsonBody(pars, ctx)
