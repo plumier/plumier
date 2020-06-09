@@ -1253,6 +1253,58 @@ describe("Parameter Binding", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
+
+        it("Should able to mix with non file fields", async () => {
+            class AnimalController {
+                @route.post()
+                save(name:string, clock: FormFile) {
+                    return [
+                        { name: clock.name, type: clock.type }, 
+                        { name }, 
+                    ]
+                }
+            }
+            const { body } = await Supertest((await createApp(AnimalController)).callback())
+                .post("/animal/save")
+                .field("name", "lorem ipsum")
+                .attach("clock", join(__dirname, "./files/clock.jpeg"))
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+
+        it("Should able to set optional file while using other non file field", async () => {
+            class AnimalController {
+                @route.post()
+                save(name:string, clock: FormFile) {
+                    return [
+                        { name: clock?.name, type: clock?.type }, 
+                        { name }, 
+                    ]
+                }
+            }
+            const { body } = await Supertest((await createApp(AnimalController)).callback())
+                .post("/animal/save")
+                .field("name", "lorem ipsum")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+
+        it("Should able to set optional file array while using other non file field", async () => {
+            class AnimalController {
+                @route.post()
+                save(name:string, @reflect.type([FormFile]) clock: FormFile[]) {
+                    return [
+                        { name: clock && clock[0]?.name, type: clock && clock[0]?.type }, 
+                        { name }, 
+                    ]
+                }
+            }
+            const { body } = await Supertest((await createApp(AnimalController)).callback())
+                .post("/animal/save")
+                .field("name", "lorem ipsum")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
     })
 })
 
