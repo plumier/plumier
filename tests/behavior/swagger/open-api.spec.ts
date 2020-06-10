@@ -532,7 +532,7 @@ describe("Open API 3.0 Generation", () => {
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.components.schemas).toMatchSnapshot()
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
         })
         it("Should detect @bind.body() with array element", async () => {
             @domain()
@@ -569,7 +569,7 @@ describe("Open API 3.0 Generation", () => {
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.components.schemas).toMatchSnapshot()
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
         })
         it("Should detect model binding", async () => {
             @domain()
@@ -606,7 +606,7 @@ describe("Open API 3.0 Generation", () => {
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.components.schemas).toMatchSnapshot()
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
         })
         it("Should detect model binding with array", async () => {
             @domain()
@@ -643,7 +643,7 @@ describe("Open API 3.0 Generation", () => {
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.components.schemas).toMatchSnapshot()
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
         })
         it("Should detect name binding", async () => {
             class UsersController {
@@ -801,6 +801,25 @@ describe("Open API 3.0 Generation", () => {
     })
 
     describe("Component Schema", () => {
+        it("Should detect system object component", async () => {
+            @domain()
+            class User {
+                constructor(
+                    public userName: string,
+                    public password: string
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas["System-DefaultErrorMessage"]).toMatchSnapshot()
+            expect(body.components.schemas["System-ValidationError"]).toMatchSnapshot()
+        })
         it("Should detect object component", async () => {
             @domain()
             class User {
@@ -819,46 +838,7 @@ describe("Open API 3.0 Generation", () => {
                 .expect(200)
             expect(body.components.schemas.User).toMatchSnapshot()
         })
-        it("Should detect object component with required property", async () => {
-            @domain()
-            class User {
-                constructor(
-                    @val.required()
-                    public userName: string,
-                    public password: string
-                ) { }
-            }
-            class UsersController {
-                @route.post("")
-                save(user: User) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .post("/swagger/swagger.json")
-                .expect(200)
-            expect(body.components.schemas.User).toMatchSnapshot()
-        })
-        it("Should include partial object component", async () => {
-            @domain()
-            class User {
-                constructor(
-                    @val.required()
-                    public userName: string,
-                    @val.required()
-                    public password: string
-                ) { }
-            }
-            class UsersController {
-                @route.post("")
-                save(user: User) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .post("/swagger/swagger.json")
-                .expect(200)
-            expect(body.components.schemas["User-Partial"]).toMatchSnapshot()
-        })
-        it("Should detect nested object component", async () => {
+        it("Should create inline object on nested object if not registered", async () => {
             @domain()
             class Tag {
                 constructor(public tag: string) { }
@@ -879,9 +859,35 @@ describe("Open API 3.0 Generation", () => {
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.components.schemas).toMatchSnapshot()
+            expect(body.components.schemas.User).toMatchSnapshot()
         })
-        it("Should detect nested array of object component", async () => {
+        it("Should use reference on nested object if object already registered", async () => {
+            @domain()
+            class Tag {
+                constructor(public tag: string) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public userName: string,
+                    public password: string,
+                    public tag: Tag
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+                @route.post("tag")
+                saveTag(user: Tag) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+            expect(body.components.schemas.Tag).toMatchSnapshot()
+        })
+        it("Should create inline array object if nested object not registered", async () => {
             @domain()
             class Tag {
                 constructor(public tag: string) { }
@@ -903,7 +909,34 @@ describe("Open API 3.0 Generation", () => {
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.components.schemas).toMatchSnapshot()
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should use reference on nested array object if array element already registered", async () => {
+            @domain()
+            class Tag {
+                constructor(public tag: string) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public userName: string,
+                    public password: string,
+                    @reflect.type([Tag])
+                    public tag: Tag[]
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+                @route.post("tag")
+                saveTag(user: Tag) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+            expect(body.components.schemas.Tag).toMatchSnapshot()
         })
         it("Should able to mix registered an non registered object", async () => {
             @domain()
@@ -939,7 +972,8 @@ describe("Open API 3.0 Generation", () => {
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.components.schemas).toMatchSnapshot()
+            expect(body.components.schemas.Animal).toMatchSnapshot()
+            expect(body.components.schemas.User).toMatchSnapshot()
         })
         it("Should able to generate object with cross reference", async () => {
             @domain()
@@ -971,62 +1005,8 @@ describe("Open API 3.0 Generation", () => {
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.components.schemas).toMatchSnapshot()
-        })
-        it("Should ignore one to may properties", async () => {
-            @domain()
-            class Tag {
-                constructor(public tag: string) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public userName: string,
-                    public password: string,
-                    @crud.oneToMany(x => [Tag])
-                    @reflect.type(x => [Tag])
-                    public tag: Tag[]
-                ) { }
-            }
-            class UsersController {
-                @route.post("")
-                save(user: User) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .post("/swagger/swagger.json")
-                .expect(200)
             expect(body.components.schemas.User).toMatchSnapshot()
-            expect(body.components.schemas["User-Partial"]).toMatchSnapshot()
-        })
-        it("Should ignore inverse property", async () => {
-            @domain()
-            class User {
-                constructor(
-                    public userName: string,
-                    public password: string,
-                    @reflect.type(x => [Tag])
-                    public tag: Tag[]
-                ) { }
-            }
-            @domain()
-            class Tag {
-                constructor(
-                    public tag: string,
-                    @crud.inverseProperty()
-                    public user:User
-                ) { }
-            }
-            class TagsController {
-                @route.post("")
-                save(tag: Tag) { }
-            }
-            const app = await createApp(TagsController)
-            const { body } = await supertest(app.callback())
-                .post("/swagger/swagger.json")
-                .expect(200)
             expect(body.components.schemas.Tag).toMatchSnapshot()
-            expect(body.components.schemas["Tag-Partial"]).toMatchSnapshot()
         })
     })
 
@@ -1128,7 +1108,7 @@ describe("Open API 3.0 Generation", () => {
                 .post("/swagger/swagger.json")
                 .expect(200)
             expect(body.paths["/users"].post.responses["200"]).toMatchSnapshot()
-            expect(body.components.schemas).toMatchSnapshot()
+            expect(body.components.schemas.User).toMatchSnapshot()
         })
     })
 

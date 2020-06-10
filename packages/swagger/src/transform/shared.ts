@@ -9,7 +9,7 @@ import {
     Class,
     Configuration,
     IdentifierDecorator,
-    OneToManyDecorator,
+    ApiDirectionDecorator,
     InversePropertyDecorator
 } from "@plumier/core"
 import { ValidatorDecorator, PartialValidator } from "typedconverter"
@@ -23,8 +23,7 @@ const isEnums = (dec: ApiEnumDecorator): dec is ApiEnumDecorator => dec.kind ===
 const isTag = (dec: ApiTagDecorator): dec is ApiTagDecorator => dec.kind === "ApiTag"
 const isPartialValidator = (x: ValidatorDecorator) => x.type === "tc:validator" && x.validator === PartialValidator
 const isGenericId = (x: IdentifierDecorator) => x.kind === "GenericDecoratorId"
-const isOneToMany = (x: OneToManyDecorator) => x.kind === "GenericDecoratorOneToMany"
-const isInverseProperty = (x: InversePropertyDecorator) => x.kind === "GenericInverseProperty"
+const isApiDirection = (x: ApiDirectionDecorator): x is ApiDirectionDecorator => x.kind === "ApiDirection"
 
 interface TransformContext {
     map: Map<Class, string>
@@ -33,6 +32,5 @@ interface TransformContext {
 
 export {
     isRequired, isBind, isName, isDescription, isResponse, isEnums, isTag,
-    isPartialValidator, TransformContext, isGenericId, 
-    isOneToMany, isInverseProperty
+    isPartialValidator, TransformContext, isGenericId, isApiDirection
 }
