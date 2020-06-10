@@ -2,347 +2,88 @@
 
 exports[`Open API 3.0 Generation Component Schema Should able to generate object with cross reference 1`] = `
 Object {
-  "System-DefaultErrorMessage": Object {
-    "properties": Object {
-      "message": Object {
-        "type": "string",
-      },
-      "status": Object {
-        "type": "number",
-      },
+  "properties": Object {
+    "password": Object {
+      "type": "string",
     },
-    "type": "object",
-  },
-  "System-ValidationError": Object {
-    "properties": Object {
-      "message": Object {
-        "items": Object {
-          "properties": Object {
-            "messages": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-            "path": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-          },
-          "type": "object",
-        },
-        "type": "array",
+    "tags": Object {
+      "items": Object {
+        "$ref": "#/components/schemas/Tag",
+        "type": "object",
       },
-      "status": Object {
-        "type": "number",
-      },
+      "type": "array",
     },
-    "type": "object",
-  },
-  "Tag": Object {
-    "properties": Object {
-      "tag": Object {
-        "type": "string",
-      },
-      "users": Object {
-        "items": Object {
-          "$ref": "#/components/schemas/User",
-          "type": "object",
-        },
-        "type": "array",
-      },
+    "userName": Object {
+      "type": "string",
     },
-    "type": "object",
   },
-  "Tag-Partial": Object {
-    "properties": Object {
-      "tag": Object {
-        "type": "string",
-      },
-      "users": Object {
-        "items": Object {
-          "$ref": "#/components/schemas/User-Partial",
-          "type": "object",
-        },
-        "type": "array",
-      },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should able to generate object with cross reference 2`] = `
+Object {
+  "properties": Object {
+    "tag": Object {
+      "type": "string",
     },
-    "type": "object",
-  },
-  "User": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
+    "users": Object {
+      "items": Object {
+        "$ref": "#/components/schemas/User",
+        "type": "object",
       },
-      "tags": Object {
-        "items": Object {
-          "$ref": "#/components/schemas/Tag",
-          "type": "object",
-        },
-        "type": "array",
-      },
-      "userName": Object {
-        "type": "string",
-      },
+      "type": "array",
     },
-    "type": "object",
   },
-  "User-Partial": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "tags": Object {
-        "items": Object {
-          "$ref": "#/components/schemas/Tag-Partial",
-          "type": "object",
-        },
-        "type": "array",
-      },
-      "userName": Object {
-        "type": "string",
-      },
-    },
-    "type": "object",
-  },
+  "type": "object",
 }
 `;
 
 exports[`Open API 3.0 Generation Component Schema Should able to mix registered an non registered object 1`] = `
 Object {
-  "Animal": Object {
-    "properties": Object {
-      "name": Object {
-        "type": "string",
-      },
+  "properties": Object {
+    "name": Object {
+      "type": "string",
     },
-    "type": "object",
   },
-  "Animal-Partial": Object {
-    "properties": Object {
-      "name": Object {
-        "type": "string",
-      },
-    },
-    "type": "object",
-  },
-  "System-DefaultErrorMessage": Object {
-    "properties": Object {
-      "message": Object {
-        "type": "string",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "System-ValidationError": Object {
-    "properties": Object {
-      "message": Object {
-        "items": Object {
-          "properties": Object {
-            "messages": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-            "path": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-          },
-          "type": "object",
-        },
-        "type": "array",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "User": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "tag": Object {
-        "properties": Object {
-          "animal": Object {
-            "$ref": "#/components/schemas/Animal",
-            "type": "object",
-          },
-          "tag": Object {
-            "type": "string",
-          },
-        },
-        "type": "object",
-      },
-      "userName": Object {
-        "type": "string",
-      },
-    },
-    "type": "object",
-  },
-  "User-Partial": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "tag": Object {
-        "properties": Object {
-          "animal": Object {
-            "$ref": "#/components/schemas/Animal-Partial",
-            "type": "object",
-          },
-          "tag": Object {
-            "type": "string",
-          },
-        },
-        "type": "object",
-      },
-      "userName": Object {
-        "type": "string",
-      },
-    },
-    "type": "object",
-  },
+  "type": "object",
 }
 `;
 
-exports[`Open API 3.0 Generation Component Schema Should detect nested array of object component 1`] = `
+exports[`Open API 3.0 Generation Component Schema Should able to mix registered an non registered object 2`] = `
 Object {
-  "System-DefaultErrorMessage": Object {
-    "properties": Object {
-      "message": Object {
-        "type": "string",
-      },
-      "status": Object {
-        "type": "number",
-      },
+  "properties": Object {
+    "password": Object {
+      "type": "string",
     },
-    "type": "object",
-  },
-  "System-ValidationError": Object {
-    "properties": Object {
-      "message": Object {
-        "items": Object {
-          "properties": Object {
-            "messages": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-            "path": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-          },
+    "tag": Object {
+      "properties": Object {
+        "animal": Object {
+          "$ref": "#/components/schemas/Animal",
           "type": "object",
         },
-        "type": "array",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "User": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "tag": Object {
-        "items": Object {
-          "$ref": "#/components/schemas/Tag",
-          "type": "object",
+        "tag": Object {
+          "type": "string",
         },
-        "type": "array",
       },
-      "userName": Object {
-        "type": "string",
-      },
+      "type": "object",
     },
-    "type": "object",
-  },
-  "User-Partial": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "tag": Object {
-        "items": Object {
-          "$ref": "#/components/schemas/Tag-Partial",
-          "type": "object",
-        },
-        "type": "array",
-      },
-      "userName": Object {
-        "type": "string",
-      },
+    "userName": Object {
+      "type": "string",
     },
-    "type": "object",
   },
+  "type": "object",
 }
 `;
 
-exports[`Open API 3.0 Generation Component Schema Should detect nested object component 1`] = `
+exports[`Open API 3.0 Generation Component Schema Should create inline array object if nested object not registered 1`] = `
 Object {
-  "System-DefaultErrorMessage": Object {
-    "properties": Object {
-      "message": Object {
-        "type": "string",
-      },
-      "status": Object {
-        "type": "number",
-      },
+  "properties": Object {
+    "password": Object {
+      "type": "string",
     },
-    "type": "object",
-  },
-  "System-ValidationError": Object {
-    "properties": Object {
-      "message": Object {
-        "items": Object {
-          "properties": Object {
-            "messages": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-            "path": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-          },
-          "type": "object",
-        },
-        "type": "array",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "User": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "tag": Object {
+    "tag": Object {
+      "items": Object {
         "properties": Object {
           "tag": Object {
             "type": "string",
@@ -350,31 +91,35 @@ Object {
         },
         "type": "object",
       },
-      "userName": Object {
-        "type": "string",
-      },
+      "type": "array",
     },
-    "type": "object",
+    "userName": Object {
+      "type": "string",
+    },
   },
-  "User-Partial": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "tag": Object {
-        "properties": Object {
-          "tag": Object {
-            "type": "string",
-          },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should create inline object on nested object if not registered 1`] = `
+Object {
+  "properties": Object {
+    "password": Object {
+      "type": "string",
+    },
+    "tag": Object {
+      "properties": Object {
+        "tag": Object {
+          "type": "string",
         },
-        "type": "object",
       },
-      "userName": Object {
-        "type": "string",
-      },
+      "type": "object",
     },
-    "type": "object",
+    "userName": Object {
+      "type": "string",
+    },
   },
+  "type": "object",
 }
 `;
 
@@ -392,24 +137,73 @@ Object {
 }
 `;
 
-exports[`Open API 3.0 Generation Component Schema Should detect object component with required property 1`] = `
+exports[`Open API 3.0 Generation Component Schema Should detect system object component 1`] = `
+Object {
+  "properties": Object {
+    "message": Object {
+      "type": "string",
+    },
+    "status": Object {
+      "type": "number",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should detect system object component 2`] = `
+Object {
+  "properties": Object {
+    "message": Object {
+      "items": Object {
+        "properties": Object {
+          "messages": Object {
+            "items": Object {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "path": Object {
+            "items": Object {
+              "type": "string",
+            },
+            "type": "array",
+          },
+        },
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "status": Object {
+      "type": "number",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should use reference on nested array object if array element already registered 1`] = `
 Object {
   "properties": Object {
     "password": Object {
       "type": "string",
     },
+    "tag": Object {
+      "items": Object {
+        "$ref": "#/components/schemas/Tag",
+        "type": "object",
+      },
+      "type": "array",
+    },
     "userName": Object {
       "type": "string",
     },
   },
-  "required": Array [
-    "userName",
-  ],
   "type": "object",
 }
 `;
 
-exports[`Open API 3.0 Generation Component Schema Should ignore inverse property 1`] = `
+exports[`Open API 3.0 Generation Component Schema Should use reference on nested array object if array element already registered 2`] = `
 Object {
   "properties": Object {
     "tag": Object {
@@ -420,52 +214,28 @@ Object {
 }
 `;
 
-exports[`Open API 3.0 Generation Component Schema Should ignore inverse property 2`] = `
+exports[`Open API 3.0 Generation Component Schema Should use reference on nested object if object already registered 1`] = `
+Object {
+  "properties": Object {
+    "password": Object {
+      "type": "string",
+    },
+    "tag": Object {
+      "$ref": "#/components/schemas/Tag",
+      "type": "object",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should use reference on nested object if object already registered 2`] = `
 Object {
   "properties": Object {
     "tag": Object {
-      "type": "string",
-    },
-  },
-  "type": "object",
-}
-`;
-
-exports[`Open API 3.0 Generation Component Schema Should ignore one to may properties 1`] = `
-Object {
-  "properties": Object {
-    "password": Object {
-      "type": "string",
-    },
-    "userName": Object {
-      "type": "string",
-    },
-  },
-  "type": "object",
-}
-`;
-
-exports[`Open API 3.0 Generation Component Schema Should ignore one to may properties 2`] = `
-Object {
-  "properties": Object {
-    "password": Object {
-      "type": "string",
-    },
-    "userName": Object {
-      "type": "string",
-    },
-  },
-  "type": "object",
-}
-`;
-
-exports[`Open API 3.0 Generation Component Schema Should include partial object component 1`] = `
-Object {
-  "properties": Object {
-    "password": Object {
-      "type": "string",
-    },
-    "userName": Object {
       "type": "string",
     },
   },
@@ -1596,139 +1366,87 @@ Object {
 
 exports[`Open API 3.0 Generation Request Body Should detect @bind.body() with array element with required 1`] = `
 Object {
-  "System-DefaultErrorMessage": Object {
-    "properties": Object {
-      "message": Object {
-        "type": "string",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "System-ValidationError": Object {
-    "properties": Object {
-      "message": Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
         "items": Object {
-          "properties": Object {
-            "messages": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/User",
+              "type": "object",
             },
-            "path": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
+            Object {
+              "required": Array [
+                "userName",
+              ],
+              "type": "object",
             },
-          },
-          "type": "object",
+          ],
         },
         "type": "array",
       },
-      "status": Object {
-        "type": "number",
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "items": Object {
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/User",
+              "type": "object",
+            },
+            Object {
+              "required": Array [
+                "userName",
+              ],
+              "type": "object",
+            },
+          ],
+        },
+        "type": "array",
       },
     },
-    "type": "object",
   },
-  "User": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "userName": Object {
-        "type": "string",
-      },
-    },
-    "required": Array [
-      "userName",
-    ],
-    "type": "object",
-  },
-  "User-Partial": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "userName": Object {
-        "type": "string",
-      },
-    },
-    "type": "object",
-  },
+  "required": true,
 }
 `;
 
 exports[`Open API 3.0 Generation Request Body Should detect @bind.body() with required 1`] = `
 Object {
-  "System-DefaultErrorMessage": Object {
-    "properties": Object {
-      "message": Object {
-        "type": "string",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "System-ValidationError": Object {
-    "properties": Object {
-      "message": Object {
-        "items": Object {
-          "properties": Object {
-            "messages": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-            "path": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+            "type": "object",
           },
-          "type": "object",
-        },
-        "type": "array",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "User": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "userName": Object {
-        "type": "string",
+          Object {
+            "required": Array [
+              "userName",
+            ],
+            "type": "object",
+          },
+        ],
       },
     },
-    "required": Array [
-      "userName",
-    ],
-    "type": "object",
-  },
-  "User-Partial": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "userName": Object {
-        "type": "string",
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+            "type": "object",
+          },
+          Object {
+            "required": Array [
+              "userName",
+            ],
+            "type": "object",
+          },
+        ],
       },
     },
-    "type": "object",
   },
+  "required": true,
 }
 `;
 
@@ -1780,139 +1498,87 @@ Object {
 
 exports[`Open API 3.0 Generation Request Body Should detect model binding with array with required 1`] = `
 Object {
-  "System-DefaultErrorMessage": Object {
-    "properties": Object {
-      "message": Object {
-        "type": "string",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "System-ValidationError": Object {
-    "properties": Object {
-      "message": Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
         "items": Object {
-          "properties": Object {
-            "messages": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/User",
+              "type": "object",
             },
-            "path": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
+            Object {
+              "required": Array [
+                "userName",
+              ],
+              "type": "object",
             },
-          },
-          "type": "object",
+          ],
         },
         "type": "array",
       },
-      "status": Object {
-        "type": "number",
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "items": Object {
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/User",
+              "type": "object",
+            },
+            Object {
+              "required": Array [
+                "userName",
+              ],
+              "type": "object",
+            },
+          ],
+        },
+        "type": "array",
       },
     },
-    "type": "object",
   },
-  "User": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "userName": Object {
-        "type": "string",
-      },
-    },
-    "required": Array [
-      "userName",
-    ],
-    "type": "object",
-  },
-  "User-Partial": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "userName": Object {
-        "type": "string",
-      },
-    },
-    "type": "object",
-  },
+  "required": true,
 }
 `;
 
 exports[`Open API 3.0 Generation Request Body Should detect model binding with required 1`] = `
 Object {
-  "System-DefaultErrorMessage": Object {
-    "properties": Object {
-      "message": Object {
-        "type": "string",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "System-ValidationError": Object {
-    "properties": Object {
-      "message": Object {
-        "items": Object {
-          "properties": Object {
-            "messages": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-            "path": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+            "type": "object",
           },
-          "type": "object",
-        },
-        "type": "array",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "User": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "userName": Object {
-        "type": "string",
+          Object {
+            "required": Array [
+              "userName",
+            ],
+            "type": "object",
+          },
+        ],
       },
     },
-    "required": Array [
-      "userName",
-    ],
-    "type": "object",
-  },
-  "User-Partial": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "userName": Object {
-        "type": "string",
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+            "type": "object",
+          },
+          Object {
+            "required": Array [
+              "userName",
+            ],
+            "type": "object",
+          },
+        ],
       },
     },
-    "type": "object",
   },
+  "required": true,
 }
 `;
 
@@ -1995,13 +1661,13 @@ Object {
   "content": Object {
     "application/json": Object {
       "schema": Object {
-        "$ref": "#/components/schemas/User-Partial",
+        "$ref": "#/components/schemas/User",
         "type": "object",
       },
     },
     "application/x-www-form-urlencoded": Object {
       "schema": Object {
-        "$ref": "#/components/schemas/User-Partial",
+        "$ref": "#/components/schemas/User",
         "type": "object",
       },
     },
@@ -2015,13 +1681,13 @@ Object {
   "content": Object {
     "application/json": Object {
       "schema": Object {
-        "$ref": "#/components/schemas/User-Partial",
+        "$ref": "#/components/schemas/User",
         "type": "object",
       },
     },
     "application/x-www-form-urlencoded": Object {
       "schema": Object {
-        "$ref": "#/components/schemas/User-Partial",
+        "$ref": "#/components/schemas/User",
         "type": "object",
       },
     },
@@ -2099,17 +1765,6 @@ Object {
     },
     "type": "object",
   },
-  "User-Partial": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "userName": Object {
-        "type": "string",
-      },
-    },
-    "type": "object",
-  },
 }
 `;
 
@@ -2129,81 +1784,26 @@ Object {
 
 exports[`Open API 3.0 Generation Response Should detect nested object array response 2`] = `
 Object {
-  "System-DefaultErrorMessage": Object {
-    "properties": Object {
-      "message": Object {
-        "type": "string",
-      },
-      "status": Object {
-        "type": "number",
-      },
+  "properties": Object {
+    "password": Object {
+      "type": "string",
     },
-    "type": "object",
-  },
-  "System-ValidationError": Object {
-    "properties": Object {
-      "message": Object {
-        "items": Object {
-          "properties": Object {
-            "messages": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-            "path": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
+    "tag": Object {
+      "items": Object {
+        "properties": Object {
+          "tag": Object {
+            "type": "string",
           },
-          "type": "object",
         },
-        "type": "array",
+        "type": "object",
       },
-      "status": Object {
-        "type": "number",
-      },
+      "type": "array",
     },
-    "type": "object",
-  },
-  "User": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "tag": Object {
-        "items": Object {
-          "$ref": "#/components/schemas/Tag",
-          "type": "object",
-        },
-        "type": "array",
-      },
-      "userName": Object {
-        "type": "string",
-      },
+    "userName": Object {
+      "type": "string",
     },
-    "type": "object",
   },
-  "User-Partial": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "tag": Object {
-        "items": Object {
-          "$ref": "#/components/schemas/Tag-Partial",
-          "type": "object",
-        },
-        "type": "array",
-      },
-      "userName": Object {
-        "type": "string",
-      },
-    },
-    "type": "object",
-  },
+  "type": "object",
 }
 `;
 
@@ -2281,25 +1881,6 @@ Object {
     },
     "type": "object",
   },
-  "User-Partial": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "tag": Object {
-        "properties": Object {
-          "tag": Object {
-            "type": "string",
-          },
-        },
-        "type": "object",
-      },
-      "userName": Object {
-        "type": "string",
-      },
-    },
-    "type": "object",
-  },
 }
 `;
 
@@ -2359,17 +1940,6 @@ Object {
     "type": "object",
   },
   "User": Object {
-    "properties": Object {
-      "password": Object {
-        "type": "string",
-      },
-      "userName": Object {
-        "type": "string",
-      },
-    },
-    "type": "object",
-  },
-  "User-Partial": Object {
     "properties": Object {
       "password": Object {
         "type": "string",

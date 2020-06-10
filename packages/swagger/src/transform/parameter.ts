@@ -45,9 +45,9 @@ function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObj
         const result = []
         for (const prop of meta.properties) {
             // skip nested models on query parameters
-            if(prop.typeClassification !== "Primitive") continue
+            if (prop.typeClassification !== "Primitive") continue
             // skip ID parameter on query parameter 
-            if(prop.decorators.find(isGenericId)) continue
+            if (prop.decorators.find(isGenericId)) continue
             result.push(<ParameterObject>{
                 name: prop.name, in: node.kind, required: isPartial ? false : !!prop.decorators.find(isRequired),
                 schema: transformType(prop.type, ctx, { decorators: prop.decorators }),
@@ -92,7 +92,9 @@ function transformParameters(route: RouteInfo, ctx: TransformContext) {
     }
     // if in POST or PUT if all candidates is primitive type then its a name binding for body, return immediately
     if ((route.method === "post" || route.method === "put" || route.method === "patch") && bodyCandidates.every(x => x.typeName === "Primitive")) return result
-    result.push(...transformNodes(bodyCandidates.filter(x => x.typeName === "Primitive" || !x.type).map(x => ({ ...x, kind: "query" })), ctx))
+    const queries = transformNodes(bodyCandidates.filter(x => x.typeName === "Primitive" || !x.type)
+        .map(x => ({ ...x, kind: "query" })), ctx)
+    result.push(...queries)
     return result
 }
 

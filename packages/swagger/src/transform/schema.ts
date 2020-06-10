@@ -1,6 +1,6 @@
 import { Class, FormFile } from "@plumier/core"
 import { ReferenceObject, SchemaObject } from "openapi3-ts"
-import { ParameterReflection, PropertyReflection } from "tinspector"
+import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
 import { isRequired, TransformContext, isEnums, isPartialValidator } from './shared'
 
 
@@ -33,6 +33,16 @@ function refFactory(map: Map<Class, string>) {
 // --------------------------------------------------------------------- //
 
 
+function getRequiredProps(opt: (PropertyReflection | ParameterReflection)[] | Class) {
+    const props = Array.isArray(opt) ? opt : reflect(opt).properties
+    const required = []
+    for (const prop of props) {
+        const isReq = !!prop.decorators.find(isRequired)
+        if (isReq) required.push(prop.name)
+    }
+    return required.length > 0 ? required : undefined
+}
+
 function transformType(type: Class | Class[] | undefined, ctx: TransformContext, opt?: Partial<TransformTypeOption>): SchemaObject {
     const option: TransformTypeOption = { decorators: [], ...opt }
     const getRef = refFactory(ctx.map)
@@ -51,12 +61,16 @@ function transformType(type: Class | Class[] | undefined, ctx: TransformContext,
     if (type === Date) return { type: "string", format: "date-time", }
     if (type === FormFile) return { type: "string", format: "binary" }
     else {
-        const isPartial = !!opt?.decorators?.find(isPartialValidator) 
-        const name = isPartial ? `${getRef(type)}-Partial` : getRef(type)
-        return { type: "object", $ref: `#/components/schemas/${name}` }
+        const schema = { type: "object", $ref: `#/components/schemas/${getRef(type)}` }
+        const isPartial = !!opt?.decorators?.find(isPartialValidator)
+        if (isPartial)
+            return schema
+        const required = getRequiredProps(type)
+        if (!required) return schema
+        return { allOf: [schema, { type: "object", required }] }
     }
 }
 
 
-export { refFactory, transformType }
+export { refFactory, transformType, getRequiredProps }
 

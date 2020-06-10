@@ -1,10 +1,10 @@
 import { FormFile, RouteInfo } from "@plumier/core"
 import { ContentObject, ReferenceObject, RequestBodyObject, SchemaObject } from "openapi3-ts"
-import { ParameterReflection, PropertyReflection } from "tinspector"
+import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
 
 import { describeParameters, ParameterNode } from "./parameter"
-import { transformType } from "./schema"
-import { isPartialValidator, isRequired, TransformContext } from "./shared"
+import { getRequiredProps, transformType } from "./schema"
+import { TransformContext } from "./shared"
 
 
 function transformJsonContent(schema: SchemaObject): ContentObject {
@@ -21,18 +21,14 @@ function transformFileContent(schema: SchemaObject): ContentObject {
 }
 
 function transformProperties(props: (PropertyReflection | ParameterReflection)[], ctx: TransformContext): SchemaObject {
-    const required = []
     const properties = {} as { [propertyName: string]: (SchemaObject | ReferenceObject); }
     for (const prop of props) {
-        const isReq = !!prop.decorators.find(isRequired)
-        if (isReq) required.push(prop.name)
         properties[prop.name] = transformType(prop.type, ctx, { decorators: prop.decorators })
     }
-    const result: SchemaObject = { type: "object", properties }
-    if (required.length > 0) result.required = required
+    const required = getRequiredProps(props)
+    const result: SchemaObject = { type: "object", properties, required }
     return result
 }
-
 
 function transformJsonBody(nodes: ParameterNode[], ctx: TransformContext): RequestBodyObject | undefined {
     // decorator binding
