@@ -1452,6 +1452,124 @@ describe("Open API 3.0 Generation", () => {
                 .expect(200)
             expect(body.components.schemas.User).toMatchSnapshot()
         })
+        it("Should able to set readonly property on nested inline model", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public id:number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public id:number,
+                    public userName: string,
+                    public password: string,
+                    @api.params.readOnly()
+                    public animal:Animal
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should able to set readonly property on nested model", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public id:number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public id:number,
+                    public userName: string,
+                    public password: string,
+                    @api.params.readOnly()
+                    public animal:Animal
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+                @route.post("animal")
+                animal(user: Animal) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should able to set readonly property on nested inline array model", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public id:number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public id:number,
+                    public userName: string,
+                    public password: string,
+                    @api.params.readOnly()
+                    @reflect.type(x => [Animal])
+                    public animal:Animal[]
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should able to set readonly property on nested array model", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public id:number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public id:number,
+                    public userName: string,
+                    public password: string,
+                    @api.params.readOnly()
+                    @reflect.type(x => [Animal])
+                    public animal:Animal[]
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+                @route.post("animal")
+                animal(user: Animal) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
         it("Should able to set write only property", async () => {
             @domain()
             class User {
@@ -1465,6 +1583,124 @@ describe("Open API 3.0 Generation", () => {
             class UsersController {
                 @route.post("")
                 save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should able to set write only property on nested inline model", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public id:number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public id:number,
+                    public userName: string,
+                    public password: string,
+                    @api.params.writeOnly()
+                    public animal:Animal
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should able to set write only property on nested model", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public id:number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public id:number,
+                    public userName: string,
+                    public password: string,
+                    @api.params.writeOnly()
+                    public animal:Animal
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+                @route.post("animal")
+                animal(user: Animal) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should able to set write only property on nested inline array model", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public id:number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public id:number,
+                    public userName: string,
+                    public password: string,
+                    @api.params.writeOnly()
+                    @reflect.type(x => [Animal])
+                    public animal:Animal[]
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should able to set write only property on nested array model", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public id:number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public id:number,
+                    public userName: string,
+                    public password: string,
+                    @api.params.writeOnly()
+                    @reflect.type(x => [Animal])
+                    public animal:Animal[]
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+                @route.post("animal")
+                animal(user: Animal) { }
             }
             const app = await createApp(UsersController)
             const { body } = await supertest(app.callback())

@@ -872,7 +872,6 @@ Object {
     "animals": Object {
       "items": Object {
         "$ref": "#/components/schemas/Animal",
-        "type": "object",
       },
       "readOnly": true,
       "type": "array",

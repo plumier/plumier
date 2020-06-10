@@ -1,7 +1,7 @@
 import { Class, FormFile } from "@plumier/core"
 import { ReferenceObject, SchemaObject } from "openapi3-ts"
 import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
-import { isRequired, TransformContext, isEnums, isPartialValidator } from './shared'
+import { isRequired, TransformContext, isEnums, isPartialValidator, isApiWriteOnly, isApiReadOnly } from './shared'
 
 
 interface TransformTypeOption {
@@ -46,31 +46,32 @@ function getRequiredProps(opt: (PropertyReflection | ParameterReflection)[] | Cl
 function transformType(type: Class | Class[] | undefined, ctx: TransformContext, opt?: Partial<TransformTypeOption>): SchemaObject {
     const option: TransformTypeOption = { decorators: [], ...opt }
     const getRef = refFactory(ctx.map)
-    if (type === undefined) return { type: "string" }
+    const writeOnly = !!opt?.decorators?.find(isApiWriteOnly) ? true : undefined
+    const readOnly = !!opt?.decorators?.find(isApiReadOnly) ? true : undefined
+    const base = { readOnly, writeOnly }
+    if (type === undefined) return { ...base, type: "string", }
+    if (type === String) {
+        const enums = option.decorators.find(isEnums)
+        if (enums) return { ...base, type: "string", enum: enums.enums }
+        else return { ...base, type: "string" }
+    }
+    if (type === Number) return { ...base, type: "number" }
+    if (type === Boolean) return { ...base, type: "boolean" }
+    if (type === Date) return { ...base, type: "string", format: "date-time" }
+    if (type === FormFile) return { ...base, type: "string", format: "binary" }
     if (Array.isArray(type)) return {
+        ...base,
         type: "array",
         items: transformType(type[0], ctx, option)
     }
-    if (type === String) {
-        const enums = option.decorators.find(isEnums)
-        if (enums) return { type: "string", enum: enums.enums }
-        else return { type: "string" }
-    }
-    if (type === Number) return { type: "number" }
-    if (type === Boolean) return { type: "boolean" }
-    if (type === Date) return { type: "string", format: "date-time", }
-    if (type === FormFile) return { type: "string", format: "binary" }
     else {
-        const schema = { type: "object", $ref: `#/components/schemas/${getRef(type)}` }
-        const isPartial = !!opt?.decorators?.find(isPartialValidator)
-        if (isPartial)
-            return schema
-        const required = getRequiredProps(type)
-        if (!required) return schema
-        return { allOf: [schema, { type: "object", required }] }
+        const schema = { $ref: `#/components/schemas/${getRef(type)}` }
+        const required = !opt?.decorators?.find(isPartialValidator) ? getRequiredProps(type) : undefined
+        if (writeOnly || readOnly || required)
+            return { allOf: [schema, { ...base, type: "object", required }] }
+        return schema
     }
 }
 
-
-export { refFactory, transformType, getRequiredProps }
+export { refFactory, transformType, getRequiredProps, TransformTypeOption }
 

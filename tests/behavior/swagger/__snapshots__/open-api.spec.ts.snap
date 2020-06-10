@@ -9,7 +9,6 @@ Object {
     "tags": Object {
       "items": Object {
         "$ref": "#/components/schemas/Tag",
-        "type": "object",
       },
       "type": "array",
     },
@@ -30,7 +29,6 @@ Object {
     "users": Object {
       "items": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
       "type": "array",
     },
@@ -60,7 +58,6 @@ Object {
       "properties": Object {
         "animal": Object {
           "$ref": "#/components/schemas/Animal",
-          "type": "object",
         },
         "tag": Object {
           "type": "string",
@@ -191,7 +188,6 @@ Object {
     "tag": Object {
       "items": Object {
         "$ref": "#/components/schemas/Tag",
-        "type": "object",
       },
       "type": "array",
     },
@@ -222,7 +218,6 @@ Object {
     },
     "tag": Object {
       "$ref": "#/components/schemas/Tag",
-      "type": "object",
     },
     "userName": Object {
       "type": "string",
@@ -522,6 +517,119 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Decorators Should able to set readonly property on nested array model 1`] = `
+Object {
+  "properties": Object {
+    "animal": Object {
+      "items": Object {
+        "$ref": "#/components/schemas/Animal",
+      },
+      "readOnly": true,
+      "type": "array",
+    },
+    "id": Object {
+      "type": "number",
+    },
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able to set readonly property on nested inline array model 1`] = `
+Object {
+  "properties": Object {
+    "animal": Object {
+      "items": Object {
+        "properties": Object {
+          "id": Object {
+            "type": "number",
+          },
+          "name": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+      "readOnly": true,
+      "type": "array",
+    },
+    "id": Object {
+      "type": "number",
+    },
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able to set readonly property on nested inline model 1`] = `
+Object {
+  "properties": Object {
+    "animal": Object {
+      "properties": Object {
+        "id": Object {
+          "type": "number",
+        },
+        "name": Object {
+          "type": "string",
+        },
+      },
+      "readOnly": true,
+      "type": "object",
+    },
+    "id": Object {
+      "type": "number",
+    },
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able to set readonly property on nested model 1`] = `
+Object {
+  "properties": Object {
+    "animal": Object {
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/Animal",
+        },
+        Object {
+          "readOnly": true,
+          "type": "object",
+        },
+      ],
+    },
+    "id": Object {
+      "type": "number",
+    },
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
 exports[`Open API 3.0 Generation Decorators Should able to set write only property 1`] = `
 Object {
   "properties": Object {
@@ -534,6 +642,119 @@ Object {
     "userName": Object {
       "type": "string",
       "writeOnly": true,
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able to set write only property on nested array model 1`] = `
+Object {
+  "properties": Object {
+    "animal": Object {
+      "items": Object {
+        "$ref": "#/components/schemas/Animal",
+      },
+      "type": "array",
+      "writeOnly": true,
+    },
+    "id": Object {
+      "type": "number",
+    },
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able to set write only property on nested inline array model 1`] = `
+Object {
+  "properties": Object {
+    "animal": Object {
+      "items": Object {
+        "properties": Object {
+          "id": Object {
+            "type": "number",
+          },
+          "name": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+      "type": "array",
+      "writeOnly": true,
+    },
+    "id": Object {
+      "type": "number",
+    },
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able to set write only property on nested inline model 1`] = `
+Object {
+  "properties": Object {
+    "animal": Object {
+      "properties": Object {
+        "id": Object {
+          "type": "number",
+        },
+        "name": Object {
+          "type": "string",
+        },
+      },
+      "type": "object",
+      "writeOnly": true,
+    },
+    "id": Object {
+      "type": "number",
+    },
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able to set write only property on nested model 1`] = `
+Object {
+  "properties": Object {
+    "animal": Object {
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/Animal",
+        },
+        Object {
+          "type": "object",
+          "writeOnly": true,
+        },
+      ],
+    },
+    "id": Object {
+      "type": "number",
+    },
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
     },
   },
   "type": "object",
@@ -1341,13 +1562,11 @@ Object {
     "application/json": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
     "application/x-www-form-urlencoded": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
   },
@@ -1361,13 +1580,11 @@ Object {
     "application/json": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
     "application/x-www-form-urlencoded": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
   },
@@ -1381,13 +1598,11 @@ Object {
     "application/json": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
     "application/x-www-form-urlencoded": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
   },
@@ -1402,7 +1617,6 @@ Object {
       "schema": Object {
         "items": Object {
           "$ref": "#/components/schemas/User",
-          "type": "object",
         },
         "type": "array",
       },
@@ -1411,7 +1625,6 @@ Object {
       "schema": Object {
         "items": Object {
           "$ref": "#/components/schemas/User",
-          "type": "object",
         },
         "type": "array",
       },
@@ -1430,7 +1643,6 @@ Object {
           "allOf": Array [
             Object {
               "$ref": "#/components/schemas/User",
-              "type": "object",
             },
             Object {
               "required": Array [
@@ -1449,7 +1661,6 @@ Object {
           "allOf": Array [
             Object {
               "$ref": "#/components/schemas/User",
-              "type": "object",
             },
             Object {
               "required": Array [
@@ -1475,7 +1686,6 @@ Object {
         "allOf": Array [
           Object {
             "$ref": "#/components/schemas/User",
-            "type": "object",
           },
           Object {
             "required": Array [
@@ -1491,7 +1701,6 @@ Object {
         "allOf": Array [
           Object {
             "$ref": "#/components/schemas/User",
-            "type": "object",
           },
           Object {
             "required": Array [
@@ -1513,13 +1722,11 @@ Object {
     "application/json": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
     "application/x-www-form-urlencoded": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
   },
@@ -1534,7 +1741,6 @@ Object {
       "schema": Object {
         "items": Object {
           "$ref": "#/components/schemas/User",
-          "type": "object",
         },
         "type": "array",
       },
@@ -1543,7 +1749,6 @@ Object {
       "schema": Object {
         "items": Object {
           "$ref": "#/components/schemas/User",
-          "type": "object",
         },
         "type": "array",
       },
@@ -1562,7 +1767,6 @@ Object {
           "allOf": Array [
             Object {
               "$ref": "#/components/schemas/User",
-              "type": "object",
             },
             Object {
               "required": Array [
@@ -1581,7 +1785,6 @@ Object {
           "allOf": Array [
             Object {
               "$ref": "#/components/schemas/User",
-              "type": "object",
             },
             Object {
               "required": Array [
@@ -1607,7 +1810,6 @@ Object {
         "allOf": Array [
           Object {
             "$ref": "#/components/schemas/User",
-            "type": "object",
           },
           Object {
             "required": Array [
@@ -1623,7 +1825,6 @@ Object {
         "allOf": Array [
           Object {
             "$ref": "#/components/schemas/User",
-            "type": "object",
           },
           Object {
             "required": Array [
@@ -1719,13 +1920,11 @@ Object {
     "application/json": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
     "application/x-www-form-urlencoded": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
   },
@@ -1739,13 +1938,11 @@ Object {
     "application/json": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
     "application/x-www-form-urlencoded": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
   },
@@ -1760,7 +1957,6 @@ Object {
       "schema": Object {
         "items": Object {
           "$ref": "#/components/schemas/User",
-          "type": "object",
         },
         "type": "array",
       },
@@ -1831,7 +2027,6 @@ Object {
     "application/json": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
   },
@@ -1870,7 +2065,6 @@ Object {
     "application/json": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
   },
@@ -1947,7 +2141,6 @@ Object {
     "application/json": Object {
       "schema": Object {
         "$ref": "#/components/schemas/User",
-        "type": "object",
       },
     },
   },
