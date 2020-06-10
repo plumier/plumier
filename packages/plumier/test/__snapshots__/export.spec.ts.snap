@@ -148,7 +148,9 @@ Object {
     "params": Object {
       "enums": enums,
       "name": name,
+      "readOnly": readOnly,
       "required": required,
+      "writeOnly": writeOnly,
     },
     "response": response,
     "tag": tag,

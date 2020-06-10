@@ -21,6 +21,7 @@ import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import supertest from "supertest"
 import reflect, { generic } from "tinspector"
+import { SwaggerFacility } from '@plumier/swagger'
 
 jest.setTimeout(20000)
 
@@ -28,7 +29,7 @@ mongoose.set("useNewUrlParser", true)
 mongoose.set("useUnifiedTopology", true)
 mongoose.set("useFindAndModify", false)
 
-describe("TypeOrm", () => {
+describe("Generic Controller", () => {
     beforeAll(async () => {
         const mongod = new MongoMemoryServer()
         await mongoose.connect(await mongod.getUri())
@@ -1025,6 +1026,38 @@ describe("TypeOrm", () => {
                 expect(body).toMatchSnapshot()
                 consoleLog.clearMock()
             })
+        })
+    })
+    describe("Open API",  () => {
+        function createApp(option?: Partial<Configuration>) {
+            return new Plumier()
+                .set(new WebApiFacility())
+                .set(new CRUDMongooseFacility())
+                .set(new SwaggerFacility())
+                .set({ mode: "production" })
+                .initialize()
+        }
+        it("Should mark ref populate property as readonly", async () => {
+            class User {
+                id:string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
         })
     })
 })

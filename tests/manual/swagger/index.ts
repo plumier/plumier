@@ -2,12 +2,14 @@ import { domain, route, val, authorize, FormFile, api } from "@plumier/core"
 import { SwaggerFacility } from "@plumier/swagger"
 import Plumier, { WebApiFacility } from "plumier"
 import { JwtAuthFacility } from '@plumier/jwt'
-
+import reflect from "tinspector"
 
 
 @domain()
 class User {
     constructor(
+        @api.params.readOnly()
+        id:number,
         @val.required()
         public name: string,
         @val.required()
@@ -24,6 +26,7 @@ export class UsersController {
 
     @authorize.public()
     @route.get(":id")
+    @reflect.type(User)
     get(id: string, @api.description("lorem ipsum") @val.enums({enums: ["animal", "human"]}) type:string) { }
 
     @api.description("Lorem ipsum dolor")

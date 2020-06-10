@@ -3,7 +3,7 @@ import { ParameterObject } from "openapi3-ts"
 import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
 
 import { transformType } from "./schema"
-import { isBind, isDescription, isName, isPartialValidator, isRequired, TransformContext, isGenericId } from "./shared"
+import { isBind, isDescription, isName, isPartialValidator, isRequired, TransformContext, isGenericId, isApiReadOnly } from "./shared"
 
 interface ParameterNode {
     // bodyCandidate: assume that all non decorated parameters can be body request
@@ -48,6 +48,8 @@ function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObj
             if (prop.typeClassification !== "Primitive") continue
             // skip ID parameter on query parameter 
             if (prop.decorators.find(isGenericId)) continue
+            // skip readOnly property
+            if (prop.decorators.find(isApiReadOnly)) continue
             result.push(<ParameterObject>{
                 name: prop.name, in: node.kind, required: isPartial ? false : !!prop.decorators.find(isRequired),
                 schema: transformType(prop.type, ctx, { decorators: prop.decorators }),

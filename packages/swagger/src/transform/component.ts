@@ -3,7 +3,7 @@ import { ComponentsObject, ReferenceObject, SchemaObject, SecuritySchemeObject }
 import reflect from "tinspector"
 
 import { refFactory, transformType } from "./schema"
-import { TransformContext, isApiDirection } from "./shared"
+import { TransformContext, isApiReadOnly, isApiWriteOnly } from "./shared"
 
 type SchemasObject = { [key: string]: SchemaObject }
 
@@ -52,9 +52,8 @@ function createSchema(obj: Class | Class[], ctx: TransformContext): SchemaObject
             properties[prop.name] = createSchema(prop.type, ctx)
         else
             properties[prop.name] = transformType(prop.type, ctx, { decorators: prop.decorators })
-        const direction = prop.decorators.find(isApiDirection)
-        // properties[prop.name].readOnly = (direction && direction.direction === "readOnly")
-        // properties[prop.name].writeOnly = (direction && direction.direction === "writeOnly")
+        properties[prop.name].readOnly = !!prop.decorators.find(isApiReadOnly) ? true : undefined
+        properties[prop.name].writeOnly = !!prop.decorators.find(isApiWriteOnly) ? true : undefined
     }
     return { type: "object", properties }
 }
