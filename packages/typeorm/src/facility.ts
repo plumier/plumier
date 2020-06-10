@@ -6,6 +6,7 @@ import {
     getGenericControllers,
     PlumierApplication,
     RouteMetadata,
+    api,
 } from "@plumier/core"
 import { isAbsolute, join } from "path"
 import pluralize from "pluralize"
@@ -36,7 +37,7 @@ class TypeORMFacility extends DefaultFacility {
     setup() {
         const storage = getMetadataArgsStorage();
         for (const col of storage.generations) {
-            Reflect.decorate([crud.id()], (col.target as Function).prototype, col.propertyName, void 0)
+            Reflect.decorate([crud.id(), api.params.readOnly()], (col.target as Function).prototype, col.propertyName, void 0)
         }
         for (const col of storage.columns) {
             Reflect.decorate([noop()], (col.target as Function).prototype, col.propertyName, void 0)
@@ -46,9 +47,9 @@ class TypeORMFacility extends DefaultFacility {
             const type = col.relationType === "one-to-many" || col.relationType === "many-to-many" ? [rawType] : rawType
             Reflect.decorate([reflect.type(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
             if (col.relationType === "one-to-many")
-                Reflect.decorate([crud.oneToMany(x => rawType)], (col.target as Function).prototype, col.propertyName, void 0)
+                Reflect.decorate([crud.oneToMany(x => rawType), api.params.readOnly()], (col.target as Function).prototype, col.propertyName, void 0)
             if (col.relationType === "many-to-one")
-                Reflect.decorate([crud.inverseProperty()], (col.target as Function).prototype, col.propertyName, void 0)
+                Reflect.decorate([crud.inverseProperty(), api.params.readOnly()], (col.target as Function).prototype, col.propertyName, void 0)
         }
         this.entities = storage.tables.filter(x => typeof x.target !== "string").map(x => x.target as Class)
     }

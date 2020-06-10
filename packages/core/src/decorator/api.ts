@@ -8,7 +8,8 @@ interface ApiFieldNameDecorator { kind: "ApiFieldName", alias: string }
 interface ApiEnumDecorator { kind: "ApiEnum", enums: string[] }
 interface ApiDescriptionDecorator { kind: "ApiDescription", desc: string }
 interface ApiTagDecorator { kind: "ApiTag", tag: string, description?: string, externalDoc?: string }
-interface ApiDirectionDecorator { kind: "ApiDirection", direction: "readOnly" | "writeOnly" }
+interface ApiReadOnlyDecorator { kind: "ApiReadonly" }
+interface ApiWriteOnlyDecorator { kind: "ApiWriteOnly" }
 namespace api {
 
     /**
@@ -35,19 +36,19 @@ namespace api {
 
     export namespace params {
 
-        // /**
-        //  * Mark property as readonly
-        //  */
-        // export function readOnly(){
-        //     return decorateProperty(<ApiDirectionDecorator>{kind: "ApiDirection", direction: "readOnly"})
-        // }
+        /**
+         * Mark property as readonly
+         */
+        export function readOnly() {
+            return decorateProperty(<ApiReadOnlyDecorator>{ kind: "ApiReadonly" })
+        }
 
-        // /**
-        //  * Mark property as write only
-        //  */
-        // export function writeOnly(){
-        //     return decorateProperty(<ApiDirectionDecorator>{kind: "ApiDirection", direction: "writeOnly"})
-        // }
+        /**
+         * Mark property as write only
+         */
+        export function writeOnly() {
+            return decorateProperty(<ApiWriteOnlyDecorator>{ kind: "ApiWriteOnly" })
+        }
 
         /**
          * Mark parameter or property as required
@@ -77,5 +78,5 @@ namespace api {
 
 export {
     ApiRequiredDecorator, ApiResponseDecorator, ApiFieldNameDecorator, ApiEnumDecorator,
-    ApiDescriptionDecorator, ApiTagDecorator, api, ApiDirectionDecorator
+    ApiDescriptionDecorator, ApiTagDecorator, api, ApiReadOnlyDecorator, ApiWriteOnlyDecorator
 }

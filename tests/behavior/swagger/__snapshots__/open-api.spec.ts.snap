@@ -504,6 +504,42 @@ Array [
 ]
 `;
 
+exports[`Open API 3.0 Generation Decorators Should able to set readonly property 1`] = `
+Object {
+  "properties": Object {
+    "id": Object {
+      "readOnly": true,
+      "type": "number",
+    },
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able to set write only property 1`] = `
+Object {
+  "properties": Object {
+    "id": Object {
+      "type": "number",
+    },
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+      "writeOnly": true,
+    },
+  },
+  "type": "object",
+}
+`;
+
 exports[`Open API 3.0 Generation Decorators Should provide html response on History Api Fallback 1`] = `
 Object {
   "200": Object {
@@ -882,6 +918,27 @@ Array [
 `;
 
 exports[`Open API 3.0 Generation Parameter Should detect query parameter with @bind.query() of type object 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "str",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "num",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should detect query parameter with @bind.query() of type object with readOnly property 1`] = `
 Array [
   Object {
     "in": "query",

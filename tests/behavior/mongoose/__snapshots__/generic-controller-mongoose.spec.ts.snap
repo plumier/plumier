@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TypeOrm CRUD CRUD Function Should able to query by property GET /users?offset&limit&name 1`] = `
+exports[`Generic Controller CRUD CRUD Function Should able to query by property GET /users?offset&limit&name 1`] = `
 Array [
   Object {
     "email": "jean.doe@gmail.com",
@@ -9,7 +9,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD CRUD Function Should set partial validation on query GET /users?offset&limit&name 1`] = `
+exports[`Generic Controller CRUD CRUD Function Should set partial validation on query GET /users?offset&limit&name 1`] = `
 Array [
   Object {
     "email": "jean.doe@gmail.com",
@@ -18,7 +18,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Custom Generic Controller Should able to change generic controller by extending repo base generic controller 1`] = `
+exports[`Generic Controller CRUD Custom Generic Controller Should able to change generic controller by extending repo base generic controller 1`] = `
 Array [
   Array [
     "1. User -> User db.users",
@@ -49,14 +49,14 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Custom Generic Controller Should able to change generic controller by extending repo base generic controller 2`] = `
+exports[`Generic Controller CRUD Custom Generic Controller Should able to change generic controller by extending repo base generic controller 2`] = `
 Object {
   "email": "john.doe@gmail.com",
   "name": "John Doe",
 }
 `;
 
-exports[`TypeOrm CRUD Custom Generic Controller Should able to change generic controller using custom controller 1`] = `
+exports[`Generic Controller CRUD Custom Generic Controller Should able to change generic controller using custom controller 1`] = `
 Array [
   Array [
     "1. User -> User db.users",
@@ -72,7 +72,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Custom Generic Controller Should able to change generic controller using custom controller 2`] = `
+exports[`Generic Controller CRUD Custom Generic Controller Should able to change generic controller using custom controller 2`] = `
 Object {
   "__v": 0,
   "_id": "MONGODB UNIQUE ID",
@@ -81,7 +81,7 @@ Object {
 }
 `;
 
-exports[`TypeOrm CRUD Custom Generic Controller Should able to ignore action by extending repo base generic controller 1`] = `
+exports[`Generic Controller CRUD Custom Generic Controller Should able to ignore action by extending repo base generic controller 1`] = `
 Array [
   Array [
     "1. User -> User db.users",
@@ -109,7 +109,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Custom Generic One To Many Controller Should able to change generic controller by extending repo base generic controller 1`] = `
+exports[`Generic Controller CRUD Custom Generic One To Many Controller Should able to change generic controller by extending repo base generic controller 1`] = `
 Array [
   Array [
     "1. Animal -> Animal db.animals",
@@ -179,13 +179,13 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Custom Generic One To Many Controller Should able to change generic controller by extending repo base generic controller 2`] = `
+exports[`Generic Controller CRUD Custom Generic One To Many Controller Should able to change generic controller by extending repo base generic controller 2`] = `
 Object {
   "name": "Mimi",
 }
 `;
 
-exports[`TypeOrm CRUD Custom Generic One To Many Controller Should able to change generic controller using custom controller 1`] = `
+exports[`Generic Controller CRUD Custom Generic One To Many Controller Should able to change generic controller using custom controller 1`] = `
 Array [
   Array [
     "1. Animal -> Animal db.animals",
@@ -240,7 +240,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Custom Generic One To Many Controller Should able to change generic controller using custom controller 2`] = `
+exports[`Generic Controller CRUD Custom Generic One To Many Controller Should able to change generic controller using custom controller 2`] = `
 Object {
   "__v": 0,
   "_id": "MONGODB UNIQUE ID",
@@ -248,7 +248,7 @@ Object {
 }
 `;
 
-exports[`TypeOrm CRUD Custom Generic One To Many Controller Should able to ignore action by extending repo base generic controller 1`] = `
+exports[`Generic Controller CRUD Custom Generic One To Many Controller Should able to ignore action by extending repo base generic controller 1`] = `
 Array [
   Array [
     "1. Animal -> Animal db.animals",
@@ -315,7 +315,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Nested CRUD One to Many Function Should find by name GET /users/:parentId/animals?offset&limit  1`] = `
+exports[`Generic Controller CRUD Nested CRUD One to Many Function Should find by name GET /users/:parentId/animals?offset&limit  1`] = `
 Array [
   Object {
     "name": "Jojo",
@@ -323,13 +323,13 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Nested CRUD One to Many Function Should serve GET /users/:parentId/animals/:id 1`] = `
+exports[`Generic Controller CRUD Nested CRUD One to Many Function Should serve GET /users/:parentId/animals/:id 1`] = `
 Object {
   "name": "Mimi",
 }
 `;
 
-exports[`TypeOrm CRUD Nested CRUD One to Many Function Should serve GET /users/:parentId/animals?offset&limit 1`] = `
+exports[`Generic Controller CRUD Nested CRUD One to Many Function Should serve GET /users/:parentId/animals?offset&limit 1`] = `
 Array [
   Object {
     "name": "Mimi",
@@ -394,7 +394,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Nested CRUD One to Many Function Should serve PATCH /users/:parentId/animals/:id 1`] = `
+exports[`Generic Controller CRUD Nested CRUD One to Many Function Should serve PATCH /users/:parentId/animals/:id 1`] = `
 Object {
   "__v": 0,
   "_id": "MONGODB UNIQUE ID",
@@ -402,7 +402,7 @@ Object {
 }
 `;
 
-exports[`TypeOrm CRUD Nested CRUD One to Many Function Should serve POST /users/:parentId/animals 1`] = `
+exports[`Generic Controller CRUD Nested CRUD One to Many Function Should serve POST /users/:parentId/animals 1`] = `
 Object {
   "__v": 2,
   "_id": "MONGODB UNIQUE ID",
@@ -423,7 +423,7 @@ Object {
 }
 `;
 
-exports[`TypeOrm CRUD Nested CRUD One to Many Function Should serve PUT /users/:parentId/animals/:id 1`] = `
+exports[`Generic Controller CRUD Nested CRUD One to Many Function Should serve PUT /users/:parentId/animals/:id 1`] = `
 Object {
   "__v": 0,
   "_id": "MONGODB UNIQUE ID",
@@ -431,7 +431,7 @@ Object {
 }
 `;
 
-exports[`TypeOrm CRUD Nested CRUD One to Many Function Should set partial validation on PATCH /users/:parentId/animals/:id 1`] = `
+exports[`Generic Controller CRUD Nested CRUD One to Many Function Should set partial validation on PATCH /users/:parentId/animals/:id 1`] = `
 Object {
   "__v": 0,
   "_id": "MONGODB UNIQUE ID",
@@ -440,7 +440,7 @@ Object {
 }
 `;
 
-exports[`TypeOrm CRUD Nested CRUD One to Many Function Should set partial validation on query on GET /users/:parentId/animals?offset&limit 1`] = `
+exports[`Generic Controller CRUD Nested CRUD One to Many Function Should set partial validation on query on GET /users/:parentId/animals?offset&limit 1`] = `
 Array [
   Object {
     "age": 5,
@@ -449,7 +449,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Route Generator Should able to change rootPath 1`] = `
+exports[`Generic Controller CRUD Route Generator Should able to change rootPath 1`] = `
 Array [
   Array [
     "1. User -> User db.users",
@@ -480,7 +480,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Route Generator Should able to change rootPath with extra slash 1`] = `
+exports[`Generic Controller CRUD Route Generator Should able to change rootPath with extra slash 1`] = `
 Array [
   Array [
     "1. User -> User db.users",
@@ -511,7 +511,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Route Generator Should able to override route 1`] = `
+exports[`Generic Controller CRUD Route Generator Should able to override route 1`] = `
 Array [
   Array [
     "1. User -> User db.users",
@@ -542,7 +542,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Route Generator Should generate one to many routes 1`] = `
+exports[`Generic Controller CRUD Route Generator Should generate one to many routes 1`] = `
 Array [
   Array [
     "1. Animal -> Animal db.animals",
@@ -612,7 +612,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Route Generator Should generate one to many routes without callback 1`] = `
+exports[`Generic Controller CRUD Route Generator Should generate one to many routes without callback 1`] = `
 Array [
   Array [
     "1. Animal -> Animal db.animals",
@@ -682,7 +682,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Route Generator Should generate one to many with parameter properties 1`] = `
+exports[`Generic Controller CRUD Route Generator Should generate one to many with parameter properties 1`] = `
 Array [
   Array [
     "1. Animal -> Animal db.animals",
@@ -752,7 +752,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Route Generator Should generate routes from inheritance 1`] = `
+exports[`Generic Controller CRUD Route Generator Should generate routes from inheritance 1`] = `
 Array [
   Array [
     "1. User -> User db.users",
@@ -783,7 +783,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Route Generator Should generate routes from multiple entities 1`] = `
+exports[`Generic Controller CRUD Route Generator Should generate routes from multiple entities 1`] = `
 Array [
   Array [
     "1. User       -> User       db.users",
@@ -835,7 +835,7 @@ Array [
 ]
 `;
 
-exports[`TypeOrm CRUD Route Generator Should generate routes properly 1`] = `
+exports[`Generic Controller CRUD Route Generator Should generate routes properly 1`] = `
 Array [
   Array [
     "1. User -> User db.users",
@@ -864,4 +864,26 @@ Array [
   ],
   Array [],
 ]
+`;
+
+exports[`Generic Controller Open API Should mark ref populate property as readonly 1`] = `
+Object {
+  "properties": Object {
+    "animals": Object {
+      "items": Object {
+        "$ref": "#/components/schemas/Animal",
+        "type": "object",
+      },
+      "readOnly": true,
+      "type": "array",
+    },
+    "email": Object {
+      "type": "string",
+    },
+    "name": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
 `;

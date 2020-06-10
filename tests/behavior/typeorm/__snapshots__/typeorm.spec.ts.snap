@@ -806,3 +806,82 @@ Array [
   ],
 ]
 `;
+
+exports[`TypeOrm Open API Should mark guid column as readonly 1`] = `
+Object {
+  "properties": Object {
+    "id": Object {
+      "readOnly": true,
+      "type": "number",
+    },
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`TypeOrm Open API Should mark id column as readonly 1`] = `
+Object {
+  "properties": Object {
+    "id": Object {
+      "readOnly": true,
+      "type": "number",
+    },
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`TypeOrm Open API Should mark one to many and many to one as readonly 1`] = `
+Object {
+  "properties": Object {
+    "children": Object {
+      "items": Object {
+        "$ref": "#/components/schemas/Child",
+        "type": "object",
+      },
+      "readOnly": true,
+      "type": "array",
+    },
+    "id": Object {
+      "readOnly": true,
+      "type": "number",
+    },
+    "name": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`TypeOrm Open API Should mark one to many and many to one as readonly 2`] = `
+Object {
+  "properties": Object {
+    "entity": Object {
+      "$ref": "#/components/schemas/MyEntity",
+      "readOnly": true,
+      "type": "object",
+    },
+    "id": Object {
+      "readOnly": true,
+      "type": "number",
+    },
+    "name": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;

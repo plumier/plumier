@@ -21,6 +21,7 @@ import {
 } from "typeorm"
 
 import { fixture } from "../helper"
+import { SwaggerFacility } from '@plumier/swagger'
 
 jest.setTimeout(20000)
 
@@ -1324,6 +1325,76 @@ describe("TypeOrm", () => {
                 expect(body).toMatchSnapshot()
                 consoleLog.clearMock()
             })
+        })
+    })
+    describe("Open API", () => {
+        function createApp(entities: Function[], option?: Partial<Configuration>) {
+            return new Plumier()
+                .set(new WebApiFacility())
+                .set(new CRUDTypeORMFacility({
+                    connection: getConn(entities)
+                }))
+                .set(new SwaggerFacility())
+                .set({ mode: "production" })
+                .initialize()
+        }
+        it("Should mark id column as readonly", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                public id: number
+                @Column()
+                public userName: string
+                @Column()
+                public password: string
+            }
+            const app = await createApp([User])
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should mark guid column as readonly", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn("uuid")
+                public id: number
+                @Column()
+                public userName: string
+                @Column()
+                public password: string
+            }
+            const app = await createApp([User])
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should mark one to many and many to one as readonly", async () => {
+            @Entity()
+            class MyEntity {
+                @PrimaryGeneratedColumn()
+                id: number = 123
+                @Column()
+                name: string
+                @OneToMany(x => Child, x => x.entity)
+                children: Child[]
+            }
+            @Entity()
+            class Child {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => MyEntity, x => x.children)
+                entity: MyEntity
+            }
+            const app = await createApp([MyEntity, Child])
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.MyEntity).toMatchSnapshot()
+            expect(body.components.schemas.Child).toMatchSnapshot()
         })
     })
 })

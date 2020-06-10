@@ -224,6 +224,27 @@ describe("Open API 3.0 Generation", () => {
             expect(body.paths["/users"].get.parameters).toMatchSnapshot()
         })
 
+        it("Should detect query parameter with @bind.query() of type object with readOnly property", async () => {
+            @domain()
+            class Parameters {
+                constructor(
+                    @api.params.readOnly()
+                    public id:number,
+                    public str: string,
+                    public num: number
+                ) { }
+            }
+            class UsersController {
+                @route.get("")
+                get(@bind.query() params: Parameters) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
+        })
+
         it("Should detect header parameter with @bind.header()", async () => {
             class UsersController {
                 @route.get("")
@@ -1410,6 +1431,46 @@ describe("Open API 3.0 Generation", () => {
                 .post("/swagger/swagger.json")
                 .expect(200)
             expect(body.paths["/users"].post).toMatchSnapshot()
+        })
+        it("Should able to set readonly property", async () => {
+            @domain()
+            class User {
+                constructor(
+                    @api.params.readOnly()
+                    public id:number,
+                    public userName: string,
+                    public password: string
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should able to set write only property", async () => {
+            @domain()
+            class User {
+                constructor(
+                    public id:number,
+                    @api.params.writeOnly()
+                    public userName: string,
+                    public password: string
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
         })
     })
 
