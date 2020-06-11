@@ -2,7 +2,7 @@ import { Class, isCustomClass } from "@plumier/core"
 import { ComponentsObject, ReferenceObject, SchemaObject, SecuritySchemeObject } from "openapi3-ts"
 import reflect from "tinspector"
 
-import { refFactory, transformType } from "./schema"
+import { refFactory, transformType, TransformTypeOption } from "./schema"
 import { TransformContext, isApiReadOnly, isApiWriteOnly } from "./shared"
 
 type SchemasObject = { [key: string]: SchemaObject }
@@ -33,11 +33,13 @@ const defaultSchemas: { [key: string]: SchemaObject } = {
     }
 }
 
+
 function createArraySchema(obj: Class[], ctx: TransformContext): SchemaObject {
     const exists = ctx.map.get(obj[0])
+    if (exists) return transformType(obj, ctx)
     return {
         type: "array",
-        items: exists ? transformType(obj[0], ctx) : createSchema(obj[0], ctx)
+        items: createSchema(obj[0], ctx)
     }
 }
 
@@ -48,12 +50,14 @@ function createSchema(obj: Class | Class[], ctx: TransformContext): SchemaObject
     const properties: SchemasObject = {}
     for (const prop of meta.properties) {
         // if the type is not registered then make inline object
-        if (isCustomClass(prop.type) && !types.some(x => x === prop.type))
-            properties[prop.name] = createSchema(prop.type, ctx)
+        if (isCustomClass(prop.type) && !types.some(x => x === prop.type)) {
+            const writeOnly = !!prop.decorators.find(isApiWriteOnly) ? true : undefined
+            const readOnly = !!prop.decorators.find(isApiReadOnly) ? true : undefined
+            const schema = createSchema(prop.type, ctx)
+            properties[prop.name] = { ...schema, readOnly, writeOnly }
+        }
         else
             properties[prop.name] = transformType(prop.type, ctx, { decorators: prop.decorators })
-        properties[prop.name].readOnly = !!prop.decorators.find(isApiReadOnly) ? true : undefined
-        properties[prop.name].writeOnly = !!prop.decorators.find(isApiWriteOnly) ? true : undefined
     }
     return { type: "object", properties }
 }

@@ -4,6 +4,12 @@ import Plumier, { WebApiFacility } from "plumier"
 import { JwtAuthFacility } from '@plumier/jwt'
 import reflect from "tinspector"
 
+@domain()
+class Animal {
+    constructor(
+        public name:string
+    ){}
+}
 
 @domain()
 class User {
@@ -15,6 +21,8 @@ class User {
         @val.required()
         public email: string,
         public dateOfBirth: Date,
+        @api.params.readOnly()
+        public animal:Animal
     ) { }
 }
 
@@ -23,6 +31,9 @@ export class UsersController {
 
     @route.post("")
     save(user: User) { }
+
+    @route.post("/animal")
+    animal(user: Animal) { }
 
     @authorize.public()
     @route.get(":id")
