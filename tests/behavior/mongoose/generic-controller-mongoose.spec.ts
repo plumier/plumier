@@ -1037,7 +1037,7 @@ describe("Generic Controller", () => {
                 .set({ mode: "production" })
                 .initialize()
         }
-        it("Should mark ref populate property as readonly", async () => {
+        it("Should mark ref populate property as readonly and write only", async () => {
             class User {
                 id:string
                 @reflect.noop()
@@ -1057,7 +1057,50 @@ describe("Generic Controller", () => {
             const { body } = await supertest(app.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
+            
             expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should mark createdAt property as readonly ", async () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                createdAt:Date
+            }
+            model(Animal)
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.Animal).toMatchSnapshot()
+        })
+        it("Should mark updatedAt property as readonly ", async () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                updatedAt:Date
+            }
+            model(Animal)
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.Animal).toMatchSnapshot()
+        })
+        it("Should mark id property as readonly ", async () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                id:string
+            }
+            model(Animal)
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.Animal).toMatchSnapshot()
         })
     })
 })

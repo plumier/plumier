@@ -37,7 +37,7 @@ class TypeORMFacility extends DefaultFacility {
     setup() {
         const storage = getMetadataArgsStorage();
         for (const col of storage.generations) {
-            Reflect.decorate([crud.id(), api.params.readOnly()], (col.target as Function).prototype, col.propertyName, void 0)
+            Reflect.decorate([noop()], (col.target as Function).prototype, col.propertyName, void 0)
         }
         for (const col of storage.columns) {
             Reflect.decorate([noop()], (col.target as Function).prototype, col.propertyName, void 0)
@@ -46,10 +46,6 @@ class TypeORMFacility extends DefaultFacility {
             const rawType: Class = (col as any).type()
             const type = col.relationType === "one-to-many" || col.relationType === "many-to-many" ? [rawType] : rawType
             Reflect.decorate([reflect.type(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
-            if (col.relationType === "one-to-many")
-                Reflect.decorate([crud.oneToMany(x => rawType), api.params.readOnly(), api.params.writeOnly()], (col.target as Function).prototype, col.propertyName, void 0)
-            if (col.relationType === "many-to-one")
-                Reflect.decorate([crud.inverseProperty(), api.params.readOnly(), api.params.writeOnly()], (col.target as Function).prototype, col.propertyName, void 0)
         }
         this.entities = storage.tables.filter(x => typeof x.target !== "string").map(x => x.target as Class)
     }
@@ -70,6 +66,22 @@ class CRUDTypeORMFacility extends TypeORMFacility {
             rootPath: "",
             ...opt
         }
+    }
+    setup(){
+        const storage = getMetadataArgsStorage();
+        // decorate entities to match with required CRUD specs 
+        // also add decorators to make some property readOnly or writeOnly on Open API generation
+        for (const col of storage.generations) {
+            Reflect.decorate([crud.id(), api.params.readOnly()], (col.target as Function).prototype, col.propertyName, void 0)
+        }
+        for (const col of storage.relations) {
+            const rawType: Class = (col as any).type()
+            if (col.relationType === "one-to-many")
+                Reflect.decorate([crud.oneToMany(x => rawType), api.params.readOnly(), api.params.writeOnly()], (col.target as Function).prototype, col.propertyName, void 0)
+            if (col.relationType === "many-to-one")
+                Reflect.decorate([crud.inverseProperty(), api.params.readOnly(), api.params.writeOnly()], (col.target as Function).prototype, col.propertyName, void 0)
+        }
+        super.setup()
     }
 
     async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> {

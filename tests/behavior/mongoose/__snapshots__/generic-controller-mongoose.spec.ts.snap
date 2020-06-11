@@ -866,7 +866,38 @@ Array [
 ]
 `;
 
-exports[`Generic Controller Open API Should mark ref populate property as readonly 1`] = `
+exports[`Generic Controller Open API Should mark createdAt property as readonly  1`] = `
+Object {
+  "properties": Object {
+    "createdAt": Object {
+      "format": "date-time",
+      "readOnly": true,
+      "type": "string",
+    },
+    "name": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Generic Controller Open API Should mark id property as readonly  1`] = `
+Object {
+  "properties": Object {
+    "id": Object {
+      "readOnly": true,
+      "type": "string",
+    },
+    "name": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Generic Controller Open API Should mark ref populate property as readonly and write only 1`] = `
 Object {
   "properties": Object {
     "animals": Object {
@@ -875,11 +906,28 @@ Object {
       },
       "readOnly": true,
       "type": "array",
+      "writeOnly": true,
     },
     "email": Object {
       "type": "string",
     },
     "name": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Generic Controller Open API Should mark updatedAt property as readonly  1`] = `
+Object {
+  "properties": Object {
+    "name": Object {
+      "type": "string",
+    },
+    "updatedAt": Object {
+      "format": "date-time",
+      "readOnly": true,
       "type": "string",
     },
   },

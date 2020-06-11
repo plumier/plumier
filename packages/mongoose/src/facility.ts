@@ -4,6 +4,8 @@ import {
     getGenericControllers,
     isCustomClass,
     PlumierApplication,
+    api,
+    crud,
 } from "@plumier/core"
 import Mongoose from "mongoose"
 import { isAbsolute, join } from "path"
@@ -13,7 +15,8 @@ import { Result, VisitorInvocation } from "typedconverter"
 import { printAnalysis } from "./analyzer"
 import { getAnalysis, models } from "./generator"
 import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
-import { CRUDMongooseFacilityOption, MongooseFacilityOption } from "./types"
+import { CRUDMongooseFacilityOption, MongooseFacilityOption, RefDecorator } from "./types"
+import reflect, { TypeDecorator} from "tinspector"
 
 
 
@@ -58,6 +61,7 @@ export class CRUDMongooseFacility extends MongooseFacility {
         super(opt)
         this.option = { ...opt }
     }
+
     async generateRoutes(app: Readonly<PlumierApplication>) {
         const { controller, rootDir } = app.config
         let ctl = typeof controller === "string" && !isAbsolute(controller) ? join(rootDir, controller) : controller
@@ -66,6 +70,19 @@ export class CRUDMongooseFacility extends MongooseFacility {
             MongooseControllerGeneric, MongooseOneToManyControllerGeneric
         )
         const entities = Array.from(models.keys())
+        for (const entity of entities) {
+            const meta = reflect(entity)
+            for (const property of meta.properties) {
+                if (["id", "createdAt", "updatedAt"].some(x => property.name === x)) {
+                    Reflect.decorate([api.params.readOnly()], entity.prototype, property.name)
+                }
+                if (property.decorators.find((x: RefDecorator) => x.name === "MongooseRef")) {
+                    const ovr = property.decorators.find((x:TypeDecorator):x is TypeDecorator => x.kind === "Override")!
+                    Reflect.decorate([crud.oneToMany(ovr.type as any), api.params.readOnly(), api.params.writeOnly()], entity.prototype, property.name)
+                }
+            }
+            reflect(entity, { flushCache: true })
+        }
         return createRoutesFromEntities({
             entities,
             controller: genericController.type,
