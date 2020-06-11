@@ -22,9 +22,7 @@ collection.property = (option?: SchemaTypeOpts<any>) => {
 collection.ref = (type: Class | Class[] | ((x:any) => Class | Class[])) => {
     return mergeDecorator(
         decorateProperty(<RefDecorator>{ name: "MongooseRef" }),
-        reflect.type(type),
-        crud.oneToMany(type),
-        api.params.readOnly()
+        reflect.type(type)
     )
 }
 
