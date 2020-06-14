@@ -2,7 +2,6 @@ import { Class, isCustomClass } from "@plumier/core"
 import mongoose from "mongoose"
 import reflect, { ClassReflection, PropertyReflection } from "tinspector"
 
-import { createAnalyzer } from "./analyzer"
 import {
     ClassOptionDecorator,
     GeneratorHook,
@@ -88,11 +87,10 @@ function generator(): ModelGenerator {
     const models = new Map<Class, ModelStore>()
     return {
         model: modelFactory(models),
-        getAnalysis: createAnalyzer(models),
         models
     }
 }
 
-const { model, getAnalysis, models } = generator()
+const { model, models } = generator()
 
-export { getDefinition, generator, model, getAnalysis, models }
+export { getDefinition, generator, model, models }

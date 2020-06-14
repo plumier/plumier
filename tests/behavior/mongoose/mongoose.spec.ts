@@ -1,5 +1,5 @@
 import { Class, consoleLog, route } from "@plumier/core"
-import { collection, generator, model as globalModel, MongooseFacility, printAnalysis } from "@plumier/mongoose"
+import { collection, generator, model as globalModel, MongooseFacility } from "@plumier/mongoose"
 import mongoose from "mongoose"
 import Plumier, { WebApiFacility } from "plumier"
 import supertest from "supertest"
@@ -470,96 +470,6 @@ describe("Mongoose", () => {
         })
     })
 
-    describe("Analyzer", () => {
-        it("Should get simple analysis", async () => {
-            const { model, getAnalysis } = generator()
-            @collection({ timestamps: true })
-            class Dummy {
-                constructor(
-                    public stringProp: string,
-                    public numberProp: number,
-                    public booleanProp: boolean,
-                    public dateProp: Date
-                ) { }
-            }
-            model(Dummy)
-            expect(getAnalysis()).toMatchSnapshot()
-        })
-
-        it("Should print analysis", async () => {
-            const { model, getAnalysis } = generator()
-            @collection({ timestamps: true })
-            class Dummy {
-                constructor(
-                    public stringProp: string,
-                    public numberProp: number,
-                    public booleanProp: boolean,
-                    public dateProp: Date
-                ) { }
-            }
-            @collection()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                ) { }
-            }
-            @collection({ timestamps: true, toObject: { virtuals: true } })
-            class UserActivity {
-                constructor(
-                    public name: string,
-                    public email: string,
-                ) { }
-            }
-            model(Dummy)
-            model(User)
-            model(UserActivity)
-            const mock = consoleLog.startMock()
-            printAnalysis(getAnalysis())
-            expect(mock.mock.calls).toMatchSnapshot()
-            consoleLog.clearMock()
-        })
-
-        it("Should print analysis on global mode and facility", async () => {
-            @collection({ timestamps: true })
-            class Dummy {
-                constructor(
-                    public stringProp: string,
-                    public numberProp: number,
-                    public booleanProp: boolean,
-                    public dateProp: Date
-                ) { }
-            }
-            @collection()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                ) { }
-            }
-            @collection({ timestamps: true, toObject: { virtuals: true } })
-            class UserActivity {
-                constructor(
-                    public name: string,
-                    public email: string,
-                ) { }
-            }
-            globalModel(Dummy)
-            globalModel(User)
-            globalModel(UserActivity)
-            class AnimalController { get() { return { id: 123 } } }
-            const mock = consoleLog.startMock()
-            const app = await fixture(AnimalController)
-                .set({ mode: "debug" })
-                .set(new MongooseFacility())
-                .initialize()
-            await supertest(app.callback())
-                .get("/animal/get")
-                .expect(200, { id: 123 })
-            expect(mock.mock.calls).toMatchSnapshot()
-            consoleLog.clearMock()
-        })
-    })
 })
 
 describe("Facility", () => {
