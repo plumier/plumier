@@ -11,13 +11,10 @@ Object {
   "MongooseRepository": MongooseRepository,
   "ReferenceTypeNotRegistered": "MONG1000: Type {0} required type {1} which is not registered as Mongoose model",
   "collection": collection,
-  "createAnalyzer": createAnalyzer,
   "default": ,
   "generator": generator,
-  "getAnalysis": ,
   "getDefinition": getDefinition,
   "model": ,
   "models": Map {},
-  "printAnalysis": printAnalysis,
 }
 `;

@@ -12,8 +12,7 @@ import { isAbsolute, join } from "path"
 import pluralize from "pluralize"
 import { Result, VisitorInvocation } from "typedconverter"
 
-import { printAnalysis } from "./analyzer"
-import { getAnalysis, models } from "./generator"
+import { models } from "./generator"
 import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
 import { CRUDMongooseFacilityOption, MongooseFacilityOption, RefDecorator } from "./types"
 import reflect, { TypeDecorator} from "tinspector"
@@ -46,8 +45,6 @@ export class MongooseFacility extends DefaultFacility {
     }
 
     async initialize(app: Readonly<PlumierApplication>) {
-        if (app.config.mode === "debug")
-            printAnalysis(getAnalysis())
         app.set({ typeConverterVisitors: [relationToObjectIdVisitor] })
         const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
         if (uri)
