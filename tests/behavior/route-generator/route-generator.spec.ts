@@ -1618,6 +1618,22 @@ describe("Route Merging", () => {
         ])
         expect(routes).toMatchSnapshot()
     })
+    it("Should merge nested routes", () => {
+        const routes = mergeRoutes([
+            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:userId/animals/:animalId", access: "Public" },
+            <RouteInfo>{ kind: "ActionRoute", method: "post", url: "/users" },
+            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:userId/animals/:animalId", overridable: true },
+        ])
+        expect(routes).toMatchSnapshot()
+    })
+    it("Should ignore parameter name", () => {
+        const routes = mergeRoutes([
+            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:userId/animals/:animalId", access: "Public" },
+            <RouteInfo>{ kind: "ActionRoute", method: "post", url: "/users" },
+            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:pid/animals/:id", overridable: true },
+        ])
+        expect(routes).toMatchSnapshot()
+    })
     it("Should keep duplicate if not overridable", () => {
         const routes = mergeRoutes([
             <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:id", access: "Public" },
