@@ -21,7 +21,6 @@ interface ModelStore { name: string, collectionName: string, definition: any, op
 interface AnalysisResult { name: string, collection: string, option: string, definition: string }
 interface ModelGenerator {
     model: ModelFactory
-    getAnalysis: () => AnalysisResult[],
     models: Map<Class, ModelStore>
 }
 

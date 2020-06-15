@@ -20,9 +20,6 @@ Array [
 
 exports[`Generic Controller CRUD Custom Generic Controller Should able to change generic controller by extending repo base generic controller 1`] = `
 Array [
-  Array [
-    "1. User -> User db.users",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
@@ -58,9 +55,6 @@ Object {
 
 exports[`Generic Controller CRUD Custom Generic Controller Should able to change generic controller using custom controller 1`] = `
 Array [
-  Array [
-    "1. User -> User db.users",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
@@ -83,9 +77,6 @@ Object {
 
 exports[`Generic Controller CRUD Custom Generic Controller Should able to ignore action by extending repo base generic controller 1`] = `
 Array [
-  Array [
-    "1. User -> User db.users",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
@@ -111,12 +102,6 @@ Array [
 
 exports[`Generic Controller CRUD Custom Generic One To Many Controller Should able to change generic controller by extending repo base generic controller 1`] = `
 Array [
-  Array [
-    "1. Animal -> Animal db.animals",
-  ],
-  Array [
-    "2. User   -> User   db.users",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
@@ -187,12 +172,6 @@ Object {
 
 exports[`Generic Controller CRUD Custom Generic One To Many Controller Should able to change generic controller using custom controller 1`] = `
 Array [
-  Array [
-    "1. Animal -> Animal db.animals",
-  ],
-  Array [
-    "2. User   -> User   db.users",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
@@ -250,12 +229,6 @@ Object {
 
 exports[`Generic Controller CRUD Custom Generic One To Many Controller Should able to ignore action by extending repo base generic controller 1`] = `
 Array [
-  Array [
-    "1. Animal -> Animal db.animals",
-  ],
-  Array [
-    "2. User   -> User   db.users",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
@@ -451,9 +424,6 @@ Array [
 
 exports[`Generic Controller CRUD Route Generator Should able to change rootPath 1`] = `
 Array [
-  Array [
-    "1. User -> User db.users",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
@@ -482,9 +452,6 @@ Array [
 
 exports[`Generic Controller CRUD Route Generator Should able to change rootPath with extra slash 1`] = `
 Array [
-  Array [
-    "1. User -> User db.users",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
@@ -513,9 +480,6 @@ Array [
 
 exports[`Generic Controller CRUD Route Generator Should able to override route 1`] = `
 Array [
-  Array [
-    "1. User -> User db.users",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
@@ -544,12 +508,6 @@ Array [
 
 exports[`Generic Controller CRUD Route Generator Should generate one to many routes 1`] = `
 Array [
-  Array [
-    "1. Animal -> Animal db.animals",
-  ],
-  Array [
-    "2. User   -> User   db.users",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
@@ -614,12 +572,6 @@ Array [
 
 exports[`Generic Controller CRUD Route Generator Should generate one to many routes without callback 1`] = `
 Array [
-  Array [
-    "1. Animal -> Animal db.animals",
-  ],
-  Array [
-    "2. User   -> User   db.users",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
@@ -684,12 +636,6 @@ Array [
 
 exports[`Generic Controller CRUD Route Generator Should generate one to many with parameter properties 1`] = `
 Array [
-  Array [
-    "1. Animal -> Animal db.animals",
-  ],
-  Array [
-    "2. User   -> User   db.users",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
@@ -754,9 +700,6 @@ Array [
 
 exports[`Generic Controller CRUD Route Generator Should generate routes from inheritance 1`] = `
 Array [
-  Array [
-    "1. User -> User db.users",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
@@ -785,12 +728,6 @@ Array [
 
 exports[`Generic Controller CRUD Route Generator Should generate routes from multiple entities 1`] = `
 Array [
-  Array [
-    "1. User       -> User       db.users",
-  ],
-  Array [
-    "2. SecondUser -> SecondUser db.secondusers",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
@@ -837,9 +774,6 @@ Array [
 
 exports[`Generic Controller CRUD Route Generator Should generate routes properly 1`] = `
 Array [
-  Array [
-    "1. User -> User db.users",
-  ],
   Array [],
   Array [
     "Route Analysis Report",
