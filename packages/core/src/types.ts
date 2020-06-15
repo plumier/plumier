@@ -3,13 +3,12 @@ import { copyFile } from "fs"
 import { Server } from "http"
 import Koa, { Context } from "koa"
 import { extname, join } from "path"
-import { ClassReflection, decorateClass, MethodReflection, PropertyReflection, ParameterReflection } from "tinspector"
+import reflect, { ClassReflection, decorateClass, MethodReflection, PropertyReflection, ParameterReflection } from "tinspector"
 import { VisitorExtension } from "typedconverter"
 import { promisify } from "util"
 
 import { RoleField } from "./authorization"
 import { Class } from "./common"
-import { domain } from "./decorator/common"
 import { HttpStatus } from "./http-status"
 
 const copyFileAsync = promisify(copyFile)
@@ -117,8 +116,6 @@ export type RouteAnalyzerFunction = (route: RouteMetadata, allRoutes: RouteMetad
 // --------------------------------------------------------------------- //
 // ------------------------------ FACILITY ----------------------------- //
 // --------------------------------------------------------------------- //
-
-export interface SetupResult { routes: RouteMetadata[] }
 
 export interface Facility {
     generateRoutes(app: Readonly<PlumierApplication>): Promise< RouteMetadata[]>
@@ -249,7 +246,6 @@ export class DefaultDependencyResolver implements DependencyResolver {
 // --------------------------------------------------------------------- //
 
 
-
 export interface Application {
     /**
      * Use plumier middleware registered from the registry
@@ -327,38 +323,10 @@ export interface PlumierApplication extends Application {
 }
 
 // --------------------------------------------------------------------- //
-// ----------------------------- VALIDATOR ----------------------------- //
-// --------------------------------------------------------------------- //
-
-export interface ValidatorDecorator {
-    type: "ValidatorDecorator",
-    validator: CustomValidatorFunction | string | symbol,
-}
-
-export interface ValidatorContext {
-    name: string,
-    ctx: ActionContext,
-    parent?: { value: any, type: Class, decorators: any[] },
-    metadata: Metadata
-}
-
-export interface AsyncValidatorResult {
-    path: string,
-    messages: string[]
-}
-
-export type CustomValidatorFunction = (value: any, info: ValidatorContext) => undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
-
-export interface CustomValidator {
-    validate(value: any, info: ValidatorContext): undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
-}
-
-
-// --------------------------------------------------------------------- //
 // ----------------------------- MULTIPART ----------------------------- //
 // --------------------------------------------------------------------- //
 
-@domain()
+@reflect.parameterProperties()
 export class FormFile {
     constructor(
         public size: number,
@@ -381,19 +349,6 @@ export class FormFile {
         await copyFileAsync(this.path, fullPath)
         return { fullPath, name }
     }
-}
-
-export interface FileUploadInfo {
-    field: string,
-    fileName: string,
-    originalName: string,
-    mime: string,
-    size: number,
-    encoding: string
-}
-
-export interface FileParser {
-    save(subDirectory?: string): Promise<FileUploadInfo[]>
 }
 
 // --------------------------------------------------------------------- //

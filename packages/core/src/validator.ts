@@ -5,14 +5,9 @@ import { Class, hasKeyOf, isCustomClass } from "./common"
 import {
     ActionContext,
     ActionResult,
-    AsyncValidatorResult,
-    CustomValidator,
-    CustomValidatorFunction,
     Invocation,
     Middleware,
     ValidationError,
-    ValidatorContext,
-    ValidatorDecorator,
     MetadataImpl,
     Metadata,
 } from "./types"
@@ -32,6 +27,31 @@ interface ValidationResult {
     result: any[],
     issues: tc.ResultMessages[]
 }
+
+
+export interface ValidatorDecorator {
+    type: "ValidatorDecorator",
+    validator: CustomValidatorFunction | string | symbol,
+}
+
+export interface ValidatorContext {
+    name: string,
+    ctx: ActionContext,
+    parent?: { value: any, type: Class, decorators: any[] },
+    metadata: Metadata
+}
+
+export interface AsyncValidatorResult {
+    path: string,
+    messages: string[]
+}
+
+export type CustomValidatorFunction = (value: any, info: ValidatorContext) => undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
+
+export interface CustomValidator {
+    validate(value: any, info: ValidatorContext): undefined | string | AsyncValidatorResult[] | Promise<AsyncValidatorResult[] | string | undefined>
+}
+
 
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //
