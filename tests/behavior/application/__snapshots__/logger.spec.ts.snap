@@ -21,9 +21,6 @@ Array [
   Array [
     "GET 500 /users/error 123ms",
   ],
-  Array [
-    "Lorem ipsum dolor",
-  ],
 ]
 `;
 

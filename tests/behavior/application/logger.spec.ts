@@ -70,7 +70,8 @@ describe("Logger", () => {
         await supertest(app.callback())
             .get("/users/error")
             .expect(500)
-        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        expect(cleanupConsole([mock.mock.calls[0]])).toMatchSnapshot()
+        expect(mock.mock.calls[1][0]).toContain("at UsersController.error")
         consoleLog.clearMock()
     })
     it("Should log action without status", async () => {

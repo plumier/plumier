@@ -51,8 +51,11 @@ describe("TypeOrm", () => {
         (storage as any).tables = [];
         (storage as any).columns = [];
         (storage as any).relations = [];
-        if (conn.isConnected)
+        if (conn.isConnected){
+            // delete all tables
+            await conn.synchronize(true)
             await conn.close();
+        }
     });
     describe("Facility", () => {
         function extract(type: Class) {
