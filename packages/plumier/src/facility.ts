@@ -107,22 +107,26 @@ export class LoggerFacility extends DefaultFacility {
 
 class LoggerMiddleware implements CustomMiddleware {
     async execute(i: Readonly<Invocation<Context>>): Promise<ActionResult> {
+        const log = (msg:string) => {
+            if(i.ctx.config.mode === "debug")
+                console.log(msg)
+        }
         const start = new Date()
         const getTime = () => `${(new Date().getTime() - start.getTime())}ms`
         try {
             const result = await i.proceed()
-            console.log(chalk.green(`${i.ctx.method} ${result.status || 200} ${i.ctx.url} ${getTime()}`))
+            log(chalk.green(`${i.ctx.method} ${result.status || 200} ${i.ctx.url} ${getTime()}`))
             return result;
         }
         catch (e) {
             if (e instanceof HttpStatusError) {
-                console.log(chalk.yellow(`${i.ctx.method} ${e.status} ${i.ctx.url} ${getTime()}`))
+                log(chalk.yellow(`${i.ctx.method} ${e.status} ${i.ctx.url} ${getTime()}`))
                 if (e.message)
-                    console.log(chalk.yellow(e.message))
+                    log(chalk.yellow(e.message))
             }
             else {
-                console.log(chalk.red(`${i.ctx.method} 500 ${i.ctx.url} ${getTime()}`))
-                console.log(chalk.red(e.stack))
+                log(chalk.red(`${i.ctx.method} 500 ${i.ctx.url} ${getTime()}`))
+                log(chalk.red(e.stack))
             }
             throw e
         }

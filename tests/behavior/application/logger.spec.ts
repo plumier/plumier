@@ -7,7 +7,7 @@ import supertest from 'supertest'
 describe("Logger", () => {
     function createApp() {
         class UsersController {
-            error(){
+            error() {
                 throw new Error("Lorem ipsum dolor")
             }
             @route.post("")
@@ -19,59 +19,59 @@ describe("Logger", () => {
                 return { id }
             }
         }
-        return fixture(UsersController)
+        return fixture(UsersController, { mode: "debug" })
             .set(new LoggerFacility())
             .initialize()
     }
     it("Should log success request", async () => {
-        const app = await createApp()
         const mock = consoleLog.startMock()
-        const {body} = await supertest(app.callback())
+        const app = await createApp()
+        const { body } = await supertest(app.callback())
             .get("/users/123")
-            .expect(200, {id: "123"})
+            .expect(200, { id: "123" })
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
     it("Should log post request", async () => {
-        const app = await createApp()
         const mock = consoleLog.startMock()
-        const {body} = await supertest(app.callback())
+        const app = await createApp()
+        const { body } = await supertest(app.callback())
             .post("/users")
-            .send({ name: "Mimi", email: "mimi.cute@gmail.com"})
+            .send({ name: "Mimi", email: "mimi.cute@gmail.com" })
             .expect(200)
         expect(body).toMatchSnapshot()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
     it("Should log 404 request", async () => {
-        const app = await createApp()
         const mock = consoleLog.startMock()
-        const {body} = await supertest(app.callback())
+        const app = await createApp()
+        const { body } = await supertest(app.callback())
             .get("/users-data")
             .expect(404)
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
     it("Should log invalid validation request", async () => {
-        const app = await createApp()
         const mock = consoleLog.startMock()
-        const {body} = await supertest(app.callback())
+        const app = await createApp()
+        const { body } = await supertest(app.callback())
             .post("/users")
-            .send({ name: "Mimi", email: "mimi"})
+            .send({ name: "Mimi", email: "mimi" })
             .expect(422)
         expect(body).toMatchSnapshot()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
     it("Should log internal error request", async () => {
-        const app = await createApp()
         const mock = consoleLog.startMock()
-        app.on("error", () => {})
+        const app = await createApp()
+        app.on("error", () => { })
         await supertest(app.callback())
             .get("/users/error")
             .expect(500)
-        expect(cleanupConsole([mock.mock.calls[0]])).toMatchSnapshot()
-        expect(mock.mock.calls[1][0]).toContain("at UsersController.error")
+        expect(cleanupConsole([mock.mock.calls[6]])).toMatchSnapshot()
+        expect(mock.mock.calls[7][0]).toContain("at UsersController.error")
         consoleLog.clearMock()
     })
     it("Should log action without status", async () => {
@@ -81,18 +81,34 @@ describe("Logger", () => {
                 return { id }
             }
         }
-        const app = await fixture(UsersController)
+        const mock = consoleLog.startMock()
+        const app = await fixture(UsersController, { mode: "debug" })
             .set(new LoggerFacility())
             .use(async x => {
                 return new ActionResult({})
             })
             .initialize()
-        const mock = consoleLog.startMock()
-
         await supertest(app.callback())
             .get("/users/custom")
             .expect(200)
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+    it("Should disabled on production mode", async () => {
+        class UsersController {
+            @route.get(":id")
+            get(id: string) {
+                return { id }
+            }
+        }
+        const mock = consoleLog.startMock()
+        const app = await fixture(UsersController, { mode: "production" })
+            .set(new LoggerFacility())
+            .initialize()
+        await supertest(app.callback())
+            .get("/users/123")
+            .expect(200)
+        expect(mock.mock.calls).toMatchSnapshot()
         consoleLog.clearMock()
     })
 })

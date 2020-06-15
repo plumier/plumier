@@ -1,7 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Logger Should disabled on production mode 1`] = `Array []`;
+
 exports[`Logger Should log 404 request 1`] = `
 Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.error()           -> GET  /users/error",
+  ],
+  Array [
+    "2. UsersController.save(name, email) -> POST /users",
+  ],
+  Array [
+    "3. UsersController.get(id)           -> GET  /users/:id",
+  ],
+  Array [],
   Array [
     "GET 404 /users-data 123ms",
   ],
@@ -10,6 +26,14 @@ Array [
 
 exports[`Logger Should log action without status 1`] = `
 Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.get(id) -> GET /users/:id",
+  ],
+  Array [],
   Array [
     "GET 200 /users/custom 123ms",
   ],
@@ -42,6 +66,20 @@ Object {
 
 exports[`Logger Should log invalid validation request 2`] = `
 Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.error()           -> GET  /users/error",
+  ],
+  Array [
+    "2. UsersController.save(name, email) -> POST /users",
+  ],
+  Array [
+    "3. UsersController.get(id)           -> GET  /users/:id",
+  ],
+  Array [],
   Array [
     "POST 422 /users 123ms",
   ],
@@ -60,6 +98,20 @@ Object {
 
 exports[`Logger Should log post request 2`] = `
 Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.error()           -> GET  /users/error",
+  ],
+  Array [
+    "2. UsersController.save(name, email) -> POST /users",
+  ],
+  Array [
+    "3. UsersController.get(id)           -> GET  /users/:id",
+  ],
+  Array [],
   Array [
     "POST 200 /users 123ms",
   ],
@@ -68,6 +120,20 @@ Array [
 
 exports[`Logger Should log success request 1`] = `
 Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.error()           -> GET  /users/error",
+  ],
+  Array [
+    "2. UsersController.save(name, email) -> POST /users",
+  ],
+  Array [
+    "3. UsersController.get(id)           -> GET  /users/:id",
+  ],
+  Array [],
   Array [
     "GET 200 /users/123 123ms",
   ],
