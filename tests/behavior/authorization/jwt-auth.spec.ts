@@ -1789,6 +1789,87 @@ describe("JwtAuth", () => {
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .expect(200, { name: "admin" })
             })
+            it("Should able to set by role", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.set("admin")
+                        public role: string
+                    ) { }
+                }
+                class UsersController {
+                    @route.post("")
+                    post(user: User) {
+                        return new User("admin", "secret")
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .post("/users")
+                    .send({ name: "admin", role: "admin" })
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/users")
+                    .send({ name: "admin", role: "admin" })
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (user.role)" })
+            })
+            it("Should able to filter by role with property field", async () => {
+                class User {
+                    @reflect.noop()
+                    public name: string
+                    @authorize.get("admin")
+                    public password: string
+                }
+                class UsersController {
+                    @reflect.type(User)
+                    get() {
+                        return { name: "admin", password: "secret" }
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { name: "admin", password: "secret" })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { name: "admin" })
+            })
+            it("Should able to set by role with property field", async () => {
+                class User {
+                    @reflect.noop()
+                    public name: string
+                    @authorize.set("admin")
+                    public role: string
+                }
+                class UsersController {
+                    @route.post("")
+                    post(user: User) {
+                        return { id: 123 }
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .post("/users")
+                    .send({ name: "admin", role: "admin" })
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/users")
+                    .send({ name: "admin", role: "admin" })
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (user.role)" })
+            })
             it("Should able to filter by multiple roles", async () => {
                 @domain()
                 class User {
@@ -1879,7 +1960,6 @@ describe("JwtAuth", () => {
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .expect(200, { name: "admin", password: "secret" })
             })
-
             it("Should able to use role authorizer", async () => {
                 @domain()
                 class User {

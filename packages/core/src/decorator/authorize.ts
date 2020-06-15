@@ -1,4 +1,4 @@
-import { decorate } from "tinspector"
+import { decorate, CustomPropertyDecorator } from "tinspector"
 
 import { AuthorizerFunction, AuthorizeDecorator, Authorizer } from "../authorization"
 import { errorMessage } from "../types"
@@ -40,7 +40,7 @@ class AuthDecoratorImpl {
      * @param role user role allowed
      * @param modifier access kind
      */
-    role(option: AuthorizeOption): PropertyDecorator | ParameterDecorator
+    role(option: AuthorizeOption): CustomPropertyDecorator
 
     /**
      * Auhtorize property or parameter property accessible by specific role
