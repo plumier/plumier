@@ -22,7 +22,11 @@ Array [
     "GET 500 /users/error 123ms",
   ],
   Array [
-    "Lorem ipsum dolor",
+    "Error: Lorem ipsum dolor
+    at UsersController.error (/Volumes/Data/plumier/plumier/tests/behavior/application/logger.spec.ts:11:23)
+    at ActionInvocation.proceed (/Volumes/Data/plumier/plumier/packages/core/src/application-pipeline.ts:67:81)
+    at AuthorizerMiddleware.execute (/Volumes/Data/plumier/plumier/packages/core/src/authorization.ts:303:41)
+    at process._tickCallback (internal/process/next_tick.js:68:7)",
   ],
 ]
 `;

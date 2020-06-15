@@ -122,7 +122,7 @@ class LoggerMiddleware implements CustomMiddleware {
             }
             else {
                 console.log(chalk.red(`${i.ctx.method} 500 ${i.ctx.url} ${getTime()}`))
-                console.log(chalk.red(e.message))
+                console.log(chalk.red(e.stack))
             }
             throw e
         }
