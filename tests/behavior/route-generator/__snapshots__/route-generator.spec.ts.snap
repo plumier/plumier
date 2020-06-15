@@ -152,6 +152,22 @@ Array [
 ]
 `;
 
+exports[`Route Merging Should ignore parameter name 1`] = `
+Array [
+  Object {
+    "kind": "ActionRoute",
+    "method": "post",
+    "url": "/users",
+  },
+  Object {
+    "access": "Public",
+    "kind": "ActionRoute",
+    "method": "get",
+    "url": "/users/:userId/animals/:animalId",
+  },
+]
+`;
+
 exports[`Route Merging Should keep duplicate if not overridable 1`] = `
 Array [
   Object {
@@ -169,6 +185,22 @@ Array [
     "kind": "ActionRoute",
     "method": "get",
     "url": "/users/:id",
+  },
+]
+`;
+
+exports[`Route Merging Should merge nested routes 1`] = `
+Array [
+  Object {
+    "kind": "ActionRoute",
+    "method": "post",
+    "url": "/users",
+  },
+  Object {
+    "access": "Public",
+    "kind": "ActionRoute",
+    "method": "get",
+    "url": "/users/:userId/animals/:animalId",
   },
 ]
 `;

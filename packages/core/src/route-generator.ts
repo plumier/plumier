@@ -49,6 +49,20 @@ function getRoot(rootPath: string, path: string) {
    return (part.length === 0) ? undefined : appendRoute(...part)
 }
 
+function findControllerRecursive(path: string, criteria: ((x: ClassReflection) => boolean)) {
+   //read all files and get module reflection
+   const files = findFilesRecursive(path)
+   const result = []
+   for (const file of files) {
+      const root = getRoot(path, file) ?? ""
+      for (const member of (reflect(file).members as ClassReflection[])) {
+         if (member.kind === "Class" && criteria(member))
+            result.push({ root, type: member.type })
+      }
+   }
+   return result
+}
+
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- TRANSFORMER -------------------------------- */
 /* ------------------------------------------------------------------------------- */
@@ -144,10 +158,23 @@ function generateRoutes(controller: string | Class[] | Class, opt: { overridable
    return routes
 }
 
+// --------------------------------------------------------------------- //
+// ---------------------------- MERGE ROUTES --------------------------- //
+// --------------------------------------------------------------------- //
+
+function createKey(route: RouteMetadata) {
+   // create unique key for route
+   // post users/:userId/animals = post users/:pid/animals
+   // post users/:userId !== post users/:userId/animals
+   // replace any :param into :par
+   const newUrl = route.url.replace(/:\w*\d*/g, ":par")
+   return `${route.method}${newUrl}`
+}
+
 function findDupe(routes: RouteMetadata[], key: string, margin: number): RouteMetadata | undefined {
    for (let i = 0; i < margin; i++) {
       const route = routes[i]
-      const curKey = `${route.method}${route.url}`
+      const curKey = createKey(route)
       if (curKey === key) return route;
    }
 }
@@ -155,9 +182,13 @@ function findDupe(routes: RouteMetadata[], key: string, margin: number): RouteMe
 function mergeRoutes(routes: RouteMetadata[]) {
    const skip: { [key: string]: true } = {}
    const result = []
+   // loop routes from bottom to the top
+   // move duplicate routes (overridable) at the top of collection 
+   // into the appropriate location at the bottom
+   // intended to group similar routes
    for (let i = routes.length - 1; i >= 0; i--) {
       const route = routes[i]
-      const curKey = `${route.method}${route.url}`
+      const curKey = createKey(route)
       if (skip[curKey]) continue;
       if (route.overridable) {
          const replace = findDupe(routes, curKey, i)
@@ -166,20 +197,6 @@ function mergeRoutes(routes: RouteMetadata[]) {
       }
       else {
          result.unshift(route)
-      }
-   }
-   return result
-}
-
-function findControllerRecursive(path: string, criteria: ((x: ClassReflection) => boolean)) {
-   //read all files and get module reflection
-   const files = findFilesRecursive(path)
-   const result = []
-   for (const file of files) {
-      const root = getRoot(path, file) ?? ""
-      for (const member of (reflect(file).members as ClassReflection[])) {
-         if (member.kind === "Class" && criteria(member))
-            result.push({ root, type: member.type })
       }
    }
    return result
