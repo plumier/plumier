@@ -14,8 +14,8 @@ export { AuthDecoratorImpl, authorize } from "./decorator/authorize";
 export { ApiDescriptionDecorator, ApiEnumDecorator, ApiFieldNameDecorator, ApiRequiredDecorator, ApiResponseDecorator, ApiTagDecorator, api, ApiReadOnlyDecorator, ApiWriteOnlyDecorator } from "./decorator/api"
 export { bind } from "./decorator/bind";
 export { domain, middleware } from "./decorator/common";
-export * from "./decorator/route";
-export * from "./decorator/rest";
+export { route, RouteDecoratorImpl } from "./decorator/route";
+export { rest, RestDecoratorImpl } from "./decorator/rest";
 export { crud } from "./decorator/crud";
 export { ControllerGeneric, OneToManyControllerGeneric, IdentifierResult, createRoutesFromEntities, OneToManyDecorator, Repository, OneToManyRepository, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, IdentifierDecorator, InversePropertyDecorator, getGenericControllers } from "./generic-controller"
 export { HttpStatus } from "./http-status";
