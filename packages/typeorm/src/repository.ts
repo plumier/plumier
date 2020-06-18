@@ -1,6 +1,6 @@
-import { Class, Repository, OneToManyRepository } from "@plumier/core"
-import { Repository as NativeRepository, getManager } from "typeorm"
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
+import { Class } from "@plumier/core"
+import { OneToManyRepository, Repository } from "@plumier/generic-controller"
+import { getManager, Repository as NativeRepository } from "typeorm"
 
 class TypeORMRepository<T> implements Repository<T> {
     protected readonly nativeRepository: NativeRepository<T>

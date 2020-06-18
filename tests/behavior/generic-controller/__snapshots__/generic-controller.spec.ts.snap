@@ -1,1090 +1,314 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Generic Controller Should able to use Number id 1`] = `
+exports[`Open Api Generic Controller Should generate DELETE /animals/:id properly 1`] = `
 Array [
   Object {
-    "name": "findByIdOrNotFound",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": Object,
-      },
-    ],
-    "type": Promise,
-  },
-  Object {
-    "name": "list",
-    "pars": Array [
-      Object {
-        "name": "offset",
-        "type": Number,
-      },
-      Object {
-        "name": "limit",
-        "type": Number,
-      },
-      Object {
-        "name": "query",
-        "type": User,
-      },
-    ],
-    "type": Array [
-      User,
-    ],
-  },
-  Object {
-    "name": "save",
-    "pars": Array [
-      Object {
-        "name": "data",
-        "type": User,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "get",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-    ],
-    "type": User,
-  },
-  Object {
-    "name": "modify",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-      Object {
-        "name": "data",
-        "type": User,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "replace",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-      Object {
-        "name": "data",
-        "type": User,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "delete",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-    ],
-    "type": DynamicType,
-  },
-]
-`;
-
-exports[`Generic Controller Should able to use Number id 2`] = `
-Array [
-  Object {
-    "name": "id",
-    "type": Number,
-  },
-]
-`;
-
-exports[`Generic Controller Should able to use String id 1`] = `
-Array [
-  Object {
-    "name": "findByIdOrNotFound",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": Object,
-      },
-    ],
-    "type": Promise,
-  },
-  Object {
-    "name": "list",
-    "pars": Array [
-      Object {
-        "name": "offset",
-        "type": Number,
-      },
-      Object {
-        "name": "limit",
-        "type": Number,
-      },
-      Object {
-        "name": "query",
-        "type": User,
-      },
-    ],
-    "type": Array [
-      User,
-    ],
-  },
-  Object {
-    "name": "save",
-    "pars": Array [
-      Object {
-        "name": "data",
-        "type": User,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "get",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": String,
-      },
-    ],
-    "type": User,
-  },
-  Object {
-    "name": "modify",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": User,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "replace",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": User,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "delete",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": String,
-      },
-    ],
-    "type": DynamicType,
-  },
-]
-`;
-
-exports[`Generic Controller Should able to use String id 2`] = `
-Array [
-  Object {
-    "name": "id",
-    "type": String,
-  },
-]
-`;
-
-exports[`Generic One To Many Controller Should able to use Number id 1`] = `
-Array [
-  Object {
-    "name": "findByIdOrNotFound",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": Object,
-      },
-    ],
-    "type": Promise,
-  },
-  Object {
-    "name": "findParentByIdOrNotFound",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": Object,
-      },
-    ],
-    "type": Promise,
-  },
-  Object {
-    "name": "list",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "offset",
-        "type": Number,
-      },
-      Object {
-        "name": "limit",
-        "type": Number,
-      },
-      Object {
-        "name": "query",
-        "type": Animal,
-      },
-    ],
-    "type": Array [
-      Animal,
-    ],
-  },
-  Object {
-    "name": "save",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "get",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-    ],
-    "type": Animal,
-  },
-  Object {
-    "name": "modify",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "replace",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "delete",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-    ],
-    "type": DynamicType,
-  },
-]
-`;
-
-exports[`Generic One To Many Controller Should able to use Number id 2`] = `
-Array [
-  Object {
-    "name": "id",
-    "type": Number,
-  },
-]
-`;
-
-exports[`Generic One To Many Controller Should able to use Number pid 1`] = `
-Array [
-  Object {
-    "name": "findByIdOrNotFound",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": Object,
-      },
-    ],
-    "type": Promise,
-  },
-  Object {
-    "name": "findParentByIdOrNotFound",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": Object,
-      },
-    ],
-    "type": Promise,
-  },
-  Object {
-    "name": "list",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "offset",
-        "type": Number,
-      },
-      Object {
-        "name": "limit",
-        "type": Number,
-      },
-      Object {
-        "name": "query",
-        "type": Animal,
-      },
-    ],
-    "type": Array [
-      Animal,
-    ],
-  },
-  Object {
-    "name": "save",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "get",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-    ],
-    "type": Animal,
-  },
-  Object {
-    "name": "modify",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "replace",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "delete",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-    ],
-    "type": DynamicType,
-  },
-]
-`;
-
-exports[`Generic One To Many Controller Should able to use Number pid 2`] = `
-Array [
-  Object {
-    "name": "id",
-    "type": Number,
-  },
-]
-`;
-
-exports[`Generic One To Many Controller Should able to use String id 1`] = `
-Array [
-  Object {
-    "name": "findByIdOrNotFound",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": Object,
-      },
-    ],
-    "type": Promise,
-  },
-  Object {
-    "name": "findParentByIdOrNotFound",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": Object,
-      },
-    ],
-    "type": Promise,
-  },
-  Object {
-    "name": "list",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "offset",
-        "type": Number,
-      },
-      Object {
-        "name": "limit",
-        "type": Number,
-      },
-      Object {
-        "name": "query",
-        "type": Animal,
-      },
-    ],
-    "type": Array [
-      Animal,
-    ],
-  },
-  Object {
-    "name": "save",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "get",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "id",
-        "type": String,
-      },
-    ],
-    "type": Animal,
-  },
-  Object {
-    "name": "modify",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "replace",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "delete",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": Number,
-      },
-      Object {
-        "name": "id",
-        "type": String,
-      },
-    ],
-    "type": DynamicType,
-  },
-]
-`;
-
-exports[`Generic One To Many Controller Should able to use String id 2`] = `
-Array [
-  Object {
-    "name": "id",
-    "type": String,
-  },
-]
-`;
-
-exports[`Generic One To Many Controller Should able to use String pid 1`] = `
-Array [
-  Object {
-    "name": "findByIdOrNotFound",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": Object,
-      },
-    ],
-    "type": Promise,
-  },
-  Object {
-    "name": "findParentByIdOrNotFound",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": Object,
-      },
-    ],
-    "type": Promise,
-  },
-  Object {
-    "name": "list",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "offset",
-        "type": Number,
-      },
-      Object {
-        "name": "limit",
-        "type": Number,
-      },
-      Object {
-        "name": "query",
-        "type": Animal,
-      },
-    ],
-    "type": Array [
-      Animal,
-    ],
-  },
-  Object {
-    "name": "save",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "get",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-    ],
-    "type": Animal,
-  },
-  Object {
-    "name": "modify",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "replace",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-    ],
-    "type": DynamicType,
-  },
-  Object {
-    "name": "delete",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "id",
-        "type": Number,
-      },
-    ],
-    "type": DynamicType,
-  },
-]
-`;
-
-exports[`Generic One To Many Controller Should able to use String pid 2`] = `
-Array [
-  Object {
-    "name": "id",
-    "type": Number,
-  },
-]
-`;
-
-exports[`Generic One To Many Controller Should throw error when no OneToManyDecorator provided 1`] = `"Configuration Error: UsersController doesn't decorated with OneToManyDecorator @decorateClass(<OneToManyDecorator>)"`;
-
-exports[`Rote Generator Should able to ignore entity from routes generation 1`] = `
-Array [
-  Object {
-    "method": "get",
-    "path": "/user",
-  },
-  Object {
-    "method": "post",
-    "path": "/user",
-  },
-  Object {
-    "method": "get",
-    "path": "/user/:id",
-  },
-  Object {
-    "method": "patch",
-    "path": "/user/:id",
-  },
-  Object {
-    "method": "put",
-    "path": "/user/:id",
-  },
-  Object {
-    "method": "delete",
-    "path": "/user/:id",
-  },
-]
-`;
-
-exports[`Rote Generator Should able to ignore one to many route generation 1`] = `
-Array [
-  Object {
-    "method": "get",
-    "path": "/animal",
-  },
-  Object {
-    "method": "post",
-    "path": "/animal",
-  },
-  Object {
-    "method": "get",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "patch",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "put",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "delete",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "get",
-    "path": "/user",
-  },
-  Object {
-    "method": "post",
-    "path": "/user",
-  },
-  Object {
-    "method": "get",
-    "path": "/user/:id",
-  },
-  Object {
-    "method": "patch",
-    "path": "/user/:id",
-  },
-  Object {
-    "method": "put",
-    "path": "/user/:id",
-  },
-  Object {
-    "method": "delete",
-    "path": "/user/:id",
-  },
-]
-`;
-
-exports[`Rote Generator Should able to ignore some method on one to many route generation 1`] = `
-Array [
-  Object {
-    "method": "get",
-    "path": "/animal",
-  },
-  Object {
-    "method": "post",
-    "path": "/animal",
-  },
-  Object {
-    "method": "get",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "patch",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "put",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "delete",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "get",
-    "path": "/user",
-  },
-  Object {
-    "method": "post",
-    "path": "/user",
-  },
-  Object {
-    "method": "get",
-    "path": "/user/:id",
-  },
-  Object {
-    "method": "patch",
-    "path": "/user/:id",
-  },
-  Object {
-    "method": "put",
-    "path": "/user/:id",
-  },
-  Object {
-    "method": "delete",
-    "path": "/user/:id",
-  },
-  Object {
-    "method": "patch",
-    "path": "/user/:pid/animals/:id",
-  },
-]
-`;
-
-exports[`Rote Generator Should able to ignore some methods of generated routes 1`] = `
-Array [
-  Object {
-    "method": "patch",
-    "path": "/animal/:id",
-  },
-]
-`;
-
-exports[`Rote Generator Should generate routes properly 1`] = `
-Array [
-  Object {
-    "method": "get",
-    "path": "/animal",
-  },
-  Object {
-    "method": "post",
-    "path": "/animal",
-  },
-  Object {
-    "method": "get",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "patch",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "put",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "delete",
-    "path": "/animal/:id",
-  },
-  Object {
-    "method": "get",
-    "path": "/user",
-  },
-  Object {
-    "method": "post",
-    "path": "/user",
-  },
-  Object {
-    "method": "get",
-    "path": "/user/:id",
-  },
-  Object {
-    "method": "patch",
-    "path": "/user/:id",
-  },
-  Object {
-    "method": "put",
-    "path": "/user/:id",
-  },
-  Object {
-    "method": "delete",
-    "path": "/user/:id",
-  },
-  Object {
-    "method": "get",
-    "path": "/user/:pid/animals",
-  },
-  Object {
-    "method": "post",
-    "path": "/user/:pid/animals",
-  },
-  Object {
-    "method": "get",
-    "path": "/user/:pid/animals/:id",
-  },
-  Object {
-    "method": "patch",
-    "path": "/user/:pid/animals/:id",
-  },
-  Object {
-    "method": "put",
-    "path": "/user/:pid/animals/:id",
-  },
-  Object {
-    "method": "delete",
-    "path": "/user/:pid/animals/:id",
-  },
-]
-`;
-
-exports[`Swagger Generic Controller Should generate DELETE /animal/:id properly 1`] = `
-Array [
-  Object {
-    "description": undefined,
     "in": "path",
     "name": "id",
     "required": true,
     "schema": Object {
-      "readOnly": undefined,
       "type": "string",
-      "writeOnly": undefined,
     },
   },
 ]
 `;
 
-exports[`Swagger Generic Controller Should generate DELETE /animal/:id properly 2`] = `
+exports[`Open Api Generic Controller Should generate DELETE /animals/:id properly 2`] = `
 Array [
   "Animal",
 ]
 `;
 
-exports[`Swagger Generic Controller Should generate GET /animal properly 1`] = `
+exports[`Open Api Generic Controller Should generate DELETE /animals/:id properly 3`] = `
+Array [
+  Object {
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open Api Generic Controller Should generate DELETE /animals/:id properly 4`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Open Api Generic Controller Should generate DELETE /animals/{pid}/tags/:id properly 1`] = `
+Array [
+  Object {
+    "in": "path",
+    "name": "pid",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open Api Generic Controller Should generate DELETE /animals/{pid}/tags/:id properly 2`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Open Api Generic Controller Should generate GET /animals properly 1`] = `
 Array [
   Object {
     "in": "query",
     "name": "name",
     "required": false,
     "schema": Object {
-      "readOnly": undefined,
       "type": "string",
-      "writeOnly": undefined,
     },
   },
   Object {
-    "description": undefined,
     "in": "query",
     "name": "offset",
     "required": false,
     "schema": Object {
-      "readOnly": undefined,
       "type": "number",
-      "writeOnly": undefined,
     },
   },
   Object {
-    "description": undefined,
     "in": "query",
     "name": "limit",
     "required": false,
     "schema": Object {
-      "readOnly": undefined,
       "type": "number",
-      "writeOnly": undefined,
     },
   },
 ]
 `;
 
-exports[`Swagger Generic Controller Should generate GET /animal properly 2`] = `
+exports[`Open Api Generic Controller Should generate GET /animals properly 2`] = `
 Array [
   "Animal",
 ]
 `;
 
-exports[`Swagger Generic Controller Should generate GET /animal/:id properly 1`] = `
+exports[`Open Api Generic Controller Should generate GET /animals properly 3`] = `
 Array [
   Object {
-    "description": undefined,
+    "in": "query",
+    "name": "name",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "offset",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "limit",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+]
+`;
+
+exports[`Open Api Generic Controller Should generate GET /animals properly 4`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Open Api Generic Controller Should generate GET /animals/:id properly 1`] = `
+Array [
+  Object {
     "in": "path",
     "name": "id",
     "required": true,
     "schema": Object {
-      "readOnly": undefined,
       "type": "string",
-      "writeOnly": undefined,
     },
   },
 ]
 `;
 
-exports[`Swagger Generic Controller Should generate GET /animal/:id properly 2`] = `
+exports[`Open Api Generic Controller Should generate GET /animals/:id properly 2`] = `
 Array [
   "Animal",
 ]
 `;
 
-exports[`Swagger Generic Controller Should generate PATCH /animal/:id properly 1`] = `
+exports[`Open Api Generic Controller Should generate GET /animals/:id properly 3`] = `
 Array [
   Object {
-    "description": undefined,
     "in": "path",
     "name": "id",
     "required": true,
     "schema": Object {
-      "readOnly": undefined,
       "type": "string",
-      "writeOnly": undefined,
     },
   },
 ]
 `;
 
-exports[`Swagger Generic Controller Should generate PATCH /animal/:id properly 2`] = `
+exports[`Open Api Generic Controller Should generate GET /animals/:id properly 4`] = `
 Array [
   "Animal",
 ]
 `;
 
-exports[`Swagger Generic Controller Should generate POST /animal properly 1`] = `
+exports[`Open Api Generic Controller Should generate GET /animals/{pid}/tags properly 1`] = `
+Array [
+  Object {
+    "in": "path",
+    "name": "pid",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "tag",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "offset",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "limit",
+    "required": false,
+    "schema": Object {
+      "type": "number",
+    },
+  },
+]
+`;
+
+exports[`Open Api Generic Controller Should generate GET /animals/{pid}/tags properly 2`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Open Api Generic Controller Should generate GET /animals/{pid}/tags/:id properly 1`] = `
+Array [
+  Object {
+    "in": "path",
+    "name": "pid",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open Api Generic Controller Should generate GET /animals/{pid}/tags/:id properly 2`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Open Api Generic Controller Should generate PATCH /animals/:id properly 1`] = `
+Array [
+  Object {
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open Api Generic Controller Should generate PATCH /animals/:id properly 2`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Open Api Generic Controller Should generate PATCH /animals/:id properly 3`] = `
+Array [
+  Object {
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open Api Generic Controller Should generate PATCH /animals/:id properly 4`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Open Api Generic Controller Should generate PATCH /animals/{pid}/tags/:id properly 1`] = `
+Array [
+  Object {
+    "in": "path",
+    "name": "pid",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open Api Generic Controller Should generate PATCH /animals/{pid}/tags/:id properly 2`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Open Api Generic Controller Should generate POST /animals properly 1`] = `
 Object {
   "content": Object {
     "application/json": Object {
@@ -1102,188 +326,13 @@ Object {
 }
 `;
 
-exports[`Swagger Generic Controller Should generate POST /animal properly 2`] = `
+exports[`Open Api Generic Controller Should generate POST /animals properly 2`] = `
 Array [
   "Animal",
 ]
 `;
 
-exports[`Swagger Generic Controller Should generate PUT /animal/:id properly 1`] = `
-Array [
-  Object {
-    "description": undefined,
-    "in": "path",
-    "name": "id",
-    "required": true,
-    "schema": Object {
-      "readOnly": undefined,
-      "type": "string",
-      "writeOnly": undefined,
-    },
-  },
-]
-`;
-
-exports[`Swagger Generic Controller Should generate PUT /animal/:id properly 2`] = `
-Array [
-  "Animal",
-]
-`;
-
-exports[`Swagger One To Many Generic Controller Should generate DELETE /animal/:id properly 1`] = `
-Array [
-  Object {
-    "description": undefined,
-    "in": "path",
-    "name": "pid",
-    "required": true,
-    "schema": Object {
-      "readOnly": undefined,
-      "type": "string",
-      "writeOnly": undefined,
-    },
-  },
-  Object {
-    "description": undefined,
-    "in": "path",
-    "name": "id",
-    "required": true,
-    "schema": Object {
-      "readOnly": undefined,
-      "type": "string",
-      "writeOnly": undefined,
-    },
-  },
-]
-`;
-
-exports[`Swagger One To Many Generic Controller Should generate DELETE /animal/:id properly 2`] = `
-Array [
-  "Client",
-]
-`;
-
-exports[`Swagger One To Many Generic Controller Should generate GET /animal properly 1`] = `
-Array [
-  Object {
-    "description": undefined,
-    "in": "path",
-    "name": "pid",
-    "required": true,
-    "schema": Object {
-      "readOnly": undefined,
-      "type": "string",
-      "writeOnly": undefined,
-    },
-  },
-  Object {
-    "in": "query",
-    "name": "name",
-    "required": false,
-    "schema": Object {
-      "readOnly": undefined,
-      "type": "string",
-      "writeOnly": undefined,
-    },
-  },
-  Object {
-    "description": undefined,
-    "in": "query",
-    "name": "offset",
-    "required": false,
-    "schema": Object {
-      "readOnly": undefined,
-      "type": "number",
-      "writeOnly": undefined,
-    },
-  },
-  Object {
-    "description": undefined,
-    "in": "query",
-    "name": "limit",
-    "required": false,
-    "schema": Object {
-      "readOnly": undefined,
-      "type": "number",
-      "writeOnly": undefined,
-    },
-  },
-]
-`;
-
-exports[`Swagger One To Many Generic Controller Should generate GET /animal properly 2`] = `
-Array [
-  "Client",
-]
-`;
-
-exports[`Swagger One To Many Generic Controller Should generate GET /animal/:id properly 1`] = `
-Array [
-  Object {
-    "description": undefined,
-    "in": "path",
-    "name": "pid",
-    "required": true,
-    "schema": Object {
-      "readOnly": undefined,
-      "type": "string",
-      "writeOnly": undefined,
-    },
-  },
-  Object {
-    "description": undefined,
-    "in": "path",
-    "name": "id",
-    "required": true,
-    "schema": Object {
-      "readOnly": undefined,
-      "type": "string",
-      "writeOnly": undefined,
-    },
-  },
-]
-`;
-
-exports[`Swagger One To Many Generic Controller Should generate GET /animal/:id properly 2`] = `
-Array [
-  "Client",
-]
-`;
-
-exports[`Swagger One To Many Generic Controller Should generate PATCH /animal/:id properly 1`] = `
-Array [
-  Object {
-    "description": undefined,
-    "in": "path",
-    "name": "pid",
-    "required": true,
-    "schema": Object {
-      "readOnly": undefined,
-      "type": "string",
-      "writeOnly": undefined,
-    },
-  },
-  Object {
-    "description": undefined,
-    "in": "path",
-    "name": "id",
-    "required": true,
-    "schema": Object {
-      "readOnly": undefined,
-      "type": "string",
-      "writeOnly": undefined,
-    },
-  },
-]
-`;
-
-exports[`Swagger One To Many Generic Controller Should generate PATCH /animal/:id properly 2`] = `
-Array [
-  "Client",
-]
-`;
-
-exports[`Swagger One To Many Generic Controller Should generate POST /animal properly 1`] = `
+exports[`Open Api Generic Controller Should generate POST /animals properly 3`] = `
 Object {
   "content": Object {
     "application/json": Object {
@@ -1301,145 +350,1992 @@ Object {
 }
 `;
 
-exports[`Swagger One To Many Generic Controller Should generate POST /animal properly 2`] = `
+exports[`Open Api Generic Controller Should generate POST /animals properly 4`] = `
 Array [
-  "Client",
+  "Animal",
 ]
 `;
 
-exports[`Swagger One To Many Generic Controller Should generate PUT /animal/:id properly 1`] = `
-Array [
-  Object {
-    "description": undefined,
-    "in": "path",
-    "name": "pid",
-    "required": true,
-    "schema": Object {
-      "readOnly": undefined,
-      "type": "string",
-      "writeOnly": undefined,
+exports[`Open Api Generic Controller Should generate POST /animals/{pid}/tags properly 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/Tag",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/Tag",
+      },
     },
   },
+  "required": true,
+}
+`;
+
+exports[`Open Api Generic Controller Should generate POST /animals/{pid}/tags properly 2`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Open Api Generic Controller Should generate PUT /animals/:id properly 1`] = `
+Array [
   Object {
-    "description": undefined,
     "in": "path",
     "name": "id",
     "required": true,
     "schema": Object {
-      "readOnly": undefined,
       "type": "string",
-      "writeOnly": undefined,
     },
   },
 ]
 `;
 
-exports[`Swagger One To Many Generic Controller Should generate PUT /animal/:id properly 2`] = `
+exports[`Open Api Generic Controller Should generate PUT /animals/:id properly 2`] = `
 Array [
-  "Client",
+  "Animal",
 ]
 `;
 
-exports[`getGenericControllers Should able only change only one generic controller 1`] = `
+exports[`Open Api Generic Controller Should generate PUT /animals/:id properly 3`] = `
+Array [
+  Object {
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open Api Generic Controller Should generate PUT /animals/:id properly 4`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Open Api Generic Controller Should generate PUT /animals/{pid}/tags/:id properly 1`] = `
+Array [
+  Object {
+    "in": "path",
+    "name": "pid",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "path",
+    "name": "id",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
+exports[`Open Api Generic Controller Should generate PUT /animals/{pid}/tags/:id properly 2`] = `
+Array [
+  "Animal",
+]
+`;
+
+exports[`Open Api Generic Controller Should provide proper component 1`] = `
 Object {
-  "genericController": Object {
-    "root": "api/v1",
-    "type": MyControllerGeneric,
+  "properties": Object {
+    "name": Object {
+      "type": "string",
+    },
+    "tags": Object {
+      "items": Object {
+        "$ref": "#/components/schemas/Tag",
+      },
+      "type": "array",
+    },
   },
-  "genericOneToManyController": Object {
-    "root": "api/v1",
-    "type": OneToManyControllerGeneric,
-  },
+  "type": "object",
 }
 `;
 
-exports[`getGenericControllers Should able to change root path 1`] = `
+exports[`Open Api Generic Controller Should provide proper component 2`] = `
 Object {
-  "genericController": Object {
-    "root": "api/v1",
-    "type": MyControllerGeneric,
+  "properties": Object {
+    "tag": Object {
+      "type": "string",
+    },
   },
-  "genericOneToManyController": Object {
-    "root": "api/v1",
-    "type": MyOneToManyControllerGeneric,
-  },
+  "type": "object",
 }
 `;
 
-exports[`getGenericControllers Should able to provide directory path 1`] = `
+exports[`Open Api Generic Controller Should provided proper component 1`] = `
 Object {
-  "genericController": Object {
-    "root": "",
-    "type": MyControllerGeneric,
+  "properties": Object {
+    "name": Object {
+      "type": "string",
+    },
   },
-  "genericOneToManyController": Object {
-    "root": "",
-    "type": MyOneToManyControllerGeneric,
-  },
+  "type": "object",
 }
 `;
 
-exports[`getGenericControllers Should able to provide directory path with nested root 1`] = `
-Object {
-  "genericController": Object {
-    "root": "/api/v1",
-    "type": MyControllerGeneric,
-  },
-  "genericOneToManyController": Object {
-    "root": "/api/v1",
-    "type": MyOneToManyControllerGeneric,
-  },
-}
+exports[`Route Generator Generic Controller Should able to change root path 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> GET    /api/v1/users",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> POST   /api/v1/users",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> GET    /api/v1/users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> PATCH  /api/v1/users/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> PUT    /api/v1/users/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> DELETE /api/v1/users/:id",
+  ],
+  Array [],
+]
 `;
 
-exports[`getGenericControllers Should able to provide path to current file 1`] = `
-Object {
-  "genericController": Object {
-    "root": "",
-    "type": MyControllerGeneric,
-  },
-  "genericOneToManyController": Object {
-    "root": "",
-    "type": MyOneToManyControllerGeneric,
-  },
-}
+exports[`Route Generator Generic Controller Should able to ignore an entity from route generation 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> GET    /animals",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> POST   /animals",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> GET    /animals/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> PATCH  /animals/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> PUT    /animals/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> DELETE /animals/:id",
+  ],
+  Array [],
+]
 `;
 
-exports[`getGenericControllers Should able to use default controllers 1`] = `
-Object {
-  "genericController": Object {
-    "root": "root/path",
-    "type": ControllerGeneric,
-  },
-  "genericOneToManyController": Object {
-    "root": "root/path",
-    "type": OneToManyControllerGeneric,
-  },
-}
+exports[`Route Generator Generic Controller Should able to ignore some method of controller from entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> GET    /users",
+  ],
+  Array [
+    "2. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    "3. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [],
+]
 `;
 
-exports[`getGenericControllers Should get controller properly when provided classes directly 1`] = `
-Object {
-  "genericController": Object {
-    "root": "",
-    "type": MyControllerGeneric,
+exports[`Route Generator Generic Controller Should able to specify ID type by providing decorator 1`] = `
+Array [
+  Object {
+    "name": "list",
+    "pars": Array [
+      Object {
+        "name": "offset",
+        "type": Number,
+      },
+      Object {
+        "name": "limit",
+        "type": Number,
+      },
+      Object {
+        "name": "query",
+        "type": User,
+      },
+    ],
   },
-  "genericOneToManyController": Object {
-    "root": "",
-    "type": MyOneToManyControllerGeneric,
+  Object {
+    "name": "save",
+    "pars": Array [
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
   },
-}
+  Object {
+    "name": "get",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+    ],
+  },
+  Object {
+    "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+  },
+  Object {
+    "name": "replace",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+    ],
+  },
+]
 `;
 
-exports[`getGenericControllers Should prioritize rootPath on configuration vs nested root 1`] = `
-Object {
-  "genericController": Object {
-    "root": "root/path",
-    "type": MyControllerGeneric,
+exports[`Route Generator Generic Controller Should able to specify custom controller from Web Api Facility 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. HostedControllerGeneric.list             -> GET    /users",
+  ],
+  Array [
+    "2. HostedControllerGeneric.save(data)       -> POST   /users",
+  ],
+  Array [
+    "3. HostedControllerGeneric.get(id)          -> GET    /users/:id",
+  ],
+  Array [
+    "4. HostedControllerGeneric.modify(id, data) -> PATCH  /users/:id",
+  ],
+  Array [
+    "5. HostedControllerGeneric.replace          -> PUT    /users/:id",
+  ],
+  Array [
+    "6. HostedControllerGeneric.delete(id)       -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should able to specify directory of custom controller in nested directory, but should not affect route 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. NestedControllerGeneric.list             -> GET    /users",
+  ],
+  Array [
+    "2. NestedControllerGeneric.save(data)       -> POST   /users",
+  ],
+  Array [
+    "3. NestedControllerGeneric.get(id)          -> GET    /users/:id",
+  ],
+  Array [
+    "4. NestedControllerGeneric.modify(id, data) -> PATCH  /users/:id",
+  ],
+  Array [
+    "5. NestedControllerGeneric.replace          -> PUT    /users/:id",
+  ],
+  Array [
+    "6. NestedControllerGeneric.delete(id)       -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should able to specify directory of custom controller with absolute path 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. HostedControllerGeneric.list             -> GET    /users",
+  ],
+  Array [
+    "2. HostedControllerGeneric.save(data)       -> POST   /users",
+  ],
+  Array [
+    "3. HostedControllerGeneric.get(id)          -> GET    /users/:id",
+  ],
+  Array [
+    "4. HostedControllerGeneric.modify(id, data) -> PATCH  /users/:id",
+  ],
+  Array [
+    "5. HostedControllerGeneric.replace          -> PUT    /users/:id",
+  ],
+  Array [
+    "6. HostedControllerGeneric.delete(id)       -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should able to specify directory of custom controller with relative path 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. HostedControllerGeneric.list             -> GET    /users",
+  ],
+  Array [
+    "2. HostedControllerGeneric.save(data)       -> POST   /users",
+  ],
+  Array [
+    "3. HostedControllerGeneric.get(id)          -> GET    /users/:id",
+  ],
+  Array [
+    "4. HostedControllerGeneric.modify(id, data) -> PATCH  /users/:id",
+  ],
+  Array [
+    "5. HostedControllerGeneric.replace          -> PUT    /users/:id",
+  ],
+  Array [
+    "6. HostedControllerGeneric.delete(id)       -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should able to use custom controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyCustomControllerGeneric.list       -> GET    /api/v1/users",
+  ],
+  Array [
+    "2. MyCustomControllerGeneric.save(data) -> POST   /api/v1/users",
+  ],
+  Array [
+    "3. MyCustomControllerGeneric.get(id)    -> GET    /api/v1/users/:id",
+  ],
+  Array [
+    "4. MyCustomControllerGeneric.modify     -> PATCH  /api/v1/users/:id",
+  ],
+  Array [
+    "5. MyCustomControllerGeneric.replace    -> PUT    /api/v1/users/:id",
+  ],
+  Array [
+    "6. MyCustomControllerGeneric.delete(id) -> DELETE /api/v1/users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should able to use root path without leading slash 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> GET    /api/v1/users",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> POST   /api/v1/users",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> GET    /api/v1/users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> PATCH  /api/v1/users/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> PUT    /api/v1/users/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> DELETE /api/v1/users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should able to use root path without trailing slash 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> GET    /api/v1/users",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> POST   /api/v1/users",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> GET    /api/v1/users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> PATCH  /api/v1/users/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> PUT    /api/v1/users/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> DELETE /api/v1/users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should generate routes with parameter property entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> GET    /users",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> POST   /users",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> GET    /users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should generate routes with property field entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> GET    /users",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> POST   /users",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> GET    /users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should only allow custom controller ends with Generic 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> GET    /api/v1/users",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> POST   /api/v1/users",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> GET    /api/v1/users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> PATCH  /api/v1/users/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> PUT    /api/v1/users/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> DELETE /api/v1/users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should only allow custom controller extends from ControllerGeneric 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> GET    /api/v1/users",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> POST   /api/v1/users",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> GET    /api/v1/users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> PATCH  /api/v1/users/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> PUT    /api/v1/users/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> DELETE /api/v1/users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should prioritize controller provided by CRUD facility instead of WebApiFacility 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyCustomControllerGeneric.list       -> GET    /users",
+  ],
+  Array [
+    "2. MyCustomControllerGeneric.save(data) -> POST   /users",
+  ],
+  Array [
+    "3. MyCustomControllerGeneric.get(id)    -> GET    /users/:id",
+  ],
+  Array [
+    "4. MyCustomControllerGeneric.modify     -> PATCH  /users/:id",
+  ],
+  Array [
+    "5. MyCustomControllerGeneric.replace    -> PUT    /users/:id",
+  ],
+  Array [
+    "6. MyCustomControllerGeneric.delete(id) -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should use string as default id if no ID type specified 1`] = `
+Array [
+  Object {
+    "name": "list",
+    "pars": Array [
+      Object {
+        "name": "offset",
+        "type": Number,
+      },
+      Object {
+        "name": "limit",
+        "type": Number,
+      },
+      Object {
+        "name": "query",
+        "type": User,
+      },
+    ],
   },
-  "genericOneToManyController": Object {
-    "root": "root/path",
-    "type": MyOneToManyControllerGeneric,
+  Object {
+    "name": "save",
+    "pars": Array [
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
   },
+  Object {
+    "name": "get",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": String,
+      },
+    ],
+  },
+  Object {
+    "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+  },
+  Object {
+    "name": "replace",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": String,
+      },
+    ],
+  },
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to change root path 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> GET    /api/v1/users",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> POST   /api/v1/users",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> GET    /api/v1/users/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> PATCH  /api/v1/users/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> PUT    /api/v1/users/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> DELETE /api/v1/users/:id",
+  ],
+  Array [
+    " 7. MyOneToManyContr...eneric.list        -> GET    /api/v1/users/:pid/animals",
+  ],
+  Array [
+    " 8. MyOneToManyContr...eneric.save        -> POST   /api/v1/users/:pid/animals",
+  ],
+  Array [
+    " 9. MyOneToManyContr...eneric.get         -> GET    /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyOneToManyContr...eneric.modify      -> PATCH  /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "11. MyOneToManyContr...eneric.replace     -> PUT    /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "12. MyOneToManyContr...eneric.delete      -> DELETE /api/v1/users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to ignore an entity from route generation 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyOneToManyContr...eneric.list        -> GET    /users/:pid/animals",
+  ],
+  Array [
+    " 2. MyOneToManyContr...eneric.save        -> POST   /users/:pid/animals",
+  ],
+  Array [
+    " 3. MyOneToManyContr...eneric.get         -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    " 4. MyOneToManyContr...eneric.modify      -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    " 5. MyOneToManyContr...eneric.replace     -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    " 6. MyOneToManyContr...eneric.delete      -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [
+    " 7. MyControllerGeneric.list              -> GET    /animals",
+  ],
+  Array [
+    " 8. MyControllerGeneric.save(data)        -> POST   /animals",
+  ],
+  Array [
+    " 9. MyControllerGeneric.get(id)           -> GET    /animals/:id",
+  ],
+  Array [
+    "10. MyControllerGeneric.modify(id, data)  -> PATCH  /animals/:id",
+  ],
+  Array [
+    "11. MyControllerGeneric.replace(id, data) -> PUT    /animals/:id",
+  ],
+  Array [
+    "12. MyControllerGeneric.delete(id)        -> DELETE /animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to ignore relation 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> GET    /users",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> POST   /users",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> GET    /users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to ignore relation on property field 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> GET    /users",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> POST   /users",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> GET    /users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to ignore some method of controller from entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.get(id)           -> GET    /users/:id",
+  ],
+  Array [
+    " 2. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    " 3. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [
+    " 5. MyOneToManyContr...eneric.list        -> GET    /users/:pid/animals",
+  ],
+  Array [
+    " 6. MyOneToManyContr...eneric.save        -> POST   /users/:pid/animals",
+  ],
+  Array [
+    " 7. MyOneToManyContr...eneric.get         -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    " 8. MyOneToManyContr...eneric.modify      -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    " 9. MyOneToManyContr...eneric.replace     -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyOneToManyContr...eneric.delete      -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to ignore some method on relation 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> GET    /users",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> POST   /users",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> GET    /users/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [
+    " 7. MyOneToManyContr...eneric.save        -> POST   /users/:pid/animals",
+  ],
+  Array [
+    " 8. MyOneToManyContr...eneric.get         -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    " 9. MyOneToManyContr...eneric.modify      -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyOneToManyContr...eneric.delete      -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to ignore some method on relation on property field 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> GET    /users",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> POST   /users",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> GET    /users/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [
+    " 7. MyOneToManyContr...eneric.save        -> POST   /users/:pid/animals",
+  ],
+  Array [
+    " 8. MyOneToManyContr...eneric.get         -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    " 9. MyOneToManyContr...eneric.replace     -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyOneToManyContr...eneric.delete      -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to specify ID type by providing decorator 1`] = `
+Array [
+  Object {
+    "name": "list",
+    "pars": Array [
+      Object {
+        "name": "offset",
+        "type": Number,
+      },
+      Object {
+        "name": "limit",
+        "type": Number,
+      },
+      Object {
+        "name": "query",
+        "type": User,
+      },
+    ],
+  },
+  Object {
+    "name": "save",
+    "pars": Array [
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+  },
+  Object {
+    "name": "get",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+    ],
+  },
+  Object {
+    "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+  },
+  Object {
+    "name": "replace",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+    ],
+  },
+  Object {
+    "name": "list",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "offset",
+        "type": Number,
+      },
+      Object {
+        "name": "limit",
+        "type": Number,
+      },
+      Object {
+        "name": "query",
+        "type": Animal,
+      },
+    ],
+  },
+  Object {
+    "name": "save",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+  },
+  Object {
+    "name": "get",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+    ],
+  },
+  Object {
+    "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+  },
+  Object {
+    "name": "replace",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+    ],
+  },
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to specify directory of custom controller in nested directory, but should not affect route 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. NestedControllerGeneric.list             -> GET    /users",
+  ],
+  Array [
+    " 2. NestedControllerGeneric.save(data)       -> POST   /users",
+  ],
+  Array [
+    " 3. NestedControllerGeneric.get(id)          -> GET    /users/:id",
+  ],
+  Array [
+    " 4. NestedControllerGeneric.modify(id, data) -> PATCH  /users/:id",
+  ],
+  Array [
+    " 5. NestedControllerGeneric.replace          -> PUT    /users/:id",
+  ],
+  Array [
+    " 6. NestedControllerGeneric.delete(id)       -> DELETE /users/:id",
+  ],
+  Array [
+    " 7. NestedOneToManyC...eneric.list           -> GET    /users/:pid/animals",
+  ],
+  Array [
+    " 8. NestedOneToManyC...eneric.save           -> POST   /users/:pid/animals",
+  ],
+  Array [
+    " 9. NestedOneToManyC...eneric.get            -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "10. NestedOneToManyC...eneric.modify         -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "11. NestedOneToManyC...eneric.replace        -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "12. NestedOneToManyC...eneric.delete         -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to specify directory of custom controller with absolute path 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. HostedControllerGeneric.list             -> GET    /users",
+  ],
+  Array [
+    " 2. HostedControllerGeneric.save(data)       -> POST   /users",
+  ],
+  Array [
+    " 3. HostedControllerGeneric.get(id)          -> GET    /users/:id",
+  ],
+  Array [
+    " 4. HostedControllerGeneric.modify(id, data) -> PATCH  /users/:id",
+  ],
+  Array [
+    " 5. HostedControllerGeneric.replace          -> PUT    /users/:id",
+  ],
+  Array [
+    " 6. HostedControllerGeneric.delete(id)       -> DELETE /users/:id",
+  ],
+  Array [
+    " 7. HostedOneToManyC...eneric.list           -> GET    /users/:pid/animals",
+  ],
+  Array [
+    " 8. HostedOneToManyC...eneric.save           -> POST   /users/:pid/animals",
+  ],
+  Array [
+    " 9. HostedOneToManyC...eneric.get            -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "10. HostedOneToManyC...eneric.modify         -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "11. HostedOneToManyC...eneric.replace        -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "12. HostedOneToManyC...eneric.delete         -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to specify directory of custom controller with relative path 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. HostedControllerGeneric.list             -> GET    /users",
+  ],
+  Array [
+    " 2. HostedControllerGeneric.save(data)       -> POST   /users",
+  ],
+  Array [
+    " 3. HostedControllerGeneric.get(id)          -> GET    /users/:id",
+  ],
+  Array [
+    " 4. HostedControllerGeneric.modify(id, data) -> PATCH  /users/:id",
+  ],
+  Array [
+    " 5. HostedControllerGeneric.replace          -> PUT    /users/:id",
+  ],
+  Array [
+    " 6. HostedControllerGeneric.delete(id)       -> DELETE /users/:id",
+  ],
+  Array [
+    " 7. HostedOneToManyC...eneric.list           -> GET    /users/:pid/animals",
+  ],
+  Array [
+    " 8. HostedOneToManyC...eneric.save           -> POST   /users/:pid/animals",
+  ],
+  Array [
+    " 9. HostedOneToManyC...eneric.get            -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "10. HostedOneToManyC...eneric.modify         -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "11. HostedOneToManyC...eneric.replace        -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "12. HostedOneToManyC...eneric.delete         -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to use custom controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> GET    /api/v1/users",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> POST   /api/v1/users",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> GET    /api/v1/users/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> PATCH  /api/v1/users/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> PUT    /api/v1/users/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> DELETE /api/v1/users/:id",
+  ],
+  Array [
+    " 7. MyCustomOneToMan...eneric.list        -> GET    /api/v1/users/:pid/animals",
+  ],
+  Array [
+    " 8. MyCustomOneToMan...eneric.save        -> POST   /api/v1/users/:pid/animals",
+  ],
+  Array [
+    " 9. MyCustomOneToMan...eneric.get         -> GET    /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyCustomOneToMan...eneric.modify      -> PATCH  /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "11. MyCustomOneToMan...eneric.replace     -> PUT    /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "12. MyCustomOneToMan...eneric.delete      -> DELETE /api/v1/users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to use custom controller from WebApiFacility 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. HostedControllerGeneric.list             -> GET    /users",
+  ],
+  Array [
+    " 2. HostedControllerGeneric.save(data)       -> POST   /users",
+  ],
+  Array [
+    " 3. HostedControllerGeneric.get(id)          -> GET    /users/:id",
+  ],
+  Array [
+    " 4. HostedControllerGeneric.modify(id, data) -> PATCH  /users/:id",
+  ],
+  Array [
+    " 5. HostedControllerGeneric.replace          -> PUT    /users/:id",
+  ],
+  Array [
+    " 6. HostedControllerGeneric.delete(id)       -> DELETE /users/:id",
+  ],
+  Array [
+    " 7. HostedOneToManyC...eneric.list           -> GET    /users/:pid/animals",
+  ],
+  Array [
+    " 8. HostedOneToManyC...eneric.save           -> POST   /users/:pid/animals",
+  ],
+  Array [
+    " 9. HostedOneToManyC...eneric.get            -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "10. HostedOneToManyC...eneric.modify         -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "11. HostedOneToManyC...eneric.replace        -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "12. HostedOneToManyC...eneric.delete         -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to use root path without leading slash 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> GET    /api/v1/users",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> POST   /api/v1/users",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> GET    /api/v1/users/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> PATCH  /api/v1/users/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> PUT    /api/v1/users/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> DELETE /api/v1/users/:id",
+  ],
+  Array [
+    " 7. MyOneToManyContr...eneric.list        -> GET    /api/v1/users/:pid/animals",
+  ],
+  Array [
+    " 8. MyOneToManyContr...eneric.save        -> POST   /api/v1/users/:pid/animals",
+  ],
+  Array [
+    " 9. MyOneToManyContr...eneric.get         -> GET    /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyOneToManyContr...eneric.modify      -> PATCH  /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "11. MyOneToManyContr...eneric.replace     -> PUT    /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "12. MyOneToManyContr...eneric.delete      -> DELETE /api/v1/users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to use root path without trailing slash 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> GET    /api/v1/users",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> POST   /api/v1/users",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> GET    /api/v1/users/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> PATCH  /api/v1/users/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> PUT    /api/v1/users/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> DELETE /api/v1/users/:id",
+  ],
+  Array [
+    " 7. MyOneToManyContr...eneric.list        -> GET    /api/v1/users/:pid/animals",
+  ],
+  Array [
+    " 8. MyOneToManyContr...eneric.save        -> POST   /api/v1/users/:pid/animals",
+  ],
+  Array [
+    " 9. MyOneToManyContr...eneric.get         -> GET    /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyOneToManyContr...eneric.modify      -> PATCH  /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "11. MyOneToManyContr...eneric.replace     -> PUT    /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "12. MyOneToManyContr...eneric.delete      -> DELETE /api/v1/users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should generate routes with parameter property entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> GET    /users",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> POST   /users",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> GET    /users/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [
+    " 7. MyOneToManyContr...eneric.list        -> GET    /users/:pid/animals",
+  ],
+  Array [
+    " 8. MyOneToManyContr...eneric.save        -> POST   /users/:pid/animals",
+  ],
+  Array [
+    " 9. MyOneToManyContr...eneric.get         -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyOneToManyContr...eneric.modify      -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "11. MyOneToManyContr...eneric.replace     -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "12. MyOneToManyContr...eneric.delete      -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should generate routes with property field entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> GET    /users",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> POST   /users",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> GET    /users/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [
+    " 7. MyOneToManyContr...eneric.list        -> GET    /users/:pid/animals",
+  ],
+  Array [
+    " 8. MyOneToManyContr...eneric.save        -> POST   /users/:pid/animals",
+  ],
+  Array [
+    " 9. MyOneToManyContr...eneric.get         -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyOneToManyContr...eneric.modify      -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "11. MyOneToManyContr...eneric.replace     -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "12. MyOneToManyContr...eneric.delete      -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should only allow custom controller ends with Generic 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> GET    /api/v1/users",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> POST   /api/v1/users",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> GET    /api/v1/users/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> PATCH  /api/v1/users/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> PUT    /api/v1/users/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> DELETE /api/v1/users/:id",
+  ],
+  Array [
+    " 7. MyOneToManyContr...eneric.list        -> GET    /api/v1/users/:pid/animals",
+  ],
+  Array [
+    " 8. MyOneToManyContr...eneric.save        -> POST   /api/v1/users/:pid/animals",
+  ],
+  Array [
+    " 9. MyOneToManyContr...eneric.get         -> GET    /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyOneToManyContr...eneric.modify      -> PATCH  /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "11. MyOneToManyContr...eneric.replace     -> PUT    /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "12. MyOneToManyContr...eneric.delete      -> DELETE /api/v1/users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should only allow custom controller extends from ControllerGeneric 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> GET    /api/v1/users",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> POST   /api/v1/users",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> GET    /api/v1/users/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> PATCH  /api/v1/users/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> PUT    /api/v1/users/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> DELETE /api/v1/users/:id",
+  ],
+  Array [
+    " 7. MyOneToManyContr...eneric.list        -> GET    /api/v1/users/:pid/animals",
+  ],
+  Array [
+    " 8. MyOneToManyContr...eneric.save        -> POST   /api/v1/users/:pid/animals",
+  ],
+  Array [
+    " 9. MyOneToManyContr...eneric.get         -> GET    /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyOneToManyContr...eneric.modify      -> PATCH  /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "11. MyOneToManyContr...eneric.replace     -> PUT    /api/v1/users/:pid/animals/:id",
+  ],
+  Array [
+    "12. MyOneToManyContr...eneric.delete      -> DELETE /api/v1/users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should prioritize controller provided by CRUD facility instead of WebApiFacility 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> GET    /users",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> POST   /users",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> GET    /users/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [
+    " 7. MyCustomOneToMan...eneric.list        -> GET    /users/:pid/animals",
+  ],
+  Array [
+    " 8. MyCustomOneToMan...eneric.save        -> POST   /users/:pid/animals",
+  ],
+  Array [
+    " 9. MyCustomOneToMan...eneric.get         -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyCustomOneToMan...eneric.modify      -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "11. MyCustomOneToMan...eneric.replace     -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "12. MyCustomOneToMan...eneric.delete      -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should use string as default id if no ID type specified 1`] = `
+Array [
+  Object {
+    "name": "list",
+    "pars": Array [
+      Object {
+        "name": "offset",
+        "type": Number,
+      },
+      Object {
+        "name": "limit",
+        "type": Number,
+      },
+      Object {
+        "name": "query",
+        "type": User,
+      },
+    ],
+  },
+  Object {
+    "name": "save",
+    "pars": Array [
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+  },
+  Object {
+    "name": "get",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": String,
+      },
+    ],
+  },
+  Object {
+    "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+  },
+  Object {
+    "name": "replace",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "data",
+        "type": User,
+      },
+    ],
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": String,
+      },
+    ],
+  },
+  Object {
+    "name": "list",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": String,
+      },
+      Object {
+        "name": "offset",
+        "type": Number,
+      },
+      Object {
+        "name": "limit",
+        "type": Number,
+      },
+      Object {
+        "name": "query",
+        "type": Animal,
+      },
+    ],
+  },
+  Object {
+    "name": "save",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": String,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+  },
+  Object {
+    "name": "get",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": String,
+      },
+      Object {
+        "name": "id",
+        "type": String,
+      },
+    ],
+  },
+  Object {
+    "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": String,
+      },
+      Object {
+        "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+  },
+  Object {
+    "name": "replace",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": String,
+      },
+      Object {
+        "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+    ],
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": String,
+      },
+      Object {
+        "name": "id",
+        "type": String,
+      },
+    ],
+  },
+]
+`;
+
+exports[`Route Generator Should able to specify entity directory 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> GET    /animals",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> POST   /animals",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> GET    /animals/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> PATCH  /animals/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> PUT    /animals/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> DELETE /animals/:id",
+  ],
+  Array [
+    " 7. MyControllerGeneric.list              -> GET    /users",
+  ],
+  Array [
+    " 8. MyControllerGeneric.save(data)        -> POST   /users",
+  ],
+  Array [
+    " 9. MyControllerGeneric.get(id)           -> GET    /users/:id",
+  ],
+  Array [
+    "10. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    "11. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    "12. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [
+    "13. MyOneToManyContr...eneric.list        -> GET    /users/:pid/animals",
+  ],
+  Array [
+    "14. MyOneToManyContr...eneric.save        -> POST   /users/:pid/animals",
+  ],
+  Array [
+    "15. MyOneToManyContr...eneric.get         -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "16. MyOneToManyContr...eneric.modify      -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "17. MyOneToManyContr...eneric.replace     -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "18. MyOneToManyContr...eneric.delete      -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Should able to specify entity directory with relative path 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> GET    /animals",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> POST   /animals",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> GET    /animals/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> PATCH  /animals/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> PUT    /animals/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> DELETE /animals/:id",
+  ],
+  Array [
+    " 7. MyControllerGeneric.list              -> GET    /users",
+  ],
+  Array [
+    " 8. MyControllerGeneric.save(data)        -> POST   /users",
+  ],
+  Array [
+    " 9. MyControllerGeneric.get(id)           -> GET    /users/:id",
+  ],
+  Array [
+    "10. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    "11. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    "12. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [
+    "13. MyOneToManyContr...eneric.list        -> GET    /users/:pid/animals",
+  ],
+  Array [
+    "14. MyOneToManyContr...eneric.save        -> POST   /users/:pid/animals",
+  ],
+  Array [
+    "15. MyOneToManyContr...eneric.get         -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "16. MyOneToManyContr...eneric.modify      -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "17. MyOneToManyContr...eneric.replace     -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "18. MyOneToManyContr...eneric.delete      -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Should initiate IdentifierResult properly 1`] = `
+IdentifierResult {
+  "id": 20,
 }
 `;

@@ -49,7 +49,7 @@ function getRoot(rootPath: string, path: string) {
    return (part.length === 0) ? undefined : appendRoute(...part)
 }
 
-function findControllerRecursive(path: string, criteria: ((x: ClassReflection) => boolean)) {
+function findClassRecursive(path: string, criteria: ((x: ClassReflection) => boolean)) {
    //read all files and get module reflection
    const files = findFilesRecursive(path)
    const result = []
@@ -135,7 +135,7 @@ function transformController(object: Class, overridable: boolean, opt?: Transfor
 }
 
 function transformModule(path: string, overridable: boolean): RouteInfo[] {
-   const types = findControllerRecursive(path, isController)
+   const types = findClassRecursive(path, isController)
    const infos: RouteInfo[] = []
    for (const type of types) {
       infos.push(...transformController(type.type, overridable, { root: type.root }))
@@ -202,5 +202,5 @@ function mergeRoutes(routes: RouteMetadata[]) {
    return result
 }
 
-export { generateRoutes, RouteDecorator, IgnoreDecorator, RootDecorator, mergeRoutes, appendRoute, findControllerRecursive }
+export { generateRoutes, RouteDecorator, IgnoreDecorator, RootDecorator, mergeRoutes, appendRoute, findClassRecursive }
 

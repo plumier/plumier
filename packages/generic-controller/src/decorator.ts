@@ -1,11 +1,6 @@
-import { Class, decorateClass, decorateProperty } from "tinspector"
+import { Class, decorateProperty } from "tinspector"
 
-import {
-    GenericControllerDecorator,
-    IdentifierDecorator,
-    InversePropertyDecorator,
-    OneToManyDecorator,
-} from "../generic-controller"
+import { IdentifierDecorator, InversePropertyDecorator, OneToManyDecorator } from "./types"
 
 
 namespace crud {

@@ -8,11 +8,11 @@ import {
     BindingDecorator,
     Class,
     Configuration,
-    IdentifierDecorator,
     ApiReadOnlyDecorator,
     ApiWriteOnlyDecorator,
 } from "@plumier/core"
 import { ValidatorDecorator, PartialValidator } from "typedconverter"
+import { IdentifierDecorator } from "@plumier/generic-controller"
 
 const isRequired = (dec: ApiRequiredDecorator): dec is ApiRequiredDecorator => dec.kind === "ApiRequired"
 const isBind = (dec: BindingDecorator): dec is BindingDecorator => dec.type === "ParameterBinding"

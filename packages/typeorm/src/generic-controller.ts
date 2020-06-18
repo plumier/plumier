@@ -1,6 +1,7 @@
-import { RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, HttpStatusError, IdentifierResult, route } from "@plumier/core"
+import { RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric } from "@plumier/generic-controller"
 import reflect, { generic } from "tinspector"
-import { TypeORMRepository, TypeORMOneToManyRepository } from './repository'
+
+import { TypeORMOneToManyRepository, TypeORMRepository } from "./repository"
 
 // --------------------------------------------------------------------- //
 // ------------------------ GENERIC CONTROLLERS ------------------------ //

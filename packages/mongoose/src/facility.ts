@@ -1,23 +1,12 @@
-import {
-    createRoutesFromEntities,
-    DefaultFacility,
-    getGenericControllers,
-    isCustomClass,
-    PlumierApplication,
-    api,
-    crud,
-} from "@plumier/core"
+import { api, Class, DefaultFacility, findClassRecursive, isCustomClass, PlumierApplication } from "@plumier/core"
+import { crud, GenericControllerFacility, GenericControllerFacilityOption } from "@plumier/generic-controller"
 import Mongoose from "mongoose"
-import { isAbsolute, join } from "path"
-import pluralize from "pluralize"
+import reflect, { PropertyReflection, TypeDecorator } from "tinspector"
 import { Result, VisitorInvocation } from "typedconverter"
 
 import { models } from "./generator"
 import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
-import { CRUDMongooseFacilityOption, MongooseFacilityOption, RefDecorator } from "./types"
-import reflect, { TypeDecorator} from "tinspector"
-
-
+import { MongooseFacilityOption, RefDecorator } from "./types"
 
 function safeToString(obj: any) {
     try {
@@ -52,41 +41,54 @@ export class MongooseFacility extends DefaultFacility {
     }
 }
 
-export class CRUDMongooseFacility extends MongooseFacility {
-    option: CRUDMongooseFacilityOption
-    constructor(opt?: CRUDMongooseFacilityOption) {
-        super(opt)
-        this.option = { ...opt }
+export class MongooseGenericControllerFacility extends GenericControllerFacility {
+    protected defaultController = MongooseControllerGeneric
+    protected defaultOneToManyController = MongooseOneToManyControllerGeneric
+
+    private static defaultOptions(opt?: Partial<GenericControllerFacilityOption>): GenericControllerFacilityOption {
+        const entities = Array.from(models.keys())
+        if (!opt) {
+            return { entities }
+        }
+        else
+            return { entities, ...opt, }
     }
 
-    async generateRoutes(app: Readonly<PlumierApplication>) {
-        const { controller, rootDir } = app.config
-        let ctl = typeof controller === "string" && !isAbsolute(controller) ? join(rootDir, controller) : controller
-        const { genericController, genericOneToManyController } = getGenericControllers(
-            this.option.rootPath, this.option.controller ?? ctl,
-            MongooseControllerGeneric, MongooseOneToManyControllerGeneric
-        )
-        const entities = Array.from(models.keys())
-        for (const entity of entities) {
-            const meta = reflect(entity)
-            for (const property of meta.properties) {
-                if (["id", "createdAt", "updatedAt"].some(x => property.name === x)) {
-                    Reflect.decorate([api.params.readOnly()], entity.prototype, property.name)
-                }
-                if (property.decorators.find((x: RefDecorator) => x.name === "MongooseRef")) {
-                    const ovr = property.decorators.find((x:TypeDecorator):x is TypeDecorator => x.kind === "Override")!
-                    Reflect.decorate([crud.oneToMany(ovr.type as any), api.params.readOnly(), api.params.writeOnly()], entity.prototype, property.name)
-                }
-            }
-            reflect(entity, { flushCache: true })
+    constructor(opt?: Partial<GenericControllerFacilityOption>) {
+        super(MongooseGenericControllerFacility.defaultOptions(opt))
+    }
+
+    private assignDecorators(entity: Class, property: PropertyReflection) {
+        if (["id", "createdAt", "updatedAt"].some(x => property.name === x)) {
+            Reflect.decorate([api.params.readOnly()], entity.prototype, property.name)
         }
-        return createRoutesFromEntities({
-            entities,
-            controller: genericController.type,
-            controllerRootPath: genericController.root,
-            oneToManyController: genericOneToManyController.type,
-            oneToManyControllerRootPath: genericOneToManyController.root,
-            nameConversion: x => pluralize.plural(x)
-        })
+        if (property.decorators.find((x: RefDecorator) => x.name === "MongooseRef")) {
+            const ovr = property.decorators.find((x: TypeDecorator): x is TypeDecorator => x.kind === "Override")!
+            Reflect.decorate([crud.oneToMany(ovr.type as any), api.params.readOnly(), api.params.writeOnly()], entity.prototype, property.name)
+        }
+    }
+
+    protected getEntities(entities: string | Class | Class[]): Class[] {
+        if (typeof entities === "function") {
+            const registered = Array.from(models.keys())
+            if (!registered.some(x => x === entities)) return []
+            const meta = reflect(entities)
+            for (const property of meta.properties) {
+                this.assignDecorators(entities, property)
+            }
+            reflect(entities, { flushCache: true })
+            return [entities]
+        }
+        else if (Array.isArray(entities)) {
+            const result = []
+            for (const entity of entities) {
+                result.push(...this.getEntities(entity))
+            }
+            return result;
+        }
+        else {
+            const classes = findClassRecursive(entities, x => true).map(x => x.type)
+            return this.getEntities(classes)
+        }
     }
 }

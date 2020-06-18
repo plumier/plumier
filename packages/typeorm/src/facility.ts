@@ -1,19 +1,19 @@
 import {
     Class,
-    createRoutesFromEntities,
-    crud,
     DefaultFacility,
-    getGenericControllers,
     PlumierApplication,
     RouteMetadata,
     api,
+    findClassRecursive,
 } from "@plumier/core"
 import { isAbsolute, join } from "path"
 import pluralize from "pluralize"
-import reflect, { noop } from "tinspector"
+import reflect, { noop, PropertyReflection, TypeDecorator } from "tinspector"
 import { ConnectionOptions, createConnection, getMetadataArgsStorage } from "typeorm"
+import { GenericControllerFacility, GenericControllerFacilityOption, crud } from "@plumier/generic-controller"
 
 import { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
+import { MetadataArgsStorage } from 'typeorm/metadata-args/MetadataArgsStorage'
 
 
 interface TypeORMFacilityOption {
@@ -58,50 +58,65 @@ class TypeORMFacility extends DefaultFacility {
     }
 }
 
-class CRUDTypeORMFacility extends TypeORMFacility {
-    private crudOpt: CRUDTypeORMFacilityOption
-    constructor(opt?: Partial<CRUDTypeORMFacilityOption>) {
-        super(opt)
-        this.crudOpt = {
-            rootPath: "",
-            ...opt
+class TypeORMGenericControllerFacility extends GenericControllerFacility {
+    protected defaultController = TypeORMControllerGeneric
+    protected defaultOneToManyController = TypeORMOneToManyControllerGeneric
+
+    private static getDefaultOpt(opt?: Partial<GenericControllerFacilityOption>): GenericControllerFacilityOption {
+        const entities = getMetadataArgsStorage().tables.map(x => x.target as Class)
+        if (!opt) {
+            return { entities }
         }
+        else
+            return { entities, ...opt, }
     }
-    setup(){
-        const storage = getMetadataArgsStorage();
+
+    constructor(opt?: Partial<GenericControllerFacilityOption>) {
+        super(TypeORMGenericControllerFacility.getDefaultOpt(opt))
+    }
+
+    private assignDecorators(entity: Class, storage: MetadataArgsStorage) {
         // decorate entities to match with required CRUD specs 
         // also add decorators to make some property readOnly or writeOnly on Open API generation
         for (const col of storage.generations) {
-            Reflect.decorate([crud.id(), api.params.readOnly()], (col.target as Function).prototype, col.propertyName, void 0)
+            if (col.target === entity) {
+                Reflect.decorate([crud.id(), api.params.readOnly()], (col.target as Function).prototype, col.propertyName, void 0)
+                break;
+            }
         }
         for (const col of storage.relations) {
             const rawType: Class = (col as any).type()
-            if (col.relationType === "one-to-many")
-                Reflect.decorate([crud.oneToMany(x => rawType), api.params.readOnly(), api.params.writeOnly()], (col.target as Function).prototype, col.propertyName, void 0)
-            if (col.relationType === "many-to-one")
-                Reflect.decorate([crud.inverseProperty(), api.params.readOnly(), api.params.writeOnly()], (col.target as Function).prototype, col.propertyName, void 0)
+            if (rawType === entity) {
+                if (col.relationType === "one-to-many")
+                    Reflect.decorate([crud.oneToMany(x => rawType), api.params.readOnly(), api.params.writeOnly()], (col.target as Function).prototype, col.propertyName, void 0)
+                if (col.relationType === "many-to-one")
+                    Reflect.decorate([crud.inverseProperty(), api.params.readOnly(), api.params.writeOnly()], (col.target as Function).prototype, col.propertyName, void 0)
+                break;
+            }
         }
-        super.setup()
     }
 
-    async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> {
-        const { controller, rootDir } = app.config
-        let ctl = typeof controller === "string" && !isAbsolute(controller) ? join(rootDir, controller) : controller
-        const { genericController, genericOneToManyController } = getGenericControllers(
-            this.crudOpt.rootPath, this.crudOpt.controller ?? ctl,
-            TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric
-        )
-        return createRoutesFromEntities({
-            entities: this.entities,
-            controller: genericController.type,
-            controllerRootPath: genericController.root,
-            oneToManyController: genericOneToManyController.type,
-            oneToManyControllerRootPath: genericOneToManyController.root,
-            nameConversion: x => pluralize.plural(x)
-        })
+    protected getEntities(entities: string | Class | Class[]): Class[] {
+        if (typeof entities === "function") {
+            const storage = getMetadataArgsStorage();
+            if (!storage.tables.some(x => x.target === entities)) return []
+            this.assignDecorators(entities, storage)
+            return [entities]
+        }
+        else if (Array.isArray(entities)) {
+            const result = []
+            for (const entity of entities) {
+                result.push(...this.getEntities(entity))
+            }
+            return result;
+        }
+        else {
+            const classes = findClassRecursive(entities, x => true).map(x => x.type)
+            return this.getEntities(classes)
+        }
     }
 }
 
-export { TypeORMFacility, CRUDTypeORMFacility }
+export { TypeORMFacility, TypeORMGenericControllerFacility }
 
 
