@@ -1,4 +1,10 @@
-import { Class, RepoBaseOneToManyControllerGeneric, RepoBaseControllerGeneric, Repository, OneToManyRepository } from "@plumier/core"
+import { Class } from "@plumier/core"
+import {
+    OneToManyRepository,
+    RepoBaseControllerGeneric,
+    RepoBaseOneToManyControllerGeneric,
+    Repository,
+} from "@plumier/generic-controller"
 import mongoose, { Document, Model } from "mongoose"
 import { generic } from "tinspector"
 

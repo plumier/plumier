@@ -1,11 +1,12 @@
 {
-  "name": "@plumier/typeorm",
+  "name": "@plumier/generic-controller",
   "version": "1.0.0-rc.2",
-  "description": "TypeOrm helper for Plumier",
+  "description": "Plumier generic controller implementation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "keywords": [
-    "typeorm",
+    "generic-controller",
+    "CRUD",
     "plumier"
   ],
   "scripts": {
@@ -14,10 +15,8 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
+    "@plumier/core": "1.0.0-rc.2",
     "@types/pluralize": "^0.0.29",
-    "@plumier/core": "^1.0.0-rc.2",
-    "@plumier/generic-controller": "1.0.0-rc.2",
-    "typeorm": "^0.2.24",
     "pluralize": "^8.0.0"
   },
   "bugs": {

@@ -2,10 +2,10 @@
 
 exports[`Module Export Should export module properly 1`] = `
 Object {
-  "CRUDMongooseFacility": CRUDMongooseFacility,
   "CanNotValidateNonProperty": "MONG1002: @val.unique() only can be applied on property",
   "MongooseControllerGeneric": MongooseControllerGeneric,
   "MongooseFacility": MongooseFacility,
+  "MongooseGenericControllerFacility": MongooseGenericControllerFacility,
   "MongooseOneToManyControllerGeneric": MongooseOneToManyControllerGeneric,
   "MongooseOneToManyRepository": MongooseOneToManyRepository,
   "MongooseRepository": MongooseRepository,

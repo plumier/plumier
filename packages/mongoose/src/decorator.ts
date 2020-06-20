@@ -1,4 +1,4 @@
-import { Class, crud, api } from "@plumier/core"
+import { Class } from "@plumier/core"
 import { SchemaTypeOpts } from "mongoose"
 import reflect, { decorateProperty, mergeDecorator, decorateClass } from "tinspector"
 

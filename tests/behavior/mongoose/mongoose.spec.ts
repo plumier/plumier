@@ -14,11 +14,15 @@ mongoose.set("useFindAndModify", false)
 jest.setTimeout(20000)
 
 describe("Mongoose", () => {
+    let mongod:MongoMemoryServer|undefined
     beforeAll(async () => {
-        const mongod = new MongoMemoryServer()
+        mongod = new MongoMemoryServer()
         await mongoose.connect(await mongod.getUri())
     })
-    afterAll(async () => await mongoose.disconnect())
+    afterAll(async () => {
+        await mongoose.disconnect()
+        await mongod?.stop()
+    })
     beforeEach(() => {
         mongoose.models = {}
         mongoose.connection.models = {}

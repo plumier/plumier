@@ -3,8 +3,8 @@ import { generic } from "tinspector"
 
 @generic.template("T", "TID")
 @generic.type("T", "TID")
-export class NestedControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{ }
+export class HostedControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{ }
 
 @generic.template("P", "T", "PID", "TID")
 @generic.type("P", "T", "PID", "TID")
-export class NestedOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{ }
+export class HostedOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{ }

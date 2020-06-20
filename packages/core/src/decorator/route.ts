@@ -274,7 +274,7 @@ class RouteDecoratorImpl {
     //otherMethod not generated
     ```
     */
-   ignore(...methods:string[]) { return decorate(<IgnoreDecorator>{ [DecoratorId]: "route:ignore", name: "Ignore", methods }, ["Class", "Method", "Property"], { allowMultiple: false }) }
+   ignore(...methods:string[]) { return decorate(<IgnoreDecorator>{ [DecoratorId]: "route:ignore", name: "Ignore", methods }, ["Class", "Method", "Property", "Parameter"], { allowMultiple: false }) }
 }
 
 const route = new RouteDecoratorImpl()

@@ -12,8 +12,8 @@ import {
     route,
     RouteMetadata,
     val,
-    crud,
 } from "@plumier/core"
+import { crud } from "@plumier/generic-controller"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { refFactory, SwaggerFacility } from "@plumier/swagger"
 import { IncomingMessage } from "http"
