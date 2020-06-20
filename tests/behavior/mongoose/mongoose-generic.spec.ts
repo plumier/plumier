@@ -28,7 +28,7 @@ beforeAll(async () => {
     await mongoose.connect(await mong.getUri())
 })
 afterAll(async () => {
-    await mong?.stop()
+    //await mong?.stop()
     await mongoose.disconnect()
 })
 beforeEach(() => {
