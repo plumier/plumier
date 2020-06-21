@@ -5,7 +5,9 @@
     "baseUrl": "./packages",
     "paths": {
       "@plumier/*": ["*/src"],
-      "plumier": ["plumier/src/index"]
+      "plumier": ["plumier/src/index"],
+      "tinspector": ["tinspector/src/index"],
+      "typedconverter": ["typedconverter/src/index"]
     }
   }
 }
