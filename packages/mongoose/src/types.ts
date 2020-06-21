@@ -1,5 +1,5 @@
 import { Class } from "@plumier/core"
-import mongoose, { SchemaOptions, SchemaTypeOpts } from "mongoose"
+import mongoose, { SchemaOptions, SchemaTypeOpts, Mongoose } from "mongoose"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -16,8 +16,10 @@ interface RefDecorator { name: "MongooseRef" }
 interface ModelStore { name: string, collectionName: string, definition: any, option: NamedSchemaOption }
 interface AnalysisResult { name: string, collection: string, option: string, definition: string }
 interface ModelGenerator {
+    mongoose: Mongoose
     model: ModelFactory
-    models: Map<Class, ModelStore>
+    models: Map<Class, ModelStore>,
+    getModels():Class[]
 }
 
 const ReferenceTypeNotRegistered = "MONG1000: Type {0} required type {1} which is not registered as Mongoose model"
