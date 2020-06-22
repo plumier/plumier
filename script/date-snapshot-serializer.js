@@ -1,9 +1,9 @@
 
 function extractValues(date) {
     return {
-        year: date.getUTCFullYear(),
-        month: date.getUTCMonth(),
-        date: date.getUTCDate()
+        year: date.getFullYear(),
+        month: date.getMonth(),
+        date: date.getDate()
     }
 }
 
