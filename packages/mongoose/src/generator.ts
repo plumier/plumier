@@ -1,5 +1,5 @@
 import { Class, isCustomClass } from "@plumier/core"
-import mongoose from "mongoose"
+import mong, { Mongoose, Document } from "mongoose"
 import reflect, { ClassReflection, PropertyReflection } from "tinspector"
 
 import {
@@ -33,7 +33,7 @@ function getPropertyDefinition(parent: ClassReflection, prop: PropertyReflection
         if (ref) {
             const type = store.get(prop.type)
             if (!type) throw Error(ReferenceTypeNotRegistered.format(parent.name, prop.type.name))
-            return { type: mongoose.Types.ObjectId, ref: type.name, ...option }
+            return { type: mong.Types.ObjectId, ref: type.name, ...option }
         }
         else
             return { ...getDefinition(prop.type, store), ...option }
@@ -58,7 +58,7 @@ function getOption(meta: ClassReflection, opt?: string | GeneratorHook | NamedSc
     return { ...classOption, ...factoryOption }
 }
 
-function modelFactory(store: Map<Class, ModelStore>): ModelFactory {
+function modelFactory(store: Map<Class, ModelStore>, mongoose:Mongoose): ModelFactory {
     return <T>(type: new (...args: any) => T, opt?: string | GeneratorHook | NamedSchemaOption) => {
         const storedModel = store.get(type)
         if (storedModel) {
@@ -71,7 +71,7 @@ function modelFactory(store: Map<Class, ModelStore>): ModelFactory {
             const definition = getDefinition(type, store)
             const schema = new mongoose.Schema(definition, option)
             if(option.hook) option.hook(schema)
-            const mongooseModel = mongoose.model<T & mongoose.Document>(name, schema)
+            const mongooseModel = mongoose.model<T & Document>(name, schema)
             store.set(type, { name, collectionName: mongooseModel.collection.name, definition, option })
             return mongooseModel
         }
@@ -83,14 +83,16 @@ function modelFactory(store: Map<Class, ModelStore>): ModelFactory {
 // --------------------------------------------------------------------- //
 
 
-function generator(): ModelGenerator {
+function generator(mongoose?:Mongoose): ModelGenerator {
     const models = new Map<Class, ModelStore>()
     return {
-        model: modelFactory(models),
-        models
+        mongoose: mongoose ?? mong,
+        model: modelFactory(models, mongoose ?? mong),
+        models,
+        getModels: () => Array.from(models.keys())
     }
 }
 
-const { model, models } = generator()
+const { model, models, getModels } = generator()
 
-export { getDefinition, generator, model, models }
+export { getDefinition, generator, model, models, getModels }

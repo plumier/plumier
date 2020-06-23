@@ -622,3 +622,7 @@ describe("Facility", () => {
 
     })
 })
+
+describe("Mongoose Multiple Instance", () => {
+    
+})

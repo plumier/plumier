@@ -1,8 +1,7 @@
-import { domain } from '@plumier/core';
-import model from '@plumier/mongoose';
+import model, { collection } from "@plumier/mongoose"
 
 
-@domain()
+@collection()
 export class Absolute {
     constructor(public name:string){}
 }

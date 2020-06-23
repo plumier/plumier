@@ -14,6 +14,8 @@ import mongoose from "mongoose"
 import supertest from "supertest"
 import reflect from "tinspector"
 import { join } from "path"
+import * as v1 from "./v1/models"
+import * as v2 from "./v2/models"
 
 jest.setTimeout(20000)
 
@@ -45,7 +47,7 @@ describe("Facility", () => {
     }
     afterEach(() => consoleLog.clearMock())
     it("Should load default models if no option specified", async () => {
-        @domain()
+        @collection()
         class Animal {
             constructor(public name: string) { }
         }
@@ -57,7 +59,7 @@ describe("Facility", () => {
         expect(mock.mock.calls).toMatchSnapshot()
     })
     it("Should not generate model if not registered as mongoose model", async () => {
-        @domain()
+        // @collection() <-- not registered
         class Animal {
             constructor(public name: string) { }
         }
@@ -83,7 +85,7 @@ describe("Facility", () => {
         expect(mock.mock.calls).toMatchSnapshot()
     })
     it("Should able specify rootPath", async () => {
-        @domain()
+        @collection()
         class Animal {
             constructor(public name: string) { }
         }
@@ -95,7 +97,7 @@ describe("Facility", () => {
         expect(mock.mock.calls).toMatchSnapshot()
     })
     it("Should able to create API versioning with multiple facility", async () => {
-        @domain()
+        @collection()
         class Animal {
             constructor(public name: string) { }
         }
@@ -108,22 +110,28 @@ describe("Facility", () => {
         expect(mock.mock.calls).toMatchSnapshot()
     })
     it("Should able to create API versioning with external models", async () => {
+        // each version module uses their own mongoose instance and model generator
+        // each mongoose instance should be connected separately
+        await v1.mongoose.connect(await mong!.getUri())
+        await v2.mongoose.connect(await mong!.getUri())
         const mock = consoleLog.startMock()
         await createApp()
             .set(new MongooseGenericControllerFacility({ rootPath: "api/v1", entities: "./v1" }))
-            .set(new MongooseGenericControllerFacility({ rootPath: "api/v2", entities: "./v1" }))
+            .set(new MongooseGenericControllerFacility({ rootPath: "api/v2", entities: "./v2" }))
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
+        await v1.mongoose.disconnect()
+        await v2.mongoose.disconnect()
     })
     it("Should able to create API version using default entities", async () => {
-        @domain()
+        @collection()
         class Animal {
             constructor(public name: string) { }
         }
         model(Animal)
         const mock = consoleLog.startMock()
         await createApp()
-            .set(new MongooseGenericControllerFacility({rootPath: "api/v1"}))
+            .set(new MongooseGenericControllerFacility({ rootPath: "api/v1" }))
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
     })
@@ -140,6 +148,7 @@ describe("CRUD", () => {
     }
     describe("CRUD Function", () => {
         it("Should serve GET /users?offset&limit", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -156,6 +165,7 @@ describe("CRUD", () => {
             expect(body.length).toBe(20)
         })
         it("Should serve GET /users?offset&limit with default value", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -172,6 +182,7 @@ describe("CRUD", () => {
             expect(body.length).toBe(50)
         })
         it("Should able to query by property GET /users?offset&limit&name", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -189,6 +200,7 @@ describe("CRUD", () => {
             expect(body).toMatchSnapshot()
         })
         it("Should set partial validation on query GET /users?offset&limit&name", async () => {
+            @collection()
             class User {
                 @val.required()
                 @reflect.noop()
@@ -207,6 +219,7 @@ describe("CRUD", () => {
             expect(body).toMatchSnapshot()
         })
         it("Should serve POST /users", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -225,6 +238,7 @@ describe("CRUD", () => {
             expect(inserted!.name).toBe("John Doe")
         })
         it("Should serve GET /users/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -242,6 +256,7 @@ describe("CRUD", () => {
             expect(body.name).toBe("John Doe")
         })
         it("Should throw 404 if not found GET /users/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -255,6 +270,7 @@ describe("CRUD", () => {
                 .expect(404)
         })
         it("Should serve PUT /users/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -274,6 +290,7 @@ describe("CRUD", () => {
             expect(modified!.name).toBe("Jane Doe")
         })
         it("Should throw 404 if not found PUT /users/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -288,6 +305,7 @@ describe("CRUD", () => {
                 .expect(404)
         })
         it("Should serve PATCH /users/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -307,6 +325,7 @@ describe("CRUD", () => {
             expect(modified!.name).toBe("Jane Doe")
         })
         it("Should set partial validation on PATCH /users/:id", async () => {
+            @collection()
             class User {
                 @val.required()
                 @reflect.noop()
@@ -327,6 +346,7 @@ describe("CRUD", () => {
             expect(modified!.name).toBe("Jane Doe")
         })
         it("Should throw 404 if not found PATCH /users/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -341,6 +361,7 @@ describe("CRUD", () => {
                 .expect(404)
         })
         it("Should serve DELETE /users/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -358,6 +379,7 @@ describe("CRUD", () => {
             expect(modified).toBeNull()
         })
         it("Should throw 404 if not found DELETE /users/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -379,6 +401,7 @@ describe("CRUD", () => {
             return saved!
         }
         it("Should serve GET /users/:parentId/animals?offset&limit", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -387,6 +410,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -404,6 +428,7 @@ describe("CRUD", () => {
             expect(body.length).toBe(20)
         })
         it("Should serve GET /users/:parentId/animals?offset&limit with default value", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -412,6 +437,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -428,6 +454,7 @@ describe("CRUD", () => {
             expect(body.length).toBe(50)
         })
         it("Should find by name GET /users/:parentId/animals?offset&limit ", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -436,6 +463,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -453,6 +481,7 @@ describe("CRUD", () => {
             expect(body).toMatchSnapshot()
         })
         it("Should set partial validation on query on GET /users/:parentId/animals?offset&limit", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -461,6 +490,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @val.required()
                 @reflect.noop()
@@ -481,6 +511,7 @@ describe("CRUD", () => {
             expect(body).toMatchSnapshot()
         })
         it("Should serve POST /users/:parentId/animals", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -489,6 +520,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -510,6 +542,7 @@ describe("CRUD", () => {
             expect(inserted).toMatchSnapshot()
         })
         it("Should throw 404 if parent not found POST /users/:parentId/animals", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -518,6 +551,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -532,6 +566,7 @@ describe("CRUD", () => {
                 .expect(404)
         })
         it("Should serve GET /users/:parentId/animals/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -540,6 +575,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -556,6 +592,7 @@ describe("CRUD", () => {
             expect(body).toMatchSnapshot()
         })
         it("Should throw 404 if not found GET /users/:parentId/animals/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -564,6 +601,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -577,6 +615,7 @@ describe("CRUD", () => {
                 .expect(404)
         })
         it("Should serve PUT /users/:parentId/animals/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -585,6 +624,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -603,6 +643,7 @@ describe("CRUD", () => {
             expect(modified).toMatchSnapshot()
         })
         it("Should throw 404 if not found PUT /users/:parentId/animals/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -611,6 +652,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -625,6 +667,7 @@ describe("CRUD", () => {
                 .expect(404)
         })
         it("Should serve PATCH /users/:parentId/animals/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -633,6 +676,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -651,6 +695,7 @@ describe("CRUD", () => {
             expect(modified).toMatchSnapshot()
         })
         it("Should set partial validation on PATCH /users/:parentId/animals/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -659,6 +704,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -680,6 +726,7 @@ describe("CRUD", () => {
             expect(modified).toMatchSnapshot()
         })
         it("Should throw 404 if not found PATCH /users/:parentId/animals/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -688,6 +735,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -702,6 +750,7 @@ describe("CRUD", () => {
                 .expect(404)
         })
         it("Should serve DELETE /users/:parentId/animals/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -710,6 +759,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -727,6 +777,7 @@ describe("CRUD", () => {
             expect(modified).toBeNull()
         })
         it("Should throw 404 if not found DELETE /users/:parentId/animals/:id", async () => {
+            @collection()
             class User {
                 @reflect.noop()
                 email: string
@@ -735,6 +786,7 @@ describe("CRUD", () => {
                 @collection.ref(x => [Animal])
                 animals: Animal[]
             }
+            @collection()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -761,6 +813,7 @@ describe("Open API", () => {
             .initialize()
     }
     it("Should mark ref populate property as readonly and write only", async () => {
+        @collection()
         class User {
             id: string
             @reflect.noop()
@@ -770,6 +823,7 @@ describe("Open API", () => {
             @collection.ref(x => [Animal])
             animals: Animal[]
         }
+        @collection()
         class Animal {
             @reflect.noop()
             name: string
@@ -784,6 +838,7 @@ describe("Open API", () => {
         expect(body.components.schemas.User).toMatchSnapshot()
     })
     it("Should mark createdAt property as readonly ", async () => {
+        @collection()
         class Animal {
             @reflect.noop()
             name: string
@@ -798,6 +853,7 @@ describe("Open API", () => {
         expect(body.components.schemas.Animal).toMatchSnapshot()
     })
     it("Should mark updatedAt property as readonly ", async () => {
+        @collection()
         class Animal {
             @reflect.noop()
             name: string
@@ -812,6 +868,7 @@ describe("Open API", () => {
         expect(body.components.schemas.Animal).toMatchSnapshot()
     })
     it("Should mark id property as readonly ", async () => {
+        @collection()
         class Animal {
             @reflect.noop()
             name: string
