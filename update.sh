@@ -1,13 +1,14 @@
 #!/bin/bash
+
+# update root package
 ncu -a
-ncu -a --packageFile packages/core/package.json
-ncu -a --packageFile packages/jwt/package.json
-ncu -a --packageFile packages/mongoose/package.json
-ncu -a --packageFile packages/plumier/package.json
-ncu -a --packageFile packages/serve-static/package.json
-ncu -a --packageFile packages/social-login/package.json
-ncu -a --packageFile packages/swagger/package.json
+# update pckages
+for file in packages/*/package.json; do
+    ncu -a --packageFile "$file"
+done
+# remove all dependent libraries
 rm -f yarn.lock 
 rm -rf node_modules
+# install and test
 yarn install
 yarn test

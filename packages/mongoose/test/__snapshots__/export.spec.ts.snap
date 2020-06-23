@@ -14,6 +14,7 @@ Object {
   "default": ,
   "generator": generator,
   "getDefinition": getDefinition,
+  "getModels": getModels,
   "model": ,
   "models": Map {},
 }

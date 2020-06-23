@@ -6,7 +6,7 @@ import { Result, VisitorInvocation } from "typedconverter"
 
 import { getModels } from "./generator"
 import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
-import { MongooseFacilityOption, RefDecorator } from "./types"
+import { MongooseFacilityOption, RefDecorator, ClassOptionDecorator } from "./types"
 
 function safeToString(obj: any) {
     try {
@@ -70,9 +70,8 @@ export class MongooseGenericControllerFacility extends GenericControllerFacility
 
     protected getEntities(entities: string | Class | Class[]): Class[] {
         if (typeof entities === "function") {
-            // const registered = Array.from(models.keys())
-            // if (!registered.some(x => x === entities)) return []
             const meta = reflect(entities)
+            if(!meta.decorators.find((x:ClassOptionDecorator) => x.name === "ClassOption")) return []
             for (const property of meta.properties) {
                 this.assignDecorators(entities, property)
             }
