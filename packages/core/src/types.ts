@@ -92,7 +92,8 @@ export type RouteMetadata = RouteInfo | VirtualRoute
 
 export interface RouteInfo {
     kind: "ActionRoute"
-    url: string,
+    group?:string
+    url: string
     method: HttpMethod
     action: MethodReflection
     controller: ClassReflection
@@ -102,11 +103,12 @@ export interface RouteInfo {
 
 export interface VirtualRoute {
     kind: "VirtualRoute"
-    url: string,
+    group?:string
+    url: string
     method: HttpMethod
     provider: Class 
     overridable: boolean
-    access?: string,
+    access?: string
     openApiOperation?: any
 }
 

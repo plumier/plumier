@@ -3,6 +3,7 @@
 exports[`Module Export Should export module properly 1`] = `
 Object {
   "ActionResult": ActionResult,
+  "ControllerFacility": ControllerFacility,
   "DefaultDependencyResolver": DefaultDependencyResolver,
   "DefaultFacility": DefaultFacility,
   "ForceHttpsMiddleware": ForceHttpsMiddleware,

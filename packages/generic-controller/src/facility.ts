@@ -25,6 +25,10 @@ interface CreateRouteFromEntitiesOption {
 
 interface GenericControllerFacilityOption {
     /**
+     * Define group of route generated, this will be used to categorized routes in Route Analysis and Swagger (separate swagger endpoint for each group)
+     */
+    group?:string
+    /**
      * Root path of the endpoint generated, for example /api/v1
      */
     rootPath?: string

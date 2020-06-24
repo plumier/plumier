@@ -2203,6 +2203,81 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Route Grouping Should generate Open API schema properly 1`] = `
+Object {
+  "components": Object {
+    "schemas": Object {
+      "System-DefaultErrorMessage": Object {
+        "properties": Object {
+          "message": Object {
+            "type": "string",
+          },
+          "status": Object {
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
+      "System-ValidationError": Object {
+        "properties": Object {
+          "message": Object {
+            "items": Object {
+              "properties": Object {
+                "messages": Object {
+                  "items": Object {
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+                "path": Object {
+                  "items": Object {
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+              },
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "status": Object {
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
+    },
+  },
+  "info": Object {
+    "title": "Api Explorer",
+    "version": "1.0.0",
+  },
+  "openapi": "3.0.0",
+  "paths": Object {
+    "/api/v1/animal/method": Object {
+      "get": Object {
+        "parameters": Array [],
+        "responses": Object {
+          "200": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Response body",
+          },
+        },
+        "tags": Array [
+          "Animal",
+        ],
+      },
+    },
+  },
+}
+`;
+
 exports[`Open API 3.0 Generation Security Should apply security on secured operation 1`] = `
 Array [
   Object {

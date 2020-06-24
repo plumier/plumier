@@ -274,6 +274,7 @@ Object {
     "type": UserController,
     "typeClassification": "Class",
   },
+  "group": undefined,
   "kind": "ActionRoute",
   "method": "post",
   "overridable": false,

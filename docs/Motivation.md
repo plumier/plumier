@@ -167,14 +167,18 @@ Creating lightweight framework is not easy, from result above Plumier only 1.84%
 ## Standard Packages
 Plumier provided some default packages
 
-| package                 | Description                                                                                 |
-| ----------------------- | ------------------------------------------------------------------------------------------- |
-| `plumier`               | Default package to create standard Rest API                                                 |
-| `@plumier/jwt`          | Security package for authorization using JWT                                                |
-| `@plumier/mongoose`     | MongoDB package contains mongoose helper to automatically generate schema from domain model |
-| `@plumier/multipart`    | File upload package (optional). `plumier` package already supported multipart form          |
-| `@plumier/serve-static` | Serve static files                                                                          |
-| `@plumier/social-login` | OAuth2 login package supported some social media login                                      |
+| package                       | Description                                                                                                    |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `@plumier/core`               | Core module of Plumier                                                                                         |
+| `@plumier/generic-controller` | Abstract generic controller library to automatically generate controller on the fly based on provided entities |
+| `plumier`                     | Default package to create standard Rest API                                                                    |
+| `@plumier/jwt`                | Security package for authorization using JWT                                                                   |
+| `@plumier/mongoose`           | MongoDB package contains mongoose helper to automatically generate schema from domain model                    |
+| `@plumier/typeorm`            | TypeORM package contains TypeORM helper to transform Entities into Plumier domain model                        |
+| `@plumier/multipart`          | File upload package (optional). `plumier` package already supported multipart form                             |
+| `@plumier/swagger`            | Open API 3.0 and Swagger UI, automatically generate schema from controllers and domain models                  |
+| `@plumier/serve-static`       | Serve static files                                                                                             |
+| `@plumier/social-login`       | OAuth2 login package supported some social media login                                                         |
 
 ## Tutorial
 * [Basic REST api using Knex.js](tutorials/basic-sql/get-started)

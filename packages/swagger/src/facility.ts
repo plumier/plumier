@@ -7,6 +7,7 @@ import {
     response,
     RouteInfo,
     RouteMetadata,
+    appendRoute,
 } from "@plumier/core"
 import { ServeStaticMiddleware } from "@plumier/serve-static"
 import { join } from "path"
@@ -17,6 +18,7 @@ import { InfoObject } from 'openapi3-ts'
 
 
 export interface SwaggerConfiguration { endpoint: string, info?: InfoObject }
+type ResultGroup = { [group: string]: RouteMetadata[] }
 
 class SwaggerMiddleware implements Middleware {
     constructor(private spec: any, private opt: SwaggerConfiguration) { }
@@ -35,6 +37,7 @@ class SwaggerMiddleware implements Middleware {
 }
 
 export class SwaggerFacility extends DefaultFacility {
+    private defaultGroup = "___default___"
     opt: SwaggerConfiguration
     constructor(opt?: Partial<SwaggerConfiguration>) {
         super()
@@ -43,10 +46,22 @@ export class SwaggerFacility extends DefaultFacility {
             this.opt.endpoint = this.opt.endpoint.substring(0, this.opt.endpoint.length - 6)
     }
 
+    private groupRoutes(routes: RouteMetadata[]) {
+        return routes.reduce((prev, cur) => {
+            const key = cur.group ?? this.defaultGroup
+            prev[key] = (prev[key] ?? []).concat(cur)
+            return prev
+        }, {} as ResultGroup)
+    }
+
     async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]): Promise<void> {
         const path = dist.getAbsoluteFSPath()
-        const spec = transform(routes, { map: new Map(), config: app.config }, this.opt.info)
-        app.use(new SwaggerMiddleware(spec, this.opt))
+        const group = this.groupRoutes(routes)
+        for (const key in group) {
+            const spec = transform(group[key], { map: new Map(), config: app.config }, this.opt.info)
+            const endpoint = key === this.defaultGroup ? this.opt.endpoint : appendRoute(this.opt.endpoint, key)
+            app.use(new SwaggerMiddleware(spec, {...this.opt, endpoint }))
+        }
         app.use(new ServeStaticMiddleware({ root: path, rootPath: this.opt.endpoint }))
     }
 }
