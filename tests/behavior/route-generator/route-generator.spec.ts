@@ -10,7 +10,7 @@ import {
     RouteInfo
 } from "@plumier/core"
 import { join } from "path"
-import Plumier, { RestfulApiFacility, route } from "plumier"
+import Plumier, { RestfulApiFacility, route, WebApiFacility, ControllerFacility } from "plumier"
 import Supertest from "supertest"
 
 import { fixture } from "../helper"
@@ -1703,5 +1703,72 @@ describe("Route Ignore", () => {
         }
         const routes = generateRoutes(UsersController)
         expect(routes.map(x => ({ method: x.method, url: x.url }))).toMatchSnapshot()
+    })
+})
+
+describe("Route Grouping", () => {
+    function createApp() {
+        return new Plumier()
+            .set(new WebApiFacility({ controller: "__" }))
+    }
+    it("Should able to group routes", async () => {
+        class AnimalController {
+            method() { }
+        }
+        const mock = consoleLog.startMock()
+        await createApp()
+            .set(new ControllerFacility({ controller: AnimalController, group: "v1", rootPath: "api/v1" }))
+            .set(new ControllerFacility({ controller: AnimalController, group: "v2", rootPath: "api/v2" }))
+            .initialize()
+        expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+    it("Should use directory tree as route", async () => {
+        const mock = consoleLog.startMock()
+        await createApp()
+            .set(new ControllerFacility({ controller: "./nested/", group: "v1" }))
+            .initialize()
+        expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+    it("Should able to group routes by providing relative path", async () => {
+        const mock = consoleLog.startMock()
+        await createApp()
+            .set(new ControllerFacility({ controller: "./nested/api/v1", group: "v1", rootPath: "api/v1" }))
+            .set(new ControllerFacility({ controller: "./nested/api/v2", group: "v2", rootPath: "api/v2" }))
+            .initialize()
+        expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+    it("Should able to group routes by providing absolute path", async () => {
+        const mock = consoleLog.startMock()
+        await createApp()
+            .set(new ControllerFacility({ controller: join(__dirname, "./nested/api/v1"), group: "v1", rootPath: "api/v1" }))
+            .set(new ControllerFacility({ controller: join(__dirname, "./nested/api/v2"), group: "v2", rootPath: "api/v2" }))
+            .initialize()
+        expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+    it("Should able to combine with default controller path", async () => {
+        const mock = consoleLog.startMock()
+        await createApp()
+            .set({ controller: "./controller" })
+            .set(new ControllerFacility({ controller: "./nested/api/v1", group: "v1", rootPath: "api/v1" }))
+            .set(new ControllerFacility({ controller: "./nested/api/v2", group: "v2", rootPath: "api/v2" }))
+            .initialize()
+        expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+    it("Should able to make endpoint overridable", async () => {
+        class AnimalController {
+            method() { }
+        }
+        const mock = consoleLog.startMock()
+        await createApp()
+            .set({ controller: AnimalController })
+            .set(new ControllerFacility({ controller: AnimalController, overridable: true }))
+            .initialize()
+        expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
     })
 })

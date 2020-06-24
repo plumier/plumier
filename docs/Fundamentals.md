@@ -56,13 +56,17 @@ new Plumier()
 
 Facility is a component used to configure Plumier application to add a new functionalities. It consist of ordered middlewares, some initialization process before the application started and some application configuration. Plumier provided some facilities for development convenient.
 
-| Facility              | Includes                                                          | Package                 |
-| --------------------- | ----------------------------------------------------------------- | ----------------------- |
-| `WebApiFacility`      | Body parser, CORS middleware, Default dependency resolver         | `plumier`               |
-| `JwtAuthFacility`     | Jwt middleware, Enable authorization, Jwt Secret configuration    | `@plumier/jwt`          |
-| `MongooseFacility`    | Mongoose schema generator, Schema analyzer, Connection management | `@plumier/mongoose`     |
-| `MultiPartFacility`   | Multipart file parser                                             | `@plumier/multipart`    |
-| `ServeStaticFacility` | Serve static files middleware                                     | `@plumier/serve-static` |
+| Facility              | Includes                                                                               | Package                 |
+| --------------------- | -------------------------------------------------------------------------------------- | ----------------------- |
+| `WebApiFacility`      | Body parser, CORS middleware, Default dependency resolver                              | `plumier`               |
+| `RestApiFacility`     | Same as `WebApiFacility` except its provided more strict restful API status code       | `plumier`               |
+| `ControllerFacility`  | Host controllers by path or type, furthermore controllers can be grouped and versioned | `plumier`               |
+| `JwtAuthFacility`     | Jwt middleware, Enable authorization, Jwt Secret configuration                         | `@plumier/jwt`          |
+| `MongooseFacility`    | Mongoose schema generator, Schema analyzer, Connection management                      | `@plumier/mongoose`     |
+| `TypeORMFacility`     | Provided helper to easily use TypeORM from Plumier                                     | `@plumier/typeorm`      |
+| `MultiPartFacility`   | Multipart file parser                                                                  | `@plumier/multipart`    |
+| `ServeStaticFacility` | Serve static files middleware                                                          | `@plumier/serve-static` |
+| `SwaggerFacility`     | Serve Swagger UI and generate Open API 3.0 automatically                               | `@plumier/swagger`      |
 
 
 ## Controller 

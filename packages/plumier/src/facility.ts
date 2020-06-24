@@ -13,14 +13,9 @@ import {
     toBoolean,
 } from "@plumier/core"
 import chalk from "chalk"
-import { exists } from "fs"
 import { Context } from "koa"
 import BodyParser from "koa-body"
 import { isAbsolute, join } from "path"
-import { promisify } from "util"
-
-const existsAsync = promisify(exists)
-
 
 export interface WebApiFacilityOption {
     controller?: string | Class | Class[],
@@ -107,8 +102,8 @@ export class LoggerFacility extends DefaultFacility {
 
 class LoggerMiddleware implements CustomMiddleware {
     async execute(i: Readonly<Invocation<Context>>): Promise<ActionResult> {
-        const log = (msg:string) => {
-            if(i.ctx.config.mode === "debug")
+        const log = (msg: string) => {
+            if (i.ctx.config.mode === "debug")
                 console.log(msg)
         }
         const start = new Date()
@@ -130,5 +125,36 @@ class LoggerMiddleware implements CustomMiddleware {
             }
             throw e
         }
+    }
+}
+
+export interface ControllerFacilityOption {
+    /**
+     * Define group of route generated, this will be used to categorized routes in Route Analysis and Swagger (separate swagger endpoint for each group)
+     */
+    group?: string
+    /**
+     * Root path of the endpoint generated, for example /api/v1
+     */
+    rootPath?: string
+
+    /**
+     * Controllers or controller path
+     */
+    controller: string | Class | Class[],
+
+    overridable?: boolean
+}
+
+export class ControllerFacility extends DefaultFacility {
+    constructor(private option: ControllerFacilityOption) {
+        super()
+    }
+
+    async generateRoutes(app: Readonly<PlumierApplication>) {
+        const { rootDir } = app.config
+        const controller = this.option.controller
+        let ctl = typeof controller === "string" && !isAbsolute(controller) ? join(rootDir, controller) : controller
+        return generateRoutes(ctl, { overridable: this.option.overridable ?? false, group: this.option.group, rootPath: this.option.rootPath })
     }
 }

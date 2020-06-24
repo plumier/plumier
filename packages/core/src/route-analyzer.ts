@@ -1,5 +1,4 @@
 import chalk from "chalk"
-import { ParameterReflection, PropertyReflection } from "tinspector"
 
 import { updateRouteAuthorizationAccess } from "./authorization"
 import { AnalysisMessage, analyzeModel, ellipsis, printTable } from "./common"
@@ -11,8 +10,6 @@ import { Configuration, errorMessage, RouteAnalyzerFunction, RouteAnalyzerIssue,
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-
-type PropOrParamReflection = PropertyReflection | ParameterReflection
 interface TestResult { route: RouteMetadata, issues: RouteAnalyzerIssue[] }
 
 
@@ -114,6 +111,21 @@ function analyzeRoutes(routes: RouteMetadata[], config: Configuration) {
 }
 
 function printAnalysis(results: TestResult[]) {
+   console.log()
+   console.log("Route Analysis Report")
+   if (results.length == 0) console.log("No controller found")
+   type ResultGroup = { [group: string]: TestResult[] }
+   const group = results.reduce((prev, cur) => {
+      const key = cur.route.group ?? "___default___"
+      prev[key] = (prev[key] ?? []).concat(cur) 
+      return prev
+   }, {} as ResultGroup)
+   for (const key in group) {
+      printRoutes(group[key])
+   }
+}
+
+function printRoutes(results: TestResult[]) {
    const data = results.map(x => {
       const method = x.route.method.toUpperCase()
       const action = getActionNameForReport(x.route)
@@ -121,9 +133,6 @@ function printAnalysis(results: TestResult[]) {
       return { method, url: ellipsis(x.route.url, 60), action, issues, access: x.route.access }
    })
    const hasAccess = data.every(x => !!x.access)
-   console.log()
-   console.log("Route Analysis Report")
-   if (data.length == 0) console.log("No controller found")
    printTable([
       "action",
       { property: x => `->` },
@@ -137,7 +146,7 @@ function printAnalysis(results: TestResult[]) {
          return log([row, ...data.issues].join("\n"))
       }
    })
-   if (data.length > 0) console.log()
+   console.log()
 }
 
 export { analyzeRoutes, printAnalysis }

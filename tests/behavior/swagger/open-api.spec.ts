@@ -22,6 +22,7 @@ import supertest from "supertest"
 import reflect from "tinspector"
 
 import { fixture } from "../helper"
+import Plumier, { WebApiFacility, ControllerFacility } from '@plumier/plumier'
 
 describe("getRef", () => {
     class User { }
@@ -229,7 +230,7 @@ describe("Open API 3.0 Generation", () => {
             class Parameters {
                 constructor(
                     @api.params.readOnly()
-                    public id:number,
+                    public id: number,
                     public str: string,
                     public num: number
                 ) { }
@@ -1437,7 +1438,7 @@ describe("Open API 3.0 Generation", () => {
             class User {
                 constructor(
                     @api.params.readOnly()
-                    public id:number,
+                    public id: number,
                     public userName: string,
                     public password: string
                 ) { }
@@ -1456,18 +1457,18 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public userName: string,
                     public password: string,
                     @api.params.readOnly()
-                    public animal:Animal
+                    public animal: Animal
                 ) { }
             }
             class UsersController {
@@ -1484,18 +1485,18 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public userName: string,
                     public password: string,
                     @api.params.readOnly()
-                    public animal:Animal
+                    public animal: Animal
                 ) { }
             }
             class UsersController {
@@ -1514,19 +1515,19 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public userName: string,
                     public password: string,
                     @api.params.readOnly()
                     @reflect.type(x => [Animal])
-                    public animal:Animal[]
+                    public animal: Animal[]
                 ) { }
             }
             class UsersController {
@@ -1543,19 +1544,19 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public userName: string,
                     public password: string,
                     @api.params.readOnly()
                     @reflect.type(x => [Animal])
-                    public animal:Animal[]
+                    public animal: Animal[]
                 ) { }
             }
             class UsersController {
@@ -1574,7 +1575,7 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class User {
                 constructor(
-                    public id:number,
+                    public id: number,
                     @api.params.writeOnly()
                     public userName: string,
                     public password: string
@@ -1594,18 +1595,18 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public userName: string,
                     public password: string,
                     @api.params.writeOnly()
-                    public animal:Animal
+                    public animal: Animal
                 ) { }
             }
             class UsersController {
@@ -1622,18 +1623,18 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public userName: string,
                     public password: string,
                     @api.params.writeOnly()
-                    public animal:Animal
+                    public animal: Animal
                 ) { }
             }
             class UsersController {
@@ -1652,19 +1653,19 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public userName: string,
                     public password: string,
                     @api.params.writeOnly()
                     @reflect.type(x => [Animal])
-                    public animal:Animal[]
+                    public animal: Animal[]
                 ) { }
             }
             class UsersController {
@@ -1681,19 +1682,19 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    public id:number,
+                    public id: number,
                     public userName: string,
                     public password: string,
                     @api.params.writeOnly()
                     @reflect.type(x => [Animal])
-                    public animal:Animal[]
+                    public animal: Animal[]
                 ) { }
             }
             class UsersController {
@@ -1770,6 +1771,88 @@ describe("Open API 3.0 Generation", () => {
                 .get("/swagger/swagger.json")
                 .expect(200)
             expect(body.paths["/other/get"]).toMatchSnapshot()
+        })
+    })
+
+    describe("Route Grouping", () => {
+        function createApp() {
+            return new Plumier()
+                .set({mode: "production"})
+                .set(new WebApiFacility())
+                .set(new SwaggerFacility())
+        }
+        it("Should group route properly", async () => {
+            class AnimalController {
+                @route.get()
+                method() { }
+            }
+            const app = await createApp()
+                .set(new ControllerFacility({ controller: AnimalController, group: "v1", rootPath: "api/v1" }))
+                .initialize()
+            await supertest(app.callback())
+                .get("/swagger/v1")
+                .expect(302)
+        })
+        it("Should group route properly", async () => {
+            class AnimalController {
+                @route.get()
+                method() { }
+            }
+            const app = await createApp()
+                .set(new ControllerFacility({ controller: AnimalController, group: "v1", rootPath: "api/v1" }))
+                .initialize()
+            await supertest(app.callback())
+                .get("/swagger/v1/index")
+                .expect(200)
+        })
+        it("Should generate Open API schema properly", async () => {
+            class AnimalController {
+                @route.get()
+                method() { }
+            }
+            const app = await createApp()
+                .set(new ControllerFacility({ controller: AnimalController, group: "v1", rootPath: "api/v1" }))
+                .initialize()
+            const { body } = await supertest(app.callback())
+                .get("/swagger/v1/swagger.json")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to group multiple", async () => {
+            class AnimalController {
+                @route.get()
+                method() { }
+            }
+            const app = await createApp()
+                .set(new ControllerFacility({ controller: AnimalController, group: "v1", rootPath: "api/v1" }))
+                .set(new ControllerFacility({ controller: AnimalController, group: "v2", rootPath: "api/v2" }))
+                .initialize()
+            await supertest(app.callback())
+                .get("/swagger/v1/swagger.json")
+                .expect(200)
+            await supertest(app.callback())
+                .get("/swagger/v2/swagger.json")
+                .expect(200)
+        })
+        it("Should able to separated with default controller", async () => {
+            class AnimalController {
+                @route.get()
+                method() { }
+            }
+            const app = await createApp()
+                .set({ controller: AnimalController })
+                .set(new ControllerFacility({ controller: AnimalController, group: "v1", rootPath: "api/v1" }))
+                .set(new ControllerFacility({ controller: AnimalController, group: "v2", rootPath: "api/v2" }))
+                .initialize()
+            await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            await supertest(app.callback())
+                .get("/swagger/v1/swagger.json")
+                .expect(200)
+            await supertest(app.callback())
+                .get("/swagger/v2/swagger.json")
+                .expect(200)
         })
     })
 })

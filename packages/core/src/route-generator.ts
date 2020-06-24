@@ -12,7 +12,7 @@ import { HttpMethod, RouteInfo, RouteMetadata } from "./types"
 interface RouteDecorator { name: "Route", method: HttpMethod, url?: string }
 interface IgnoreDecorator { name: "Ignore", methods: string[] }
 interface RootDecorator { name: "Root", url: string }
-interface TransformOption { root?: string }
+interface TransformOption { rootPath?: string, overridable: boolean, group?: string }
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- HELPERS --------------------------------------- */
@@ -80,9 +80,9 @@ function transformDecorator(root: string, actionName: string, actionDecorator: {
    }
 }
 
-function transformMethodWithDecorator(root: string, controller: ClassReflection, method: MethodReflection, overridable: boolean): RouteInfo[] {
+function transformMethodWithDecorator(root: string, controller: ClassReflection, method: MethodReflection, overridable: boolean, group?: string): RouteInfo[] {
    if (method.decorators.some((x: IgnoreDecorator) => x.name == "Ignore")) return []
-   const result = { kind: "ActionRoute" as "ActionRoute", action: method, controller, overridable }
+   const result = { kind: "ActionRoute" as "ActionRoute", group, action: method, controller, overridable }
    const infos: RouteInfo[] = []
    for (const decorator of (method.decorators.slice().reverse() as RouteDecorator[])) {
       if (decorator.name === "Route")
@@ -95,10 +95,10 @@ function transformMethodWithDecorator(root: string, controller: ClassReflection,
    return infos
 }
 
-function transformMethod(root: string, controller: ClassReflection, method: MethodReflection, overridable: boolean): RouteInfo[] {
+function transformMethod(root: string, controller: ClassReflection, method: MethodReflection, overridable: boolean, group?: string): RouteInfo[] {
    return [{
       kind: "ActionRoute",
-      method: "get",
+      group, method: "get",
       url: appendRoute(root, method.name),
       controller,
       action: method,
@@ -110,10 +110,10 @@ function isController(meta: ClassReflection) {
    return !!meta.name.match(/controller$/i) || !!meta.decorators.find((x: RootDecorator) => x.name === "Root")
 }
 
-function transformController(object: Class, overridable: boolean, opt?: TransformOption) {
+function transformController(object: Class, opt: TransformOption) {
    const controller = reflect(object)
    if (!isController(controller)) return []
-   const rootRoutes = getRootRoutes(opt && opt.root || "", controller)
+   const rootRoutes = getRootRoutes(opt && opt.rootPath || "", controller)
    const infos: RouteInfo[] = []
    // check for class @route.ignore()
    const ignoreDecorator = controller.decorators.find((x: IgnoreDecorator): x is IgnoreDecorator => x.name === "Ignore")
@@ -126,34 +126,34 @@ function transformController(object: Class, overridable: boolean, opt?: Transfor
          // if method in ignored list then skip
          if (ignoredMethods.some(x => x === method.name)) continue
          if (method.decorators.some((x: IgnoreDecorator | RouteDecorator) => x.name == "Ignore" || x.name == "Route"))
-            infos.push(...transformMethodWithDecorator(ctl, controller, method, overridable))
+            infos.push(...transformMethodWithDecorator(ctl, controller, method, opt.overridable, opt.group))
          else
-            infos.push(...transformMethod(ctl, controller, method, overridable))
+            infos.push(...transformMethod(ctl, controller, method, opt.overridable, opt.group))
       }
    }
    return infos
 }
 
-function transformModule(path: string, overridable: boolean): RouteInfo[] {
+function transformModule(path: string, opt: TransformOption): RouteInfo[] {
    const types = findClassRecursive(path, isController)
    const infos: RouteInfo[] = []
    for (const type of types) {
-      infos.push(...transformController(type.type, overridable, { root: type.root }))
+      infos.push(...transformController(type.type, { ...opt, rootPath: appendRoute(opt.rootPath ?? "", type.root) }))
    }
    return infos
 }
 
-function generateRoutes(controller: string | Class[] | Class, opt: { overridable: boolean } = { overridable: false }): RouteMetadata[] {
+function generateRoutes(controller: string | Class[] | Class, opt: TransformOption = { overridable: false }): RouteMetadata[] {
    let routes: RouteInfo[] = []
    if (typeof controller === "string") {
-      routes = transformModule(controller, opt.overridable)
+      routes = transformModule(controller, opt)
    }
    else if (Array.isArray(controller)) {
-      routes = controller.map(x => transformController(x, opt.overridable))
+      routes = controller.map(x => transformController(x, opt))
          .flatten()
    }
    else {
-      routes = transformController(controller, opt.overridable)
+      routes = transformController(controller, opt)
    }
    return routes
 }
