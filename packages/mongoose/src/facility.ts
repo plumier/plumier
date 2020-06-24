@@ -4,9 +4,11 @@ import Mongoose from "mongoose"
 import reflect, { PropertyReflection, TypeDecorator } from "tinspector"
 import { Result, VisitorInvocation } from "typedconverter"
 
-import { getModels } from "./generator"
+import { getModels, MongooseHelper } from "./generator"
 import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
-import { MongooseFacilityOption, RefDecorator, ClassOptionDecorator } from "./types"
+import { RefDecorator, ClassOptionDecorator } from "./types"
+
+interface MongooseFacilityOption { uri?: string, helper?: MongooseHelper }
 
 function safeToString(obj: any) {
     try {
@@ -37,7 +39,10 @@ export class MongooseFacility extends DefaultFacility {
         app.set({ typeConverterVisitors: [relationToObjectIdVisitor] })
         const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
         if (uri)
-            await Mongoose.connect(uri, { useNewUrlParser: true })
+            if (this.option.helper)
+                await this.option.helper.connect(uri)
+            else
+                await Mongoose.connect(uri)
     }
 }
 
@@ -71,7 +76,7 @@ export class MongooseGenericControllerFacility extends GenericControllerFacility
     protected getEntities(entities: string | Class | Class[]): Class[] {
         if (typeof entities === "function") {
             const meta = reflect(entities)
-            if(!meta.decorators.find((x:ClassOptionDecorator) => x.name === "ClassOption")) return []
+            if (!meta.decorators.find((x: ClassOptionDecorator) => x.name === "ClassOption")) return []
             for (const property of meta.properties) {
                 this.assignDecorators(entities, property)
             }

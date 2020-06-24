@@ -1,7 +1,7 @@
 import { Class, Configuration, consoleLog, domain, val } from "@plumier/core"
 import model, {
-    collection,
     models,
+    collection,
     MongooseFacility,
     MongooseGenericControllerFacility,
     MongooseOneToManyRepository,
@@ -112,16 +112,16 @@ describe("Facility", () => {
     it("Should able to create API versioning with external models", async () => {
         // each version module uses their own mongoose instance and model generator
         // each mongoose instance should be connected separately
-        await v1.mongoose.connect(await mong!.getUri())
-        await v2.mongoose.connect(await mong!.getUri())
+        await v1.helper.connect(await mong!.getUri())
+        await v2.helper.connect(await mong!.getUri())
         const mock = consoleLog.startMock()
         await createApp()
             .set(new MongooseGenericControllerFacility({ rootPath: "api/v1", entities: "./v1" }))
             .set(new MongooseGenericControllerFacility({ rootPath: "api/v2", entities: "./v2" }))
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
-        await v1.mongoose.disconnect()
-        await v2.mongoose.disconnect()
+        await v1.helper.disconnect()
+        await v2.helper.disconnect()
     })
     it("Should able to create API version using default entities", async () => {
         @collection()

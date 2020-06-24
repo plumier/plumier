@@ -1,12 +1,11 @@
 import { Class, isCustomClass } from "@plumier/core"
-import mong, { Mongoose, Document } from "mongoose"
+import mong, { Document, ConnectionOptions, Mongoose } from "mongoose"
 import reflect, { ClassReflection, PropertyReflection } from "tinspector"
 
 import {
     ClassOptionDecorator,
     GeneratorHook,
     ModelFactory,
-    ModelGenerator,
     ModelStore,
     NamedSchemaOption,
     PropertyOptionDecorator,
@@ -58,41 +57,48 @@ function getOption(meta: ClassReflection, opt?: string | GeneratorHook | NamedSc
     return { ...classOption, ...factoryOption }
 }
 
-function modelFactory(store: Map<Class, ModelStore>, mongoose:Mongoose): ModelFactory {
-    return <T>(type: new (...args: any) => T, opt?: string | GeneratorHook | NamedSchemaOption) => {
-        const storedModel = store.get(type)
+// --------------------------------------------------------------------- //
+// ------------------------------ ANALYZER ----------------------------- //
+// --------------------------------------------------------------------- //
+
+class MongooseHelper {
+    readonly models = new Map<Class, ModelStore>()
+    private readonly mongoose:Mongoose
+    constructor(mongoose?:Mongoose){
+        this.mongoose = mongoose ?? new mong.Mongoose()
+        this.model = this.model.bind(this)
+        this.getModels = this.getModels.bind(this)
+        this.connect = this.connect.bind(this)
+        this.disconnect = this.disconnect.bind(this)
+    }
+    model<T>(type: new (...args: any) => T, opt?: string | GeneratorHook | NamedSchemaOption):mong.Model<T & mong.Document, {}> {
+        const storedModel = this.models.get(type)
         if (storedModel) {
-            return mongoose.model(storedModel.name)
+            return this.mongoose.model(storedModel.name)
         }
         else {
             const meta = reflect(type)
             const option = getOption(meta, opt)
             const name = option.name ?? type.name
-            const definition = getDefinition(type, store)
-            const schema = new mongoose.Schema(definition, option)
+            const definition = getDefinition(type, this.models)
+            const schema = new this.mongoose.Schema(definition, option)
             if(option.hook) option.hook(schema)
-            const mongooseModel = mongoose.model<T & Document>(name, schema)
-            store.set(type, { name, collectionName: mongooseModel.collection.name, definition, option })
+            const mongooseModel = this.mongoose.model<T & Document>(name, schema)
+            this.models.set(type, { name, collectionName: mongooseModel.collection.name, definition, option })
             return mongooseModel
         }
     }
-}
-
-// --------------------------------------------------------------------- //
-// ------------------------------ ANALYZER ----------------------------- //
-// --------------------------------------------------------------------- //
-
-
-function generator(mongoose?:Mongoose): ModelGenerator {
-    const models = new Map<Class, ModelStore>()
-    return {
-        mongoose: mongoose ?? mong,
-        model: modelFactory(models, mongoose ?? mong),
-        models,
-        getModels: () => Array.from(models.keys())
+    getModels(){
+        return Array.from(this.models.keys())
+    }
+    connect(uri:string, opt?:ConnectionOptions){
+        return this.mongoose.connect(uri, opt)
+    }
+    disconnect(){
+        return this.mongoose.disconnect()
     }
 }
 
-const { model, models, getModels } = generator()
+const { model, getModels, models } = new MongooseHelper(mong)
 
-export { getDefinition, generator, model, models, getModels }
+export { getDefinition, MongooseHelper, model, getModels, models }

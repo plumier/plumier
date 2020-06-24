@@ -1,5 +1,5 @@
 import { Class, consoleLog, route } from "@plumier/core"
-import { collection, generator, model as globalModel, MongooseFacility } from "@plumier/mongoose"
+import { collection, model as globalModel, MongooseFacility, MongooseHelper } from "@plumier/mongoose"
 import mongoose from "mongoose"
 import Plumier, { WebApiFacility } from "plumier"
 import supertest from "supertest"
@@ -14,14 +14,14 @@ mongoose.set("useFindAndModify", false)
 jest.setTimeout(20000)
 
 describe("Mongoose", () => {
-    let mongod:MongoMemoryServer|undefined
+    let server: MongoMemoryServer | undefined
     beforeAll(async () => {
-        mongod = new MongoMemoryServer()
-        await mongoose.connect(await mongod.getUri())
+        server = new MongoMemoryServer()
+        await mongoose.connect(await server.getUri())
     })
     afterAll(async () => {
         await mongoose.disconnect()
-        await mongod?.stop()
+        await server?.stop()
     })
     beforeEach(() => {
         mongoose.models = {}
@@ -30,7 +30,7 @@ describe("Mongoose", () => {
 
     describe("Schema Generation", () => {
         it("Should work with primitive data", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Dummy {
                 constructor(
@@ -53,7 +53,7 @@ describe("Mongoose", () => {
         })
 
         it("Should work with primitive array", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Dummy {
                 constructor(
@@ -80,7 +80,7 @@ describe("Mongoose", () => {
         })
 
         it("Should work with nested model", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Nest {
                 constructor(
@@ -107,7 +107,7 @@ describe("Mongoose", () => {
         })
 
         it("Should work with nested array model", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Nest {
                 constructor(
@@ -135,7 +135,7 @@ describe("Mongoose", () => {
         })
 
         it("Should work with nested model with ref (populate)", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Nest {
                 constructor(
@@ -166,7 +166,7 @@ describe("Mongoose", () => {
         })
 
         it("Should work with nested array with ref (populate)", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Nest {
                 constructor(
@@ -197,7 +197,7 @@ describe("Mongoose", () => {
         })
 
         it("Should throw error when dependent type specified by ref (populate) not registered as model", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Nest {
                 constructor(
@@ -216,7 +216,7 @@ describe("Mongoose", () => {
         })
 
         it("Should able to rename collection with different name", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Dummy {
                 constructor(
@@ -233,7 +233,7 @@ describe("Mongoose", () => {
         })
 
         it("Should able to rename collection with different name using object configuration", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Dummy {
                 constructor(
@@ -250,7 +250,7 @@ describe("Mongoose", () => {
         })
 
         it("Should able to call model factory multiple time on the same model", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Dummy {
                 constructor(
@@ -269,7 +269,7 @@ describe("Mongoose", () => {
         })
 
         it("Should able to call model factory multiple time on the same model with custom name", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Dummy {
                 constructor(
@@ -294,7 +294,7 @@ describe("Mongoose", () => {
 
     describe("Schema Configuration", () => {
         it("Should able to specify configuration", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Dummy {
                 constructor(
@@ -312,7 +312,7 @@ describe("Mongoose", () => {
         })
 
         it("Should able to use @schema.property() as noop decorator", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             class Dummy {
                 @collection.property()
                 public stringProp: string = ""
@@ -326,7 +326,7 @@ describe("Mongoose", () => {
         })
 
         it("Should able to specify default value", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Dummy {
                 constructor(
@@ -345,7 +345,7 @@ describe("Mongoose", () => {
         })
 
         it("Should able to specify multiple configuration decorators", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Dummy {
                 constructor(
@@ -362,7 +362,7 @@ describe("Mongoose", () => {
         })
 
         it("Should able to specify default value on base class", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Base {
                 @collection.property({ default: false })
@@ -384,7 +384,7 @@ describe("Mongoose", () => {
         })
 
         it("Should able specify extra configuration from factory", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Dummy {
                 constructor(
@@ -401,7 +401,7 @@ describe("Mongoose", () => {
         })
 
         it("Should able to enable timestamps using decorator", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection({ timestamps: true })
             class Dummy {
                 constructor(
@@ -417,7 +417,7 @@ describe("Mongoose", () => {
         })
 
         it("Should able to enable timestamps using decorator from base class", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection({ timestamps: true })
             class Base {
                 @collection.property({ default: false })
@@ -438,7 +438,7 @@ describe("Mongoose", () => {
         })
 
         it("Should able to override timestamps decorator from factory", async () => {
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection({ timestamps: true })
             class Dummy {
                 constructor(
@@ -455,7 +455,7 @@ describe("Mongoose", () => {
 
         it("Should able to hook schema generation", async () => {
             const fn = jest.fn()
-            const { model } = generator()
+            const { model } = new MongooseHelper(mongoose)
             @collection()
             class Dummy {
                 constructor(
@@ -474,6 +474,28 @@ describe("Mongoose", () => {
         })
     })
 
+    describe("Mongoose Multiple Instance", () => {
+        it("Should be able to host multiple instance of mongoose helper", async () => {
+            const one = new MongooseHelper()
+            const two = new MongooseHelper()
+            @collection()
+            class User {
+                constructor(
+                    public name: string,
+                ) { }
+            }
+            const UserOneModel = one.model(User)
+            const UserTwoModel = two.model(User)
+            await new Plumier()
+                .set({ mode: "production" })
+                .set(new MongooseFacility({ uri: await server?.getUri(), helper:one }))
+                .set(new MongooseFacility({ uri: await server?.getUri(), helper:two }))
+                .initialize()
+            const newly = await new UserOneModel({name: "John Doe"}).save()
+            const saved = await UserTwoModel.findById(newly._id)
+            expect(newly.name).toBe("John Doe")
+        })
+    })
 })
 
 describe("Facility", () => {
@@ -623,6 +645,3 @@ describe("Facility", () => {
     })
 })
 
-describe("Mongoose Multiple Instance", () => {
-    
-})
