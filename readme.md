@@ -204,13 +204,12 @@ To run Plumier project on local machine, some setup/app required
 * Yarn `npm install -g yarn`
 
 ### Local Setup
-* Fork and clone the project
+* Fork and clone the project `git clone --recurse-submodules` Note that the project contains submodules
 * Install dependencies by `yarn install`
 * Run test by `yarn test`
 
 ### Debugging
 Plumier already provided vscode `task` and `launch` setting. To start debugging a test scenario:
-* Build the project 
 * Locate the test file and narrow the test runs by using `.only`
 * Put breakpoint on any location you need on `.ts` file 
 * On start/debug configuration select `Jest Current File` and start debugging
