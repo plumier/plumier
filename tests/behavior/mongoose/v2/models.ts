@@ -1,7 +1,6 @@
-import { generator, collection } from "@plumier/mongoose"
-import { Mongoose } from "mongoose"
+import { MongooseHelper, collection } from "@plumier/mongoose"
 
-export const { mongoose, model } = generator(new Mongoose())
+export const helper = new MongooseHelper()
 
 @collection()
 export class Tag {
@@ -9,7 +8,7 @@ export class Tag {
         public name: string
     ) { }
 }
-model(Tag)
+helper.model(Tag)
 @collection()
 export class Animal {
     constructor(
@@ -18,4 +17,4 @@ export class Animal {
         public tags: Tag[]
     ) { }
 }
-model(Animal)
+helper.model(Animal)

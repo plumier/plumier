@@ -8,19 +8,13 @@ import mongoose, { SchemaOptions, SchemaTypeOpts, Mongoose } from "mongoose"
 
 type GeneratorHook = (schema: mongoose.Schema) => void
 type NamedSchemaOption = SchemaOptions & { hook?: GeneratorHook, proxy?: boolean, name?: string }
-interface MongooseFacilityOption { uri?: string }
 type ModelFactory = <T>(type: new (...args: any) => T, opt?: string | GeneratorHook | NamedSchemaOption) => mongoose.Model<T & mongoose.Document, {}>
 interface ClassOptionDecorator { name: "ClassOption", option: NamedSchemaOption }
 interface PropertyOptionDecorator { name: "PropertyOption", option?: SchemaTypeOpts<any> }
 interface RefDecorator { name: "MongooseRef" }
 interface ModelStore { name: string, collectionName: string, definition: any, option: NamedSchemaOption }
 interface AnalysisResult { name: string, collection: string, option: string, definition: string }
-interface ModelGenerator {
-    mongoose: Mongoose
-    model: ModelFactory
-    models: Map<Class, ModelStore>,
-    getModels():Class[]
-}
+
 
 const ReferenceTypeNotRegistered = "MONG1000: Type {0} required type {1} which is not registered as Mongoose model"
 const CanNotValidateNonProperty = `MONG1002: @val.unique() only can be applied on property`
@@ -28,8 +22,7 @@ const CanNotValidateNonProperty = `MONG1002: @val.unique() only can be applied o
 export {
     NamedSchemaOption,
     ModelFactory, PropertyOptionDecorator, RefDecorator,
-    ModelGenerator, MongooseFacilityOption, ClassOptionDecorator,
-    ReferenceTypeNotRegistered, CanNotValidateNonProperty,
+    ClassOptionDecorator, ReferenceTypeNotRegistered, CanNotValidateNonProperty,
     GeneratorHook, ModelStore, AnalysisResult
 }
 
