@@ -10,7 +10,7 @@
 		"compile": "yarn clean && jest && lerna run compile",
 		"publish:beta": "yarn compile && lerna publish prerelease --exact --preid beta --force-publish",
 		"publish:rc": "yarn compile && lerna publish prerelease --exact --preid rc --force-publish",
-		"publish:canary": "lerna run compile && lerna publish prerelease --exact --canary --preid=\"canary$(date +%s)\" --force-publish --yes",
+		"publish:canary": "lerna run compile && lerna publish patch --exact --canary --preid=\"canary.$(node script/canary-id)\" --force-publish --yes",
 		"publish:prod": "yarn compile && lerna publish && yarn clean",
 		"benchmark": "ts-node -r tsconfig-paths/register tests/manual/benchmark/run",
 		"doc:start": "cd website && yarn start",
