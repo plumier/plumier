@@ -1,0 +1,1 @@
+console.log(new Date().getTime().toString(36))
