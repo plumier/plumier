@@ -25,7 +25,7 @@ class RepoBaseControllerGeneric<T, TID> extends ControllerGeneric<T, TID>{
     }
 
     @route.ignore()
-    private async findByIdOrNotFound(id: TID): Promise<T> {
+    protected async findByIdOrNotFound(id: TID): Promise<T> {
         const saved = await this.repo.findById(id)
         if (!saved) throw new HttpStatusError(404, `Record with ID ${id} not found`)
         return saved
@@ -81,14 +81,14 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> extends OneToManyContro
     }
 
     @route.ignore()
-    private async findByIdOrNotFound(id: TID): Promise<T> {
+    protected async findByIdOrNotFound(id: TID): Promise<T> {
         const saved = await this.repo.findById(id)
         if (!saved) throw new HttpStatusError(404, `Record with ID ${id} not found`)
         return saved
     }
 
     @route.ignore()
-    private async findParentByIdOrNotFound(id: PID): Promise<P> {
+    protected async findParentByIdOrNotFound(id: PID): Promise<P> {
         const saved = await this.repo.findParentById(id)
         if (!saved) throw new HttpStatusError(404, `Parent record with ID ${id} not found`)
         return saved
