@@ -61,7 +61,7 @@ export class SwaggerFacility extends DefaultFacility {
             const spec = transform(group[key], { map: new Map(), config: app.config }, this.opt.info)
             const endpoint = key === this.defaultGroup ? this.opt.endpoint : appendRoute(this.opt.endpoint, key)
             app.use(new SwaggerMiddleware(spec, {...this.opt, endpoint }))
+            app.use(new ServeStaticMiddleware({ root: path, rootPath: endpoint }))
         }
-        app.use(new ServeStaticMiddleware({ root: path, rootPath: this.opt.endpoint }))
     }
 }
