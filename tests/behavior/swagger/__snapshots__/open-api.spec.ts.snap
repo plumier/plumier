@@ -1556,6 +1556,24 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Request Body Model binding should not pick model with binding decorator 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/User",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/User",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
 exports[`Open API 3.0 Generation Request Body Should detect @bind.body() 1`] = `
 Object {
   "content": Object {

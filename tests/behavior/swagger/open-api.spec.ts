@@ -23,6 +23,7 @@ import reflect from "tinspector"
 
 import { fixture } from "../helper"
 import Plumier, { WebApiFacility, ControllerFacility } from '@plumier/plumier'
+import { x } from '@hapi/joi'
 
 describe("getRef", () => {
     class User { }
@@ -728,6 +729,30 @@ describe("Open API 3.0 Generation", () => {
                 .post("/swagger/swagger.json")
                 .expect(200)
             expect(body.paths["/users"].put.requestBody).toMatchSnapshot()
+        })
+        it("Model binding should not pick model with binding decorator", async () => {
+            @domain()
+            class User {
+                constructor(
+                    public userName: string,
+                    public password: string
+                ) { }
+            }
+            @domain()
+            class Query{
+                constructor(
+                    public type:string
+                ){}
+            }
+            class UsersController {
+                @route.post("")
+                save(@bind.custom(ctx => ctx.request.query) req:Query, user: User, type: string) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
         })
     })
 
