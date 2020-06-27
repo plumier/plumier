@@ -773,6 +773,24 @@ describe("Route Generator", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
     })
+    describe("Grouping", () => {
+        it("Should able to group routes", async () => {
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await new Plumier()
+                .set(new WebApiFacility())
+                .set(new MyCRUDModuleFacility({ group: "v1", entities: User }))
+                .set(new MyCRUDModuleFacility({ group: "v2", entities: join(__dirname, "entities") }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+    })
 })
 
 describe("Open Api", () => {

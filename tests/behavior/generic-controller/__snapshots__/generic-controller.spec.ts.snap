@@ -1048,6 +1048,71 @@ Array [
 ]
 `;
 
+exports[`Route Generator Grouping Should able to group routes 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> GET    /animals",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> POST   /animals",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> GET    /animals/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> PATCH  /animals/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> PUT    /animals/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> DELETE /animals/:id",
+  ],
+  Array [
+    " 7. MyOneToManyContr...eneric.list        -> GET    /users/:pid/animals",
+  ],
+  Array [
+    " 8. MyOneToManyContr...eneric.save        -> POST   /users/:pid/animals",
+  ],
+  Array [
+    " 9. MyOneToManyContr...eneric.get         -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyOneToManyContr...eneric.modify      -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "11. MyOneToManyContr...eneric.replace     -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "12. MyOneToManyContr...eneric.delete      -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+  Array [
+    "1. MyControllerGeneric.list              -> GET    /users",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> POST   /users",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> GET    /users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> PATCH  /users/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> PUT    /users/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`Route Generator One To Many Controller Should able to change root path 1`] = `
 Array [
   Array [],

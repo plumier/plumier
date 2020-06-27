@@ -136,7 +136,7 @@ abstract class GenericControllerFacility extends DefaultFacility {
                 }
             }
         }
-        return generateRoutes(controllers, { overridable: true })
+        return generateRoutes(controllers, { group: this.option.group, overridable: true })
     }
 
     protected getControllers(controller: string | Class | Class[]): Class[] {
@@ -170,6 +170,7 @@ abstract class GenericControllerFacility extends DefaultFacility {
         const controller = controllers.find(x => x.name.search(/generic$/i) > -1 && x.prototype instanceof ControllerGeneric)
         const controllerOneToMany = controllers.find(x => x.name.search(/generic$/i) > -1 && x.prototype instanceof OneToManyControllerGeneric)
         return this.createRoutesFromEntities({
+            
             rootPath: this.option.rootPath ?? "",
             controller: controller ?? this.defaultController,
             oneToManyController: controllerOneToMany ?? this.defaultOneToManyController,
