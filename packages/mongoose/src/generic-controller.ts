@@ -8,12 +8,13 @@ import {
 import mongoose, { Document, Model } from "mongoose"
 import { generic } from "tinspector"
 
-import { model } from "./generator"
+import { MongooseHelper, globalHelper } from "./generator"
 
 class MongooseRepository<T> implements Repository<T>{
     readonly Model: Model<T & Document>
-    constructor(type: Class<T>) {
-        this.Model = model(type)
+    constructor(type: Class<T>, helper?:MongooseHelper) {
+        const hlp = helper ?? globalHelper
+        this.Model = hlp.model(type)
     }
 
     find(offset: number, limit: number, query: Partial<T>): Promise<(T & mongoose.Document)[]> {
@@ -43,9 +44,10 @@ class MongooseRepository<T> implements Repository<T>{
 class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
     readonly Model: Model<T & Document>
     readonly ParentModel: Model<P & Document>
-    constructor(parent: Class<P>, type: Class<T>, protected relation: string) {
-        this.Model = model(type)
-        this.ParentModel = model(parent)
+    constructor(parent: Class<P>, type: Class<T>, protected relation: string, helper?:MongooseHelper) {
+        const hlp = helper ?? globalHelper
+        this.Model = hlp.model(type)
+        this.ParentModel = hlp.model(parent)
     }
 
     async find(pid: string, offset: number, limit: number, query: Partial<T>): Promise<(T & mongoose.Document)[]> {

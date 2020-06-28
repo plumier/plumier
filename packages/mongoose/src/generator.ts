@@ -99,6 +99,7 @@ class MongooseHelper {
     }
 }
 
-const { model, getModels, models } = new MongooseHelper(mong)
+const globalHelper = new MongooseHelper(mong)
+const  { model, getModels, models } = globalHelper
 
-export { getDefinition, MongooseHelper, model, getModels, models }
+export { getDefinition, MongooseHelper, model, getModels, models, globalHelper }
