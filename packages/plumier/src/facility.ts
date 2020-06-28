@@ -143,7 +143,15 @@ export interface ControllerFacilityOption {
      */
     controller: string | Class | Class[],
 
+    /**
+     * Check if route can be overridden by next controller facility, default false
+     */
     overridable?: boolean
+
+    /**
+     * Transform nested directories as route path, default true
+     */
+    directoryAsPath?: boolean
 }
 
 export class ControllerFacility extends DefaultFacility {
@@ -155,6 +163,11 @@ export class ControllerFacility extends DefaultFacility {
         const { rootDir } = app.config
         const controller = this.option.controller
         let ctl = typeof controller === "string" && !isAbsolute(controller) ? join(rootDir, controller) : controller
-        return generateRoutes(ctl, { overridable: this.option.overridable ?? false, group: this.option.group, rootPath: this.option.rootPath })
+        return generateRoutes(ctl, {
+            overridable: this.option.overridable ?? false,
+            group: this.option.group,
+            rootPath: this.option.rootPath,
+            directoryAsPath: this.option.directoryAsPath
+        })
     }
 }

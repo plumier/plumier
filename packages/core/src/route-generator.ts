@@ -12,7 +12,7 @@ import { HttpMethod, RouteInfo, RouteMetadata } from "./types"
 interface RouteDecorator { name: "Route", method: HttpMethod, url?: string }
 interface IgnoreDecorator { name: "Ignore", methods: string[] }
 interface RootDecorator { name: "Root", url: string }
-interface TransformOption { rootPath?: string, overridable: boolean, group?: string }
+interface TransformOption { rootPath?: string, overridable: boolean, group?: string, directoryAsPath?: boolean }
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- HELPERS --------------------------------------- */
@@ -138,12 +138,14 @@ function transformModule(path: string, opt: TransformOption): RouteInfo[] {
    const types = findClassRecursive(path, isController)
    const infos: RouteInfo[] = []
    for (const type of types) {
-      infos.push(...transformController(type.type, { ...opt, rootPath: appendRoute(opt.rootPath ?? "", type.root) }))
+      const rootPath = opt.directoryAsPath ? appendRoute(opt.rootPath ?? "", type.root) : opt.rootPath ?? ""
+      infos.push(...transformController(type.type, { ...opt, rootPath }))
    }
    return infos
 }
 
-function generateRoutes(controller: string | Class[] | Class, opt: TransformOption = { overridable: false }): RouteMetadata[] {
+function generateRoutes(controller: string | Class[] | Class, option: TransformOption = { overridable: false }): RouteMetadata[] {
+   const opt = { ...option, directoryAsPath: option.directoryAsPath ?? true }
    let routes: RouteInfo[] = []
    if (typeof controller === "string") {
       routes = transformModule(controller, opt)
