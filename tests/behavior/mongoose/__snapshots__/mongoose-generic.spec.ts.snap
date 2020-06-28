@@ -536,3 +536,28 @@ Object {
   "type": "object",
 }
 `;
+
+exports[`Repository Should able to use One To Many Repository in isolation 1`] = `
+Object {
+  "__v": 1,
+  "_id": "MONGODB UNIQUE ID",
+  "animals": Array [
+    Object {
+      "__v": 0,
+      "_id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+  ],
+  "email": "john.doe@gmail.com",
+  "name": "John Doe",
+}
+`;
+
+exports[`Repository Should able to use Repository in isolation 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "email": "john.doe@gmail.com",
+  "name": "John Doe",
+}
+`;
