@@ -15,6 +15,82 @@ Object {
   "default": bound model,
   "getDefinition": getDefinition,
   "getModels": bound getModels,
+  "globalHelper": MongooseHelper {
+    "connect": bound connect,
+    "disconnect": bound disconnect,
+    "getModels": bound getModels,
+    "model": bound model,
+    "models": Map {},
+    "mongoose": Mongoose {
+      "Schema": Schema,
+      "_pluralize": pluralize,
+      "connections": Array [
+        NativeConnection {
+          "_closeCalled": false,
+          "_hasOpened": false,
+          "_listening": false,
+          "_readyState": 0,
+          "base": [Circular],
+          "collections": Object {},
+          "config": Object {
+            "autoIndex": true,
+          },
+          "id": 0,
+          "models": Object {},
+          "options": null,
+          "otherDbs": Array [],
+          "plugins": Array [],
+          "relatedDbs": Object {},
+          "replica": false,
+          "states": Object {
+            "0": "disconnected",
+            "1": "connected",
+            "2": "connecting",
+            "3": "disconnecting",
+            "99": "uninitialized",
+            "connected": 1,
+            "connecting": 2,
+            "disconnected": 0,
+            "disconnecting": 3,
+            "uninitialized": 99,
+          },
+        },
+      ],
+      "model": ,
+      "modelSchemas": Object {},
+      "models": Object {},
+      "options": Object {
+        "pluralization": true,
+        Symbol(mongoose:default): true,
+      },
+      "plugins": Array [
+        Array [
+          ,
+          Object {
+            "deduplicate": true,
+          },
+        ],
+        Array [
+          ,
+          Object {
+            "deduplicate": true,
+          },
+        ],
+        Array [
+          shardingPlugin,
+          Object {
+            "deduplicate": true,
+          },
+        ],
+        Array [
+          ,
+          Object {
+            "deduplicate": true,
+          },
+        ],
+      ],
+    },
+  },
   "model": bound model,
   "models": Map {},
 }

@@ -6,6 +6,7 @@ import model, {
     MongooseGenericControllerFacility,
     MongooseOneToManyRepository,
     MongooseRepository,
+    MongooseHelper,
 } from "@plumier/mongoose"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { SwaggerFacility } from "@plumier/swagger"
@@ -881,5 +882,51 @@ describe("Open API", () => {
             .get("/swagger/swagger.json")
             .expect(200)
         expect(body.components.schemas.Animal).toMatchSnapshot()
+    })
+})
+
+describe("Repository", () => {
+    it("Should able to use Repository in isolation", async () => {
+        const helper = new MongooseHelper()
+        const uri = await mong?.getUri()
+        await helper.connect(uri!)
+        @collection()
+        class User {
+            @reflect.noop()
+            email: string
+            @reflect.noop()
+            name: string
+        }
+        const UserModel = helper.model(User)
+        const repo = new MongooseRepository(User, helper)
+        const inserted = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+        const saved = await UserModel.findById(inserted.id)
+        expect(saved).toMatchSnapshot()
+    })
+    it("Should able to use One To Many Repository in isolation", async () => {
+        const helper = new MongooseHelper()
+        const uri = await mong?.getUri()
+        await helper.connect(uri!)
+        @collection()
+        class User {
+            @reflect.noop()
+            email: string
+            @reflect.noop()
+            name: string
+            @collection.ref(x => [Animal])
+            animals: Animal[]
+        }
+        @collection()
+        class Animal {
+            @reflect.noop()
+            name: string
+        }
+        const AnimalModel = helper.model(Animal)
+        const UserModel = helper.model(User)
+        const repo = new MongooseOneToManyRepository(User, Animal, "animals", helper)
+        const parent = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe" }).save()
+        const inserted = await repo.insert(parent.id, { name: "Mimi" })
+        const saved = await UserModel.findById(parent.id).populate("animals")
+        expect(saved).toMatchSnapshot()
     })
 })
