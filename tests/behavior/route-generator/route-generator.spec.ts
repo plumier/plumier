@@ -1776,7 +1776,7 @@ describe("Route Grouping", () => {
         await createApp()
             .set(new ControllerFacility({ controller: "./nested", group: "v1", directoryAsPath: false  }))
             .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
     it("Should able to ignore nested directory as path with rootPath", async () => {
@@ -1784,7 +1784,7 @@ describe("Route Grouping", () => {
         await createApp()
             .set(new ControllerFacility({ controller: "./nested", group: "v1", directoryAsPath: false, rootPath: "api/v1"  }))
             .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
 })
