@@ -1,5 +1,5 @@
 import { Class, HttpMethod, route, val } from "@plumier/core"
-import { collection, model, MongooseFacility } from "@plumier/mongoose"
+import { collection, model, MongooseFacility, MongooseHelper } from "@plumier/mongoose"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import Mongoose from "mongoose"
 import supertest = require("supertest")
@@ -227,5 +227,48 @@ describe("unique validator", () => {
         const res = await setup({ controller: UserController, domain: User, initUser: user, testUser: user, method: "patch" })
         expect(res.status).toBe(422)
         expect(res.body).toEqual({ status: 422, message: [{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }] })
+    })
+
+    it("Should able to use isolated helper", async () => {
+        const mongod = new MongoMemoryServer()
+        const helper = new MongooseHelper()
+        @collection()
+        class Animal {
+            constructor(
+                public name: string,
+            ) { }
+        }
+        helper.model(Animal)
+        @collection()
+        class User {
+            constructor(
+                public name: string,
+                @val.unique(helper)
+                public email: string,
+                @collection.ref(x => [Animal])
+                public animals: Animal[]
+            ) { }
+        }
+        const UserModel = helper.model(User)
+        class UserController {
+            @route.post()
+            save(user: User) { }
+        }
+        const koa = await fixture(UserController)
+            .set(new MongooseFacility({
+                uri: await mongod.getUri(),
+                helper
+            })).initialize()
+        //setup user
+        const user = { name: "Ketut", email: "ketut@gmail.com" }
+        await UserModel.deleteMany({})
+        await new UserModel(user).save()
+        //test
+        const res = await supertest(koa.callback())
+            .post("/user/save")
+            .send(user)
+        expect(res.status).toBe(422)
+        expect(res.body).toEqual({ status: 422, message: [{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }] })
+        await helper.disconnect()
     })
 })
