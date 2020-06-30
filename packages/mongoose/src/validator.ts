@@ -1,12 +1,12 @@
 
 import { val } from "typedconverter"
-import { model } from './generator'
+import { model, MongooseHelper } from './generator'
 import { Class } from '@plumier/core'
 import { CanNotValidateNonProperty } from './types'
 
-async function isUnique(value: string, target: Class | undefined, field: string, method: string) {
+async function isUnique(value: string, target: Class | undefined, field: string, method: string, helper?: MongooseHelper) {
     if (!target) throw new Error(CanNotValidateNonProperty)
-    const Model = model(target)
+    const Model = helper?.model(target) ?? model(target)
     const condition: { [key: string]: object } = {}
     //case insensitive comparison
     condition[field] = { $regex: value, $options: "i" }
@@ -17,10 +17,10 @@ async function isUnique(value: string, target: Class | undefined, field: string,
 
 declare module "typedconverter" {
     namespace val {
-        function unique(): (target: any, name: string, index?: any) => void
+        function unique(helper?:MongooseHelper): (target: any, name: string, index?: any) => void
     }
 }
 
-val.unique = () => val.custom(async (value, info) => {
-    return isUnique(value, info.parent && info.parent.type, info.name, info.ctx.method.toLocaleLowerCase())
+val.unique = (helper) => val.custom(async (value, info) => {
+    return isUnique(value, info.parent && info.parent.type, info.name, info.ctx.method.toLocaleLowerCase(), helper)
 })
