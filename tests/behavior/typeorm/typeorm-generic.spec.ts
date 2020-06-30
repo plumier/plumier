@@ -1,10 +1,10 @@
 import { Class, Configuration, consoleLog, val } from "@plumier/core"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { SwaggerFacility } from "@plumier/swagger"
-import { TypeORMFacility, TypeORMGenericControllerFacility } from "@plumier/typeorm"
+import { TypeORMFacility, TypeORMGenericControllerFacility, TypeORMControllerGeneric, TypeORMRepository, TypeORMOneToManyControllerGeneric, TypeORMOneToManyRepository } from "@plumier/typeorm"
 import { join } from "path"
 import supertest from "supertest"
-import reflect from "tinspector"
+import reflect, { generic } from "tinspector"
 import { Column, Entity, getManager, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 
 import { cleanup, getConn } from "./helper"
@@ -394,6 +394,32 @@ describe("CRUD", () => {
             await supertest(app.callback())
                 .delete(`/users/123`)
                 .expect(404)
+        })
+        it("Should able to use custom generic controller with custom repository", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            @generic.template("T", "TID")
+            @generic.type("T", "TID")
+            class MyCustomGeneric<T, TID> extends TypeORMControllerGeneric<T, TID>{
+                constructor() { super(x => new TypeORMRepository(x)) }
+            }
+            const app = await new Plumier()
+                .set(new WebApiFacility())
+                .set(new TypeORMFacility({ connection: getConn([User]) }))
+                .set(new TypeORMGenericControllerFacility({ controller: MyCustomGeneric }))
+                .set({ mode: "production" })
+                .initialize()
+            await supertest(app.callback())
+                .post("/users")
+                .send({ email: "john.doe@gmail.com", name: "John Doe" })
+                .expect(200)
         })
     })
     describe("Nested CRUD One to Many Function", () => {
@@ -856,6 +882,44 @@ describe("CRUD", () => {
             await supertest(app.callback())
                 .delete(`/users/${user.id}/animals/123`)
                 .expect(404)
+        })
+        it("Should able to use custom generic controller with custom repository", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                animals: Animal[]
+            }
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            @generic.template("P", "T", "PID", "TID")
+            @generic.type("P", "T", "PID", "TID")
+            class MyCustomGeneric<P, T, PID, TID> extends TypeORMOneToManyControllerGeneric<P, T, PID, TID>{
+                constructor() { super((p, t, rel) => new TypeORMOneToManyRepository(p, t, rel)) }
+            }
+            const app = await new Plumier()
+                .set(new WebApiFacility())
+                .set(new TypeORMFacility({ connection: getConn([User, Animal]) }))
+                .set(new TypeORMGenericControllerFacility({ controller: MyCustomGeneric }))
+                .set({ mode: "production" })
+                .initialize()
+            const user = await createUser(User)
+            await supertest(app.callback())
+                .post(`/users/${user.id}/animals`)
+                .send({ name: "Mimi" })
+                .expect(200)
         })
     })
 })

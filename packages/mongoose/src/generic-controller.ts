@@ -12,7 +12,7 @@ import { MongooseHelper, globalHelper } from "./generator"
 
 class MongooseRepository<T> implements Repository<T>{
     readonly Model: Model<T & Document>
-    constructor(type: Class<T>, helper?:MongooseHelper) {
+    constructor(type: Class<T>, helper?: MongooseHelper) {
         const hlp = helper ?? globalHelper
         this.Model = hlp.model(type)
     }
@@ -44,7 +44,7 @@ class MongooseRepository<T> implements Repository<T>{
 class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
     readonly Model: Model<T & Document>
     readonly ParentModel: Model<P & Document>
-    constructor(parent: Class<P>, type: Class<T>, protected relation: string, helper?:MongooseHelper) {
+    constructor(parent: Class<P>, type: Class<T>, protected relation: string, helper?: MongooseHelper) {
         const hlp = helper ?? globalHelper
         this.Model = hlp.model(type)
         this.ParentModel = hlp.model(parent)
@@ -84,16 +84,16 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
 @generic.template("T", "TID")
 @generic.type("T", "TID")
 class MongooseControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
-    constructor() {
-        super(x => new MongooseRepository(x))
+    constructor(fac?: ((x: Class<T>) => Repository<T>)) {
+        super(fac ?? (x => new MongooseRepository(x)))
     }
 }
 
 @generic.template("P", "T", "PID", "TID")
 @generic.type("P", "T", "PID", "TID")
 class MongooseOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
-    constructor() {
-        super((p, t, rel) => new MongooseOneToManyRepository(p, t, rel))
+    constructor(fac?: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
+        super(fac ?? ((p, t, rel) => new MongooseOneToManyRepository(p, t, rel)))
     }
 }
 

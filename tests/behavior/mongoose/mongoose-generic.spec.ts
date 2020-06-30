@@ -7,13 +7,15 @@ import model, {
     MongooseOneToManyRepository,
     MongooseRepository,
     MongooseHelper,
+    MongooseControllerGeneric,
+    MongooseOneToManyControllerGeneric,
 } from "@plumier/mongoose"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import supertest from "supertest"
-import reflect from "tinspector"
+import reflect, { generic } from "tinspector"
 import { join } from "path"
 import * as v1 from "./v1/models"
 import * as v2 from "./v2/models"
@@ -392,6 +394,32 @@ describe("CRUD", () => {
             await supertest(app.callback())
                 .delete(`/users/5099803df3f4948bd2f98391`)
                 .expect(404)
+        })
+        it("Should able to use custom generic controller with custom repository", async () => {
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            model(User)
+            const repo = new MongooseRepository(User)
+            @generic.template("T", "TID")
+            @generic.type("T", "TID")
+            class MyCustomGeneric<T, TID> extends MongooseControllerGeneric<T, TID>{
+                constructor() { super(x => new MongooseRepository(x)) }
+            }
+            const app = await new Plumier()
+                .set(new WebApiFacility())
+                .set(new MongooseFacility())
+                .set(new MongooseGenericControllerFacility({ controller: MyCustomGeneric }))
+                .set({ mode: "production" })
+                .initialize()
+            await supertest(app.callback())
+                .post("/users")
+                .send({ email: "john.doe@gmail.com", name: "John Doe" })
+                .expect(200)
         })
     })
     describe("Nested CRUD One to Many Function", () => {
@@ -799,6 +827,41 @@ describe("CRUD", () => {
             await supertest(app.callback())
                 .delete(`/users/${user._id}/animals/5099803df3f4948bd2f98391`)
                 .expect(404)
+        })
+        it("Should able to use custom generic controller with custom repository", async () => {
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            model(Animal)
+            model(User)
+            const user = await createUser(User)
+            const repo = new MongooseRepository(User)
+            @generic.template("P", "T", "PID", "TID")
+            @generic.type("P", "T", "PID", "TID")
+            class MyCustomGeneric<P, T, PID, TID> extends MongooseOneToManyControllerGeneric<P, T, PID, TID>{
+                constructor() { super((p, t, rel) => new MongooseOneToManyRepository(p, t, rel)) }
+            }
+            const app = await new Plumier()
+                .set(new WebApiFacility())
+                .set(new MongooseFacility())
+                .set(new MongooseGenericControllerFacility({ controller: MyCustomGeneric }))
+                .set({ mode: "production" })
+                .initialize()
+            await supertest(app.callback())
+                .post(`/users/${user._id}/animals`)
+                .send({ name: "Mimi" })
+                .expect(200)
         })
     })
 })
