@@ -159,22 +159,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. MongooseControllerGeneric.list       -> GET    /api/v1/animals",
+    "1. MongooseControllerGeneric.get(id)    -> GET    /api/v1/animals/:id",
   ],
   Array [
-    "2. MongooseControllerGeneric.save(data) -> POST   /api/v1/animals",
+    "2. MongooseControllerGeneric.modify     -> PATCH  /api/v1/animals/:id",
   ],
   Array [
-    "3. MongooseControllerGeneric.get(id)    -> GET    /api/v1/animals/:id",
+    "3. MongooseControllerGeneric.replace    -> PUT    /api/v1/animals/:id",
   ],
   Array [
-    "4. MongooseControllerGeneric.modify     -> PATCH  /api/v1/animals/:id",
+    "4. MongooseControllerGeneric.delete(id) -> DELETE /api/v1/animals/:id",
   ],
   Array [
-    "5. MongooseControllerGeneric.replace    -> PUT    /api/v1/animals/:id",
+    "5. MongooseControllerGeneric.list       -> GET    /api/v1/animals",
   ],
   Array [
-    "6. MongooseControllerGeneric.delete(id) -> DELETE /api/v1/animals/:id",
+    "6. MongooseControllerGeneric.save(data) -> POST   /api/v1/animals",
   ],
   Array [],
 ]
@@ -187,22 +187,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. MongooseControllerGeneric.list       -> GET    /api/v1/animals",
+    "1. MongooseControllerGeneric.get(id)    -> GET    /api/v1/animals/:id",
   ],
   Array [
-    "2. MongooseControllerGeneric.save(data) -> POST   /api/v1/animals",
+    "2. MongooseControllerGeneric.modify     -> PATCH  /api/v1/animals/:id",
   ],
   Array [
-    "3. MongooseControllerGeneric.get(id)    -> GET    /api/v1/animals/:id",
+    "3. MongooseControllerGeneric.replace    -> PUT    /api/v1/animals/:id",
   ],
   Array [
-    "4. MongooseControllerGeneric.modify     -> PATCH  /api/v1/animals/:id",
+    "4. MongooseControllerGeneric.delete(id) -> DELETE /api/v1/animals/:id",
   ],
   Array [
-    "5. MongooseControllerGeneric.replace    -> PUT    /api/v1/animals/:id",
+    "5. MongooseControllerGeneric.list       -> GET    /api/v1/animals",
   ],
   Array [
-    "6. MongooseControllerGeneric.delete(id) -> DELETE /api/v1/animals/:id",
+    "6. MongooseControllerGeneric.save(data) -> POST   /api/v1/animals",
   ],
   Array [],
 ]
@@ -215,40 +215,40 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. MongooseControllerGeneric.list       -> GET    /api/v1/tags",
+    " 1. MongooseControllerGeneric.get(id)    -> GET    /api/v1/tags/:id",
   ],
   Array [
-    " 2. MongooseControllerGeneric.save(data) -> POST   /api/v1/tags",
+    " 2. MongooseControllerGeneric.modify     -> PATCH  /api/v1/tags/:id",
   ],
   Array [
-    " 3. MongooseControllerGeneric.get(id)    -> GET    /api/v1/tags/:id",
+    " 3. MongooseControllerGeneric.replace    -> PUT    /api/v1/tags/:id",
   ],
   Array [
-    " 4. MongooseControllerGeneric.modify     -> PATCH  /api/v1/tags/:id",
+    " 4. MongooseControllerGeneric.delete(id) -> DELETE /api/v1/tags/:id",
   ],
   Array [
-    " 5. MongooseControllerGeneric.replace    -> PUT    /api/v1/tags/:id",
+    " 5. MongooseControllerGeneric.list       -> GET    /api/v1/tags",
   ],
   Array [
-    " 6. MongooseControllerGeneric.delete(id) -> DELETE /api/v1/tags/:id",
+    " 6. MongooseControllerGeneric.save(data) -> POST   /api/v1/tags",
   ],
   Array [
-    " 7. MongooseControllerGeneric.list       -> GET    /api/v1/animals",
+    " 7. MongooseControllerGeneric.get(id)    -> GET    /api/v1/animals/:id",
   ],
   Array [
-    " 8. MongooseControllerGeneric.save(data) -> POST   /api/v1/animals",
+    " 8. MongooseControllerGeneric.modify     -> PATCH  /api/v1/animals/:id",
   ],
   Array [
-    " 9. MongooseControllerGeneric.get(id)    -> GET    /api/v1/animals/:id",
+    " 9. MongooseControllerGeneric.replace    -> PUT    /api/v1/animals/:id",
   ],
   Array [
-    "10. MongooseControllerGeneric.modify     -> PATCH  /api/v1/animals/:id",
+    "10. MongooseControllerGeneric.delete(id) -> DELETE /api/v1/animals/:id",
   ],
   Array [
-    "11. MongooseControllerGeneric.replace    -> PUT    /api/v1/animals/:id",
+    "11. MongooseControllerGeneric.list       -> GET    /api/v1/animals",
   ],
   Array [
-    "12. MongooseControllerGeneric.delete(id) -> DELETE /api/v1/animals/:id",
+    "12. MongooseControllerGeneric.save(data) -> POST   /api/v1/animals",
   ],
   Array [
     "13. MongooseOneToMan...eneric.list       -> GET    /api/v1/animals/:pid/tags",
@@ -269,40 +269,40 @@ Array [
     "18. MongooseOneToMan...eneric.delete     -> DELETE /api/v1/animals/:pid/tags/:id",
   ],
   Array [
-    "19. MongooseControllerGeneric.list       -> GET    /api/v2/tags",
+    "19. MongooseControllerGeneric.get(id)    -> GET    /api/v2/tags/:id",
   ],
   Array [
-    "20. MongooseControllerGeneric.save(data) -> POST   /api/v2/tags",
+    "20. MongooseControllerGeneric.modify     -> PATCH  /api/v2/tags/:id",
   ],
   Array [
-    "21. MongooseControllerGeneric.get(id)    -> GET    /api/v2/tags/:id",
+    "21. MongooseControllerGeneric.replace    -> PUT    /api/v2/tags/:id",
   ],
   Array [
-    "22. MongooseControllerGeneric.modify     -> PATCH  /api/v2/tags/:id",
+    "22. MongooseControllerGeneric.delete(id) -> DELETE /api/v2/tags/:id",
   ],
   Array [
-    "23. MongooseControllerGeneric.replace    -> PUT    /api/v2/tags/:id",
+    "23. MongooseControllerGeneric.list       -> GET    /api/v2/tags",
   ],
   Array [
-    "24. MongooseControllerGeneric.delete(id) -> DELETE /api/v2/tags/:id",
+    "24. MongooseControllerGeneric.save(data) -> POST   /api/v2/tags",
   ],
   Array [
-    "25. MongooseControllerGeneric.list       -> GET    /api/v2/animals",
+    "25. MongooseControllerGeneric.get(id)    -> GET    /api/v2/animals/:id",
   ],
   Array [
-    "26. MongooseControllerGeneric.save(data) -> POST   /api/v2/animals",
+    "26. MongooseControllerGeneric.modify     -> PATCH  /api/v2/animals/:id",
   ],
   Array [
-    "27. MongooseControllerGeneric.get(id)    -> GET    /api/v2/animals/:id",
+    "27. MongooseControllerGeneric.replace    -> PUT    /api/v2/animals/:id",
   ],
   Array [
-    "28. MongooseControllerGeneric.modify     -> PATCH  /api/v2/animals/:id",
+    "28. MongooseControllerGeneric.delete(id) -> DELETE /api/v2/animals/:id",
   ],
   Array [
-    "29. MongooseControllerGeneric.replace    -> PUT    /api/v2/animals/:id",
+    "29. MongooseControllerGeneric.list       -> GET    /api/v2/animals",
   ],
   Array [
-    "30. MongooseControllerGeneric.delete(id) -> DELETE /api/v2/animals/:id",
+    "30. MongooseControllerGeneric.save(data) -> POST   /api/v2/animals",
   ],
   Array [
     "31. MongooseOneToMan...eneric.list       -> GET    /api/v2/animals/:pid/tags",
@@ -333,40 +333,40 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. MongooseControllerGeneric.list       -> GET    /api/v1/animals",
+    " 1. MongooseControllerGeneric.get(id)    -> GET    /api/v1/animals/:id",
   ],
   Array [
-    " 2. MongooseControllerGeneric.save(data) -> POST   /api/v1/animals",
+    " 2. MongooseControllerGeneric.modify     -> PATCH  /api/v1/animals/:id",
   ],
   Array [
-    " 3. MongooseControllerGeneric.get(id)    -> GET    /api/v1/animals/:id",
+    " 3. MongooseControllerGeneric.replace    -> PUT    /api/v1/animals/:id",
   ],
   Array [
-    " 4. MongooseControllerGeneric.modify     -> PATCH  /api/v1/animals/:id",
+    " 4. MongooseControllerGeneric.delete(id) -> DELETE /api/v1/animals/:id",
   ],
   Array [
-    " 5. MongooseControllerGeneric.replace    -> PUT    /api/v1/animals/:id",
+    " 5. MongooseControllerGeneric.list       -> GET    /api/v1/animals",
   ],
   Array [
-    " 6. MongooseControllerGeneric.delete(id) -> DELETE /api/v1/animals/:id",
+    " 6. MongooseControllerGeneric.save(data) -> POST   /api/v1/animals",
   ],
   Array [
-    " 7. MongooseControllerGeneric.list       -> GET    /api/v2/animals",
+    " 7. MongooseControllerGeneric.get(id)    -> GET    /api/v2/animals/:id",
   ],
   Array [
-    " 8. MongooseControllerGeneric.save(data) -> POST   /api/v2/animals",
+    " 8. MongooseControllerGeneric.modify     -> PATCH  /api/v2/animals/:id",
   ],
   Array [
-    " 9. MongooseControllerGeneric.get(id)    -> GET    /api/v2/animals/:id",
+    " 9. MongooseControllerGeneric.replace    -> PUT    /api/v2/animals/:id",
   ],
   Array [
-    "10. MongooseControllerGeneric.modify     -> PATCH  /api/v2/animals/:id",
+    "10. MongooseControllerGeneric.delete(id) -> DELETE /api/v2/animals/:id",
   ],
   Array [
-    "11. MongooseControllerGeneric.replace    -> PUT    /api/v2/animals/:id",
+    "11. MongooseControllerGeneric.list       -> GET    /api/v2/animals",
   ],
   Array [
-    "12. MongooseControllerGeneric.delete(id) -> DELETE /api/v2/animals/:id",
+    "12. MongooseControllerGeneric.save(data) -> POST   /api/v2/animals",
   ],
   Array [],
 ]
@@ -379,22 +379,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. MongooseControllerGeneric.list       -> GET    /absolutes",
+    "1. MongooseControllerGeneric.get(id)    -> GET    /absolutes/:id",
   ],
   Array [
-    "2. MongooseControllerGeneric.save(data) -> POST   /absolutes",
+    "2. MongooseControllerGeneric.modify     -> PATCH  /absolutes/:id",
   ],
   Array [
-    "3. MongooseControllerGeneric.get(id)    -> GET    /absolutes/:id",
+    "3. MongooseControllerGeneric.replace    -> PUT    /absolutes/:id",
   ],
   Array [
-    "4. MongooseControllerGeneric.modify     -> PATCH  /absolutes/:id",
+    "4. MongooseControllerGeneric.delete(id) -> DELETE /absolutes/:id",
   ],
   Array [
-    "5. MongooseControllerGeneric.replace    -> PUT    /absolutes/:id",
+    "5. MongooseControllerGeneric.list       -> GET    /absolutes",
   ],
   Array [
-    "6. MongooseControllerGeneric.delete(id) -> DELETE /absolutes/:id",
+    "6. MongooseControllerGeneric.save(data) -> POST   /absolutes",
   ],
   Array [],
 ]
@@ -407,22 +407,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. MongooseControllerGeneric.list       -> GET    /relatives",
+    "1. MongooseControllerGeneric.get(id)    -> GET    /relatives/:id",
   ],
   Array [
-    "2. MongooseControllerGeneric.save(data) -> POST   /relatives",
+    "2. MongooseControllerGeneric.modify     -> PATCH  /relatives/:id",
   ],
   Array [
-    "3. MongooseControllerGeneric.get(id)    -> GET    /relatives/:id",
+    "3. MongooseControllerGeneric.replace    -> PUT    /relatives/:id",
   ],
   Array [
-    "4. MongooseControllerGeneric.modify     -> PATCH  /relatives/:id",
+    "4. MongooseControllerGeneric.delete(id) -> DELETE /relatives/:id",
   ],
   Array [
-    "5. MongooseControllerGeneric.replace    -> PUT    /relatives/:id",
+    "5. MongooseControllerGeneric.list       -> GET    /relatives",
   ],
   Array [
-    "6. MongooseControllerGeneric.delete(id) -> DELETE /relatives/:id",
+    "6. MongooseControllerGeneric.save(data) -> POST   /relatives",
   ],
   Array [],
 ]
@@ -435,22 +435,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. MongooseControllerGeneric.list       -> GET    /animals",
+    "1. MongooseControllerGeneric.get(id)    -> GET    /animals/:id",
   ],
   Array [
-    "2. MongooseControllerGeneric.save(data) -> POST   /animals",
+    "2. MongooseControllerGeneric.modify     -> PATCH  /animals/:id",
   ],
   Array [
-    "3. MongooseControllerGeneric.get(id)    -> GET    /animals/:id",
+    "3. MongooseControllerGeneric.replace    -> PUT    /animals/:id",
   ],
   Array [
-    "4. MongooseControllerGeneric.modify     -> PATCH  /animals/:id",
+    "4. MongooseControllerGeneric.delete(id) -> DELETE /animals/:id",
   ],
   Array [
-    "5. MongooseControllerGeneric.replace    -> PUT    /animals/:id",
+    "5. MongooseControllerGeneric.list       -> GET    /animals",
   ],
   Array [
-    "6. MongooseControllerGeneric.delete(id) -> DELETE /animals/:id",
+    "6. MongooseControllerGeneric.save(data) -> POST   /animals",
   ],
   Array [],
 ]

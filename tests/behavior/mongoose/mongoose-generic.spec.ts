@@ -258,6 +258,20 @@ describe("CRUD", () => {
             expect(body.email).toBe("john.doe@gmail.com")
             expect(body.name).toBe("John Doe")
         })
+        it("Should check prover mongodb id on GET /users/:id", async () => {
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            model(User)
+            const app = await createApp({ mode: "production" })
+            await supertest(app.callback())
+                .get(`/users/lorem`)
+                .expect(422)
+        })
         it("Should throw 404 if not found GET /users/:id", async () => {
             @collection()
             class User {
@@ -291,6 +305,21 @@ describe("CRUD", () => {
             const modified = await repo.findById(body.id)
             expect(modified!.email).toBe("john.doe@gmail.com")
             expect(modified!.name).toBe("Jane Doe")
+        })
+        it("Should check prover mongodb id on PUT /users/:id", async () => {
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            model(User)
+            const app = await createApp({ mode: "production" })
+            await supertest(app.callback())
+                .put(`/users/lorem`)
+                .send({ name: "Jane Doe" })
+                .expect(422)
         })
         it("Should throw 404 if not found PUT /users/:id", async () => {
             @collection()
@@ -326,6 +355,21 @@ describe("CRUD", () => {
             const modified = await repo.findById(body.id)
             expect(modified!.email).toBe("john.doe@gmail.com")
             expect(modified!.name).toBe("Jane Doe")
+        })
+        it("Should check prover mongodb id on PATCH /users/:id", async () => {
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            model(User)
+            const app = await createApp({ mode: "production" })
+            await supertest(app.callback())
+                .patch(`/users/lorem`)
+                .send({ name: "Jane Doe" })
+                .expect(422)
         })
         it("Should set partial validation on PATCH /users/:id", async () => {
             @collection()
@@ -380,6 +424,20 @@ describe("CRUD", () => {
                 .expect(200)
             const modified = await repo.findById(body.id)
             expect(modified).toBeNull()
+        })
+        it("Should check prover mongodb id on DELETE /users/:id", async () => {
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            model(User)
+            const app = await createApp({ mode: "production" })
+            await supertest(app.callback())
+                .delete(`/users/lorem`)
+                .expect(422)
         })
         it("Should throw 404 if not found DELETE /users/:id", async () => {
             @collection()
@@ -482,6 +540,28 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body.length).toBe(50)
         })
+        it("Should check prover mongodb id on GET /users/:parentId/animals?offset&limit", async () => {
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ mode: "production" })
+            await supertest(app.callback())
+                .get(`/users/lorem/animals?offset=0&limit=20`)
+                .expect(422)
+        })
         it("Should find by name GET /users/:parentId/animals?offset&limit ", async () => {
             @collection()
             class User {
@@ -570,6 +650,29 @@ describe("CRUD", () => {
             const inserted = await repo.Model.findById(user._id).populate("animals")
             expect(inserted).toMatchSnapshot()
         })
+        it("Should check prover mongodb id on POST /users/:parentId/animals", async () => {
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ mode: "production" })
+            await supertest(app.callback())
+                .post(`/users/lorem/animals`)
+                .send({ name: "Mimi" })
+                .expect(422)
+        })
         it("Should throw 404 if parent not found POST /users/:parentId/animals", async () => {
             @collection()
             class User {
@@ -619,6 +722,28 @@ describe("CRUD", () => {
                 .get(`/users/${user._id}/animals/${inserted.id}`)
                 .expect(200)
             expect(body).toMatchSnapshot()
+        })
+        it("Should check prover mongodb id GET /users/:parentId/animals/:id", async () => {
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ mode: "production" })
+            await supertest(app.callback())
+                .get(`/users/lorem/animals/ipsum`)
+                .expect(422)
         })
         it("Should throw 404 if not found GET /users/:parentId/animals/:id", async () => {
             @collection()
@@ -671,6 +796,29 @@ describe("CRUD", () => {
             const modified = await animalRepo.findById(body.id)
             expect(modified).toMatchSnapshot()
         })
+        it("Should check prover mongodb id PUT /users/:parentId/animals/:id", async () => {
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ mode: "production" })
+            await supertest(app.callback())
+                .put(`/users/lorem/animals/lorem`)
+                .send({ name: "Poe" })
+                .expect(422)
+        })
         it("Should throw 404 if not found PUT /users/:parentId/animals/:id", async () => {
             @collection()
             class User {
@@ -722,6 +870,29 @@ describe("CRUD", () => {
                 .expect(200)
             const modified = await animalRepo.findById(body.id)
             expect(modified).toMatchSnapshot()
+        })
+        it("Should check prover mongodb id PATCH /users/:parentId/animals/:id", async () => {
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ mode: "production" })
+            await supertest(app.callback())
+                .patch(`/users/lorem/animals/lorem`)
+                .send({ name: "Poe" })
+                .expect(422)
         })
         it("Should set partial validation on PATCH /users/:parentId/animals/:id", async () => {
             @collection()
@@ -804,6 +975,28 @@ describe("CRUD", () => {
                 .expect(200)
             const modified = await animalRepo.findById(body.id)
             expect(modified).toBeNull()
+        })
+        it("Should check prover mongodb id DELETE /users/:parentId/animals/:id", async () => {
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .delete(`/users/lorem/animals/lorem`)
+                .expect(422)
         })
         it("Should throw 404 if not found DELETE /users/:parentId/animals/:id", async () => {
             @collection()

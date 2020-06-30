@@ -1,4 +1,4 @@
-import { Class } from "@plumier/core"
+import { Class, val } from "@plumier/core"
 import {
     OneToManyRepository,
     RepoBaseControllerGeneric,
@@ -87,6 +87,22 @@ class MongooseControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID
     constructor(fac?: ((x: Class<T>) => Repository<T>)) {
         super(fac ?? (x => new MongooseRepository(x)))
     }
+
+    get(@val.mongoId() id: TID): Promise<T> {
+        return super.get(id)
+    }
+
+    modify(@val.mongoId() id: TID, data: T) {
+        return super.modify(id, data)
+    }
+
+    replace(@val.mongoId() id: TID, data: T) {
+        return super.replace(id, data)
+    }
+
+    delete(@val.mongoId() id: TID) {
+        return super.delete(id)
+    }
 }
 
 @generic.template("P", "T", "PID", "TID")
@@ -94,6 +110,30 @@ class MongooseControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID
 class MongooseOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
     constructor(fac?: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
         super(fac ?? ((p, t, rel) => new MongooseOneToManyRepository(p, t, rel)))
+    }
+
+    list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, query: T) {
+        return super.list(pid, offset, limit, query)
+    }
+
+    save(@val.mongoId() pid: PID, data: T) {
+        return super.save(pid, data)
+    }
+
+    get(@val.mongoId() pid: PID, @val.mongoId() id: TID) {
+        return super.get(pid, id)
+    }
+
+    modify(@val.mongoId() pid: PID, @val.mongoId() id: TID, data: T) {
+        return super.modify(pid, id, data)
+    }
+
+    replace(@val.mongoId() pid: PID, @val.mongoId() id: TID, data: T) {
+        return super.replace(pid, id, data)
+    }
+
+    delete(@val.mongoId() pid: PID, @val.mongoId() id: TID) {
+        return super.delete(pid, id)
     }
 }
 
