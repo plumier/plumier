@@ -1,17 +1,8 @@
 import { Class, isCustomClass } from "@plumier/core"
-import mong, { Document, ConnectionOptions, Mongoose } from "mongoose"
+import mong, { ConnectionOptions, Document, Mongoose } from "mongoose"
 import reflect, { ClassReflection, PropertyReflection } from "tinspector"
 
-import {
-    ClassOptionDecorator,
-    GeneratorHook,
-    ModelFactory,
-    ModelStore,
-    NamedSchemaOption,
-    PropertyOptionDecorator,
-    RefDecorator,
-    ReferenceTypeNotRegistered,
-} from "./types"
+import { ClassOptionDecorator, ModelStore, NamedSchemaOption, PropertyOptionDecorator, RefDecorator } from "./types"
 
 
 
@@ -30,9 +21,9 @@ function getPropertyDefinition(parent: ClassReflection, prop: PropertyReflection
     if (isCustomClass(prop.type)) {
         const ref = prop.decorators.find((x: RefDecorator): x is RefDecorator => x.name === "MongooseRef")
         if (ref) {
-            const type = store.get(prop.type)
-            if (!type) throw Error(ReferenceTypeNotRegistered.format(parent.name, prop.type.name))
-            return { type: mong.Types.ObjectId, ref: type.name, ...option }
+            const meta = reflect(prop.type as Class)
+            const option = getOption(meta)
+            return { type: mong.Types.ObjectId, ref: option.name, ...option }
         }
         else
             return { ...getDefinition(prop.type, store), ...option }
@@ -47,14 +38,10 @@ function getDefinition(type: Class, store: Map<Class, ModelStore>) {
     }, {} as any)
 }
 
-function getOption(meta: ClassReflection, opt?: string | GeneratorHook | NamedSchemaOption) {
-    const factoryOption =
-        typeof opt === "string" ? { name: opt } :
-            typeof opt === "function" ? { hook: opt } :
-                (opt ?? {})
-    const classOption:NamedSchemaOption = meta.decorators.filter((x: ClassOptionDecorator): x is ClassOptionDecorator => x.name === "ClassOption")
+function getOption(meta: ClassReflection):NamedSchemaOption {
+    const classOption: NamedSchemaOption = meta.decorators.filter((x: ClassOptionDecorator): x is ClassOptionDecorator => x.name === "ClassOption")
         .reduce((a, b) => Object.assign(a, b.option), {})
-    return { ...classOption, ...factoryOption }
+    return {... classOption, name: classOption.name ?? meta.name }
 }
 
 // --------------------------------------------------------------------- //
@@ -63,43 +50,42 @@ function getOption(meta: ClassReflection, opt?: string | GeneratorHook | NamedSc
 
 class MongooseHelper {
     readonly models = new Map<Class, ModelStore>()
-    private readonly mongoose:Mongoose
-    constructor(mongoose?:Mongoose){
+    private readonly mongoose: Mongoose
+    constructor(mongoose?: Mongoose) {
         this.mongoose = mongoose ?? new mong.Mongoose()
         this.model = this.model.bind(this)
         this.getModels = this.getModels.bind(this)
         this.connect = this.connect.bind(this)
         this.disconnect = this.disconnect.bind(this)
     }
-    model<T>(type: new (...args: any) => T, opt?: string | GeneratorHook | NamedSchemaOption):mong.Model<T & mong.Document, {}> {
+    model<T>(type: new (...args: any) => T): mong.Model<T & mong.Document, {}> {
         const storedModel = this.models.get(type)
         if (storedModel) {
             return this.mongoose.model(storedModel.name)
         }
         else {
             const meta = reflect(type)
-            const option = getOption(meta, opt)
-            const name = option.name ?? type.name
+            const option = getOption(meta)
+            const name = option.name!
             const definition = getDefinition(type, this.models)
             const schema = new this.mongoose.Schema(definition, option)
-            if(option.hook) option.hook(schema)
             const mongooseModel = this.mongoose.model<T & Document>(name, schema)
             this.models.set(type, { name, collectionName: mongooseModel.collection.name, definition, option })
             return mongooseModel
         }
     }
-    getModels(){
+    getModels() {
         return Array.from(this.models.keys())
     }
-    connect(uri:string, opt?:ConnectionOptions){
+    connect(uri: string, opt?: ConnectionOptions) {
         return this.mongoose.connect(uri, opt)
     }
-    disconnect(){
+    disconnect() {
         return this.mongoose.disconnect()
     }
 }
 
 const globalHelper = new MongooseHelper(mong)
-const  { model, getModels, models } = globalHelper
+const { model, getModels, models } = globalHelper
 
 export { getDefinition, MongooseHelper, model, getModels, models, globalHelper }

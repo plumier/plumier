@@ -258,7 +258,7 @@ Using configuration above, all class inherited from `DomainBase` will have `dele
 ```typescript
 import { model, collection } from "@plumier/mongoose"
 
-@collection()
+@collection({ name: "Empty" })
 class Dummy {
     constructor(
         public stringProp: string,
@@ -267,36 +267,40 @@ class Dummy {
         public dateProp: Date
     ) { }
 }
-// use the second parameter to change the model name
-const DummyModel = model(Dummy, "Empty")
+const DummyModel = model(Dummy)
 // calling next model will not require passing name
 const SecondDummyModel = model(Dummy)
 ```
 
-### Schema Generation Hook
+## Relation with Cyclic Dependency 
+Its possible to map relation with cyclic dependency using mongoose helper
+
+> Note when you define model with cyclic dependency its required to use `Ref<T>`  data type and use callback on the `@collection.ref()` parameter to prevent TypeScript `ReferenceError: Model is not defined` error.
 
 ```typescript
-import { model, collection } from "@plumier/mongoose"
-import mongoose from "mongoose"
+@collection()
+class Child {
+    constructor(
+        public name:string,
+        // use callback to define ref type
+        @collection.ref(x => Dummy)
+        // use Ref<T> to define data type
+        public dummy:Ref<Dummy>
+    ){}
+}
 
 @collection()
 class Dummy {
     constructor(
-        public stringProp: string,
-        public numberProp: number,
-        public booleanProp: boolean,
-        public dateProp: Date
+        public name:string,
+        // nested array of model 
+        @collection.ref([Child])
+        public children: Child[],
     ) { }
 }
-// pass function on second parameter to hook schema generation
-const DummyModel = model(Dummy, schema => {
-    schema.pre("save", next => {
-        // do something
-        next()
-    })
-})
-// calling next model will not require passing the hook
-const SecondDummyModel = model(Dummy)
+
+const ChildModel = model(Child)
+const DummyModel = model(Dummy)
 ```
 
 ## Unique Validation
@@ -362,30 +366,3 @@ POST /animal/save
 payload:
 {name: "Mimi", images: ["507f191e810c19729de860ea", "507f191e810c19729de239ca"]}
 ```
-
-## Dockify
-`Dockify<T>` is an advanced TypeScript type, it converts all Property of `T` inherit from `Object` into mongoose `Document`. For example: 
-
-```typescript 
-class Child {
-    constructor(
-        public name:string
-    ){}
-}
-
-class Parent {
-    constructor(
-        public child:Child
-    ){}
-}
-
-let parent:Dockify<Parent>
-// child property converted into `Child & mongoose.Document` 
-// thus its possible access document properties/method like below
-parent.child._id
-parent.child.save()
-```
-
-`Dockify<T>` provide syntax sugar to access ref (populate) properties, while keep entity definition POJO (clean from Mongoose specific types). 
-
-> **CAVEAT**: Dockify will treat all properties with custom type as Document, thus for non ref (populate) property will keep inferred as `Document`. 

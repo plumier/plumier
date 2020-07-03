@@ -1,29 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Definition Error Handling Should throw error when reference type not registered in nested array 1`] = `"MONG1000: Type Dummy required type Nest which is not registered as Mongoose model"`;
-
-exports[`Definition Error Handling Should throw error when reference type not registered in nested model 1`] = `"MONG1000: Type Dummy required type Nest which is not registered as Mongoose model"`;
-
-exports[`Definition Nested Data Type Should able to define nested object array with ref (populate) 1`] = `
-Object {
-  "children": Array [
-    Object {
-      "ref": "Nest",
-      "type": ObjectID,
-    },
-  ],
-}
-`;
-
-exports[`Definition Nested Data Type Should able to define nested object with ref (populate) 1`] = `
-Object {
-  "child": Object {
-    "ref": "Nest",
-    "type": ObjectID,
-  },
-}
-`;
-
 exports[`Definition Nested Data Type Should able to extract nested object 1`] = `
 Object {
   "child": Object {
