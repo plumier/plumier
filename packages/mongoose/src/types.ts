@@ -5,10 +5,10 @@ import mongoose, { SchemaOptions, SchemaTypeOpts, Mongoose } from "mongoose"
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-
+type Ref<T> = T & mongoose.Document
 type GeneratorHook = (schema: mongoose.Schema) => void
-type NamedSchemaOption = SchemaOptions & { hook?: GeneratorHook, proxy?: boolean, name?: string }
-type ModelFactory = <T>(type: new (...args: any) => T, opt?: string | GeneratorHook | NamedSchemaOption) => mongoose.Model<T & mongoose.Document, {}>
+type NamedSchemaOption = SchemaOptions & { hook?: GeneratorHook, name?: string }
+type ModelFactory = <T>(type: new (...args: any) => T) => mongoose.Model<T & mongoose.Document, {}>
 interface ClassOptionDecorator { name: "ClassOption", option: NamedSchemaOption }
 interface PropertyOptionDecorator { name: "PropertyOption", option?: SchemaTypeOpts<any> }
 interface RefDecorator { name: "MongooseRef" }
@@ -20,7 +20,7 @@ const ReferenceTypeNotRegistered = "MONG1000: Type {0} required type {1} which i
 const CanNotValidateNonProperty = `MONG1002: @val.unique() only can be applied on property`
 
 export {
-    NamedSchemaOption,
+    NamedSchemaOption, Ref,
     ModelFactory, PropertyOptionDecorator, RefDecorator,
     ClassOptionDecorator, ReferenceTypeNotRegistered, CanNotValidateNonProperty,
     GeneratorHook, ModelStore, AnalysisResult

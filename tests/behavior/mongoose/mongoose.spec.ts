@@ -1,5 +1,5 @@
 import { Class, consoleLog, route } from "@plumier/core"
-import { collection, model as globalModel, MongooseFacility, MongooseHelper } from "@plumier/mongoose"
+import { collection, model as globalModel, MongooseFacility, MongooseHelper, Ref } from "@plumier/mongoose"
 import mongoose from "mongoose"
 import Plumier, { WebApiFacility } from "plumier"
 import supertest from "supertest"
@@ -196,51 +196,91 @@ describe("Mongoose", () => {
             expect(saved).toMatchSnapshot()
         })
 
-        it("Should throw error when dependent type specified by ref (populate) not registered as model", async () => {
+        it("Should work with cyclic reference model", async () => {
             const { model } = new MongooseHelper(mongoose)
             @collection()
             class Nest {
                 constructor(
                     public stringProp: string,
-                    public booleanProp: boolean
+                    public booleanProp: boolean,
+                    @collection.ref(x => Dummy)
+                    public dummy: Ref<Dummy>
                 ) { }
             }
             @collection()
             class Dummy {
                 constructor(
-                    @collection.ref(Nest)
-                    public child: Nest
+                    public name:string,
+                    @collection.ref(x => [Nest])
+                    public children: Nest[]
                 ) { }
             }
-            expect(() => model(Dummy)).toThrowErrorMatchingSnapshot()
+            const NestModel = model(Nest)
+            const DummyModel = model(Dummy)
+            const child = await NestModel.create(<Nest>{
+                stringProp: "string",
+                booleanProp: true,
+            })
+            const added = await DummyModel.create(<Dummy>{
+                name: "lorem",
+                children: [child._id]
+            })
+            await NestModel.findByIdAndUpdate(child.id, { dummy: added._id })
+            const saved = await DummyModel.findById(added._id)
+                .populate("children", { dummy: 0 })
+            const savedNest = await NestModel.findById(child._id)
+                .populate("dummy", { children: 0 })
+            expect(saved).toMatchSnapshot()
+            expect(savedNest).toMatchSnapshot()
+        })
+
+        it("Should work with cyclic reference model with custom name", async () => {
+            const { model } = new MongooseHelper(mongoose)
+            @collection({ name: "lorem" })
+            class Nest {
+                constructor(
+                    public stringProp: string,
+                    public booleanProp: boolean,
+                    @collection.ref(x => Dummy)
+                    public dummy: Ref<Dummy>
+                ) { }
+            }
+            @collection({ name: "ipsum" })
+            class Dummy {
+                constructor(
+                    public name:string,
+                    @collection.ref(x => [Nest])
+                    public children: Nest[]
+                ) { }
+            }
+            const NestModel = model(Nest)
+            const DummyModel = model(Dummy)
+            const child = await NestModel.create(<Nest>{
+                stringProp: "string",
+                booleanProp: true,
+            })
+            const added = await DummyModel.create(<Dummy>{
+                name: "lorem",
+                children: [child._id]
+            })
+            await NestModel.findByIdAndUpdate(child.id, { dummy: added._id })
+            const saved = await DummyModel.findById(added._id)
+                .populate("children", { dummy: 0 })
+            const savedNest = await NestModel.findById(child._id)
+                .populate("dummy", { children: 0 })
+            expect(saved).toMatchSnapshot()
+            expect(savedNest).toMatchSnapshot()
         })
 
         it("Should able to rename collection with different name", async () => {
             const { model } = new MongooseHelper(mongoose)
-            @collection()
+            @collection({ name: "lorem" })
             class Dummy {
                 constructor(
                     public stringProp: string,
                 ) { }
             }
-            const DummyModel = model(Dummy, "lorem")
-            const added = await DummyModel.create(<Dummy>{ stringProp: "string" })
-            const saved = await DummyModel.findById(added._id)
-            expect(saved).toMatchSnapshot()
-            expect(mongoose.models.Dummy).toBeUndefined()
-            expect(typeof mongoose.models.lorem).toBe("function")
-            expect(DummyModel.collection.name).toBe("lorems")
-        })
-
-        it("Should able to rename collection with different name using object configuration", async () => {
-            const { model } = new MongooseHelper(mongoose)
-            @collection()
-            class Dummy {
-                constructor(
-                    public stringProp: string,
-                ) { }
-            }
-            const DummyModel = model(Dummy, { name: "lorem" })
+            const DummyModel = model(Dummy)
             const added = await DummyModel.create(<Dummy>{ stringProp: "string" })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
@@ -270,13 +310,13 @@ describe("Mongoose", () => {
 
         it("Should able to call model factory multiple time on the same model with custom name", async () => {
             const { model } = new MongooseHelper(mongoose)
-            @collection()
+            @collection({ name: "lorem" })
             class Dummy {
                 constructor(
                     public stringProp: string,
                 ) { }
             }
-            const DummyModel = model(Dummy, "lorem")
+            const DummyModel = model(Dummy)
             const added = await DummyModel.create(<Dummy>{ stringProp: "string" })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
@@ -383,23 +423,6 @@ describe("Mongoose", () => {
             expect(saved).toMatchSnapshot()
         })
 
-        it("Should able specify extra configuration from factory", async () => {
-            const { model } = new MongooseHelper(mongoose)
-            @collection()
-            class Dummy {
-                constructor(
-                    public stringProp: string,
-                ) { }
-            }
-            const DummyModel = model(Dummy, { timestamps: true })
-            const added = await DummyModel.create({
-                excess: "lorem ipsum",
-                stringProp: "string",
-            } as any)
-            const saved = await DummyModel.findById(added._id)
-            expect(saved).toMatchSnapshot()
-        })
-
         it("Should able to enable timestamps using decorator", async () => {
             const { model } = new MongooseHelper(mongoose)
             @collection({ timestamps: true })
@@ -436,42 +459,6 @@ describe("Mongoose", () => {
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
         })
-
-        it("Should able to override timestamps decorator from factory", async () => {
-            const { model } = new MongooseHelper(mongoose)
-            @collection({ timestamps: true })
-            class Dummy {
-                constructor(
-                    public stringProp: string,
-                ) { }
-            }
-            const DummyModel = model(Dummy, { timestamps: false })
-            const added = await DummyModel.create({
-                stringProp: "string",
-            })
-            const saved = await DummyModel.findById(added._id)
-            expect(saved).toMatchSnapshot()
-        })
-
-        it("Should able to hook schema generation", async () => {
-            const fn = jest.fn()
-            const { model } = new MongooseHelper(mongoose)
-            @collection()
-            class Dummy {
-                constructor(
-                    public stringProp: string,
-                ) { }
-            }
-            const DummyModel = model(Dummy, sch => {
-                fn(sch)
-            })
-            const added = await DummyModel.create({
-                stringProp: "string",
-            })
-            const saved = await DummyModel.findById(added._id)
-            expect(saved).toMatchSnapshot()
-            expect(fn).toBeCalled()
-        })
     })
 
     describe("Mongoose Multiple Instance", () => {
@@ -488,10 +475,10 @@ describe("Mongoose", () => {
             const UserTwoModel = two.model(User)
             await new Plumier()
                 .set({ mode: "production" })
-                .set(new MongooseFacility({ uri: await server?.getUri(), helper:one }))
-                .set(new MongooseFacility({ uri: await server?.getUri(), helper:two }))
+                .set(new MongooseFacility({ uri: await server?.getUri(), helper: one }))
+                .set(new MongooseFacility({ uri: await server?.getUri(), helper: two }))
                 .initialize()
-            const newly = await new UserOneModel({name: "John Doe"}).save()
+            const newly = await new UserOneModel({ name: "John Doe" }).save()
             const saved = await UserTwoModel.findById(newly._id)
             expect(newly.name).toBe("John Doe")
         })

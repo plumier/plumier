@@ -1,15 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Mongoose Schema Configuration Should able specify extra configuration from factory 1`] = `
-Object {
-  "__v": 0,
-  "_id": "MONGODB UNIQUE ID",
-  "createdAt": DATE NOW,
-  "stringProp": "string",
-  "updatedAt": DATE NOW,
-}
-`;
-
 exports[`Mongoose Schema Configuration Should able to enable timestamps using decorator 1`] = `
 Object {
   "__v": 0,
@@ -28,22 +18,6 @@ Object {
   "deleted": false,
   "stringProp": "string",
   "updatedAt": DATE NOW,
-}
-`;
-
-exports[`Mongoose Schema Configuration Should able to hook schema generation 1`] = `
-Object {
-  "__v": 0,
-  "_id": "MONGODB UNIQUE ID",
-  "stringProp": "string",
-}
-`;
-
-exports[`Mongoose Schema Configuration Should able to override timestamps decorator from factory 1`] = `
-Object {
-  "__v": 0,
-  "_id": "MONGODB UNIQUE ID",
-  "stringProp": "string",
 }
 `;
 
@@ -129,15 +103,65 @@ Object {
 }
 `;
 
-exports[`Mongoose Schema Generation Should able to rename collection with different name using object configuration 1`] = `
+exports[`Mongoose Schema Generation Should work with cyclic reference model 1`] = `
 Object {
   "__v": 0,
   "_id": "MONGODB UNIQUE ID",
+  "children": Array [
+    Object {
+      "__v": 0,
+      "_id": "MONGODB UNIQUE ID",
+      "booleanProp": true,
+      "stringProp": "string",
+    },
+  ],
+  "name": "lorem",
+}
+`;
+
+exports[`Mongoose Schema Generation Should work with cyclic reference model 2`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "booleanProp": true,
+  "dummy": Object {
+    "__v": 0,
+    "_id": "MONGODB UNIQUE ID",
+    "name": "lorem",
+  },
   "stringProp": "string",
 }
 `;
 
-exports[`Mongoose Schema Generation Should throw error when dependent type specified by ref (populate) not registered as model 1`] = `"MONG1000: Type Dummy required type Nest which is not registered as Mongoose model"`;
+exports[`Mongoose Schema Generation Should work with cyclic reference model with custom name 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "children": Array [
+    Object {
+      "__v": 0,
+      "_id": "MONGODB UNIQUE ID",
+      "booleanProp": true,
+      "stringProp": "string",
+    },
+  ],
+  "name": "lorem",
+}
+`;
+
+exports[`Mongoose Schema Generation Should work with cyclic reference model with custom name 2`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "booleanProp": true,
+  "dummy": Object {
+    "__v": 0,
+    "_id": "MONGODB UNIQUE ID",
+    "name": "lorem",
+  },
+  "stringProp": "string",
+}
+`;
 
 exports[`Mongoose Schema Generation Should work with nested array model 1`] = `
 Object {
