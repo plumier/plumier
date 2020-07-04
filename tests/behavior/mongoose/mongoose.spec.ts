@@ -3,7 +3,7 @@ import { collection, model as globalModel, MongooseFacility, MongooseHelper, Ref
 import mongoose from "mongoose"
 import Plumier, { WebApiFacility } from "plumier"
 import supertest from "supertest"
-import reflect from "tinspector"
+import reflect, { noop } from "tinspector"
 import { fixture } from "../helper"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 
@@ -134,6 +134,36 @@ describe("Mongoose", () => {
             expect(saved).toMatchSnapshot()
         })
 
+        it("Should work domain with inheritance", async () => {
+            const { model } = new MongooseHelper(mongoose)
+            @collection({ timestamps: true, toJSON: { virtuals: true, versionKey: false } })
+            class Domain {
+                @noop()
+                id?: string
+                @noop()
+                createdAt?: Date
+                @noop()
+                updatedAt?: Date
+                @collection.property({ default: false })
+                deleted?: boolean
+            }
+
+            @collection()
+            class Dummy extends Domain {
+                constructor(
+                    @reflect.type([String])
+                    public stringProp: string[]
+                ) { super() }
+            }
+            const DummyModel = model(Dummy)
+            const added = await DummyModel.create(<Dummy>{
+                stringProp: ["string", "strong"],
+            })
+            const saved = await DummyModel.findById(added._id)
+            const object = saved?.toObject()
+            expect(mongoose.isValidObjectId(object.id)).toBe(true)
+        })
+
         it("Should work with nested model with ref (populate)", async () => {
             const { model } = new MongooseHelper(mongoose)
             @collection()
@@ -210,7 +240,7 @@ describe("Mongoose", () => {
             @collection()
             class Dummy {
                 constructor(
-                    public name:string,
+                    public name: string,
                     @collection.ref(x => [Nest])
                     public children: Nest[]
                 ) { }
@@ -248,7 +278,7 @@ describe("Mongoose", () => {
             @collection({ name: "ipsum" })
             class Dummy {
                 constructor(
-                    public name:string,
+                    public name: string,
                     @collection.ref(x => [Nest])
                     public children: Nest[]
                 ) { }

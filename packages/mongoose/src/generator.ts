@@ -33,9 +33,12 @@ function getPropertyDefinition(parent: ClassReflection, prop: PropertyReflection
 
 function getDefinition(type: Class, store: Map<Class, ModelStore>) {
     const parent = reflect(type)
-    return parent.properties.reduce((a, b) => {
-        return Object.assign(a, { [b.name]: getPropertyDefinition(parent, b, store) })
-    }, {} as any)
+    const result:any = {}
+    for (const prop of parent.properties) {
+        if(prop.name === "id") continue
+        result[prop.name] = getPropertyDefinition(parent, prop, store)
+    }
+    return result;
 }
 
 function getOption(meta: ClassReflection):NamedSchemaOption {
