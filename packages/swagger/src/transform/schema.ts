@@ -12,7 +12,7 @@ function refFactory(map: Map<Class, string>) {
     return (obj: Class) => {
         const objName = obj.name;
         const typeName = map.get(obj)
-        const names = Array.from(map.values()).filter(x => x === objName)
+        const names = Array.from(map.values()).filter(x => x.match(`^${objName}\\d*$`))
         // if type is not exits and no other type with the same name
         if (!typeName && names.length === 0) {
             map.set(obj, objName)
