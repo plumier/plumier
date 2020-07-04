@@ -19,7 +19,7 @@ import { refFactory, SwaggerFacility } from "@plumier/swagger"
 import { IncomingMessage } from "http"
 import { Context } from "koa"
 import supertest from "supertest"
-import reflect from "tinspector"
+import reflect, { type } from "tinspector"
 
 import { fixture } from "../helper"
 import Plumier, { WebApiFacility, ControllerFacility } from '@plumier/plumier'
@@ -739,14 +739,14 @@ describe("Open API 3.0 Generation", () => {
                 ) { }
             }
             @domain()
-            class Query{
+            class Query {
                 constructor(
-                    public type:string
-                ){}
+                    public type: string
+                ) { }
             }
             class UsersController {
                 @route.post("")
-                save(@bind.custom(ctx => ctx.request.query) req:Query, user: User, type: string) { }
+                save(@bind.custom(ctx => ctx.request.query) req: Query, user: User, type: string) { }
             }
             const app = await createApp(UsersController)
             const { body } = await supertest(app.callback())
@@ -884,6 +884,21 @@ describe("Open API 3.0 Generation", () => {
                 .post("/swagger/swagger.json")
                 .expect(200)
             expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should able to register object with the same name", async () => {
+            class UsersController {
+                @type({ one: String })
+                one() { }
+                @type({ two: String })
+                two() { }
+                @type({ three: String })
+                three() { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas).toMatchSnapshot()
         })
         it("Should create inline object on nested object if not registered", async () => {
             @domain()
@@ -1802,7 +1817,7 @@ describe("Open API 3.0 Generation", () => {
     describe("Route Grouping", () => {
         function createApp() {
             return new Plumier()
-                .set({mode: "production"})
+                .set({ mode: "production" })
                 .set(new WebApiFacility())
                 .set(new SwaggerFacility())
         }

@@ -73,6 +73,74 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Component Schema Should able to register object with the same name 1`] = `
+Object {
+  "DynamicType": Object {
+    "properties": Object {
+      "one": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "DynamicType1": Object {
+    "properties": Object {
+      "two": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "DynamicType2": Object {
+    "properties": Object {
+      "three": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "System-DefaultErrorMessage": Object {
+    "properties": Object {
+      "message": Object {
+        "type": "string",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "System-ValidationError": Object {
+    "properties": Object {
+      "message": Object {
+        "items": Object {
+          "properties": Object {
+            "messages": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "path": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "status": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
 exports[`Open API 3.0 Generation Component Schema Should create inline array object if nested object not registered 1`] = `
 Object {
   "properties": Object {
