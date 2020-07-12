@@ -53,9 +53,9 @@ function getOption(meta: ClassReflection):NamedSchemaOption {
 
 class MongooseHelper {
     readonly models = new Map<Class, ModelStore>()
-    private readonly mongoose: Mongoose
+    readonly client: Mongoose
     constructor(mongoose?: Mongoose) {
-        this.mongoose = mongoose ?? new mong.Mongoose()
+        this.client = mongoose ?? new mong.Mongoose()
         this.model = this.model.bind(this)
         this.getModels = this.getModels.bind(this)
         this.connect = this.connect.bind(this)
@@ -64,15 +64,15 @@ class MongooseHelper {
     model<T>(type: new (...args: any) => T): mong.Model<T & mong.Document, {}> {
         const storedModel = this.models.get(type)
         if (storedModel) {
-            return this.mongoose.model(storedModel.name)
+            return this.client.model(storedModel.name)
         }
         else {
             const meta = reflect(type)
             const option = getOption(meta)
             const name = option.name!
             const definition = getDefinition(type, this.models)
-            const schema = new this.mongoose.Schema(definition, option)
-            const mongooseModel = this.mongoose.model<T & Document>(name, schema)
+            const schema = new this.client.Schema(definition, option)
+            const mongooseModel = this.client.model<T & Document>(name, schema)
             this.models.set(type, { name, collectionName: mongooseModel.collection.name, definition, option })
             return mongooseModel
         }
@@ -81,10 +81,10 @@ class MongooseHelper {
         return Array.from(this.models.keys())
     }
     connect(uri: string, opt?: ConnectionOptions) {
-        return this.mongoose.connect(uri, opt)
+        return this.client.connect(uri, opt)
     }
     disconnect() {
-        return this.mongoose.disconnect()
+        return this.client.disconnect()
     }
 }
 

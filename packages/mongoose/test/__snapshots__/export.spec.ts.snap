@@ -16,12 +16,7 @@ Object {
   "getDefinition": getDefinition,
   "getModels": bound getModels,
   "globalHelper": MongooseHelper {
-    "connect": bound connect,
-    "disconnect": bound disconnect,
-    "getModels": bound getModels,
-    "model": bound model,
-    "models": Map {},
-    "mongoose": Mongoose {
+    "client": Mongoose {
       "Schema": Schema,
       "_pluralize": pluralize,
       "connections": Array [
@@ -90,6 +85,11 @@ Object {
         ],
       ],
     },
+    "connect": bound connect,
+    "disconnect": bound disconnect,
+    "getModels": bound getModels,
+    "model": bound model,
+    "models": Map {},
   },
   "model": bound model,
   "models": Map {},
