@@ -1,22 +1,23 @@
-import { Class, Configuration, consoleLog, domain, val } from "@plumier/core"
+import { Class, Configuration, consoleLog, val } from "@plumier/core"
 import model, {
-    models,
     collection,
+    models,
+    MongooseControllerGeneric,
     MongooseFacility,
     MongooseGenericControllerFacility,
+    MongooseHelper,
+    MongooseOneToManyControllerGeneric,
     MongooseOneToManyRepository,
     MongooseRepository,
-    MongooseHelper,
-    MongooseControllerGeneric,
-    MongooseOneToManyControllerGeneric,
 } from "@plumier/mongoose"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
+import { join } from "path"
 import supertest from "supertest"
 import reflect, { generic } from "tinspector"
-import { join } from "path"
+
 import * as v1 from "./v1/models"
 import * as v2 from "./v2/models"
 
@@ -1144,6 +1145,9 @@ describe("Open API", () => {
 describe("Repository", () => {
     it("Should able to use Repository in isolation", async () => {
         const helper = new MongooseHelper()
+        helper.client.set("useNewUrlParser", true)
+        helper.client.set("useUnifiedTopology", true)
+        helper.client.set("useFindAndModify", false)
         const uri = await mong?.getUri()
         await helper.connect(uri!)
         @collection()
@@ -1161,6 +1165,9 @@ describe("Repository", () => {
     })
     it("Should able to use One To Many Repository in isolation", async () => {
         const helper = new MongooseHelper()
+        helper.client.set("useNewUrlParser", true)
+        helper.client.set("useUnifiedTopology", true)
+        helper.client.set("useFindAndModify", false)
         const uri = await mong?.getUri()
         await helper.connect(uri!)
         @collection()
