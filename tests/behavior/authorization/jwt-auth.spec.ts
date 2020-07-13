@@ -1,4 +1,4 @@
-import { consoleLog, Authorizer, AuthorizationContext, DefaultDependencyResolver, DefaultFacility, PlumierApplication, RouteMetadata, cleanupConsole } from "@plumier/core"
+import { consoleLog, Authorizer, AuthorizationContext, DefaultDependencyResolver, DefaultFacility, PlumierApplication, RouteMetadata, cleanupConsole, CustomAuthorizerFunction } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { sign } from "jsonwebtoken"
 import { authorize, domain, route, val } from "plumier"
@@ -2107,7 +2107,6 @@ describe("JwtAuth", () => {
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .expect(200, [{ name: "admin", password: "secret" }, { name: "user", password: "secret" }])
             })
-
             it("Should able to use role authorizer", async () => {
                 @domain()
                 class User {
@@ -2336,6 +2335,102 @@ describe("JwtAuth", () => {
                     .expect(200, { user: { name: "admin", parent: {} } })
             })
         })
-    })
 
+        describe("Custom Authorizer", () => {
+            it("Should able to use custom authorizer", async () => {
+                const onlyAdmin:CustomAuthorizerFunction = info => {
+                    return info.role.some(x => x === "admin")
+                }
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.custom(onlyAdmin)
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type(User)
+                    get() {
+                        return new User("admin", "secret")
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { name: "admin", password: "secret" })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { name: "admin" })
+            })
+            it("Should able to use custom authorizer on array of object", async () => {
+                const onlyAdmin:CustomAuthorizerFunction = info => {
+                    return info.role.some(x => x === "admin")
+                }
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.custom(onlyAdmin)
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type([User])
+                    get() {
+                        return [new User("admin", "secret"), new User("user", "secret")]
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, [{ name: "admin", password: "secret" }, { name: "user", password: "secret" }])
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, [{ name: "admin" }, { name: "user" }])
+            })
+            it("Should able to use custom authorizer on nested object", async () => {
+                const onlyAdmin:CustomAuthorizerFunction = info => {
+                    return info.role.some(x => x === "admin")
+                }
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.custom(onlyAdmin)
+                        public password: string
+                    ) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(public user: User) { }
+                }
+                class UsersController {
+                    @reflect.type(Parent)
+                    get() {
+                        return new Parent(new User("admin", "secret"))
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { user: { name: "admin", password: "secret" } })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { user: { name: "admin" } })
+            })
+        })
+    })
 })
