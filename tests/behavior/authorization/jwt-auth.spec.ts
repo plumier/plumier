@@ -967,6 +967,33 @@ describe("JwtAuth", () => {
                 .send({ id: "123", deceased: "Yes" })
                 .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.deceased)" })
         })
+        it("Should be able get value and its parent value", async () => {
+            const fn = jest.fn()
+            const onlyAdmin: CustomAuthorizerFunction = ({ role, parentValue, value }) => {
+                fn({ parentValue, value })
+                return role.some(x => x === "admin")
+            }
+            @domain()
+            class Animal {
+                constructor(name: string,
+                    id: number | undefined,
+                    @authorize.custom(onlyAdmin, { access: "set" })
+                    deceased: boolean | undefined) { }
+            }
+            class AnimalController {
+                @route.post()
+                save(data: Animal) { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .send({ id: "123", deceased: "Yes" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
         it("Should be able get current metadata information", async () => {
             const fn = jest.fn()
             const onlyAdmin: CustomAuthorizerFunction = ({ role, metadata }) => {
