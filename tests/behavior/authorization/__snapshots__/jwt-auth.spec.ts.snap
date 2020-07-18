@@ -16,6 +16,138 @@ Array [
 ]
 `;
 
+exports[`JwtAuth Authorization Filter Custom Authorizer Should able to access current property metadata 1`] = `
+Array [
+  Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "access": "all",
+          "authorize": onlyAdmin,
+          "evaluation": "Dynamic",
+          "location": "Parameter",
+          "tag": "Custom",
+          "type": "plumier-meta:authorize",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "inherit": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "name",
+      "parent": User,
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "access": "all",
+          "authorize": onlyAdmin,
+          "evaluation": "Dynamic",
+          "location": "Parameter",
+          "tag": "Custom",
+          "type": "plumier-meta:authorize",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "inherit": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 1,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "password",
+      "parent": User,
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+]
+`;
+
+exports[`JwtAuth Authorization Filter Custom Authorizer Should able to access value and parent value 1`] = `
+Array [
+  Array [
+    Object {
+      "parentValue": User {
+        "name": "admin",
+        "password": "secret",
+      },
+      "value": "secret",
+    },
+  ],
+]
+`;
+
+exports[`JwtAuth Custom Parameter Authorizer Should be able get current metadata information 1`] = `
+Array [
+  Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "access": "set",
+          "authorize": onlyAdmin,
+          "evaluation": "Dynamic",
+          "location": "Parameter",
+          "tag": "Custom",
+          "type": "plumier-meta:authorize",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "inherit": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 1,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "id",
+      "parent": Animal,
+      "set": undefined,
+      "type": Object,
+      "typeClassification": "Primitive",
+    },
+  ],
+  Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "access": "set",
+          "authorize": onlyAdmin,
+          "evaluation": "Dynamic",
+          "location": "Parameter",
+          "tag": "Custom",
+          "type": "plumier-meta:authorize",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "inherit": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 2,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "deceased",
+      "parent": Animal,
+      "set": undefined,
+      "type": Object,
+      "typeClassification": "Primitive",
+    },
+  ],
+]
+`;
+
 exports[`JwtAuth Default Configuration Should throw error when no secret provided nor environment variable 1`] = `
 Array [
   Array [

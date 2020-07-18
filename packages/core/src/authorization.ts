@@ -137,7 +137,6 @@ async function checkUserAccessToRoute(decorators: AuthorizeDecorator[], info: Au
 // ---------------------- PARAMETER AUTHORIZATION ---------------------- //
 // --------------------------------------------------------------------- //
 
-
 async function checkParameter(path: string[], meta: PropertyReflection | ParameterReflection, value: any, info: AuthorizationContext, parent: Class) {
     if (value === undefined) return []
     else if (Array.isArray(meta.type)) {
@@ -244,7 +243,7 @@ interface ArrayNode {
 
 interface ClassNode {
     kind: "Class"
-    properties: { name: string, authorizer: (boolean | Authorizer)[], type: FilterNode }[]
+    properties: { name: string, meta: PropertyReflection & { parent?: Class }, authorizer: (boolean | Authorizer)[], type: FilterNode }[]
 }
 
 async function createPropertyNode(prop: PropertyReflection, info: AuthorizerContext) {
@@ -270,7 +269,11 @@ async function compileType(type: Class | Class[], ctx: AuthorizerContext, parent
         const properties = []
         for (const prop of meta.properties) {
             const propNode = await createPropertyNode(prop, ctx)
-            properties.push({ ...propNode, type: await compileType(prop.type, ctx, parentTypes.concat(type)) })
+            properties.push({
+                ...propNode,
+                meta: { ...prop, parent: type },
+                type: await compileType(prop.type, ctx, parentTypes.concat(type))
+            })
         }
         return { kind: "Class", properties }
     }
@@ -300,9 +303,14 @@ async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): P
     else if (node.kind === "Class") {
         const result: any = {}
         for (const prop of node.properties) {
-            const authorized = await getAuthorize(prop.authorizer, ctx)
+            const value = raw[prop.name]
+            const authorized = await getAuthorize(prop.authorizer, {
+                ...ctx, value,
+                parentValue: raw, 
+                metadata: { ...ctx.metadata, current: prop.meta }
+            })
             if (authorized) {
-                result[prop.name] = await filterType(raw[prop.name], prop.type, ctx)
+                result[prop.name] = await filterType(value, prop.type, ctx)
             }
         }
         return result
