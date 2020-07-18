@@ -14,18 +14,22 @@ import {
     RouteInfo,
     RouteMetadata,
 } from "./types"
+import { authorize } from './decorator/authorize'
 
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
+type AuthorizerType = "Route" | "Filter" | "Parameter"
 interface AuthorizationContext {
     value?: any
+    parentValue?: any
     role: string[]
     user: any
     ctx: ActionContext
     metadata: Metadata
+    type: AuthorizerType
 }
 
 type AuthorizerFunction = (info: AuthorizationContext, location: "Class" | "Parameter" | "Method") => boolean | Promise<boolean>
@@ -35,7 +39,11 @@ interface AuthorizeDecorator {
     authorize: string | AuthorizerFunction | Authorizer
     access: "get" | "set" | "all"
     tag: string,
-    location: "Class" | "Parameter" | "Method"
+    location: "Class" | "Parameter" | "Method",
+    // only applied on authorize filter
+    // static -> authorize function evaluate once then applied through all data 
+    // dynamic -> authorize function evaluate on each data
+    evaluation: "Static" | "Dynamic"
 }
 
 interface Authorizer {
@@ -53,15 +61,18 @@ type RoleField = string | ((value: any) => Promise<string[]>)
 /* ------------------------------- HELPERS --------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function executeDecorator(decorator: AuthorizeDecorator, info: AuthorizationContext) {
+function createAuthorizer(decorator: AuthorizeDecorator, info: AuthorizationContext): Authorizer {
     const authorize = decorator.authorize
-    let instance: Authorizer
     if (typeof authorize === "function")
-        instance = { authorize }
+        return { authorize }
     else if (hasKeyOf<Authorizer>(authorize, "authorize"))
-        instance = authorize
+        return authorize
     else
-        instance = info.ctx.config.dependencyResolver.resolve(authorize)
+        return info.ctx.config.dependencyResolver.resolve(authorize)
+}
+
+function executeDecorator(decorator: AuthorizeDecorator, info: AuthorizationContext) {
+    const instance = createAuthorizer(decorator, info)
     return instance.authorize(info, decorator.location)
 }
 
@@ -88,10 +99,13 @@ function getAuthorizeDecorators(info: RouteInfo, globalDecorator?: (...args: any
 }
 
 
-async function createAuthContext(ctx: ActionContext): Promise<AuthorizationContext> {
+async function createAuthContext(ctx: ActionContext, type: AuthorizerType): Promise<AuthorizationContext> {
     const { route, parameters, state, config } = ctx
     const userRoles = await getRole(state.user, config.roleField)
-    return <AuthorizationContext>{ role: userRoles, user: state.user, route, ctx, metadata: new MetadataImpl(ctx.parameters, ctx.route, {} as any) }
+    return <AuthorizationContext>{
+        role: userRoles, user: state.user, route, ctx, type,
+        metadata: new MetadataImpl(ctx.parameters, ctx.route, {} as any),
+    }
 }
 
 // --------------------------------------------------------------------- //
@@ -202,11 +216,12 @@ async function getRole(user: any, roleField: RoleField): Promise<string[]> {
 async function checkAuthorize(ctx: ActionContext) {
     if (ctx.config.enableAuthorization) {
         const { route, parameters, config } = ctx
-        const info = await createAuthContext(ctx)
+        const info = await createAuthContext(ctx, "Route")
         const decorator = getAuthorizeDecorators(route, config.globalAuthorizationDecorators)
         //check user access
         await checkUserAccessToRoute(decorator, info)
         //if ok check parameter access
+        const parInfo = await createAuthContext(ctx, "Parameter")
         await checkUserAccessToParameters(route.action.parameters, parameters, info)
     }
 }
@@ -229,22 +244,22 @@ interface ArrayNode {
 
 interface ClassNode {
     kind: "Class"
-    properties: { name: string, authorized: boolean, type: FilterNode }[]
+    properties: { name: string, authorizer: (boolean | Authorizer)[], type: FilterNode }[]
 }
 
-async function createPropertyNode(prop: PropertyReflection, ctx: ActionContext) {
+async function createPropertyNode(prop: PropertyReflection, info: AuthorizerContext) {
     const decorators = prop.decorators.filter(createDecoratorFilter(x => x.access === "get" || x.access === "all"))
-    const info = await createAuthContext(ctx)
     // if no authorize decorator then always allow to access
-    let authorized = decorators.length === 0
+    let authorizer: (boolean | Authorizer)[] = [decorators.length === 0]
     for (const dec of decorators) {
-        authorized = await executeDecorator(dec, info)
-        if (authorized) break
+        const auth = dec.evaluation === "Static" ? await executeDecorator(dec, info) : createAuthorizer(dec, info)
+        authorizer.push(auth)
+        if (auth === true) break
     }
-    return { name: prop.name, authorized }
+    return { name: prop.name, authorizer }
 }
 
-async function compileType(type: Class | Class[], ctx: ActionContext, parentTypes: Class[]): Promise<FilterNode> {
+async function compileType(type: Class | Class[], ctx: AuthorizerContext, parentTypes: Class[]): Promise<FilterNode> {
     if (Array.isArray(type)) {
         return { kind: "Array", child: await compileType(type[0], ctx, parentTypes) }
     }
@@ -262,19 +277,35 @@ async function compileType(type: Class | Class[], ctx: ActionContext, parentType
     else return { kind: "Value" }
 }
 
+async function getAuthorize(authorizers: (boolean | Authorizer)[], ctx: AuthorizerContext) {
+    for (const auth of authorizers) {
+        if (auth === true) return true
+        if (typeof auth === "object") {
+            const result = await auth.authorize(ctx, "Parameter")
+            if (result) return true
+        }
+    }
+    return false
+}
 
-function filterType(raw: any, node: FilterNode) {
-    if(raw === undefined || raw === null) return undefined
+async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): Promise<any> {
+    if (raw === undefined || raw === null) return undefined
     if (node.kind === "Array") {
-        return raw.map((x: any) => filterType(x, node.child))
+        const result = []
+        for (const item of raw) {
+            result.push(await filterType(item, node.child, ctx))
+        }
+        return result
     }
     else if (node.kind === "Class") {
-        return node.properties.reduce((a, b) => {
-            if (b.authorized) {
-                a[b.name] = filterType(raw[b.name], b.type)
+        const result: any = {}
+        for (const prop of node.properties) {
+            const authorized = await getAuthorize(prop.authorizer, ctx)
+            if (authorized) {
+                result[prop.name] = await filterType(raw[prop.name], prop.type, ctx)
             }
-            return a
-        }, {} as any)
+        }
+        return result
     }
     else return raw
 }
@@ -282,8 +313,9 @@ function filterType(raw: any, node: FilterNode) {
 async function filterResult(raw: ActionResult, ctx: ActionContext): Promise<ActionResult> {
     const type = ctx.route.action.returnType
     if (type !== Promise && type && raw.status === 200 && raw.body) {
-        const node = await compileType(type, ctx, [])
-        raw.body = filterType(raw.body, node)
+        const info = await createAuthContext(ctx, "Filter")
+        const node = await compileType(type, info, [])
+        raw.body = await filterType(raw.body, node, info)
         return raw
     }
     else {
