@@ -937,6 +937,66 @@ describe("JwtAuth", () => {
 
     })
 
+    describe("Custom Parameter Authorizer", () => {
+        it("Should be able to authorize using custom parameter", async () => {
+            const onlyAdmin: CustomAuthorizerFunction = info => {
+                return info.role.some(x => x === "admin")
+            }
+            @domain()
+            class Animal {
+                constructor(name: string,
+                    id: number | undefined,
+                    @authorize.custom(onlyAdmin, { access: "set" })
+                    deceased: boolean | undefined) { }
+            }
+            class AnimalController {
+                @route.post()
+                save(data: Animal) { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .send({ id: "123", deceased: "Yes" })
+                .expect(200)
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .send({ id: "123", deceased: "Yes" })
+                .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.deceased)" })
+        })
+        it("Should be able get current metadata information", async () => {
+            const fn = jest.fn()
+            const onlyAdmin: CustomAuthorizerFunction = ({ role, metadata }) => {
+                fn(metadata.current)
+                return role.some(x => x === "admin")
+            }
+            @domain()
+            class Animal {
+                constructor(name: string,
+                    @authorize.custom(onlyAdmin, { access: "set" })
+                    id: number | undefined,
+                    @authorize.custom(onlyAdmin, { access: "set" })
+                    deceased: boolean | undefined) { }
+            }
+            class AnimalController {
+                @route.post()
+                save(data: Animal) { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .send({ id: "123", deceased: "Yes" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+    })
+
     describe("Separate Decorator And Implementation with Object Registry", () => {
         const OTHER_USER_TOKEN = sign({ email: "other-ketut@gmail.com", role: "user" }, SECRET)
         const resolver = new DefaultDependencyResolver()
@@ -2338,7 +2398,7 @@ describe("JwtAuth", () => {
 
         describe("Custom Authorizer", () => {
             it("Should able to use custom authorizer", async () => {
-                const onlyAdmin:CustomAuthorizerFunction = info => {
+                const onlyAdmin: CustomAuthorizerFunction = info => {
                     return info.role.some(x => x === "admin")
                 }
                 @domain()
@@ -2368,7 +2428,7 @@ describe("JwtAuth", () => {
                     .expect(200, { name: "admin" })
             })
             it("Should able to use custom authorizer on array of object", async () => {
-                const onlyAdmin:CustomAuthorizerFunction = info => {
+                const onlyAdmin: CustomAuthorizerFunction = info => {
                     return info.role.some(x => x === "admin")
                 }
                 @domain()
@@ -2398,7 +2458,7 @@ describe("JwtAuth", () => {
                     .expect(200, [{ name: "admin" }, { name: "user" }])
             })
             it("Should able to use custom authorizer on nested object", async () => {
-                const onlyAdmin:CustomAuthorizerFunction = info => {
+                const onlyAdmin: CustomAuthorizerFunction = info => {
                     return info.role.some(x => x === "admin")
                 }
                 @domain()
@@ -2430,6 +2490,107 @@ describe("JwtAuth", () => {
                     .get("/users/get")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .expect(200, { user: { name: "admin" } })
+            })
+            it("Should able to specify access modifier", async () => {
+                const onlyAdmin: CustomAuthorizerFunction = info => {
+                    return info.role.some(x => x === "admin")
+                }
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.custom(onlyAdmin, { access: "get" })
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type(User)
+                    get() {
+                        return new User("admin", "secret")
+                    }
+                    @route.post()
+                    save(data: User) { }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .post("/users/save")
+                    .send({ name: "lorem", password: "ipsum" })
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/users/save")
+                    .send({ name: "lorem", password: "ipsum" })
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200)
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { name: "admin", password: "secret" })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { name: "admin" })
+            })
+            it("Should able to access value and parent value", async () => {
+                const fn = jest.fn()
+                const onlyAdmin: CustomAuthorizerFunction = ({ value, parentValue, role }) => {
+                    fn({ value, parentValue })
+                    return role.some(x => x === "admin")
+                }
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.custom(onlyAdmin)
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type(User)
+                    get() {
+                        return new User("admin", "secret")
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200)
+                expect(fn.mock.calls).toMatchSnapshot()
+            })
+            it("Should able to access current property metadata", async () => {
+                const fn = jest.fn()
+                const onlyAdmin: CustomAuthorizerFunction = ({ metadata, role }) => {
+                    fn(metadata.current)
+                    return role.some(x => x === "admin")
+                }
+                @domain()
+                class User {
+                    constructor(
+                        @authorize.custom(onlyAdmin)
+                        public name: string,
+                        @authorize.custom(onlyAdmin)
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type(User)
+                    get() {
+                        return new User("admin", "secret")
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200)
+                expect(fn.mock.calls).toMatchSnapshot()
             })
         })
     })
