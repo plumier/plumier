@@ -137,48 +137,55 @@ async function checkUserAccessToRoute(decorators: AuthorizeDecorator[], info: Au
 // ---------------------- PARAMETER AUTHORIZATION ---------------------- //
 // --------------------------------------------------------------------- //
 
-async function checkParameter(path: string[], meta: PropertyReflection | ParameterReflection, value: any, info: AuthorizationContext, parent: Class) {
+interface ParamCheckContext {
+    path: string[]
+    info: AuthorizationContext
+    parent: Class
+    parentValue?: any
+}
+
+async function checkParameter(meta: PropertyReflection | ParameterReflection, value: any, ctx: ParamCheckContext) {
     if (value === undefined) return []
     else if (Array.isArray(meta.type)) {
         const newMeta = { ...meta, type: meta.type[0] };
         const result: string[] = []
         for (let i = 0; i < value.length; i++) {
             const val = value[i];
-            result.push(...await checkParameter(path.concat(i.toString()), newMeta, val, info, parent))
+            result.push(...await checkParameter(newMeta, val, { ...ctx, path: ctx.path.concat(i.toString()) }))
         }
         return result
     }
     else if (isCustomClass(meta.type)) {
         const classMeta = reflect(<Class>meta.type)
         const values = classMeta.properties.map(x => value[x.name])
-        return checkParameters(path, classMeta.properties, values, info, meta.type)
+        return checkParameters(classMeta.properties, values, { ...ctx, parent: meta.type, parentValue: value })
     }
     else {
         const decorators = meta.decorators.filter(createDecoratorFilter())
         const result: string[] = []
         for (const dec of decorators) {
             if (dec.access === "get") continue;
-            info.metadata.current = { ...meta, parent }
-            const allowed = await executeDecorator(dec, { ...info, value })
+            ctx.info.metadata.current = { ...meta, parent: ctx.parent }
+            const allowed = await executeDecorator(dec, { ...ctx.info, value, parentValue: ctx.parentValue })
             if (!allowed)
-                result.push(path.join("."))
+                result.push(ctx.path.join("."))
         }
         return result
     }
 }
 
-async function checkParameters(path: string[], meta: (PropertyReflection | ParameterReflection)[], value: any[], info: AuthorizationContext, parent: Class) {
+async function checkParameters(meta: (PropertyReflection | ParameterReflection)[], value: any[], ctx: ParamCheckContext) {
     const result: string[] = []
     for (let i = 0; i < meta.length; i++) {
         const prop = meta[i];
-        const issues = await checkParameter(path.concat(prop.name), prop, value[i], info, parent)
+        const issues = await checkParameter(prop, value[i], { ...ctx, path: ctx.path.concat(prop.name), })
         result.push(...issues)
     }
     return result
 }
 
 async function checkUserAccessToParameters(meta: ParameterReflection[], values: any[], info: AuthorizationContext) {
-    const unauthorizedPaths = await checkParameters([], meta, values, info, info.ctx.route.controller.type)
+    const unauthorizedPaths = await checkParameters(meta, values, { info, path: [], parent: info.ctx.route.controller.type })
     if (unauthorizedPaths.length > 0)
         throw new HttpStatusError(401, `Unauthorized to populate parameter paths (${unauthorizedPaths.join(", ")})`)
 }
@@ -220,8 +227,7 @@ async function checkAuthorize(ctx: ActionContext) {
         //check user access
         await checkUserAccessToRoute(decorator, info)
         //if ok check parameter access
-        const parInfo = await createAuthContext(ctx, "Parameter")
-        await checkUserAccessToParameters(route.action.parameters, parameters, info)
+        await checkUserAccessToParameters(route.action.parameters, parameters, { ...info, type: "Parameter" })
     }
 }
 
@@ -306,7 +312,7 @@ async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): P
             const value = raw[prop.name]
             const authorized = await getAuthorize(prop.authorizer, {
                 ...ctx, value,
-                parentValue: raw, 
+                parentValue: raw,
                 metadata: { ...ctx.metadata, current: prop.meta }
             })
             if (authorized) {

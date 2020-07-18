@@ -148,6 +148,20 @@ Array [
 ]
 `;
 
+exports[`JwtAuth Custom Parameter Authorizer Should be able get value and its parent value 1`] = `
+Array [
+  Array [
+    Object {
+      "parentValue": Animal {
+        "deceased": "Yes",
+        "id": "123",
+      },
+      "value": "Yes",
+    },
+  ],
+]
+`;
+
 exports[`JwtAuth Default Configuration Should throw error when no secret provided nor environment variable 1`] = `
 Array [
   Array [
