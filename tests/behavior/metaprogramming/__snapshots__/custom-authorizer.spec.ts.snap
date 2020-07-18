@@ -36,6 +36,7 @@ Array [
         Object {
           "access": "all",
           "authorize": customAuthorizer,
+          "evaluation": "Dynamic",
           "location": "Class",
           "tag": "Custom",
           "type": "plumier-meta:authorize",
@@ -94,6 +95,7 @@ Array [
         Object {
           "access": "all",
           "authorize": customAuthorizer,
+          "evaluation": "Dynamic",
           "location": "Method",
           "tag": "Custom",
           "type": "plumier-meta:authorize",
@@ -141,6 +143,7 @@ Array [
         Object {
           "access": "all",
           "authorize": customAuthorizer,
+          "evaluation": "Dynamic",
           "location": "Parameter",
           "tag": "Custom",
           "type": "plumier-meta:authorize",
@@ -170,6 +173,7 @@ Array [
         Object {
           "access": "all",
           "authorize": customAuthorizer,
+          "evaluation": "Dynamic",
           "location": "Parameter",
           "tag": "Custom",
           "type": "plumier-meta:authorize",
@@ -203,6 +207,7 @@ Array [
           Object {
             "access": "all",
             "authorize": customAuthorizer,
+            "evaluation": "Dynamic",
             "location": "Method",
             "tag": "Custom",
             "type": "plumier-meta:authorize",
@@ -267,6 +272,7 @@ Array [
               Object {
                 "access": "all",
                 "authorize": customAuthorizer,
+                "evaluation": "Dynamic",
                 "location": "Method",
                 "tag": "Custom",
                 "type": "plumier-meta:authorize",
@@ -313,6 +319,7 @@ Array [
           Object {
             "access": "all",
             "authorize": customAuthorizer,
+            "evaluation": "Dynamic",
             "location": "Method",
             "tag": "Custom",
             "type": "plumier-meta:authorize",
