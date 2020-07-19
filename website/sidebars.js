@@ -1,12 +1,13 @@
-{
-  "docs": {
-    "Overview": [
+module.exports = {
+  someSidebar: {
+    Overview: [
+      "overview",
       "motivation",
       "fundamentals",
       "extend",
       "project-template"
     ],
-    "References": [
+    References: [
       "refs/entry-point",
       "refs/controller",
       "refs/route",
@@ -38,19 +39,5 @@
       "extends/custom-dependency-resolver",
       "extends/custom-route-generator"
     ]
-  },
-  "tutorials": {
-    "SQL Restful API": [
-      "tutorials/basic-sql/get-started",
-      "tutorials/basic-sql/create-domain",
-      "tutorials/basic-sql/create-migration",
-      "tutorials/basic-sql/create-restful-api",
-      "tutorials/basic-sql/debugging",
-      "tutorials/basic-sql/create-custom-validation",
-      "tutorials/basic-sql/create-local-authentication",
-      "tutorials/basic-sql/securing-routes",
-      "tutorials/basic-sql/securing-domain",
-      "tutorials/basic-sql/deployment"
-    ]
   }
-}
+};
