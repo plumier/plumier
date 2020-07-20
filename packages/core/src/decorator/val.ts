@@ -31,10 +31,10 @@ tc.val.enums = (opt) => {
     return mergeDecorator(tc.val.custom(x => {
         if (!opt.enums.some(y => x === y))
             return opt.message || `Value must be one of ${opt.enums.join(", ")}`
-    }), api.params.enums(...opt.enums))
+    }), api.enums(...opt.enums))
 }
 
 const originalRequired = tc.val.required
 tc.val.required = (): CustomPropertyDecorator => {
-    return mergeDecorator(originalRequired(), api.params.required())
+    return mergeDecorator(originalRequired(), api.required())
 }

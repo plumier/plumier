@@ -14,14 +14,14 @@ class Animal {
 @domain()
 class User {
     constructor(
-        @api.params.readOnly()
+        @api.readOnly()
         id:number,
         @val.required()
         public name: string,
         @val.required()
         public email: string,
         public dateOfBirth: Date,
-        @api.params.readOnly()
+        @api.readOnly()
         public animal:Animal
     ) { }
 }

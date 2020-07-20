@@ -3,7 +3,7 @@ import { JwtAuthFacility } from "@plumier/jwt"
 import { sign } from "jsonwebtoken"
 import { authorize, domain, route, val } from "plumier"
 import Supertest from "supertest"
-import { reflect } from "tinspector"
+import { reflect, type } from "tinspector"
 
 import { fixture } from "../helper"
 
@@ -887,13 +887,13 @@ describe("JwtAuth", () => {
         @domain()
         class DomainBase {
             constructor(
-                @authorize.role("Machine")
+                @authorize.readonly()
                 public id: number = 0,
 
-                @authorize.role("Machine")
+                @authorize.readonly()
                 public createdAt: Date = new Date(),
 
-                @authorize.role("Machine")
+                @authorize.readonly()
                 public deleted: boolean = false
             ) { }
         }
@@ -935,6 +935,62 @@ describe("JwtAuth", () => {
                 .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id, data.createdAt, data.deleted)" })
         })
 
+    })
+
+    describe("Readonly/Writeonly Authorization", () => {
+        @domain()
+        class DomainBase {
+            @authorize.readonly()
+            id: number
+
+            @authorize.readonly()
+            createdAt: Date
+
+            @authorize.readonly()
+            deleted: boolean
+        }
+
+        @domain()
+        class User extends DomainBase {
+            constructor(
+                public name: string,
+                @authorize.writeonly()
+                public password: string
+            ) { super() }
+        }
+
+        class UserController {
+            @route.post()
+            save(data: User) { return "Hello" }
+            @route.get()
+            @type(User)
+            get() {
+                return new User("John Doe", "secret")
+            }
+        }
+
+        it("Should not able to set secured property", async () => {
+            const app = await fixture(UserController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .post("/user/save")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .send({ id: 20, createdAt: "2018-1-1", deleted: "YES", name: "John", password: "secret" })
+                .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id, data.createdAt, data.deleted)" })
+        })
+
+        it("Should not able to get secured property", async () => {
+            const app = await fixture(UserController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/user/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200, { name: "John Doe" })
+        })
     })
 
     describe("Custom Parameter Authorizer", () => {
