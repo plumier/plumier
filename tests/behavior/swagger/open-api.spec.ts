@@ -1,3 +1,4 @@
+import { x } from "@hapi/joi"
 import {
     ActionResult,
     api,
@@ -15,6 +16,7 @@ import {
 } from "@plumier/core"
 import { crud } from "@plumier/generic-controller"
 import { JwtAuthFacility } from "@plumier/jwt"
+import Plumier, { ControllerFacility, WebApiFacility } from "@plumier/plumier"
 import { refFactory, SwaggerFacility } from "@plumier/swagger"
 import { IncomingMessage } from "http"
 import { Context } from "koa"
@@ -22,8 +24,6 @@ import supertest from "supertest"
 import reflect, { type } from "tinspector"
 
 import { fixture } from "../helper"
-import Plumier, { WebApiFacility, ControllerFacility } from '@plumier/plumier'
-import { x } from '@hapi/joi'
 
 describe("getRef", () => {
     class User { }
@@ -230,7 +230,7 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Parameters {
                 constructor(
-                    @api.params.readOnly()
+                    @api.readOnly()
                     public id: number,
                     public str: string,
                     public num: number
@@ -1070,6 +1070,44 @@ describe("Open API 3.0 Generation", () => {
             expect(body.components.schemas.User).toMatchSnapshot()
             expect(body.components.schemas.Tag).toMatchSnapshot()
         })
+        it("Should add readonly information on property marked with @authorize.readonly()", async () => {
+            @domain()
+            class User {
+                constructor(
+                    @authorize.readonly()
+                    public userName: string,
+                    public password: string
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
+        it("Should add writeonly information on property marked with @authorize.writeonly()", async () => {
+            @domain()
+            class User {
+                constructor(
+                    public userName: string,
+                    @authorize.writeonly()
+                    public password: string
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+        })
     })
 
     describe("Response", () => {
@@ -1310,7 +1348,7 @@ describe("Open API 3.0 Generation", () => {
         it("Should able to mark required", async () => {
             class UsersController {
                 @route.get("")
-                get(@api.params.required() id: string) {
+                get(@api.required() id: string) {
                     return {} as any
                 }
             }
@@ -1323,7 +1361,7 @@ describe("Open API 3.0 Generation", () => {
         it("Should able to rename field", async () => {
             class UsersController {
                 @route.get("")
-                get(@api.params.name("data") id: string) {
+                get(@api.name("data") id: string) {
                     return {} as any
                 }
             }
@@ -1336,7 +1374,7 @@ describe("Open API 3.0 Generation", () => {
         it("Should able add enums information", async () => {
             class UsersController {
                 @route.get("")
-                get(@api.params.enums("a", "b") id: "a" | "b") {
+                get(@api.enums("a", "b") id: "a" | "b") {
                     return {} as any
                 }
             }
@@ -1477,7 +1515,7 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class User {
                 constructor(
-                    @api.params.readOnly()
+                    @api.readOnly()
                     public id: number,
                     public userName: string,
                     public password: string
@@ -1507,7 +1545,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.params.readOnly()
+                    @api.readOnly()
                     public animal: Animal
                 ) { }
             }
@@ -1535,7 +1573,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.params.readOnly()
+                    @api.readOnly()
                     public animal: Animal
                 ) { }
             }
@@ -1565,7 +1603,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.params.readOnly()
+                    @api.readOnly()
                     @reflect.type(x => [Animal])
                     public animal: Animal[]
                 ) { }
@@ -1594,7 +1632,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.params.readOnly()
+                    @api.readOnly()
                     @reflect.type(x => [Animal])
                     public animal: Animal[]
                 ) { }
@@ -1616,7 +1654,7 @@ describe("Open API 3.0 Generation", () => {
             class User {
                 constructor(
                     public id: number,
-                    @api.params.writeOnly()
+                    @api.writeOnly()
                     public userName: string,
                     public password: string
                 ) { }
@@ -1645,7 +1683,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.params.writeOnly()
+                    @api.writeOnly()
                     public animal: Animal
                 ) { }
             }
@@ -1673,7 +1711,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.params.writeOnly()
+                    @api.writeOnly()
                     public animal: Animal
                 ) { }
             }
@@ -1703,7 +1741,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.params.writeOnly()
+                    @api.writeOnly()
                     @reflect.type(x => [Animal])
                     public animal: Animal[]
                 ) { }
@@ -1732,7 +1770,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.params.writeOnly()
+                    @api.writeOnly()
                     @reflect.type(x => [Animal])
                     public animal: Animal[]
                 ) { }

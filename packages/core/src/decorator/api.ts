@@ -34,46 +34,42 @@ namespace api {
         return decorateClass(<ApiTagDecorator>{ kind: "ApiTag", tag })
     }
 
-    export namespace params {
-
-        /**
-         * Mark property as readonly
-         */
-        export function readOnly() {
-            return decorateProperty(<ApiReadOnlyDecorator>{ kind: "ApiReadonly" })
-        }
-
-        /**
-         * Mark property as write only
-         */
-        export function writeOnly() {
-            return decorateProperty(<ApiWriteOnlyDecorator>{ kind: "ApiWriteOnly" })
-        }
-
-        /**
-         * Mark parameter or property as required
-         */
-        export function required() {
-            return decorateProperty(<ApiRequiredDecorator>{ kind: "ApiRequired" })
-        }
-
-        /**
-         * Specify new name for a field
-         * @param alias the new name
-         */
-        export function name(alias: string) {
-            return decorateProperty(<ApiFieldNameDecorator>{ kind: "ApiFieldName", alias })
-        }
-
-        /**
-         * Specify enumeration value
-         * @param enums list of enumeration values
-         */
-        export function enums(...enums: string[]) {
-            return decorateProperty(<ApiEnumDecorator>{ kind: "ApiEnum", enums })
-        }
+    /**
+     * Mark property as readonly
+     */
+    export function readOnly() {
+        return decorateProperty(<ApiReadOnlyDecorator>{ kind: "ApiReadonly" })
     }
 
+    /**
+     * Mark property as write only
+     */
+    export function writeOnly() {
+        return decorateProperty(<ApiWriteOnlyDecorator>{ kind: "ApiWriteOnly" })
+    }
+
+    /**
+     * Mark parameter or property as required
+     */
+    export function required() {
+        return decorateProperty(<ApiRequiredDecorator>{ kind: "ApiRequired" })
+    }
+
+    /**
+     * Specify new name for a field
+     * @param alias the new name
+     */
+    export function name(alias: string) {
+        return decorateProperty(<ApiFieldNameDecorator>{ kind: "ApiFieldName", alias })
+    }
+
+    /**
+     * Specify enumeration value
+     * @param enums list of enumeration values
+     */
+    export function enums(...enums: string[]) {
+        return decorateProperty(<ApiEnumDecorator>{ kind: "ApiEnum", enums })
+    }
 }
 
 export {

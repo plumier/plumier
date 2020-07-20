@@ -1,7 +1,8 @@
-import { decorate, CustomPropertyDecorator } from "tinspector"
+import { decorate, CustomPropertyDecorator, mergeDecorator } from "tinspector"
 
 import { AuthorizerFunction, AuthorizeDecorator, Authorizer } from "../authorization"
 import { errorMessage } from "../types"
+import { api } from './api'
 
 type AccessModifier = "get" | "set" | "all"
 type FunctionEvaluation = "Static" | "Dynamic"
@@ -15,7 +16,7 @@ class AuthDecoratorImpl {
      * @param modifier modifier access (for property and parameter authorizer)
      * @param tag authorizer name visible on route generator
      */
-    custom(authorize: symbol | string | AuthorizerFunction | Authorizer, tag: string | { tag?: string, access?: AccessModifier, evaluation?:FunctionEvaluation } = "Custom") {
+    custom(authorize: symbol | string | AuthorizerFunction | Authorizer, tag: string | { tag?: string, access?: AccessModifier, evaluation?: FunctionEvaluation } = "Custom") {
         return decorate((...args: any[]) => {
             const option = typeof tag === "string" ? { tag, access: "all", evaluation: "Dynamic" } : { tag: "Custom", access: "all", evaluation: "Dynamic", ...tag }
             const location = args.length === 1 ? "Class" : args.length === 2 ? "Method" : "Parameter"
@@ -37,14 +38,14 @@ class AuthDecoratorImpl {
     }
 
     /**
-     * Auhtorize property or parameter property accessible by specific role with access control
+     * Authorize property or parameter property accessible by specific role with access control
      * @param role user role allowed
      * @param modifier access kind
      */
     role(option: AuthorizeOption): CustomPropertyDecorator
 
     /**
-     * Auhtorize property or parameter property accessible by specific role
+     * Authorize property or parameter property accessible by specific role
      * @param role user role allowed
      */
     role(role: string): (...args: any[]) => void
@@ -71,6 +72,20 @@ class AuthDecoratorImpl {
      */
     set(...roles: string[]) {
         return this.role({ access: "set", role: roles })
+    }
+
+    /**
+     * Mark parameter or property as readonly, no Role can set its value
+     */
+    readonly() {
+        return mergeDecorator(this.set("plumier::readonly"), api.readOnly()) as CustomPropertyDecorator
+    }
+
+    /**
+      * Mark parameter or property as writeonly, no Role can read its value
+      */
+    writeonly() {
+        return mergeDecorator(this.get("plumier::writeonly"), api.writeOnly()) as CustomPropertyDecorator
     }
 }
 
