@@ -38,8 +38,8 @@ export class Plumier implements PlumierApplication {
         }
     }
 
-    use(option: string | symbol | MiddlewareFunction | Middleware): Application {
-        this.config.middlewares.push(option)
+    use(middleware: string | symbol | MiddlewareFunction | Middleware, scope: "Global" | "Action" = "Global"): Application {
+        this.config.middlewares.push({ middleware, scope })
         return this
     }
 
@@ -77,7 +77,7 @@ export class Plumier implements PlumierApplication {
             if (this.config.mode === "debug") {
                 printAnalysis(analyzeRoutes(routes, this.config))
             }
-            const actionRoutes = routes.filter((x):x is RouteInfo => x.kind === "ActionRoute")
+            const actionRoutes = routes.filter((x): x is RouteInfo => x.kind === "ActionRoute")
             this.koa.use(router(actionRoutes, this.config))
             this.koa.proxy = this.config.trustProxyHeader
             return this.koa
