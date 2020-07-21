@@ -565,7 +565,7 @@ describe("Facility", () => {
             ]);
             const response = await supertest(koa.callback())
                 .post("/animal/save")
-                .send({ name: "Mimi", images: [image1._id, image2._id] })
+                .send({ name: "Mimi", images: [image1.id, image2.id] })
                 .expect(200)
             const result = await AnimalModel.findById(response.body)
                 .populate("images")
@@ -603,14 +603,14 @@ describe("Facility", () => {
 
             const response = await supertest(koa.callback())
                 .post("/animal/save")
-                .send({ name: "Mimi", image: image1._id })
+                .send({ name: "Mimi", image: image1.id })
                 .expect(200)
             const result = await AnimalModel.findById(response.body)
                 .populate("image")
             expect(result!.image.name).toBe("Image1.jpg")
         })
 
-        it.only("Should work with nested object with readonly id", async () => {
+        it("Should work with nested object with readonly id", async () => {
             @collection()
             class Image {
                 constructor(
@@ -643,7 +643,7 @@ describe("Facility", () => {
 
             const response = await supertest(koa.callback())
                 .post("/animal/save")
-                .send({ name: "Mimi", image: image1._id })
+                .send({ name: "Mimi", image: image1.id })
                 .expect(200)
             const result = await AnimalModel.findById(response.body)
                 .populate("image")
