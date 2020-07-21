@@ -14,7 +14,7 @@ import {
     RouteInfo,
     RouteMetadata,
 } from "./types"
-import { authorize } from './decorator/authorize'
+
 
 
 // --------------------------------------------------------------------- //
