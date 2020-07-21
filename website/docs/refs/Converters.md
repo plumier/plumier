@@ -5,7 +5,9 @@ title: Converters
 
 Converters will automatically convert bound value (provided by Parameter Binding) into parameter type specified.
 
-> To be able to make converters work properly Plumier need TypeScript design type information, by providing any decorator on the appropriate action. Use `@route` decorator is best practice to make converter and parameter work properly.
+:::info
+To be able to make converters work properly Plumier need TypeScript design type information, by providing any decorator on the appropriate action. Use `@route` decorator is best practice to make converter and parameter work properly.
+:::
 
 ### Number Converter
 
@@ -58,7 +60,9 @@ GET /animal/get?id=hello       -> Error status 400
 ### Domain Converter
 Domain converter only works for POST and PUT method
 
-> To be able to make Domain converter work properly, the domain model must use [Parameter Properties](https://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) and any of decorator (on the constructor, or on any of constructor parameter decorator). Best practice is using `@domain()` decorator on the top of any dto.
+:::info
+To be able to make Domain converter work properly, the domain model must use [Parameter Properties](https://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) and any of decorator (on the constructor, or on any of constructor parameter decorator). Best practice is using `@domain()` decorator on the top of any dto.
+:::
 
 ```typescript
 @domain() //any decorator will works

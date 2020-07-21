@@ -16,7 +16,9 @@ Plumier has a default error handler that will handle all error thrown inside con
 
 `message` can be a plain text message or can be a JSON object. 
 
-> 500 (Internal server error)  will not formatted into JSON response for security reason.
+:::caution
+500 (Internal server error)  will not formatted into JSON response for security reason.
+:::
 
 ## Override Error Handling
 You can provide a global error handler to override the behavior or the default error handler above, by providing another middleware. 

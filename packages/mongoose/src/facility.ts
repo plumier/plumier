@@ -1,8 +1,8 @@
-import { api, Class, DefaultFacility, findClassRecursive, isCustomClass, PlumierApplication } from "@plumier/core"
+import { api, Class, DefaultFacility, findClassRecursive, isCustomClass, PlumierApplication, ActionContext, MiddlewareFunction } from "@plumier/core"
 import { crud, GenericControllerFacility, GenericControllerFacilityOption } from "@plumier/generic-controller"
 import Mongoose from "mongoose"
 import reflect, { PropertyReflection, TypeDecorator } from "tinspector"
-import { Result, VisitorInvocation } from "typedconverter"
+import convert, { Result, VisitorInvocation } from "typedconverter"
 
 import { getModels, MongooseHelper } from "./generator"
 import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
@@ -19,10 +19,10 @@ function safeToString(obj: any) {
     }
 }
 
-function relationToObjectIdVisitor(i: VisitorInvocation): Result {
+function validateObjectId(i: VisitorInvocation): Result {
     const id = safeToString(i.value)
     if (Mongoose.isValidObjectId(id) && isCustomClass(i.type)) {
-        return Result.create(Mongoose.Types.ObjectId(id))
+        return Result.create(id)
     }
     else
         return i.proceed()
@@ -36,13 +36,14 @@ export class MongooseFacility extends DefaultFacility {
     }
 
     async initialize(app: Readonly<PlumierApplication>) {
-        app.set({ typeConverterVisitors: [relationToObjectIdVisitor] })
+        app.set({ typeConverterVisitors: [validateObjectId] })
         const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
-        if (uri)
+        if (uri) {
             if (this.option.helper)
                 await this.option.helper.connect(uri)
             else
                 await Mongoose.connect(uri)
+        }
     }
 }
 
@@ -65,11 +66,11 @@ export class MongooseGenericControllerFacility extends GenericControllerFacility
 
     private assignDecorators(entity: Class, property: PropertyReflection) {
         if (["id", "createdAt", "updatedAt"].some(x => property.name === x)) {
-            Reflect.decorate([api.params.readOnly()], entity.prototype, property.name)
+            Reflect.decorate([api.readOnly()], entity.prototype, property.name)
         }
         if (property.decorators.find((x: RefDecorator) => x.name === "MongooseRef")) {
             const ovr = property.decorators.find((x: TypeDecorator): x is TypeDecorator => x.kind === "Override")!
-            Reflect.decorate([crud.oneToMany(ovr.type as any), api.params.readOnly(), api.params.writeOnly()], entity.prototype, property.name)
+            Reflect.decorate([crud.oneToMany(ovr.type as any), api.readOnly(), api.writeOnly()], entity.prototype, property.name)
         }
     }
 

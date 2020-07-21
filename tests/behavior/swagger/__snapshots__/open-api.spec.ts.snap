@@ -141,6 +141,36 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Component Schema Should add readonly information on property marked with @authorize.readonly() 1`] = `
+Object {
+  "properties": Object {
+    "password": Object {
+      "type": "string",
+    },
+    "userName": Object {
+      "readOnly": true,
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should add writeonly information on property marked with @authorize.writeonly() 1`] = `
+Object {
+  "properties": Object {
+    "password": Object {
+      "type": "string",
+      "writeOnly": true,
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
 exports[`Open API 3.0 Generation Component Schema Should create inline array object if nested object not registered 1`] = `
 Object {
   "properties": Object {

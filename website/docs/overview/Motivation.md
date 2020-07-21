@@ -19,9 +19,9 @@ Welcome to Plumier where robustness and secureness is mandatory and fanciness is
 
 The main goal is to make your development time fast and delightful by providing built-in functionalities such as automatic data type conversion, comprehensive list (40+ types) of validator, authorization to programmatically restrict access to some endpoints and more cool features such as: 
 
-* [Parameter binding](refs/parameter-binding)
-* [Route generation](refs/route)
-* [Static route generation analysis](refs/static-analysis)
+* [Parameter binding](../refs/Parameter-Binding.md)
+* [Route generation](Route-Generation-Cheat-Sheet.md)
+* [Static route generation analysis](../refs/Static-Analysis.md)
 * [Meta programming on middleware basis](https://medium.com/hackernoon/adding-an-auditing-system-into-a-rest-api-4fbb522240ea)
 * API versioning based on reflection
 
@@ -47,7 +47,7 @@ Above controller generate single endpoints `GET /animals/list?offset=0&list=10`.
 3. It automatically validate the `limit` parameter and make sure if the provided value is a positive number.
 4. It taking care of query case insensitivity, `GET /animals/list?OFFSET=0&LIMIT=10` will keep working. Note that query is case sensitive in most frameworks.
 
-Plumier has [comprehensive list](refs/validation#decorators) of decorator based validators, it easily can be applied on method parameters or domain model properties. 
+Plumier has [comprehensive list](../refs/Validation.md#decorators) of decorator based validators, it easily can be applied on method parameters or domain model properties. 
 
 ```typescript
 @domain()
@@ -109,7 +109,7 @@ class User {
 const UserModel = model(User)
 ```
 
-Read more information about Mongoose helper [here](refs/mongoose-helper). 
+Read more information about Mongoose helper [here](Mongoose-Helper.md). 
 
 ## Reduce Duplication
 There is a best practice spread among static type programmers: **Never use your domain model as DTO**. Literally its a good advice because in a common framework using domain model as DTO can lead to some security issue, but this will ends up in another issue: bloated code and duplication. 
@@ -179,9 +179,6 @@ Plumier provided some default packages
 | `@plumier/swagger`            | Open API 3.0 and Swagger UI, automatically generate schema from controllers and domain models                  |
 | `@plumier/serve-static`       | Serve static files                                                                                             |
 | `@plumier/social-login`       | OAuth2 login package supported some social media login                                                         |
-
-## Tutorial
-* [Basic REST api using Knex.js](tutorials/basic-sql/get-started)
 
 ## Examples
 * [Basic REST API with Knex.js](https://github.com/plumier/tutorial-todo-sql-backend)

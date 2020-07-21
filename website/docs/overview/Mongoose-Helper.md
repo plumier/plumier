@@ -275,7 +275,9 @@ const SecondDummyModel = model(Dummy)
 ## Relation with Cyclic Dependency 
 Its possible to map relation with cyclic dependency using mongoose helper
 
-> Note when you define model with cyclic dependency its required to use `Ref<T>`  data type and use callback on the `@collection.ref()` parameter to prevent TypeScript `ReferenceError: Model is not defined` error.
+:::info
+Note when you define model with cyclic dependency its required to use `Ref<T>`  data type and use callback on the `@collection.ref()` parameter to prevent TypeScript `ReferenceError: Model is not defined` error.
+:::
 
 ```typescript
 @collection()
@@ -306,7 +308,9 @@ const DummyModel = model(Dummy)
 ## Unique Validation
 Mongoose helper provided `@val.unique()` that augmented (merged) with `@plumier/validator` module. Means if you install `@plumier/mongoose` `@val` decorator will automatically has `unique()` function.
 
-> This validation done some http check and only work on `POST` method, since for `PUT` and `PATCH` method, uniqueness check require more complex condition.
+:::info
+This validation done some http check and only work on `POST` method, since for `PUT` and `PATCH` method, uniqueness check require more complex condition.
+:::
 
 This function is not using the mongoose `unique` schema, but it automatically check to the database for uniqueness, so validation engine can execute the validation rule without touching controller.
 

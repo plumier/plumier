@@ -126,7 +126,7 @@ String parameter passed into the route parameter `@route.get(":id")` will rename
 
 When empty string provided `@route.post("")` the method name will be ignored, thus its become `POST /animals`, note the `save` method name ignored from the url.
 
-This behavior enable Plumier to construct more flexible route such as nested route easily, refer to [route generation cheat sheet](refs/route) for more information.
+This behavior enable Plumier to construct more flexible route such as nested route easily, refer to [route generation cheat sheet](Route-Generation-Cheat-Sheet.md) for more information.
 
 
 ## Basic Parameter Binding
@@ -335,7 +335,7 @@ class AnimalsController {
 | `POST /animals`     | Admin only    |
 
 
-Go to the [Authorization](refs/authorization) for more information.
+Go to the [Authorization](../refs/Authorization.md) for more information.
 
 
 ## Controller Return Value
@@ -383,4 +383,4 @@ Plumier provided several `ActionResult` derived class for development convenient
 | `RedirectActionResult` | `response.redirect()` | Redirect response          | `plumier`               |
 | `FileActionResult`     | `response.file()`     | Serve static file response | `@plumier/serve-static` |
 
-Refer to [action result documentation](refs/action-result) for more information.
+Refer to [action result documentation](../refs/Action-Result.md) for more information.

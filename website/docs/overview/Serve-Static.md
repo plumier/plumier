@@ -54,7 +54,9 @@ History Api Fallback help SPA application which commonly handle navigation using
 
 Plumier provide `@route.historyApiFallback()` decorator to automatically redirect all the browser request (API or file request can be detected) into the specific controller action. Internally it detects the request `Accept` header to guess if the request comes from a browser or an API call.
 
-> Keep in mind that `@route.historyApiFallback()` require the `ServeStaticFacility` enabled on the Plumier application.
+:::info
+Keep in mind that `@route.historyApiFallback()` require the `ServeStaticFacility` enabled on the Plumier application.
+:::
 
 
 ```typescript

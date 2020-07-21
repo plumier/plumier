@@ -15,9 +15,15 @@ module.exports = {
       },
       links: [
         {
-          to: 'docs/',
-          activeBasePath: 'docs',
+          to: 'docs/overview/get-started',
+          activeBasePath: 'docs/overview',
           label: 'Docs',
+          position: 'left',
+        },
+        {
+          to: 'docs/refs/entry-point',
+          activeBasePath: 'docs/refs',
+          label: 'Reference',
           position: 'left',
         },
         // {to: 'blog', label: 'Blog', position: 'left'},
@@ -35,11 +41,7 @@ module.exports = {
           title: 'Docs',
           items: [
             {
-              label: 'Overview',
-              href: 'docs/overview',
-            },
-            {
-              label: 'Motivation',
+              label: 'Plumier In Five Minutes',
               href: 'docs/overview',
             },
             {

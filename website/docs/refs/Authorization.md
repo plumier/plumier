@@ -15,7 +15,9 @@ app.set(new JwtAuthFacility({ secret: "<your secret key>" }))
 app.set(new JwtAuthFacility())
 ```
 
->  If no `secret` provide `JwtAuthFacility` will check for environment variable named `PLUM_JWT_SECRET`, if both not provided an error will be thrown.
+:::info
+If no `secret` provide `JwtAuthFacility` will check for environment variable named `PLUM_JWT_SECRET`, if both not provided an error will be thrown.
+:::
 
 ## Setup
 Plumier authorization uses standard token based authentication using json web token, internally it uses [koa-jwt](https://github.com/koajs/jwt) middleware. 
@@ -74,7 +76,9 @@ app.set(new JwtAuthFacility({ secret: "<your secret key>", roleField: async user
 ## All Routes are Secured
 By enabling `JwtAuthFacility` all routes are secured, means if end user access your API without token they will receive 403.
 
-> You can provided global public authorization if you like it
+:::info
+You can provided global public authorization if you like it
+:::
 
 
 ## Public Route
@@ -226,7 +230,9 @@ export class UsersController {
 
 By using code above, the `basePrice` data will only visible if client has `admin` role, other than that will return `undefined`. 
 
-> Note that the `@reflect.type()` is required to describe the return type of the action.
+:::info
+Note that the `@reflect.type()` is required to describe the return type of the action.
+:::
 
 
 ### Access Modifier 
@@ -250,7 +256,9 @@ export class Item {
 
 Using above code `basePrice` will only can be set by `admin` and retrieved by both `staff` and `admin`. 
 
-> Note that `@authorize.role("admin")` is the same as provide `@authorize.get("admin")` and `@authorize.set("admin")`
+:::info
+Note that `@authorize.role("admin")` is the same as provide `@authorize.get("admin")` and `@authorize.set("admin")`
+:::
 
 
 ## Global Authorization

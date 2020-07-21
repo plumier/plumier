@@ -28,8 +28,6 @@ new Plumier()
 Above snippet will host a simple REST API service `GET /hello/index` and listen to port 8000. It uses simple routing by convention which by default will generate controller method into `GET` route. When requested using http client it simply returned JSON `{ "message", "Hello world!" }`. 
 Example above showing that Controller manually registered on `WebApiFacility`, by default Plumier will look into `controller/` directory and traverse through all classes that is named end with `Controller`.
 
-> Its recommended to start Plumier project using `plumier-starter` which provided some ready to use starter with some best practices. Go to [Plumier Basic Tutorial](tutorials/basic-sql/get-started) for more information
-
 ## Routing 
 Plumier provided flexible routing that combine between decorator, metadata reflection and directory structure to generate routes.
 
@@ -94,9 +92,9 @@ PUT     /animals/:id
 DELETE  /animals/:id 
 ```
 
-Notice that the different between `@route.get()` and `@route.get("")`. the string parameter passed into the route method has various meaning: [relative override](refs/route#relative-route-override), [absolute override](refs/route#absolute-route-override) and [ignore override](refs/route#ignore-action-name)
+Notice that the different between `@route.get()` and `@route.get("")`. the string parameter passed into the route method has various meaning: [relative override](Route-Generation-Cheat-Sheet.md#relative-route-override), [absolute override](Route-Generation-Cheat-Sheet.md#absolute-route-override) and [ignore override](Route-Generation-Cheat-Sheet.md#ignore-action-name)
 
-Take a look at the complete [cheat sheet](refs/route) on how to configure routes. It also can be used for more complex routing such as [nested restful api](refs/route#example-nested-restful-api)
+Take a look at the complete [cheat sheet](Route-Generation-Cheat-Sheet.md) on how to configure routes. It also can be used for more complex routing such as [nested restful api](Route-Generation-Cheat-Sheet.md#example-nested-restful-api)
 
 
 ## Type Converter
@@ -168,12 +166,12 @@ Type of birthDate: Date
 Type of isDeceased: boolean
 ```
 
-Refer to [converter documentation](refs/converters) for more information about Plumier type conversion.
+Refer to [converter documentation](../refs/Converters.md) for more information about Plumier type conversion.
 
 ## Parameter Binding
 Plumier provided parameter binding to bind request data into method parameters, and provided convention that is readable and testable.
 
-Plumier supported various type of parameter binding: [decorator binding](refs/parameter-binding#decorator-binding), [name binding](refs/parameter-binding#name-binding), [model binding](refs/parameter-binding#model-binding). 
+Plumier supported various type of parameter binding: [decorator binding](../refs/Parameter-Binding.md#decorator-binding), [name binding](../refs/Parameter-Binding.md#name-binding), [model binding](../refs/Parameter-Binding.md#model-binding). 
 
 ```typescript
 @domain()
@@ -217,7 +215,9 @@ curl --header "Content-Type: application/json" \
 
 Using above request `userName` and `password` from request body will automatically bound to `userName` and `password` parameter. 
 
-> If you confused on why `animal` parameter bound to the whole request body but `userName` and `password` bound to request body properties, you can check into documentation about [name binding](refs/parameter-binding#name-binding), [model binding](refs/parameter-binding#model-binding) and their [behavior](refs/parameter-binding#behavior)
+:::info
+If you confused on why `animal` parameter bound to the whole request body but `userName` and `password` bound to request body properties, you can check into documentation about [name binding](../refs/Parameter-Binding.md#name-binding), [model binding](../refs/Parameter-Binding.md#model-binding) and their [behavior](../refs/Parameter-Binding.md#behavior)
+:::
 
 Plumier also provided parameter binding using `@bind` decorator. Example we can bind request header to the controller parameter like below:
 
@@ -242,7 +242,7 @@ export class TestController {
 }
 ```
 
-Benefit of using parameter binding is make code simpler, readable and easy to test because its make controller free from request object. Read the full documentation about parameter binding [here](refs/parameter-binding)
+Benefit of using parameter binding is make code simpler, readable and easy to test because its make controller free from request object. Read the full documentation about parameter binding [here](../refs/Parameter-Binding.md)
 
 ## Validation
 Plumier provided decorator based validator uses [Validator](https://www.npmjs.com/package/validator) package. Validator `@val` decorator can be applied on parameter or inside domain properties.
@@ -276,16 +276,16 @@ export class AuthController {
 }
 ```
 
-Custom validator easily can be created using `@val.custom()` check appropriate [documentation](extends/custom-validator) for more detail information.
+Custom validator easily can be created using `@val.custom()` check appropriate [documentation](../extends/Custom-Validator.md) for more detail information.
 
-For more information about validator can be found in this [documentation](refs/validation)
+For more information about validator can be found in this [documentation](../refs/Validation.md)
 
 ## Security
 Plumier provided built-in function to secure route and parameter based on user role. Internally it uses [koa-jwt](https://github.com/koajs/jwt) middleware to authenticate and authorize user based on their role. 
 
 To authorize specific user to access route or set parameter, you only need to decorate specific controller method with `@authorize` decorator. `@authorize` decorator can also be applied into a parameter to restrict access for user setting value to the parameter. 
 
-There is some setup required before start using `@authorize` decorator can be found in [this documentation](refs/authorization#setup).
+There is some setup required before start using `@authorize` decorator can be found in [this documentation](../refs/Authorization.md#setup).
 
 ```typescript
 export class AuthController {
@@ -336,7 +336,7 @@ export class UsersController {
 
 Above snippet showing that we provided a public user registration in `POST /users` but only `Admin` can set user `role`.
 
-Check the full [documentation](refs/authorization) for more information about Plumier security
+Check the full [documentation](../refs/Authorization.md) for more information about Plumier security
 
 ## Performance
 Plumier relatively has small code base which make it light and fast. It uses Koa as its core http handler which is quite fast, below is comparison result of Koa, Plumier and Express.

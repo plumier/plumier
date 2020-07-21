@@ -126,4 +126,6 @@ class User {
 }
 ```
 
-> This functionality work well with dependency injection, register the custom validator by name/id and plumier will automatically pass the ID into the custom dependency resolver.
+:::info 
+This functionality work well with dependency injection, register the custom validator by name/id and plumier will automatically pass the ID into the custom dependency resolver.
+:::

@@ -158,7 +158,7 @@ class AnimalController {
 
 ### Login User Binding
 
-Bind login user to action's parameter. This functionalities require `JwtAuthFacility` see how to setup user authorization [here](./authorization)
+Bind login user to action's parameter. This functionalities require `JwtAuthFacility` see how to setup user authorization [here](Authorization.md)
 
 ```typescript
 export class AnimalController {
@@ -172,7 +172,7 @@ export class AnimalController {
 `User` type is type of claim that you specify when you sign the access token.
 
 ### File Parser Binding
-Bind multi part file parser into action parameter, see more detail on [File Upload Section](file-upload#Bind-File-Parser)
+Bind multi part file parser into action parameter, see more detail on [File Upload Section](../overview/File-Upload.md#Bind-File-Parser)
 
 
 ## Name Binding

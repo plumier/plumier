@@ -24,4 +24,6 @@ const koa = new Plumier()
     .initialize()
 ```
 
-> Production mode is not necessary if you have NODE_ENV set to 'production'
+:::info
+Production mode is not necessary if you have NODE_ENV set to 'production'
+:::

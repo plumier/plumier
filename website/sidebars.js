@@ -1,26 +1,25 @@
 module.exports = {
-  someSidebar: {
-    Overview: [
-      "overview",
-      "motivation",
-      "fundamentals",
-      "extend",
-      "project-template"
-    ],
-    References: [
+  overview: [
+    "overview/get-started",
+    "overview/fundamentals",
+    "overview/extend",
+    "overview/project-template",
+    "overview/route",
+    "overview/typeorm-helper",
+    "overview/mongoose-helper",
+    "overview/swagger",
+    "overview/social-login",
+    "overview/serve-static",
+    "overview/file-upload",
+  ],
+  refs: {
+    "Framework Reference": [
       "refs/entry-point",
       "refs/controller",
-      "refs/route",
       "refs/parameter-binding",
       "refs/converters",
       "refs/validation",
       "refs/authorization",
-      "refs/serve-static",
-      "refs/file-upload",
-      "refs/mongoose-helper",
-      "refs/typeorm-helper",
-      "refs/social-login",
-      "refs/swagger",
       "refs/default-environment-variable",
       "refs/middleware",
       "refs/action-result",

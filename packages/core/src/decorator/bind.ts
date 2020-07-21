@@ -113,7 +113,7 @@ export namespace bind {
     export function formFile(name: string): ParameterDecorator {
         return mergeDecorator(
             bind.custom(ctx => (ctx.request as any).files?.[name], "formFile") as any,
-            api.params.name(name))
+            api.name(name))
     }
 
     /**
