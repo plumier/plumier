@@ -1,4 +1,4 @@
-import { Class, consoleLog, route } from "@plumier/core"
+import { Class, consoleLog, route, authorize } from "@plumier/core"
 import { collection, model as globalModel, MongooseFacility, MongooseHelper, Ref } from "@plumier/mongoose"
 import mongoose from "mongoose"
 import Plumier, { WebApiFacility } from "plumier"
@@ -6,6 +6,7 @@ import supertest from "supertest"
 import reflect, { noop } from "tinspector"
 import { fixture } from "../helper"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
+import { JwtAuthFacility } from '@plumier/jwt'
 
 mongoose.set("useNewUrlParser", true)
 mongoose.set("useUnifiedTopology", true)
@@ -524,6 +525,7 @@ describe("Facility", () => {
             app.set(new MongooseFacility({
                 uri: await mongod.getUri()
             }))
+            app.set(new JwtAuthFacility({ secret: "secret" }))
             app.set({ mode: "production" })
             return app.initialize()
         }
@@ -550,6 +552,7 @@ describe("Facility", () => {
             const AnimalModel = globalModel(Animal)
             class AnimalController {
                 @route.post()
+                @authorize.public()
                 async save(data: Animal) {
                     const newly = await new AnimalModel(data).save()
                     return newly._id
@@ -562,7 +565,7 @@ describe("Facility", () => {
             ]);
             const response = await supertest(koa.callback())
                 .post("/animal/save")
-                .send({ name: "Mimi", images: [image1._id, image2._id] })
+                .send({ name: "Mimi", images: [image1.id, image2.id] })
                 .expect(200)
             const result = await AnimalModel.findById(response.body)
                 .populate("images")
@@ -589,6 +592,7 @@ describe("Facility", () => {
             const AnimalModel = globalModel(Animal)
             class AnimalController {
                 @route.post()
+                @authorize.public()
                 async save(data: Animal) {
                     const newly = await new AnimalModel(data).save()
                     return newly._id
@@ -599,7 +603,47 @@ describe("Facility", () => {
 
             const response = await supertest(koa.callback())
                 .post("/animal/save")
-                .send({ name: "Mimi", image: image1._id })
+                .send({ name: "Mimi", image: image1.id })
+                .expect(200)
+            const result = await AnimalModel.findById(response.body)
+                .populate("image")
+            expect(result!.image.name).toBe("Image1.jpg")
+        })
+
+        it("Should work with nested object with readonly id", async () => {
+            @collection()
+            class Image {
+                constructor(
+                    @authorize.readonly()
+                    public id:string,
+                    public name: string
+                ) { }
+            }
+            @collection()
+            class Animal {
+                constructor(
+                    public id:string,
+                    public name: string,
+                    @collection.ref(Image)
+                    public image: Image
+                ) { }
+            }
+            const ImageModel = globalModel(Image)
+            const AnimalModel = globalModel(Animal)
+            class AnimalController {
+                @route.post()
+                @authorize.public()
+                async save(data: Animal) {
+                    const newly = await new AnimalModel(data).save()
+                    return newly._id
+                }
+            }
+            const koa = await createApp(AnimalController, [Image, Animal])
+            const image1 = await new ImageModel({ name: "Image1.jpg" }).save()
+
+            const response = await supertest(koa.callback())
+                .post("/animal/save")
+                .send({ name: "Mimi", image: image1.id })
                 .expect(200)
             const result = await AnimalModel.findById(response.body)
                 .populate("image")
@@ -617,6 +661,7 @@ describe("Facility", () => {
             const fn = jest.fn()
             class AnimalController {
                 @route.get(":id")
+                @authorize.public()
                 async get(id: string) {
                     fn(typeof id)
                 }
