@@ -55,6 +55,8 @@ describe("Application life cycle", () => {
             .set({mode: "production"})
             .use(createMdw("global 1"))
             .use(createMdw("global 2"))
+            .use(createMdw("action 1"), "Action")
+            .use(createMdw("action 2"), "Action")
             .initialize()
 
         await supertest(koa.callback())

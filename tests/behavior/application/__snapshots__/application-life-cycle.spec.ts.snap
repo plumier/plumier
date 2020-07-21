@@ -18,6 +18,12 @@ Array [
     "authorizer",
   ],
   Array [
+    "before middleware: action 1",
+  ],
+  Array [
+    "before middleware: action 2",
+  ],
+  Array [
     "before middleware: controller 1",
   ],
   Array [
@@ -43,6 +49,12 @@ Array [
   ],
   Array [
     "after middleware: controller 1",
+  ],
+  Array [
+    "after middleware: action 2",
+  ],
+  Array [
+    "after middleware: action 1",
   ],
   Array [
     "after middleware: global 2",
