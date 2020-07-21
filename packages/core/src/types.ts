@@ -92,7 +92,7 @@ export type RouteMetadata = RouteInfo | VirtualRoute
 
 export interface RouteInfo {
     kind: "ActionRoute"
-    group?:string
+    group?: string
     url: string
     method: HttpMethod
     action: MethodReflection
@@ -103,10 +103,10 @@ export interface RouteInfo {
 
 export interface VirtualRoute {
     kind: "VirtualRoute"
-    group?:string
+    group?: string
     url: string
     method: HttpMethod
-    provider: Class 
+    provider: Class
     overridable: boolean
     access?: string
     openApiOperation?: any
@@ -120,14 +120,14 @@ export type RouteAnalyzerFunction = (route: RouteMetadata, allRoutes: RouteMetad
 // --------------------------------------------------------------------- //
 
 export interface Facility {
-    generateRoutes(app: Readonly<PlumierApplication>): Promise< RouteMetadata[]>
-    setup(app: Readonly<PlumierApplication>): void 
+    generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]>
+    setup(app: Readonly<PlumierApplication>): void
     initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]): Promise<void>
 }
 
 export class DefaultFacility implements Facility {
-    async generateRoutes(app: Readonly<PlumierApplication>): Promise< RouteMetadata[]>{ return [] }
-    setup(app: Readonly<PlumierApplication>) {}
+    async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> { return [] }
+    setup(app: Readonly<PlumierApplication>) { }
     async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]) { }
 }
 
@@ -256,7 +256,7 @@ export interface Application {
     ```
      */
 
-    use(middleware: string | symbol): Application
+    use(middleware: string | symbol, scope?: "Global" | "Action"): Application
 
     /**
      * Use plumier middleware 
@@ -265,7 +265,7 @@ export interface Application {
     ```
      */
 
-    use(middleware: Middleware): Application
+    use(middleware: Middleware, scope?: "Global" | "Action"): Application
 
     /**
      * Use plumier middleware 
@@ -277,7 +277,7 @@ export interface Application {
     ```
      */
 
-    use(middleware: MiddlewareFunction): Application
+    use(middleware: MiddlewareFunction, scope?: "Global" | "Action"): Application
 
     /**
      * Set facility (advanced configuration)
@@ -364,7 +364,7 @@ export interface Configuration {
     /**
      * List of registered global middlewares
      */
-    middlewares: (string | symbol | MiddlewareFunction | Middleware)[]
+    middlewares: { middleware: (string | symbol | MiddlewareFunction | Middleware), scope: "Global" | "Action" }[]
 
     /**
      * Specify controller path (absolute or relative to entry point) or the controller classes array.

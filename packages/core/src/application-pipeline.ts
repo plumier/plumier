@@ -119,7 +119,14 @@ function link(middlewares: MiddlewareMeta[], topNode: Pipe) {
 }
 
 function createPipes(context: Context | ActionContext) {
-    const globalMdw = context.config.middlewares.map(m => ({ middleware: m }))
+    const globalMdw = []
+    const actionMdw = []
+    for (const mdw of context.config.middlewares) {
+        if(mdw.scope === "Global")
+            globalMdw.push(mdw)
+        else 
+            actionMdw.push(mdw)
+    }
     if (hasKeyOf<ActionContext>(context, "route")) {
         const middlewares = [
             // 1. global middlewares
@@ -131,6 +138,8 @@ function createPipes(context: Context | ActionContext) {
             // 4. authorization
             { middleware: new AuthorizerMiddleware() },
             // 5. action middlewares
+            ...actionMdw,
+            // 6. action middlewares from decorators
             ...MiddlewareUtil.extractDecorators(context.route)
         ]
         return link(middlewares, new ActionPipe())
