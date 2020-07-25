@@ -38,6 +38,7 @@ Array [
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Class",
+          "selector": Array [],
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
@@ -97,6 +98,7 @@ Array [
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Method",
+          "selector": Array [],
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
@@ -145,6 +147,7 @@ Array [
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Parameter",
+          "selector": Array [],
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
@@ -175,6 +178,7 @@ Array [
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Parameter",
+          "selector": Array [],
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
@@ -209,6 +213,7 @@ Array [
             "authorize": customAuthorizer,
             "evaluation": "Dynamic",
             "location": "Method",
+            "selector": Array [],
             "tag": "Custom",
             "type": "plumier-meta:authorize",
             Symbol(tinspector:decoratorOption): Object {
@@ -274,6 +279,7 @@ Array [
                 "authorize": customAuthorizer,
                 "evaluation": "Dynamic",
                 "location": "Method",
+                "selector": Array [],
                 "tag": "Custom",
                 "type": "plumier-meta:authorize",
                 Symbol(tinspector:decoratorOption): Object {
@@ -321,6 +327,7 @@ Array [
             "authorize": customAuthorizer,
             "evaluation": "Dynamic",
             "location": "Method",
+            "selector": Array [],
             "tag": "Custom",
             "type": "plumier-meta:authorize",
             Symbol(tinspector:decoratorOption): Object {

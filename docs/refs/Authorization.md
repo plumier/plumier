@@ -114,7 +114,7 @@ export class ProductsController {
 | `POST /products`     | admin  |
 
 
-## Controller Decorator
+## Controller Scoped Authorization
 Decorated action one by one will be cumbersome, you can apply `@authorize` decorator on controller to apply authorization on all routes contained.
 
 ```typescript
@@ -134,7 +134,31 @@ export class ProductsController {
 | `POST /products`     | admin  |
 
 
-## Controller Decorator Override
+## Controller Scoped Authorization Selector 
+From controller scoped authorization you can specify which methods will be applied by setting the `selector` option like below 
+
+```typescript
+@authorize.role("admin", { selector: ["save", "replace"] })
+export class ProductsController {
+    @route.get(":id")
+    get(id: string) { }
+
+    @route.post("")
+    save(data: Product) { }
+
+    @route.put(":id")
+    replace(id:string, data: Product) { }
+}
+```
+
+| Route                | Access        |
+| -------------------- | ------------- |
+| `GET /products/<id>` | Authenticated |
+| `POST /products`     | admin         |
+| `PUT /products/:id`  | admin         |
+
+
+## Controller Scoped Authorization Override
 If controller and action decorated with `@authorize` decorator, the action authorization will replace the controller authorization
 
 ```typescript
