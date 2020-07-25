@@ -230,7 +230,7 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Parameters {
                 constructor(
-                    @api.readOnly()
+                    @api.readonly()
                     public id: number,
                     public str: string,
                     public num: number
@@ -1515,7 +1515,7 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class User {
                 constructor(
-                    @api.readOnly()
+                    @api.readonly()
                     public id: number,
                     public userName: string,
                     public password: string
@@ -1545,7 +1545,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.readOnly()
+                    @api.readonly()
                     public animal: Animal
                 ) { }
             }
@@ -1573,7 +1573,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.readOnly()
+                    @api.readonly()
                     public animal: Animal
                 ) { }
             }
@@ -1603,7 +1603,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.readOnly()
+                    @api.readonly()
                     @reflect.type(x => [Animal])
                     public animal: Animal[]
                 ) { }
@@ -1632,7 +1632,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.readOnly()
+                    @api.readonly()
                     @reflect.type(x => [Animal])
                     public animal: Animal[]
                 ) { }
@@ -1654,7 +1654,7 @@ describe("Open API 3.0 Generation", () => {
             class User {
                 constructor(
                     public id: number,
-                    @api.writeOnly()
+                    @api.writeonly()
                     public userName: string,
                     public password: string
                 ) { }
@@ -1683,7 +1683,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.writeOnly()
+                    @api.writeonly()
                     public animal: Animal
                 ) { }
             }
@@ -1711,7 +1711,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.writeOnly()
+                    @api.writeonly()
                     public animal: Animal
                 ) { }
             }
@@ -1741,7 +1741,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.writeOnly()
+                    @api.writeonly()
                     @reflect.type(x => [Animal])
                     public animal: Animal[]
                 ) { }
@@ -1770,7 +1770,7 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @api.writeOnly()
+                    @api.writeonly()
                     @reflect.type(x => [Animal])
                     public animal: Animal[]
                 ) { }
