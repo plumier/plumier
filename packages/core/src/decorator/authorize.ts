@@ -157,14 +157,14 @@ class AuthDecoratorImpl {
      * Mark parameter or property as readonly, no Role can set its value
      */
     readonly(): CustomPropertyDecorator {
-        return mergeDecorator(this.set("plumier::readonly"), api.readOnly())
+        return mergeDecorator(this.set("plumier::readonly"), api.readonly())
     }
 
     /**
      * Mark parameter or property as writeonly, no Role can read its value
      */
     writeonly(): CustomPropertyDecorator {
-        return mergeDecorator(this.get("plumier::writeonly"), api.writeOnly())
+        return mergeDecorator(this.get("plumier::writeonly"), api.writeonly())
     }
 }
 

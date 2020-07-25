@@ -66,11 +66,11 @@ export class MongooseGenericControllerFacility extends GenericControllerFacility
 
     private assignDecorators(entity: Class, property: PropertyReflection) {
         if (["id", "createdAt", "updatedAt"].some(x => property.name === x)) {
-            Reflect.decorate([api.readOnly()], entity.prototype, property.name)
+            Reflect.decorate([api.readonly()], entity.prototype, property.name)
         }
         if (property.decorators.find((x: RefDecorator) => x.name === "MongooseRef")) {
             const ovr = property.decorators.find((x: TypeDecorator): x is TypeDecorator => x.kind === "Override")!
-            Reflect.decorate([crud.oneToMany(ovr.type as any), api.readOnly(), api.writeOnly()], entity.prototype, property.name)
+            Reflect.decorate([crud.oneToMany(ovr.type as any), api.readonly(), api.writeonly()], entity.prototype, property.name)
         }
     }
 
