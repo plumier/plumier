@@ -328,6 +328,36 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
+        it("Should able to set public authorizer from entity", async () => {
+            @domain()
+            @authorize.public()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ entities: [User] })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to set custom authorizer from entity", async () => {
+            @domain()
+            @authorize.custom(x => x.user.role === "Admin")
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ entities: [User] })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
     })
     describe("One To Many Controller", () => {
         it("Should generate routes with parameter property entity", async () => {

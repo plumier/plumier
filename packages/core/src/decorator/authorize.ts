@@ -80,7 +80,8 @@ class AuthDecoratorImpl {
                 type: "plumier-meta:authorize",
                 tag: "Public",
                 evaluation: "Static",
-                actionSelector: opt?.actionSelector ?? []
+                actionSelector: opt?.actionSelector ?? [],
+                access: "all"
             }
         }, ["Class", "Parameter", "Method", "Property"])
     }
