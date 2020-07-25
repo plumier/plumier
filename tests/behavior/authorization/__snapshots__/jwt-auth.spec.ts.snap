@@ -26,6 +26,7 @@ Array [
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
+          "selector": Array [],
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
@@ -53,6 +54,7 @@ Array [
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
+          "selector": Array [],
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
@@ -89,7 +91,15 @@ Array [
 ]
 `;
 
-exports[`JwtAuth Custom Parameter Authorizer Should be able get current metadata information 1`] = `
+exports[`JwtAuth Default Configuration Should throw error when no secret provided nor environment variable 1`] = `
+Array [
+  Array [
+    "JWT Secret not provided. Provide secret on JwtAuthFacility constructor or environment variable PLUM_JWT_SECRET",
+  ],
+]
+`;
+
+exports[`JwtAuth Parameter Authorization Custom Parameter Authorizer Should be able get current metadata information 1`] = `
 Array [
   Array [
     Object {
@@ -99,6 +109,7 @@ Array [
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
+          "selector": Array [],
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
@@ -126,6 +137,7 @@ Array [
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
+          "selector": Array [],
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
@@ -148,7 +160,7 @@ Array [
 ]
 `;
 
-exports[`JwtAuth Custom Parameter Authorizer Should be able get value and its parent value 1`] = `
+exports[`JwtAuth Parameter Authorization Custom Parameter Authorizer Should be able get value and its parent value 1`] = `
 Array [
   Array [
     Object {
@@ -158,14 +170,6 @@ Array [
       },
       "value": "Yes",
     },
-  ],
-]
-`;
-
-exports[`JwtAuth Default Configuration Should throw error when no secret provided nor environment variable 1`] = `
-Array [
-  Array [
-    "JWT Secret not provided. Provide secret on JwtAuthFacility constructor or environment variable PLUM_JWT_SECRET",
   ],
 ]
 `;

@@ -1,4 +1,4 @@
-import { ParameterReflection, PropertyReflection, reflect } from "tinspector"
+import { ParameterReflection, PropertyReflection, reflect, Reflection, ClassReflection } from "tinspector"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import { HttpStatus } from "./http-status"
@@ -40,10 +40,8 @@ interface AuthorizeDecorator {
     access: "get" | "set" | "all"
     tag: string,
     location: "Class" | "Parameter" | "Method",
-    // only applied on authorize filter
-    // static -> authorize function evaluate once then applied through all data 
-    // dynamic -> authorize function evaluate on each data
     evaluation: "Static" | "Dynamic"
+    selector: string | string[]
 }
 
 interface Authorizer {
@@ -91,9 +89,21 @@ function getGlobalDecorators(globalDecorator?: (...args: any[]) => void) {
 }
 
 function getAuthorizeDecorators(info: RouteInfo, globalDecorator?: (...args: any[]) => void) {
+    // if action has decorators then return immediately to prioritize the action decorator
     const actionDecs = info.action.decorators.filter(createDecoratorFilter())
     if (actionDecs.length > 0) return actionDecs
-    const controllerDecs = info.controller.decorators.filter(createDecoratorFilter())
+    const controllerDecs: AuthorizeDecorator[] = []
+    // if controller has decorators then return immediately
+    for (const dec of info.controller.decorators) {
+        const decorator = dec as AuthorizeDecorator
+        if (decorator.type === "plumier-meta:authorize") {
+            const selector = typeof decorator.selector === "string" ? [decorator.selector] : decorator.selector 
+            if(selector.length === 0) 
+                controllerDecs.push(decorator)
+            if(selector.some(x => x === info.action.name))
+                controllerDecs.push(decorator)
+        }
+    }
     if (controllerDecs.length > 0) return controllerDecs
     return getGlobalDecorators(globalDecorator)
 }
@@ -144,6 +154,27 @@ interface ParamCheckContext {
     parentValue?: any
 }
 
+async function executeDecorators(decorators: AuthorizeDecorator[], info: AuthorizationContext, path: string) {
+    const result: string[] = []
+    for (const dec of decorators) {
+        if (dec.access === "get") continue;
+        const allowed = await executeDecorator(dec, info)
+        if (!allowed)
+            result.push(path)
+    }
+    return result
+}
+
+function createContext(ctx: ParamCheckContext, value: any, meta: ClassReflection | PropertyReflection | ParameterReflection) {
+    const info = { ...ctx.info }
+    const metadata = { ...info.metadata }
+    metadata.current = { ...meta, parent: ctx.parent }
+    info.value = value
+    info.parentValue = ctx.parentValue
+    info.metadata = metadata
+    return info
+}
+
 async function checkParameter(meta: PropertyReflection | ParameterReflection, value: any, ctx: ParamCheckContext) {
     if (value === undefined) return []
     else if (Array.isArray(meta.type)) {
@@ -162,15 +193,8 @@ async function checkParameter(meta: PropertyReflection | ParameterReflection, va
     }
     else {
         const decorators = meta.decorators.filter(createDecoratorFilter())
-        const result: string[] = []
-        for (const dec of decorators) {
-            if (dec.access === "get") continue;
-            ctx.info.metadata.current = { ...meta, parent: ctx.parent }
-            const allowed = await executeDecorator(dec, { ...ctx.info, value, parentValue: ctx.parentValue })
-            if (!allowed)
-                result.push(ctx.path.join("."))
-        }
-        return result
+        const info = createContext(ctx, value, meta)
+        return executeDecorators(decorators, info, ctx.path.join("."))
     }
 }
 
