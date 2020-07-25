@@ -562,6 +562,62 @@ Array [
 ]
 `;
 
+exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> Authenticated GET    /users",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> admin         POST   /users",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> Authenticated GET    /users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> admin         PATCH  /users/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> admin         PUT    /users/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> admin         DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should able to set authorization from entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> admin GET    /users",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> admin POST   /users",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> admin GET    /users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> admin PATCH  /users/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> admin PUT    /users/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> admin DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`Route Generator Generic Controller Should able to specify ID type by providing decorator 1`] = `
 Array [
   Object {
@@ -1108,6 +1164,98 @@ Array [
   ],
   Array [
     "6. MyControllerGeneric.delete(id)        -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to authorize relation on relation 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> Authenticated GET    /users",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> Authenticated POST   /users",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> Authenticated GET    /users/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> Authenticated PATCH  /users/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> Authenticated PUT    /users/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> Authenticated DELETE /users/:id",
+  ],
+  Array [
+    " 7. MyOneToManyContr...eneric.list        -> admin         GET    /users/:pid/animals",
+  ],
+  Array [
+    " 8. MyOneToManyContr...eneric.save        -> admin         POST   /users/:pid/animals",
+  ],
+  Array [
+    " 9. MyOneToManyContr...eneric.get         -> admin         GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyOneToManyContr...eneric.modify      -> admin         PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "11. MyOneToManyContr...eneric.replace     -> admin         PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "12. MyOneToManyContr...eneric.delete      -> admin         DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should able to authorize some method on relation 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyControllerGeneric.list              -> Authenticated GET    /users",
+  ],
+  Array [
+    " 2. MyControllerGeneric.save(data)        -> Authenticated POST   /users",
+  ],
+  Array [
+    " 3. MyControllerGeneric.get(id)           -> Authenticated GET    /users/:id",
+  ],
+  Array [
+    " 4. MyControllerGeneric.modify(id, data)  -> Authenticated PATCH  /users/:id",
+  ],
+  Array [
+    " 5. MyControllerGeneric.replace(id, data) -> Authenticated PUT    /users/:id",
+  ],
+  Array [
+    " 6. MyControllerGeneric.delete(id)        -> Authenticated DELETE /users/:id",
+  ],
+  Array [
+    " 7. MyOneToManyContr...eneric.list        -> Authenticated GET    /users/:pid/animals",
+  ],
+  Array [
+    " 8. MyOneToManyContr...eneric.save        -> admin         POST   /users/:pid/animals",
+  ],
+  Array [
+    " 9. MyOneToManyContr...eneric.get         -> Authenticated GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyOneToManyContr...eneric.modify      -> admin         PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "11. MyOneToManyContr...eneric.replace     -> admin         PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "12. MyOneToManyContr...eneric.delete      -> admin         DELETE /users/:pid/animals/:id",
   ],
   Array [],
 ]
