@@ -333,7 +333,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply authorization to specific method from controller", async () => {
-            @authorize.role("superadmin", { selector: "get" })
+            @authorize.role("superadmin", { actionSelector: "get" })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -362,7 +362,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply authorization to specific methods from controller", async () => {
-            @authorize.role("superadmin", { selector: ["get", "save"] })
+            @authorize.role("superadmin", { actionSelector: ["get", "save"] })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -401,7 +401,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply public authorization to specific method from controller", async () => {
-            @authorize.public({ selector: "get" })
+            @authorize.public({ actionSelector: "get" })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -428,7 +428,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply public authorization to specific methods from controller", async () => {
-            @authorize.public({ selector: ["get", "save"] })
+            @authorize.public({ actionSelector: ["get", "save"] })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -465,7 +465,7 @@ describe("JwtAuth", () => {
 
         it("Should able to mix controller scope authorizer with other decorators", async () => {
             @route.ignore("save")
-            @authorize.role("superadmin", { selector: ["get", "save"] })
+            @authorize.role("superadmin", { actionSelector: ["get", "save"] })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }

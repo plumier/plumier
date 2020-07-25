@@ -11,7 +11,7 @@ interface CustomAuthorizeOption {
     /**
      * Filter authorizer into specific method(s), only work on controller scoped authorizer
      */
-    selector?: string | string[],
+    actionSelector?: string | string[],
 
     /**
      * Text that will visible on route analysis
@@ -41,9 +41,11 @@ interface CustomAuthorizeOption {
 
 interface AuthorizeSelectorOption {
     /**
-     * Filter authorizer into specific method(s), only work on controller scoped authorizer
+     * Filter authorizer into specific action, only work on controller scoped authorizer.
+     * 
+     * Should specify a correct action name(s)
      */
-    selector: string | string[]
+    actionSelector: string | string[]
 }
 
 class AuthDecoratorImpl {
@@ -62,7 +64,7 @@ class AuthDecoratorImpl {
                 type: "plumier-meta:authorize",
                 tag: option.tag, authorize, location,
                 access: option.access, evaluation: option.evaluation,
-                selector: option.selector ?? []
+                actionSelector: option.actionSelector ?? []
             }
         }, ["Class", "Parameter", "Method", "Property"])
     }
@@ -78,7 +80,7 @@ class AuthDecoratorImpl {
                 type: "plumier-meta:authorize",
                 tag: "Public",
                 evaluation: "Static",
-                selector: opt?.selector ?? []
+                actionSelector: opt?.actionSelector ?? []
             }
         }, ["Class", "Parameter", "Method", "Property"])
     }
@@ -90,7 +92,7 @@ class AuthDecoratorImpl {
         const allRoles: string[] = typeof last === "string" ? roles : roles.slice(0, roles.length - 1)
         return this.custom(async (info) => {
             return allRoles.filter(x => !!x).some(x => info.role.some(y => x === y))
-        }, { ...opt, tag: roles.join("|"), evaluation: "Static" })
+        }, { ...opt, tag: allRoles.join("|"), evaluation: "Static" })
     }
 
     /**

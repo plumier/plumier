@@ -1,4 +1,4 @@
-import { cleanupConsole, consoleLog, DefaultFacility, PlumierApplication, route, RouteMetadata } from "@plumier/core"
+import { cleanupConsole, consoleLog, DefaultFacility, PlumierApplication, route, RouteMetadata, authorize } from "@plumier/core"
 import {
     crud,
     GenericControllerFacilityOption,
@@ -13,6 +13,7 @@ import supertest from "supertest"
 import reflect, { generic } from "tinspector"
 
 import { MyCRUDModuleFacility } from "./mocks"
+import { JwtAuthFacility } from '@plumier/jwt'
 
 function createApp(opt: GenericControllerFacilityOption) {
     return new Plumier()
@@ -295,6 +296,36 @@ describe("Route Generator", () => {
             }
             const mock = consoleLog.startMock()
             await createApp({ entities: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to set authorization from entity", async () => {
+            @domain()
+            @authorize.role("admin")
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ entities: [User] })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to set authorization for specific method from entity", async () => {
+            @domain()
+            @authorize.role("admin", { actionSelector: ["save", "replace", "delete", "modify"] })
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ entities: User })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
     })
@@ -770,6 +801,48 @@ describe("Route Generator", () => {
             }
             const mock = consoleLog.startMock()
             await createApp({ entities: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to authorize relation on relation", async () => {
+            class Animal {
+                @reflect.noop()
+                public name: string
+            }
+            class User {
+                @reflect.noop()
+                public name: string
+                @reflect.noop()
+                public email: string
+                @authorize.role("admin")
+                @reflect.type([Animal])
+                @crud.oneToMany(Animal)
+                public animals: Animal[]
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ entities: User })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to authorize some method on relation", async () => {
+            class Animal {
+                @reflect.noop()
+                public name: string
+            }
+            class User {
+                @reflect.noop()
+                public name: string
+                @reflect.noop()
+                public email: string
+                @authorize.role("admin", { actionSelector: ["save", "replace", "delete", "modify"] })
+                @reflect.type([Animal])
+                @crud.oneToMany(Animal)
+                public animals: Animal[]
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ entities: User })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
     })

@@ -23,10 +23,10 @@ Array [
       "decorators": Array [
         Object {
           "access": "all",
+          "actionSelector": Array [],
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
-          "selector": Array [],
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
@@ -51,10 +51,10 @@ Array [
       "decorators": Array [
         Object {
           "access": "all",
+          "actionSelector": Array [],
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
-          "selector": Array [],
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
@@ -106,10 +106,10 @@ Array [
       "decorators": Array [
         Object {
           "access": "set",
+          "actionSelector": Array [],
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
-          "selector": Array [],
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
@@ -134,10 +134,10 @@ Array [
       "decorators": Array [
         Object {
           "access": "set",
+          "actionSelector": Array [],
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
-          "selector": Array [],
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {

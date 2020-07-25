@@ -8,6 +8,7 @@ import {
     IgnoreDecorator,
     PlumierApplication,
     route,
+    AuthorizeDecorator,
 } from "@plumier/core"
 import reflect, { decorateClass, generic, metadata } from "tinspector"
 
@@ -58,14 +59,24 @@ function getIdType(type: Class): Class {
     return String
 }
 
-function getIgnore(entity: Class, property?: string): IgnoreDecorator | undefined {
-    const meta = reflect(entity)
-    if (property) {
-        const prop = meta.properties.find(x => x.name === property)!
-        return prop.decorators.find((x: IgnoreDecorator): x is IgnoreDecorator => x.name === "Ignore")
+function copyDecorators(decorators:any[]) {
+    const result = []
+    for (const decorator of decorators) {
+        if((decorator as IgnoreDecorator).name === "Ignore") {
+            result.push(decorator)
+        }
+        const authDec = (decorator as AuthorizeDecorator)
+        if(authDec.type === "plumier-meta:authorize" && authDec.access === "all"){
+            result.push(decorator)
+        }
     }
-    else
-        return meta.decorators.find((x: IgnoreDecorator): x is IgnoreDecorator => x.name === "Ignore")
+    return result
+}
+
+function decorateController(controller:Class, decorators:any[]) {
+    for (const decorator of decorators) {
+        Reflect.decorate([decorateClass(decorator)], controller)
+    }
 }
 
 function createController(rootPath: string, entity: Class, controller: Class<ControllerGeneric<any, any>>, nameConversion: (x: string) => string) {
@@ -76,10 +87,9 @@ function createController(rootPath: string, entity: Class, controller: Class<Con
     // add root decorator
     const name = nameConversion(entity.name)
     const path = appendRoute(rootPath, name)
-    // copy @route.ignore() on entity to the controller to control route generation
-    const ignore = getIgnore(entity)
-    if (ignore)
-        Reflect.decorate([route.ignore(...ignore.methods)], Controller)
+    // copy @route.ignore() and @authorize on entity to the controller to control route generation
+    const meta = reflect(entity)
+    decorateController(Controller, copyDecorators(meta.decorators))
     Reflect.decorate([route.root(path)], Controller)
     Reflect.decorate([api.tag(entity.name)], Controller)
     return Controller
@@ -98,9 +108,9 @@ function createOneToManyController(rootPath: string, dec: OneToManyDecorator, co
     const name = nameConversion(dec.parentType.name)
     const path = appendRoute(rootPath, `${name}/:pid/${dec.propertyName}`)
     // copy @route.ignore() on entity to the controller to control route generation
-    const ignore = getIgnore(dec.parentType, dec.propertyName)
-    if (ignore)
-        Reflect.decorate([route.ignore(...ignore.methods)], Controller)
+    const meta = reflect(dec.parentType)
+    const decorators = meta.properties.find(x => x.name === dec.propertyName)!.decorators
+    decorateController(Controller, copyDecorators(decorators))
     Reflect.decorate([
         route.root(path),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
