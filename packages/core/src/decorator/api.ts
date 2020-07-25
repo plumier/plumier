@@ -37,14 +37,14 @@ namespace api {
     /**
      * Mark property as readonly
      */
-    export function readOnly() {
+    export function readonly() {
         return decorateProperty(<ApiReadOnlyDecorator>{ kind: "ApiReadonly" })
     }
 
     /**
      * Mark property as write only
      */
-    export function writeOnly() {
+    export function writeonly() {
         return decorateProperty(<ApiWriteOnlyDecorator>{ kind: "ApiWriteOnly" })
     }
 

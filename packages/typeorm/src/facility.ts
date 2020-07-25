@@ -80,7 +80,7 @@ class TypeORMGenericControllerFacility extends GenericControllerFacility {
         // also add decorators to make some property readOnly or writeOnly on Open API generation
         for (const col of storage.generations) {
             if (col.target === entity) {
-                Reflect.decorate([crud.id(), api.readOnly()], (col.target as Function).prototype, col.propertyName, void 0)
+                Reflect.decorate([crud.id(), api.readonly()], (col.target as Function).prototype, col.propertyName, void 0)
                 break;
             }
         }
@@ -88,9 +88,9 @@ class TypeORMGenericControllerFacility extends GenericControllerFacility {
             const rawType: Class = (col as any).type()
             if (rawType === entity) {
                 if (col.relationType === "one-to-many")
-                    Reflect.decorate([crud.oneToMany(x => rawType), api.readOnly(), api.writeOnly()], (col.target as Function).prototype, col.propertyName, void 0)
+                    Reflect.decorate([crud.oneToMany(x => rawType), api.readonly(), api.writeonly()], (col.target as Function).prototype, col.propertyName, void 0)
                 if (col.relationType === "many-to-one")
-                    Reflect.decorate([crud.inverseProperty(), api.readOnly(), api.writeOnly()], (col.target as Function).prototype, col.propertyName, void 0)
+                    Reflect.decorate([crud.inverseProperty(), api.readonly(), api.writeonly()], (col.target as Function).prototype, col.propertyName, void 0)
                 break;
             }
         }
