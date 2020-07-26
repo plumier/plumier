@@ -9,12 +9,14 @@ import {
     PlumierApplication,
     route,
     AuthorizeDecorator,
+    HttpMethod,
 } from "@plumier/core"
 import reflect, { decorateClass, generic, metadata } from "tinspector"
 
 import { ControllerGeneric, IdentifierDecorator, OneToManyControllerGeneric, OneToManyDecorator } from "./types"
 import pluralize from "pluralize"
 import { isAbsolute, join } from "path"
+import { RouteDecorator } from 'core/src/route-generator'
 
 interface CreateRouteFromEntitiesOption {
     entities: Class[],
@@ -28,7 +30,7 @@ interface GenericControllerFacilityOption {
     /**
      * Define group of route generated, this will be used to categorized routes in Route Analysis and Swagger (separate swagger endpoint for each group)
      */
-    group?:string
+    group?: string
     /**
      * Root path of the endpoint generated, for example /api/v1
      */
@@ -59,23 +61,49 @@ function getIdType(type: Class): Class {
     return String
 }
 
-function copyDecorators(decorators:any[]) {
+function copyDecorators(decorators: any[], controller: Class) {
     const result = []
     for (const decorator of decorators) {
         // copy @route.ignore()
-        if((decorator as IgnoreDecorator).name === "plumier-meta:ignore") {
+        if ((decorator as IgnoreDecorator).name === "plumier-meta:ignore") {
             result.push(decorator)
         }
         // copy @authorize
         const authDec = (decorator as AuthorizeDecorator)
-        if(authDec.type === "plumier-meta:authorize"){
-            result.push(decorator)
+        if (authDec.type === "plumier-meta:authorize") {
+            // @authorize.role() should applied to all actions 
+            if (authDec.access === "all") {
+                result.push(decorator)
+                continue
+            }
+            const meta = reflect(controller)
+            const findAction = (...methods: HttpMethod[]) => {
+                const result = []
+                for (const action of meta.methods) {
+                    if (action.decorators.some((x: RouteDecorator) => x.name === "plumier-meta:route"
+                        && methods.some(m => m === x.method)))
+                        result.push(action.name)
+                }
+                return result
+            }
+            // add extra action filter for decorator @authorize.get() and @authorize.set() 
+            // get will only applied to actions with GET method 
+            // set will only applied to actions with mutation DELETE, PATCH, POST, PUT
+            if (authDec.access === "get") {
+                authDec.action = findAction("get")
+                result.push(decorator)
+            }
+            if (authDec.access === "set") {
+                authDec.action = findAction("delete", "patch", "post", "put")
+                result.push(decorator)
+            }
         }
     }
+    //reflect(ctl, { flushCache: true })
     return result
 }
 
-function decorateController(controller:Class, decorators:any[]) {
+function decorateController(controller: Class, decorators: any[]) {
     for (const decorator of decorators) {
         Reflect.decorate([decorateClass(decorator)], controller)
     }
@@ -91,9 +119,8 @@ function createController(rootPath: string, entity: Class, controller: Class<Con
     const path = appendRoute(rootPath, name)
     // copy @route.ignore() and @authorize on entity to the controller to control route generation
     const meta = reflect(entity)
-    decorateController(Controller, copyDecorators(meta.decorators))
-    Reflect.decorate([route.root(path)], Controller)
-    Reflect.decorate([api.tag(entity.name)], Controller)
+    decorateController(Controller, copyDecorators(meta.decorators, controller))
+    Reflect.decorate([route.root(path), api.tag(entity.name)], Controller)
     return Controller
 }
 
@@ -112,13 +139,14 @@ function createOneToManyController(rootPath: string, dec: OneToManyDecorator, co
     // copy @route.ignore() on entity to the controller to control route generation
     const meta = reflect(dec.parentType)
     const decorators = meta.properties.find(x => x.name === dec.propertyName)!.decorators
-    decorateController(Controller, copyDecorators(decorators))
+    decorateController(Controller, copyDecorators(decorators, controller))
     Reflect.decorate([
         route.root(path),
+        api.tag(dec.parentType.name),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
-        decorateClass(dec)],
-        Controller)
-    Reflect.decorate([api.tag(dec.parentType.name)], Controller)
+        decorateClass(dec),
+    ], Controller)
+    Reflect.decorate([], Controller)
     return Controller
 }
 
@@ -182,7 +210,7 @@ abstract class GenericControllerFacility extends DefaultFacility {
         const controller = controllers.find(x => x.name.search(/generic$/i) > -1 && x.prototype instanceof ControllerGeneric)
         const controllerOneToMany = controllers.find(x => x.name.search(/generic$/i) > -1 && x.prototype instanceof OneToManyControllerGeneric)
         return this.createRoutesFromEntities({
-            
+
             rootPath: this.option.rootPath ?? "",
             controller: controller ?? this.defaultController,
             oneToManyController: controllerOneToMany ?? this.defaultOneToManyController,
