@@ -9,12 +9,14 @@ import {
     PlumierApplication,
     route,
     AuthorizeDecorator,
+    HttpMethod,
 } from "@plumier/core"
 import reflect, { decorateClass, generic, metadata } from "tinspector"
 
 import { ControllerGeneric, IdentifierDecorator, OneToManyControllerGeneric, OneToManyDecorator } from "./types"
 import pluralize from "pluralize"
 import { isAbsolute, join } from "path"
+import { RouteDecorator } from 'core/src/route-generator'
 
 interface CreateRouteFromEntitiesOption {
     entities: Class[],
@@ -28,7 +30,7 @@ interface GenericControllerFacilityOption {
     /**
      * Define group of route generated, this will be used to categorized routes in Route Analysis and Swagger (separate swagger endpoint for each group)
      */
-    group?:string
+    group?: string
     /**
      * Root path of the endpoint generated, for example /api/v1
      */
@@ -59,23 +61,44 @@ function getIdType(type: Class): Class {
     return String
 }
 
-function copyDecorators(decorators:any[]) {
+function copyDecorators(decorators: any[], ctl: Class) {
     const result = []
     for (const decorator of decorators) {
         // copy @route.ignore()
-        if((decorator as IgnoreDecorator).name === "plumier-meta:ignore") {
+        if ((decorator as IgnoreDecorator).name === "plumier-meta:ignore") {
             result.push(decorator)
         }
         // copy @authorize
         const authDec = (decorator as AuthorizeDecorator)
-        if(authDec.type === "plumier-meta:authorize"){
-            result.push(decorator)
+        if (authDec.type === "plumier-meta:authorize") {
+            if (authDec.access === "all") {
+                result.push(decorator)
+                continue
+            }
+            // if action target already specified --> copy immediately
+            if (typeof authDec.action === "string" || authDec.action.length > 0) {
+                result.push(decorator)
+                continue
+            }
+            const meta = reflect(ctl)
+            const findAction = (methods: HttpMethod[]) => {
+                const result = []
+                for (const action of meta.methods) {
+                    if (action.decorators.some((x: RouteDecorator) => x.name === "plumier-meta:route"
+                        && methods.some(m => m === x.method)))
+                        result.push(action.name)
+                }
+                return result
+            }
+            if (authDec.access === "get") {
+                
+            }
         }
     }
     return result
 }
 
-function decorateController(controller:Class, decorators:any[]) {
+function decorateController(controller: Class, decorators: any[]) {
     for (const decorator of decorators) {
         Reflect.decorate([decorateClass(decorator)], controller)
     }
@@ -182,7 +205,7 @@ abstract class GenericControllerFacility extends DefaultFacility {
         const controller = controllers.find(x => x.name.search(/generic$/i) > -1 && x.prototype instanceof ControllerGeneric)
         const controllerOneToMany = controllers.find(x => x.name.search(/generic$/i) > -1 && x.prototype instanceof OneToManyControllerGeneric)
         return this.createRoutesFromEntities({
-            
+
             rootPath: this.option.rootPath ?? "",
             controller: controller ?? this.defaultController,
             oneToManyController: controllerOneToMany ?? this.defaultOneToManyController,
