@@ -287,7 +287,7 @@ describe("Route Generator", () => {
         })
         it("Should able to ignore some method of controller from entity", async () => {
             @domain()
-            @route.ignore("get", "save")
+            @route.ignore({ action: ["get", "save"] })
             class User {
                 constructor(
                     public name: string,
@@ -315,7 +315,7 @@ describe("Route Generator", () => {
         })
         it("Should able to set authorization for specific method from entity", async () => {
             @domain()
-            @authorize.role("admin", { actionSelector: ["save", "replace", "delete", "modify"] })
+            @authorize.role("admin", { action: ["save", "replace", "delete", "modify"] })
             class User {
                 constructor(
                     public name: string,
@@ -737,7 +737,7 @@ describe("Route Generator", () => {
                 ) { }
             }
             @domain()
-            @route.ignore("save", "list")
+            @route.ignore({ action: ["save", "list"] })
             class User {
                 constructor(
                     public name: string,
@@ -785,7 +785,7 @@ describe("Route Generator", () => {
                 constructor(
                     public name: string,
                     public email: string,
-                    @route.ignore("list", "replace")
+                    @route.ignore({ action: ["list", "replace"] })
                     @reflect.type([Animal])
                     @crud.oneToMany(Animal)
                     public animals: Animal[]
@@ -824,7 +824,7 @@ describe("Route Generator", () => {
                 public name: string
                 @reflect.noop()
                 public email: string
-                @route.ignore("list", "modify")
+                @route.ignore({ action: ["list", "modify"] })
                 @reflect.type([Animal])
                 @crud.oneToMany(Animal)
                 public animals: Animal[]
@@ -864,7 +864,7 @@ describe("Route Generator", () => {
                 public name: string
                 @reflect.noop()
                 public email: string
-                @authorize.role("admin", { actionSelector: ["save", "replace", "delete", "modify"] })
+                @authorize.role("admin", { action: ["save", "replace", "delete", "modify"] })
                 @reflect.type([Animal])
                 @crud.oneToMany(Animal)
                 public animals: Animal[]

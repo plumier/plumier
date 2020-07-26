@@ -35,7 +35,7 @@ Array [
       "decorators": Array [
         Object {
           "access": "all",
-          "actionSelector": Array [],
+          "action": Array [],
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Class",
@@ -53,7 +53,7 @@ Array [
           "decorators": Array [
             Object {
               "method": "get",
-              "name": "Route",
+              "name": "plumier-meta:route",
               "url": undefined,
               Symbol(tinspector:decoratorOption): Object {
                 "allowMultiple": true,
@@ -95,7 +95,7 @@ Array [
       "decorators": Array [
         Object {
           "access": "all",
-          "actionSelector": Array [],
+          "action": Array [],
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Method",
@@ -108,7 +108,7 @@ Array [
         },
         Object {
           "method": "get",
-          "name": "Route",
+          "name": "plumier-meta:route",
           "url": undefined,
           Symbol(tinspector:decoratorOption): Object {
             "allowMultiple": true,
@@ -144,7 +144,7 @@ Array [
       "decorators": Array [
         Object {
           "access": "all",
-          "actionSelector": Array [],
+          "action": Array [],
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Parameter",
@@ -175,7 +175,7 @@ Array [
       "decorators": Array [
         Object {
           "access": "all",
-          "actionSelector": Array [],
+          "action": Array [],
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Parameter",
@@ -210,7 +210,7 @@ Array [
         "decorators": Array [
           Object {
             "access": "all",
-            "actionSelector": Array [],
+            "action": Array [],
             "authorize": customAuthorizer,
             "evaluation": "Dynamic",
             "location": "Method",
@@ -223,7 +223,7 @@ Array [
           },
           Object {
             "method": "get",
-            "name": "Route",
+            "name": "plumier-meta:route",
             "url": undefined,
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,
@@ -276,7 +276,7 @@ Array [
             "decorators": Array [
               Object {
                 "access": "all",
-                "actionSelector": Array [],
+                "action": Array [],
                 "authorize": customAuthorizer,
                 "evaluation": "Dynamic",
                 "location": "Method",
@@ -289,7 +289,7 @@ Array [
               },
               Object {
                 "method": "get",
-                "name": "Route",
+                "name": "plumier-meta:route",
                 "url": undefined,
                 Symbol(tinspector:decoratorOption): Object {
                   "allowMultiple": true,
@@ -324,7 +324,7 @@ Array [
         "decorators": Array [
           Object {
             "access": "all",
-            "actionSelector": Array [],
+            "action": Array [],
             "authorize": customAuthorizer,
             "evaluation": "Dynamic",
             "location": "Method",
@@ -337,7 +337,7 @@ Array [
           },
           Object {
             "method": "get",
-            "name": "Route",
+            "name": "plumier-meta:route",
             "url": undefined,
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,

@@ -9,9 +9,9 @@ type AccessModifier = "get" | "set" | "all"
 type FunctionEvaluation = "Static" | "Dynamic"
 interface CustomAuthorizeOption {
     /**
-     * Filter authorizer into specific method(s), only work on controller scoped authorizer
+     * Filter authorizer into specific action(s), only work on controller scoped authorizer
      */
-    actionSelector?: string | string[],
+    action?: string | string[],
 
     /**
      * Text that will visible on route analysis
@@ -45,7 +45,7 @@ interface AuthorizeSelectorOption {
      * 
      * Should specify a correct action name(s)
      */
-    actionSelector: string | string[]
+    action: string | string[]
 }
 
 class AuthDecoratorImpl {
@@ -64,7 +64,7 @@ class AuthDecoratorImpl {
                 type: "plumier-meta:authorize",
                 tag: option.tag, authorize, location,
                 access: option.access, evaluation: option.evaluation,
-                actionSelector: option.actionSelector ?? []
+                action: option.action ?? []
             }
         }, ["Class", "Parameter", "Method", "Property"])
     }
@@ -80,7 +80,7 @@ class AuthDecoratorImpl {
                 type: "plumier-meta:authorize",
                 tag: "Public",
                 evaluation: "Static",
-                actionSelector: opt?.actionSelector ?? [],
+                action: opt?.action ?? [],
                 access: "all"
             }
         }, ["Class", "Parameter", "Method", "Property"])
@@ -141,32 +141,32 @@ class AuthDecoratorImpl {
     }
 
     /**
-     * Authorize parameter or domain property only can be retrieved by specific role
+     * Authorize entity or parameter or domain property only can be retrieved by specific role
      * @param role List of allowed roles
      */
-    get(...roles: string[]): CustomPropertyDecorator {
+    get(...roles: string[]) {
         return this.byRole(roles, "get")
     }
 
     /**
-     * Authorize parameter or domain property only can be set by specific role
+     * Authorize entity  parameter or domain property only can be set by specific role
      * @param role List of allowed role
      */
-    set(...roles: string[]): CustomPropertyDecorator {
+    set(...roles: string[]) {
         return this.byRole(roles, "set")
     }
 
     /**
-     * Mark parameter or property as readonly, no Role can set its value
+     * Mark entity parameter or property as readonly, no Role can set its value
      */
-    readonly(): CustomPropertyDecorator {
+    readonly() {
         return mergeDecorator(this.set("plumier::readonly"), api.readonly())
     }
 
     /**
-     * Mark parameter or property as writeonly, no Role can read its value
+     * Mark entity parameter or property as writeonly, no Role can read its value
      */
-    writeonly(): CustomPropertyDecorator {
+    writeonly() {
         return mergeDecorator(this.get("plumier::writeonly"), api.writeonly())
     }
 }

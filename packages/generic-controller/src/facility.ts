@@ -62,11 +62,13 @@ function getIdType(type: Class): Class {
 function copyDecorators(decorators:any[]) {
     const result = []
     for (const decorator of decorators) {
-        if((decorator as IgnoreDecorator).name === "Ignore") {
+        // copy @route.ignore()
+        if((decorator as IgnoreDecorator).name === "plumier-meta:ignore") {
             result.push(decorator)
         }
+        // copy @authorize
         const authDec = (decorator as AuthorizeDecorator)
-        if(authDec.type === "plumier-meta:authorize" && authDec.access === "all"){
+        if(authDec.type === "plumier-meta:authorize"){
             result.push(decorator)
         }
     }

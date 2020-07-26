@@ -9,9 +9,9 @@ import { HttpMethod, RouteInfo, RouteMetadata } from "./types"
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-interface RouteDecorator { name: "Route", method: HttpMethod, url?: string }
-interface IgnoreDecorator { name: "Ignore", methods: string[] }
-interface RootDecorator { name: "Root", url: string }
+interface RouteDecorator { name: "plumier-meta:route", method: HttpMethod, url?: string }
+interface IgnoreDecorator { name: "plumier-meta:ignore", action?: string | string[] }
+interface RootDecorator { name: "plumier-meta:root", url: string }
 interface TransformOption { rootPath?: string, overridable: boolean, group?: string, directoryAsPath?: boolean }
 
 /* ------------------------------------------------------------------------------- */
@@ -33,7 +33,7 @@ function striveController(name: string) {
 }
 
 function getRootRoutes(root: string, controller: ClassReflection): string[] {
-   const decs: RootDecorator[] = controller.decorators.filter((x: RootDecorator) => x.name == "Root")
+   const decs: RootDecorator[] = controller.decorators.filter((x: RootDecorator) => x.name == "plumier-meta:root")
    if (decs.length > 0) {
       return decs.slice().reverse().map(x => transformDecorator(root, "", x))
    }
@@ -81,11 +81,11 @@ function transformDecorator(root: string, actionName: string, actionDecorator: {
 }
 
 function transformMethodWithDecorator(root: string, controller: ClassReflection, method: MethodReflection, overridable: boolean, group?: string): RouteInfo[] {
-   if (method.decorators.some((x: IgnoreDecorator) => x.name == "Ignore")) return []
+   if (method.decorators.some((x: IgnoreDecorator) => x.name == "plumier-meta:ignore")) return []
    const result = { kind: "ActionRoute" as "ActionRoute", group, action: method, controller, overridable }
    const infos: RouteInfo[] = []
    for (const decorator of (method.decorators.slice().reverse() as RouteDecorator[])) {
-      if (decorator.name === "Route")
+      if (decorator.name === "plumier-meta:route")
          infos.push({
             ...result,
             method: decorator.method,
@@ -107,7 +107,7 @@ function transformMethod(root: string, controller: ClassReflection, method: Meth
 }
 
 function isController(meta: ClassReflection) {
-   return !!meta.name.match(/controller$/i) || !!meta.decorators.find((x: RootDecorator) => x.name === "Root")
+   return !!meta.name.match(/controller$/i) || !!meta.decorators.find((x: RootDecorator) => x.name === "plumier-meta:root")
 }
 
 function transformController(object: Class, opt: TransformOption) {
@@ -116,16 +116,17 @@ function transformController(object: Class, opt: TransformOption) {
    const rootRoutes = getRootRoutes(opt && opt.rootPath || "", controller)
    const infos: RouteInfo[] = []
    // check for class @route.ignore()
-   const ignoreDecorator = controller.decorators.find((x: IgnoreDecorator): x is IgnoreDecorator => x.name === "Ignore")
+   const ignoreDecorator = controller.decorators.find((x: IgnoreDecorator): x is IgnoreDecorator => x.name === "plumier-meta:ignore")
    // if has @route.ignore() (without specify method) than ignore immediately
-   if (ignoreDecorator && ignoreDecorator.methods.length === 0) return []
-   const ignoredMethods = ignoreDecorator?.methods || []
+   const ignoredMethods = ignoreDecorator?.action === undefined ? [] :
+      typeof ignoreDecorator.action === "string" ? [ignoreDecorator.action] : ignoreDecorator.action
+   if (ignoreDecorator && ignoredMethods.length === 0) return []
 
    for (const ctl of rootRoutes) {
       for (const method of controller.methods) {
          // if method in ignored list then skip
          if (ignoredMethods.some(x => x === method.name)) continue
-         if (method.decorators.some((x: IgnoreDecorator | RouteDecorator) => x.name == "Ignore" || x.name == "Route"))
+         if (method.decorators.some((x: IgnoreDecorator | RouteDecorator) => x.name == "plumier-meta:ignore" || x.name == "plumier-meta:route"))
             infos.push(...transformMethodWithDecorator(ctl, controller, method, opt.overridable, opt.group))
          else
             infos.push(...transformMethod(ctl, controller, method, opt.overridable, opt.group))

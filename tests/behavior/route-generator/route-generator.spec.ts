@@ -1655,7 +1655,7 @@ describe("Route Ignore", () => {
         expect(routes).toMatchSnapshot()
     })
     it("Should able to ignore specific methods from class ignore", () => {
-        @route.ignore("get", "save")
+        @route.ignore({ action: ["get", "save"] })
         class UsersController {
             @route.get("")
             get(id: string) { }
@@ -1671,7 +1671,7 @@ describe("Route Ignore", () => {
     })
 
     it("Should able to ignore specific methods from class ignore with multiple root route", () => {
-        @route.ignore("get", "save")
+        @route.ignore({ action: ["get", "save"] })
         @route.root("users")
         @route.root("clients")
         class UsersController {
@@ -1688,7 +1688,7 @@ describe("Route Ignore", () => {
         expect(routes.map(x => ({ method: x.method, url: x.url }))).toMatchSnapshot()
     })
     it("Should able to ignore specific methods from class ignore with multiple route", () => {
-        @route.ignore("get", "save")
+        @route.ignore({ action: ["get", "save"] })
         class UsersController {
             @route.get("")
             @route.get()
@@ -1774,7 +1774,7 @@ describe("Route Grouping", () => {
     it("Should able to ignore nested directory as path", async () => {
         const mock = consoleLog.startMock()
         await createApp()
-            .set(new ControllerFacility({ controller: "./nested", group: "v1", directoryAsPath: false  }))
+            .set(new ControllerFacility({ controller: "./nested", group: "v1", directoryAsPath: false }))
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
@@ -1782,7 +1782,7 @@ describe("Route Grouping", () => {
     it("Should able to ignore nested directory as path with rootPath", async () => {
         const mock = consoleLog.startMock()
         await createApp()
-            .set(new ControllerFacility({ controller: "./nested", group: "v1", directoryAsPath: false, rootPath: "api/v1"  }))
+            .set(new ControllerFacility({ controller: "./nested", group: "v1", directoryAsPath: false, rootPath: "api/v1" }))
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()

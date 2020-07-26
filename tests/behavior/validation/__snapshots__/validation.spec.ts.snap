@@ -188,7 +188,7 @@ Object {
     "decorators": Array [
       Object {
         "method": "post",
-        "name": "Route",
+        "name": "plumier-meta:route",
         "url": undefined,
         Symbol(tinspector:decoratorOption): Object {
           "allowMultiple": true,
@@ -234,7 +234,7 @@ Object {
         "decorators": Array [
           Object {
             "method": "post",
-            "name": "Route",
+            "name": "plumier-meta:route",
             "url": undefined,
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,
