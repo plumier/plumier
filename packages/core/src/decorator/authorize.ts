@@ -141,32 +141,32 @@ class AuthDecoratorImpl {
     }
 
     /**
-     * Authorize parameter or domain property only can be retrieved by specific role
+     * Authorize entity or parameter or domain property only can be retrieved by specific role
      * @param role List of allowed roles
      */
-    get(...roles: string[]): CustomPropertyDecorator {
+    get(...roles: string[]) {
         return this.byRole(roles, "get")
     }
 
     /**
-     * Authorize parameter or domain property only can be set by specific role
+     * Authorize entity  parameter or domain property only can be set by specific role
      * @param role List of allowed role
      */
-    set(...roles: string[]): CustomPropertyDecorator {
+    set(...roles: string[]) {
         return this.byRole(roles, "set")
     }
 
     /**
-     * Mark parameter or property as readonly, no Role can set its value
+     * Mark entity parameter or property as readonly, no Role can set its value
      */
-    readonly(): CustomPropertyDecorator {
+    readonly() {
         return mergeDecorator(this.set("plumier::readonly"), api.readonly())
     }
 
     /**
-     * Mark parameter or property as writeonly, no Role can read its value
+     * Mark entity parameter or property as writeonly, no Role can read its value
      */
-    writeonly(): CustomPropertyDecorator {
+    writeonly() {
         return mergeDecorator(this.get("plumier::writeonly"), api.writeonly())
     }
 }

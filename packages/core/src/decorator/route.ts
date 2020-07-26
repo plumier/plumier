@@ -11,7 +11,7 @@ interface IgnoreOption {
 }
 
 class RouteDecoratorImpl {
-   private decorateRoute(method: HttpMethod, url?: string) { return decorateMethod(<RouteDecorator>{ name: "Route", method, url }) }
+   private decorateRoute(method: HttpMethod, url?: string) { return decorateMethod(<RouteDecorator>{ name: "plumier-meta:route", method, url }) }
    /**
     * Mark method as POST method http handler
     ```
@@ -265,7 +265,7 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   root(url: string) { return decorateClass(<RootDecorator>{ name: "Root", url }) }
+   root(url: string) { return decorateClass(<RootDecorator>{ name: "plumier-meta:root", url }) }
 
    /**
     * Ignore method from route generation
@@ -280,7 +280,7 @@ class RouteDecoratorImpl {
     //otherMethod not generated
     ```
     */
-   ignore(opt?: IgnoreOption) { return decorate(<IgnoreDecorator>{ [DecoratorId]: "route:ignore", name: "Ignore", action: opt?.action }, ["Class", "Method", "Property", "Parameter"], { allowMultiple: false }) }
+   ignore(opt?: IgnoreOption) { return decorate(<IgnoreDecorator>{ [DecoratorId]: "route:ignore", name: "plumier-meta:ignore", action: opt?.action }, ["Class", "Method", "Property", "Parameter"], { allowMultiple: false }) }
 }
 
 const route = new RouteDecoratorImpl()
