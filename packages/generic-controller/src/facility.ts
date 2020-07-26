@@ -61,7 +61,7 @@ function getIdType(type: Class): Class {
     return String
 }
 
-function copyDecorators(decorators: any[], ctl: Class) {
+function copyDecorators(decorators: any[], controller: Class) {
     const result = []
     for (const decorator of decorators) {
         // copy @route.ignore()
@@ -71,17 +71,13 @@ function copyDecorators(decorators: any[], ctl: Class) {
         // copy @authorize
         const authDec = (decorator as AuthorizeDecorator)
         if (authDec.type === "plumier-meta:authorize") {
+            // @authorize.role() should applied to all actions 
             if (authDec.access === "all") {
                 result.push(decorator)
                 continue
             }
-            // if action target already specified --> copy immediately
-            if (typeof authDec.action === "string" || authDec.action.length > 0) {
-                result.push(decorator)
-                continue
-            }
-            const meta = reflect(ctl)
-            const findAction = (methods: HttpMethod[]) => {
+            const meta = reflect(controller)
+            const findAction = (...methods: HttpMethod[]) => {
                 const result = []
                 for (const action of meta.methods) {
                     if (action.decorators.some((x: RouteDecorator) => x.name === "plumier-meta:route"
@@ -90,11 +86,20 @@ function copyDecorators(decorators: any[], ctl: Class) {
                 }
                 return result
             }
+            // add extra action filter for decorator @authorize.get() and @authorize.set() 
+            // get will only applied to actions with GET method 
+            // set will only applied to actions with mutation DELETE, PATCH, POST, PUT
             if (authDec.access === "get") {
-                
+                authDec.action = findAction("get")
+                result.push(decorator)
+            }
+            if (authDec.access === "set") {
+                authDec.action = findAction("delete", "patch", "post", "put")
+                result.push(decorator)
             }
         }
     }
+    //reflect(ctl, { flushCache: true })
     return result
 }
 
@@ -114,9 +119,8 @@ function createController(rootPath: string, entity: Class, controller: Class<Con
     const path = appendRoute(rootPath, name)
     // copy @route.ignore() and @authorize on entity to the controller to control route generation
     const meta = reflect(entity)
-    decorateController(Controller, copyDecorators(meta.decorators))
-    Reflect.decorate([route.root(path)], Controller)
-    Reflect.decorate([api.tag(entity.name)], Controller)
+    decorateController(Controller, copyDecorators(meta.decorators, controller))
+    Reflect.decorate([route.root(path), api.tag(entity.name)], Controller)
     return Controller
 }
 
@@ -135,13 +139,14 @@ function createOneToManyController(rootPath: string, dec: OneToManyDecorator, co
     // copy @route.ignore() on entity to the controller to control route generation
     const meta = reflect(dec.parentType)
     const decorators = meta.properties.find(x => x.name === dec.propertyName)!.decorators
-    decorateController(Controller, copyDecorators(decorators))
+    decorateController(Controller, copyDecorators(decorators, controller))
     Reflect.decorate([
         route.root(path),
+        api.tag(dec.parentType.name),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
-        decorateClass(dec)],
-        Controller)
-    Reflect.decorate([api.tag(dec.parentType.name)], Controller)
+        decorateClass(dec),
+    ], Controller)
+    Reflect.decorate([], Controller)
     return Controller
 }
 

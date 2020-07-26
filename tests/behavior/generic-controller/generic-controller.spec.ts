@@ -358,6 +358,36 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
+        it("Should able to set @authorize.get() from entity", async () => {
+            @domain()
+            @authorize.get("admin")
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ entities: [User] })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to set @authorize.set() from entity", async () => {
+            @domain()
+            @authorize.set("admin")
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ entities: [User] })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
     })
     describe("One To Many Controller", () => {
         it("Should generate routes with parameter property entity", async () => {
@@ -865,6 +895,48 @@ describe("Route Generator", () => {
                 @reflect.noop()
                 public email: string
                 @authorize.role("admin", { action: ["save", "replace", "delete", "modify"] })
+                @reflect.type([Animal])
+                @crud.oneToMany(Animal)
+                public animals: Animal[]
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ entities: User })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to set @authorize.set() on relation", async () => {
+            class Animal {
+                @reflect.noop()
+                public name: string
+            }
+            class User {
+                @reflect.noop()
+                public name: string
+                @reflect.noop()
+                public email: string
+                @authorize.set("admin")
+                @reflect.type([Animal])
+                @crud.oneToMany(Animal)
+                public animals: Animal[]
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ entities: User })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to set @authorize.get() on relation", async () => {
+            class Animal {
+                @reflect.noop()
+                public name: string
+            }
+            class User {
+                @reflect.noop()
+                public name: string
+                @reflect.noop()
+                public email: string
+                @authorize.get("admin")
                 @reflect.type([Animal])
                 @crud.oneToMany(Animal)
                 public animals: Animal[]
