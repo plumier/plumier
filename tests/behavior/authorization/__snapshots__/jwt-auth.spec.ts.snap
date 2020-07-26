@@ -23,7 +23,7 @@ Array [
       "decorators": Array [
         Object {
           "access": "all",
-          "actionSelector": Array [],
+          "action": Array [],
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
@@ -51,7 +51,7 @@ Array [
       "decorators": Array [
         Object {
           "access": "all",
-          "actionSelector": Array [],
+          "action": Array [],
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
@@ -106,7 +106,7 @@ Array [
       "decorators": Array [
         Object {
           "access": "set",
-          "actionSelector": Array [],
+          "action": Array [],
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
@@ -134,7 +134,7 @@ Array [
       "decorators": Array [
         Object {
           "access": "set",
-          "actionSelector": Array [],
+          "action": Array [],
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",

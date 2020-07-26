@@ -333,7 +333,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply authorization to specific method from controller", async () => {
-            @authorize.role("superadmin", { actionSelector: "get" })
+            @authorize.role("superadmin", { action: "get" })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -362,7 +362,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply authorization to specific methods from controller", async () => {
-            @authorize.role("superadmin", { actionSelector: ["get", "save"] })
+            @authorize.role("superadmin", { action: ["get", "save"] })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -401,7 +401,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply public authorization to specific method from controller", async () => {
-            @authorize.public({ actionSelector: "get" })
+            @authorize.public({ action: "get" })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -428,7 +428,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply public authorization to specific methods from controller", async () => {
-            @authorize.public({ actionSelector: ["get", "save"] })
+            @authorize.public({ action: ["get", "save"] })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -464,8 +464,8 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to mix controller scope authorizer with other decorators", async () => {
-            @route.ignore("save")
-            @authorize.role("superadmin", { actionSelector: ["get", "save"] })
+            @route.ignore({ action: "save" })
+            @authorize.role("superadmin", { action: ["get", "save"] })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }

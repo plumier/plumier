@@ -3,6 +3,12 @@ import { decorateClass, decorateMethod, decorate, DecoratorId } from "tinspector
 import { HttpMethod } from "../types"
 import { IgnoreDecorator, RootDecorator, RouteDecorator } from "../route-generator"
 
+interface IgnoreOption {
+   /**
+    * Ignore specific actions. Only work on controller scope ignore
+    */
+   action: string | string[]
+}
 
 class RouteDecoratorImpl {
    private decorateRoute(method: HttpMethod, url?: string) { return decorateMethod(<RouteDecorator>{ name: "Route", method, url }) }
@@ -274,7 +280,7 @@ class RouteDecoratorImpl {
     //otherMethod not generated
     ```
     */
-   ignore(...methods:string[]) { return decorate(<IgnoreDecorator>{ [DecoratorId]: "route:ignore", name: "Ignore", methods }, ["Class", "Method", "Property", "Parameter"], { allowMultiple: false }) }
+   ignore(opt?: IgnoreOption) { return decorate(<IgnoreDecorator>{ [DecoratorId]: "route:ignore", name: "Ignore", action: opt?.action }, ["Class", "Method", "Property", "Parameter"], { allowMultiple: false }) }
 }
 
 const route = new RouteDecoratorImpl()

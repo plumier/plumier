@@ -9,9 +9,9 @@ type AccessModifier = "get" | "set" | "all"
 type FunctionEvaluation = "Static" | "Dynamic"
 interface CustomAuthorizeOption {
     /**
-     * Filter authorizer into specific method(s), only work on controller scoped authorizer
+     * Filter authorizer into specific action(s), only work on controller scoped authorizer
      */
-    actionSelector?: string | string[],
+    action?: string | string[],
 
     /**
      * Text that will visible on route analysis
@@ -45,7 +45,7 @@ interface AuthorizeSelectorOption {
      * 
      * Should specify a correct action name(s)
      */
-    actionSelector: string | string[]
+    action: string | string[]
 }
 
 class AuthDecoratorImpl {
@@ -64,7 +64,7 @@ class AuthDecoratorImpl {
                 type: "plumier-meta:authorize",
                 tag: option.tag, authorize, location,
                 access: option.access, evaluation: option.evaluation,
-                actionSelector: option.actionSelector ?? []
+                action: option.action ?? []
             }
         }, ["Class", "Parameter", "Method", "Property"])
     }
@@ -80,7 +80,7 @@ class AuthDecoratorImpl {
                 type: "plumier-meta:authorize",
                 tag: "Public",
                 evaluation: "Static",
-                actionSelector: opt?.actionSelector ?? [],
+                action: opt?.action ?? [],
                 access: "all"
             }
         }, ["Class", "Parameter", "Method", "Property"])
