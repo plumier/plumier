@@ -351,7 +351,7 @@ export class ControllerBase {
     replace(){ }
 }
 
-@route.ignore("save", "replace")
+@route.ignore({ action: ["save", "replace"] })
 export class UsersController extends ControllerBase{}
 ```
 

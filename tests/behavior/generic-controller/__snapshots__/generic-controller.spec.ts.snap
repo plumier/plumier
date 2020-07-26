@@ -618,6 +618,62 @@ Array [
 ]
 `;
 
+exports[`Route Generator Generic Controller Should able to set custom authorizer from entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> Custom GET    /users",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> Custom POST   /users",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> Custom GET    /users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> Custom PATCH  /users/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> Custom PUT    /users/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> Custom DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should able to set public authorizer from entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MyControllerGeneric.list              -> Public GET    /users",
+  ],
+  Array [
+    "2. MyControllerGeneric.save(data)        -> Public POST   /users",
+  ],
+  Array [
+    "3. MyControllerGeneric.get(id)           -> Public GET    /users/:id",
+  ],
+  Array [
+    "4. MyControllerGeneric.modify(id, data)  -> Public PATCH  /users/:id",
+  ],
+  Array [
+    "5. MyControllerGeneric.replace(id, data) -> Public PUT    /users/:id",
+  ],
+  Array [
+    "6. MyControllerGeneric.delete(id)        -> Public DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`Route Generator Generic Controller Should able to specify ID type by providing decorator 1`] = `
 Array [
   Object {

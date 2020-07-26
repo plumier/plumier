@@ -139,10 +139,10 @@ export class ProductsController {
 
 
 ## Controller Scoped Authorization Selector 
-From controller scoped authorization you can specify which methods will be applied by setting the `selector` option like below 
+From controller scoped authorization you can specify which actions will be applied by setting the `action` option like below 
 
 ```typescript
-@authorize.role("admin", { selector: ["save", "replace"] })
+@authorize.role("admin", { action: ["save", "replace"] })
 export class ProductsController {
     @route.get(":id")
     get(id: string) { }
