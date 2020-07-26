@@ -10,7 +10,7 @@ import { HttpMethod, RouteInfo, RouteMetadata } from "./types"
 // --------------------------------------------------------------------- //
 
 interface RouteDecorator { name: "Route", method: HttpMethod, url?: string }
-interface IgnoreDecorator { name: "Ignore", methods: string[] }
+interface IgnoreDecorator { name: "Ignore", action?: string | string[] }
 interface RootDecorator { name: "Root", url: string }
 interface TransformOption { rootPath?: string, overridable: boolean, group?: string, directoryAsPath?: boolean }
 
@@ -118,8 +118,9 @@ function transformController(object: Class, opt: TransformOption) {
    // check for class @route.ignore()
    const ignoreDecorator = controller.decorators.find((x: IgnoreDecorator): x is IgnoreDecorator => x.name === "Ignore")
    // if has @route.ignore() (without specify method) than ignore immediately
-   if (ignoreDecorator && ignoreDecorator.methods.length === 0) return []
-   const ignoredMethods = ignoreDecorator?.methods || []
+   const ignoredMethods = ignoreDecorator?.action === undefined ? [] :
+      typeof ignoreDecorator.action === "string" ? [ignoreDecorator.action] : ignoreDecorator.action
+   if (ignoreDecorator && ignoredMethods.length === 0) return []
 
    for (const ctl of rootRoutes) {
       for (const method of controller.methods) {
