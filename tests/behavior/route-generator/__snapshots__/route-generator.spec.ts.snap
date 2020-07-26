@@ -82,7 +82,7 @@ Array [
       },
       "decorators": Array [
         Object {
-          "name": "Root",
+          "name": "plumier-meta:root",
           "url": "beast",
           Symbol(tinspector:decoratorOption): Object {
             "allowMultiple": true,

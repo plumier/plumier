@@ -53,7 +53,7 @@ Array [
           "decorators": Array [
             Object {
               "method": "get",
-              "name": "Route",
+              "name": "plumier-meta:route",
               "url": undefined,
               Symbol(tinspector:decoratorOption): Object {
                 "allowMultiple": true,
@@ -108,7 +108,7 @@ Array [
         },
         Object {
           "method": "get",
-          "name": "Route",
+          "name": "plumier-meta:route",
           "url": undefined,
           Symbol(tinspector:decoratorOption): Object {
             "allowMultiple": true,
@@ -223,7 +223,7 @@ Array [
           },
           Object {
             "method": "get",
-            "name": "Route",
+            "name": "plumier-meta:route",
             "url": undefined,
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,
@@ -289,7 +289,7 @@ Array [
               },
               Object {
                 "method": "get",
-                "name": "Route",
+                "name": "plumier-meta:route",
                 "url": undefined,
                 Symbol(tinspector:decoratorOption): Object {
                   "allowMultiple": true,
@@ -337,7 +337,7 @@ Array [
           },
           Object {
             "method": "get",
-            "name": "Route",
+            "name": "plumier-meta:route",
             "url": undefined,
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,
