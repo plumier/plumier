@@ -10,13 +10,13 @@ import {
     route,
     AuthorizeDecorator,
     HttpMethod,
+    RouteDecorator
 } from "@plumier/core"
 import reflect, { decorateClass, generic, metadata } from "tinspector"
 
 import { ControllerGeneric, IdentifierDecorator, OneToManyControllerGeneric, OneToManyDecorator } from "./types"
 import pluralize from "pluralize"
 import { isAbsolute, join } from "path"
-import { RouteDecorator } from 'core/src/route-generator'
 
 interface CreateRouteFromEntitiesOption {
     entities: Class[],

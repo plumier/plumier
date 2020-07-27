@@ -6,7 +6,7 @@ export { AuthorizerFunction, checkAuthorize, RoleField, Authorizer, CustomAuthor
 export { HeaderPart, RequestPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction } from "./binder";
 export { invoke } from "./application-pipeline";
 export { response } from "./response";
-export { generateRoutes, mergeRoutes, findClassRecursive, appendRoute, IgnoreDecorator } from "./route-generator";
+export { generateRoutes, mergeRoutes, findClassRecursive, appendRoute, IgnoreDecorator, RouteDecorator } from "./route-generator";
 export { analyzeRoutes, printAnalysis } from "./route-analyzer";
 export { router } from "./router";
 export { Class, consoleLog, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass, printTable, toBoolean, cleanupConsole, ellipsis, analyzeModel, AnalysisMessage } from "./common";
