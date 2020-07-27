@@ -204,6 +204,7 @@ Object {
   },
   "printAnalysis": printAnalysis,
   "printTable": printTable,
+  "relation": relation,
   "response": Object {
     "json": json,
     "redirect": redirect,

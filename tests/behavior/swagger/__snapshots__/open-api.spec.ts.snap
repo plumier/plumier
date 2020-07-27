@@ -2066,6 +2066,470 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Request Body With Relation Property Should able combine with required 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "required": Array [
+              "userName",
+              "password",
+            ],
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "pet": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "required": Array [
+              "userName",
+              "password",
+            ],
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "pet": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body With Relation Property Should able to provide callback type 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "pet": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "pet": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body With Relation Property Should able to transform body with relation 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "pet": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "pet": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body With Relation Property Should able to transform other type 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "pet": Object {
+                "type": "string",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "pet": Object {
+                "type": "string",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body With Relation Property Should able use multiple relations 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "otherPet": Object {
+                "items": Object {
+                  "type": "number",
+                },
+                "type": "array",
+              },
+              "pet": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "otherPet": Object {
+                "items": Object {
+                  "type": "number",
+                },
+                "type": "array",
+              },
+              "pet": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body With Relation Property Should able use multiple relations in array model 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "items": Object {
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/User",
+            },
+            Object {
+              "properties": Object {
+                "otherPet": Object {
+                  "items": Object {
+                    "type": "number",
+                  },
+                  "type": "array",
+                },
+                "pet": Object {
+                  "type": "number",
+                },
+              },
+              "type": "object",
+            },
+          ],
+        },
+        "type": "array",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "items": Object {
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/User",
+            },
+            Object {
+              "properties": Object {
+                "otherPet": Object {
+                  "items": Object {
+                    "type": "number",
+                  },
+                  "type": "array",
+                },
+                "pet": Object {
+                  "type": "number",
+                },
+              },
+              "type": "object",
+            },
+          ],
+        },
+        "type": "array",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body With Relation Property Should not error when model type not specified 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/Object",
+        },
+        "type": "array",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/Object",
+        },
+        "type": "array",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body With Relation Property Should work on array relation 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "pet": Object {
+                "items": Object {
+                  "type": "number",
+                },
+                "type": "array",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "pet": Object {
+                "items": Object {
+                  "type": "number",
+                },
+                "type": "array",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body With Relation Property Should work on array relation with callback 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "pet": Object {
+                "items": Object {
+                  "type": "number",
+                },
+                "type": "array",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "pet": Object {
+                "items": Object {
+                  "type": "number",
+                },
+                "type": "array",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Request Body With Relation Property Should work with array type model 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "items": Object {
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/User",
+            },
+            Object {
+              "properties": Object {
+                "pet": Object {
+                  "type": "number",
+                },
+              },
+              "type": "object",
+            },
+          ],
+        },
+        "type": "array",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "items": Object {
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/User",
+            },
+            Object {
+              "properties": Object {
+                "pet": Object {
+                  "type": "number",
+                },
+              },
+              "type": "object",
+            },
+          ],
+        },
+        "type": "array",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
 exports[`Open API 3.0 Generation Response Should detect array object response 1`] = `
 Object {
   "content": Object {
