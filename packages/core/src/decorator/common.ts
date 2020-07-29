@@ -1,7 +1,10 @@
-import reflect, { decorate } from "tinspector"
+import reflect, { decorate, decorateProperty } from "tinspector"
 
 import { ActionContext, Middleware, MiddlewareDecorator, MiddlewareFunction } from "../types"
+import { Class } from '../common'
 
+
+interface RelationDecorator { kind: "plumier-meta:relation", type: Class | Class[] | ((x:any) => Class | Class[]) }
 
 // --------------------------------------------------------------------- //
 // ------------------------------- DOMAIN ------------------------------ //
@@ -30,5 +33,8 @@ namespace middleware {
     }
 }
 
+function relation(type: Class | Class[] | ((x:any) => Class | Class[])) {
+    return decorateProperty(<RelationDecorator>{ kind: "plumier-meta:relation", type })
+}
 
-export { middleware, domain }
+export { middleware, domain, relation, RelationDecorator }

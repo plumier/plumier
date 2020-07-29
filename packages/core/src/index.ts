@@ -13,7 +13,7 @@ export { Class, consoleLog, findFilesRecursive, getChildValue, hasKeyOf, isCusto
 export { AuthDecoratorImpl, authorize } from "./decorator/authorize";
 export { ApiDescriptionDecorator, ApiEnumDecorator, ApiFieldNameDecorator, ApiRequiredDecorator, ApiResponseDecorator, ApiTagDecorator, api, ApiReadOnlyDecorator, ApiWriteOnlyDecorator } from "./decorator/api"
 export { bind } from "./decorator/bind";
-export { domain, middleware } from "./decorator/common";
+export { domain, middleware, relation, RelationDecorator } from "./decorator/common";
 export { route, RouteDecoratorImpl } from "./decorator/route";
 export { rest, RestDecoratorImpl } from "./decorator/rest";
 export { HttpStatus } from "./http-status";

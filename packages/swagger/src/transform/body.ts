@@ -1,10 +1,35 @@
-import { FormFile, RouteInfo } from "@plumier/core"
+import { FormFile, RouteInfo, RelationDecorator, Class } from "@plumier/core"
 import { ContentObject, ReferenceObject, RequestBodyObject, SchemaObject } from "openapi3-ts"
-import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
+import reflect, { ParameterReflection, PropertyReflection, metadata } from "tinspector"
 
 import { describeParameters, ParameterNode } from "./parameter"
 import { getRequiredProps, transformType } from "./schema"
 import { TransformContext } from "./shared"
+
+function addSchema(target: SchemaObject | ReferenceObject, schema: SchemaObject): SchemaObject {
+    if ("type" in target && target.type === "array")
+        return { ...target, items: addSchema(target.items!, schema) }
+    if ("allOf" in target && target.allOf)
+        return { allOf: [...target.allOf, schema] }
+    else
+        return { allOf: [target, schema] }
+}
+
+function addRelationProperties(rootSchema: SchemaObject, modelType: (Class | Class[] ), ctx: TransformContext): SchemaObject {
+    const type = Array.isArray(modelType) ? modelType[0] : modelType
+    const meta = reflect(type)
+    const result: SchemaObject = { type: "object", properties: {} }
+    for (const property of meta.properties) {
+        const relation = property.decorators.find((x: RelationDecorator): x is RelationDecorator => x.kind === "plumier-meta:relation")
+        if (relation) {
+            const relType = metadata.isCallback(relation.type) ? relation.type({}) : relation.type
+            result.properties![property.name] = transformType(relType, ctx)
+        }
+    }
+    const count = Object.keys(result.properties!).length
+    return count == 0 ? rootSchema : addSchema(rootSchema, result)
+}
+
 
 
 function transformJsonContent(schema: SchemaObject): ContentObject {
@@ -46,8 +71,11 @@ function transformJsonBody(nodes: ParameterNode[], ctx: TransformContext): Reque
     // model binding
     const model = nodes.find(x => x.typeName === "Array" || x.typeName === "Class")
     if (model) {
-        const schema = transformType(model.type, ctx, { decorators: model.meta.decorators })
-        return { required: true, content: transformJsonContent(schema) }
+        let schema = transformType(model.type, ctx, { decorators: model.meta.decorators })
+        // convert relational model into appropriate ID type
+        // to inform user that its able to provide the ID
+        const relation = addRelationProperties(schema, model.type!, ctx)
+        return { required: true, content: transformJsonContent(relation) }
     }
 }
 
@@ -72,7 +100,7 @@ function transformBody(route: RouteInfo, ctx: TransformContext): RequestBodyObje
     if (route.method !== "post" && route.method !== "put" && route.method !== "patch") return
     const pars = describeParameters(route)
         .filter(x => x.kind === "bodyCandidate")
-        .filter(x => !["ctx", "request", "user", "custom"].some(y => y === x.binding?.name) )
+        .filter(x => !["ctx", "request", "user", "custom"].some(y => y === x.binding?.name))
     if (pars.some(x => isFormFile(x)))
         return transformFileBody(pars, ctx)
     else

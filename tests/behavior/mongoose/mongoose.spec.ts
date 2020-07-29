@@ -533,6 +533,107 @@ describe("Facility", () => {
         beforeEach(() => mongoose.models = {})
         afterEach(async () => await mongoose.disconnect())
 
+        it("Should work on nested object", async () => {
+            @collection()
+            class Image {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @collection()
+            class Animal {
+                constructor(
+                    public name: string,
+                    @collection.ref(Image)
+                    public image: Image
+                ) { }
+            }
+            const ImageModel = globalModel(Image)
+            const AnimalModel = globalModel(Animal)
+            class AnimalController {
+                @route.post()
+                @authorize.public()
+                async save(data: Animal) {
+                    const newly = await new AnimalModel(data).save()
+                    return newly._id
+                }
+            }
+            const koa = await createApp(AnimalController, [Image, Animal])
+            const image = await new ImageModel({ name: "Image1.jpg" }).save()
+            const response = await supertest(koa.callback())
+                .post("/animal/save")
+                .send({ name: "Mimi", image: image.id })
+                .expect(200)
+            const result = await AnimalModel.findById(response.body)
+                .populate("image")
+            expect(result).toMatchSnapshot()
+        })
+
+        it("Should validate properly on nested object", async () => {
+            @collection()
+            class Image {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @collection()
+            class Animal {
+                constructor(
+                    public name: string,
+                    @collection.ref(Image)
+                    public image: Image
+                ) { }
+            }
+            const ImageModel = globalModel(Image)
+            const AnimalModel = globalModel(Animal)
+            class AnimalController {
+                @route.post()
+                @authorize.public()
+                async save(data: Animal) {
+                    const newly = await new AnimalModel(data).save()
+                    return newly._id
+                }
+            }
+            const koa = await createApp(AnimalController, [Image, Animal])
+            const response = await supertest(koa.callback())
+                .post("/animal/save")
+                .send({ name: "Mimi", image: "lorem" })
+                .expect(422)
+            expect(response.body).toMatchSnapshot()
+        })
+
+        it("Should not error when provided undefined", async () => {
+            @collection()
+            class Image {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @collection()
+            class Animal {
+                constructor(
+                    public name: string,
+                    @collection.ref(Image)
+                    public image: Image
+                ) { }
+            }
+            const ImageModel = globalModel(Image)
+            const AnimalModel = globalModel(Animal)
+            class AnimalController {
+                @route.post()
+                @authorize.public()
+                async save(data: Animal) {
+                    const newly = await new AnimalModel(data).save()
+                    return newly._id
+                }
+            }
+            const koa = await createApp(AnimalController, [Image, Animal])
+            await supertest(koa.callback())
+                .post("/animal/save")
+                .send({ name: "Mimi" })
+                .expect(200)
+        })
+
         it("Should work properly on Array", async () => {
             @collection()
             class Image {
@@ -571,6 +672,40 @@ describe("Facility", () => {
                 .populate("images")
             expect(result!.images[0].name).toBe("Image1.jpg")
             expect(result!.images[1].name).toBe("Image2.jpg")
+        })
+
+        it("Should validate properly on Array", async () => {
+            @collection()
+            class Image {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @collection()
+            class Animal {
+                constructor(
+                    public name: string,
+                    @collection.ref([Image])
+                    public images: Image[]
+                ) { }
+            }
+            const ImageModel = globalModel(Image)
+            const AnimalModel = globalModel(Animal)
+            class AnimalController {
+                @route.post()
+                @authorize.public()
+                async save(data: Animal) {
+                    const newly = await new AnimalModel(data).save()
+                    return newly._id
+                }
+            }
+            const koa = await createApp(AnimalController, [Image, Animal])
+            const image = await new ImageModel({ name: "Image1.jpg" }).save()
+            const response = await supertest(koa.callback())
+                .post("/animal/save")
+                .send({ name: "Mimi", images: [image.id, "lorem"] })
+                .expect(422)
+            expect(response.body).toMatchSnapshot()
         })
 
         it("Should work properly on nested object", async () => {
@@ -657,7 +792,7 @@ describe("Facility", () => {
                     public name: string
                 ) { }
             }
-            const ImageModel = globalModel(Image)
+            globalModel(Image)
             const fn = jest.fn()
             class AnimalController {
                 @route.get(":id")

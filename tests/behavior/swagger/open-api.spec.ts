@@ -13,6 +13,7 @@ import {
     route,
     RouteMetadata,
     val,
+    relation,
 } from "@plumier/core"
 import { crud } from "@plumier/generic-controller"
 import { JwtAuthFacility } from "@plumier/jwt"
@@ -1931,6 +1932,295 @@ describe("Open API 3.0 Generation", () => {
             await supertest(app.callback())
                 .get("/swagger/v2/swagger.json")
                 .expect(200)
+        })
+    })
+
+    describe("Request Body With Relation Property", () => {
+        it("Should able to transform body with relation", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    id: number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    id: number,
+                    public userName: string,
+                    public password: string,
+                    @relation(Number)
+                    public pet: Animal
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should able to provide callback type", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    id: number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    id: number,
+                    public userName: string,
+                    public password: string,
+                    @relation(x => Number)
+                    public pet: Animal
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should able to transform other type", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    id: string,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    id: string,
+                    public userName: string,
+                    public password: string,
+                    @relation(String)
+                    public pet: Animal
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should work on array relation", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    id: number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    id: number,
+                    public userName: string,
+                    public password: string,
+                    @relation([Number])
+                    public pet: Animal[]
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should work on array relation with callback", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    id: number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    id: number,
+                    public userName: string,
+                    public password: string,
+                    @relation(x => [Number])
+                    public pet: Animal[]
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should work with array type model", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    id: number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    id: number,
+                    public userName: string,
+                    public password: string,
+                    @relation(Number)
+                    public pet: Animal
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(@type([User]) user: User[]) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should able use multiple relations", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    id: number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    id: number,
+                    public userName: string,
+                    public password: string,
+                    @relation(Number)
+                    public pet: Animal,
+                    @relation([Number])
+                    public otherPet: Animal[]
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should able use multiple relations in array model", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    id: number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    id: number,
+                    public userName: string,
+                    public password: string,
+                    @relation(Number)
+                    public pet: Animal,
+                    @relation([Number])
+                    public otherPet: Animal[]
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(@type([User]) user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should able combine with required", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public id: number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public id: number,
+                    @api.required()
+                    public userName: string,
+                    @api.required()
+                    public password: string,
+                    @relation(Number)
+                    public pet: Animal
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should not error when model type not specified", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public id: number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public id: number,
+                    public userName: string,
+                    public password: string,
+                    @relation(Number)
+                    public pet: Animal
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                save(user: User[]) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
         })
     })
 })

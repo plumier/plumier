@@ -1,5 +1,52 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Facility Automatically replace mongodb id into ObjectId on populate data Should validate properly on Array 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Invalid MongoDB id",
+      ],
+      "path": Array [
+        "data",
+        "images[1]",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Facility Automatically replace mongodb id into ObjectId on populate data Should validate properly on nested object 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Invalid MongoDB id",
+      ],
+      "path": Array [
+        "data",
+        "image",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Facility Automatically replace mongodb id into ObjectId on populate data Should work on nested object 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "image": Object {
+    "__v": 0,
+    "_id": "MONGODB UNIQUE ID",
+    "name": "Image1.jpg",
+  },
+  "name": "Mimi",
+}
+`;
+
 exports[`Mongoose Schema Configuration Should able to enable timestamps using decorator 1`] = `
 Object {
   "__v": 0,

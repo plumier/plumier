@@ -2,6 +2,7 @@ import { Class, FormFile } from "@plumier/core"
 import { ReferenceObject, SchemaObject } from "openapi3-ts"
 import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
 import { isRequired, TransformContext, isEnums, isPartialValidator, isApiWriteOnly, isApiReadOnly } from './shared'
+import { options } from '@hapi/joi'
 
 
 interface TransformTypeOption {

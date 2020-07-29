@@ -1,5 +1,4 @@
-import { domain, Class } from "@plumier/core"
-import { getDefinition, collection, ModelStore } from "@plumier/mongoose"
+import { collection, getDefinition } from "@plumier/mongoose"
 import reflect from "tinspector"
 
 describe("Definition", () => {
