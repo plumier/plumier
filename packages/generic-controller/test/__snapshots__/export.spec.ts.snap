@@ -9,10 +9,5 @@ Object {
   "OneToManyControllerGeneric": OneToManyControllerGeneric,
   "RepoBaseControllerGeneric": RepoBaseControllerGeneric,
   "RepoBaseOneToManyControllerGeneric": RepoBaseOneToManyControllerGeneric,
-  "crud": Object {
-    "id": id,
-    "inverseProperty": inverseProperty,
-    "oneToMany": oneToMany,
-  },
 }
 `;

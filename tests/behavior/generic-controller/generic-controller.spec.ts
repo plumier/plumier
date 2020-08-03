@@ -1,6 +1,5 @@
-import { cleanupConsole, consoleLog, DefaultFacility, PlumierApplication, route, RouteMetadata, authorize } from "@plumier/core"
+import { cleanupConsole, consoleLog, DefaultFacility, PlumierApplication, route, RouteMetadata, authorize, primaryId, relation } from "@plumier/core"
 import {
-    crud,
     GenericControllerFacilityOption,
     RepoBaseControllerGeneric,
     RepoBaseOneToManyControllerGeneric,
@@ -78,7 +77,7 @@ describe("Route Generator", () => {
             @domain()
             class User {
                 constructor(
-                    @crud.id()
+                    @primaryId()
                     public id: number,
                     public name: string,
                     public email: string
@@ -403,7 +402,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -422,7 +421,7 @@ describe("Route Generator", () => {
                 @reflect.noop()
                 email: string
                 @reflect.type([Animal])
-                @crud.oneToMany(Animal)
+                @relation()
                 animals: Animal[]
             }
             const mock = consoleLog.startMock()
@@ -433,7 +432,7 @@ describe("Route Generator", () => {
             @domain()
             class Animal {
                 constructor(
-                    @crud.id()
+                    @primaryId()
                     public id: number,
                     public name: string
                 ) { }
@@ -441,12 +440,12 @@ describe("Route Generator", () => {
             @domain()
             class User {
                 constructor(
-                    @crud.id()
+                    @primaryId()
                     public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -469,7 +468,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -492,7 +491,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -514,7 +513,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -536,7 +535,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -558,7 +557,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -583,7 +582,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -608,7 +607,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -633,7 +632,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -655,7 +654,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -677,7 +676,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -699,7 +698,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -723,7 +722,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -751,7 +750,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -773,7 +772,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -795,7 +794,7 @@ describe("Route Generator", () => {
                     public email: string,
                     @route.ignore()
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -817,7 +816,7 @@ describe("Route Generator", () => {
                     public email: string,
                     @route.ignore({ action: ["list", "replace"] })
                     @reflect.type([Animal])
-                    @crud.oneToMany(Animal)
+                    @relation()
                     public animals: Animal[]
                 ) { }
             }
@@ -837,7 +836,7 @@ describe("Route Generator", () => {
                 public email: string
                 @route.ignore()
                 @reflect.type([Animal])
-                @crud.oneToMany(Animal)
+                @relation()
                 public animals: Animal[]
             }
             const mock = consoleLog.startMock()
@@ -856,7 +855,7 @@ describe("Route Generator", () => {
                 public email: string
                 @route.ignore({ action: ["list", "modify"] })
                 @reflect.type([Animal])
-                @crud.oneToMany(Animal)
+                @relation()
                 public animals: Animal[]
             }
             const mock = consoleLog.startMock()
@@ -875,7 +874,7 @@ describe("Route Generator", () => {
                 public email: string
                 @authorize.role("admin")
                 @reflect.type([Animal])
-                @crud.oneToMany(Animal)
+                @relation()
                 public animals: Animal[]
             }
             const mock = consoleLog.startMock()
@@ -896,7 +895,7 @@ describe("Route Generator", () => {
                 public email: string
                 @authorize.role("admin", { action: ["save", "replace", "delete", "modify"] })
                 @reflect.type([Animal])
-                @crud.oneToMany(Animal)
+                @relation()
                 public animals: Animal[]
             }
             const mock = consoleLog.startMock()
@@ -917,7 +916,7 @@ describe("Route Generator", () => {
                 public email: string
                 @authorize.set("admin")
                 @reflect.type([Animal])
-                @crud.oneToMany(Animal)
+                @relation()
                 public animals: Animal[]
             }
             const mock = consoleLog.startMock()
@@ -938,7 +937,7 @@ describe("Route Generator", () => {
                 public email: string
                 @authorize.get("admin")
                 @reflect.type([Animal])
-                @crud.oneToMany(Animal)
+                @relation()
                 public animals: Animal[]
             }
             const mock = consoleLog.startMock()
@@ -1069,13 +1068,13 @@ describe("Open Api", () => {
         })
     })
 
-    describe("Generic Controller", () => {
+    describe("Generic One To Many Controller", () => {
         it("Should provide proper component", async () => {
             class Animal {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @crud.oneToMany(x => [Tag])
+                @relation()
                 tags: Tag[]
             }
             class Tag {
@@ -1096,7 +1095,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @crud.oneToMany(x => [Tag])
+                @relation()
                 tags: Tag[]
             }
             class Tag {
@@ -1117,7 +1116,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @crud.oneToMany(x => [Tag])
+                @relation()
                 tags: Tag[]
             }
             class Tag {
@@ -1138,7 +1137,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @crud.oneToMany(x => [Tag])
+                @relation()
                 tags: Tag[]
             }
             class Tag {
@@ -1159,7 +1158,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @crud.oneToMany(x => [Tag])
+                @relation()
                 tags: Tag[]
             }
             class Tag {
@@ -1180,7 +1179,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @crud.oneToMany(x => [Tag])
+                @relation()
                 tags: Tag[]
             }
             class Tag {
@@ -1201,7 +1200,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @crud.oneToMany(x => [Tag])
+                @relation()
                 tags: Tag[]
             }
             class Tag {
@@ -1222,7 +1221,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @crud.oneToMany(x => [Tag])
+                @relation()
                 tags: Tag[]
             }
             class Tag {
@@ -1243,7 +1242,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @crud.oneToMany(x => [Tag])
+                @relation()
                 tags: Tag[]
             }
             class Tag {
@@ -1264,7 +1263,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @crud.oneToMany(x => [Tag])
+                @relation()
                 tags: Tag[]
             }
             class Tag {
@@ -1285,7 +1284,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @crud.oneToMany(x => [Tag])
+                @relation()
                 tags: Tag[]
             }
             class Tag {
@@ -1306,7 +1305,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @crud.oneToMany(x => [Tag])
+                @relation()
                 tags: Tag[]
             }
             class Tag {
@@ -1327,7 +1326,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @crud.oneToMany(x => [Tag])
+                @relation()
                 tags: Tag[]
             }
             class Tag {

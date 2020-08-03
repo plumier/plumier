@@ -1,6 +1,6 @@
-import { FormFile, RouteInfo, RelationDecorator, Class } from "@plumier/core"
+import { Class, entityHelper, FormFile, RelationDecorator, RouteInfo } from "@plumier/core"
 import { ContentObject, ReferenceObject, RequestBodyObject, SchemaObject } from "openapi3-ts"
-import reflect, { ParameterReflection, PropertyReflection, metadata } from "tinspector"
+import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
 
 import { describeParameters, ParameterNode } from "./parameter"
 import { getRequiredProps, transformType } from "./schema"
@@ -15,22 +15,22 @@ function addSchema(target: SchemaObject | ReferenceObject, schema: SchemaObject)
         return { allOf: [target, schema] }
 }
 
-function addRelationProperties(rootSchema: SchemaObject, modelType: (Class | Class[] ), ctx: TransformContext): SchemaObject {
+function addRelationProperties(rootSchema: SchemaObject, modelType: (Class | Class[]), ctx: TransformContext): SchemaObject {
     const type = Array.isArray(modelType) ? modelType[0] : modelType
     const meta = reflect(type)
     const result: SchemaObject = { type: "object", properties: {} }
     for (const property of meta.properties) {
         const relation = property.decorators.find((x: RelationDecorator): x is RelationDecorator => x.kind === "plumier-meta:relation")
         if (relation) {
-            const relType = metadata.isCallback(relation.type) ? relation.type({}) : relation.type
-            result.properties![property.name] = transformType(relType, ctx)
+            const isArray = property.typeClassification === "Array"
+            const propType = isArray ? property.type[0] : property.type
+            const idType = entityHelper.getIdType(propType)
+            result.properties![property.name] = transformType(isArray ? [idType] : idType, ctx)
         }
     }
     const count = Object.keys(result.properties!).length
     return count == 0 ? rootSchema : addSchema(rootSchema, result)
 }
-
-
 
 function transformJsonContent(schema: SchemaObject): ContentObject {
     return {
@@ -73,7 +73,7 @@ function transformJsonBody(nodes: ParameterNode[], ctx: TransformContext): Reque
     if (model) {
         let schema = transformType(model.type, ctx, { decorators: model.meta.decorators })
         // convert relational model into appropriate ID type
-        // to inform user that its able to provide the ID
+        // to inform user that its able to provide the ID instead of the object
         const relation = addRelationProperties(schema, model.type!, ctx)
         return { required: true, content: transformJsonContent(relation) }
     }

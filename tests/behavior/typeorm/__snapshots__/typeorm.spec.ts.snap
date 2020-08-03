@@ -1,5 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`TypeOrm Facility Should able load entity using absolute dir location 1`] = `
+Array [
+  "id",
+  "name",
+  "id",
+  "name",
+]
+`;
+
 exports[`TypeOrm Facility Should able to reflect entity properties 1`] = `
 MyEntity {
   "id": 1,

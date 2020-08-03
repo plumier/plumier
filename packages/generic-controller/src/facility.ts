@@ -10,11 +10,14 @@ import {
     route,
     AuthorizeDecorator,
     HttpMethod,
-    RouteDecorator
+    RouteDecorator,
+    EntityIdDecorator,
+    RelationDecorator,
+    entityHelper
 } from "@plumier/core"
 import reflect, { decorateClass, generic, metadata } from "tinspector"
 
-import { ControllerGeneric, IdentifierDecorator, OneToManyControllerGeneric, OneToManyDecorator } from "./types"
+import { ControllerGeneric, OneToManyControllerGeneric, RelationPropertyDecorator } from "./types"
 import pluralize from "pluralize"
 import { isAbsolute, join } from "path"
 
@@ -50,16 +53,6 @@ interface GenericControllerFacilityOption {
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //
 // --------------------------------------------------------------------- //
-
-
-function getIdType(type: Class): Class {
-    const meta = reflect(type)
-    for (const prop of meta.properties) {
-        const decorator = prop.decorators.find((x: IdentifierDecorator) => x.kind === "GenericDecoratorId")
-        if (decorator) return prop.type
-    }
-    return String
-}
 
 function copyDecorators(decorators: any[], controller: Class) {
     const result = []
@@ -111,7 +104,7 @@ function decorateController(controller: Class, decorators: any[]) {
 
 function createController(rootPath: string, entity: Class, controller: Class<ControllerGeneric<any, any>>, nameConversion: (x: string) => string) {
     // get type of ID column on entity
-    const idType = getIdType(entity)
+    const idType = entityHelper.getIdType(entity)
     // create controller type dynamically 
     const Controller = generic.create({ parent: controller, name: controller.name }, entity, idType)
     // add root decorator
@@ -124,27 +117,25 @@ function createController(rootPath: string, entity: Class, controller: Class<Con
     return Controller
 }
 
-function createOneToManyController(rootPath: string, dec: OneToManyDecorator, controller: Class<OneToManyControllerGeneric<any, any, any, any>>, nameConversion: (x: string) => string) {
-    const decType = metadata.isCallback(dec.type) ? dec.type({}) : dec.type
-    const realType = Array.isArray(decType) ? decType[0] : decType
+function createOneToManyController(rootPath: string, entity: Class, relation: Class, relationProperty: string, controller: Class<OneToManyControllerGeneric<any, any, any, any>>, nameConversion: (x: string) => string) {
     // get type of ID column on parent entity
-    const parentIdType = getIdType(dec.parentType)
+    const parentIdType = entityHelper.getIdType(entity)
     // get type of ID column on entity
-    const idType = getIdType(realType)
+    const idType = entityHelper.getIdType(relation)
     // create controller 
-    const Controller = generic.create({ parent: controller, name: controller.name }, dec.parentType, realType, parentIdType, idType)
+    const Controller = generic.create({ parent: controller, name: controller.name }, entity, relation, parentIdType, idType)
     // add root decorator
-    const name = nameConversion(dec.parentType.name)
-    const path = appendRoute(rootPath, `${name}/:pid/${dec.propertyName}`)
+    const name = nameConversion(entity.name)
+    const path = appendRoute(rootPath, `${name}/:pid/${relationProperty}`)
     // copy @route.ignore() on entity to the controller to control route generation
-    const meta = reflect(dec.parentType)
-    const decorators = meta.properties.find(x => x.name === dec.propertyName)!.decorators
+    const meta = reflect(entity)
+    const decorators = meta.properties.find(x => x.name === relationProperty)!.decorators
     decorateController(Controller, copyDecorators(decorators, controller))
     Reflect.decorate([
         route.root(path),
-        api.tag(dec.parentType.name),
+        api.tag(entity.name),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
-        decorateClass(dec),
+        decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: relationProperty }),
     ], Controller)
     Reflect.decorate([], Controller)
     return Controller
@@ -170,9 +161,9 @@ abstract class GenericControllerFacility extends DefaultFacility {
             controllers.push(createController(opt.rootPath, entity, opt.controller, opt.nameConversion))
             const meta = reflect(entity)
             for (const prop of meta.properties) {
-                const oneToMany = prop.decorators.find((x: OneToManyDecorator): x is OneToManyDecorator => x.kind === "GenericDecoratorOneToMany")
-                if (oneToMany) {
-                    controllers.push(createOneToManyController(opt.rootPath, { ...oneToMany, propertyName: prop.name }, opt.oneToManyController, opt.nameConversion))
+                const relation = prop.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation")
+                if (relation && prop.typeClassification === "Array") {
+                    controllers.push(createOneToManyController(opt.rootPath, entity, prop.type[0], prop.name, opt.oneToManyController, opt.nameConversion))
                 }
             }
         }
@@ -210,7 +201,6 @@ abstract class GenericControllerFacility extends DefaultFacility {
         const controller = controllers.find(x => x.name.search(/generic$/i) > -1 && x.prototype instanceof ControllerGeneric)
         const controllerOneToMany = controllers.find(x => x.name.search(/generic$/i) > -1 && x.prototype instanceof OneToManyControllerGeneric)
         return this.createRoutesFromEntities({
-
             rootPath: this.option.rootPath ?? "",
             controller: controller ?? this.defaultController,
             oneToManyController: controllerOneToMany ?? this.defaultOneToManyController,

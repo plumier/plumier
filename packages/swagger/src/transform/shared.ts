@@ -10,9 +10,9 @@ import {
     Configuration,
     ApiReadOnlyDecorator,
     ApiWriteOnlyDecorator,
+    EntityIdDecorator,
 } from "@plumier/core"
 import { ValidatorDecorator, PartialValidator } from "typedconverter"
-import { IdentifierDecorator } from "@plumier/generic-controller"
 
 const isRequired = (dec: ApiRequiredDecorator): dec is ApiRequiredDecorator => dec.kind === "ApiRequired"
 const isBind = (dec: BindingDecorator): dec is BindingDecorator => dec.type === "ParameterBinding"
@@ -22,7 +22,7 @@ const isResponse = (dec: ApiResponseDecorator): dec is ApiResponseDecorator => d
 const isEnums = (dec: ApiEnumDecorator): dec is ApiEnumDecorator => dec.kind === "ApiEnum"
 const isTag = (dec: ApiTagDecorator): dec is ApiTagDecorator => dec.kind === "ApiTag"
 const isPartialValidator = (x: ValidatorDecorator) => x.type === "tc:validator" && x.validator === PartialValidator
-const isGenericId = (x: IdentifierDecorator) => x.kind === "GenericDecoratorId"
+const isGenericId = (x: EntityIdDecorator) => x.kind === "plumier-meta:entity-id"
 const isApiReadOnly = (x: ApiReadOnlyDecorator) => x.kind === "ApiReadonly"
 const isApiWriteOnly = (x: ApiWriteOnlyDecorator) => x.kind === "ApiWriteOnly"
 

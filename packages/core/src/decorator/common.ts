@@ -4,7 +4,6 @@ import { ActionContext, Middleware, MiddlewareDecorator, MiddlewareFunction } fr
 import { Class } from '../common'
 
 
-interface RelationDecorator { kind: "plumier-meta:relation", type: Class | Class[] | ((x:any) => Class | Class[]) }
 
 // --------------------------------------------------------------------- //
 // ------------------------------- DOMAIN ------------------------------ //
@@ -33,8 +32,4 @@ namespace middleware {
     }
 }
 
-function relation(type: Class | Class[] | ((x:any) => Class | Class[])) {
-    return decorateProperty(<RelationDecorator>{ kind: "plumier-meta:relation", type })
-}
-
-export { middleware, domain, relation, RelationDecorator }
+export { middleware, domain }
