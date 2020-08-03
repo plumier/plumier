@@ -1,7 +1,15 @@
-import { api, Class, DefaultFacility, findClassRecursive, PlumierApplication, RelationDecorator } from "@plumier/core"
-import { crud, GenericControllerFacility, GenericControllerFacilityOption } from "@plumier/generic-controller"
+import {
+    api,
+    Class,
+    DefaultFacility,
+    findClassRecursive,
+    PlumierApplication,
+    relation,
+    RelationDecorator,
+} from "@plumier/core"
+import { GenericControllerFacility, GenericControllerFacilityOption } from "@plumier/generic-controller"
 import Mongoose from "mongoose"
-import reflect, { PropertyReflection, TypeDecorator } from "tinspector"
+import reflect, { PropertyReflection } from "tinspector"
 import convert, { Result, ResultMessages, VisitorInvocation } from "typedconverter"
 
 import { getModels, MongooseHelper } from "./generator"
@@ -76,8 +84,7 @@ export class MongooseGenericControllerFacility extends GenericControllerFacility
             Reflect.decorate([api.readonly()], entity.prototype, property.name)
         }
         if (property.decorators.find((x: RefDecorator) => x.name === "MongooseRef")) {
-            const ovr = property.decorators.find((x: TypeDecorator): x is TypeDecorator => x.kind === "Override")!
-            Reflect.decorate([crud.oneToMany(ovr.type as any), api.readonly(), api.writeonly()], entity.prototype, property.name)
+            Reflect.decorate([relation(), api.readonly(), api.writeonly()], entity.prototype, property.name)
         }
     }
 

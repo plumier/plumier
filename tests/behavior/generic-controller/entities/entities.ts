@@ -1,6 +1,5 @@
-import { domain } from "@plumier/core";
+import { domain, relation } from "@plumier/core";
 import reflect from "tinspector"
-import { crud } from '@plumier/generic-controller';
 
 @domain()
 export class Animal {
@@ -14,7 +13,7 @@ export class User {
         public name: string,
         public email: string,
         @reflect.type([Animal])
-        @crud.oneToMany(Animal)
+        @relation()
         public animals: Animal[]
     ) { }
 }

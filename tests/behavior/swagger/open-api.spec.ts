@@ -1,4 +1,3 @@
-import { x } from "@hapi/joi"
 import {
     ActionResult,
     api,
@@ -14,8 +13,8 @@ import {
     RouteMetadata,
     val,
     relation,
+    primaryId,
 } from "@plumier/core"
-import { crud } from "@plumier/generic-controller"
 import { JwtAuthFacility } from "@plumier/jwt"
 import Plumier, { ControllerFacility, WebApiFacility } from "@plumier/plumier"
 import { refFactory, SwaggerFacility } from "@plumier/swagger"
@@ -466,7 +465,7 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Parameters {
                 constructor(
-                    @crud.id()
+                    @primaryId()
                     public id: number,
                     public str: string,
                     public num: number,
@@ -1940,17 +1939,19 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    id: number,
+                    @primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    id: number,
+                    @primaryId()
+                    public id: number,
                     public userName: string,
                     public password: string,
-                    @relation(Number)
+                    @relation()
                     public pet: Animal
                 ) { }
             }
@@ -1968,17 +1969,19 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    id: number,
+                    @primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    id: number,
+                    @primaryId()
+                    public id: number,
                     public userName: string,
                     public password: string,
-                    @relation(x => Number)
+                    @relation()
                     public pet: Animal
                 ) { }
             }
@@ -1996,17 +1999,19 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    id: string,
+                    @primaryId()
+                    public id: string,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    id: string,
+                    @primaryId()
+                    public id: string,
                     public userName: string,
                     public password: string,
-                    @relation(String)
+                    @relation()
                     public pet: Animal
                 ) { }
             }
@@ -2024,17 +2029,20 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    id: number,
+                    @primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    id: number,
+                    @primaryId()
+                    public id: number,
                     public userName: string,
                     public password: string,
-                    @relation([Number])
+                    @type([Animal])
+                    @relation()
                     public pet: Animal[]
                 ) { }
             }
@@ -2052,17 +2060,20 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    id: number,
+                    @primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    id: number,
+                    @primaryId()
+                    public id: number,
                     public userName: string,
                     public password: string,
-                    @relation(x => [Number])
+                    @type([Animal])
+                    @relation()
                     public pet: Animal[]
                 ) { }
             }
@@ -2080,17 +2091,19 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    id: number,
+                    @primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    id: number,
+                    @primaryId()
+                    public id: number,
                     public userName: string,
                     public password: string,
-                    @relation(Number)
+                    @relation()
                     public pet: Animal
                 ) { }
             }
@@ -2108,19 +2121,22 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    id: number,
+                    @primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    id: number,
+                    @primaryId()
+                    public id: number,
                     public userName: string,
                     public password: string,
-                    @relation(Number)
+                    @relation()
                     public pet: Animal,
-                    @relation([Number])
+                    @type([Animal])
+                    @relation()
                     public otherPet: Animal[]
                 ) { }
             }
@@ -2138,19 +2154,22 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
-                    id: number,
+                    @primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
-                    id: number,
+                    @primaryId()
+                    public id: number,
                     public userName: string,
                     public password: string,
-                    @relation(Number)
+                    @relation()
                     public pet: Animal,
-                    @relation([Number])
+                    @type([Animal])
+                    @relation()
                     public otherPet: Animal[]
                 ) { }
             }
@@ -2168,6 +2187,7 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
+                    @primaryId()
                     public id: number,
                     public name: string
                 ) { }
@@ -2175,12 +2195,13 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class User {
                 constructor(
+                    @primaryId()
                     public id: number,
                     @api.required()
                     public userName: string,
                     @api.required()
                     public password: string,
-                    @relation(Number)
+                    @relation()
                     public pet: Animal
                 ) { }
             }
@@ -2198,6 +2219,7 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class Animal {
                 constructor(
+                    @primaryId()
                     public id: number,
                     public name: string
                 ) { }
@@ -2205,10 +2227,11 @@ describe("Open API 3.0 Generation", () => {
             @domain()
             class User {
                 constructor(
+                    @primaryId()
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @relation(Number)
+                    @relation()
                     public pet: Animal
                 ) { }
             }

@@ -1,25 +1,6 @@
 import { Class, route } from "@plumier/core"
 import reflect, { GenericTypeDecorator } from "tinspector"
 
-export interface OneToManyDecorator {
-    kind: "GenericDecoratorOneToMany"
-    propertyName: string,
-    type: Class | Class[] | ((x: any) => Class | Class[]),
-    parentType: Class
-}
-
-export interface IdentifierDecorator {
-    kind: "GenericDecoratorId",
-}
-
-export interface InversePropertyDecorator {
-    kind: "GenericInverseProperty"
-}
-
-export interface GenericControllerDecorator {
-    kind: "GenericController"
-}
-
 export interface Repository<T> {
     find(offset: number, limit: number, query: Partial<T>): Promise<T[]>
     insert(data: Partial<T>): Promise<{ id: any }>
@@ -50,7 +31,7 @@ export abstract class BaseControllerGeneric {
     }
 }
 
-export abstract class ControllerGeneric<T, TID> extends BaseControllerGeneric{
+export abstract class ControllerGeneric<T, TID> extends BaseControllerGeneric {
     protected readonly entityType: Class<T>
     constructor() {
         super()
@@ -59,7 +40,9 @@ export abstract class ControllerGeneric<T, TID> extends BaseControllerGeneric{
     }
 }
 
-export abstract class OneToManyControllerGeneric<P, T, PID, TID>  extends BaseControllerGeneric{
+export interface RelationPropertyDecorator { kind: "plumier-meta:relation-prop-name", name:string }
+
+export abstract class OneToManyControllerGeneric<P, T, PID, TID> extends BaseControllerGeneric {
     protected readonly entityType: Class<T>
     protected readonly parentEntityType: Class<P>
     protected readonly relation: string
@@ -69,7 +52,7 @@ export abstract class OneToManyControllerGeneric<P, T, PID, TID>  extends BaseCo
         const { types, meta } = this.getGenericTypeParameters()
         this.parentEntityType = types[0]
         this.entityType = types[1]
-        const oneToMany = meta.decorators.find((x: OneToManyDecorator): x is OneToManyDecorator => x.kind === "GenericDecoratorOneToMany")
-        this.relation = oneToMany!.propertyName
+        const oneToMany = meta.decorators.find((x: RelationPropertyDecorator): x is RelationPropertyDecorator => x.kind === "plumier-meta:relation-prop-name")
+        this.relation = oneToMany!.name
     }
 }

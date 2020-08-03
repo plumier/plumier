@@ -1,30 +1,15 @@
-import {
-    Class,
-    DefaultFacility,
-    PlumierApplication,
-    RouteMetadata,
-    api,
-    findClassRecursive,
-} from "@plumier/core"
-import { isAbsolute, join } from "path"
-import pluralize from "pluralize"
-import reflect, { noop, PropertyReflection, TypeDecorator } from "tinspector"
+import { api, Class, DefaultFacility, findClassRecursive, primaryId, relation, PlumierApplication, findFilesRecursive } from "@plumier/core"
+import { GenericControllerFacility, GenericControllerFacilityOption } from "@plumier/generic-controller"
+import reflect, { noop } from "tinspector"
 import { ConnectionOptions, createConnection, getMetadataArgsStorage } from "typeorm"
-import { GenericControllerFacility, GenericControllerFacilityOption, crud } from "@plumier/generic-controller"
+import { MetadataArgsStorage } from "typeorm/metadata-args/MetadataArgsStorage"
 
 import { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
-import { MetadataArgsStorage } from 'typeorm/metadata-args/MetadataArgsStorage'
-
+import { join, isAbsolute } from "path"
 
 interface TypeORMFacilityOption {
     connection?: ConnectionOptions
 }
-
-interface CRUDTypeORMFacilityOption extends TypeORMFacilityOption {
-    rootPath?: string
-    controller?: string | Class | Class[]
-}
-
 
 class TypeORMFacility extends DefaultFacility {
     protected entities: Class[] = []
@@ -34,7 +19,19 @@ class TypeORMFacility extends DefaultFacility {
         this.option = { ...opt }
     }
 
-    setup() {
+    setup(app: Readonly<PlumierApplication>) {
+        // load all entities to be able to take the metadata storage
+        if (this.option.connection?.entities) {
+            for (const entity of this.option.connection.entities) {
+                if (typeof entity === "string") {
+                    const files = findFilesRecursive(entity)
+                    for (const file of files) {
+                        require(file)
+                    }
+                }
+            }
+        }
+        // assign tinspector decorators, so Plumier can understand the entity metadata
         const storage = getMetadataArgsStorage();
         for (const col of storage.generations) {
             Reflect.decorate([noop()], (col.target as Function).prototype, col.propertyName, void 0)
@@ -80,7 +77,7 @@ class TypeORMGenericControllerFacility extends GenericControllerFacility {
         // also add decorators to make some property readOnly or writeOnly on Open API generation
         for (const col of storage.generations) {
             if (col.target === entity) {
-                Reflect.decorate([crud.id(), api.readonly()], (col.target as Function).prototype, col.propertyName, void 0)
+                Reflect.decorate([primaryId(), api.readonly()], (col.target as Function).prototype, col.propertyName, void 0)
                 break;
             }
         }
@@ -88,9 +85,9 @@ class TypeORMGenericControllerFacility extends GenericControllerFacility {
             const rawType: Class = (col as any).type()
             if (rawType === entity) {
                 if (col.relationType === "one-to-many")
-                    Reflect.decorate([crud.oneToMany(x => rawType), api.readonly(), api.writeonly()], (col.target as Function).prototype, col.propertyName, void 0)
+                    Reflect.decorate([relation(), api.readonly(), api.writeonly()], (col.target as Function).prototype, col.propertyName, void 0)
                 if (col.relationType === "many-to-one")
-                    Reflect.decorate([crud.inverseProperty(), api.readonly(), api.writeonly()], (col.target as Function).prototype, col.propertyName, void 0)
+                    Reflect.decorate([relation({ inverse: true }), api.readonly(), api.writeonly()], (col.target as Function).prototype, col.propertyName, void 0)
                 break;
             }
         }

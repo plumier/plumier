@@ -1,5 +1,6 @@
-import { Class } from "@plumier/core"
+import { Class, consoleLog } from "@plumier/core"
 import { TypeORMFacility } from "@plumier/typeorm"
+import { join } from "path"
 import reflect from "tinspector"
 import {
     Column,
@@ -16,13 +17,14 @@ import {
 
 import { fixture } from "../helper"
 import { cleanup, getConn } from "./helper"
+import { getMetadataArgsStorage } from "typeorm"
 
 jest.setTimeout(20000)
 
 
 
 describe("TypeOrm", () => {
-    function createApp(entities: Function[]) {
+    function createApp(entities: (string | Function)[]) {
         class UsersController {
             get() { }
         }
@@ -192,6 +194,16 @@ describe("TypeOrm", () => {
             }
             expect(fn.mock.calls).toMatchSnapshot()
         })
+        it("Should able load entity using absolute dir location", async () => {
+            await createApp([join(__dirname, "./v1")])
+            const meta = getMetadataArgsStorage()
+            expect(meta.columns.map(x => x.propertyName)).toMatchSnapshot()
+        })
+        // it.only("Should able load entity using relative dir location", async () => {
+        //     await createApp(["./v1"])
+        //     const meta = getMetadataArgsStorage()
+        //     expect(meta.columns.map(x => x.propertyName)).toMatchSnapshot()
+        // })
     })
 
 })

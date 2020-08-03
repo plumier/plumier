@@ -2,6 +2,7 @@ import { lstatSync, existsSync } from "fs"
 import glob from "glob"
 import { extname } from "path"
 import reflect, { useCache } from "tinspector"
+import { EntityIdDecorator } from './decorator/entity'
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -214,4 +215,19 @@ function analyzeModel<T>(type: Class | Class[], ctx: TraverseContext<T> = { path
 }
 
 
-export { ellipsis, toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, findFilesRecursive, memoize, printTable, cleanupConsole, analyzeModel, AnalysisMessage };
+namespace entityHelper {
+    export function getIdType(entity: Class): Class {
+        const meta = reflect(entity)
+        for (const prop of meta.properties) {
+            const decorator = prop.decorators.find((x: EntityIdDecorator) => x.kind === "plumier-meta:entity-id")
+            if (decorator) return prop.type
+        }
+        return String
+    }
+}
+
+
+export {
+    ellipsis, toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, entityHelper,
+    findFilesRecursive, memoize, printTable, cleanupConsole, analyzeModel, AnalysisMessage
+};
