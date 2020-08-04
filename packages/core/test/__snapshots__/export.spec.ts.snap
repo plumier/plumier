@@ -177,6 +177,7 @@ Object {
   "domain": domain,
   "ellipsis": ellipsis,
   "entityHelper": Object {
+    "getIdProp": getIdProp,
     "getIdType": getIdType,
   },
   "errorMessage": Object {

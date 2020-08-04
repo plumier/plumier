@@ -1,11 +1,13 @@
-import { Class, consoleLog } from "@plumier/core"
+import { Class, route } from "@plumier/core"
 import { TypeORMFacility } from "@plumier/typeorm"
 import { join } from "path"
+import supertest from "supertest"
 import reflect from "tinspector"
 import {
     Column,
     Entity,
     getManager,
+    getMetadataArgsStorage,
     JoinColumn,
     JoinTable,
     ManyToMany,
@@ -17,10 +19,8 @@ import {
 
 import { fixture } from "../helper"
 import { cleanup, getConn } from "./helper"
-import { getMetadataArgsStorage } from "typeorm"
 
 jest.setTimeout(20000)
-
 
 
 describe("TypeOrm", () => {
@@ -199,13 +199,284 @@ describe("TypeOrm", () => {
             const meta = getMetadataArgsStorage()
             expect(meta.columns.map(x => x.propertyName)).toMatchSnapshot()
         })
-        // it.only("Should able load entity using relative dir location", async () => {
-        //     await createApp(["./v1"])
-        //     const meta = getMetadataArgsStorage()
-        //     expect(meta.columns.map(x => x.propertyName)).toMatchSnapshot()
-        // })
     })
 
+    describe("Update relation with ID", () => {
+        function createApp(entities: (string | Function)[], controller: Class) {
+            return fixture(controller)
+                .set(new TypeORMFacility({ connection: getConn(entities) }))
+                .initialize()
+        }
+
+        it("Should able to update relation on one to one", async () => {
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne(x => Child, x => x.parent)
+                child: any
+            }
+            @Entity()
+            class Child {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne(x => Parent)
+                @JoinColumn()
+                parent: Parent
+            }
+            class ParentController {
+                @route.post("")
+                async save(data: Parent) {
+                    const parentRepo = getManager().getRepository(Parent)
+                    await parentRepo.save(data)
+                    return { id: data.id }
+                }
+            }
+            const koa = await createApp([Child, Parent], ParentController)
+            const parentRepo = getManager().getRepository(Parent)
+            const repo = getManager().getRepository(Child)
+            const child = await repo.insert({ name: "Poo" })
+            const { body } = await supertest(koa.callback())
+                .post("/parent")
+                .send({ name: "Mimi", child: child.raw })
+                .expect(200)
+            const result = await parentRepo.findOne(body.id, { relations: ["child"] })
+            expect(result).toMatchSnapshot()
+        })
+
+        it("Should validate number type id", async () => {
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne(x => Child, x => x.parent)
+                child: any
+            }
+            @Entity()
+            class Child {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne(x => Parent)
+                @JoinColumn()
+                parent: Parent
+            }
+            class ParentController {
+                @route.post("")
+                async save(data: Parent) {
+                    const parentRepo = getManager().getRepository(Parent)
+                    await parentRepo.save(data)
+                    return { id: data.id }
+                }
+            }
+            const koa = await createApp([Child, Parent], ParentController)
+            const { body } = await supertest(koa.callback())
+                .post("/parent")
+                .send({ name: "Mimi", child: "lorem" })
+                .expect(422)
+            expect(body).toMatchSnapshot()
+        })
+
+        it("Should able to update relation on one to many", async () => {
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToMany(x => Child, x => x.parent)
+                child: any
+            }
+            @Entity()
+            class Child {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => Parent, x => x.child)
+                parent: Parent
+            }
+            class ParentController {
+                @route.post("")
+                async save(data: Parent) {
+                    const parentRepo = getManager().getRepository(Parent)
+                    await parentRepo.save(data)
+                    return { id: data.id }
+                }
+            }
+            const koa = await createApp([Child, Parent], ParentController)
+            const parentRepo = getManager().getRepository(Parent)
+            const repo = getManager().getRepository(Child)
+            const poo = await repo.insert({ name: "Poo" })
+            const pee = await repo.insert({ name: "Pee" })
+            const { body } = await supertest(koa.callback())
+                .post("/parent")
+                .send({ name: "Mimi", child: [poo.raw, pee.raw] })
+                .expect(200)
+            const result = await parentRepo.findOne(body.id, { relations: ["child"] })
+            expect(result).toMatchSnapshot()
+        })
+
+        it("Should able to validate one to many", async () => {
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToMany(x => Child, x => x.parent)
+                child: any
+            }
+            @Entity()
+            class Child {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => Parent, x => x.child)
+                parent: Parent
+            }
+            class ParentController {
+                @route.post("")
+                async save(data: Parent) {
+                    const parentRepo = getManager().getRepository(Parent)
+                    await parentRepo.save(data)
+                    return { id: data.id }
+                }
+            }
+            const koa = await createApp([Child, Parent], ParentController)
+            const { body } = await supertest(koa.callback())
+                .post("/parent")
+                .send({ name: "Mimi", child: ["lorem"] })
+                .expect(422)
+            expect(body).toMatchSnapshot()
+        })
+
+        it("Should able to update relation with UUID", async () => {
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn("uuid")
+                id: string
+                @Column()
+                name: string
+                @OneToOne(x => Child, x => x.parent)
+                child: any
+            }
+            @Entity()
+            class Child {
+                @PrimaryGeneratedColumn("uuid")
+                id: string
+                @Column()
+                name: string
+                @OneToOne(x => Parent, x => x.child)
+                @JoinColumn()
+                parent: Parent
+            }
+            class ParentController {
+                @route.post("")
+                async save(data: Parent) {
+                    const parentRepo = getManager().getRepository(Parent)
+                    await parentRepo.save(data)
+                    return { id: data.id }
+                }
+            }
+            const koa = await createApp([Child, Parent], ParentController)
+            const parentRepo = getManager().getRepository(Parent)
+            const repo = getManager().getRepository(Child)
+            const child = await repo.insert({ name: "Poo" })
+            const { body } = await supertest(koa.callback())
+                .post("/parent")
+                .send({ name: "Mimi", child: child.identifiers[0].id })
+                .expect(200)
+            const result = await parentRepo.findOne(body.id, { relations: ["child"] })
+            delete result?.id 
+            delete result?.child.id
+            expect(result).toMatchSnapshot()
+        })
+
+        it("Should able to validate relation with UUID", async () => {
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn("uuid")
+                id: string
+                @Column()
+                name: string
+                @OneToOne(x => Child, x => x.parent)
+                child: any
+            }
+            @Entity()
+            class Child {
+                @PrimaryGeneratedColumn("uuid")
+                id: string
+                @Column()
+                name: string
+                @OneToOne(x => Parent, x => x.child)
+                @JoinColumn()
+                parent: Parent
+            }
+            class ParentController {
+                @route.post("")
+                async save(data: Parent) {
+                    const parentRepo = getManager().getRepository(Parent)
+                    await parentRepo.save(data)
+                    return { id: data.id }
+                }
+            }
+            const koa = await createApp([Child, Parent], ParentController)
+            const { body } = await supertest(koa.callback())
+                .post("/parent")
+                .send({ name: "Mimi", child: "lorem" })
+                .expect(422)
+            expect(body).toMatchSnapshot()
+        })
+
+        it("Should able to update relation with custom id name", async () => {
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn()
+                parentId: number
+                @Column()
+                name: string
+                @OneToOne(x => Child, x => x.parent)
+                child: any
+            }
+            @Entity()
+            class Child {
+                @PrimaryGeneratedColumn()
+                childId: number
+                @Column()
+                name: string
+                @OneToOne(x => Parent)
+                @JoinColumn()
+                parent: Parent
+            }
+            class ParentController {
+                @route.post("")
+                async save(data: Parent) {
+                    const parentRepo = getManager().getRepository(Parent)
+                    await parentRepo.save(data)
+                    return { id: data.parentId }
+                }
+            }
+            const koa = await createApp([Child, Parent], ParentController)
+            const parentRepo = getManager().getRepository(Parent)
+            const repo = getManager().getRepository(Child)
+            const child = await repo.insert({ name: "Poo" })
+            const { body } = await supertest(koa.callback())
+                .post("/parent")
+                .send({ name: "Mimi", child: child.raw })
+                .expect(200)
+            const result = await parentRepo.findOne(body.id, { relations: ["child"] })
+            expect(result).toMatchSnapshot()
+        })
+    })
 })
 
 
