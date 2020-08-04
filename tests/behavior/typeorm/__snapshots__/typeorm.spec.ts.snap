@@ -221,3 +221,102 @@ Array [
   ],
 ]
 `;
+
+exports[`TypeOrm Update relation with ID Should able to update relation on one to many 1`] = `
+Parent {
+  "child": Array [
+    Child {
+      "id": 1,
+      "name": "Poo",
+    },
+    Child {
+      "id": 2,
+      "name": "Pee",
+    },
+  ],
+  "id": 1,
+  "name": "Mimi",
+}
+`;
+
+exports[`TypeOrm Update relation with ID Should able to update relation on one to one 1`] = `
+Parent {
+  "child": Child {
+    "id": 1,
+    "name": "Poo",
+  },
+  "id": 1,
+  "name": "Mimi",
+}
+`;
+
+exports[`TypeOrm Update relation with ID Should able to update relation with UUID 1`] = `
+Parent {
+  "child": Child {
+    "name": "Poo",
+  },
+  "name": "Mimi",
+}
+`;
+
+exports[`TypeOrm Update relation with ID Should able to update relation with custom id name 1`] = `
+Parent {
+  "child": Child {
+    "childId": 1,
+    "name": "Poo",
+  },
+  "name": "Mimi",
+  "parentId": 1,
+}
+`;
+
+exports[`TypeOrm Update relation with ID Should able to validate one to many 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Value must be a number",
+      ],
+      "path": Array [
+        "data",
+        "child[0]",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`TypeOrm Update relation with ID Should able to validate relation with UUID 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Value must be an UUID",
+      ],
+      "path": Array [
+        "data",
+        "child",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`TypeOrm Update relation with ID Should validate number type id 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Value must be a number",
+      ],
+      "path": Array [
+        "data",
+        "child",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;

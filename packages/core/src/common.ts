@@ -216,13 +216,16 @@ function analyzeModel<T>(type: Class | Class[], ctx: TraverseContext<T> = { path
 
 
 namespace entityHelper {
-    export function getIdType(entity: Class): Class {
+    export function getIdProp(entity: Class) {
         const meta = reflect(entity)
         for (const prop of meta.properties) {
             const decorator = prop.decorators.find((x: EntityIdDecorator) => x.kind === "plumier-meta:entity-id")
-            if (decorator) return prop.type
+            if (decorator) return prop
         }
-        return String
+    }
+    export function getIdType(entity: Class): Class {
+        const prop = getIdProp(entity)
+        return prop?.type ?? String
     }
 }
 

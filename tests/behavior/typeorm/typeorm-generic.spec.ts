@@ -73,7 +73,7 @@ describe("Facility", () => {
     })
     it("Should able to load external model using relative path", async () => {
         const mock = consoleLog.startMock()
-        await createApp([join(__dirname, "./absolute")])
+        await createApp([join(__dirname, "./relative")])
             .set(new TypeORMGenericControllerFacility({ entities: "./relative" }))
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
