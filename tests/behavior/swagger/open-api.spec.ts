@@ -1965,36 +1965,6 @@ describe("Open API 3.0 Generation", () => {
                 .expect(200)
             expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
         })
-        it("Should able to provide callback type", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    @primaryId()
-                    public id: number,
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    @primaryId()
-                    public id: number,
-                    public userName: string,
-                    public password: string,
-                    @relation()
-                    public pet: Animal
-                ) { }
-            }
-            class UsersController {
-                @route.post("")
-                save(user: User) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .post("/swagger/swagger.json")
-                .expect(200)
-            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
-        })
         it("Should able to transform other type", async () => {
             @domain()
             class Animal {
@@ -2056,15 +2026,7 @@ describe("Open API 3.0 Generation", () => {
                 .expect(200)
             expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
         })
-        it("Should work on array relation with callback", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    @primaryId()
-                    public id: number,
-                    public name: string
-                ) { }
-            }
+        it("Should work on inverse property relation", async () => {
             @domain()
             class User {
                 constructor(
@@ -2072,20 +2034,30 @@ describe("Open API 3.0 Generation", () => {
                     public id: number,
                     public userName: string,
                     public password: string,
-                    @type([Animal])
+                    @type(x => [Animal])
                     @relation()
                     public pet: Animal[]
                 ) { }
             }
-            class UsersController {
-                @route.post("")
-                save(user: User) { }
+            @domain()
+            class Animal {
+                constructor(
+                    @primaryId()
+                    public id: number,
+                    public name: string,
+                    @relation({ inverse: true })
+                    public user: User
+                ) { }
             }
-            const app = await createApp(UsersController)
+            class AnimalsController {
+                @route.post("")
+                save(animal: Animal) { }
+            }
+            const app = await createApp(AnimalsController)
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+            expect(body.paths["/animals"].post.requestBody).toMatchSnapshot()
         })
         it("Should work with array type model", async () => {
             @domain()

@@ -1,6 +1,6 @@
 import { domain, route, val, authorize, FormFile, api, relation } from "@plumier/core"
 import { SwaggerFacility } from "@plumier/swagger"
-import Plumier, { WebApiFacility } from "plumier"
+import Plumier, { WebApiFacility, LoggerFacility } from "plumier"
 import { JwtAuthFacility } from '@plumier/jwt'
 import reflect from "tinspector"
 
@@ -10,7 +10,7 @@ import { TypeORMFacility, TypeORMGenericControllerFacility } from '@plumier/type
 
 
 @Entity()
-class User {
+export class User {
     @PrimaryGeneratedColumn()
     id: number
     @Column()
@@ -20,18 +20,19 @@ class User {
 }
 
 @Entity()
-class Animal {
+export class Animal {
     @PrimaryGeneratedColumn()
     id: number
     @Column()
     name: string
-    @Column()
+    @ManyToOne(x => User, x => x.animal)
     user: User
 }
 
 new Plumier()
     .set(new WebApiFacility({ controller: __dirname }))
-    .set(new JwtAuthFacility({ secret: "lorem" }))
+    .set(new LoggerFacility())
+    .set(new JwtAuthFacility({ secret: "lorem", global: authorize.public() }))
     .set(new TypeORMFacility({
         connection: {
             type: "sqlite",

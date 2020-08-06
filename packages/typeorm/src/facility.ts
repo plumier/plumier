@@ -1,24 +1,23 @@
 import {
-    api,
+    authorize,
     Class,
     DefaultFacility,
+    entityHelper,
     findClassRecursive,
     findFilesRecursive,
     PlumierApplication,
     primaryId,
     relation,
     RelationDecorator,
-    entityHelper,
-    authorize,
+    api,
 } from "@plumier/core"
 import { GenericControllerFacility, GenericControllerFacilityOption } from "@plumier/generic-controller"
 import reflect, { noop } from "tinspector"
+import { Result, ResultMessages, VisitorInvocation } from "typedconverter"
 import { ConnectionOptions, createConnection, getMetadataArgsStorage } from "typeorm"
-import { MetadataArgsStorage } from "typeorm/metadata-args/MetadataArgsStorage"
+import validator from "validator"
 
 import { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
-import { ResultMessages, Result, VisitorInvocation } from 'typedconverter'
-import validator from "validator"
 
 interface TypeORMFacilityOption {
     connection?: ConnectionOptions
@@ -130,6 +129,11 @@ class TypeORMGenericControllerFacility extends GenericControllerFacility {
         if (typeof entities === "function") {
             const storage = getMetadataArgsStorage();
             if (!storage.tables.some(x => x.target === entities)) return []
+            const col = storage.relations.find(x => x.target === entities)
+            if(col && ["one-to-many", "many-to-many", "many-to-one"].some(x => col.relationType === x)){
+                // set relation to readonly and writeonly and should be populated using API /parent/pid/child
+                Reflect.decorate([api.readonly(), api.writeonly()], (col.target as Function).prototype, col.propertyName, void 0)
+            }
             return [entities]
         }
         else if (Array.isArray(entities)) {
