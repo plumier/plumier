@@ -1,4 +1,4 @@
-import { Class, route } from "@plumier/core"
+import { Class, route, RelationDecorator } from "@plumier/core"
 import reflect, { GenericTypeDecorator } from "tinspector"
 
 export interface Repository<T> {
@@ -16,6 +16,17 @@ export interface OneToManyRepository<P, T> {
     findById(id: any): Promise<T | undefined>
     update(id: any, data: Partial<T>): Promise<{ id: any }>
     delete(id: any): Promise<{ id: any }>
+}
+
+export function getOneToOneRelations(type:Class){
+    const meta = reflect(type)
+    const result = []
+    for (const prop of meta.properties) {
+        if(prop.decorators.find((x:RelationDecorator) => x.kind === "plumier-meta:relation") && prop.typeClassification !== "Array"){
+            result.push(prop)
+        }
+    }
+    return result
 }
 
 export abstract class BaseControllerGeneric {
