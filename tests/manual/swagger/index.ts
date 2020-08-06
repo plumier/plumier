@@ -1,4 +1,4 @@
-import { domain, route, val, authorize, FormFile, api } from "@plumier/core"
+import { domain, route, val, authorize, FormFile, api, relation } from "@plumier/core"
 import { SwaggerFacility } from "@plumier/swagger"
 import Plumier, { WebApiFacility } from "plumier"
 import { JwtAuthFacility } from '@plumier/jwt'
@@ -14,14 +14,14 @@ class Animal {
 @domain()
 class User {
     constructor(
-        @api.readOnly()
+        @api.readonly()
         id:number,
         @val.required()
         public name: string,
         @val.required()
         public email: string,
         public dateOfBirth: Date,
-        @api.readOnly()
+        @relation(Number)
         public animal:Animal
     ) { }
 }

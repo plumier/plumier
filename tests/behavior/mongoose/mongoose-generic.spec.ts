@@ -9,6 +9,7 @@ import model, {
     MongooseOneToManyControllerGeneric,
     MongooseOneToManyRepository,
     MongooseRepository,
+    Ref,
 } from "@plumier/mongoose"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { SwaggerFacility } from "@plumier/swagger"
@@ -1139,6 +1140,55 @@ describe("Open API", () => {
             .get("/swagger/swagger.json")
             .expect(200)
         expect(body.components.schemas.Animal).toMatchSnapshot()
+    })
+    it("Should transform relation into their appropriate ID type", async () => {
+        @collection()
+        class User {
+            id: string
+            @reflect.noop()
+            email: string
+            @reflect.noop()
+            name: string
+            @collection.ref(x => [Animal])
+            animals: Animal[]
+        }
+        @collection()
+        class Animal {
+            @reflect.noop()
+            name: string
+        }
+        model(Animal)
+        model(User)
+        const app = await createApp({ mode: "production" })
+        const { body } = await supertest(app.callback())
+            .get("/swagger/swagger.json")
+            .expect(200)
+        expect(body.paths["/users"].post).toMatchSnapshot()
+    })
+    it("Should transform relation into their appropriate ID type on one to one relation", async () => {
+        
+        @collection()
+        class Animal {
+            @reflect.noop()
+            name: string
+        }
+        @collection()
+        class User {
+            id: string
+            @reflect.noop()
+            email: string
+            @reflect.noop()
+            name: string
+            @collection.ref(Animal)
+            animals: Animal
+        }
+        model(Animal)
+        model(User)
+        const app = await createApp({ mode: "production" })
+        const { body } = await supertest(app.callback())
+            .get("/swagger/swagger.json")
+            .expect(200)
+        expect(body.paths["/users"].post).toMatchSnapshot()
     })
 })
 

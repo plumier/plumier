@@ -1,6 +1,8 @@
-import reflect, { decorate } from "tinspector"
+import reflect, { decorate, decorateProperty } from "tinspector"
 
 import { ActionContext, Middleware, MiddlewareDecorator, MiddlewareFunction } from "../types"
+import { Class } from '../common'
+
 
 
 // --------------------------------------------------------------------- //
@@ -29,6 +31,5 @@ namespace middleware {
         }, ["Class", "Method"])
     }
 }
-
 
 export { middleware, domain }

@@ -9,13 +9,14 @@ export { response } from "./response";
 export { generateRoutes, mergeRoutes, findClassRecursive, appendRoute, IgnoreDecorator, RouteDecorator } from "./route-generator";
 export { analyzeRoutes, printAnalysis } from "./route-analyzer";
 export { router } from "./router";
-export { Class, consoleLog, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass, printTable, toBoolean, cleanupConsole, ellipsis, analyzeModel, AnalysisMessage } from "./common";
+export { Class, consoleLog, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass, printTable, toBoolean, cleanupConsole, ellipsis, analyzeModel, AnalysisMessage, entityHelper } from "./common";
 export { AuthDecoratorImpl, authorize } from "./decorator/authorize";
 export { ApiDescriptionDecorator, ApiEnumDecorator, ApiFieldNameDecorator, ApiRequiredDecorator, ApiResponseDecorator, ApiTagDecorator, api, ApiReadOnlyDecorator, ApiWriteOnlyDecorator } from "./decorator/api"
 export { bind } from "./decorator/bind";
 export { domain, middleware } from "./decorator/common";
 export { route, RouteDecoratorImpl } from "./decorator/route";
 export { rest, RestDecoratorImpl } from "./decorator/rest";
+export { EntityIdDecorator, RelationDecorator, primaryId, relation } from "./decorator/entity";
 export { HttpStatus } from "./http-status";
 export { validate, ValidatorMiddleware, CustomValidator, ValidatorDecorator, CustomValidatorFunction,AsyncValidatorResult, ValidatorContext, } from "./validator"
 export {

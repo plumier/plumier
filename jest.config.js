@@ -29,7 +29,7 @@ module.exports = {
   ],
   globals: {
       'ts-jest': {
-          tsConfig: '<rootDir>tests/behavior/tsconfig.json'
+          tsConfig: '<rootDir>tests/tsconfig.json'
       }
   }
 };

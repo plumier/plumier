@@ -1,29 +1,44 @@
-import { api, Class, DefaultFacility, findClassRecursive, isCustomClass, PlumierApplication, ActionContext, MiddlewareFunction } from "@plumier/core"
-import { crud, GenericControllerFacility, GenericControllerFacilityOption } from "@plumier/generic-controller"
+import {
+    api,
+    Class,
+    DefaultFacility,
+    findClassRecursive,
+    PlumierApplication,
+    relation,
+    RelationDecorator,
+} from "@plumier/core"
+import { GenericControllerFacility, GenericControllerFacilityOption } from "@plumier/generic-controller"
 import Mongoose from "mongoose"
-import reflect, { PropertyReflection, TypeDecorator } from "tinspector"
-import convert, { Result, VisitorInvocation } from "typedconverter"
+import reflect, { PropertyReflection } from "tinspector"
+import convert, { Result, ResultMessages, VisitorInvocation } from "typedconverter"
 
 import { getModels, MongooseHelper } from "./generator"
 import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
-import { RefDecorator, ClassOptionDecorator } from "./types"
+import { ClassOptionDecorator, RefDecorator } from "./types"
 
 interface MongooseFacilityOption { uri?: string, helper?: MongooseHelper }
 
-function safeToString(obj: any) {
-    try {
-        return obj.toString()
+function convertValue(value: any, path: string): Result {
+    if (Array.isArray(value)) {
+        const result: ResultMessages[] = []
+        for (const [i, item] of value.entries()) {
+            const converted = convertValue(item, `${path}[${i}]`)
+            if (converted.issues)
+                result.push(...converted.issues)
+        }
+        return { value, issues: result.length > 0 ? result : undefined }
     }
-    catch {
-        return ""
+    else {
+        if (!Mongoose.isValidObjectId(value))
+            return Result.error(value, path, "Invalid MongoDB id")
+        else
+            return Result.create(value)
     }
 }
 
-function validateObjectId(i: VisitorInvocation): Result {
-    const id = safeToString(i.value)
-    if (Mongoose.isValidObjectId(id) && isCustomClass(i.type)) {
-        return Result.create(id)
-    }
+function validateRelation(i: VisitorInvocation): Result {
+    if (i.value && i.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation"))
+        return convertValue(i.value, i.path)
     else
         return i.proceed()
 }
@@ -36,7 +51,7 @@ export class MongooseFacility extends DefaultFacility {
     }
 
     async initialize(app: Readonly<PlumierApplication>) {
-        app.set({ typeConverterVisitors: [validateObjectId] })
+        app.set({ typeConverterVisitors: [validateRelation] })
         const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
         if (uri) {
             if (this.option.helper)
@@ -69,8 +84,7 @@ export class MongooseGenericControllerFacility extends GenericControllerFacility
             Reflect.decorate([api.readonly()], entity.prototype, property.name)
         }
         if (property.decorators.find((x: RefDecorator) => x.name === "MongooseRef")) {
-            const ovr = property.decorators.find((x: TypeDecorator): x is TypeDecorator => x.kind === "Override")!
-            Reflect.decorate([crud.oneToMany(ovr.type as any), api.readonly(), api.writeonly()], entity.prototype, property.name)
+            Reflect.decorate([relation(), api.readonly(), api.writeonly()], entity.prototype, property.name)
         }
     }
 

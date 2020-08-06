@@ -176,6 +176,10 @@ Object {
   },
   "domain": domain,
   "ellipsis": ellipsis,
+  "entityHelper": Object {
+    "getIdProp": getIdProp,
+    "getIdType": getIdType,
+  },
   "errorMessage": Object {
     "ActionParameterDoesNotHaveTypeInfo": "PLUM1004: Parameter binding skipped because action parameters doesn't have type information in ({0})",
     "ArrayWithoutTypeInformation": "PLUM1006: Parameter binding skipped because array element doesn't have type information in ({0})",
@@ -202,8 +206,10 @@ Object {
   "middleware": Object {
     "use": use,
   },
+  "primaryId": primaryId,
   "printAnalysis": printAnalysis,
   "printTable": printTable,
+  "relation": relation,
   "response": Object {
     "json": json,
     "redirect": redirect,

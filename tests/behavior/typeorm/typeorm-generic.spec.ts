@@ -1,7 +1,14 @@
 import { Class, Configuration, consoleLog, val } from "@plumier/core"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { SwaggerFacility } from "@plumier/swagger"
-import { TypeORMFacility, TypeORMGenericControllerFacility, TypeORMControllerGeneric, TypeORMRepository, TypeORMOneToManyControllerGeneric, TypeORMOneToManyRepository } from "@plumier/typeorm"
+import {
+    TypeORMControllerGeneric,
+    TypeORMFacility,
+    TypeORMGenericControllerFacility,
+    TypeORMOneToManyControllerGeneric,
+    TypeORMOneToManyRepository,
+    TypeORMRepository,
+} from "@plumier/typeorm"
 import { join } from "path"
 import supertest from "supertest"
 import reflect, { generic } from "tinspector"
@@ -66,7 +73,7 @@ describe("Facility", () => {
     })
     it("Should able to load external model using relative path", async () => {
         const mock = consoleLog.startMock()
-        await createApp([join(__dirname, "./absolute")])
+        await createApp([join(__dirname, "./relative")])
             .set(new TypeORMGenericControllerFacility({ entities: "./relative" }))
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()

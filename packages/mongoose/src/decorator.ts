@@ -1,8 +1,8 @@
-import { Class } from "@plumier/core"
+import { Class, relation } from "@plumier/core"
 import { SchemaTypeOpts } from "mongoose"
-import reflect, { decorateProperty, mergeDecorator, decorateClass } from "tinspector"
+import reflect, { decorateClass, decorateProperty, mergeDecorator } from "tinspector"
 
-import { PropertyOptionDecorator, RefDecorator, NamedSchemaOption, ClassOptionDecorator } from "./types"
+import { ClassOptionDecorator, NamedSchemaOption, PropertyOptionDecorator, RefDecorator } from "./types"
 
 // --------------------------------------------------------------------- //
 // ----------------------------- DECORATORS ---------------------------- //
@@ -22,7 +22,8 @@ collection.property = (option?: SchemaTypeOpts<any>) => {
 collection.ref = (type: Class | Class[] | ((x:any) => Class | Class[])) => {
     return mergeDecorator(
         decorateProperty(<RefDecorator>{ name: "MongooseRef" }),
-        reflect.type(type)
+        reflect.type(type),
+        relation()
     )
 }
 
