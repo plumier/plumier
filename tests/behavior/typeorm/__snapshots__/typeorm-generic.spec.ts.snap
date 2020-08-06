@@ -443,7 +443,9 @@ Object {
       "items": Object {
         "$ref": "#/components/schemas/Child",
       },
+      "readOnly": true,
       "type": "array",
+      "writeOnly": true,
     },
     "id": Object {
       "readOnly": true,
@@ -461,7 +463,16 @@ exports[`Open API Should mark one to many and many to one as readonly 2`] = `
 Object {
   "properties": Object {
     "entity": Object {
-      "$ref": "#/components/schemas/MyEntity",
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/MyEntity",
+        },
+        Object {
+          "readOnly": true,
+          "type": "object",
+          "writeOnly": true,
+        },
+      ],
     },
     "id": Object {
       "readOnly": true,

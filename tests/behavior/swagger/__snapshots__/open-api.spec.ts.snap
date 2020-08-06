@@ -2122,48 +2122,6 @@ Object {
 }
 `;
 
-exports[`Open API 3.0 Generation Request Body With Relation Property Should able to provide callback type 1`] = `
-Object {
-  "content": Object {
-    "application/json": Object {
-      "schema": Object {
-        "allOf": Array [
-          Object {
-            "$ref": "#/components/schemas/User",
-          },
-          Object {
-            "properties": Object {
-              "pet": Object {
-                "type": "number",
-              },
-            },
-            "type": "object",
-          },
-        ],
-      },
-    },
-    "application/x-www-form-urlencoded": Object {
-      "schema": Object {
-        "allOf": Array [
-          Object {
-            "$ref": "#/components/schemas/User",
-          },
-          Object {
-            "properties": Object {
-              "pet": Object {
-                "type": "number",
-              },
-            },
-            "type": "object",
-          },
-        ],
-      },
-    },
-  },
-  "required": true,
-}
-`;
-
 exports[`Open API 3.0 Generation Request Body With Relation Property Should able to transform body with relation 1`] = `
 Object {
   "content": Object {
@@ -2434,22 +2392,19 @@ Object {
 }
 `;
 
-exports[`Open API 3.0 Generation Request Body With Relation Property Should work on array relation with callback 1`] = `
+exports[`Open API 3.0 Generation Request Body With Relation Property Should work on inverse property relation 1`] = `
 Object {
   "content": Object {
     "application/json": Object {
       "schema": Object {
         "allOf": Array [
           Object {
-            "$ref": "#/components/schemas/User",
+            "$ref": "#/components/schemas/Animal",
           },
           Object {
             "properties": Object {
-              "pet": Object {
-                "items": Object {
-                  "type": "number",
-                },
-                "type": "array",
+              "user": Object {
+                "type": "number",
               },
             },
             "type": "object",
@@ -2461,15 +2416,12 @@ Object {
       "schema": Object {
         "allOf": Array [
           Object {
-            "$ref": "#/components/schemas/User",
+            "$ref": "#/components/schemas/Animal",
           },
           Object {
             "properties": Object {
-              "pet": Object {
-                "items": Object {
-                  "type": "number",
-                },
-                "type": "array",
+              "user": Object {
+                "type": "number",
               },
             },
             "type": "object",
