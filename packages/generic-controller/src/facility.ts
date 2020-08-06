@@ -1,25 +1,24 @@
 import {
     api,
     appendRoute,
+    AuthorizeDecorator,
     Class,
     DefaultFacility,
+    entityHelper,
     findClassRecursive,
     generateRoutes,
+    HttpMethod,
     IgnoreDecorator,
     PlumierApplication,
-    route,
-    AuthorizeDecorator,
-    HttpMethod,
-    RouteDecorator,
-    EntityIdDecorator,
     RelationDecorator,
-    entityHelper
+    route,
+    RouteDecorator,
 } from "@plumier/core"
-import reflect, { decorateClass, generic, metadata } from "tinspector"
+import { isAbsolute, join } from "path"
+import pluralize from "pluralize"
+import reflect, { decorateClass, generic } from "tinspector"
 
 import { ControllerGeneric, OneToManyControllerGeneric, RelationPropertyDecorator } from "./types"
-import pluralize from "pluralize"
-import { isAbsolute, join } from "path"
 
 interface CreateRouteFromEntitiesOption {
     entities: Class[],

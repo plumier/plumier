@@ -9,5 +9,6 @@ Object {
   "OneToManyControllerGeneric": OneToManyControllerGeneric,
   "RepoBaseControllerGeneric": RepoBaseControllerGeneric,
   "RepoBaseOneToManyControllerGeneric": RepoBaseOneToManyControllerGeneric,
+  "getOneToOneRelations": getOneToOneRelations,
 }
 `;
