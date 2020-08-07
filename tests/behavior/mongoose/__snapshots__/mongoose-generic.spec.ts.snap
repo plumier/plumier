@@ -152,6 +152,194 @@ Array [
 ]
 `;
 
+exports[`CRUD One To One Function Should able to add with ID 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "animal": Object {
+    "__v": 0,
+    "_id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One Function Should able to modify relation by ID 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "animal": Object {
+    "__v": 0,
+    "_id": "MONGODB UNIQUE ID",
+    "name": "Bingo",
+  },
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One Function Should not populated one to many 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "animals": Array [
+    Object {
+      "__v": 0,
+      "_id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "__v": 0,
+      "_id": "MONGODB UNIQUE ID",
+      "name": "Bingo",
+    },
+  ],
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One Function Should not populated one to many 2`] = `
+Object {
+  "animals": Array [
+    Object {},
+    Object {},
+  ],
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One Function Should populated multiple result 1`] = `
+Array [
+  Object {
+    "animal": Object {
+      "name": "Mimi",
+    },
+    "name": "John",
+  },
+  Object {
+    "animal": Object {
+      "name": "Mimi",
+    },
+    "name": "Jane",
+  },
+]
+`;
+
+exports[`CRUD One To One Function Should populated on get by id 1`] = `
+Object {
+  "animal": Object {
+    "name": "Mimi",
+  },
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One Function Should populated on multiple property 1`] = `
+Object {
+  "animal": Object {
+    "name": "Mimi",
+  },
+  "name": "John",
+  "secondAnimal": Object {
+    "name": "Bingo",
+  },
+}
+`;
+
+exports[`CRUD One To One on Nested Object Should able to add with ID 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "animal": Object {
+    "__v": 0,
+    "_id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One on Nested Object Should able to modify relation by ID 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "animal": Object {
+    "__v": 0,
+    "_id": "MONGODB UNIQUE ID",
+    "name": "Bingo",
+  },
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One on Nested Object Should populated multiple result 1`] = `
+Array [
+  Object {
+    "animal": Object {
+      "name": "Mimi",
+    },
+    "name": "John",
+  },
+  Object {
+    "animal": Object {
+      "name": "Bingo",
+    },
+    "name": "Jane",
+  },
+]
+`;
+
+exports[`CRUD One To One on Nested Object Should not populated one to many 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "animals": Array [
+    Object {
+      "__v": 0,
+      "_id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "__v": 0,
+      "_id": "MONGODB UNIQUE ID",
+      "name": "Bingo",
+    },
+  ],
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One on Nested Object Should not populated one to many 2`] = `
+Object {
+  "animals": Array [
+    Object {},
+    Object {},
+  ],
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One on Nested Object Should populated on get by id 1`] = `
+Object {
+  "animal": Object {
+    "name": "Mimi",
+  },
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One on Nested Object Should populated on multiple property 1`] = `
+Object {
+  "animal": Object {
+    "name": "Mimi",
+  },
+  "name": "John",
+  "secondAnimal": Object {
+    "name": "Bingo",
+  },
+}
+`;
+
 exports[`Facility Should able specify rootPath 1`] = `
 Array [
   Array [],

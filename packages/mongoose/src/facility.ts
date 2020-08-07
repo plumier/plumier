@@ -84,7 +84,8 @@ export class MongooseGenericControllerFacility extends GenericControllerFacility
             Reflect.decorate([api.readonly()], entity.prototype, property.name)
         }
         if (property.decorators.find((x: RefDecorator) => x.name === "MongooseRef")) {
-            Reflect.decorate([relation(), api.readonly(), api.writeonly()], entity.prototype, property.name)
+            if (property.typeClassification === "Array")
+                Reflect.decorate([relation(), api.readonly(), api.writeonly()], entity.prototype, property.name)
         }
     }
 

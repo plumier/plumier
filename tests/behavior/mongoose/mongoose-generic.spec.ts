@@ -1059,6 +1059,388 @@ describe("CRUD", () => {
                 .expect(200)
         })
     })
+    describe("One To One Function", () => {
+        it("Should able to add with ID", async () => {
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => Animal)
+                animal: Animal
+            }
+            const AnimalModel = model(Animal)
+            const UserModel = model(User)
+            const animal = await new AnimalModel({ name: "Mimi" }).save()
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .post(`/users`)
+                .send({ name: "John", animal: animal.id })
+                .expect(200)
+            const saved = await UserModel.findById(body.id).populate("animal")
+            expect(saved).toMatchSnapshot()
+        })
+        it("Should able to modify relation by ID", async () => {
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => Animal)
+                animal: Animal
+            }
+            const AnimalModel = model(Animal)
+            const UserModel = model(User)
+            const animal = await new AnimalModel({ name: "Mimi" }).save()
+            const user = await new UserModel({ name: "John", animal }).save()
+            const otherAnimal = await new AnimalModel({ name: "Bingo" }).save()
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .patch(`/users/${user.id}`)
+                .send({ animal: otherAnimal.id })
+                .expect(200)
+            const saved = await UserModel.findById(body.id).populate("animal")
+            expect(saved).toMatchSnapshot()
+        })
+        it("Should populated on get by id", async () => {
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => Animal)
+                animal: Animal
+            }
+            const AnimalModel = model(Animal)
+            const UserModel = model(User)
+            const animal = await new AnimalModel({ name: "Mimi" }).save()
+            const user = await new UserModel({ name: "John", animal }).save()
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should populated on multiple property", async () => {
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => Animal)
+                animal: Animal
+                @collection.ref(x => Animal)
+                secondAnimal: Animal
+            }
+            const AnimalModel = model(Animal)
+            const UserModel = model(User)
+            const animal = await new AnimalModel({ name: "Mimi" }).save()
+            const second = await new AnimalModel({ name: "Bingo" }).save()
+            const user = await new UserModel({ name: "John", animal, secondAnimal: second }).save()
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should not populated one to many", async () => {
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            const AnimalModel = model(Animal)
+            const UserModel = model(User)
+            const animal = await new AnimalModel({ name: "Mimi" }).save()
+            const second = await new AnimalModel({ name: "Bingo" }).save()
+            const user = await new UserModel({ name: "John", animals: [animal.id, second.id] }).save()
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}`)
+                .expect(200)
+            const saved = await user.populate("animals").execPopulate()
+            expect(saved).toMatchSnapshot()
+            expect(body).toMatchSnapshot()
+        })
+        it("Should populated multiple result", async () => {
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => Animal)
+                animal: Animal
+            }
+            const AnimalModel = model(Animal)
+            const UserModel = model(User)
+            const animal = await new AnimalModel({ name: "Mimi" }).save()
+            await UserModel.deleteMany({})
+            await new UserModel({ name: "John", animal }).save()
+            await new UserModel({ name: "Jane", animal }).save()
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .get(`/users`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+    })
+    describe("One To One on Nested Object", () => {
+        it("Should able to add with ID", async () => {
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => Animal)
+                animal: Animal
+            }
+            @collection()
+            class Parent {
+                @collection.property()
+                name: string
+                @collection.ref([User])
+                children: User[]
+            }
+            const AnimalModel = model(Animal)
+            const UserModel = model(User)
+            const ParentModel = model(Parent)
+            const animal = await new AnimalModel({ name: "Mimi" }).save()
+            const parent = await new ParentModel({ name: "John" }).save()
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .post(`/parents/${parent.id}/children`)
+                .send({ name: "John", animal: animal.id })
+                .expect(200)
+            const saved = await UserModel.findById(body.id).populate("animal")
+            expect(saved).toMatchSnapshot()
+        })
+        it("Should able to modify relation by ID", async () => {
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => Animal)
+                animal: Animal
+            }
+            @collection()
+            class Parent {
+                @collection.property()
+                name: string
+                @collection.ref([User])
+                children: User[]
+            }
+            const AnimalModel = model(Animal)
+            const UserModel = model(User)
+            const ParentModel = model(Parent)
+            const animal = await new AnimalModel({ name: "Mimi" }).save()
+            const parent = await new ParentModel({ name: "John" }).save()
+            const user = await new UserModel({ name: "John", animal }).save()
+            const otherAnimal = await new AnimalModel({ name: "Bingo" }).save()
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .patch(`/parents/${parent.id}/children/${user.id}`)
+                .send({ animal: otherAnimal.id })
+                .expect(200)
+            const saved = await UserModel.findById(body.id).populate("animal")
+            expect(saved).toMatchSnapshot()
+        })
+        it("Should populated on get by id", async () => {
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => Animal)
+                animal: Animal
+            }
+            @collection()
+            class Parent {
+                @collection.property()
+                name: string
+                @collection.ref([User])
+                children: User[]
+            }
+            const AnimalModel = model(Animal)
+            const UserModel = model(User)
+            const ParentModel = model(Parent)
+            const animal = await new AnimalModel({ name: "Mimi" }).save()
+            const user = await new UserModel({ name: "John", animal }).save()
+            const parent = await new ParentModel({ name: "John", children: [user.id] }).save()
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children/${user.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should populated on multiple property", async () => {
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => Animal)
+                animal: Animal
+                @collection.ref(x => Animal)
+                secondAnimal: Animal
+            }
+            @collection()
+            class Parent {
+                @collection.property()
+                name: string
+                @collection.ref([User])
+                children: User[]
+            }
+            const AnimalModel = model(Animal)
+            const UserModel = model(User)
+            const ParentModel = model(Parent)
+            const animal = await new AnimalModel({ name: "Mimi" }).save()
+            const second = await new AnimalModel({ name: "Bingo" }).save()
+            const user = await new UserModel({ name: "John", animal, secondAnimal: second }).save()
+            const parent = await new ParentModel({ name: "John", children: [user.id] }).save()
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children/${user.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should not populated one to many", async () => {
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            class Parent {
+                @collection.property()
+                name: string
+                @collection.ref([User])
+                children: User[]
+            }
+            const AnimalModel = model(Animal)
+            const UserModel = model(User)
+            const ParentModel = model(Parent)
+            const animal = await new AnimalModel({ name: "Mimi" }).save()
+            const second = await new AnimalModel({ name: "Bingo" }).save()
+            const user = await new UserModel({ name: "John", animals: [animal.id, second.id] }).save()
+            const parent = await new ParentModel({ name: "John", children: [user.id] }).save()
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children/${user.id}`)
+                .expect(200)
+            const saved = await user.populate("animals").execPopulate()
+            expect(saved).toMatchSnapshot()
+            expect(body).toMatchSnapshot()
+        })
+        it("Should populated multiple result", async () => {
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => Animal)
+                animal: Animal
+            }
+            @collection()
+            class Parent {
+                @collection.property()
+                name: string
+                @collection.ref([User])
+                children: User[]
+            }
+            const AnimalModel = model(Animal)
+            const UserModel = model(User)
+            const ParentModel = model(Parent)
+            const animal = await new AnimalModel({ name: "Mimi" }).save()
+            const second = await new AnimalModel({ name: "Bingo" }).save()
+            const user = await new UserModel({ name: "John", animal: animal.id}).save()
+            const secondUser = await new UserModel({ name: "Jane", animal: second.id}).save()
+            const parent = await new ParentModel({ name: "John", children: [user.id, secondUser.id] }).save()
+            const app = await createApp({ mode: "production" })
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+    })
 })
 
 describe("Open API", () => {
@@ -1166,7 +1548,7 @@ describe("Open API", () => {
         expect(body.paths["/users"].post).toMatchSnapshot()
     })
     it("Should transform relation into their appropriate ID type on one to one relation", async () => {
-        
+
         @collection()
         class Animal {
             @reflect.noop()

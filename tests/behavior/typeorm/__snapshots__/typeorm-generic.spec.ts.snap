@@ -25,6 +25,11 @@ Array [
   Object {
     "id": 1,
     "name": "Jojo",
+    "user": Object {
+      "email": "john.doe@gmail.com",
+      "id": 1,
+      "name": "John Doe",
+    },
   },
 ]
 `;
@@ -33,6 +38,11 @@ exports[`CRUD Nested CRUD One to Many Function Should serve GET /users/:parentId
 Object {
   "id": 1,
   "name": "Mimi",
+  "user": Object {
+    "email": "john.doe@gmail.com",
+    "id": 1,
+    "name": "John Doe",
+  },
 }
 `;
 
@@ -73,6 +83,11 @@ Array [
   Object {
     "id": 1,
     "name": "Jeje",
+    "user": Object {
+      "email": "john.doe@gmail.com",
+      "id": 1,
+      "name": "John Doe",
+    },
   },
 ]
 `;
@@ -81,6 +96,212 @@ exports[`CRUD Nested CRUD One to Many Function Should set partial validation on 
 Animal {
   "id": 1,
   "name": "Poe",
+}
+`;
+
+exports[`CRUD One To One Function Should able to add with ID 1`] = `
+User {
+  "animal": Animal {
+    "id": 1,
+    "name": "Mimi",
+  },
+  "id": 1,
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One Function Should able to modify relation by ID 1`] = `
+User {
+  "animal": Animal {
+    "id": 2,
+    "name": "Bingo",
+  },
+  "id": 1,
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One Function Should not populated one to many 1`] = `
+User {
+  "animals": Array [
+    Animal {
+      "id": 1,
+      "name": "Mimi",
+    },
+    Animal {
+      "id": 2,
+      "name": "Bingo",
+    },
+  ],
+  "id": 1,
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One Function Should not populated one to many 2`] = `
+Object {
+  "id": 1,
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One Function Should populated multiple result 1`] = `
+Array [
+  Object {
+    "animal": Object {
+      "id": 1,
+      "name": "Mimi",
+    },
+    "id": 1,
+    "name": "John",
+  },
+  Object {
+    "animal": Object {
+      "id": 1,
+      "name": "Mimi",
+    },
+    "id": 2,
+    "name": "Jane",
+  },
+]
+`;
+
+exports[`CRUD One To One Function Should populated on get by id 1`] = `
+Object {
+  "animal": Object {
+    "id": 1,
+    "name": "Mimi",
+  },
+  "id": 1,
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One Function Should populated on multiple property 1`] = `
+Object {
+  "animal": Object {
+    "id": 1,
+    "name": "Mimi",
+  },
+  "id": 1,
+  "name": "John",
+  "secondAnimal": Object {
+    "id": 2,
+    "name": "Bingo",
+  },
+}
+`;
+
+exports[`CRUD One To One on Nested Object Should able to add with ID 1`] = `
+User {
+  "animal": Animal {
+    "id": 1,
+    "name": "Mimi",
+  },
+  "id": 1,
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One on Nested Object Should able to modify relation by ID 1`] = `
+User {
+  "animal": Animal {
+    "id": 2,
+    "name": "Bingo",
+  },
+  "id": 1,
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One on Nested Object Should not populated one to many 1`] = `
+User {
+  "animals": Array [
+    Animal {
+      "id": 1,
+      "name": "Mimi",
+    },
+    Animal {
+      "id": 2,
+      "name": "Bingo",
+    },
+  ],
+  "id": 1,
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One on Nested Object Should not populated one to many 2`] = `
+Object {
+  "id": 1,
+  "name": "John",
+  "parent": Object {
+    "id": 1,
+    "name": "John",
+  },
+}
+`;
+
+exports[`CRUD One To One on Nested Object Should populated multiple result 1`] = `
+Array [
+  Object {
+    "animal": Object {
+      "id": 1,
+      "name": "Mimi",
+    },
+    "id": 1,
+    "name": "John",
+    "parent": Object {
+      "id": 1,
+      "name": "John",
+    },
+  },
+  Object {
+    "animal": Object {
+      "id": 2,
+      "name": "Bingo",
+    },
+    "id": 2,
+    "name": "Jane",
+    "parent": Object {
+      "id": 1,
+      "name": "John",
+    },
+  },
+]
+`;
+
+exports[`CRUD One To One on Nested Object Should populated on get by id 1`] = `
+Object {
+  "animal": Object {
+    "id": 1,
+    "name": "Mimi",
+  },
+  "id": 1,
+  "name": "John",
+  "parent": Object {
+    "id": 1,
+    "name": "John",
+  },
+}
+`;
+
+exports[`CRUD One To One on Nested Object Should populated on multiple property 1`] = `
+Object {
+  "animal": Object {
+    "id": 1,
+    "name": "Mimi",
+  },
+  "id": 1,
+  "name": "John",
+  "parent": Object {
+    "id": 1,
+    "name": "John",
+  },
+  "secondAnimal": Object {
+    "id": 2,
+    "name": "Bingo",
+  },
 }
 `;
 

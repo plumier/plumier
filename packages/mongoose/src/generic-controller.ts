@@ -4,6 +4,7 @@ import {
     RepoBaseControllerGeneric,
     RepoBaseOneToManyControllerGeneric,
     Repository,
+    getOneToOneRelations,
 } from "@plumier/generic-controller"
 import mongoose, { Document, Model } from "mongoose"
 import { generic } from "tinspector"
@@ -12,13 +13,19 @@ import { MongooseHelper, globalHelper } from "./generator"
 
 class MongooseRepository<T> implements Repository<T>{
     readonly Model: Model<T & Document>
+    protected readonly oneToOneRelations: string[]
     constructor(type: Class<T>, helper?: MongooseHelper) {
         const hlp = helper ?? globalHelper
         this.Model = hlp.model(type)
+        this.oneToOneRelations = getOneToOneRelations(type).map(x => x.name)
     }
 
     find(offset: number, limit: number, query: Partial<T>): Promise<(T & mongoose.Document)[]> {
-        return this.Model.find(query as any).skip(offset).limit(limit) as any
+        const q = this.Model.find(query as any)
+        for (const prop of this.oneToOneRelations) {
+            q.populate(prop)
+        }
+        return q.skip(offset).limit(limit) as any
     }
 
     async insert(doc: Partial<T>): Promise<{ id: any }> {
@@ -27,7 +34,11 @@ class MongooseRepository<T> implements Repository<T>{
     }
 
     findById(id: any): Promise<(T & mongoose.Document) | undefined> {
-        return this.Model.findById(id) as any
+        const q = this.Model.findById(id)
+        for (const prop of this.oneToOneRelations) {
+            q.populate(prop)
+        }
+        return q as any
     }
 
     async update(id: any, data: Partial<T>) {
@@ -44,16 +55,25 @@ class MongooseRepository<T> implements Repository<T>{
 class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
     readonly Model: Model<T & Document>
     readonly ParentModel: Model<P & Document>
+    protected readonly oneToOneRelations: string[]
     constructor(parent: Class<P>, type: Class<T>, protected relation: string, helper?: MongooseHelper) {
         const hlp = helper ?? globalHelper
         this.Model = hlp.model(type)
         this.ParentModel = hlp.model(parent)
+        this.oneToOneRelations = getOneToOneRelations(type).map(x => x.name)
     }
 
     async find(pid: string, offset: number, limit: number, query: Partial<T>): Promise<(T & mongoose.Document)[]> {
-        const parent = await this.ParentModel.findById(pid).populate(this.relation, null, query, { skip: offset, limit })
+        const parent = await this.ParentModel.findById(pid)
+            .populate({
+                path: this.relation,
+                match: query,
+                options: { skip: offset, limit },
+                populate: this.oneToOneRelations.map(x => ({ path: x }))
+            })
         return (parent as any)[this.relation]
     }
+
     async insert(pid: string, doc: Partial<T>): Promise<{ id: any }> {
         const parent = await this.ParentModel.findById(pid);
         const result = await new this.Model(doc).save();
@@ -67,7 +87,11 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
     }
 
     findById(id: any): Promise<(T & mongoose.Document) | undefined> {
-        return this.Model.findById(id) as any
+        const q = this.Model.findById(id) 
+        for (const prop of this.oneToOneRelations) {
+            q.populate(prop)
+        }
+        return q as any
     }
 
     async update(id: any, data: Partial<T>): Promise<{ id: any }> {
