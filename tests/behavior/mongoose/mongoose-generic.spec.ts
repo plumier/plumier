@@ -1209,8 +1209,6 @@ describe("CRUD", () => {
                 name: string
                 @collection.ref(x => Animal)
                 animal: Animal
-                @collection.ref(x => Animal)
-                secondAnimal: Animal
             }
             const AnimalModel = model(Animal)
             const UserModel = model(User)
@@ -1406,7 +1404,7 @@ describe("CRUD", () => {
             expect(saved).toMatchSnapshot()
             expect(body).toMatchSnapshot()
         })
-        it("Should not populated multiple result", async () => {
+        it("Should populated multiple result", async () => {
             @collection()
             class Animal {
                 @reflect.noop()

@@ -1,15 +1,17 @@
 import { Class } from "@plumier/core"
-import { OneToManyRepository, Repository } from "@plumier/generic-controller"
+import { OneToManyRepository, Repository, getOneToOneRelations } from "@plumier/generic-controller"
 import { getManager, Repository as NativeRepository } from "typeorm"
 
 class TypeORMRepository<T> implements Repository<T> {
     protected readonly nativeRepository: NativeRepository<T>
+    protected readonly oneToOneRelations: string[]
     constructor(type: Class<T>) {
         this.nativeRepository = getManager().getRepository(type)
+        this.oneToOneRelations = getOneToOneRelations(type).map(x => x.name)
     }
 
     find(offset: number, limit: number, query: Partial<T>): Promise<T[]> {
-        return this.nativeRepository.find({ skip: offset, take: limit, where: query })
+        return this.nativeRepository.find({ skip: offset, take: limit, where: query, relations: this.oneToOneRelations })
     }
 
     async insert(doc: T): Promise<{ id: any }> {
@@ -18,7 +20,7 @@ class TypeORMRepository<T> implements Repository<T> {
     }
 
     findById(id: any): Promise<T | undefined> {
-        return this.nativeRepository.findOne(id)
+        return this.nativeRepository.findOne(id, { relations: this.oneToOneRelations })
     }
 
     async update(id: any, data: T): Promise<{ id: any }> {
@@ -36,15 +38,23 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
     protected readonly nativeRepository: NativeRepository<T>
     protected readonly nativeParentRepository: NativeRepository<P>
     protected readonly inversePropertyName: string
+    protected readonly oneToOneRelations: string[]
     constructor(parent: Class<P>, type: Class<T>, protected relation: string) {
         this.nativeRepository = getManager().getRepository(type)
         this.nativeParentRepository = getManager().getRepository(parent)
         const join = this.nativeParentRepository.metadata.relations.find(x => x.propertyName === this.relation)
         this.inversePropertyName = join!.inverseSidePropertyPath;
+        this.oneToOneRelations = getOneToOneRelations(type).map(x => x.name)
     }
 
     async find(pid: any, offset: number, limit: number, query: Partial<T>): Promise<T[]> {
-        return this.nativeRepository.find({ where: { [this.inversePropertyName]: pid, ...query }, skip: offset, take: limit })
+        return this.nativeRepository.find({
+            where:
+                { [this.inversePropertyName]: pid, ...query },
+            skip: offset,
+            take: limit,
+            relations: this.oneToOneRelations
+        })
     }
 
     async insert(pid: any, data: T): Promise<{ id: any }> {
@@ -62,7 +72,7 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
     }
 
     findById(id: any): Promise<T | undefined> {
-        return this.nativeRepository.findOne(id)
+        return this.nativeRepository.findOne(id, { relations: this.oneToOneRelations })
     }
 
     async update(id: any, data: T): Promise<{ id: any }> {

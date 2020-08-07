@@ -7,14 +7,14 @@ import {
     TypeORMGenericControllerFacility,
     TypeORMOneToManyControllerGeneric,
     TypeORMOneToManyRepository,
-    TypeORMRepository,
+    TypeORMRepository
 } from "@plumier/typeorm"
 import { join } from "path"
 import supertest from "supertest"
-import reflect, { generic } from "tinspector"
-import { Column, Entity, getManager, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm"
-
+import { generic } from "tinspector"
+import { Column, Entity, getManager, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, JoinColumn } from "typeorm"
 import { cleanup, getConn } from "./helper"
+
 
 jest.setTimeout(20000)
 
@@ -927,6 +927,453 @@ describe("CRUD", () => {
                 .post(`/users/${user.id}/animals`)
                 .send({ name: "Mimi" })
                 .expect(200)
+        })
+    })
+    describe("One To One Function", () => {
+        it("Should able to add with ID", async () => {
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+            }
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne(x => Animal)
+                @JoinColumn()
+                @JoinColumn()
+                animal: Animal
+            }
+            const app = await createApp([Animal, User], { mode: "production" })
+            const AnimalModel = getManager().getRepository(Animal)
+            const UserModel = getManager().getRepository(User)
+            const animal = await AnimalModel.save({ name: "Mimi" })
+            const { body } = await supertest(app.callback())
+                .post(`/users`)
+                .send({ name: "John", animal: animal.id })
+                .expect(200)
+            const saved = await UserModel.findOne(body.id, { relations: ["animal"] })
+            expect(saved).toMatchSnapshot()
+        })
+        it("Should able to modify relation by ID", async () => {
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+            }
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne(x => Animal)
+                @JoinColumn()
+                animal: Animal
+            }
+            const app = await createApp([Animal, User], { mode: "production" })
+            const AnimalModel = getManager().getRepository(Animal)
+            const UserModel = getManager().getRepository(User)
+            const animal = await AnimalModel.save({ name: "Mimi" })
+            const user = await UserModel.save({ name: "John", animal })
+            const otherAnimal = await AnimalModel.save({ name: "Bingo" })
+            const { body } = await supertest(app.callback())
+                .patch(`/users/${user.id}`)
+                .send({ animal: otherAnimal.id })
+                .expect(200)
+            const saved = await UserModel.findOne(body.id, { relations: ["animal"] })
+            expect(saved).toMatchSnapshot()
+        })
+        it("Should populated on get by id", async () => {
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+            }
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne(x => Animal)
+                @JoinColumn()
+                animal: Animal
+            }
+            const app = await createApp([Animal, User], { mode: "production" })
+            const AnimalModel = getManager().getRepository(Animal)
+            const UserModel = getManager().getRepository(User)
+            const animal = await AnimalModel.save({ name: "Mimi" })
+            const user = await UserModel.save({ name: "John", animal })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should populated on multiple property", async () => {
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+            }
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne(x => Animal)
+                @JoinColumn()
+                animal: Animal
+                @OneToOne(x => Animal)
+                @JoinColumn()
+                secondAnimal: Animal
+            }
+            const app = await createApp([Animal, User], { mode: "production" })
+            const AnimalModel = getManager().getRepository(Animal)
+            const UserModel = getManager().getRepository(User)
+            const animal = await AnimalModel.save({ name: "Mimi" })
+            const second = await AnimalModel.save({ name: "Bingo" })
+            const user = await UserModel.save({ name: "John", animal, secondAnimal: second })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should not populated one to many", async () => {
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: any
+            }
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                animals: Animal[]
+            }
+            const app = await createApp([Animal, User], { mode: "production" })
+            const AnimalModel = getManager().getRepository(Animal)
+            const UserModel = getManager().getRepository(User)
+            const animal = await AnimalModel.save({ name: "Mimi" })
+            const second = await AnimalModel.save({ name: "Bingo" })
+            const user = await UserModel.save({ name: "John", animals: [{ id: animal.id }, { id: second.id }] })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}`)
+                .expect(200)
+            const saved = await UserModel.findOne(user.id, { relations: ["animals"] })
+            expect(saved).toMatchSnapshot()
+            expect(body).toMatchSnapshot()
+        })
+        it("Should populated multiple result", async () => {
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+            }
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => Animal)
+                @JoinColumn()
+                animal: Animal
+            }
+            const app = await createApp([Animal, User], { mode: "production" })
+            const AnimalModel = getManager().getRepository(Animal)
+            const UserModel = getManager().getRepository(User)
+            const animal = await AnimalModel.save({ name: "Mimi" })
+            await UserModel.delete({})
+            await UserModel.insert({ name: "John", animal: { id: animal.id } })
+            await UserModel.insert({ name: "Jane", animal: { id: animal.id } })
+            const { body } = await supertest(app.callback())
+                .get(`/users`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+    })
+    describe("One To One on Nested Object", () => {
+        it("Should able to add with ID", async () => {
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+            }
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne(x => Animal)
+                @JoinColumn()
+                animal: Animal
+                @ManyToOne(x => Parent, x => x.children)
+                parent: any
+            }
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToMany(x => User, x => x.parent)
+                children: User[]
+            }
+            const app = await createApp([Animal, User, Parent], {mode: "production"})
+            const AnimalModel = getManager().getRepository(Animal)
+            const UserModel = getManager().getRepository(User)
+            const ParentModel = getManager().getRepository(Parent)
+            const animal = await AnimalModel.save({ name: "Mimi" })
+            const parent = await ParentModel.save({ name: "John" })
+            const { body } = await supertest(app.callback())
+                .post(`/parents/${parent.id}/children`)
+                .send({ name: "John", animal: animal.id })
+                .expect(200)
+            const saved = await UserModel.findOne(body.id, { relations: ["animal"] })
+            expect(saved).toMatchSnapshot()
+        })
+        it("Should able to modify relation by ID", async () => {
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+            }
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne(x => Animal)
+                @JoinColumn()
+                animal: Animal
+                @ManyToOne(x => Parent, x => x.children)
+                parent: any
+            }
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToMany(x => User, x => x.parent)
+                children: User[]
+            }
+            const app = await createApp([Animal, User, Parent], {mode: "production"})
+            const AnimalModel = getManager().getRepository(Animal)
+            const UserModel = getManager().getRepository(User)
+            const ParentModel = getManager().getRepository(Parent)
+            const animal = await AnimalModel.save({ name: "Mimi" })
+            const user = await UserModel.save({ name: "John", animal })
+            const parent = await ParentModel.save({ name: "John", children: [{ id: user.id }] })
+            const otherAnimal = await AnimalModel.save({ name: "Bingo" })
+            const { body } = await supertest(app.callback())
+                .patch(`/parents/${parent.id}/children/${user.id}`)
+                .send({ animal: otherAnimal.id })
+                .expect(200)
+            const saved = await UserModel.findOne(body.id, { relations: ["animal"] })
+            expect(saved).toMatchSnapshot()
+        })
+        it("Should populated on get by id", async () => {
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+            }
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne(x => Animal)
+                @JoinColumn()
+                animal: Animal
+                @ManyToOne(x => Parent, x => x.children)
+                parent: any
+            }
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToMany(x => User, x => x.parent)
+                children: User[]
+            }
+            const app = await createApp([Animal, User, Parent], {mode: "production"})
+            const AnimalModel = getManager().getRepository(Animal)
+            const UserModel = getManager().getRepository(User)
+            const ParentModel = getManager().getRepository(Parent)
+            const animal = await AnimalModel.save({ name: "Mimi" })
+            const user = await UserModel.save({ name: "John", animal })
+            const parent = await ParentModel.save({ name: "John", children: [{ id: user.id }] })
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children/${user.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should populated on multiple property", async () => {
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+            }
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne(x => Animal)
+                @JoinColumn()
+                animal: Animal
+                @OneToOne(x => Animal)
+                @JoinColumn()
+                secondAnimal: Animal
+                @ManyToOne(x => Parent, x => x.children)
+                parent: any
+            }
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToMany(x => User, x => x.parent)
+                children: User[]
+            }
+            const app = await createApp([Animal, User, Parent], {mode: "production"})
+            const AnimalModel = getManager().getRepository(Animal)
+            const UserModel = getManager().getRepository(User)
+            const ParentModel = getManager().getRepository(Parent)
+            const animal = await AnimalModel.save({ name: "Mimi" })
+            const second = await AnimalModel.save({ name: "Bingo" })
+            const user = await UserModel.save({ name: "John", animal, secondAnimal: second })
+            const parent = await ParentModel.save({ name: "John", children: [{ id: user.id }] })
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children/${user.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should not populated one to many", async () => {
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: any
+            }
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                animals: Animal[]
+                @ManyToOne(x => Parent, x => x.children)
+                parent: any
+            }
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToMany(x => User, x => x.parent)
+                children: User[]
+            }
+            const app = await createApp([Animal, User, Parent], {mode: "production"})
+            const AnimalModel = getManager().getRepository(Animal)
+            const UserModel = getManager().getRepository(User)
+            const ParentModel = getManager().getRepository(Parent)
+            const animal = await AnimalModel.save({ name: "Mimi" })
+            const second = await AnimalModel.save({ name: "Bingo" })
+            const user = await UserModel.save({ name: "John", animals: [{ id: animal.id }, { id: second.id }] })
+            const parent = await ParentModel.save({ name: "John", children: [{ id: user.id }] })
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children/${user.id}`)
+                .expect(200)
+            const saved = await UserModel.findOne(body.id, { relations: ["animals"] })
+            expect(saved).toMatchSnapshot()
+            expect(body).toMatchSnapshot()
+        })
+        it("Should populated multiple result", async () => {
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+            }
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne(x => Animal)
+                @JoinColumn()
+                animal: Animal
+                @ManyToOne(x => Parent, x => x.children)
+                parent: any
+            }
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToMany(x => User, x => x.parent)
+                children: User[]
+            }
+            const app = await createApp([Animal, User, Parent], {mode: "production"})
+            const AnimalModel = getManager().getRepository(Animal)
+            const UserModel = getManager().getRepository(User)
+            const ParentModel = getManager().getRepository(Parent)
+            const animal = await AnimalModel.save({ name: "Mimi" })
+            const second = await AnimalModel.save({ name: "Bingo" })
+            const user = await UserModel.save({ name: "John", animal: { id: animal.id } })
+            const secondUser = await UserModel.save({ name: "Jane", animal: { id: second.id } })
+            const parent = await ParentModel.save({ name: "John", children: [{ id: user.id }, { id: secondUser.id }] })
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
         })
     })
 })
