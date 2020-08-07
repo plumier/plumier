@@ -1,4 +1,4 @@
-import { decorateProperty } from "tinspector/src/decorators";
+import { decorateProperty } from "tinspector";
 
 interface EntityIdDecorator { kind: "plumier-meta:entity-id" }
 interface RelationDecorator { kind: "plumier-meta:relation", inverse?: true }
