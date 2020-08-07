@@ -272,7 +272,7 @@ Object {
 }
 `;
 
-exports[`CRUD One To One on Nested Object Should not populated multiple result 1`] = `
+exports[`CRUD One To One on Nested Object Should populated multiple result 1`] = `
 Array [
   Object {
     "animal": Object {
