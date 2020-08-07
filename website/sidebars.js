@@ -1,16 +1,15 @@
 module.exports = {
   overview: [
     "overview/get-started",
-    "overview/fundamentals",
-    "overview/extend",
-    "overview/project-template",
-    "overview/route",
+    "overview/framework-skeleton",
+    "overview/functionalities",
     "overview/typeorm-helper",
     "overview/mongoose-helper",
     "overview/swagger",
     "overview/social-login",
     "overview/serve-static",
     "overview/file-upload",
+    "overview/extend",
   ],
   refs: {
     "Framework Reference": [

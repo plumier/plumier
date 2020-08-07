@@ -13,16 +13,10 @@ module.exports = {
         alt: 'Plumier logo',
         src: 'img/plumier.png',
       },
-      links: [
+      items: [
         {
-          to: 'docs/overview/get-started',
-          activeBasePath: 'docs/overview',
-          label: 'Docs',
-          position: 'left',
-        },
-        {
-          to: 'docs/refs/entry-point',
-          activeBasePath: 'docs/refs',
+          to: 'refs/entry-point',
+          activeBasePath: 'refs',
           label: 'Reference',
           position: 'left',
         },
@@ -42,15 +36,15 @@ module.exports = {
           items: [
             {
               label: 'Plumier In Five Minutes',
-              href: 'docs/overview',
+              to: 'overview',
             },
             {
               label: 'Fundamentals',
-              href: 'docs/fundamentals',
+              to: 'fundamentals',
             },
             {
               label: 'Extending Plumier',
-              href: 'docs/extends',
+              to: 'extends',
             }
           ],
         },
@@ -82,7 +76,8 @@ module.exports = {
       {
         docs: {
           // It is recommended to set document id as docs home page (`docs/` path).
-          homePageId: 'overview',
+          routeBasePath: '/',
+          homePageId: 'overview/get-started',
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl: 'https://github.com/plumier/plumier/edit/master/website/',

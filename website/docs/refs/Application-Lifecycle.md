@@ -5,11 +5,11 @@ title: Application Lifecycle
 
 When an Http Request issued into Plumier application, the process goes through a series of processing steps that can be categorized into three main process. Infographic picture below showing the various stage of Plumier Application Life Cycle.
 
-![Application Life Cycle](assets/application-lifecycle.png)
+![Application Life Cycle](../assets/application-lifecycle.png)
 
 Above picture showing the Plumier components, the lifecycle sequence start from left to right then return back to left after execution done.
 
-![Sequence Diagram](assets/request-sequence.png)
+![Sequence Diagram](../assets/request-sequence.png)
 
 ## Router 
 Router is the main process during the occurrence of the http request. There three main process inside router are: 

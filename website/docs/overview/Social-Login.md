@@ -6,7 +6,7 @@ title: Social Media Login
 Plumier provided functionalities to easily secure your API and application using social media login such as Facebook, Google, GitHub and GitLab (Other provider will be added in the future). It included some security best practices out of the box, so you don't need to understand the security practice technically to implement social media login in Plumier.
 
 :::caution
-This documentation assume that you have knowledge on how to setup social login application on [Facebook](https://developers.facebook.com/), [Google](https://console.developers.google.com/), [GitHub](https://github.com/settings/developers) and [GitLab](https://gitlab.com/profile/applications), and have basic knowledge on how to setup OAuth login.
+This documentation assume that you have knowledge on how to setup social login application on [Facebook](https://developers.facebook.com/), [Google](https://console.developers.google.com/), [GitHub](https://github.com/settings/developers), [GitLab](https://gitlab.com/profile/applications) and [Twitter](https://developer.twitter.com/en/apps), and have basic knowledge on how to setup OAuth login.
 :::
 
 :::info Source Code 
@@ -171,7 +171,7 @@ OAuth user is the current social media user. If you notice all example above, al
 
 ```typescript
 interface OAuthUser<T = {}> {
-    provider: "Facebook" | "Google" | "GitHub" | "GitLab"
+    provider: "Facebook" | "Google" | "GitHub" | "GitLab" | "Twitter"
     id: string,
     name: string,
     firstName: string,

@@ -30,6 +30,10 @@ GET /animal/list?last=<number>&limit=<number>
 ## Directory Convention
 Route generated based on controller directory hierarchy. For example if the controller hierarchy like below:
 
+:::info
+Directory convention can be disabled by using `ControllerFacility` and set `directoryAsPath` to `false`
+:::
+
 ```
 + controller
   - home-controller.ts
