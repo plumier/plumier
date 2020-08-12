@@ -179,6 +179,14 @@ describe("TypeOrm", () => {
             expect(extract(MyEntity)).toMatchSnapshot()
             expect(extract(Child)).toMatchSnapshot()
         })
+        it("Should not error when no entities specified", async () => {
+            class UsersController {
+                get() { }
+            }
+            await fixture(UsersController)
+                .set(new TypeORMFacility({ connection: getConn() }))
+                .initialize()
+        })
         it("Should throw error when no option specified", async () => {
             const fn = jest.fn()
             class UsersController {
@@ -196,6 +204,11 @@ describe("TypeOrm", () => {
         })
         it("Should able load entity using absolute dir location", async () => {
             await createApp([join(__dirname, "./v1")])
+            const meta = getMetadataArgsStorage()
+            expect(meta.columns.map(x => x.propertyName)).toMatchSnapshot()
+        })
+        it("Should able load entity using absolute file location", async () => {
+            await createApp([join(__dirname, "./absolute/*.ts")])
             const meta = getMetadataArgsStorage()
             expect(meta.columns.map(x => x.propertyName)).toMatchSnapshot()
         })
@@ -396,7 +409,7 @@ describe("TypeOrm", () => {
                 .send({ name: "Mimi", child: child.identifiers[0].id })
                 .expect(200)
             const result = await parentRepo.findOne(body.id, { relations: ["child"] })
-            delete result?.id 
+            delete result?.id
             delete result?.child.id
             expect(result).toMatchSnapshot()
         })
@@ -478,5 +491,3 @@ describe("TypeOrm", () => {
         })
     })
 })
-
-
