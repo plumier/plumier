@@ -103,6 +103,27 @@ describe("unique validator", () => {
         expect(res.body).toEqual({ status: 422, message: [{ messages: ["KETUT@gmail.com already exists"], path: ["user", "email"] }] })
     })
 
+    it("Should not check if partial part provided", async () => {
+        @collection()
+        class User {
+            constructor(
+                public name: string,
+                @val.unique()
+                public email: string
+            ) { }
+        }
+        class UserController {
+            @route.post()
+            save(user: User) { }
+        }
+        const res = await setup({
+            controller: UserController, domain: User,
+            initUser: { name: "Ketut", email: "ketut@gmail.com" },
+            testUser: { name: "Ketut", email: "ketut" }
+        })
+        expect(res.status).toBe(200)
+    })
+
     it("Should return valid if data not exist", async () => {
         @collection()
         class User {

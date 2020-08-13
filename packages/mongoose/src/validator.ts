@@ -9,7 +9,7 @@ async function isUnique(value: string, target: Class | undefined, field: string,
     const Model = helper?.model(target) ?? model(target)
     const condition: { [key: string]: object } = {}
     //case insensitive comparison
-    condition[field] = { $regex: value, $options: "i" }
+    condition[field] = { $regex: `^${value}$`, $options: "i" }
     const result = await Model.find(condition)
     if (method === "post" && result && result.length > 0) return `${value} already exists`
     if ((method == "put" || method === "patch") && result && result.length > 1) return `${value} already exists`
