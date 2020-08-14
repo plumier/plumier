@@ -205,7 +205,7 @@ exports[`Custom Authorizer Should able to access metadata from custom authorizer
 Array [
   Array [
     MetadataImpl {
-      "access": undefined,
+      "access": "Custom",
       "action": Object {
         "decorators": Array [
           Object {

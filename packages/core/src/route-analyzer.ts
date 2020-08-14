@@ -1,6 +1,5 @@
 import chalk from "chalk"
 
-import { updateRouteAuthorizationAccess } from "./authorization"
 import { AnalysisMessage, analyzeModel, ellipsis, printTable } from "./common"
 import { Configuration, errorMessage, RouteAnalyzerFunction, RouteAnalyzerIssue, RouteMetadata } from "./types"
 
@@ -106,7 +105,6 @@ function analyzeRoutes(routes: RouteMetadata[], config: Configuration) {
    const tests: RouteAnalyzerFunction[] = [
       backingParameterTest, duplicateRouteTest, typeInfoTest,
    ]
-   updateRouteAuthorizationAccess(routes, config)
    return routes.map(x => analyzeRoute(x, tests.concat(config.analyzers || []), routes))
 }
 
