@@ -4,17 +4,17 @@ import {
     Configuration,
     DefaultDependencyResolver,
     Facility,
-    generateRoutes,
     hasKeyOf,
+    mergeRoutes,
     Middleware,
     MiddlewareFunction,
     PlumierApplication,
     PlumierConfiguration,
     printAnalysis,
     RouteInfo,
-    router,
     RouteMetadata,
-    mergeRoutes
+    router,
+    updateRouteAuthorizationAccess,
 } from "@plumier/core"
 import Koa from "koa"
 import { dirname } from "path"
@@ -70,6 +70,8 @@ export class Plumier implements PlumierApplication {
                 rawRoutes.push(...genRoutes)
             }
             const routes = mergeRoutes(rawRoutes)
+            // update authorization access on route.access property
+            updateRouteAuthorizationAccess(routes, this.config)
             //run initialize
             for (const facility of this.config.facilities) {
                 await facility.initialize(this, routes)

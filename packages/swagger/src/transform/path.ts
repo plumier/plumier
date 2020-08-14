@@ -66,7 +66,7 @@ function transformPath(path: string, route: RouteInfo[], ctx: TransformContext):
 }
 
 function transformOperation(route: RouteInfo, ctx: TransformContext): [HttpMethod, OperationObject] {
-    const isPublic = !!route.action.decorators.find((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize" && x.tag === "Public")
+    const isPublic = route.access === "Public"
     const desc = route.action.decorators.find(isDescription)
     const tags = route.controller.decorators.filter(isTag).map(x => x.tag)
     if (tags.length === 0) tags.push(route.controller.name.replace(/controller$/i, ""))

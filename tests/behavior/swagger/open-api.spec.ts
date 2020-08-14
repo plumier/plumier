@@ -1314,6 +1314,20 @@ describe("Open API 3.0 Generation", () => {
                 .expect(200)
             expect(body.paths["/users"].get.security).toMatchSnapshot()
         })
+        it("Should not apply security on class scope public with filter", async () => {
+            @authorize.public({ action: "get" })
+            class UsersController {
+                @route.get("")
+                get(id: string) {
+                    return {} as any
+                }
+            }
+            const app = await createSecureApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.security).toMatchSnapshot()
+        })
         it("Should apply security response on secured operation by role", async () => {
             class UsersController {
                 @authorize.role("admin")
