@@ -9,6 +9,20 @@ Array [
 ]
 `;
 
+exports[`TypeOrm Facility Should able load entity using absolute file location 1`] = `
+Array [
+  "id",
+  "name",
+]
+`;
+
+exports[`TypeOrm Facility Should able load entity when specified from configuration 1`] = `
+Array [
+  "id",
+  "name",
+]
+`;
+
 exports[`TypeOrm Facility Should able to reflect entity properties 1`] = `
 MyEntity {
   "id": 1,

@@ -5,7 +5,6 @@ title: Get Started
 
 This documentation will show you how to create a secure CRUD restful API with a proper validation and authorization. We will use Plumier Generic Controller to automatically host CRUD restful API based on your ORM entities. 
 
-In this example we will created a relatively complex app
 
 As a bonus we will setup Swagger which the schema automatically generated. 
 
@@ -42,14 +41,23 @@ To get started create a directory and initiate a common Node.js project by execu
 npm init --yes
 ``` 
 
-Above command will create a new `package.json` with default setup. Next create three more files required for the project, that is `tsconfig.json`, `.env`, and `src/index.ts`. Your project structure will be like below 
+Above command will create a new `package.json` with default setup. Create more files for our base project structure like below
+
+* `tsconfig.json`
+* `.env`
+* `/src/index.ts`
+* `/src/user/user-entity.ts`
+
+The project structure will be like below
 
 ```
 - src/
-    - index.ts
-  - .env
-  - tsconfig.json
-  - package.json
+  - user/
+    - user-entity.ts
+  - index.ts
+- .env
+- tsconfig.json
+- package.json
 ```
 
 ### TypeScript Configuration 

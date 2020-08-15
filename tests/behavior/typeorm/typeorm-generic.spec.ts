@@ -14,6 +14,7 @@ import supertest from "supertest"
 import { generic } from "tinspector"
 import { Column, Entity, getManager, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, JoinColumn } from "typeorm"
 import { cleanup, getConn } from "./helper"
+import { fixture } from '../helper'
 
 
 jest.setTimeout(20000)
@@ -23,7 +24,7 @@ afterEach(async () => {
 });
 
 describe("Facility", () => {
-    function createApp(entities: (string | Function)[]) {
+    function createApp(entities?: (string | Function)[]) {
         return new Plumier()
             .set(new WebApiFacility())
             .set(new TypeORMFacility({ connection: getConn(entities) }))
@@ -77,6 +78,25 @@ describe("Facility", () => {
             .set(new TypeORMGenericControllerFacility({ entities: "./relative" }))
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
+    })
+    it("Should able load external model using default configuration", async () => {
+        process.env.TYPEORM_CONNECTION = "sqlite"
+        process.env.TYPEORM_DATABASE = ":memory:"
+        process.env.TYPEORM_ENTITIES = "tests/behavior/typeorm/external/*.ts"
+        process.env.TYPEORM_SYNCHRONIZE = "true"
+        const mock = consoleLog.startMock()
+        class UsersController {
+            get() { }
+        }
+        await fixture(UsersController, { mode: "debug" })
+            .set(new TypeORMFacility())
+            .set(new TypeORMGenericControllerFacility())
+            .initialize()
+        expect(mock.mock.calls).toMatchSnapshot()
+        delete process.env.TYPEORM_CONNECTION
+        delete process.env.TYPEORM_DATABASE
+        delete process.env.TYPEORM_ENTITIES
+        delete process.env.TYPEORM_SYNCHRONIZE
     })
     it("Should able specify rootPath", async () => {
         @Entity()
@@ -1144,7 +1164,7 @@ describe("CRUD", () => {
                 @OneToMany(x => User, x => x.parent)
                 children: User[]
             }
-            const app = await createApp([Animal, User, Parent], {mode: "production"})
+            const app = await createApp([Animal, User, Parent], { mode: "production" })
             const AnimalModel = getManager().getRepository(Animal)
             const UserModel = getManager().getRepository(User)
             const ParentModel = getManager().getRepository(Parent)
@@ -1186,7 +1206,7 @@ describe("CRUD", () => {
                 @OneToMany(x => User, x => x.parent)
                 children: User[]
             }
-            const app = await createApp([Animal, User, Parent], {mode: "production"})
+            const app = await createApp([Animal, User, Parent], { mode: "production" })
             const AnimalModel = getManager().getRepository(Animal)
             const UserModel = getManager().getRepository(User)
             const ParentModel = getManager().getRepository(Parent)
@@ -1230,7 +1250,7 @@ describe("CRUD", () => {
                 @OneToMany(x => User, x => x.parent)
                 children: User[]
             }
-            const app = await createApp([Animal, User, Parent], {mode: "production"})
+            const app = await createApp([Animal, User, Parent], { mode: "production" })
             const AnimalModel = getManager().getRepository(Animal)
             const UserModel = getManager().getRepository(User)
             const ParentModel = getManager().getRepository(Parent)
@@ -1274,7 +1294,7 @@ describe("CRUD", () => {
                 @OneToMany(x => User, x => x.parent)
                 children: User[]
             }
-            const app = await createApp([Animal, User, Parent], {mode: "production"})
+            const app = await createApp([Animal, User, Parent], { mode: "production" })
             const AnimalModel = getManager().getRepository(Animal)
             const UserModel = getManager().getRepository(User)
             const ParentModel = getManager().getRepository(Parent)
@@ -1317,7 +1337,7 @@ describe("CRUD", () => {
                 @OneToMany(x => User, x => x.parent)
                 children: User[]
             }
-            const app = await createApp([Animal, User, Parent], {mode: "production"})
+            const app = await createApp([Animal, User, Parent], { mode: "production" })
             const AnimalModel = getManager().getRepository(Animal)
             const UserModel = getManager().getRepository(User)
             const ParentModel = getManager().getRepository(Parent)
@@ -1361,7 +1381,7 @@ describe("CRUD", () => {
                 @OneToMany(x => User, x => x.parent)
                 children: User[]
             }
-            const app = await createApp([Animal, User, Parent], {mode: "production"})
+            const app = await createApp([Animal, User, Parent], { mode: "production" })
             const AnimalModel = getManager().getRepository(Animal)
             const UserModel = getManager().getRepository(User)
             const ParentModel = getManager().getRepository(Parent)

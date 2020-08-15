@@ -4,18 +4,21 @@ import {
     DefaultFacility,
     entityHelper,
     findClassRecursive,
-    findFilesRecursive,
     PlumierApplication,
     primaryId,
     relation,
     RelationDecorator,
     api,
+    findFilesRecursive,
 } from "@plumier/core"
 import { GenericControllerFacility, GenericControllerFacilityOption } from "@plumier/generic-controller"
 import reflect, { noop } from "tinspector"
 import { Result, ResultMessages, VisitorInvocation } from "typedconverter"
-import { ConnectionOptions, createConnection, getMetadataArgsStorage } from "typeorm"
+import { ConnectionOptions, createConnection, getMetadataArgsStorage, getConnectionOptions, EntitySchema } from "typeorm"
 import validator from "validator"
+import { lstatSync } from "fs"
+import glob from "glob"
+
 
 import { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
 
@@ -58,6 +61,32 @@ function validateRelation(i: VisitorInvocation): Result {
         return i.proceed()
 }
 
+// load all entities to be able to take the metadata storage
+async function loadEntities(connection?: ConnectionOptions) {
+    try {
+        const { entities } = connection ?? await getConnectionOptions()
+        if (!entities) return
+        for (const entity of entities) {
+            if (typeof entity !== "string") continue
+            const files = glob.sync(entity, { absolute: true })
+            for (const file of files) {
+                const stat = lstatSync(file)
+                if (stat.isDirectory()) {
+                    const files = findFilesRecursive(file)
+                    for (const f of files) {
+                        require(f)
+                    }
+                }
+                else
+                    require(file)
+            }
+        }
+    }
+    // just skip error in setup method 
+    // it will caught properly during db connect on initialize
+    catch{ }
+}
+
 class TypeORMFacility extends DefaultFacility {
     protected entities: Class[] = []
     private option: TypeORMFacilityOption;
@@ -66,20 +95,11 @@ class TypeORMFacility extends DefaultFacility {
         this.option = { ...opt }
     }
 
-    setup(app: Readonly<PlumierApplication>) {
+    async generateRoutes(app: Readonly<PlumierApplication>) {
         // set type converter module to allow updating relation by id
         app.set({ typeConverterVisitors: [validateRelation] })
         // load all entities to be able to take the metadata storage
-        if (this.option.connection?.entities) {
-            for (const entity of this.option.connection.entities) {
-                if (typeof entity === "string") {
-                    const files = findFilesRecursive(entity)
-                    for (const file of files) {
-                        require(file)
-                    }
-                }
-            }
-        }
+        await loadEntities(this.option.connection)
         // assign tinspector decorators, so Plumier can understand the entity metadata
         const storage = getMetadataArgsStorage();
         for (const col of storage.columns) {
@@ -97,6 +117,7 @@ class TypeORMFacility extends DefaultFacility {
                 Reflect.decorate([relation()], (col.target as Function).prototype, col.propertyName, void 0)
         }
         this.entities = storage.tables.filter(x => typeof x.target !== "string").map(x => x.target as Class)
+        return []
     }
 
     async initialize() {
@@ -107,30 +128,23 @@ class TypeORMFacility extends DefaultFacility {
     }
 }
 
+const notDefined = "plum-meta:not-defined"
+
 class TypeORMGenericControllerFacility extends GenericControllerFacility {
     protected defaultController = TypeORMControllerGeneric
     protected defaultOneToManyController = TypeORMOneToManyControllerGeneric
 
-    private static getDefaultOpt(opt?: Partial<GenericControllerFacilityOption>): GenericControllerFacilityOption {
-        const entities = getMetadataArgsStorage().tables.map(x => x.target as Class)
-        if (!opt) {
-            return { entities }
-        }
-        else
-            return { entities, ...opt, }
-    }
 
     constructor(opt?: Partial<GenericControllerFacilityOption>) {
-        super(TypeORMGenericControllerFacility.getDefaultOpt(opt))
+        super({ entities: notDefined, ...opt })
     }
-
 
     protected getEntities(entities: string | Class | Class[]): Class[] {
         if (typeof entities === "function") {
             const storage = getMetadataArgsStorage();
             if (!storage.tables.some(x => x.target === entities)) return []
             const col = storage.relations.find(x => x.target === entities)
-            if(col && ["one-to-many", "many-to-many", "many-to-one"].some(x => col.relationType === x)){
+            if (col && ["one-to-many", "many-to-many", "many-to-one"].some(x => col.relationType === x)) {
                 // set relation to readonly and writeonly and should be populated using API /parent/pid/child
                 Reflect.decorate([api.readonly(), api.writeonly()], (col.target as Function).prototype, col.propertyName, void 0)
             }
@@ -142,6 +156,11 @@ class TypeORMGenericControllerFacility extends GenericControllerFacility {
                 result.push(...this.getEntities(entity))
             }
             return result;
+        }
+        else if (entities.endsWith(notDefined)) {
+            const meta = getMetadataArgsStorage()
+            const tables = meta.tables.map(x => x.target as Class)
+            return this.getEntities(tables)
         }
         else {
             const classes = findClassRecursive(entities, x => true).map(x => x.type)

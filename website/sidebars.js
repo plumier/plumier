@@ -2,6 +2,7 @@ module.exports = {
   overview: [
     "overview/get-started",
     "overview/framework-skeleton",
+    "overview/generic-controller",
     "overview/functionalities",
     "overview/typeorm-helper",
     "overview/mongoose-helper",

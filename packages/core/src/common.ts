@@ -113,8 +113,6 @@ function findFilesRecursive(path: string): string[] {
     if (!existsSync(path)) return []
     if (lstatSync(path).isDirectory()) {
         const files = glob.sync(`${path}/**/*+(.js|.ts)`)
-            //take only file in extension list
-            .filter(x => [".js", ".ts"].some(ext => extname(x) == ext))
             //add root path + file name
             .map(x => removeExtension(x))
         return Array.from(new Set(files))

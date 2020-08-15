@@ -218,6 +218,7 @@ Object {
   "route": RouteDecoratorImpl {},
   "router": router,
   "toBoolean": toBoolean,
+  "updateRouteAuthorizationAccess": updateRouteAuthorizationAccess,
   "val": Object {
     "UUID": UUID,
     "after": after,

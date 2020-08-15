@@ -2881,6 +2881,8 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Security Should not apply security on class scope public with filter 1`] = `undefined`;
+
 exports[`Open API 3.0 Generation Security Should not apply security on public operation 1`] = `undefined`;
 
 exports[`Open API 3.0 Generation Security Should not apply security response on public operation 1`] = `

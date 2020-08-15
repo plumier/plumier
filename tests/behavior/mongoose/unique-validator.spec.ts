@@ -13,30 +13,34 @@ Mongoose.set("useFindAndModify", false)
 
 jest.setTimeout(20000)
 
-async function setup<T extends object>({ controller, domain, initUser, testUser, method }: { controller: Class; domain: Class; initUser?: T; testUser: T; method?: HttpMethod }) {
-    const mongod = new MongoMemoryServer()
-    const httpMethod = method || "post"
-    const koa = await fixture(controller)
-        .set(new MongooseFacility({
-            uri: await mongod.getUri()
-        })).initialize()
-    koa.on("error", () => { })
-    //setup user
-    const UserModel = model(domain)
-    await UserModel.deleteMany({})
-    if (!!initUser)
-        await new UserModel(initUser).save()
-    if (httpMethod !== "post")
-        await new UserModel(testUser).save()
-    //test
-    return await supertest(koa.callback())
-    [httpMethod || "post"]("/user/save")
-        .send(testUser)
-}
+
+
 
 describe("unique validator", () => {
     beforeEach(() => Mongoose.models = {})
     afterAll(async () => await Mongoose.disconnect())
+    beforeAll(async () => {
+        const mongod = new MongoMemoryServer()
+        await Mongoose.connect(await mongod.getUri())
+    })
+
+    async function setup<T extends object>({ controller, domain, initUser, testUser, method }: { controller: Class; domain: Class; initUser?: T; testUser: T; method?: HttpMethod }) {
+        const httpMethod = method || "post"
+        const koa = await fixture(controller)
+            .set(new MongooseFacility()).initialize()
+        koa.on("error", () => { })
+        //setup user
+        const UserModel = model(domain)
+        await UserModel.deleteMany({})
+        if (!!initUser)
+            await new UserModel(initUser).save()
+        if (httpMethod !== "post")
+            await new UserModel(testUser).save()
+        //test
+        return await supertest(koa.callback())
+        [httpMethod || "post"]("/user/save")
+            .send(testUser)
+    }
 
     it("Should return invalid if data already exist", async () => {
         @collection()
@@ -101,6 +105,27 @@ describe("unique validator", () => {
         })
         expect(res.status).toBe(422)
         expect(res.body).toEqual({ status: 422, message: [{ messages: ["KETUT@gmail.com already exists"], path: ["user", "email"] }] })
+    })
+
+    it("Should not check if partial part provided", async () => {
+        @collection()
+        class User {
+            constructor(
+                public name: string,
+                @val.unique()
+                public email: string
+            ) { }
+        }
+        class UserController {
+            @route.post()
+            save(user: User) { }
+        }
+        const res = await setup({
+            controller: UserController, domain: User,
+            initUser: { name: "Ketut", email: "ketut@gmail.com" },
+            testUser: { name: "Ketut", email: "ketut" }
+        })
+        expect(res.status).toBe(200)
     })
 
     it("Should return valid if data not exist", async () => {
