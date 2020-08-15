@@ -83,6 +83,12 @@ Object {
             "deduplicate": true,
           },
         ],
+        Array [
+          trackTransaction,
+          Object {
+            "deduplicate": true,
+          },
+        ],
       ],
     },
     "connect": bound connect,

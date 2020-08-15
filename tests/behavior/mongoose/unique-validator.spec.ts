@@ -13,30 +13,34 @@ Mongoose.set("useFindAndModify", false)
 
 jest.setTimeout(20000)
 
-async function setup<T extends object>({ controller, domain, initUser, testUser, method }: { controller: Class; domain: Class; initUser?: T; testUser: T; method?: HttpMethod }) {
-    const mongod = new MongoMemoryServer()
-    const httpMethod = method || "post"
-    const koa = await fixture(controller)
-        .set(new MongooseFacility({
-            uri: await mongod.getUri()
-        })).initialize()
-    koa.on("error", () => { })
-    //setup user
-    const UserModel = model(domain)
-    await UserModel.deleteMany({})
-    if (!!initUser)
-        await new UserModel(initUser).save()
-    if (httpMethod !== "post")
-        await new UserModel(testUser).save()
-    //test
-    return await supertest(koa.callback())
-    [httpMethod || "post"]("/user/save")
-        .send(testUser)
-}
+
+
 
 describe("unique validator", () => {
     beforeEach(() => Mongoose.models = {})
     afterAll(async () => await Mongoose.disconnect())
+    beforeAll(async () => {
+        const mongod = new MongoMemoryServer()
+        await Mongoose.connect(await mongod.getUri())
+    })
+
+    async function setup<T extends object>({ controller, domain, initUser, testUser, method }: { controller: Class; domain: Class; initUser?: T; testUser: T; method?: HttpMethod }) {
+        const httpMethod = method || "post"
+        const koa = await fixture(controller)
+            .set(new MongooseFacility()).initialize()
+        koa.on("error", () => { })
+        //setup user
+        const UserModel = model(domain)
+        await UserModel.deleteMany({})
+        if (!!initUser)
+            await new UserModel(initUser).save()
+        if (httpMethod !== "post")
+            await new UserModel(testUser).save()
+        //test
+        return await supertest(koa.callback())
+        [httpMethod || "post"]("/user/save")
+            .send(testUser)
+    }
 
     it("Should return invalid if data already exist", async () => {
         @collection()
