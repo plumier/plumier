@@ -1,4 +1,4 @@
-import { Class, route } from "@plumier/core"
+import { Class, route, consoleLog } from "@plumier/core"
 import { TypeORMFacility } from "@plumier/typeorm"
 import { join } from "path"
 import supertest from "supertest"
@@ -211,6 +211,24 @@ describe("TypeOrm", () => {
             await createApp([join(__dirname, "./absolute/*.ts")])
             const meta = getMetadataArgsStorage()
             expect(meta.columns.map(x => x.propertyName)).toMatchSnapshot()
+        })
+        it("Should able load entity when specified from configuration", async () => {
+            process.env.TYPEORM_CONNECTION = "sqlite"
+            process.env.TYPEORM_DATABASE = ":memory:"
+            process.env.TYPEORM_ENTITIES = "tests/behavior/typeorm/relative/*.ts"
+            process.env.TYPEORM_SYNCHRONIZE = "true"
+            class UsersController {
+                get() { }
+            }
+            await fixture(UsersController)
+                .set(new TypeORMFacility())
+                .initialize()
+            const meta = getMetadataArgsStorage()
+            expect(meta.columns.map(x => x.propertyName)).toMatchSnapshot()
+            delete process.env.TYPEORM_CONNECTION
+            delete process.env.TYPEORM_DATABASE
+            delete process.env.TYPEORM_ENTITIES
+            delete process.env.TYPEORM_SYNCHRONIZE
         })
     })
 
