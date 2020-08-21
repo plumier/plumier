@@ -1,20 +1,12 @@
-import {
-    api,
-    Class,
-    DefaultFacility,
-    findClassRecursive,
-    PlumierApplication,
-    relation,
-    RelationDecorator,
-} from "@plumier/core"
-import { GenericControllerFacility, GenericControllerFacilityOption } from "@plumier/generic-controller"
+import { api, DefaultFacility, GenericControllerDecorator, PlumierApplication, RelationDecorator } from "@plumier/core"
 import Mongoose from "mongoose"
-import reflect, { PropertyReflection } from "tinspector"
-import convert, { Result, ResultMessages, VisitorInvocation } from "typedconverter"
+import reflect from "tinspector"
+import { Result, ResultMessages, VisitorInvocation } from "typedconverter"
 
 import { getModels, MongooseHelper } from "./generator"
-import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
-import { ClassOptionDecorator, RefDecorator } from "./types"
+import { RefDecorator } from "./types"
+import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from './generic-controller'
+import pluralize from 'pluralize'
 
 interface MongooseFacilityOption { uri?: string, helper?: MongooseHelper }
 
@@ -50,6 +42,13 @@ export class MongooseFacility extends DefaultFacility {
         this.option = { ...opts }
     }
 
+    setup(app: Readonly<PlumierApplication>){
+        Object.assign(app.config, { 
+            genericController: [MongooseControllerGeneric, MongooseOneToManyControllerGeneric],
+            genericControllerNameConversion: (x:string) => pluralize(x)
+        })
+    }
+
     async initialize(app: Readonly<PlumierApplication>) {
         app.set({ typeConverterVisitors: [validateRelation] })
         const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
@@ -59,56 +58,21 @@ export class MongooseFacility extends DefaultFacility {
             else
                 await Mongoose.connect(uri)
         }
-    }
-}
-
-export class MongooseGenericControllerFacility extends GenericControllerFacility {
-    protected defaultController = MongooseControllerGeneric
-    protected defaultOneToManyController = MongooseOneToManyControllerGeneric
-
-    private static defaultOptions(opt?: Partial<GenericControllerFacilityOption>): GenericControllerFacilityOption {
         const entities = getModels()
-        if (!opt) {
-            return { entities }
-        }
-        else
-            return { entities, ...opt, }
-    }
-
-    constructor(opt?: Partial<GenericControllerFacilityOption>) {
-        super(MongooseGenericControllerFacility.defaultOptions(opt))
-    }
-
-    private assignDecorators(entity: Class, property: PropertyReflection) {
-        if (["id", "createdAt", "updatedAt"].some(x => property.name === x)) {
-            Reflect.decorate([api.readonly()], entity.prototype, property.name)
-        }
-        if (property.decorators.find((x: RefDecorator) => x.name === "MongooseRef")) {
-            if (property.typeClassification === "Array")
-                Reflect.decorate([relation(), api.readonly(), api.writeonly()], entity.prototype, property.name)
-        }
-    }
-
-    protected getEntities(entities: string | Class | Class[]): Class[] {
-        if (typeof entities === "function") {
-            const meta = reflect(entities)
-            if (!meta.decorators.find((x: ClassOptionDecorator) => x.name === "ClassOption")) return []
+        // update decorators for Open API schema
+        for (const entity of entities) {
+            const meta = reflect(entity)
+            const isGeneric = meta.decorators.find((x:GenericControllerDecorator) => x.name === "plumier-meta:controller")
             for (const property of meta.properties) {
-                this.assignDecorators(entities, property)
+                if (["id", "createdAt", "updatedAt"].some(x => property.name === x)) {
+                    Reflect.decorate([api.readonly()], entity.prototype, property.name)
+                }
+                if (isGeneric && property.decorators.find((x: RefDecorator) => x.name === "MongooseRef")) {
+                    if (property.typeClassification === "Array")
+                        Reflect.decorate([api.readonly(), api.writeonly()], entity.prototype, property.name)
+                }
             }
-            reflect(entities, { flushCache: true })
-            return [entities]
-        }
-        else if (Array.isArray(entities)) {
-            const result = []
-            for (const entity of entities) {
-                result.push(...this.getEntities(entity))
-            }
-            return result;
-        }
-        else {
-            const classes = findClassRecursive(entities, x => true).map(x => x.type)
-            return this.getEntities(classes)
+            reflect.flush(entity)
         }
     }
 }

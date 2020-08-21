@@ -151,7 +151,6 @@ describe("History Api Fallback", () => {
                 return [{
                     kind: "VirtualRoute",
                     method: "get",
-                    overridable: false,
                     provider: MyFacility,
                     url: "/other/get",
                     access: "Public"

@@ -110,10 +110,8 @@ function cleanupConsole(mocks: string[][]) {
 
 function findFilesRecursive(path: string): string[] {
     const removeExtension = (x: string) => x.replace(/\.[^/.]+$/, "")
-    if (!existsSync(path)) return []
     if (lstatSync(path).isDirectory()) {
         const files = glob.sync(`${path}/**/*+(.js|.ts)`)
-            //add root path + file name
             .map(x => removeExtension(x))
         return Array.from(new Set(files))
     }

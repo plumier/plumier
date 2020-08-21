@@ -1822,7 +1822,6 @@ describe("Open API 3.0 Generation", () => {
                     return [{
                         kind: "VirtualRoute",
                         method: "get",
-                        overridable: false,
                         provider: MyFacility,
                         url: "/other/get",
                         access: "Public"
@@ -1842,7 +1841,6 @@ describe("Open API 3.0 Generation", () => {
                     return [{
                         kind: "VirtualRoute",
                         method: "get",
-                        overridable: false,
                         provider: MyFacility,
                         url: "/other/get",
                         access: "Public",

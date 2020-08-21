@@ -6,7 +6,6 @@ import {
     generateRoutes,
     PlumierApplication,
     RouteMetadata,
-    mergeRoutes,
     RouteInfo
 } from "@plumier/core"
 import { join } from "path"
@@ -159,13 +158,12 @@ describe("Route Generator", () => {
             .expect(200)
     })
 
-    it("Should able to set metadata overridable", async () => {
-        @route.root("beast")
-        class AnimalController {
-            method() {
-            }
-        }
-        expect(generateRoutes(AnimalController, { overridable: true })).toMatchSnapshot()
+    it("Should not throw error when specify invalid directory", async () => {
+        const mock = consoleLog.startMock()
+        await fixture(join(__dirname, "not-exits"), {mode: "debug"})
+            .initialize()
+        expect(mock.mock.calls).toMatchSnapshot()
+        consoleLog.clearMock()
     })
 
     describe("GET route", () => {
@@ -1514,7 +1512,7 @@ describe("Extend Route Generator", () => {
         class MyFacility extends DefaultFacility {
             constructor(private ctl: Class) { super() }
             async generateRoutes(app: Readonly<PlumierApplication>) {
-                return generateRoutes(this.ctl)
+                return generateRoutes(this.ctl, {...app.config})
             }
         }
         const mock = consoleLog.startMock()
@@ -1535,7 +1533,6 @@ describe("Extend Route Generator", () => {
                 return [{
                     kind: "VirtualRoute",
                     method: "get",
-                    overridable: false,
                     provider: MyFacility,
                     url: "/other/get"
                 }]
@@ -1547,100 +1544,6 @@ describe("Extend Route Generator", () => {
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
-    })
-    it("Should duplicate route if non overridable", async () => {
-        class AnimalController {
-            @route.get()
-            method() { }
-        }
-        class MyFacility extends DefaultFacility {
-            constructor() { super() }
-            async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> {
-                return [{
-                    kind: "VirtualRoute",
-                    method: "get",
-                    overridable: false,
-                    provider: MyFacility,
-                    url: "/animal/method"
-                }]
-            }
-        }
-        const mock = consoleLog.startMock()
-        await fixture(AnimalController, { mode: "debug" })
-            .set(new MyFacility())
-            .initialize()
-        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
-    })
-    it("Should not duplicate route if overridable", async () => {
-        class AnimalController {
-            @route.get()
-            method() { }
-        }
-        class MyFacility extends DefaultFacility {
-            constructor() { super() }
-            async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> {
-                return [{
-                    kind: "VirtualRoute",
-                    method: "get",
-                    overridable: true,
-                    provider: MyFacility,
-                    url: "/animal/method"
-                }]
-            }
-        }
-        const mock = consoleLog.startMock()
-        await fixture(AnimalController, { mode: "debug" })
-            .set(new MyFacility())
-            .initialize()
-        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
-    })
-
-})
-
-describe("Route Merging", () => {
-    it("Should merge route properly", () => {
-        const routes = mergeRoutes([
-            <RouteInfo>{ kind: "ActionRoute", method: "post", url: "/users" },
-            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:id" },
-            <RouteInfo>{ kind: "ActionRoute", method: "put", url: "/users/:id" },
-            <RouteInfo>{ kind: "ActionRoute", method: "patch", url: "/users/:id" },
-            <RouteInfo>{ kind: "ActionRoute", method: "delete", url: "/users/:id" },
-        ])
-        expect(routes).toMatchSnapshot()
-    })
-    it("Should merge overridable route and maintain position", () => {
-        const routes = mergeRoutes([
-            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:id", access: "Public" },
-            <RouteInfo>{ kind: "ActionRoute", method: "post", url: "/users" },
-            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:id", overridable: true },
-        ])
-        expect(routes).toMatchSnapshot()
-    })
-    it("Should merge nested routes", () => {
-        const routes = mergeRoutes([
-            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:userId/animals/:animalId", access: "Public" },
-            <RouteInfo>{ kind: "ActionRoute", method: "post", url: "/users" },
-            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:userId/animals/:animalId", overridable: true },
-        ])
-        expect(routes).toMatchSnapshot()
-    })
-    it("Should ignore parameter name", () => {
-        const routes = mergeRoutes([
-            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:userId/animals/:animalId", access: "Public" },
-            <RouteInfo>{ kind: "ActionRoute", method: "post", url: "/users" },
-            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:pid/animals/:id", overridable: true },
-        ])
-        expect(routes).toMatchSnapshot()
-    })
-    it("Should keep duplicate if not overridable", () => {
-        const routes = mergeRoutes([
-            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:id", access: "Public" },
-            <RouteInfo>{ kind: "ActionRoute", method: "post", url: "/users" },
-            <RouteInfo>{ kind: "ActionRoute", method: "get", url: "/users/:id" },
-        ])
-        expect(routes).toMatchSnapshot()
     })
 })
 
@@ -1755,18 +1658,6 @@ describe("Route Grouping", () => {
             .set({ controller: "./controller" })
             .set(new ControllerFacility({ controller: "./nested/api/v1", group: "v1", rootPath: "api/v1" }))
             .set(new ControllerFacility({ controller: "./nested/api/v2", group: "v2", rootPath: "api/v2" }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-        consoleLog.clearMock()
-    })
-    it("Should able to make endpoint overridable", async () => {
-        class AnimalController {
-            method() { }
-        }
-        const mock = consoleLog.startMock()
-        await createApp()
-            .set({ controller: AnimalController })
-            .set(new ControllerFacility({ controller: AnimalController, overridable: true }))
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
         consoleLog.clearMock()

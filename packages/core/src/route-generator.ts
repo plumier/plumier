@@ -1,8 +1,10 @@
 import { ClassReflection, MethodReflection, reflect } from "tinspector"
 
 import { Class, findFilesRecursive } from "./common"
-import { HttpMethod, RouteInfo, RouteMetadata } from "./types"
-
+import { createGenericControllers, genericControllerRegistry, DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from "./generic-controller"
+import { GenericController, HttpMethod, RouteInfo, RouteMetadata } from "./types"
+import { x, exist } from '@hapi/joi'
+import { existsSync } from 'fs-extra'
 
 
 // --------------------------------------------------------------------- //
@@ -12,7 +14,13 @@ import { HttpMethod, RouteInfo, RouteMetadata } from "./types"
 interface RouteDecorator { name: "plumier-meta:route", method: HttpMethod, url?: string }
 interface IgnoreDecorator { name: "plumier-meta:ignore", action?: string | string[] }
 interface RootDecorator { name: "plumier-meta:root", url: string }
-interface TransformOption { rootPath?: string, overridable: boolean, group?: string, directoryAsPath?: boolean }
+interface TransformOption {
+   rootPath?: string,
+   group?: string,
+   directoryAsPath?: boolean,
+   genericController?: GenericController
+   genericControllerNameConversion?: (x: string) => string
+}
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- HELPERS --------------------------------------- */
@@ -49,15 +57,14 @@ function getRoot(rootPath: string, path: string) {
    return (part.length === 0) ? undefined : appendRoute(...part)
 }
 
-function findClassRecursive(path: string, criteria: ((x: ClassReflection) => boolean)) {
+function findClassRecursive(path: string) {
    //read all files and get module reflection
    const files = findFilesRecursive(path)
    const result = []
    for (const file of files) {
       const root = getRoot(path, file) ?? ""
       for (const member of (reflect(file).members as ClassReflection[])) {
-         if (member.kind === "Class" && criteria(member))
-            result.push({ root, type: member.type })
+         result.push({ root, type: member.type })
       }
    }
    return result
@@ -80,9 +87,9 @@ function transformDecorator(root: string, actionName: string, actionDecorator: {
    }
 }
 
-function transformMethodWithDecorator(root: string, controller: ClassReflection, method: MethodReflection, overridable: boolean, group?: string): RouteInfo[] {
+function transformMethodWithDecorator(root: string, controller: ClassReflection, method: MethodReflection, group?: string): RouteInfo[] {
    if (method.decorators.some((x: IgnoreDecorator) => x.name == "plumier-meta:ignore")) return []
-   const result = { kind: "ActionRoute" as "ActionRoute", group, action: method, controller, overridable }
+   const result = { kind: "ActionRoute" as "ActionRoute", group, action: method, controller }
    const infos: RouteInfo[] = []
    for (const decorator of (method.decorators.slice().reverse() as RouteDecorator[])) {
       if (decorator.name === "plumier-meta:route")
@@ -95,14 +102,13 @@ function transformMethodWithDecorator(root: string, controller: ClassReflection,
    return infos
 }
 
-function transformMethod(root: string, controller: ClassReflection, method: MethodReflection, overridable: boolean, group?: string): RouteInfo[] {
+function transformMethod(root: string, controller: ClassReflection, method: MethodReflection, group?: string): RouteInfo[] {
    return [{
       kind: "ActionRoute",
       group, method: "get",
       url: appendRoute(root, method.name),
       controller,
-      action: method,
-      overridable
+      action: method
    }]
 }
 
@@ -110,10 +116,14 @@ function isController(meta: ClassReflection) {
    return !!meta.name.match(/controller$/i) || !!meta.decorators.find((x: RootDecorator) => x.name === "plumier-meta:root")
 }
 
-function transformController(object: Class, opt: TransformOption) {
+function isGenericController(meta: ClassReflection) {
+   const cache = genericControllerRegistry.get(meta.type)
+   return !!cache
+}
+
+function transformController(object: Class, opt: Required<TransformOption>) {
    const controller = reflect(object)
-   if (!isController(controller)) return []
-   const rootRoutes = getRootRoutes(opt && opt.rootPath || "", controller)
+   const rootRoutes = getRootRoutes(opt.rootPath, controller)
    const infos: RouteInfo[] = []
    // check for class @route.ignore()
    const ignoreDecorator = controller.decorators.find((x: IgnoreDecorator): x is IgnoreDecorator => x.name === "plumier-meta:ignore")
@@ -127,83 +137,65 @@ function transformController(object: Class, opt: TransformOption) {
          // if method in ignored list then skip
          if (ignoredMethods.some(x => x === method.name)) continue
          if (method.decorators.some((x: IgnoreDecorator | RouteDecorator) => x.name == "plumier-meta:ignore" || x.name == "plumier-meta:route"))
-            infos.push(...transformMethodWithDecorator(ctl, controller, method, opt.overridable, opt.group))
+            infos.push(...transformMethodWithDecorator(ctl, controller, method, opt.group))
          else
-            infos.push(...transformMethod(ctl, controller, method, opt.overridable, opt.group))
+            infos.push(...transformMethod(ctl, controller, method, opt.group))
       }
    }
    return infos
 }
 
-function transformModule(path: string, opt: TransformOption): RouteInfo[] {
-   const types = findClassRecursive(path, isController)
-   const infos: RouteInfo[] = []
-   for (const type of types) {
-      const rootPath = opt.directoryAsPath ? appendRoute(opt.rootPath ?? "", type.root) : opt.rootPath ?? ""
-      infos.push(...transformController(type.type, { ...opt, rootPath }))
-   }
-   return infos
-}
-
-function generateRoutes(controller: string | Class[] | Class, option: TransformOption = { overridable: false }): RouteMetadata[] {
-   const opt = { ...option, directoryAsPath: option.directoryAsPath ?? true }
-   let routes: RouteInfo[] = []
+function extractController(controller: string | Class[] | Class, option: Required<TransformOption>): { root: string, type: Class }[] {
    if (typeof controller === "string") {
-      routes = transformModule(controller, opt)
+      if (!existsSync(controller)) return []
+      const types = findClassRecursive(controller)
+      const result = []
+      for (const type of types) {
+         const ctl = extractController(type.type, option)
+         result.push(...ctl.map(x => ({
+            root: option.directoryAsPath ? type.root : "",
+            type: x.type
+         })))
+      }
+      return result
    }
    else if (Array.isArray(controller)) {
-      routes = controller.map(x => transformController(x, opt))
-         .flatten()
+      const result = []
+      for (const item of controller) {
+         const ctl = extractController(item, option)
+         result.push(...ctl)
+      }
+      return result
    }
-   else {
-      routes = transformController(controller, opt)
+   const meta = reflect(controller)
+   // common controller
+   if (isController(meta)) return [{ root: "", type: controller }]
+   // entity marked with generic controller
+   if (isGenericController(meta)) {
+      return createGenericControllers(controller, option.genericController, option.genericControllerNameConversion)
+         .map(type => ({ root: "", type }))
+   }
+   return []
+}
+
+function generateRoutes(controller: string | Class[] | Class, option?: TransformOption): RouteMetadata[] {
+   const opt: Required<TransformOption> = {
+      genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric],
+      genericControllerNameConversion: (x: string) => x,
+      group: undefined as any, rootPath: "",
+      directoryAsPath: true,
+      ...option
+   }
+   const controllers = extractController(controller, opt)
+   let routes: RouteInfo[] = []
+   for (const controller of controllers) {
+      routes.push(...transformController(controller.type, {
+         ...opt,
+         rootPath: appendRoute(controller.root, opt.rootPath)
+      }))
    }
    return routes
 }
 
-// --------------------------------------------------------------------- //
-// ---------------------------- MERGE ROUTES --------------------------- //
-// --------------------------------------------------------------------- //
-
-function createKey(route: RouteMetadata) {
-   // create unique key for route
-   // post users/:userId/animals = post users/:pid/animals
-   // post users/:userId !== post users/:userId/animals
-   // replace any :param into :par
-   const newUrl = route.url.replace(/:\w*\d*/g, ":par")
-   return `${route.method}${newUrl}`
-}
-
-function findDupe(routes: RouteMetadata[], key: string, margin: number): RouteMetadata | undefined {
-   for (let i = 0; i < margin; i++) {
-      const route = routes[i]
-      const curKey = createKey(route)
-      if (curKey === key) return route;
-   }
-}
-
-function mergeRoutes(routes: RouteMetadata[]) {
-   const skip: { [key: string]: true } = {}
-   const result = []
-   // loop routes from bottom to the top
-   // move duplicate routes (overridable) at the top of collection 
-   // into the appropriate location at the bottom
-   // intended to group similar routes
-   for (let i = routes.length - 1; i >= 0; i--) {
-      const route = routes[i]
-      const curKey = createKey(route)
-      if (skip[curKey]) continue;
-      if (route.overridable) {
-         const replace = findDupe(routes, curKey, i)
-         if (replace) skip[curKey] = true
-         result.unshift(replace ?? route)
-      }
-      else {
-         result.unshift(route)
-      }
-   }
-   return result
-}
-
-export { generateRoutes, RouteDecorator, IgnoreDecorator, RootDecorator, mergeRoutes, appendRoute, findClassRecursive }
+export { generateRoutes, RouteDecorator, IgnoreDecorator, RootDecorator, appendRoute, findClassRecursive }
 

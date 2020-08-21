@@ -1,15 +1,16 @@
-import { Class, val } from "@plumier/core"
 import {
+    Class,
+    getGenericControllerOneToOneRelations,
     OneToManyRepository,
     RepoBaseControllerGeneric,
     RepoBaseOneToManyControllerGeneric,
     Repository,
-    getOneToOneRelations,
-} from "@plumier/generic-controller"
+    val,
+} from "@plumier/core"
 import mongoose, { Document, Model } from "mongoose"
 import { generic } from "tinspector"
 
-import { MongooseHelper, globalHelper } from "./generator"
+import { globalHelper, MongooseHelper } from "./generator"
 
 class MongooseRepository<T> implements Repository<T>{
     readonly Model: Model<T & Document>
@@ -17,7 +18,7 @@ class MongooseRepository<T> implements Repository<T>{
     constructor(type: Class<T>, helper?: MongooseHelper) {
         const hlp = helper ?? globalHelper
         this.Model = hlp.model(type)
-        this.oneToOneRelations = getOneToOneRelations(type).map(x => x.name)
+        this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
     find(offset: number, limit: number, query: Partial<T>): Promise<(T & mongoose.Document)[]> {
@@ -60,7 +61,7 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         const hlp = helper ?? globalHelper
         this.Model = hlp.model(type)
         this.ParentModel = hlp.model(parent)
-        this.oneToOneRelations = getOneToOneRelations(type).map(x => x.name)
+        this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
     async find(pid: string, offset: number, limit: number, query: Partial<T>): Promise<(T & mongoose.Document)[]> {
@@ -87,7 +88,7 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
     }
 
     findById(id: any): Promise<(T & mongoose.Document) | undefined> {
-        const q = this.Model.findById(id) 
+        const q = this.Model.findById(id)
         for (const prop of this.oneToOneRelations) {
             q.populate(prop)
         }

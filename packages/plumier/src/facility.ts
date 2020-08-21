@@ -41,7 +41,7 @@ export class WebApiFacility extends DefaultFacility {
     async generateRoutes(app: Readonly<PlumierApplication>) {
         const { controller, rootDir } = app.config
         let ctl = typeof controller === "string" && !isAbsolute(controller) ? join(rootDir, controller) : controller
-        return generateRoutes(ctl, { overridable: false })
+        return generateRoutes(ctl, { ...app.config })
     }
 
     setup(app: Readonly<PlumierApplication>) {
@@ -144,11 +144,6 @@ export interface ControllerFacilityOption {
     controller: string | Class | Class[],
 
     /**
-     * Check if route can be overridden by next controller facility, default false
-     */
-    overridable?: boolean
-
-    /**
      * Transform nested directories as route path, default true
      */
     directoryAsPath?: boolean
@@ -164,10 +159,8 @@ export class ControllerFacility extends DefaultFacility {
         const controller = this.option.controller
         let ctl = typeof controller === "string" && !isAbsolute(controller) ? join(rootDir, controller) : controller
         return generateRoutes(ctl, {
-            overridable: this.option.overridable ?? false,
-            group: this.option.group,
-            rootPath: this.option.rootPath,
-            directoryAsPath: this.option.directoryAsPath
+            ...app.config,
+            ...this.option
         })
     }
 }

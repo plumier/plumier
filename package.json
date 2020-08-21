@@ -17,7 +17,8 @@
 		"doc:build": "cd website && yarn build",
 		"social:start": "ts-node -r tsconfig-paths/register tests/manual/social-login-test/index.ts",
 		"typeorm:start": "ts-node-script -r tsconfig-paths/register tests/manual/typeorm/index.ts",
-		"swagger:start": "ts-node -r tsconfig-paths/register tests/manual/swagger/index.ts"
+		"swagger:start": "ts-node -r tsconfig-paths/register tests/manual/swagger/index.ts",
+		"type-check": "tsc --noEmit"
 	},
 	"author": "Ketut Sandiarsa",
 	"devDependencies": {

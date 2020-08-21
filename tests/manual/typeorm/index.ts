@@ -6,7 +6,7 @@ import reflect from "tinspector"
 
 
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from "typeorm"
-import { TypeORMFacility, TypeORMGenericControllerFacility } from '@plumier/typeorm'
+import { TypeORMFacility } from '@plumier/typeorm'
 
 
 @Entity()
@@ -42,6 +42,5 @@ new Plumier()
             logging: false
         }
     }))
-    .set(new TypeORMGenericControllerFacility())
     .set(new SwaggerFacility())
     .listen(8000)
