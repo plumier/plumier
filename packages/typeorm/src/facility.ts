@@ -10,8 +10,8 @@ import {
     RelationDecorator,
     api,
     findFilesRecursive,
+    genericControllerRegistry,
 } from "@plumier/core"
-import { GenericControllerFacility, GenericControllerFacilityOption } from "@plumier/generic-controller"
 import reflect, { noop } from "tinspector"
 import { Result, ResultMessages, VisitorInvocation } from "typedconverter"
 import { ConnectionOptions, createConnection, getMetadataArgsStorage, getConnectionOptions, EntitySchema } from "typeorm"
@@ -21,6 +21,7 @@ import glob from "glob"
 
 
 import { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
+import pluralize from 'pluralize'
 
 interface TypeORMFacilityOption {
     connection?: ConnectionOptions
@@ -88,14 +89,13 @@ async function loadEntities(connection?: ConnectionOptions) {
 }
 
 class TypeORMFacility extends DefaultFacility {
-    protected entities: Class[] = []
     private option: TypeORMFacilityOption;
     constructor(opt?: TypeORMFacilityOption) {
         super()
         this.option = { ...opt }
     }
 
-    async generateRoutes(app: Readonly<PlumierApplication>) {
+    async preInitialize(app: Readonly<PlumierApplication>) {
         // set type converter module to allow updating relation by id
         app.set({ typeConverterVisitors: [validateRelation] })
         // load all entities to be able to take the metadata storage
@@ -111,16 +111,28 @@ class TypeORMFacility extends DefaultFacility {
             const rawType: Class = (col as any).type()
             const type = col.relationType === "one-to-many" || col.relationType === "many-to-many" ? [rawType] : rawType
             Reflect.decorate([reflect.type(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
-            if (col.relationType === "many-to-one")
+            if (col.relationType === "many-to-one") {
+                // TODO
                 Reflect.decorate([relation({ inverse: true })], (col.target as Function).prototype, col.propertyName, void 0)
-            else
+            }
+            else {
+                const cache = genericControllerRegistry.get(rawType)
+                // if entity handled with generic controller then hide all one to many relation
+                if (cache)
+                    Reflect.decorate([api.readonly(), api.writeonly()], (col.target as Function).prototype, col.propertyName, void 0)
                 Reflect.decorate([relation()], (col.target as Function).prototype, col.propertyName, void 0)
+            }
         }
-        this.entities = storage.tables.filter(x => typeof x.target !== "string").map(x => x.target as Class)
-        return []
     }
 
-    async initialize() {
+    setup(app: Readonly<PlumierApplication>){
+        Object.assign(app.config, { 
+            genericController: [TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric],
+            genericControllerNameConversion: (x:string) => pluralize(x)
+        })
+    }
+
+    async initialize(app: Readonly<PlumierApplication>) {
         if (this.option.connection)
             await createConnection(this.option.connection)
         else
@@ -128,47 +140,6 @@ class TypeORMFacility extends DefaultFacility {
     }
 }
 
-const notDefined = "plum-meta:not-defined"
-
-class TypeORMGenericControllerFacility extends GenericControllerFacility {
-    protected defaultController = TypeORMControllerGeneric
-    protected defaultOneToManyController = TypeORMOneToManyControllerGeneric
-
-
-    constructor(opt?: Partial<GenericControllerFacilityOption>) {
-        super({ entities: notDefined, ...opt })
-    }
-
-    protected getEntities(entities: string | Class | Class[]): Class[] {
-        if (typeof entities === "function") {
-            const storage = getMetadataArgsStorage();
-            if (!storage.tables.some(x => x.target === entities)) return []
-            const col = storage.relations.find(x => x.target === entities)
-            if (col && ["one-to-many", "many-to-many", "many-to-one"].some(x => col.relationType === x)) {
-                // set relation to readonly and writeonly and should be populated using API /parent/pid/child
-                Reflect.decorate([api.readonly(), api.writeonly()], (col.target as Function).prototype, col.propertyName, void 0)
-            }
-            return [entities]
-        }
-        else if (Array.isArray(entities)) {
-            const result = []
-            for (const entity of entities) {
-                result.push(...this.getEntities(entity))
-            }
-            return result;
-        }
-        else if (entities.endsWith(notDefined)) {
-            const meta = getMetadataArgsStorage()
-            const tables = meta.tables.map(x => x.target as Class)
-            return this.getEntities(tables)
-        }
-        else {
-            const classes = findClassRecursive(entities, x => true).map(x => x.type)
-            return this.getEntities(classes)
-        }
-    }
-}
-
-export { TypeORMFacility, TypeORMGenericControllerFacility }
+export { TypeORMFacility }
 
 

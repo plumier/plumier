@@ -391,7 +391,6 @@ export class OAuthProviderBaseFacility extends DefaultFacility {
             provider: this.constructor as Class,
             url: this.loginEndpoint,
             access: "Public",
-            overridable: false,
             openApiOperation: {
                 description: `Redirect request to ${this.option.provider} login page. This endpoint writes CSRF token on the client required to generate ${this.option.provider} login endpoint`,
                 tags: ["Social Login"],

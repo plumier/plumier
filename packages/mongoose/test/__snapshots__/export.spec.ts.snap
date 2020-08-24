@@ -5,7 +5,6 @@ Object {
   "CanNotValidateNonProperty": "MONG1002: @val.unique() only can be applied on property",
   "MongooseControllerGeneric": MongooseControllerGeneric,
   "MongooseFacility": MongooseFacility,
-  "MongooseGenericControllerFacility": MongooseGenericControllerFacility,
   "MongooseHelper": MongooseHelper,
   "MongooseOneToManyControllerGeneric": MongooseOneToManyControllerGeneric,
   "MongooseOneToManyRepository": MongooseOneToManyRepository,

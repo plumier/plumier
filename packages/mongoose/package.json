@@ -16,7 +16,6 @@
   "dependencies": {
     "@types/pluralize": "^0.0.29",
     "@plumier/core": "1.0.0-rc.2",
-    "@plumier/generic-controller": "1.0.0-rc.2",
     "@types/mongoose": "^5.7.34",
     "chalk": "^4.1.0",
     "mongoose": "^5.9.27",

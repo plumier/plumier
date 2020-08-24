@@ -5,7 +5,6 @@ import {
     DefaultDependencyResolver,
     Facility,
     hasKeyOf,
-    mergeRoutes,
     Middleware,
     MiddlewareFunction,
     PlumierApplication,
@@ -63,13 +62,16 @@ export class Plumier implements PlumierApplication {
             //module.parent.parent.filename -> because Plumier app also exported in plumier/src/index.ts
             if (this.config.rootDir === "__UNSET__")
                 (this.config as Configuration).rootDir = dirname(module.parent!.parent!.filename)
+            //pre initialize
+            for (const facility of this.config.facilities) {
+                await facility.preInitialize(this)
+            }
             //generate routes 
-            const rawRoutes: RouteMetadata[] = []
+            const routes: RouteMetadata[] = []
             for (const facility of this.config.facilities) {
                 const genRoutes = await facility.generateRoutes(this)
-                rawRoutes.push(...genRoutes)
+                routes.push(...genRoutes)
             }
-            const routes = mergeRoutes(rawRoutes)
             // update authorization access on route.access property
             updateRouteAuthorizationAccess(routes, this.config)
             //run initialize

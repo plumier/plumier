@@ -253,7 +253,6 @@ Array [
           "Social Login",
         ],
       },
-      "overridable": false,
       "provider": FakeOAuth2Facility,
       "url": "/auth/mazebook/login",
     },

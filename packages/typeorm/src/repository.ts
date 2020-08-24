@@ -1,5 +1,4 @@
-import { Class } from "@plumier/core"
-import { OneToManyRepository, Repository, getOneToOneRelations } from "@plumier/generic-controller"
+import { Class, OneToManyRepository, Repository, getGenericControllerOneToOneRelations } from "@plumier/core"
 import { getManager, Repository as NativeRepository } from "typeorm"
 
 class TypeORMRepository<T> implements Repository<T> {
@@ -7,7 +6,7 @@ class TypeORMRepository<T> implements Repository<T> {
     protected readonly oneToOneRelations: string[]
     constructor(type: Class<T>) {
         this.nativeRepository = getManager().getRepository(type)
-        this.oneToOneRelations = getOneToOneRelations(type).map(x => x.name)
+        this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
     find(offset: number, limit: number, query: Partial<T>): Promise<T[]> {
@@ -44,7 +43,7 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
         this.nativeParentRepository = getManager().getRepository(parent)
         const join = this.nativeParentRepository.metadata.relations.find(x => x.propertyName === this.relation)
         this.inversePropertyName = join!.inverseSidePropertyPath;
-        this.oneToOneRelations = getOneToOneRelations(type).map(x => x.name)
+        this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
     async find(pid: any, offset: number, limit: number, query: Partial<T>): Promise<T[]> {

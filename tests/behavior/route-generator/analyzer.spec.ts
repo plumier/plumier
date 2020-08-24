@@ -82,47 +82,6 @@ describe("Route Analyzer", () => {
         consoleLog.clearMock()
     })
 
-    it("Should identify duplicate route from other facility if not overrideable", async () => {
-        class BeastController {
-            @route.get()
-            method(a: number) { }
-        }
-        class MyFacility extends DefaultFacility {
-            async generateRoutes(): Promise<RouteMetadata[]> {
-                return [<VirtualRoute>{ kind: "VirtualRoute", method: "get", overridable: false, provider: MyFacility, url: "/beast/method" }]
-            }
-        }
-        const mock = consoleLog.startMock()
-        const app = await new Plumier()
-            .set(new RestfulApiFacility())
-            .set(new MyFacility())
-            .set({ controller: [BeastController] })
-            .initialize()
-        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
-    })
-
-    it("Should not detect duplicate route if overridable", async () => {
-        class BeastController {
-            otherMethod() { }
-            @route.get()
-            method(a: number) { }
-        }
-        class MyFacility extends DefaultFacility {
-            async generateRoutes(): Promise<RouteMetadata[]> {
-                return [<VirtualRoute>{ kind: "VirtualRoute", method: "get", overridable: true, provider: MyFacility, url: "/beast/method" }]
-            }
-        }
-        const mock = consoleLog.startMock()
-        const app = await new Plumier()
-            .set(new RestfulApiFacility())
-            .set(new MyFacility())
-            .set({ controller: [BeastController] })
-            .initialize()
-        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
-    })
-
     it("Should identify if model doesn't have type information for parameter binding", async () => {
         class AnimalModel {
             constructor(
