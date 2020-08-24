@@ -3,7 +3,13 @@ import { copyFile } from "fs"
 import { Server } from "http"
 import Koa, { Context } from "koa"
 import { extname, join } from "path"
-import reflect, { ClassReflection, decorateClass, MethodReflection, PropertyReflection, ParameterReflection, GenericTypeDecorator } from "tinspector"
+import reflect, {
+    ClassReflection,
+    decorateClass,
+    MethodReflection,
+    ParameterReflection,
+    PropertyReflection,
+} from "tinspector"
 import { VisitorExtension } from "typedconverter"
 import { promisify } from "util"
 
