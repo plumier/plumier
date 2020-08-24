@@ -1497,6 +1497,16 @@ describe("Router with external controller", () => {
         expect((console.log as any).mock.calls[2][0]).toContain("No controller found")
         consoleLog.clearMock()
     })
+
+    it("Should not error when provided files with mix types", async () => {
+        consoleLog.startMock()
+        const app = await new Plumier()
+            .set(new RestfulApiFacility())
+            .set({ controller: "mix-types" })
+            .initialize()
+        expect((console.log as any).mock.calls[2][0]).toContain("/users/save")
+        consoleLog.clearMock()
+    })
 })
 
 describe("Extend Route Generator", () => {

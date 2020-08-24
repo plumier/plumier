@@ -67,8 +67,9 @@ function findClassRecursive(path: string) {
    const result = []
    for (const file of files) {
       const root = getRoot(path, file) ?? ""
-      for (const member of (reflect(file).members as ClassReflection[])) {
-         result.push({ root, type: member.type })
+      for (const member of reflect(file).members) {
+         if (member.kind === "Class")
+            result.push({ root, type: member.type })
       }
    }
    return result
