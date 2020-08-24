@@ -3,7 +3,7 @@ import { copyFile } from "fs"
 import { Server } from "http"
 import Koa, { Context } from "koa"
 import { extname, join } from "path"
-import reflect, { ClassReflection, decorateClass, MethodReflection, PropertyReflection, ParameterReflection } from "tinspector"
+import reflect, { ClassReflection, decorateClass, MethodReflection, PropertyReflection, ParameterReflection, GenericTypeDecorator } from "tinspector"
 import { VisitorExtension } from "typedconverter"
 import { promisify } from "util"
 
@@ -97,7 +97,6 @@ export interface RouteInfo {
     method: HttpMethod
     action: MethodReflection
     controller: ClassReflection
-    overridable: boolean
     access?: string
 }
 
@@ -107,7 +106,6 @@ export interface VirtualRoute {
     url: string
     method: HttpMethod
     provider: Class
-    overridable: boolean
     access?: string
     openApiOperation?: any
 }
@@ -122,12 +120,14 @@ export type RouteAnalyzerFunction = (route: RouteMetadata, allRoutes: RouteMetad
 export interface Facility {
     generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]>
     setup(app: Readonly<PlumierApplication>): void
+    preInitialize(app: Readonly<PlumierApplication>): Promise<void>
     initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]): Promise<void>
 }
 
 export class DefaultFacility implements Facility {
     async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> { return [] }
-    setup(app: Readonly<PlumierApplication>) { }
+    setup(app: Readonly<PlumierApplication>):void { }
+    async preInitialize(app: Readonly<PlumierApplication>) { }
     async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]) { }
 }
 
@@ -354,6 +354,41 @@ export class FormFile {
 }
 
 // --------------------------------------------------------------------- //
+// ------------------------- GENERIC CONTROLLER ------------------------ //
+// --------------------------------------------------------------------- //
+
+export interface RelationPropertyDecorator { kind: "plumier-meta:relation-prop-name", name: string }
+
+export type GenericController = [Class<ControllerGeneric>, Class<OneToManyControllerGeneric>]
+
+export interface Repository<T> {
+    find(offset: number, limit: number, query: Partial<T>): Promise<T[]>
+    insert(data: Partial<T>): Promise<{ id: any }>
+    findById(id: any): Promise<T | undefined>
+    update(id: any, data: Partial<T>): Promise<{ id: any }>
+    delete(id: any): Promise<{ id: any }>
+}
+
+export interface OneToManyRepository<P, T> {
+    find(pid: any, offset: number, limit: number, query: Partial<T>): Promise<T[]>
+    insert(pid: any, data: Partial<T>): Promise<{ id: any }>
+    findParentById(id: any): Promise<P | undefined>
+    findById(id: any): Promise<T | undefined>
+    update(id: any, data: Partial<T>): Promise<{ id: any }>
+    delete(id: any): Promise<{ id: any }>
+}
+
+export abstract class ControllerGeneric<T = any, TID = any> {
+    abstract readonly entityType: Class<T>
+}
+
+export abstract class OneToManyControllerGeneric<P = any, T = any, PID = any, TID = any> {
+    abstract readonly entityType: Class<T>
+    abstract readonly parentEntityType: Class<P>
+    abstract readonly relation: string
+}
+
+// --------------------------------------------------------------------- //
 // --------------------------- CONFIGURATION --------------------------- //
 // --------------------------------------------------------------------- //
 
@@ -421,6 +456,17 @@ export interface Configuration {
      * to appropriate request properties: ip, protocol, host
      */
     trustProxyHeader: boolean
+
+    /**
+     * Implementation of generic controllers, first tuple for simple controller, second tuple for one to many controller
+     */
+    genericController?: GenericController
+
+    /**
+     * Generic controller name conversion to make plural route
+     */
+
+     genericControllerNameConversion?: (x:string) => string
 }
 
 export interface PlumierConfiguration extends Configuration {
@@ -554,8 +600,9 @@ export namespace errorMessage {
     export const ActionParameterDoesNotHaveTypeInfo = "PLUM1004: Parameter binding skipped because action parameters doesn't have type information in ({0})"
     export const ModelWithoutTypeInformation = "PLUM1005: Parameter binding skipped because {0} doesn't have type information on its properties"
     export const ArrayWithoutTypeInformation = "PLUM1006: Parameter binding skipped because array element doesn't have type information in ({0})"
-    export const PropertyWithoutTypeInformation = "PLUM1008: Parameter binding skipped because property doesn't have type information in ({0})"
     export const PublicNotInParameter = "PLUM1007: @authorize.public() can not be applied to parameter"
+    export const PropertyWithoutTypeInformation = "PLUM1008: Parameter binding skipped because property doesn't have type information in ({0})"
+    export const GenericControllerImplementationNotFound = "PLUM1009: Generic controller implementation not installed"
 
     //PLUM2XXX internal app error
     export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate {0}. Domain model should not throw error inside constructor`

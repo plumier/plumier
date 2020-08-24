@@ -6,7 +6,7 @@ export { AuthorizerFunction, checkAuthorize, RoleField, Authorizer, CustomAuthor
 export { HeaderPart, RequestPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction } from "./binder";
 export { invoke } from "./application-pipeline";
 export { response } from "./response";
-export { generateRoutes, mergeRoutes, findClassRecursive, appendRoute, IgnoreDecorator, RouteDecorator } from "./route-generator";
+export { generateRoutes, findClassRecursive, appendRoute, IgnoreDecorator, RouteDecorator } from "./route-generator";
 export { analyzeRoutes, printAnalysis } from "./route-analyzer";
 export { router } from "./router";
 export { Class, consoleLog, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass, printTable, toBoolean, cleanupConsole, ellipsis, analyzeModel, AnalysisMessage, entityHelper } from "./common";
@@ -14,17 +14,22 @@ export { AuthDecoratorImpl, authorize } from "./decorator/authorize";
 export { ApiDescriptionDecorator, ApiEnumDecorator, ApiFieldNameDecorator, ApiRequiredDecorator, ApiResponseDecorator, ApiTagDecorator, api, ApiReadOnlyDecorator, ApiWriteOnlyDecorator } from "./decorator/api"
 export { bind } from "./decorator/bind";
 export { domain, middleware } from "./decorator/common";
-export { route, RouteDecoratorImpl } from "./decorator/route";
+export { route, RouteDecoratorImpl, GenericControllerDecorator } from "./decorator/route";
 export { rest, RestDecoratorImpl } from "./decorator/rest";
 export { EntityIdDecorator, RelationDecorator, primaryId, relation } from "./decorator/entity";
-export { HttpStatus } from "./http-status";
-export { validate, ValidatorMiddleware, CustomValidator, ValidatorDecorator, CustomValidatorFunction,AsyncValidatorResult, ValidatorContext, } from "./validator"
 export {
-    ActionResult, Application, Configuration, DefaultFacility, 
-    DependencyResolver, Facility,  HttpMethod, HttpStatusError, Invocation, KoaMiddleware,
+    DefaultControllerGeneric, DefaultOneToManyControllerGeneric, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
+    IdentifierResult, getGenericControllerOneToOneRelations, genericControllerRegistry, DefaultOneToManyRepository, DefaultRepository
+} from "./generic-controller"
+export { HttpStatus } from "./http-status";
+export { validate, ValidatorMiddleware, CustomValidator, ValidatorDecorator, CustomValidatorFunction, AsyncValidatorResult, ValidatorContext, } from "./validator"
+export {
+    ActionResult, Application, Configuration, DefaultFacility,
+    DependencyResolver, Facility, HttpMethod, HttpStatusError, Invocation, KoaMiddleware,
     Middleware, MiddlewareFunction, MiddlewareDecorator, MiddlewareUtil, PlumierApplication, PlumierConfiguration, RedirectActionResult,
-    ActionContext, RouteInfo, RouteAnalyzerFunction, RouteAnalyzerIssue, 
+    ActionContext, RouteInfo, RouteAnalyzerFunction, RouteAnalyzerIssue,
     ValidationError, errorMessage, DefaultDependencyResolver,
     CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie,
-    Metadata, GlobalMetadata, Omit, Optional, RouteMetadata, VirtualRoute
+    Metadata, GlobalMetadata, Omit, Optional, RouteMetadata, VirtualRoute,
+    GenericController, ControllerGeneric, OneToManyControllerGeneric, Repository, OneToManyRepository
 } from "./types";

@@ -1,20 +1,18 @@
-import { Class, Configuration, consoleLog, val } from "@plumier/core"
+import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from "@plumier/core"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
     TypeORMControllerGeneric,
     TypeORMFacility,
-    TypeORMGenericControllerFacility,
     TypeORMOneToManyControllerGeneric,
     TypeORMOneToManyRepository,
-    TypeORMRepository
+    TypeORMRepository,
 } from "@plumier/typeorm"
-import { join } from "path"
 import supertest from "supertest"
 import { generic } from "tinspector"
-import { Column, Entity, getManager, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, JoinColumn } from "typeorm"
+import { Column, Entity, getManager, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm"
+
 import { cleanup, getConn } from "./helper"
-import { fixture } from '../helper'
 
 
 jest.setTimeout(20000)
@@ -23,146 +21,18 @@ afterEach(async () => {
     await cleanup()
 });
 
-describe("Facility", () => {
-    function createApp(entities?: (string | Function)[]) {
-        return new Plumier()
-            .set(new WebApiFacility())
-            .set(new TypeORMFacility({ connection: getConn(entities) }))
-    }
-    afterEach(() => consoleLog.clearMock())
-    it("Should load default models if no option specified", async () => {
-        @Entity()
-        class Animal {
-            @PrimaryGeneratedColumn()
-            id: number
-            @Column()
-            name: string
-        }
-        const mock = consoleLog.startMock()
-        await createApp([Animal])
-            .set(new TypeORMGenericControllerFacility())
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-    it("Should not generate model if not registered as TypeORM model", async () => {
-        @Entity()
-        class Tag {
-            @PrimaryGeneratedColumn()
-            id: number
-            @Column()
-            name: string
-        }
-        //@Entity() <-- not registered
-        class Animal {
-            @PrimaryGeneratedColumn()
-            id: number
-            @Column()
-            name: string
-        }
-        const mock = consoleLog.startMock()
-        await createApp([Tag])
-            .set(new TypeORMGenericControllerFacility({ entities: Animal }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-    it("Should able to load external model", async () => {
-        const mock = consoleLog.startMock()
-        await createApp([join(__dirname, "./absolute")])
-            .set(new TypeORMGenericControllerFacility({ entities: join(__dirname, "./absolute") }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-    it("Should able to load external model using relative path", async () => {
-        const mock = consoleLog.startMock()
-        await createApp([join(__dirname, "./relative")])
-            .set(new TypeORMGenericControllerFacility({ entities: "./relative" }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-    it("Should able load external model using default configuration", async () => {
-        process.env.TYPEORM_CONNECTION = "sqlite"
-        process.env.TYPEORM_DATABASE = ":memory:"
-        process.env.TYPEORM_ENTITIES = "tests/behavior/typeorm/external/*.ts"
-        process.env.TYPEORM_SYNCHRONIZE = "true"
-        const mock = consoleLog.startMock()
-        class UsersController {
-            get() { }
-        }
-        await fixture(UsersController, { mode: "debug" })
-            .set(new TypeORMFacility())
-            .set(new TypeORMGenericControllerFacility())
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-        delete process.env.TYPEORM_CONNECTION
-        delete process.env.TYPEORM_DATABASE
-        delete process.env.TYPEORM_ENTITIES
-        delete process.env.TYPEORM_SYNCHRONIZE
-    })
-    it("Should able specify rootPath", async () => {
-        @Entity()
-        class Animal {
-            @PrimaryGeneratedColumn()
-            id: number
-            @Column()
-            name: string
-        }
-        const mock = consoleLog.startMock()
-        await createApp([Animal])
-            .set(new TypeORMGenericControllerFacility({ rootPath: "api/v1", entities: Animal }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-    it("Should able to create API versioning with multiple facility", async () => {
-        @Entity()
-        class Animal {
-            @PrimaryGeneratedColumn()
-            id: number
-            @Column()
-            name: string
-        }
-        const mock = consoleLog.startMock()
-        await createApp([Animal])
-            .set(new TypeORMGenericControllerFacility({ rootPath: "api/v1", entities: Animal }))
-            .set(new TypeORMGenericControllerFacility({ rootPath: "api/v2", entities: Animal }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-    it("Should able to create API versioning with external models", async () => {
-        const mock = consoleLog.startMock()
-        await createApp([join(__dirname, "./v1")])
-            .set(new TypeORMGenericControllerFacility({ rootPath: "api/v1", entities: "./v1" }))
-            .set(new TypeORMGenericControllerFacility({ rootPath: "api/v2", entities: "./v1" }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-    it("Should able to create API version using default entities", async () => {
-        @Entity()
-        class Animal {
-            @PrimaryGeneratedColumn()
-            id: number
-            @Column()
-            name: string
-        }
-        const mock = consoleLog.startMock()
-        await createApp([Animal])
-            .set(new TypeORMGenericControllerFacility({ rootPath: "api/v1" }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-})
-
 describe("CRUD", () => {
     function createApp(entities: Function[], opt?: Partial<Configuration>) {
         return new Plumier()
             .set(new WebApiFacility())
             .set(new TypeORMFacility({ connection: getConn(entities) }))
-            .set(new TypeORMGenericControllerFacility())
-            .set(opt ?? {})
+            .set({ ...opt, controller: entities as any })
             .initialize()
     }
     describe("CRUD Function", () => {
         it("Should serve GET /users?offset&limit", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -181,6 +51,7 @@ describe("CRUD", () => {
         })
         it("Should serve GET /users?offset&limit with default value", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -199,6 +70,7 @@ describe("CRUD", () => {
         })
         it("Should find by query GET /users?offset&limit", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -218,6 +90,7 @@ describe("CRUD", () => {
         })
         it("Should set partial validation on GET /users?offset&limit", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -239,6 +112,7 @@ describe("CRUD", () => {
         })
         it("Should serve POST /users", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -259,6 +133,7 @@ describe("CRUD", () => {
         })
         it("Should serve GET /users/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -278,6 +153,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found GET /users/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -293,6 +169,7 @@ describe("CRUD", () => {
         })
         it("Should serve PUT /users/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -314,6 +191,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found PUT /users/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -330,6 +208,7 @@ describe("CRUD", () => {
         })
         it("Should serve PATCH /users/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -351,6 +230,7 @@ describe("CRUD", () => {
         })
         it("Should set partial validation on PATCH /users/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -374,6 +254,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found PATCH /users/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -390,6 +271,7 @@ describe("CRUD", () => {
         })
         it("Should serve DELETE /users/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -409,6 +291,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found DELETE /users/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -424,6 +307,7 @@ describe("CRUD", () => {
         })
         it("Should able to use custom generic controller with custom repository", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -440,8 +324,7 @@ describe("CRUD", () => {
             const app = await new Plumier()
                 .set(new WebApiFacility())
                 .set(new TypeORMFacility({ connection: getConn([User]) }))
-                .set(new TypeORMGenericControllerFacility({ controller: MyCustomGeneric }))
-                .set({ mode: "production" })
+                .set({ mode: "production", controller: User, genericController: [MyCustomGeneric, DefaultOneToManyControllerGeneric] })
                 .initialize()
             await supertest(app.callback())
                 .post("/users")
@@ -458,6 +341,7 @@ describe("CRUD", () => {
         }
         it("Should serve GET /users/:parentId/animals?offset&limit", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -466,9 +350,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -488,6 +374,7 @@ describe("CRUD", () => {
         })
         it("Should serve GET /users/:parentId/animals?offset&limit with default value", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -496,9 +383,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -518,6 +407,7 @@ describe("CRUD", () => {
         })
         it("Should find by query GET /users/:parentId/animals?offset&limit", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -526,9 +416,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -549,6 +441,7 @@ describe("CRUD", () => {
         })
         it("Should set partial validation GET /users/:parentId/animals?offset&limit", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -557,9 +450,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 @val.required()
@@ -581,6 +476,7 @@ describe("CRUD", () => {
         })
         it("Should serve POST /users/:parentId/animals", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -589,9 +485,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -616,6 +514,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if parent not found POST /users/:parentId/animals", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -624,9 +523,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -644,6 +545,7 @@ describe("CRUD", () => {
         })
         it("Should serve GET /users/:parentId/animals/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -652,9 +554,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -674,6 +578,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found GET /users/:parentId/animals/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -682,9 +587,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -701,6 +608,7 @@ describe("CRUD", () => {
         })
         it("Should serve PUT /users/:parentId/animals/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -709,9 +617,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -733,6 +643,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found PUT /users/:parentId/animals/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -741,9 +652,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -761,6 +674,7 @@ describe("CRUD", () => {
         })
         it("Should serve PATCH /users/:parentId/animals/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -769,9 +683,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -793,6 +709,7 @@ describe("CRUD", () => {
         })
         it("Should set partial validation on PATCH /users/:parentId/animals/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -801,9 +718,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 @val.required()
@@ -826,6 +745,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found PATCH /users/:parentId/animals/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -834,9 +754,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -854,6 +776,7 @@ describe("CRUD", () => {
         })
         it("Should serve DELETE /users/:parentId/animals/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -862,9 +785,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -885,6 +810,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found DELETE /users/:parentId/animals/:id", async () => {
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -893,9 +819,11 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -920,6 +848,7 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, x => x.user)
+                @route.controller()
                 animals: Animal[]
             }
             @Entity()
@@ -937,10 +866,9 @@ describe("CRUD", () => {
                 constructor() { super((p, t, rel) => new TypeORMOneToManyRepository(p, t, rel)) }
             }
             const app = await new Plumier()
-                .set(new WebApiFacility())
+                .set(new WebApiFacility({ controller: User }))
                 .set(new TypeORMFacility({ connection: getConn([User, Animal]) }))
-                .set(new TypeORMGenericControllerFacility({ controller: MyCustomGeneric }))
-                .set({ mode: "production" })
+                .set({ mode: "production", genericController: [DefaultControllerGeneric, MyCustomGeneric] })
                 .initialize()
             const user = await createUser(User)
             await supertest(app.callback())
@@ -952,6 +880,7 @@ describe("CRUD", () => {
     describe("One To One Function", () => {
         it("Should able to add with ID", async () => {
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -959,6 +888,7 @@ describe("CRUD", () => {
                 name: string
             }
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -982,6 +912,7 @@ describe("CRUD", () => {
         })
         it("Should able to modify relation by ID", async () => {
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -989,6 +920,7 @@ describe("CRUD", () => {
                 name: string
             }
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1013,6 +945,7 @@ describe("CRUD", () => {
         })
         it("Should populated on get by id", async () => {
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1020,6 +953,7 @@ describe("CRUD", () => {
                 name: string
             }
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1041,6 +975,7 @@ describe("CRUD", () => {
         })
         it("Should populated on multiple property", async () => {
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1048,6 +983,7 @@ describe("CRUD", () => {
                 name: string
             }
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1073,6 +1009,7 @@ describe("CRUD", () => {
         })
         it("Should not populated one to many", async () => {
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1082,6 +1019,7 @@ describe("CRUD", () => {
                 user: any
             }
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1105,6 +1043,7 @@ describe("CRUD", () => {
         })
         it("Should populated multiple result", async () => {
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1112,6 +1051,7 @@ describe("CRUD", () => {
                 name: string
             }
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1137,6 +1077,7 @@ describe("CRUD", () => {
     describe("One To One on Nested Object", () => {
         it("Should able to add with ID", async () => {
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1144,6 +1085,7 @@ describe("CRUD", () => {
                 name: string
             }
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1156,12 +1098,14 @@ describe("CRUD", () => {
                 parent: any
             }
             @Entity()
+            @route.controller()
             class Parent {
                 @PrimaryGeneratedColumn()
                 id: number
                 @Column()
                 name: string
                 @OneToMany(x => User, x => x.parent)
+                @route.controller()
                 children: User[]
             }
             const app = await createApp([Animal, User, Parent], { mode: "production" })
@@ -1179,6 +1123,7 @@ describe("CRUD", () => {
         })
         it("Should able to modify relation by ID", async () => {
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1186,6 +1131,7 @@ describe("CRUD", () => {
                 name: string
             }
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1198,12 +1144,14 @@ describe("CRUD", () => {
                 parent: any
             }
             @Entity()
+            @route.controller()
             class Parent {
                 @PrimaryGeneratedColumn()
                 id: number
                 @Column()
                 name: string
                 @OneToMany(x => User, x => x.parent)
+                @route.controller()
                 children: User[]
             }
             const app = await createApp([Animal, User, Parent], { mode: "production" })
@@ -1223,6 +1171,7 @@ describe("CRUD", () => {
         })
         it("Should populated on get by id", async () => {
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1230,6 +1179,7 @@ describe("CRUD", () => {
                 name: string
             }
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1242,12 +1192,14 @@ describe("CRUD", () => {
                 parent: any
             }
             @Entity()
+            @route.controller()
             class Parent {
                 @PrimaryGeneratedColumn()
                 id: number
                 @Column()
                 name: string
                 @OneToMany(x => User, x => x.parent)
+                @route.controller()
                 children: User[]
             }
             const app = await createApp([Animal, User, Parent], { mode: "production" })
@@ -1264,6 +1216,7 @@ describe("CRUD", () => {
         })
         it("Should populated on multiple property", async () => {
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1271,6 +1224,7 @@ describe("CRUD", () => {
                 name: string
             }
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1286,12 +1240,14 @@ describe("CRUD", () => {
                 parent: any
             }
             @Entity()
+            @route.controller()
             class Parent {
                 @PrimaryGeneratedColumn()
                 id: number
                 @Column()
                 name: string
                 @OneToMany(x => User, x => x.parent)
+                @route.controller()
                 children: User[]
             }
             const app = await createApp([Animal, User, Parent], { mode: "production" })
@@ -1309,6 +1265,7 @@ describe("CRUD", () => {
         })
         it("Should not populated one to many", async () => {
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1318,6 +1275,7 @@ describe("CRUD", () => {
                 user: any
             }
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1329,12 +1287,14 @@ describe("CRUD", () => {
                 parent: any
             }
             @Entity()
+            @route.controller()
             class Parent {
                 @PrimaryGeneratedColumn()
                 id: number
                 @Column()
                 name: string
                 @OneToMany(x => User, x => x.parent)
+                @route.controller()
                 children: User[]
             }
             const app = await createApp([Animal, User, Parent], { mode: "production" })
@@ -1354,6 +1314,7 @@ describe("CRUD", () => {
         })
         it("Should populated multiple result", async () => {
             @Entity()
+            @route.controller()
             class Animal {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1361,6 +1322,7 @@ describe("CRUD", () => {
                 name: string
             }
             @Entity()
+            @route.controller()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
@@ -1373,12 +1335,14 @@ describe("CRUD", () => {
                 parent: any
             }
             @Entity()
+            @route.controller()
             class Parent {
                 @PrimaryGeneratedColumn()
                 id: number
                 @Column()
                 name: string
                 @OneToMany(x => User, x => x.parent)
+                @route.controller()
                 children: User[]
             }
             const app = await createApp([Animal, User, Parent], { mode: "production" })
@@ -1403,13 +1367,13 @@ describe("Open API", () => {
         return new Plumier()
             .set(new WebApiFacility())
             .set(new TypeORMFacility({ connection: getConn(entities) }))
-            .set(new TypeORMGenericControllerFacility())
             .set(new SwaggerFacility())
-            .set({ mode: "production" })
+            .set({ mode: "production", controller: entities as any })
             .initialize()
     }
     it("Should mark id column as readonly", async () => {
         @Entity()
+        @route.controller()
         class User {
             @PrimaryGeneratedColumn()
             public id: number
@@ -1426,6 +1390,7 @@ describe("Open API", () => {
     })
     it("Should mark guid column as readonly", async () => {
         @Entity()
+        @route.controller()
         class User {
             @PrimaryGeneratedColumn("uuid")
             public id: string
@@ -1439,31 +1404,5 @@ describe("Open API", () => {
             .post("/swagger/swagger.json")
             .expect(200)
         expect(body.components.schemas.User).toMatchSnapshot()
-    })
-    it("Should mark one to many and many to one as readonly", async () => {
-        @Entity()
-        class MyEntity {
-            @PrimaryGeneratedColumn()
-            id: number = 123
-            @Column()
-            name: string
-            @OneToMany(x => Child, x => x.entity)
-            children: Child[]
-        }
-        @Entity()
-        class Child {
-            @PrimaryGeneratedColumn()
-            id: number
-            @Column()
-            name: string
-            @ManyToOne(x => MyEntity, x => x.children)
-            entity: MyEntity
-        }
-        const app = await createApp([MyEntity, Child])
-        const { body } = await supertest(app.callback())
-            .post("/swagger/swagger.json")
-            .expect(200)
-        expect(body.components.schemas.MyEntity).toMatchSnapshot()
-        expect(body.components.schemas.Child).toMatchSnapshot()
     })
 })

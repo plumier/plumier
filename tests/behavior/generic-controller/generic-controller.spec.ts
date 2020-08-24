@@ -1,29 +1,58 @@
-import { cleanupConsole, consoleLog, DefaultFacility, PlumierApplication, route, RouteMetadata, authorize, primaryId, relation } from "@plumier/core"
 import {
-    GenericControllerFacilityOption,
+    ActionResult,
+    authorize,
+    cleanupConsole,
+    Configuration,
+    consoleLog,
+    DefaultControllerGeneric,
+    DefaultFacility,
+    DefaultOneToManyRepository,
+    DefaultOneToManyControllerGeneric,
+    IdentifierResult,
+    Invocation,
+    Middleware,
+    PlumierApplication,
+    primaryId,
+    relation,
     RepoBaseControllerGeneric,
     RepoBaseOneToManyControllerGeneric,
-    IdentifierResult,
-} from "@plumier/generic-controller"
-import Plumier, { domain, WebApiFacility } from "@plumier/plumier"
+    route,
+    RouteMetadata,
+    response,
+    DefaultRepository,
+} from "@plumier/core"
+import { JwtAuthFacility } from "@plumier/jwt"
+import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "@plumier/plumier"
 import { SwaggerFacility } from "@plumier/swagger"
+import { Context } from "koa"
 import { join } from "path"
 import supertest from "supertest"
 import reflect, { generic } from "tinspector"
 
-import { MyCRUDModuleFacility } from "./mocks"
-import { JwtAuthFacility } from '@plumier/jwt'
-
-function createApp(opt: GenericControllerFacilityOption) {
+function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
     return new Plumier()
+        .set({ ...config })
         .set(new WebApiFacility())
-        .set(new MyCRUDModuleFacility(opt))
+        .set(new ControllerFacility(opt))
 }
 
 class RouteHookFacility extends DefaultFacility {
     constructor(private callback: ((x: RouteMetadata[]) => void)) { super() }
     async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]) {
         this.callback(routes)
+    }
+}
+
+class ErrorHandlerMiddleware implements Middleware {
+    async execute(invocation: Readonly<Invocation<Context>>): Promise<ActionResult> {
+        try {
+            return await invocation.proceed()
+        }
+        catch (e) {
+            return response
+                .json({ error: e.message })
+                .setStatus(500)
+        }
     }
 }
 
@@ -38,12 +67,17 @@ function getParameters(routes: RouteMetadata[]) {
 describe("Route Generator", () => {
     it("Should able to specify entity directory", async () => {
         const mock = consoleLog.startMock()
-        await createApp({ entities: join(__dirname, "entities") }).initialize()
+        await createApp({ controller: join(__dirname, "entities") }).initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
     })
     it("Should able to specify entity directory with relative path", async () => {
         const mock = consoleLog.startMock()
-        await createApp({ entities: "./entities" }).initialize()
+        await createApp({ controller: "./entities" }).initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+    })
+    it("Should able to specify nested directories", async () => {
+        const mock = consoleLog.startMock()
+        await createApp({ controller: "./nested" }).initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
     })
     it("Should initiate IdentifierResult properly", () => {
@@ -51,6 +85,7 @@ describe("Route Generator", () => {
     })
     describe("Generic Controller", () => {
         it("Should generate routes with parameter property entity", async () => {
+            @route.controller()
             @domain()
             class User {
                 constructor(
@@ -59,10 +94,11 @@ describe("Route Generator", () => {
                 ) { }
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: User }).initialize()
+            await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should generate routes with property field entity", async () => {
+            @route.controller()
             class User {
                 @reflect.noop()
                 public name: string
@@ -70,10 +106,11 @@ describe("Route Generator", () => {
                 public email: string
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: User }).initialize()
+            await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to specify ID type by providing decorator", async () => {
+            @route.controller()
             @domain()
             class User {
                 constructor(
@@ -84,12 +121,30 @@ describe("Route Generator", () => {
                 ) { }
             }
             let routes: RouteMetadata[] = []
-            await createApp({ entities: User })
+            await createApp({ controller: User })
+                .set(new RouteHookFacility(x => routes = x))
+                .initialize()
+            expect(getParameters(routes)).toMatchSnapshot()
+        })
+        it("Should able to specify ID of type string by providing decorator", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @primaryId()
+                    public id: string,
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            let routes: RouteMetadata[] = []
+            await createApp({ controller: User })
                 .set(new RouteHookFacility(x => routes = x))
                 .initialize()
             expect(getParameters(routes)).toMatchSnapshot()
         })
         it("Should use string as default id if no ID type specified", async () => {
+            @route.controller()
             @domain()
             class User {
                 constructor(
@@ -98,12 +153,25 @@ describe("Route Generator", () => {
                 ) { }
             }
             let routes: RouteMetadata[] = []
-            await createApp({ entities: User })
+            await createApp({ controller: User })
                 .set(new RouteHookFacility(x => routes = x))
                 .initialize()
             expect(getParameters(routes)).toMatchSnapshot()
         })
+        it("Should not generate entity that is not marked as controller", async () => {
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
         it("Should able to change root path", async () => {
+            @route.controller()
             @domain()
             class User {
                 constructor(
@@ -112,142 +180,12 @@ describe("Route Generator", () => {
                 ) { }
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: User, rootPath: "/api/v1/" })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to use root path without trailing slash", async () => {
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ entities: User, rootPath: "/api/v1" })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to use root path without leading slash", async () => {
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ entities: User, rootPath: "api/v1/" })
+            await createApp({ controller: User, rootPath: "/api/v1/" })
                 .initialize()
             expect(mock.mock.calls).toMatchSnapshot()
         })
         it("Should able to use custom controller", async () => {
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-
-            @generic.template("T", "TID")
-            @generic.type("T", "TID")
-            class MyCustomControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{ }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: MyCustomControllerGeneric, entities: User, rootPath: "/api/v1/" })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should only allow custom controller ends with Generic", async () => {
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-
-            @generic.template("T", "TID")
-            @generic.type("T", "TID")
-            class MyCustomController<T, TID> extends RepoBaseControllerGeneric<T, TID>{ }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: MyCustomController, entities: User, rootPath: "/api/v1/" })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should only allow custom controller extends from ControllerGeneric", async () => {
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-
-            @generic.template("T", "TID")
-            @generic.type("T", "TID")
-            class MyCustomControllerGeneric<T, TID>{ }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: MyCustomControllerGeneric, entities: User, rootPath: "/api/v1/" })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to specify directory of custom controller with absolute path", async () => {
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: join(__dirname, "./custom-controller"), entities: User })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to specify directory of custom controller with relative path", async () => {
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: "./custom-controller", entities: User })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to specify directory of custom controller in nested directory, but should not affect route", async () => {
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: join(__dirname, "./nested"), entities: User })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to specify custom controller from Web Api Facility", async () => {
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await new Plumier()
-                .set(new WebApiFacility({ controller: "./custom-controller" }))
-                .set(new MyCRUDModuleFacility({ entities: User }))
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should prioritize controller provided by CRUD facility instead of WebApiFacility", async () => {
+            @route.controller()
             @domain()
             class User {
                 constructor(
@@ -259,32 +197,13 @@ describe("Route Generator", () => {
             @generic.type("T", "TID")
             class MyCustomControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{ }
             const mock = consoleLog.startMock()
-            await new Plumier()
-                .set(new WebApiFacility({ controller: "./custom-controller" }))
-                .set(new MyCRUDModuleFacility({ entities: User, controller: MyCustomControllerGeneric }))
+            await createApp({ controller: User, rootPath: "/api/v1/" })
+                .set({ genericController: [MyCustomControllerGeneric, DefaultOneToManyControllerGeneric] })
                 .initialize()
             expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to ignore an entity from route generation", async () => {
-            @domain()
-            @route.ignore()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            @domain()
-            class Animal {
-                constructor(
-                    public name: string,
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ entities: [User, Animal] }).initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to ignore some method of controller from entity", async () => {
+            @route.controller()
             @domain()
             @route.ignore({ action: ["get", "save"] })
             class User {
@@ -294,10 +213,11 @@ describe("Route Generator", () => {
                 ) { }
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: User }).initialize()
+            await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to set authorization from entity", async () => {
+            @route.controller()
             @domain()
             @authorize.role("admin")
             class User {
@@ -307,12 +227,13 @@ describe("Route Generator", () => {
                 ) { }
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: [User] })
+            await createApp({ controller: [User] })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to set authorization for specific method from entity", async () => {
+            @route.controller()
             @domain()
             @authorize.role("admin", { action: ["save", "replace", "delete", "modify"] })
             class User {
@@ -322,12 +243,13 @@ describe("Route Generator", () => {
                 ) { }
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: User })
+            await createApp({ controller: User })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to set public authorizer from entity", async () => {
+            @route.controller()
             @domain()
             @authorize.public()
             class User {
@@ -337,12 +259,13 @@ describe("Route Generator", () => {
                 ) { }
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: [User] })
+            await createApp({ controller: [User] })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to set custom authorizer from entity", async () => {
+            @route.controller()
             @domain()
             @authorize.custom(x => x.user.role === "Admin")
             class User {
@@ -352,12 +275,13 @@ describe("Route Generator", () => {
                 ) { }
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: [User] })
+            await createApp({ controller: [User] })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to set @authorize.get() from entity", async () => {
+            @route.controller()
             @domain()
             @authorize.get("admin")
             class User {
@@ -367,12 +291,13 @@ describe("Route Generator", () => {
                 ) { }
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: [User] })
+            await createApp({ controller: [User] })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to set @authorize.set() from entity", async () => {
+            @route.controller()
             @domain()
             @authorize.set("admin")
             class User {
@@ -382,10 +307,49 @@ describe("Route Generator", () => {
                 ) { }
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: [User] })
+            await createApp({ controller: [User] })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should throw error when using default generic controller", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const koa = await createApp({ controller: [User] }, { mode: "production" })
+                .use(new ErrorHandlerMiddleware())
+                .initialize()
+            const error = { error: "PLUM1009: Generic controller implementation not installed" }
+            const request = supertest(koa.callback())
+            await request.post("/user").expect(500, error)
+            await request.get("/user").expect(500, error)
+            await request.put("/user/123").expect(500, error)
+            await request.patch("/user/123").expect(500, error)
+            await request.delete("/user/123").expect(500, error)
+            await request.get("/user/123").expect(500, error)
+        })
+        it("Should throw error properly", () => {
+            const fn = jest.fn()
+            const error = async (f: () => Promise<any>) => {
+                try {
+                    await f()
+                }
+                catch (e) {
+                    fn(e.message)
+                }
+            }
+            const ctl = new DefaultRepository()
+            error(async () => ctl.delete(123))
+            error(async () => ctl.findById(123))
+            error(async () => ctl.find(1, 2, {}))
+            error(async () => ctl.update(123, {}))
+            error(async () => ctl.insert({}))
+            expect(fn.mock.calls).toMatchSnapshot()
         })
     })
     describe("One To Many Controller", () => {
@@ -396,18 +360,44 @@ describe("Route Generator", () => {
                     public name: string
                 ) { }
             }
+            @route.controller()
             @domain()
             class User {
                 constructor(
                     public name: string,
                     public email: string,
+                    @route.controller()
                     @reflect.type([Animal])
                     @relation()
+                    @route.controller()
                     public animals: Animal[]
                 ) { }
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: User }).initialize()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to specify relation", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @route.controller()
+                    @reflect.type([Animal])
+                    @relation()
+                    @route.controller()
+                    public animals: Animal[]
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should generate routes with property field entity", async () => {
@@ -415,6 +405,7 @@ describe("Route Generator", () => {
                 @reflect.noop()
                 name: string
             }
+            @route.controller()
             class User {
                 @reflect.noop()
                 name: string
@@ -422,10 +413,11 @@ describe("Route Generator", () => {
                 email: string
                 @reflect.type([Animal])
                 @relation()
+                @route.controller()
                 animals: Animal[]
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: User }).initialize()
+            await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to specify ID type by providing decorator", async () => {
@@ -446,11 +438,12 @@ describe("Route Generator", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @relation()
+                    @route.controller()
                     public animals: Animal[]
                 ) { }
             }
             let routes: RouteMetadata[] = []
-            await createApp({ entities: User })
+            await createApp({ controller: User })
                 .set(new RouteHookFacility(x => routes = x))
                 .initialize()
             expect(getParameters(routes)).toMatchSnapshot()
@@ -469,11 +462,12 @@ describe("Route Generator", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @relation()
+                    @route.controller()
                     public animals: Animal[]
                 ) { }
             }
             let routes: RouteMetadata[] = []
-            await createApp({ entities: User })
+            await createApp({ controller: User })
                 .set(new RouteHookFacility(x => routes = x))
                 .initialize()
             expect(getParameters(routes)).toMatchSnapshot()
@@ -486,61 +480,19 @@ describe("Route Generator", () => {
                 ) { }
             }
             @domain()
+            @route.controller()
             class User {
                 constructor(
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
                     @relation()
+                    @route.controller()
                     public animals: Animal[]
                 ) { }
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: User, rootPath: "/api/v1/" })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to use root path without trailing slash", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                    @reflect.type([Animal])
-                    @relation()
-                    public animals: Animal[]
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ entities: User, rootPath: "/api/v1" })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to use root path without leading slash", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                    @reflect.type([Animal])
-                    @relation()
-                    public animals: Animal[]
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ entities: User, rootPath: "api/v1/" })
+            await createApp({ controller: User, rootPath: "/api/v1/" })
                 .initialize()
             expect(mock.mock.calls).toMatchSnapshot()
         })
@@ -558,6 +510,7 @@ describe("Route Generator", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @relation()
+                    @route.controller()
                     public animals: Animal[]
                 ) { }
             }
@@ -565,198 +518,10 @@ describe("Route Generator", () => {
             @generic.type("P", "PID", "T", "TID")
             class MyCustomOneToManyControllerGeneric<P, PID, T, TID> extends RepoBaseOneToManyControllerGeneric<P, PID, T, TID>{ }
             const mock = consoleLog.startMock()
-            await createApp({ controller: MyCustomOneToManyControllerGeneric, entities: User, rootPath: "/api/v1/" })
+            await createApp({ controller: User, rootPath: "/api/v1/" })
+                .set({ genericController: [DefaultControllerGeneric, MyCustomOneToManyControllerGeneric] })
                 .initialize()
             expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should only allow custom controller ends with Generic", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                    @reflect.type([Animal])
-                    @relation()
-                    public animals: Animal[]
-                ) { }
-            }
-            @generic.template("P", "PID", "T", "TID")
-            @generic.type("P", "PID", "T", "TID")
-            class MyCustomOneToManyController<P, PID, T, TID> extends RepoBaseOneToManyControllerGeneric<P, PID, T, TID>{ }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: MyCustomOneToManyController, entities: User, rootPath: "/api/v1/" })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should only allow custom controller extends from ControllerGeneric", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                    @reflect.type([Animal])
-                    @relation()
-                    public animals: Animal[]
-                ) { }
-            }
-            @generic.template("P", "PID", "T", "TID")
-            @generic.type("P", "PID", "T", "TID")
-            class MyCustomOneToManyControllerGeneric<P, PID, T, TID> { }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: MyCustomOneToManyControllerGeneric, entities: User, rootPath: "/api/v1/" })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to specify directory of custom controller with absolute path", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                    @reflect.type([Animal])
-                    @relation()
-                    public animals: Animal[]
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: join(__dirname, "./custom-controller"), entities: User })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to specify directory of custom controller with relative path", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                    @reflect.type([Animal])
-                    @relation()
-                    public animals: Animal[]
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: "./custom-controller", entities: User })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to specify directory of custom controller in nested directory, but should not affect route", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                    @reflect.type([Animal])
-                    @relation()
-                    public animals: Animal[]
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: join(__dirname, "./nested"), entities: User })
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to use custom controller from WebApiFacility", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                    @reflect.type([Animal])
-                    @relation()
-                    public animals: Animal[]
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await new Plumier()
-                .set(new WebApiFacility({ controller: "./custom-controller" }))
-                .set(new MyCRUDModuleFacility({ entities: User }))
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should prioritize controller provided by CRUD facility instead of WebApiFacility", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                    @reflect.type([Animal])
-                    @relation()
-                    public animals: Animal[]
-                ) { }
-            }
-            @generic.template("P", "PID", "T", "TID")
-            @generic.type("P", "PID", "T", "TID")
-            class MyCustomOneToManyControllerGeneric<P, PID, T, TID> extends RepoBaseOneToManyControllerGeneric<P, PID, T, TID>{ }
-            const mock = consoleLog.startMock()
-            await new Plumier()
-                .set(new WebApiFacility({ controller: "./custom-controller" }))
-                .set(new MyCRUDModuleFacility({ entities: User, controller: MyCustomOneToManyControllerGeneric }))
-                .initialize()
-            expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to ignore an entity from route generation", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public name: string
-                ) { }
-            }
-            @domain()
-            @route.ignore()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                    @reflect.type([Animal])
-                    @relation()
-                    public animals: Animal[]
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ entities: [User, Animal] }).initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to ignore some method of controller from entity", async () => {
             @domain()
@@ -766,100 +531,19 @@ describe("Route Generator", () => {
                 ) { }
             }
             @domain()
-            @route.ignore({ action: ["save", "list"] })
             class User {
                 constructor(
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
                     @relation()
+                    @route.controller()
+                    @route.ignore({ action: ["save", "list"] })
                     public animals: Animal[]
                 ) { }
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: User }).initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to ignore relation", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                    @route.ignore()
-                    @reflect.type([Animal])
-                    @relation()
-                    public animals: Animal[]
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ entities: User }).initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to ignore some method on relation", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                    @route.ignore({ action: ["list", "replace"] })
-                    @reflect.type([Animal])
-                    @relation()
-                    public animals: Animal[]
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ entities: User }).initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to ignore relation on property field", async () => {
-            class Animal {
-                @reflect.noop()
-                public name: string
-            }
-            class User {
-                @reflect.noop()
-                public name: string
-                @reflect.noop()
-                public email: string
-                @route.ignore()
-                @reflect.type([Animal])
-                @relation()
-                public animals: Animal[]
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ entities: User }).initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to ignore some method on relation on property field", async () => {
-            class Animal {
-                @reflect.noop()
-                public name: string
-            }
-            class User {
-                @reflect.noop()
-                public name: string
-                @reflect.noop()
-                public email: string
-                @route.ignore({ action: ["list", "modify"] })
-                @reflect.type([Animal])
-                @relation()
-                public animals: Animal[]
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ entities: User }).initialize()
+            await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to authorize relation on relation", async () => {
@@ -875,10 +559,11 @@ describe("Route Generator", () => {
                 @authorize.role("admin")
                 @reflect.type([Animal])
                 @relation()
+                @route.controller()
                 public animals: Animal[]
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: User })
+            await createApp({ controller: User })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
@@ -896,10 +581,11 @@ describe("Route Generator", () => {
                 @authorize.role("admin", { action: ["save", "replace", "delete", "modify"] })
                 @reflect.type([Animal])
                 @relation()
+                @route.controller()
                 public animals: Animal[]
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: User })
+            await createApp({ controller: User })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
@@ -917,10 +603,11 @@ describe("Route Generator", () => {
                 @authorize.set("admin")
                 @reflect.type([Animal])
                 @relation()
+                @route.controller()
                 public animals: Animal[]
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: User })
+            await createApp({ controller: User })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
@@ -938,18 +625,66 @@ describe("Route Generator", () => {
                 @authorize.get("admin")
                 @reflect.type([Animal])
                 @relation()
+                @route.controller()
                 public animals: Animal[]
             }
             const mock = consoleLog.startMock()
-            await createApp({ entities: User })
+            await createApp({ controller: User })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to set @authorize.get() on relation", async () => {
+            class Animal {
+                @reflect.noop()
+                public name: string
+            }
+            class User {
+                @reflect.noop()
+                public name: string
+                @reflect.noop()
+                public email: string
+                @reflect.type([Animal])
+                @relation()
+                @route.controller()
+                public animals: Animal[]
+            }
+            const koa = await createApp({ controller: User }, { mode: "production" })
+                .use(new ErrorHandlerMiddleware())
+                .initialize()
+            const error = { error: "PLUM1009: Generic controller implementation not installed" }
+            const request = supertest(koa.callback())
+            await request.post("/user/123/animals").expect(500, error)
+            await request.get("/user/123/animals").expect(500, error)
+            await request.put("/user/123/animals/123").expect(500, error)
+            await request.patch("/user/123/animals/123").expect(500, error)
+            await request.delete("/user/123/animals/123").expect(500, error)
+            await request.get("/user/123/animals/123").expect(500, error)
+        })
+        it("Should throw error properly", () => {
+            const fn = jest.fn()
+            const error = async (f: () => Promise<any>) => {
+                try {
+                    await f()
+                }
+                catch (e) {
+                    fn(e.message)
+                }
+            }
+            const ctl = new DefaultOneToManyRepository()
+            error(async () => ctl.delete(123))
+            error(async () => ctl.findById(123))
+            error(async () => ctl.find(1, 1, 2, {}))
+            error(async () => ctl.update(123, {}))
+            error(async () => ctl.insert(1, {}))
+            error(async () => ctl.findParentById(1))
+            expect(fn.mock.calls).toMatchSnapshot()
         })
     })
     describe("Grouping", () => {
         it("Should able to group routes", async () => {
             @domain()
+            @route.controller()
             class User {
                 constructor(
                     public name: string,
@@ -959,8 +694,36 @@ describe("Route Generator", () => {
             const mock = consoleLog.startMock()
             await new Plumier()
                 .set(new WebApiFacility())
-                .set(new MyCRUDModuleFacility({ group: "v1", entities: User }))
-                .set(new MyCRUDModuleFacility({ group: "v2", entities: join(__dirname, "entities") }))
+                .set(new ControllerFacility({ controller: User, group: "v2", rootPath: "api/v2" }))
+                .set(new ControllerFacility({ controller: User, group: "v1", rootPath: "api/v1" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+
+        it("Should able to group one to many routes", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @route.controller()
+                    @reflect.type([Animal])
+                    @relation()
+                    @route.controller()
+                    public animals: Animal[]
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await new Plumier()
+                .set(new WebApiFacility())
+                .set(new ControllerFacility({ controller: User, group: "v2", rootPath: "api/v2" }))
+                .set(new ControllerFacility({ controller: User, group: "v1", rootPath: "api/v1" }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -970,11 +733,12 @@ describe("Route Generator", () => {
 describe("Open Api", () => {
     describe("Generic Controller", () => {
         it("Should provided proper component", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
@@ -982,106 +746,114 @@ describe("Open Api", () => {
                 .expect(200)
             expect(body.components.schemas.Animal).toMatchSnapshot()
         })
-        it("Should generate GET /animals properly", async () => {
+        it("Should generate GET /animal properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals"].get.parameters).toMatchSnapshot()
-            expect(body.paths["/animals"].get.tags).toMatchSnapshot()
+            expect(body.paths["/animal"].get.parameters).toMatchSnapshot()
+            expect(body.paths["/animal"].get.tags).toMatchSnapshot()
         })
-        it("Should generate POST /animals properly", async () => {
+        it("Should generate POST /animal properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals"].post.requestBody).toMatchSnapshot()
-            expect(body.paths["/animals"].post.tags).toMatchSnapshot()
+            expect(body.paths["/animal"].post.requestBody).toMatchSnapshot()
+            expect(body.paths["/animal"].post.tags).toMatchSnapshot()
         })
-        it("Should generate GET /animals/:id properly", async () => {
+        it("Should generate GET /animal/:id properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals/{id}"].get.parameters).toMatchSnapshot()
-            expect(body.paths["/animals/{id}"].get.tags).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].get.parameters).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].get.tags).toMatchSnapshot()
         })
-        it("Should generate DELETE /animals/:id properly", async () => {
+        it("Should generate DELETE /animal/:id properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals/{id}"].delete.parameters).toMatchSnapshot()
-            expect(body.paths["/animals/{id}"].delete.tags).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].delete.parameters).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].delete.tags).toMatchSnapshot()
         })
-        it("Should generate PUT /animals/:id properly", async () => {
+        it("Should generate PUT /animal/:id properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals/{id}"].put.parameters).toMatchSnapshot()
-            expect(body.paths["/animals/{id}"].put.tags).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].put.parameters).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].put.tags).toMatchSnapshot()
         })
-        it("Should generate PATCH /animals/:id properly", async () => {
+        it("Should generate PATCH /animal/:id properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals/{id}"].put.parameters).toMatchSnapshot()
-            expect(body.paths["/animals/{id}"].put.tags).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].put.parameters).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].put.tags).toMatchSnapshot()
         })
     })
 
     describe("Generic One To Many Controller", () => {
         it("Should provide proper component", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
                 @relation()
+                @route.controller()
                 tags: Tag[]
             }
             class Tag {
                 @reflect.noop()
                 tag: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
@@ -1091,256 +863,280 @@ describe("Open Api", () => {
             expect(body.components.schemas.Tag).toMatchSnapshot()
         })
         it("Should generate GET /animals properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
                 @relation()
+                @route.controller()
                 tags: Tag[]
             }
             class Tag {
                 @reflect.noop()
                 tag: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals"].get.parameters).toMatchSnapshot()
-            expect(body.paths["/animals"].get.tags).toMatchSnapshot()
+            expect(body.paths["/animal"].get.parameters).toMatchSnapshot()
+            expect(body.paths["/animal"].get.tags).toMatchSnapshot()
         })
         it("Should generate POST /animals properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
                 @relation()
+                @route.controller()
                 tags: Tag[]
             }
             class Tag {
                 @reflect.noop()
                 tag: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals"].post.requestBody).toMatchSnapshot()
-            expect(body.paths["/animals"].post.tags).toMatchSnapshot()
+            expect(body.paths["/animal"].post.requestBody).toMatchSnapshot()
+            expect(body.paths["/animal"].post.tags).toMatchSnapshot()
         })
         it("Should generate GET /animals/:id properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
                 @relation()
+                @route.controller()
                 tags: Tag[]
             }
             class Tag {
                 @reflect.noop()
                 tag: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals/{id}"].get.parameters).toMatchSnapshot()
-            expect(body.paths["/animals/{id}"].get.tags).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].get.parameters).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].get.tags).toMatchSnapshot()
         })
         it("Should generate DELETE /animals/:id properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
                 @relation()
+                @route.controller()
                 tags: Tag[]
             }
             class Tag {
                 @reflect.noop()
                 tag: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals/{id}"].delete.parameters).toMatchSnapshot()
-            expect(body.paths["/animals/{id}"].delete.tags).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].delete.parameters).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].delete.tags).toMatchSnapshot()
         })
         it("Should generate PUT /animals/:id properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
                 @relation()
+                @route.controller()
                 tags: Tag[]
             }
             class Tag {
                 @reflect.noop()
                 tag: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals/{id}"].put.parameters).toMatchSnapshot()
-            expect(body.paths["/animals/{id}"].put.tags).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].put.parameters).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].put.tags).toMatchSnapshot()
         })
         it("Should generate PATCH /animals/:id properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
                 @relation()
+                @route.controller()
                 tags: Tag[]
             }
             class Tag {
                 @reflect.noop()
                 tag: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals/{id}"].put.parameters).toMatchSnapshot()
-            expect(body.paths["/animals/{id}"].put.tags).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].put.parameters).toMatchSnapshot()
+            expect(body.paths["/animal/{id}"].put.tags).toMatchSnapshot()
         })
         it("Should generate GET /animals/{pid}/tags properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
                 @relation()
+                @route.controller()
                 tags: Tag[]
             }
             class Tag {
                 @reflect.noop()
                 tag: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals/{pid}/tags"].get.parameters).toMatchSnapshot()
-            expect(body.paths["/animals/{pid}/tags"].get.tags).toMatchSnapshot()
+            expect(body.paths["/animal/{pid}/tags"].get.parameters).toMatchSnapshot()
+            expect(body.paths["/animal/{pid}/tags"].get.tags).toMatchSnapshot()
         })
         it("Should generate POST /animals/{pid}/tags properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
                 @relation()
+                @route.controller()
                 tags: Tag[]
             }
             class Tag {
                 @reflect.noop()
                 tag: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals/{pid}/tags"].post.requestBody).toMatchSnapshot()
-            expect(body.paths["/animals/{pid}/tags"].post.tags).toMatchSnapshot()
+            expect(body.paths["/animal/{pid}/tags"].post.requestBody).toMatchSnapshot()
+            expect(body.paths["/animal/{pid}/tags"].post.tags).toMatchSnapshot()
         })
         it("Should generate GET /animals/{pid}/tags/:id properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
                 @relation()
+                @route.controller()
                 tags: Tag[]
             }
             class Tag {
                 @reflect.noop()
                 tag: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals/{pid}/tags/{id}"].get.parameters).toMatchSnapshot()
-            expect(body.paths["/animals/{pid}/tags/{id}"].get.tags).toMatchSnapshot()
+            expect(body.paths["/animal/{pid}/tags/{id}"].get.parameters).toMatchSnapshot()
+            expect(body.paths["/animal/{pid}/tags/{id}"].get.tags).toMatchSnapshot()
         })
         it("Should generate DELETE /animals/{pid}/tags/:id properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
                 @relation()
+                @route.controller()
                 tags: Tag[]
             }
             class Tag {
                 @reflect.noop()
                 tag: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals/{pid}/tags/{id}"].delete.parameters).toMatchSnapshot()
-            expect(body.paths["/animals/{pid}/tags/{id}"].delete.tags).toMatchSnapshot()
+            expect(body.paths["/animal/{pid}/tags/{id}"].delete.parameters).toMatchSnapshot()
+            expect(body.paths["/animal/{pid}/tags/{id}"].delete.tags).toMatchSnapshot()
         })
         it("Should generate PUT /animals/{pid}/tags/:id properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
                 @relation()
+                @route.controller()
                 tags: Tag[]
             }
             class Tag {
                 @reflect.noop()
                 tag: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals/{pid}/tags/{id}"].put.parameters).toMatchSnapshot()
-            expect(body.paths["/animals/{pid}/tags/{id}"].put.tags).toMatchSnapshot()
+            expect(body.paths["/animal/{pid}/tags/{id}"].put.parameters).toMatchSnapshot()
+            expect(body.paths["/animal/{pid}/tags/{id}"].put.tags).toMatchSnapshot()
         })
         it("Should generate PATCH /animals/{pid}/tags/:id properly", async () => {
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
                 @relation()
+                @route.controller()
                 tags: Tag[]
             }
             class Tag {
                 @reflect.noop()
                 tag: string
             }
-            const koa = await createApp({ entities: Animal })
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
                 .set(new SwaggerFacility())
                 .initialize()
             const { body } = await supertest(koa.callback())
                 .get("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/animals/{pid}/tags/{id}"].put.parameters).toMatchSnapshot()
-            expect(body.paths["/animals/{pid}/tags/{id}"].put.tags).toMatchSnapshot()
+            expect(body.paths["/animal/{pid}/tags/{id}"].put.parameters).toMatchSnapshot()
+            expect(body.paths["/animal/{pid}/tags/{id}"].put.tags).toMatchSnapshot()
         })
     })
 })

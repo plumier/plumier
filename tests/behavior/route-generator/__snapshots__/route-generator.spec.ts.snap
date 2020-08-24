@@ -32,87 +32,15 @@ Array [
 ]
 `;
 
-exports[`Extend Route Generator Should duplicate route if non overridable 1`] = `
+exports[`Route Generator Should not throw error when specify invalid directory 1`] = `
 Array [
   Array [],
   Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. AnimalController.method() -> GET /animal/method
- - error PLUM1001: Duplicate route found in AnimalController.method() MyFacility",
+    "No controller found",
   ],
-  Array [
-    "2. MyFacility                -> GET /animal/method
- - error PLUM1001: Duplicate route found in AnimalController.method() MyFacility",
-  ],
-  Array [],
-]
-`;
-
-exports[`Extend Route Generator Should not duplicate route if overridable 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. AnimalController.method() -> GET /animal/method",
-  ],
-  Array [],
-]
-`;
-
-exports[`Route Generator Should able to set metadata overridable 1`] = `
-Array [
-  Object {
-    "action": Object {
-      "decorators": Array [],
-      "kind": "Method",
-      "name": "method",
-      "parameters": Array [],
-      "returnType": undefined,
-      "typeClassification": undefined,
-    },
-    "controller": Object {
-      "ctor": Object {
-        "kind": "Constructor",
-        "name": "constructor",
-        "parameters": Array [],
-      },
-      "decorators": Array [
-        Object {
-          "name": "plumier-meta:root",
-          "url": "beast",
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "inherit": true,
-          },
-        },
-      ],
-      "kind": "Class",
-      "methods": Array [
-        Object {
-          "decorators": Array [],
-          "kind": "Method",
-          "name": "method",
-          "parameters": Array [],
-          "returnType": undefined,
-          "typeClassification": undefined,
-        },
-      ],
-      "name": "AnimalController",
-      "properties": Array [],
-      "super": Object,
-      "type": AnimalController,
-      "typeClassification": "Class",
-    },
-    "group": undefined,
-    "kind": "ActionRoute",
-    "method": "get",
-    "overridable": true,
-    "url": "/beast/method",
-  },
 ]
 `;
 
@@ -275,19 +203,6 @@ Array [
 ]
 `;
 
-exports[`Route Grouping Should able to make endpoint overridable 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. AnimalController.method() -> GET /animal/method",
-  ],
-  Array [],
-]
-`;
-
 exports[`Route Grouping Should use directory tree as route 1`] = `
 Array [
   Array [],
@@ -346,105 +261,6 @@ Array [
   Object {
     "method": "put",
     "url": "/users/modify",
-  },
-]
-`;
-
-exports[`Route Merging Should ignore parameter name 1`] = `
-Array [
-  Object {
-    "kind": "ActionRoute",
-    "method": "post",
-    "url": "/users",
-  },
-  Object {
-    "access": "Public",
-    "kind": "ActionRoute",
-    "method": "get",
-    "url": "/users/:userId/animals/:animalId",
-  },
-]
-`;
-
-exports[`Route Merging Should keep duplicate if not overridable 1`] = `
-Array [
-  Object {
-    "access": "Public",
-    "kind": "ActionRoute",
-    "method": "get",
-    "url": "/users/:id",
-  },
-  Object {
-    "kind": "ActionRoute",
-    "method": "post",
-    "url": "/users",
-  },
-  Object {
-    "kind": "ActionRoute",
-    "method": "get",
-    "url": "/users/:id",
-  },
-]
-`;
-
-exports[`Route Merging Should merge nested routes 1`] = `
-Array [
-  Object {
-    "kind": "ActionRoute",
-    "method": "post",
-    "url": "/users",
-  },
-  Object {
-    "access": "Public",
-    "kind": "ActionRoute",
-    "method": "get",
-    "url": "/users/:userId/animals/:animalId",
-  },
-]
-`;
-
-exports[`Route Merging Should merge overridable route and maintain position 1`] = `
-Array [
-  Object {
-    "kind": "ActionRoute",
-    "method": "post",
-    "url": "/users",
-  },
-  Object {
-    "access": "Public",
-    "kind": "ActionRoute",
-    "method": "get",
-    "url": "/users/:id",
-  },
-]
-`;
-
-exports[`Route Merging Should merge route properly 1`] = `
-Array [
-  Object {
-    "kind": "ActionRoute",
-    "method": "post",
-    "url": "/users",
-  },
-  Object {
-    "kind": "ActionRoute",
-    "method": "get",
-    "url": "/users/:id",
-  },
-  Object {
-    "kind": "ActionRoute",
-    "method": "put",
-    "url": "/users/:id",
-  },
-  Object {
-    "kind": "ActionRoute",
-    "method": "patch",
-    "url": "/users/:id",
-  },
-  Object {
-    "kind": "ActionRoute",
-    "method": "delete",
-    "url": "/users/:id",
   },
 ]
 `;

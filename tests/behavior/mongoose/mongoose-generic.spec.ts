@@ -1,10 +1,9 @@
-import { Class, Configuration, consoleLog, val } from "@plumier/core"
+import { Class, Configuration, consoleLog, val, route, DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from "@plumier/core"
 import model, {
     collection,
     models,
     MongooseControllerGeneric,
     MongooseFacility,
-    MongooseGenericControllerFacility,
     MongooseHelper,
     MongooseOneToManyControllerGeneric,
     MongooseOneToManyRepository,
@@ -44,116 +43,18 @@ beforeEach(() => {
     mongoose.connection.models = {}
 })
 
-describe("Facility", () => {
-    function createApp() {
-        return new Plumier()
-            .set(new WebApiFacility())
-            .set(new MongooseFacility())
-    }
-    afterEach(() => consoleLog.clearMock())
-    it("Should load default models if no option specified", async () => {
-        @collection()
-        class Animal {
-            constructor(public name: string) { }
-        }
-        model(Animal)
-        const mock = consoleLog.startMock()
-        await createApp()
-            .set(new MongooseGenericControllerFacility())
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-    it("Should not generate model if not registered as mongoose model", async () => {
-        // @collection() <-- not registered
-        class Animal {
-            constructor(public name: string) { }
-        }
-        //model(Animal) <-- not registered
-        const mock = consoleLog.startMock()
-        await createApp()
-            .set(new MongooseGenericControllerFacility({ entities: Animal }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-    it("Should able to load external model", async () => {
-        const mock = consoleLog.startMock()
-        await createApp()
-            .set(new MongooseGenericControllerFacility({ entities: join(__dirname, "./absolute") }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-    it("Should able to load external model using relative path", async () => {
-        const mock = consoleLog.startMock()
-        await createApp()
-            .set(new MongooseGenericControllerFacility({ entities: "./relative" }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-    it("Should able specify rootPath", async () => {
-        @collection()
-        class Animal {
-            constructor(public name: string) { }
-        }
-        model(Animal)
-        const mock = consoleLog.startMock()
-        await createApp()
-            .set(new MongooseGenericControllerFacility({ rootPath: "api/v1", entities: Animal }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-    it("Should able to create API versioning with multiple facility", async () => {
-        @collection()
-        class Animal {
-            constructor(public name: string) { }
-        }
-        model(Animal)
-        const mock = consoleLog.startMock()
-        await createApp()
-            .set(new MongooseGenericControllerFacility({ rootPath: "api/v1", entities: Animal }))
-            .set(new MongooseGenericControllerFacility({ rootPath: "api/v2", entities: Animal }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-    it("Should able to create API versioning with external models", async () => {
-        // each version module uses their own mongoose instance and model generator
-        // each mongoose instance should be connected separately
-        await v1.helper.connect(await mong!.getUri())
-        await v2.helper.connect(await mong!.getUri())
-        const mock = consoleLog.startMock()
-        await createApp()
-            .set(new MongooseGenericControllerFacility({ rootPath: "api/v1", entities: "./v1" }))
-            .set(new MongooseGenericControllerFacility({ rootPath: "api/v2", entities: "./v2" }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-        await v1.helper.disconnect()
-        await v2.helper.disconnect()
-    })
-    it("Should able to create API version using default entities", async () => {
-        @collection()
-        class Animal {
-            constructor(public name: string) { }
-        }
-        model(Animal)
-        const mock = consoleLog.startMock()
-        await createApp()
-            .set(new MongooseGenericControllerFacility({ rootPath: "api/v1" }))
-            .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
-    })
-})
-
 describe("CRUD", () => {
     function createApp(option?: Partial<Configuration>) {
         return new Plumier()
             .set(new WebApiFacility())
             .set(new MongooseFacility())
-            .set(new MongooseGenericControllerFacility())
             .set(option || {})
             .initialize()
     }
     describe("CRUD Function", () => {
         it("Should serve GET /users?offset&limit", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -161,7 +62,7 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             const repo = new MongooseRepository(User)
             await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
             const { body } = await supertest(app.callback())
@@ -171,6 +72,7 @@ describe("CRUD", () => {
         })
         it("Should serve GET /users?offset&limit with default value", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -178,7 +80,7 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             const repo = new MongooseRepository(User)
             await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
             const { body } = await supertest(app.callback())
@@ -188,6 +90,7 @@ describe("CRUD", () => {
         })
         it("Should able to query by property GET /users?offset&limit&name", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -195,7 +98,7 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             const repo = new MongooseRepository(User)
             await repo.insert({ email: "jean.doe@gmail.com", name: "Jean Doe" })
             await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
@@ -206,6 +109,7 @@ describe("CRUD", () => {
         })
         it("Should set partial validation on query GET /users?offset&limit&name", async () => {
             @collection()
+            @route.controller()
             class User {
                 @val.required()
                 @reflect.noop()
@@ -214,7 +118,7 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             const repo = new MongooseRepository(User)
             await repo.insert({ email: "jean.doe@gmail.com", name: "Juan Doe" })
             await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
@@ -225,6 +129,7 @@ describe("CRUD", () => {
         })
         it("Should serve POST /users", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -232,7 +137,7 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             const repo = new MongooseRepository(User)
             const { body } = await supertest(app.callback())
                 .post("/users")
@@ -244,6 +149,7 @@ describe("CRUD", () => {
         })
         it("Should serve GET /users/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -251,7 +157,7 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             const repo = new MongooseRepository(User)
             const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
             const { body } = await supertest(app.callback())
@@ -262,6 +168,7 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id on GET /users/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -269,13 +176,14 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             await supertest(app.callback())
                 .get(`/users/lorem`)
                 .expect(422)
         })
         it("Should throw 404 if not found GET /users/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -283,13 +191,14 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             await supertest(app.callback())
                 .get(`/users/5099803df3f4948bd2f98391`)
                 .expect(404)
         })
         it("Should serve PUT /users/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -297,7 +206,7 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             const repo = new MongooseRepository(User)
             const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
             const { body } = await supertest(app.callback())
@@ -310,6 +219,7 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id on PUT /users/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -317,7 +227,7 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             await supertest(app.callback())
                 .put(`/users/lorem`)
                 .send({ name: "Jane Doe" })
@@ -325,6 +235,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found PUT /users/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -332,7 +243,7 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             await supertest(app.callback())
                 .put(`/users/5099803df3f4948bd2f98391`)
                 .send({ name: "Jane Doe" })
@@ -340,6 +251,7 @@ describe("CRUD", () => {
         })
         it("Should serve PATCH /users/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -347,7 +259,7 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             const repo = new MongooseRepository(User)
             const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
             const { body } = await supertest(app.callback())
@@ -360,6 +272,7 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id on PATCH /users/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -367,7 +280,7 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             await supertest(app.callback())
                 .patch(`/users/lorem`)
                 .send({ name: "Jane Doe" })
@@ -375,6 +288,7 @@ describe("CRUD", () => {
         })
         it("Should set partial validation on PATCH /users/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @val.required()
                 @reflect.noop()
@@ -383,7 +297,7 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             const repo = new MongooseRepository(User)
             const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
             const { body } = await supertest(app.callback())
@@ -396,6 +310,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found PATCH /users/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -403,7 +318,7 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             await supertest(app.callback())
                 .patch(`/users/5099803df3f4948bd2f98391`)
                 .send({ name: "Jane Doe" })
@@ -411,6 +326,7 @@ describe("CRUD", () => {
         })
         it("Should serve DELETE /users/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -418,7 +334,7 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             const repo = new MongooseRepository(User)
             const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
             const { body } = await supertest(app.callback())
@@ -429,6 +345,7 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id on DELETE /users/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -436,13 +353,14 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             await supertest(app.callback())
                 .delete(`/users/lorem`)
                 .expect(422)
         })
         it("Should throw 404 if not found DELETE /users/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -450,13 +368,14 @@ describe("CRUD", () => {
                 name: string
             }
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: User, mode: "production" })
             await supertest(app.callback())
                 .delete(`/users/5099803df3f4948bd2f98391`)
                 .expect(404)
         })
         it("Should able to use custom generic controller with custom repository", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -473,8 +392,7 @@ describe("CRUD", () => {
             const app = await new Plumier()
                 .set(new WebApiFacility())
                 .set(new MongooseFacility())
-                .set(new MongooseGenericControllerFacility({ controller: MyCustomGeneric }))
-                .set({ mode: "production" })
+                .set({ mode: "production", controller: User, genericController:[MyCustomGeneric, DefaultOneToManyControllerGeneric] })
                 .initialize()
             await supertest(app.callback())
                 .post("/users")
@@ -491,22 +409,25 @@ describe("CRUD", () => {
         }
         it("Should serve GET /users/:parentId/animals?offset&limit", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
@@ -518,22 +439,25 @@ describe("CRUD", () => {
         })
         it("Should serve GET /users/:parentId/animals?offset&limit with default value", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
@@ -544,44 +468,50 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id on GET /users/:parentId/animals?offset&limit", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             await supertest(app.callback())
                 .get(`/users/lorem/animals?offset=0&limit=20`)
                 .expect(422)
         })
         it("Should find by name GET /users/:parentId/animals?offset&limit ", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
             await animalRepo.insert(user._id.toHexString(), { name: `Jojo` })
@@ -593,15 +523,18 @@ describe("CRUD", () => {
         })
         it("Should set partial validation on query on GET /users/:parentId/animals?offset&limit", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @val.required()
                 @reflect.noop()
@@ -611,7 +544,7 @@ describe("CRUD", () => {
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
             await animalRepo.insert(user._id.toHexString(), { name: `Jojo`, age: 5 })
@@ -623,22 +556,25 @@ describe("CRUD", () => {
         })
         it("Should serve POST /users/:parentId/animals", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             const repo = new MongooseRepository(User)
             await supertest(app.callback())
@@ -654,22 +590,25 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id on POST /users/:parentId/animals", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             await supertest(app.callback())
                 .post(`/users/lorem/animals`)
                 .send({ name: "Mimi" })
@@ -677,22 +616,25 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if parent not found POST /users/:parentId/animals", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             await supertest(app.callback())
                 .post(`/users/5099803df3f4948bd2f98391/animals`)
@@ -701,22 +643,25 @@ describe("CRUD", () => {
         })
         it("Should serve GET /users/:parentId/animals/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
@@ -727,44 +672,50 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id GET /users/:parentId/animals/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             await supertest(app.callback())
                 .get(`/users/lorem/animals/ipsum`)
                 .expect(422)
         })
         it("Should throw 404 if not found GET /users/:parentId/animals/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             await supertest(app.callback())
                 .get(`/users/${user._id}/animals/5099803df3f4948bd2f98391`)
@@ -772,22 +723,25 @@ describe("CRUD", () => {
         })
         it("Should serve PUT /users/:parentId/animals/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
@@ -800,22 +754,25 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id PUT /users/:parentId/animals/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             await supertest(app.callback())
                 .put(`/users/lorem/animals/lorem`)
                 .send({ name: "Poe" })
@@ -823,22 +780,25 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found PUT /users/:parentId/animals/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             await supertest(app.callback())
                 .put(`/users/${user._id}/animals/5099803df3f4948bd2f98391`)
@@ -847,22 +807,25 @@ describe("CRUD", () => {
         })
         it("Should serve PATCH /users/:parentId/animals/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
@@ -875,22 +838,25 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id PATCH /users/:parentId/animals/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             await supertest(app.callback())
                 .patch(`/users/lorem/animals/lorem`)
                 .send({ name: "Poe" })
@@ -898,15 +864,18 @@ describe("CRUD", () => {
         })
         it("Should set partial validation on PATCH /users/:parentId/animals/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
@@ -916,7 +885,7 @@ describe("CRUD", () => {
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi`, age: 4 })
@@ -929,22 +898,25 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found PATCH /users/:parentId/animals/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             await supertest(app.callback())
                 .patch(`/users/${user._id}/animals/5099803df3f4948bd2f98391`)
@@ -953,22 +925,25 @@ describe("CRUD", () => {
         })
         it("Should serve DELETE /users/:parentId/animals/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
@@ -980,44 +955,50 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id DELETE /users/:parentId/animals/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const { body } = await supertest(app.callback())
                 .delete(`/users/lorem/animals/lorem`)
                 .expect(422)
         })
         it("Should throw 404 if not found DELETE /users/:parentId/animals/:id", async () => {
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             model(Animal)
             model(User)
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             await supertest(app.callback())
                 .delete(`/users/${user._id}/animals/5099803df3f4948bd2f98391`)
@@ -1031,6 +1012,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             @collection()
@@ -1050,8 +1032,7 @@ describe("CRUD", () => {
             const app = await new Plumier()
                 .set(new WebApiFacility())
                 .set(new MongooseFacility())
-                .set(new MongooseGenericControllerFacility({ controller: MyCustomGeneric }))
-                .set({ mode: "production" })
+                .set({ mode: "production", controller: User, genericController:[DefaultControllerGeneric, MyCustomGeneric] })
                 .initialize()
             await supertest(app.callback())
                 .post(`/users/${user._id}/animals`)
@@ -1062,11 +1043,13 @@ describe("CRUD", () => {
     describe("One To One Function", () => {
         it("Should able to add with ID", async () => {
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -1078,7 +1061,7 @@ describe("CRUD", () => {
             const AnimalModel = model(Animal)
             const UserModel = model(User)
             const animal = await new AnimalModel({ name: "Mimi" }).save()
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [Animal, User], mode: "production" })
             const { body } = await supertest(app.callback())
                 .post(`/users`)
                 .send({ name: "John", animal: animal.id })
@@ -1088,11 +1071,13 @@ describe("CRUD", () => {
         })
         it("Should able to modify relation by ID", async () => {
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -1106,7 +1091,7 @@ describe("CRUD", () => {
             const animal = await new AnimalModel({ name: "Mimi" }).save()
             const user = await new UserModel({ name: "John", animal }).save()
             const otherAnimal = await new AnimalModel({ name: "Bingo" }).save()
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [Animal, User], mode: "production" })
             const { body } = await supertest(app.callback())
                 .patch(`/users/${user.id}`)
                 .send({ animal: otherAnimal.id })
@@ -1116,11 +1101,13 @@ describe("CRUD", () => {
         })
         it("Should populated on get by id", async () => {
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -1133,7 +1120,7 @@ describe("CRUD", () => {
             const UserModel = model(User)
             const animal = await new AnimalModel({ name: "Mimi" }).save()
             const user = await new UserModel({ name: "John", animal }).save()
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [Animal, User], mode: "production" })
             const { body } = await supertest(app.callback())
                 .get(`/users/${user.id}`)
                 .expect(200)
@@ -1141,11 +1128,13 @@ describe("CRUD", () => {
         })
         it("Should populated on multiple property", async () => {
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -1161,7 +1150,7 @@ describe("CRUD", () => {
             const animal = await new AnimalModel({ name: "Mimi" }).save()
             const second = await new AnimalModel({ name: "Bingo" }).save()
             const user = await new UserModel({ name: "John", animal, secondAnimal: second }).save()
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [Animal, User], mode: "production" })
             const { body } = await supertest(app.callback())
                 .get(`/users/${user.id}`)
                 .expect(200)
@@ -1169,17 +1158,20 @@ describe("CRUD", () => {
         })
         it("Should not populated one to many", async () => {
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
+                @route.controller()
                 animals: Animal[]
             }
             const AnimalModel = model(Animal)
@@ -1187,7 +1179,7 @@ describe("CRUD", () => {
             const animal = await new AnimalModel({ name: "Mimi" }).save()
             const second = await new AnimalModel({ name: "Bingo" }).save()
             const user = await new UserModel({ name: "John", animals: [animal.id, second.id] }).save()
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [Animal, User], mode: "production" })
             const { body } = await supertest(app.callback())
                 .get(`/users/${user.id}`)
                 .expect(200)
@@ -1197,11 +1189,13 @@ describe("CRUD", () => {
         })
         it("Should populated multiple result", async () => {
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -1216,7 +1210,7 @@ describe("CRUD", () => {
             await UserModel.deleteMany({})
             await new UserModel({ name: "John", animal }).save()
             await new UserModel({ name: "Jane", animal }).save()
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [Animal, User], mode: "production" })
             const { body } = await supertest(app.callback())
                 .get(`/users`)
                 .expect(200)
@@ -1226,11 +1220,13 @@ describe("CRUD", () => {
     describe("One To One on Nested Object", () => {
         it("Should able to add with ID", async () => {
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -1240,10 +1236,12 @@ describe("CRUD", () => {
                 animal: Animal
             }
             @collection()
+            @route.controller()
             class Parent {
                 @collection.property()
                 name: string
                 @collection.ref([User])
+                @route.controller()
                 children: User[]
             }
             const AnimalModel = model(Animal)
@@ -1251,7 +1249,7 @@ describe("CRUD", () => {
             const ParentModel = model(Parent)
             const animal = await new AnimalModel({ name: "Mimi" }).save()
             const parent = await new ParentModel({ name: "John" }).save()
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [Parent, User, Animal], mode: "production" })
             const { body } = await supertest(app.callback())
                 .post(`/parents/${parent.id}/children`)
                 .send({ name: "John", animal: animal.id })
@@ -1261,11 +1259,13 @@ describe("CRUD", () => {
         })
         it("Should able to modify relation by ID", async () => {
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -1275,10 +1275,12 @@ describe("CRUD", () => {
                 animal: Animal
             }
             @collection()
+            @route.controller()
             class Parent {
                 @collection.property()
                 name: string
                 @collection.ref([User])
+                @route.controller()
                 children: User[]
             }
             const AnimalModel = model(Animal)
@@ -1288,7 +1290,7 @@ describe("CRUD", () => {
             const parent = await new ParentModel({ name: "John" }).save()
             const user = await new UserModel({ name: "John", animal }).save()
             const otherAnimal = await new AnimalModel({ name: "Bingo" }).save()
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [Parent, User, Animal], mode: "production" })
             const { body } = await supertest(app.callback())
                 .patch(`/parents/${parent.id}/children/${user.id}`)
                 .send({ animal: otherAnimal.id })
@@ -1298,11 +1300,13 @@ describe("CRUD", () => {
         })
         it("Should populated on get by id", async () => {
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -1312,10 +1316,12 @@ describe("CRUD", () => {
                 animal: Animal
             }
             @collection()
+            @route.controller()
             class Parent {
                 @collection.property()
                 name: string
                 @collection.ref([User])
+                @route.controller()
                 children: User[]
             }
             const AnimalModel = model(Animal)
@@ -1324,7 +1330,7 @@ describe("CRUD", () => {
             const animal = await new AnimalModel({ name: "Mimi" }).save()
             const user = await new UserModel({ name: "John", animal }).save()
             const parent = await new ParentModel({ name: "John", children: [user.id] }).save()
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [Parent, User, Animal], mode: "production" })
             const { body } = await supertest(app.callback())
                 .get(`/parents/${parent.id}/children/${user.id}`)
                 .expect(200)
@@ -1332,11 +1338,13 @@ describe("CRUD", () => {
         })
         it("Should populated on multiple property", async () => {
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -1348,10 +1356,12 @@ describe("CRUD", () => {
                 secondAnimal: Animal
             }
             @collection()
+            @route.controller()
             class Parent {
                 @collection.property()
                 name: string
                 @collection.ref([User])
+                @route.controller()
                 children: User[]
             }
             const AnimalModel = model(Animal)
@@ -1361,7 +1371,7 @@ describe("CRUD", () => {
             const second = await new AnimalModel({ name: "Bingo" }).save()
             const user = await new UserModel({ name: "John", animal, secondAnimal: second }).save()
             const parent = await new ParentModel({ name: "John", children: [user.id] }).save()
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [Parent, User, Animal], mode: "production" })
             const { body } = await supertest(app.callback())
                 .get(`/parents/${parent.id}/children/${user.id}`)
                 .expect(200)
@@ -1369,11 +1379,13 @@ describe("CRUD", () => {
         })
         it("Should not populated one to many", async () => {
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -1383,10 +1395,12 @@ describe("CRUD", () => {
                 animals: Animal[]
             }
             @collection()
+            @route.controller()
             class Parent {
                 @collection.property()
                 name: string
                 @collection.ref([User])
+                @route.controller()
                 children: User[]
             }
             const AnimalModel = model(Animal)
@@ -1396,7 +1410,7 @@ describe("CRUD", () => {
             const second = await new AnimalModel({ name: "Bingo" }).save()
             const user = await new UserModel({ name: "John", animals: [animal.id, second.id] }).save()
             const parent = await new ParentModel({ name: "John", children: [user.id] }).save()
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [Parent, User, Animal], mode: "production" })
             const { body } = await supertest(app.callback())
                 .get(`/parents/${parent.id}/children/${user.id}`)
                 .expect(200)
@@ -1406,11 +1420,13 @@ describe("CRUD", () => {
         })
         it("Should populated multiple result", async () => {
             @collection()
+            @route.controller()
             class Animal {
                 @reflect.noop()
                 name: string
             }
             @collection()
+            @route.controller()
             class User {
                 @reflect.noop()
                 email: string
@@ -1420,10 +1436,12 @@ describe("CRUD", () => {
                 animal: Animal
             }
             @collection()
+            @route.controller()
             class Parent {
                 @collection.property()
                 name: string
                 @collection.ref([User])
+                @route.controller()
                 children: User[]
             }
             const AnimalModel = model(Animal)
@@ -1431,10 +1449,10 @@ describe("CRUD", () => {
             const ParentModel = model(Parent)
             const animal = await new AnimalModel({ name: "Mimi" }).save()
             const second = await new AnimalModel({ name: "Bingo" }).save()
-            const user = await new UserModel({ name: "John", animal: animal.id}).save()
-            const secondUser = await new UserModel({ name: "Jane", animal: second.id}).save()
+            const user = await new UserModel({ name: "John", animal: animal.id }).save()
+            const secondUser = await new UserModel({ name: "Jane", animal: second.id }).save()
             const parent = await new ParentModel({ name: "John", children: [user.id, secondUser.id] }).save()
-            const app = await createApp({ mode: "production" })
+            const app = await createApp({ controller: [Parent, User, Animal], mode: "production" })
             const { body } = await supertest(app.callback())
                 .get(`/parents/${parent.id}/children`)
                 .expect(200)
@@ -1448,13 +1466,13 @@ describe("Open API", () => {
         return new Plumier()
             .set(new WebApiFacility())
             .set(new MongooseFacility())
-            .set(new MongooseGenericControllerFacility())
             .set(new SwaggerFacility())
-            .set({ mode: "production" })
+            .set({ ...option })
             .initialize()
     }
     it("Should mark ref populate property as readonly and write only", async () => {
         @collection()
+        @route.controller()
         class User {
             id: string
             @reflect.noop()
@@ -1462,24 +1480,26 @@ describe("Open API", () => {
             @reflect.noop()
             name: string
             @collection.ref(x => [Animal])
+            @route.controller()
             animals: Animal[]
         }
         @collection()
+        @route.controller()
         class Animal {
             @reflect.noop()
             name: string
         }
         model(Animal)
         model(User)
-        const app = await createApp({ mode: "production" })
+        const app = await createApp({ controller: [User, Animal], mode: "production" })
         const { body } = await supertest(app.callback())
             .get("/swagger/swagger.json")
             .expect(200)
-
         expect(body.components.schemas.User).toMatchSnapshot()
     })
     it("Should mark createdAt property as readonly ", async () => {
         @collection()
+        @route.controller()
         class Animal {
             @reflect.noop()
             name: string
@@ -1487,7 +1507,7 @@ describe("Open API", () => {
             createdAt: Date
         }
         model(Animal)
-        const app = await createApp({ mode: "production" })
+        const app = await createApp({ controller: [Animal], mode: "production" })
         const { body } = await supertest(app.callback())
             .get("/swagger/swagger.json")
             .expect(200)
@@ -1495,6 +1515,7 @@ describe("Open API", () => {
     })
     it("Should mark updatedAt property as readonly ", async () => {
         @collection()
+        @route.controller()
         class Animal {
             @reflect.noop()
             name: string
@@ -1502,7 +1523,7 @@ describe("Open API", () => {
             updatedAt: Date
         }
         model(Animal)
-        const app = await createApp({ mode: "production" })
+        const app = await createApp({ controller: [Animal], mode: "production" })
         const { body } = await supertest(app.callback())
             .get("/swagger/swagger.json")
             .expect(200)
@@ -1510,6 +1531,7 @@ describe("Open API", () => {
     })
     it("Should mark id property as readonly ", async () => {
         @collection()
+        @route.controller()
         class Animal {
             @reflect.noop()
             name: string
@@ -1517,7 +1539,7 @@ describe("Open API", () => {
             id: string
         }
         model(Animal)
-        const app = await createApp({ mode: "production" })
+        const app = await createApp({ controller: [Animal], mode: "production" })
         const { body } = await supertest(app.callback())
             .get("/swagger/swagger.json")
             .expect(200)
@@ -1525,6 +1547,7 @@ describe("Open API", () => {
     })
     it("Should transform relation into their appropriate ID type", async () => {
         @collection()
+        @route.controller()
         class User {
             id: string
             @reflect.noop()
@@ -1532,29 +1555,32 @@ describe("Open API", () => {
             @reflect.noop()
             name: string
             @collection.ref(x => [Animal])
+            @route.controller()
             animals: Animal[]
         }
         @collection()
+        @route.controller()
         class Animal {
             @reflect.noop()
             name: string
         }
         model(Animal)
         model(User)
-        const app = await createApp({ mode: "production" })
+        const app = await createApp({ controller: [User, Animal], mode: "production" })
         const { body } = await supertest(app.callback())
             .get("/swagger/swagger.json")
             .expect(200)
         expect(body.paths["/users"].post).toMatchSnapshot()
     })
     it("Should transform relation into their appropriate ID type on one to one relation", async () => {
-
         @collection()
+        @route.controller()
         class Animal {
             @reflect.noop()
             name: string
         }
         @collection()
+        @route.controller()
         class User {
             id: string
             @reflect.noop()
@@ -1566,7 +1592,7 @@ describe("Open API", () => {
         }
         model(Animal)
         model(User)
-        const app = await createApp({ mode: "production" })
+        const app = await createApp({ controller: [User, Animal], mode: "production" })
         const { body } = await supertest(app.callback())
             .get("/swagger/swagger.json")
             .expect(200)
@@ -1583,6 +1609,7 @@ describe("Repository", () => {
         const uri = await mong?.getUri()
         await helper.connect(uri!)
         @collection()
+        @route.controller()
         class User {
             @reflect.noop()
             email: string
@@ -1603,15 +1630,18 @@ describe("Repository", () => {
         const uri = await mong?.getUri()
         await helper.connect(uri!)
         @collection()
+        @route.controller()
         class User {
             @reflect.noop()
             email: string
             @reflect.noop()
             name: string
             @collection.ref(x => [Animal])
+            @route.controller()
             animals: Animal[]
         }
         @collection()
+        @route.controller()
         class Animal {
             @reflect.noop()
             name: string

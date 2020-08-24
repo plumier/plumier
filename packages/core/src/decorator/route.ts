@@ -1,7 +1,13 @@
-import { decorateClass, decorateMethod, decorate, DecoratorId } from "tinspector"
+import { CustomPropertyDecorator, decorate, decorateClass, decorateMethod, DecoratorId } from "tinspector"
 
-import { HttpMethod } from "../types"
+import { Class } from "../common"
+import { updateGenericControllerRegistry } from "../generic-controller"
 import { IgnoreDecorator, RootDecorator, RouteDecorator } from "../route-generator"
+import { ControllerGeneric, HttpMethod, OneToManyControllerGeneric } from "../types"
+
+interface GenericControllerDecorator {
+   name: "plumier-meta:controller"
+}
 
 interface IgnoreOption {
    /**
@@ -281,8 +287,21 @@ class RouteDecoratorImpl {
     ```
     */
    ignore(opt?: IgnoreOption) { return decorate(<IgnoreDecorator>{ [DecoratorId]: "route:ignore", name: "plumier-meta:ignore", action: opt?.action }, ["Class", "Method", "Property", "Parameter"], { allowMultiple: false }) }
+
+   /**
+    * Mark an entity will be handled by a CRUD generic controller
+    */
+   controller() {
+      return decorate((...args: any[]) => {
+         if (args.length === 3 && typeof args[2] === "number") 
+            updateGenericControllerRegistry(args[0])
+         else 
+            updateGenericControllerRegistry(args[0])
+         return <GenericControllerDecorator>{ name: "plumier-meta:controller" }
+      })
+   }
 }
 
 const route = new RouteDecoratorImpl()
 
-export { route, RouteDecoratorImpl }
+export { route, RouteDecoratorImpl, GenericControllerDecorator }
