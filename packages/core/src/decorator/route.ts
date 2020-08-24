@@ -1,9 +1,9 @@
-import { CustomPropertyDecorator, decorate, decorateClass, decorateMethod, DecoratorId } from "tinspector"
+import { decorate, decorateClass, decorateMethod, DecoratorId } from "tinspector"
 
-import { Class } from "../common"
 import { updateGenericControllerRegistry } from "../generic-controller"
 import { IgnoreDecorator, RootDecorator, RouteDecorator } from "../route-generator"
-import { ControllerGeneric, HttpMethod, OneToManyControllerGeneric } from "../types"
+import { HttpMethod } from "../types"
+
 
 interface GenericControllerDecorator {
    name: "plumier-meta:controller"

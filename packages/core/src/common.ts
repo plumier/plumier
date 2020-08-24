@@ -1,8 +1,9 @@
-import { lstatSync, existsSync } from "fs"
+import { lstatSync } from "fs"
 import glob from "glob"
-import { extname } from "path"
 import reflect, { useCache } from "tinspector"
-import { EntityIdDecorator } from './decorator/entity'
+
+import { EntityIdDecorator } from "./decorator/entity"
+
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -229,4 +230,5 @@ namespace entityHelper {
 export {
     ellipsis, toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, entityHelper,
     findFilesRecursive, memoize, printTable, cleanupConsole, analyzeModel, AnalysisMessage
-};
+}
+

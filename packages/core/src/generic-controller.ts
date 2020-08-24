@@ -1,4 +1,4 @@
-import reflect, { decorateClass, generic, GenericTypeDecorator, PropertyReflection } from "tinspector"
+import reflect, { decorateClass, generic, GenericTypeDecorator } from "tinspector"
 import { val } from "typedconverter"
 
 import { AuthorizeDecorator } from "./authorization"
@@ -6,10 +6,12 @@ import { Class, entityHelper } from "./common"
 import { api } from "./decorator/api"
 import { bind } from "./decorator/bind"
 import { domain } from "./decorator/common"
-import { route, GenericControllerDecorator } from "./decorator/route"
+import { RelationDecorator } from "./decorator/entity"
+import { GenericControllerDecorator, route } from "./decorator/route"
 import { IgnoreDecorator, RouteDecorator } from "./route-generator"
 import {
     ControllerGeneric,
+    errorMessage,
     GenericController,
     HttpMethod,
     HttpStatusError,
@@ -17,10 +19,7 @@ import {
     OneToManyRepository,
     RelationPropertyDecorator,
     Repository,
-    errorMessage,
 } from "./types"
-import { RelationDecorator, relation } from './decorator/entity'
-
 
 // --------------------------------------------------------------------- //
 // ---------------------------- CONTROLLERS ---------------------------- //

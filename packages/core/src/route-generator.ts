@@ -1,10 +1,14 @@
+import { existsSync } from "fs"
 import { ClassReflection, MethodReflection, reflect } from "tinspector"
 
 import { Class, findFilesRecursive } from "./common"
-import { createGenericControllers, genericControllerRegistry, DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from "./generic-controller"
+import {
+   createGenericControllers,
+   DefaultControllerGeneric,
+   DefaultOneToManyControllerGeneric,
+   genericControllerRegistry,
+} from "./generic-controller"
 import { GenericController, HttpMethod, RouteInfo, RouteMetadata } from "./types"
-import { x, exist } from '@hapi/joi'
-import { existsSync } from 'fs-extra'
 
 
 // --------------------------------------------------------------------- //
