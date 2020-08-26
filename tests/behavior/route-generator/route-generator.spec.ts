@@ -153,6 +153,24 @@ describe("Route Generator", () => {
         consoleLog.clearMock()
     })
 
+    it("Should able to search all on nested directory", async () => {
+        const mock = consoleLog.startMock()
+        await fixture(join(__dirname, "nested/**"), {mode: "debug"})
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+
+    it("Should not use directoryAsPath with glob", async () => {
+        const mock = consoleLog.startMock()
+        await new Plumier()
+            .set(new WebApiFacility())
+            .set(new ControllerFacility({controller: "nested-w*/**/*.ts", directoryAsPath:true}))
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+
     it("Should able to provided multiple globs", async () => {
         const mock = consoleLog.startMock()
         await fixture(["nested/api/v1/*.ts", "nested/api/v2/*.ts"], { mode: "debug" })

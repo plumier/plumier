@@ -18,7 +18,7 @@ interface RouteDecorator { name: "plumier-meta:route", method: HttpMethod, url?:
 interface IgnoreDecorator { name: "plumier-meta:ignore", action?: string | string[] }
 interface RootDecorator { name: "plumier-meta:root", url: string }
 interface TransformOption {
-   rootDir?:string
+   rootDir?: string
    rootPath?: string,
    group?: string,
    directoryAsPath?: boolean,
@@ -26,8 +26,8 @@ interface TransformOption {
    genericControllerNameConversion?: (x: string) => string
 }
 interface ClassWithRoot {
-   root:string,
-   type:Class
+   root: string,
+   type: Class
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -58,14 +58,15 @@ function getRootRoutes(root: string, controller: ClassReflection): string[] {
    }
 }
 
-
 function getRoot(rootPath: string, path: string) {
+   // directoryAsPath should not working with glob
+   if(rootPath.indexOf("*") >= 0) return
    const part = path.slice(rootPath.length).split("/").filter(x => !!x)
       .slice(0, -1)
    return (part.length === 0) ? undefined : appendRoute(...part)
 }
 
-async function findClassRecursive(path: string):Promise<ClassWithRoot[]> {
+async function findClassRecursive(path: string): Promise<ClassWithRoot[]> {
    //read all files and get module reflection
    const files = await findFilesRecursive(path)
    const result = []
@@ -169,7 +170,7 @@ async function extractController(controller: string | string[] | Class[] | Class
       return result
    }
    else if (Array.isArray(controller)) {
-      const raw = controller as (string|Class)[]
+      const raw = controller as (string | Class)[]
       const controllers = await Promise.all(raw.map(x => extractController(x, option)))
       return controllers.flatten()
    }
