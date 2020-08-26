@@ -211,6 +211,7 @@ Object {
   "genericControllerRegistry": Map {},
   "getChildValue": getChildValue,
   "getGenericControllerOneToOneRelations": getGenericControllerOneToOneRelations,
+  "globAsync": globAsync,
   "hasKeyOf": hasKeyOf,
   "invoke": invoke,
   "isCustomClass": isCustomClass,

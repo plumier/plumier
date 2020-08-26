@@ -1598,16 +1598,16 @@ describe("Extend Route Generator", () => {
 })
 
 describe("Route Ignore", () => {
-    it("Should able to ignore class from route generation", () => {
+    it("Should able to ignore class from route generation", async () => {
         @route.ignore()
         class UsersController {
             @route.get("")
             get(id: string) { }
         }
-        const routes = generateRoutes(UsersController)
+        const routes = await generateRoutes(UsersController)
         expect(routes).toMatchSnapshot()
     })
-    it("Should able to ignore specific methods from class ignore", () => {
+    it("Should able to ignore specific methods from class ignore", async () => {
         @route.ignore({ action: ["get", "save"] })
         class UsersController {
             @route.get("")
@@ -1619,11 +1619,11 @@ describe("Route Ignore", () => {
             @route.put(":id")
             modify(id: string) { }
         }
-        const routes = generateRoutes(UsersController)
+        const routes = await generateRoutes(UsersController)
         expect(routes.map(x => ({ method: x.method, url: x.url }))).toMatchSnapshot()
     })
 
-    it("Should able to ignore specific methods from class ignore with multiple root route", () => {
+    it("Should able to ignore specific methods from class ignore with multiple root route", async () => {
         @route.ignore({ action: ["get", "save"] })
         @route.root("users")
         @route.root("clients")
@@ -1637,10 +1637,10 @@ describe("Route Ignore", () => {
             @route.put(":id")
             modify(id: string) { }
         }
-        const routes = generateRoutes(UsersController)
+        const routes = await generateRoutes(UsersController)
         expect(routes.map(x => ({ method: x.method, url: x.url }))).toMatchSnapshot()
     })
-    it("Should able to ignore specific methods from class ignore with multiple route", () => {
+    it("Should able to ignore specific methods from class ignore with multiple route", async () => {
         @route.ignore({ action: ["get", "save"] })
         class UsersController {
             @route.get("")
@@ -1654,7 +1654,7 @@ describe("Route Ignore", () => {
             @route.put()
             modify(id: string) { }
         }
-        const routes = generateRoutes(UsersController)
+        const routes = await generateRoutes(UsersController)
         expect(routes.map(x => ({ method: x.method, url: x.url }))).toMatchSnapshot()
     })
 })

@@ -1,27 +1,30 @@
 import {
+    api,
     authorize,
     Class,
     DefaultFacility,
     entityHelper,
-    findClassRecursive,
+    findFilesRecursive,
+    genericControllerRegistry,
     PlumierApplication,
     primaryId,
     relation,
     RelationDecorator,
-    api,
-    findFilesRecursive,
-    genericControllerRegistry,
+    globAsync,
 } from "@plumier/core"
+import { lstat } from "fs"
+import glob from "glob"
+import pluralize from "pluralize"
 import reflect, { noop } from "tinspector"
 import { Result, ResultMessages, VisitorInvocation } from "typedconverter"
-import { ConnectionOptions, createConnection, getMetadataArgsStorage, getConnectionOptions, EntitySchema } from "typeorm"
+import { ConnectionOptions, createConnection, getConnectionOptions, getMetadataArgsStorage } from "typeorm"
+import { promisify } from "util"
 import validator from "validator"
-import { lstatSync } from "fs"
-import glob from "glob"
-
 
 import { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
-import pluralize from 'pluralize'
+
+const lstatAsync = promisify(lstat)
+
 
 interface TypeORMFacilityOption {
     connection?: ConnectionOptions
@@ -69,11 +72,11 @@ async function loadEntities(connection?: ConnectionOptions) {
         if (!entities) return
         for (const entity of entities) {
             if (typeof entity !== "string") continue
-            const files = glob.sync(entity, { absolute: true })
+            const files = await globAsync(entity, { absolute: true })
             for (const file of files) {
-                const stat = lstatSync(file)
+                const stat = await lstatAsync(file)
                 if (stat.isDirectory()) {
-                    const files = findFilesRecursive(file)
+                    const files = await findFilesRecursive(file)
                     for (const f of files) {
                         require(f)
                     }
@@ -125,10 +128,10 @@ class TypeORMFacility extends DefaultFacility {
         }
     }
 
-    setup(app: Readonly<PlumierApplication>){
-        Object.assign(app.config, { 
+    setup(app: Readonly<PlumierApplication>) {
+        Object.assign(app.config, {
             genericController: [TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric],
-            genericControllerNameConversion: (x:string) => pluralize(x)
+            genericControllerNameConversion: (x: string) => pluralize(x)
         })
     }
 
