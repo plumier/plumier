@@ -18,7 +18,7 @@ import BodyParser from "koa-body"
 import { isAbsolute, join } from "path"
 
 export interface WebApiFacilityOption {
-    controller?: string | Class | Class[],
+    controller?: string | string[] | Class | Class[],
     bodyParser?: BodyParser.IKoaBodyOptions,
     cors?: Cors.Options | boolean,
     trustProxyHeader?: boolean,
@@ -39,9 +39,8 @@ export class WebApiFacility extends DefaultFacility {
     constructor(private opt?: WebApiFacilityOption) { super() }
 
     async generateRoutes(app: Readonly<PlumierApplication>) {
-        const { controller, rootDir } = app.config
-        let ctl = typeof controller === "string" && !isAbsolute(controller) ? join(rootDir, controller) : controller
-        return generateRoutes(ctl, { ...app.config })
+        const { controller } = app.config
+        return generateRoutes(controller, { ...app.config })
     }
 
     setup(app: Readonly<PlumierApplication>) {
@@ -141,7 +140,7 @@ export interface ControllerFacilityOption {
     /**
      * Controllers or controller path
      */
-    controller: string | Class | Class[],
+    controller: string | string[] | Class | Class[],
 
     /**
      * Transform nested directories as route path, default true
@@ -157,8 +156,7 @@ export class ControllerFacility extends DefaultFacility {
     async generateRoutes(app: Readonly<PlumierApplication>) {
         const { rootDir } = app.config
         const controller = this.option.controller
-        let ctl = typeof controller === "string" && !isAbsolute(controller) ? join(rootDir, controller) : controller
-        return generateRoutes(ctl, {
+        return generateRoutes(controller, {
             ...app.config,
             ...this.option
         })

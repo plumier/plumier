@@ -32,6 +32,141 @@ Array [
 ]
 `;
 
+exports[`Route Generator Should able to provided multiple globs 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "[31m1. AnimalController.get()  -> GET /animal/get[39m
+[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+  ],
+  Array [
+    "2. CatController.get()     -> GET /kitty/get",
+  ],
+  Array [
+    "3. DuckController.get()    -> GET /quack/get",
+  ],
+  Array [
+    "4. ChickenController.get() -> GET /chicken",
+  ],
+  Array [
+    "[31m5. AnimalController.get()  -> GET /animal/get[39m
+[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Should able to provided multiple path 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "[31m1. AnimalController.get()  -> GET /animal/get[39m
+[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+  ],
+  Array [
+    "2. CatController.get()     -> GET /kitty/get",
+  ],
+  Array [
+    "3. DuckController.get()    -> GET /quack/get",
+  ],
+  Array [
+    "4. ChickenController.get() -> GET /chicken",
+  ],
+  Array [
+    "[31m5. AnimalController.get()  -> GET /animal/get[39m
+[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Should able to provided multiple path with absolute 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "[31m1. AnimalController.get()  -> GET /animal/get[39m
+[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+  ],
+  Array [
+    "2. CatController.get()     -> GET /kitty/get",
+  ],
+  Array [
+    "3. DuckController.get()    -> GET /quack/get",
+  ],
+  Array [
+    "4. ChickenController.get() -> GET /chicken",
+  ],
+  Array [
+    "[31m5. AnimalController.get()  -> GET /animal/get[39m
+[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Should able to transform using absolute glob 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "[31m1. AnimalController.get()  -> GET /animal/get[39m
+[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+  ],
+  Array [
+    "2. CatController.get()     -> GET /kitty/get",
+  ],
+  Array [
+    "3. DuckController.get()    -> GET /quack/get",
+  ],
+  Array [
+    "4. ChickenController.get() -> GET /chicken",
+  ],
+  Array [
+    "[31m5. AnimalController.get()  -> GET /animal/get[39m
+[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Should able to transform using relative glob 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "[31m1. AnimalController.get()  -> GET /animal/get[39m
+[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+  ],
+  Array [
+    "2. CatController.get()     -> GET /kitty/get",
+  ],
+  Array [
+    "3. DuckController.get()    -> GET /quack/get",
+  ],
+  Array [
+    "4. ChickenController.get() -> GET /chicken",
+  ],
+  Array [
+    "[31m5. AnimalController.get()  -> GET /animal/get[39m
+[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+  ],
+  Array [],
+]
+`;
+
 exports[`Route Generator Should not throw error when specify invalid directory 1`] = `
 Array [
   Array [],

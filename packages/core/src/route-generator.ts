@@ -9,6 +9,7 @@ import {
    genericControllerRegistry,
 } from "./generic-controller"
 import { GenericController, HttpMethod, RouteInfo, RouteMetadata } from "./types"
+import { isAbsolute, join } from "path"
 
 
 // --------------------------------------------------------------------- //
@@ -19,6 +20,7 @@ interface RouteDecorator { name: "plumier-meta:route", method: HttpMethod, url?:
 interface IgnoreDecorator { name: "plumier-meta:ignore", action?: string | string[] }
 interface RootDecorator { name: "plumier-meta:root", url: string }
 interface TransformOption {
+   rootDir?:string
    rootPath?: string,
    group?: string,
    directoryAsPath?: boolean,
@@ -150,10 +152,10 @@ function transformController(object: Class, opt: Required<TransformOption>) {
    return infos
 }
 
-function extractController(controller: string | Class[] | Class, option: Required<TransformOption>): { root: string, type: Class }[] {
+function extractController(controller: string | string[] | Class[] | Class, option: Required<TransformOption>): { root: string, type: Class }[] {
    if (typeof controller === "string") {
-      if (!existsSync(controller)) return []
-      const types = findClassRecursive(controller)
+      const ctl = isAbsolute(controller) ? controller : join(option.rootDir, controller)
+      const types = findClassRecursive(ctl)
       const result = []
       for (const type of types) {
          const ctl = extractController(type.type, option)
@@ -183,11 +185,11 @@ function extractController(controller: string | Class[] | Class, option: Require
    return []
 }
 
-function generateRoutes(controller: string | Class[] | Class, option?: TransformOption): RouteMetadata[] {
+function generateRoutes(controller: string | string[] | Class[] | Class, option?: TransformOption): RouteMetadata[] {
    const opt: Required<TransformOption> = {
       genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric],
       genericControllerNameConversion: (x: string) => x,
-      group: undefined as any, rootPath: "",
+      group: undefined as any, rootPath: "", rootDir: "",
       directoryAsPath: true,
       ...option
    }
