@@ -121,6 +121,46 @@ describe("Route Generator", () => {
             .expect(200)
     })
 
+    it("Should able to provided multiple path", async () => {
+        const mock = consoleLog.startMock()
+        await fixture(["nested/api/v1", "nested/api/v2"], { mode: "debug" })
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+
+    it("Should able to provided multiple path with absolute", async () => {
+        const mock = consoleLog.startMock()
+        await fixture([join(__dirname, "nested/api/v1"), join(__dirname, "nested/api/v2")], { mode: "debug" })
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+
+    it("Should able to transform using relative glob", async () => {
+        const mock = consoleLog.startMock()
+        await fixture("nested/**/*.ts", {mode: "debug"})
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+
+    it("Should able to transform using absolute glob", async () => {
+        const mock = consoleLog.startMock()
+        await fixture(join(__dirname, "nested/**/*.ts"), {mode: "debug"})
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+
+    it("Should able to provided multiple globs", async () => {
+        const mock = consoleLog.startMock()
+        await fixture(["nested/api/v1/*.ts", "nested/api/v2/*.ts"], { mode: "debug" })
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+
     it("Should able to rename class name using relative route in nested controller", async () => {
         const app = await fixture(join(__dirname, "nested"))
             .initialize()
@@ -160,7 +200,7 @@ describe("Route Generator", () => {
 
     it("Should not throw error when specify invalid directory", async () => {
         const mock = consoleLog.startMock()
-        await fixture(join(__dirname, "not-exits"), {mode: "debug"})
+        await fixture(join(__dirname, "not-exits"), { mode: "debug" })
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
         consoleLog.clearMock()
@@ -1522,7 +1562,7 @@ describe("Extend Route Generator", () => {
         class MyFacility extends DefaultFacility {
             constructor(private ctl: Class) { super() }
             async generateRoutes(app: Readonly<PlumierApplication>) {
-                return generateRoutes(this.ctl, {...app.config})
+                return generateRoutes(this.ctl, { ...app.config })
             }
         }
         const mock = consoleLog.startMock()

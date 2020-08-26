@@ -410,7 +410,7 @@ export interface Configuration {
     /**
      * Specify controller path (absolute or relative to entry point) or the controller classes array.
      */
-    controller: string | Class[] | Class
+    controller: string | string[] | Class[] | Class
 
     /**
      * Set custom dependency resolver for dependency injection

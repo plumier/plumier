@@ -1,4 +1,4 @@
-import { lstatSync } from "fs"
+import { lstatSync, existsSync } from "fs"
 import glob from "glob"
 import reflect, { useCache } from "tinspector"
 
@@ -109,14 +109,27 @@ function cleanupConsole(mocks: string[][]) {
 // ---------------------------- FILE SYSTEM ---------------------------- //
 // --------------------------------------------------------------------- //
 
+function removeExtension(x:string) {
+    return x.replace(/\.[^/.]+$/, "")
+}
+
+function traverseDirectory(path:string) {
+    const files = glob.sync(path)
+        .map(x => removeExtension(x))
+    return Array.from(new Set(files))
+}
+
 function findFilesRecursive(path: string): string[] {
-    const removeExtension = (x: string) => x.replace(/\.[^/.]+$/, "")
-    if (lstatSync(path).isDirectory()) {
-        const files = glob.sync(`${path}/**/*+(.js|.ts)`)
-            .map(x => removeExtension(x))
-        return Array.from(new Set(files))
+    // if file / directory provided
+    if(existsSync(path)){
+        if(lstatSync(path).isDirectory()){
+            return traverseDirectory(`${path}/**/*.{ts,js}`)
+        }
+        else 
+            return [removeExtension(path)]
     }
-    else return [path]
+    // else check if glob provided
+    return traverseDirectory(path)
 }
 
 // --------------------------------------------------------------------- //
