@@ -124,7 +124,7 @@ function globAsync(path: string, opts?: glob.IOptions) {
 }
 
 async function traverseDirectory(path: string) {
-    const dirs = await globAsync(path)
+    const dirs = await globAsync(path, { nodir: true })
     const files = dirs.map(x => removeExtension(x))
     return Array.from(new Set(files))
 }
