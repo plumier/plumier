@@ -39,8 +39,8 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "[31m1. AnimalController.get()  -> GET /animal/get[39m
-[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+    "1. AnimalController.get()  -> GET /animal/get
+ - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()",
   ],
   Array [
     "2. CatController.get()     -> GET /kitty/get",
@@ -52,8 +52,8 @@ Array [
     "4. ChickenController.get() -> GET /chicken",
   ],
   Array [
-    "[31m5. AnimalController.get()  -> GET /animal/get[39m
-[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+    "5. AnimalController.get()  -> GET /animal/get
+ - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()",
   ],
   Array [],
 ]
@@ -66,8 +66,8 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "[31m1. AnimalController.get()  -> GET /animal/get[39m
-[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+    "1. AnimalController.get()  -> GET /animal/get
+ - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()",
   ],
   Array [
     "2. CatController.get()     -> GET /kitty/get",
@@ -79,8 +79,8 @@ Array [
     "4. ChickenController.get() -> GET /chicken",
   ],
   Array [
-    "[31m5. AnimalController.get()  -> GET /animal/get[39m
-[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+    "5. AnimalController.get()  -> GET /animal/get
+ - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()",
   ],
   Array [],
 ]
@@ -93,8 +93,8 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "[31m1. AnimalController.get()  -> GET /animal/get[39m
-[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+    "1. AnimalController.get()  -> GET /animal/get
+ - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()",
   ],
   Array [
     "2. CatController.get()     -> GET /kitty/get",
@@ -106,8 +106,8 @@ Array [
     "4. ChickenController.get() -> GET /chicken",
   ],
   Array [
-    "[31m5. AnimalController.get()  -> GET /animal/get[39m
-[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+    "5. AnimalController.get()  -> GET /animal/get
+ - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()",
   ],
   Array [],
 ]
@@ -120,8 +120,8 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "[31m1. AnimalController.get()  -> GET /animal/get[39m
-[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+    "1. AnimalController.get()  -> GET /animal/get
+ - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()",
   ],
   Array [
     "2. CatController.get()     -> GET /kitty/get",
@@ -133,8 +133,8 @@ Array [
     "4. ChickenController.get() -> GET /chicken",
   ],
   Array [
-    "[31m5. AnimalController.get()  -> GET /animal/get[39m
-[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+    "5. AnimalController.get()  -> GET /animal/get
+ - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()",
   ],
   Array [],
 ]
@@ -147,8 +147,8 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "[31m1. AnimalController.get()  -> GET /animal/get[39m
-[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+    "1. AnimalController.get()  -> GET /animal/get
+ - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()",
   ],
   Array [
     "2. CatController.get()     -> GET /kitty/get",
@@ -160,8 +160,8 @@ Array [
     "4. ChickenController.get() -> GET /chicken",
   ],
   Array [
-    "[31m5. AnimalController.get()  -> GET /animal/get[39m
-[31m - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()[39m",
+    "5. AnimalController.get()  -> GET /animal/get
+ - error PLUM1001: Duplicate route found in AnimalController.get() AnimalController.get()",
   ],
   Array [],
 ]

@@ -125,7 +125,7 @@ describe("Route Generator", () => {
         const mock = consoleLog.startMock()
         await fixture(["nested/api/v1", "nested/api/v2"], { mode: "debug" })
             .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
 
@@ -133,7 +133,7 @@ describe("Route Generator", () => {
         const mock = consoleLog.startMock()
         await fixture([join(__dirname, "nested/api/v1"), join(__dirname, "nested/api/v2")], { mode: "debug" })
             .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
 
@@ -141,7 +141,7 @@ describe("Route Generator", () => {
         const mock = consoleLog.startMock()
         await fixture("nested/**/*.ts", {mode: "debug"})
             .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
 
@@ -149,7 +149,7 @@ describe("Route Generator", () => {
         const mock = consoleLog.startMock()
         await fixture(join(__dirname, "nested/**/*.ts"), {mode: "debug"})
             .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
 
@@ -157,7 +157,7 @@ describe("Route Generator", () => {
         const mock = consoleLog.startMock()
         await fixture(["nested/api/v1/*.ts", "nested/api/v2/*.ts"], { mode: "debug" })
             .initialize()
-        expect(mock.mock.calls).toMatchSnapshot()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
     })
 
