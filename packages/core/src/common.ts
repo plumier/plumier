@@ -1,8 +1,13 @@
-import { lstatSync, existsSync } from "fs"
+import { lstat, exists } from "fs"
 import glob from "glob"
-import { extname } from "path"
 import reflect, { useCache } from "tinspector"
-import { EntityIdDecorator } from './decorator/entity'
+import { promisify } from "util"
+
+import { EntityIdDecorator } from "./decorator/entity"
+
+
+const lstatAsync = promisify(lstat)
+const existsAsync = promisify(exists)
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -108,14 +113,33 @@ function cleanupConsole(mocks: string[][]) {
 // ---------------------------- FILE SYSTEM ---------------------------- //
 // --------------------------------------------------------------------- //
 
-function findFilesRecursive(path: string): string[] {
-    const removeExtension = (x: string) => x.replace(/\.[^/.]+$/, "")
-    if (lstatSync(path).isDirectory()) {
-        const files = glob.sync(`${path}/**/*+(.js|.ts)`)
-            .map(x => removeExtension(x))
-        return Array.from(new Set(files))
+function removeExtension(x: string) {
+    return x.replace(/\.[^/.]+$/, "")
+}
+
+function globAsync(path: string, opts?: glob.IOptions) {
+    return new Promise<string[]>((resolve) => {
+        glob(path, { ...opts }, (e, match) => resolve(match))
+    })
+}
+
+async function traverseDirectory(path: string) {
+    const dirs = await globAsync(path, { nodir: true })
+    const files = dirs.map(x => removeExtension(x))
+    return Array.from(new Set(files))
+}
+
+async function findFilesRecursive(path: string): Promise<string[]> {
+    // if file / directory provided
+    if (await existsAsync(path)) {
+        if ((await lstatAsync(path)).isDirectory()) {
+            return traverseDirectory(`${path}/**/*.{ts,js}`)
+        }
+        else
+            return [removeExtension(path)]
     }
-    else return [path]
+    // else check if glob provided
+    return traverseDirectory(path)
 }
 
 // --------------------------------------------------------------------- //
@@ -228,5 +252,6 @@ namespace entityHelper {
 
 export {
     ellipsis, toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, entityHelper,
-    findFilesRecursive, memoize, printTable, cleanupConsole, analyzeModel, AnalysisMessage
-};
+    findFilesRecursive, memoize, printTable, cleanupConsole, analyzeModel, AnalysisMessage, globAsync
+}
+

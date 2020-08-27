@@ -3,51 +3,117 @@ id: first-class-entity
 title: First Class Entity
 ---
 
-If you are an experienced programmer, you will understand that using Entity as a DTO (Data Transfer Object) is not a good idea, because it has some unexpected property such as relational property, and may expose some sensitive data such as user password etc.
+Entity object takes an important role in Plumier, it's not just as an object mapping to database table, but can be safely used as a DTO (Data Transfer Object). 
 
-Plumier has some built-in functionalities to be able to make entity as a first class citizen. First class entity means its safe to use entity anywhere on the application layers, for example as DTO and also as an object map to database table. 
+## Features
 
-### Security
-Security issue is the most important issue that need to tackle on first class entity. Without proper security handling entity can expose sensitive data easily. 
+Plumier treats entity objects as a first class citizen and provides some extra features to make it possible to use in every part of the application.
 
-Plumier has [parameter authorization](../refs/Authorization.md#parameter-authorization) and [authorization filter](../refs/Authorization.md#authorization-filter) to restrict access to request or response properties declaratively. 
+### 1. Property Authorization 
+Its a common best practice to have a separate class for DTO and entity because entities may contains properties related wit a sensitive data. 
 
-As an example, we can configure our `User` entity that we used earlier to safely used as a DTO for request or response body. 
+```typescript
+class User {
+    // auto generated (no one allowed to write)
+    @authorize.readonly()
+    id:number
 
-```typescript {7,11}
-@Entity()
-export class User {
-    
-    /* ... other properties ... */
+    email:string
 
-    @Column()
+    // prevent value being visible on any response
     @authorize.writeonly()
     password:string
 
-    @Column({ default: "User" })
-    @authorize.set("SuperAdmin")
+    name:string
+
+    // visible to anyone but only Admin and SuperAdmin allowed to set
+    @authorize.set("Admin", "SuperAdmin")
     role: "User" | "Admin" | "SuperAdmin"
 }
 ```
 
-Above showing that we secure our sensitive data using `@authorize` decorator. We restrict `password` only as write only, it will make password will not visible in any response body including nested property that uses `User` entity as data type. We also configure the `role` property to only can be set by `SuperAdmin` but can be viewed by everyone. 
+Property authorization allows you to use above entity as a DTO safely, and make security review on your code easier. Above code showing that the `User` entity decorated with some authorization decorator
+* It prevents end user to set the `id` property
+* It prevents password being leaked to the end user 
+* It prevents `User` role set the role property
 
-### Relation Issue
 
-### Type Conversion
-Entity relation can be difficult issue when dealing with type conversion. Type converter need to understand that the relation property can be populated by id which mostly a primitive value. 
+### 2. Overridable Relation Metadata
+Its a common feature that an ORM/ODM entity contains relation property to represent relation with another entities. 
 
 ```typescript
-@Entity()
-export class Item {
-    
-    /* ... other properties ... */
+class Item {
+    @primaryId()
+    id:number
 
-    @ManyToOne(x => Category)
-    category: Category
+    name:string
+
+    price: number
+
+    @relation()
+    category: ItemCategory
+}
+
+class ItemCategory {
+    @primaryId()
+    id:number 
+
+    name:string
+
+    @relation()
+    items:Item[]
 }
 ```
 
-When above entity used as a request body DTO without having further setup will cause type conversion error when API client tries to set the `category` property. 
+Overridable relations means the metadata information of the relation properties can be overridden into of type of opposites ID instead of the object itself. This means 
+* Type conversion module allows end user to provide ID of the relation instead of the full object. On above example the `Item.category` can be filled with ID of the `Category` (a number). And the `ItemCategory.items` also can be filled with array of `Item` ids (array of number).
+* Open API generation module can provide a proper information that above relations can be filled with data of type number.
 
-### Open API Schema
+### 3. Escapable Required Validation
+When an entity used as DTO its need to add some required validation rule into the entity itself. But in case of `PATCH` method which should allow any property to be filled with null, its need to be configured like below
+
+```typescript
+class Item {
+    id:number
+
+    @val.required()
+    name:string
+
+    @val.required()
+    price:string
+}
+
+class ItemsController {
+    // PATCH /items/:id
+    @route.patch(":id")
+    modify(id:number, @val.partial(Item) data:Item){ }
+}
+```
+
+Above code showing that the `@val.partial(Item)` will tells the validator that all the required properties should be skipped from the validation. 
+
+### 4. Sharable Authorization 
+
+Plumier provide the same authorization decorator that can be used in Controllers or Entities. Providing authorization on the class level of the controller is possible.
+
+```typescript
+@authorize.set("Admin")
+class ItemsController {
+    // handles CRUD with POST, PUT, GET, DELETE
+}
+```
+
+Using above code will make all `ItemsController` actions handles write access (`POST`, `PUT`, `PATCH` and `DELETE`) will be restricted only to Admin role. Above code will 
+
+1. Nested routes 
+   - Map one to many entity relation into nested routes 
+2. Flexible parameter binding
+   - Parameter binding should able to map entity into query string for searching
+   - Search should follow secure property on rule #1
+3. Auto populate nested properties 
+   - Entity with relation one to one or many to one should be automatically populated
+
+
+
+## Benefit
+When 

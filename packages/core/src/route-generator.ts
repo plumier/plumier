@@ -1,11 +1,14 @@
+import { isAbsolute, join } from "path"
 import { ClassReflection, MethodReflection, reflect } from "tinspector"
 
 import { Class, findFilesRecursive } from "./common"
-import { createGenericControllers, genericControllerRegistry, DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from "./generic-controller"
+import {
+   createGenericControllers,
+   DefaultControllerGeneric,
+   DefaultOneToManyControllerGeneric,
+   genericControllerRegistry,
+} from "./generic-controller"
 import { GenericController, HttpMethod, RouteInfo, RouteMetadata } from "./types"
-import { x, exist } from '@hapi/joi'
-import { existsSync } from 'fs-extra'
-
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -15,11 +18,16 @@ interface RouteDecorator { name: "plumier-meta:route", method: HttpMethod, url?:
 interface IgnoreDecorator { name: "plumier-meta:ignore", action?: string | string[] }
 interface RootDecorator { name: "plumier-meta:root", url: string }
 interface TransformOption {
+   rootDir?: string
    rootPath?: string,
    group?: string,
    directoryAsPath?: boolean,
    genericController?: GenericController
    genericControllerNameConversion?: (x: string) => string
+}
+interface ClassWithRoot {
+   root: string,
+   type: Class
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -50,21 +58,23 @@ function getRootRoutes(root: string, controller: ClassReflection): string[] {
    }
 }
 
-
 function getRoot(rootPath: string, path: string) {
+   // directoryAsPath should not working with glob
+   if(rootPath.indexOf("*") >= 0) return
    const part = path.slice(rootPath.length).split("/").filter(x => !!x)
       .slice(0, -1)
    return (part.length === 0) ? undefined : appendRoute(...part)
 }
 
-function findClassRecursive(path: string) {
+async function findClassRecursive(path: string): Promise<ClassWithRoot[]> {
    //read all files and get module reflection
-   const files = findFilesRecursive(path)
+   const files = await findFilesRecursive(path)
    const result = []
    for (const file of files) {
       const root = getRoot(path, file) ?? ""
-      for (const member of (reflect(file).members as ClassReflection[])) {
-         result.push({ root, type: member.type })
+      for (const member of reflect(file).members) {
+         if (member.kind === "Class")
+            result.push({ root, type: member.type })
       }
    }
    return result
@@ -145,13 +155,13 @@ function transformController(object: Class, opt: Required<TransformOption>) {
    return infos
 }
 
-function extractController(controller: string | Class[] | Class, option: Required<TransformOption>): { root: string, type: Class }[] {
+async function extractController(controller: string | string[] | Class[] | Class, option: Required<TransformOption>): Promise<ClassWithRoot[]> {
    if (typeof controller === "string") {
-      if (!existsSync(controller)) return []
-      const types = findClassRecursive(controller)
+      const ctl = isAbsolute(controller) ? controller : join(option.rootDir, controller)
+      const types = await findClassRecursive(ctl)
       const result = []
       for (const type of types) {
-         const ctl = extractController(type.type, option)
+         const ctl = await extractController(type.type, option)
          result.push(...ctl.map(x => ({
             root: option.directoryAsPath ? type.root : "",
             type: x.type
@@ -160,12 +170,9 @@ function extractController(controller: string | Class[] | Class, option: Require
       return result
    }
    else if (Array.isArray(controller)) {
-      const result = []
-      for (const item of controller) {
-         const ctl = extractController(item, option)
-         result.push(...ctl)
-      }
-      return result
+      const raw = controller as (string | Class)[]
+      const controllers = await Promise.all(raw.map(x => extractController(x, option)))
+      return controllers.flatten()
    }
    const meta = reflect(controller)
    // common controller
@@ -178,15 +185,15 @@ function extractController(controller: string | Class[] | Class, option: Require
    return []
 }
 
-function generateRoutes(controller: string | Class[] | Class, option?: TransformOption): RouteMetadata[] {
+async function generateRoutes(controller: string | string[] | Class[] | Class, option?: TransformOption): Promise<RouteMetadata[]> {
    const opt: Required<TransformOption> = {
       genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric],
       genericControllerNameConversion: (x: string) => x,
-      group: undefined as any, rootPath: "",
+      group: undefined as any, rootPath: "", rootDir: "",
       directoryAsPath: true,
       ...option
    }
-   const controllers = extractController(controller, opt)
+   const controllers = await extractController(controller, opt)
    let routes: RouteInfo[] = []
    for (const controller of controllers) {
       routes.push(...transformController(controller.type, {

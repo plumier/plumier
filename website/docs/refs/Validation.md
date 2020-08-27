@@ -109,7 +109,7 @@ app.use({execute: async x => {
     catch(e){
         if(e instanceof ValidationError){
             //e.issues contains information of validation:
-            throw new HttpStatusError(500, "<Your custom message>")
+            throw new HttpStatusError(422, "<Your custom message>")
         }
         else 
             throw e

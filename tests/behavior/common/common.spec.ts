@@ -1,4 +1,4 @@
-import { consoleLog, printTable, ellipsis, analyzeModel, domain } from "@plumier/core"
+import { consoleLog, printTable, ellipsis, analyzeModel, domain, globAsync } from "@plumier/core"
 import reflect from "tinspector"
 
 describe("PrintTable", () => {
@@ -90,8 +90,8 @@ describe("Model Analyser", () => {
         @domain()
         class MyModel {
             constructor(
-                public parent:ParentModel
-            ){}
+                public parent: ParentModel
+            ) { }
         }
         expect(analyzeModel(MyModel)).toMatchSnapshot()
     })
@@ -117,8 +117,8 @@ describe("Model Analyser", () => {
         class MyModel {
             constructor(
                 @reflect.type([ParentModel])
-                public parent:ParentModel[]
-            ){}
+                public parent: ParentModel[]
+            ) { }
         }
         expect(analyzeModel(MyModel)).toMatchSnapshot()
     })
@@ -129,18 +129,16 @@ describe("Model Analyser", () => {
                 public name: string,
                 public date: Readonly<Date>,
                 @reflect.type(x => [MyModel])
-                public children:MyModel[]
+                public children: MyModel[]
             ) { }
         }
         @domain()
         class MyModel {
             constructor(
                 @reflect.type([ParentModel])
-                public parent:ParentModel[]
-            ){}
+                public parent: ParentModel[]
+            ) { }
         }
         expect(analyzeModel(MyModel)).toMatchSnapshot()
     })
 })
-
-

@@ -3,7 +3,13 @@ import { copyFile } from "fs"
 import { Server } from "http"
 import Koa, { Context } from "koa"
 import { extname, join } from "path"
-import reflect, { ClassReflection, decorateClass, MethodReflection, PropertyReflection, ParameterReflection, GenericTypeDecorator } from "tinspector"
+import reflect, {
+    ClassReflection,
+    decorateClass,
+    MethodReflection,
+    ParameterReflection,
+    PropertyReflection,
+} from "tinspector"
 import { VisitorExtension } from "typedconverter"
 import { promisify } from "util"
 
@@ -404,7 +410,7 @@ export interface Configuration {
     /**
      * Specify controller path (absolute or relative to entry point) or the controller classes array.
      */
-    controller: string | Class[] | Class
+    controller: string | string[] | Class[] | Class
 
     /**
      * Set custom dependency resolver for dependency injection
