@@ -37,7 +37,7 @@ type AuthorizerFunction = (info: AuthorizationContext, location: "Class" | "Para
 interface AuthorizeDecorator {
     type: "plumier-meta:authorize",
     authorize: string | AuthorizerFunction | Authorizer
-    access: "get" | "set" | "all"
+    access: "read" | "write" | "all"
     tag: string,
     location: "Class" | "Parameter" | "Method",
     evaluation: "Static" | "Dynamic"
@@ -157,7 +157,7 @@ interface ParamCheckContext {
 async function executeDecorators(decorators: AuthorizeDecorator[], info: AuthorizationContext, path: string) {
     const result: string[] = []
     for (const dec of decorators) {
-        if (dec.access === "get") continue;
+        if (dec.access === "read") continue;
         const allowed = await executeDecorator(dec, info)
         if (!allowed)
             result.push(path)
@@ -277,7 +277,7 @@ interface ClassNode {
 }
 
 async function createPropertyNode(prop: PropertyReflection, info: AuthorizerContext) {
-    const decorators = prop.decorators.filter(createDecoratorFilter(x => x.access === "get" || x.access === "all"))
+    const decorators = prop.decorators.filter(createDecoratorFilter(x => x.access === "read" || x.access === "all"))
     // if no authorize decorator then always allow to access
     let authorizer: (boolean | Authorizer)[] = [decorators.length === 0]
     for (const dec of decorators) {

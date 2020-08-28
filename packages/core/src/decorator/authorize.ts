@@ -5,7 +5,7 @@ import { errorMessage } from "../types"
 import { api } from "./api"
 
 
-type AccessModifier = "get" | "set" | "all"
+type AccessModifier = "read" | "write" | "all"
 type FunctionEvaluation = "Static" | "Dynamic"
 interface CustomAuthorizeOption {
     /**
@@ -86,7 +86,7 @@ class AuthDecoratorImpl {
         }, ["Class", "Parameter", "Method", "Property"])
     }
 
-    private byRole(roles: any[], access: "all" | "get" | "set") {
+    private byRole(roles: any[], access: "all" | "read" | "write") {
         const last = roles[roles.length - 1]
         const defaultOpt = { access, methods: [] }
         const opt: AuthorizeSelectorOption = typeof last === "string" ? defaultOpt : { ...defaultOpt, ...last }
@@ -144,30 +144,30 @@ class AuthDecoratorImpl {
      * Authorize entity or parameter or domain property only can be retrieved by specific role
      * @param role List of allowed roles
      */
-    get(...roles: string[]) {
-        return this.byRole(roles, "get")
+    read(...roles: string[]) {
+        return this.byRole(roles, "read")
     }
 
     /**
      * Authorize entity  parameter or domain property only can be set by specific role
      * @param role List of allowed role
      */
-    set(...roles: string[]) {
-        return this.byRole(roles, "set")
+    write(...roles: string[]) {
+        return this.byRole(roles, "write")
     }
 
     /**
      * Mark parameter or property as readonly, no Role can set its value
      */
     readonly():CustomPropertyDecorator {
-        return mergeDecorator(this.set("plumier::readonly"), api.readonly())
+        return mergeDecorator(this.write("plumier::readonly"), api.readonly())
     }
 
     /**
      * Mark parameter or property as writeonly, no Role can read its value
      */
     writeonly():CustomPropertyDecorator {
-        return mergeDecorator(this.get("plumier::writeonly"), api.writeonly())
+        return mergeDecorator(this.read("plumier::writeonly"), api.writeonly())
     }
 }
 

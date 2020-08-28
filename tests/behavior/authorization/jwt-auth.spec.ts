@@ -1430,7 +1430,7 @@ describe("JwtAuth", () => {
                 class Animal {
                     constructor(name: string,
                         id: number | undefined,
-                        @authorize.custom(onlyAdmin, { access: "set" })
+                        @authorize.custom(onlyAdmin, { access: "write" })
                         deceased: boolean | undefined) { }
                 }
                 class AnimalController {
@@ -1461,7 +1461,7 @@ describe("JwtAuth", () => {
                 class Animal {
                     constructor(name: string,
                         id: number | undefined,
-                        @authorize.custom(onlyAdmin, { access: "set" })
+                        @authorize.custom(onlyAdmin, { access: "write" })
                         deceased: boolean | undefined) { }
                 }
                 class AnimalController {
@@ -1487,9 +1487,9 @@ describe("JwtAuth", () => {
                 @domain()
                 class Animal {
                     constructor(name: string,
-                        @authorize.custom(onlyAdmin, { access: "set" })
+                        @authorize.custom(onlyAdmin, { access: "write" })
                         id: number | undefined,
-                        @authorize.custom(onlyAdmin, { access: "set" })
+                        @authorize.custom(onlyAdmin, { access: "write" })
                         deceased: boolean | undefined) { }
                 }
                 class AnimalController {
@@ -1513,7 +1513,7 @@ describe("JwtAuth", () => {
                 it("Should authorize with set modifier", async () => {
                     class AnimalController {
                         @route.post()
-                        save(@authorize.set("admin")
+                        save(@authorize.write("admin")
                         id: number | undefined) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
@@ -1579,7 +1579,7 @@ describe("JwtAuth", () => {
                 it("Should ignore with get modifier", async () => {
                     class AnimalController {
                         @route.post()
-                        save(@authorize.get("admin")
+                        save(@authorize.read("admin")
                         id: number | undefined) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
@@ -1627,7 +1627,7 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.set("admin")
+                            @authorize.write("admin")
                             public id: number | undefined) { }
                     }
                     class AnimalController {
@@ -1708,7 +1708,7 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.get("admin")
+                            @authorize.read("admin")
                             public id: number | undefined) { }
                     }
                     class AnimalController {
@@ -1764,7 +1764,7 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.set("admin")
+                            @authorize.write("admin")
                             public id: number | undefined) { }
                     }
                     @domain()
@@ -1863,7 +1863,7 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.get("admin")
+                            @authorize.read("admin")
                             public id: number | undefined) { }
                     }
                     @domain()
@@ -1931,7 +1931,7 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.set("admin")
+                            @authorize.write("admin")
                             public id: number | undefined) { }
                     }
                     class AnimalController {
@@ -2012,7 +2012,7 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.get("admin")
+                            @authorize.read("admin")
                             public id: number | undefined) { }
                     }
                     class AnimalController {
@@ -2074,7 +2074,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.get("admin")
+                        @authorize.read("admin")
                         public password: string
                     ) { }
                 }
@@ -2101,7 +2101,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.set("admin")
+                        @authorize.write("admin")
                         public role: string
                     ) { }
                 }
@@ -2129,7 +2129,7 @@ describe("JwtAuth", () => {
                 class User {
                     @reflect.noop()
                     public name: string
-                    @authorize.get("admin")
+                    @authorize.read("admin")
                     public password: string
                 }
                 class UsersController {
@@ -2154,7 +2154,7 @@ describe("JwtAuth", () => {
                 class User {
                     @reflect.noop()
                     public name: string
-                    @authorize.set("admin")
+                    @authorize.write("admin")
                     public role: string
                 }
                 class UsersController {
@@ -2182,8 +2182,8 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.get("superadmin")
-                        @authorize.get("admin")
+                        @authorize.read("superadmin")
+                        @authorize.read("admin")
                         public password: string
                     ) { }
                 }
@@ -2214,7 +2214,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.get("admin", "superadmin")
+                        @authorize.read("admin", "superadmin")
                         public password: string
                     ) { }
                 }
@@ -2245,7 +2245,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.set("admin")
+                        @authorize.write("admin")
                         public password: string
                     ) { }
                 }
@@ -2302,7 +2302,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.get("admin")
+                        @authorize.read("admin")
                         public password: string
                     ) { }
                 }
@@ -2329,8 +2329,8 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.get("superadmin")
-                        @authorize.get("admin")
+                        @authorize.read("superadmin")
+                        @authorize.read("admin")
                         public password: string
                     ) { }
                 }
@@ -2361,7 +2361,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.get("admin", "superadmin")
+                        @authorize.read("admin", "superadmin")
                         public password: string
                     ) { }
                 }
@@ -2392,7 +2392,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.set("admin")
+                        @authorize.write("admin")
                         public password: string
                     ) { }
                 }
@@ -2449,7 +2449,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.get("admin")
+                        @authorize.read("admin")
                         public password: string
                     ) { }
                 }
@@ -2480,8 +2480,8 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.get("superadmin")
-                        @authorize.get("admin")
+                        @authorize.read("superadmin")
+                        @authorize.read("admin")
                         public password: string
                     ) { }
                 }
@@ -2516,7 +2516,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.get("admin", "superadmin")
+                        @authorize.read("admin", "superadmin")
                         public password: string
                     ) { }
                 }
@@ -2551,7 +2551,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.set("admin")
+                        @authorize.write("admin")
                         public password: string
                     ) { }
                 }
@@ -2746,7 +2746,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.custom(onlyAdmin, { access: "get" })
+                        @authorize.custom(onlyAdmin, { access: "read" })
                         public password: string
                     ) { }
                 }

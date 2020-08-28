@@ -265,14 +265,14 @@ function copyDecorators(decorators: any[], controller: Class) {
                 }
                 return result
             }
-            // add extra action filter for decorator @authorize.get() and @authorize.set() 
+            // add extra action filter for decorator @authorize.read() and @authorize.write() 
             // get will only applied to actions with GET method 
             // set will only applied to actions with mutation DELETE, PATCH, POST, PUT
-            if (authDec.access === "get") {
+            if (authDec.access === "read") {
                 authDec.action = findAction("get")
                 result.push(decorator)
             }
-            if (authDec.access === "set") {
+            if (authDec.access === "write") {
                 authDec.action = findAction("delete", "patch", "post", "put")
                 result.push(decorator)
             }
