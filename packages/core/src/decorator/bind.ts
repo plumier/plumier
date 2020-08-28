@@ -91,9 +91,14 @@ export namespace bind {
      * Bind current login user to parameter
      *    
      *     method(@bind.user() user:User){}
+     * 
+     * If parameter provided, part of query property will be bound
+     * 
+     *     method(@bind.user("userId") id:string){}
+     *     method(@bind.user("role") role:string){}
      */
-    export function user() {
-        return ctxDecorator("user", "state.user")
+    export function user(part?: string) {
+        return ctxDecorator("user", ["state", "user", part].join("."))
     }
 
     /**
