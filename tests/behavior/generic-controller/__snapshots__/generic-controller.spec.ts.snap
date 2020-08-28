@@ -564,7 +564,7 @@ Array [
 ]
 `;
 
-exports[`Route Generator Generic Controller Should able to set @authorize.get() from entity 1`] = `
+exports[`Route Generator Generic Controller Should able to set @authorize.read() from entity 1`] = `
 Array [
   Array [],
   Array [
@@ -592,7 +592,7 @@ Array [
 ]
 `;
 
-exports[`Route Generator Generic Controller Should able to set @authorize.set() from entity 1`] = `
+exports[`Route Generator Generic Controller Should able to set @authorize.write() from entity 1`] = `
 Array [
   Array [],
   Array [
@@ -1273,7 +1273,7 @@ Array [
 ]
 `;
 
-exports[`Route Generator One To Many Controller Should able to set @authorize.get() on relation 1`] = `
+exports[`Route Generator One To Many Controller Should able to set @authorize.read() on relation 1`] = `
 Array [
   Array [],
   Array [
@@ -1301,7 +1301,7 @@ Array [
 ]
 `;
 
-exports[`Route Generator One To Many Controller Should able to set @authorize.set() on relation 1`] = `
+exports[`Route Generator One To Many Controller Should able to set @authorize.write() on relation 1`] = `
 Array [
   Array [],
   Array [

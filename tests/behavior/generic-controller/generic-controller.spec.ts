@@ -280,10 +280,10 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to set @authorize.get() from entity", async () => {
+        it("Should able to set @authorize.read() from entity", async () => {
             @route.controller()
             @domain()
-            @authorize.get("admin")
+            @authorize.read("admin")
             class User {
                 constructor(
                     public name: string,
@@ -296,10 +296,10 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to set @authorize.set() from entity", async () => {
+        it("Should able to set @authorize.write() from entity", async () => {
             @route.controller()
             @domain()
-            @authorize.set("admin")
+            @authorize.write("admin")
             class User {
                 constructor(
                     public name: string,
@@ -590,7 +590,7 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to set @authorize.set() on relation", async () => {
+        it("Should able to set @authorize.write() on relation", async () => {
             class Animal {
                 @reflect.noop()
                 public name: string
@@ -600,7 +600,7 @@ describe("Route Generator", () => {
                 public name: string
                 @reflect.noop()
                 public email: string
-                @authorize.set("admin")
+                @authorize.write("admin")
                 @reflect.type([Animal])
                 @relation()
                 @route.controller()
@@ -612,7 +612,7 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to set @authorize.get() on relation", async () => {
+        it("Should able to set @authorize.read() on relation", async () => {
             class Animal {
                 @reflect.noop()
                 public name: string
@@ -622,7 +622,7 @@ describe("Route Generator", () => {
                 public name: string
                 @reflect.noop()
                 public email: string
-                @authorize.get("admin")
+                @authorize.read("admin")
                 @reflect.type([Animal])
                 @relation()
                 @route.controller()
@@ -634,7 +634,7 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to set @authorize.get() on relation", async () => {
+        it("Should able to set @authorize.read() on relation", async () => {
             class Animal {
                 @reflect.noop()
                 public name: string

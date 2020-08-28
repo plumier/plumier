@@ -105,7 +105,7 @@ Array [
     Object {
       "decorators": Array [
         Object {
-          "access": "set",
+          "access": "write",
           "action": Array [],
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
@@ -133,7 +133,7 @@ Array [
     Object {
       "decorators": Array [
         Object {
-          "access": "set",
+          "access": "write",
           "action": Array [],
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
