@@ -734,6 +734,7 @@ describe("Route Generator", () => {
 })
 
 describe("Property Binding", () => {
+    const delayLorem = () => new Promise<string>(resolve => setTimeout(x => resolve("lorem ipsum"), 50))
     describe("Generic Controller", () => {
         const fn = jest.fn()
         class MockRepo<T> implements Repository<T>{
@@ -792,6 +793,24 @@ describe("Property Binding", () => {
                 .expect(200)
             expect(fn.mock.calls).toMatchSnapshot()
         })
+        it("Should bind promise on post method", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => delayLorem())
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: User }).initialize()
+            await supertest(koa.callback())
+                .post("/user")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
         it("Should bind on put method", async () => {
             @route.controller()
             @domain()
@@ -810,6 +829,24 @@ describe("Property Binding", () => {
                 .expect(200)
             expect(fn.mock.calls).toMatchSnapshot()
         })
+        it("Should bind promise on put method", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => delayLorem())
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: User }).initialize()
+            await supertest(koa.callback())
+                .put("/user/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
         it("Should bind on patch method", async () => {
             @route.controller()
             @domain()
@@ -818,6 +855,24 @@ describe("Property Binding", () => {
                     public name: string,
                     public email: string,
                     @bind.custom(x => "lorem ipsum dolor")
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: User }).initialize()
+            await supertest(koa.callback())
+                .patch("/user/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind promise on patch method", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => delayLorem())
                     public random: string
                 ) { }
             }
@@ -897,6 +952,31 @@ describe("Property Binding", () => {
                 .expect(200)
             expect(fn.mock.calls).toMatchSnapshot()
         })
+        it("Should bind promise on post method", async () => {
+            @domain()
+            class Parent {
+                constructor(
+                    @route.controller()
+                    @type(x => [User])
+                    users:User[]
+                ){}
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => delayLorem())
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: Parent }).initialize()
+            await supertest(koa.callback())
+                .post("/parent/123/users")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
         it("Should bind on put method", async () => {
             @domain()
             class Parent {
@@ -922,6 +1002,31 @@ describe("Property Binding", () => {
                 .expect(200)
             expect(fn.mock.calls).toMatchSnapshot()
         })
+        it("Should bind promise on put method", async () => {
+            @domain()
+            class Parent {
+                constructor(
+                    @route.controller()
+                    @type(x => [User])
+                    users:User[]
+                ){}
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => delayLorem())
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: Parent }).initialize()
+            await supertest(koa.callback())
+                .put("/parent/123/users/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
         it("Should bind on patch method", async () => {
             @domain()
             class Parent {
@@ -937,6 +1042,31 @@ describe("Property Binding", () => {
                     public name: string,
                     public email: string,
                     @bind.custom(x => "lorem ipsum dolor")
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: Parent }).initialize()
+            await supertest(koa.callback())
+                .patch("/parent/123/users/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind promise on patch method", async () => {
+            @domain()
+            class Parent {
+                constructor(
+                    @route.controller()
+                    @type(x => [User])
+                    users:User[]
+                ){}
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => delayLorem())
                     public random: string
                 ) { }
             }

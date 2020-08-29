@@ -1087,6 +1087,18 @@ describe("Parameter Binding", () => {
                 connection: 'close'
             })
         })
+        it("Should able to provide Promised value", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.custom(ctx => Promise.resolve(123)) b: number) {
+                    return { b }
+                }
+            }
+            const result = await Supertest((await fixture(AnimalController).initialize()).callback())
+                .get("/animal/get")
+                .expect(200)
+            expect(result.body).toMatchSnapshot()
+        })
     })
 
     describe("Parameter binding with parameter destructuring", () => {

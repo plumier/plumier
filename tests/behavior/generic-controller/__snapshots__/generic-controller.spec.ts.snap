@@ -558,6 +558,50 @@ Array [
 ]
 `;
 
+exports[`Property Binding Generic Controller Should bind promise on patch method 1`] = `
+Array [
+  Array [
+    "123",
+  ],
+  Array [
+    "123",
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum",
+    },
+  ],
+]
+`;
+
+exports[`Property Binding Generic Controller Should bind promise on post method 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum",
+    },
+  ],
+]
+`;
+
+exports[`Property Binding Generic Controller Should bind promise on put method 1`] = `
+Array [
+  Array [
+    "123",
+  ],
+  Array [
+    "123",
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum",
+    },
+  ],
+]
+`;
+
 exports[`Property Binding One To Many Controller Should bind on patch method 1`] = `
 Array [
   Array [
@@ -597,6 +641,50 @@ Array [
       "email": "john.doe@gmail.com",
       "name": "John",
       "random": "lorem ipsum dolor",
+    },
+  ],
+]
+`;
+
+exports[`Property Binding One To Many Controller Should bind promise on patch method 1`] = `
+Array [
+  Array [
+    "123",
+  ],
+  Array [
+    "123",
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum",
+    },
+  ],
+]
+`;
+
+exports[`Property Binding One To Many Controller Should bind promise on post method 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum",
+    },
+  ],
+]
+`;
+
+exports[`Property Binding One To Many Controller Should bind promise on put method 1`] = `
+Array [
+  Array [
+    "123",
+  ],
+  Array [
+    "123",
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum",
     },
   ],
 ]
