@@ -196,6 +196,7 @@ Object {
     "DuplicateRouteFound": "PLUM1001: Duplicate route found in {0}",
     "FileSizeExceeded": "File {0} size exceeded the maximum size",
     "GenericControllerImplementationNotFound": "PLUM1009: Generic controller implementation not installed",
+    "GenericControllerMissingTypeInfo": "PLUM1010: {0} marked with @route.controller() but doesn't have type information",
     "ModelWithoutTypeInformation": "PLUM1005: Parameter binding skipped because {0} doesn't have type information on its properties",
     "NumberOfFilesExceeded": "Number of files exceeded the maximum allowed",
     "ObjectNotFound": "PLUM1003: Object with id {0} not found in Object registry",

@@ -344,6 +344,8 @@ function createGenericControllers(controller: Class, genericControllers: Generic
     for (const prop of meta.properties) {
         const decorator = prop.decorators.find((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
         if (!decorator) continue
+        if(!prop.type[0])
+            throw new Error(errorMessage.GenericControllerMissingTypeInfo.format(`${meta.name}.${prop.name}`))
         relations.push({ name: prop.name, type: prop.type[0], decorator })
     }
     for (const relation of relations) {

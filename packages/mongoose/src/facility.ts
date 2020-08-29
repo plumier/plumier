@@ -42,27 +42,25 @@ export class MongooseFacility extends DefaultFacility {
         this.option = { ...opts }
     }
 
-    setup(app: Readonly<PlumierApplication>){
-        Object.assign(app.config, { 
+    setup(app: Readonly<PlumierApplication>) {
+        Object.assign(app.config, {
             genericController: [MongooseControllerGeneric, MongooseOneToManyControllerGeneric],
-            genericControllerNameConversion: (x:string) => pluralize(x)
+            genericControllerNameConversion: (x: string) => pluralize(x)
         })
     }
 
     async initialize(app: Readonly<PlumierApplication>) {
         app.set({ typeConverterVisitors: [validateRelation] })
         const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
+        const helper = this.option.helper ?? { connect: Mongoose.connect, getModels }
         if (uri) {
-            if (this.option.helper)
-                await this.option.helper.connect(uri)
-            else
-                await Mongoose.connect(uri)
+            await helper.connect(uri)
         }
-        const entities = getModels()
+        const entities = helper.getModels()
         // update decorators for Open API schema
         for (const entity of entities) {
             const meta = reflect(entity)
-            const isGeneric = meta.decorators.find((x:GenericControllerDecorator) => x.name === "plumier-meta:controller")
+            const isGeneric = meta.decorators.find((x: GenericControllerDecorator) => x.name === "plumier-meta:controller")
             for (const property of meta.properties) {
                 if (["id", "createdAt", "updatedAt"].some(x => property.name === x)) {
                     Reflect.decorate([api.readonly()], entity.prototype, property.name)
