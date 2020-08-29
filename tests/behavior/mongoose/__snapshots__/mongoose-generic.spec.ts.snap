@@ -18,6 +18,34 @@ Array [
 ]
 `;
 
+exports[`CRUD CRUD with versioning Should able to load entity with versioning 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MongooseControllerGeneric.get(id)    -> GET    /users/:id",
+  ],
+  Array [
+    "2. MongooseControllerGeneric.modify     -> PATCH  /users/:id",
+  ],
+  Array [
+    "3. MongooseControllerGeneric.replace    -> PUT    /users/:id",
+  ],
+  Array [
+    "4. MongooseControllerGeneric.delete(id) -> DELETE /users/:id",
+  ],
+  Array [
+    "5. MongooseControllerGeneric.list       -> GET    /users",
+  ],
+  Array [
+    "6. MongooseControllerGeneric.save       -> POST   /users",
+  ],
+  Array [],
+]
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should find by name GET /users/:parentId/animals?offset&limit  1`] = `
 Array [
   Object {
