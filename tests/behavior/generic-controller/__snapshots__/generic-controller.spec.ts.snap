@@ -514,6 +514,94 @@ Object {
 }
 `;
 
+exports[`Property Binding Generic Controller Should bind on patch method 1`] = `
+Array [
+  Array [
+    "123",
+  ],
+  Array [
+    "123",
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum dolor",
+    },
+  ],
+]
+`;
+
+exports[`Property Binding Generic Controller Should bind on post method 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum dolor",
+    },
+  ],
+]
+`;
+
+exports[`Property Binding Generic Controller Should bind on put method 1`] = `
+Array [
+  Array [
+    "123",
+  ],
+  Array [
+    "123",
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum dolor",
+    },
+  ],
+]
+`;
+
+exports[`Property Binding One To Many Controller Should bind on patch method 1`] = `
+Array [
+  Array [
+    "123",
+  ],
+  Array [
+    "123",
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum dolor",
+    },
+  ],
+]
+`;
+
+exports[`Property Binding One To Many Controller Should bind on post method 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum dolor",
+    },
+  ],
+]
+`;
+
+exports[`Property Binding One To Many Controller Should bind on put method 1`] = `
+Array [
+  Array [
+    "123",
+  ],
+  Array [
+    "123",
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum dolor",
+    },
+  ],
+]
+`;
+
 exports[`Route Generator Generic Controller Should able to change root path 1`] = `
 Array [
   Array [],
@@ -521,22 +609,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list       -> GET    /api/v1/user",
+    "1. DefaultControllerGeneric.list            -> GET    /api/v1/user",
   ],
   Array [
-    "2. DefaultControllerGeneric.save(data) -> POST   /api/v1/user",
+    "2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id)    -> GET    /api/v1/user/:id",
+    "3. DefaultControllerGeneric.get(id)         -> GET    /api/v1/user/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.modify     -> PATCH  /api/v1/user/:id",
+    "4. DefaultControllerGeneric.modify          -> PATCH  /api/v1/user/:id",
   ],
   Array [
-    "5. DefaultControllerGeneric.replace    -> PUT    /api/v1/user/:id",
+    "5. DefaultControllerGeneric.replace         -> PUT    /api/v1/user/:id",
   ],
   Array [
-    "6. DefaultControllerGeneric.delete(id) -> DELETE /api/v1/user/:id",
+    "6. DefaultControllerGeneric.delete(id)      -> DELETE /api/v1/user/:id",
   ],
   Array [],
 ]
@@ -571,22 +659,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list       -> admin         GET    /user",
+    "1. DefaultControllerGeneric.list            -> admin         GET    /user",
   ],
   Array [
-    "2. DefaultControllerGeneric.save(data) -> Authenticated POST   /user",
+    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id)    -> admin         GET    /user/:id",
+    "3. DefaultControllerGeneric.get(id)         -> admin         GET    /user/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.modify     -> Authenticated PATCH  /user/:id",
+    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
   ],
   Array [
-    "5. DefaultControllerGeneric.replace    -> Authenticated PUT    /user/:id",
+    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
   ],
   Array [
-    "6. DefaultControllerGeneric.delete(id) -> Authenticated DELETE /user/:id",
+    "6. DefaultControllerGeneric.delete(id)      -> Authenticated DELETE /user/:id",
   ],
   Array [],
 ]
@@ -599,22 +687,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list       -> Authenticated GET    /user",
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
   ],
   Array [
-    "2. DefaultControllerGeneric.save(data) -> admin         POST   /user",
+    "2. DefaultControllerGeneric.save(data, ctx) -> admin         POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id)    -> Authenticated GET    /user/:id",
+    "3. DefaultControllerGeneric.get(id)         -> Authenticated GET    /user/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.modify     -> admin         PATCH  /user/:id",
+    "4. DefaultControllerGeneric.modify          -> admin         PATCH  /user/:id",
   ],
   Array [
-    "5. DefaultControllerGeneric.replace    -> admin         PUT    /user/:id",
+    "5. DefaultControllerGeneric.replace         -> admin         PUT    /user/:id",
   ],
   Array [
-    "6. DefaultControllerGeneric.delete(id) -> admin         DELETE /user/:id",
+    "6. DefaultControllerGeneric.delete(id)      -> admin         DELETE /user/:id",
   ],
   Array [],
 ]
@@ -627,22 +715,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list       -> Authenticated GET    /user",
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
   ],
   Array [
-    "2. DefaultControllerGeneric.save(data) -> admin         POST   /user",
+    "2. DefaultControllerGeneric.save(data, ctx) -> admin         POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id)    -> Authenticated GET    /user/:id",
+    "3. DefaultControllerGeneric.get(id)         -> Authenticated GET    /user/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.modify     -> admin         PATCH  /user/:id",
+    "4. DefaultControllerGeneric.modify          -> admin         PATCH  /user/:id",
   ],
   Array [
-    "5. DefaultControllerGeneric.replace    -> admin         PUT    /user/:id",
+    "5. DefaultControllerGeneric.replace         -> admin         PUT    /user/:id",
   ],
   Array [
-    "6. DefaultControllerGeneric.delete(id) -> admin         DELETE /user/:id",
+    "6. DefaultControllerGeneric.delete(id)      -> admin         DELETE /user/:id",
   ],
   Array [],
 ]
@@ -655,22 +743,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list       -> admin GET    /user",
+    "1. DefaultControllerGeneric.list            -> admin GET    /user",
   ],
   Array [
-    "2. DefaultControllerGeneric.save(data) -> admin POST   /user",
+    "2. DefaultControllerGeneric.save(data, ctx) -> admin POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id)    -> admin GET    /user/:id",
+    "3. DefaultControllerGeneric.get(id)         -> admin GET    /user/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.modify     -> admin PATCH  /user/:id",
+    "4. DefaultControllerGeneric.modify          -> admin PATCH  /user/:id",
   ],
   Array [
-    "5. DefaultControllerGeneric.replace    -> admin PUT    /user/:id",
+    "5. DefaultControllerGeneric.replace         -> admin PUT    /user/:id",
   ],
   Array [
-    "6. DefaultControllerGeneric.delete(id) -> admin DELETE /user/:id",
+    "6. DefaultControllerGeneric.delete(id)      -> admin DELETE /user/:id",
   ],
   Array [],
 ]
@@ -683,22 +771,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list       -> Custom GET    /user",
+    "1. DefaultControllerGeneric.list            -> Custom GET    /user",
   ],
   Array [
-    "2. DefaultControllerGeneric.save(data) -> Custom POST   /user",
+    "2. DefaultControllerGeneric.save(data, ctx) -> Custom POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id)    -> Custom GET    /user/:id",
+    "3. DefaultControllerGeneric.get(id)         -> Custom GET    /user/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.modify     -> Custom PATCH  /user/:id",
+    "4. DefaultControllerGeneric.modify          -> Custom PATCH  /user/:id",
   ],
   Array [
-    "5. DefaultControllerGeneric.replace    -> Custom PUT    /user/:id",
+    "5. DefaultControllerGeneric.replace         -> Custom PUT    /user/:id",
   ],
   Array [
-    "6. DefaultControllerGeneric.delete(id) -> Custom DELETE /user/:id",
+    "6. DefaultControllerGeneric.delete(id)      -> Custom DELETE /user/:id",
   ],
   Array [],
 ]
@@ -711,22 +799,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list       -> Public GET    /user",
+    "1. DefaultControllerGeneric.list            -> Public GET    /user",
   ],
   Array [
-    "2. DefaultControllerGeneric.save(data) -> Public POST   /user",
+    "2. DefaultControllerGeneric.save(data, ctx) -> Public POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id)    -> Public GET    /user/:id",
+    "3. DefaultControllerGeneric.get(id)         -> Public GET    /user/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.modify     -> Public PATCH  /user/:id",
+    "4. DefaultControllerGeneric.modify          -> Public PATCH  /user/:id",
   ],
   Array [
-    "5. DefaultControllerGeneric.replace    -> Public PUT    /user/:id",
+    "5. DefaultControllerGeneric.replace         -> Public PUT    /user/:id",
   ],
   Array [
-    "6. DefaultControllerGeneric.delete(id) -> Public DELETE /user/:id",
+    "6. DefaultControllerGeneric.delete(id)      -> Public DELETE /user/:id",
   ],
   Array [],
 ]
@@ -758,6 +846,10 @@ Array [
         "name": "data",
         "type": User,
       },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
     ],
   },
   Object {
@@ -780,6 +872,10 @@ Array [
         "name": "data",
         "type": User,
       },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
     ],
   },
   Object {
@@ -792,6 +888,10 @@ Array [
       Object {
         "name": "data",
         "type": User,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
       },
     ],
   },
@@ -833,6 +933,10 @@ Array [
         "name": "data",
         "type": User,
       },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
     ],
   },
   Object {
@@ -855,6 +959,10 @@ Array [
         "name": "data",
         "type": User,
       },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
     ],
   },
   Object {
@@ -867,6 +975,10 @@ Array [
       Object {
         "name": "data",
         "type": User,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
       },
     ],
   },
@@ -892,7 +1004,7 @@ Array [
     "1. MyCustomControllerGeneric.list       -> GET    /api/v1/user",
   ],
   Array [
-    "2. MyCustomControllerGeneric.save(data) -> POST   /api/v1/user",
+    "2. MyCustomControllerGeneric.save       -> POST   /api/v1/user",
   ],
   Array [
     "3. MyCustomControllerGeneric.get(id)    -> GET    /api/v1/user/:id",
@@ -917,22 +1029,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list       -> GET    /user",
+    "1. DefaultControllerGeneric.list            -> GET    /user",
   ],
   Array [
-    "2. DefaultControllerGeneric.save(data) -> POST   /user",
+    "2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id)    -> GET    /user/:id",
+    "3. DefaultControllerGeneric.get(id)         -> GET    /user/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.modify     -> PATCH  /user/:id",
+    "4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
   ],
   Array [
-    "5. DefaultControllerGeneric.replace    -> PUT    /user/:id",
+    "5. DefaultControllerGeneric.replace         -> PUT    /user/:id",
   ],
   Array [
-    "6. DefaultControllerGeneric.delete(id) -> DELETE /user/:id",
+    "6. DefaultControllerGeneric.delete(id)      -> DELETE /user/:id",
   ],
   Array [],
 ]
@@ -945,22 +1057,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list       -> GET    /user",
+    "1. DefaultControllerGeneric.list            -> GET    /user",
   ],
   Array [
-    "2. DefaultControllerGeneric.save(data) -> POST   /user",
+    "2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id)    -> GET    /user/:id",
+    "3. DefaultControllerGeneric.get(id)         -> GET    /user/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.modify     -> PATCH  /user/:id",
+    "4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
   ],
   Array [
-    "5. DefaultControllerGeneric.replace    -> PUT    /user/:id",
+    "5. DefaultControllerGeneric.replace         -> PUT    /user/:id",
   ],
   Array [
-    "6. DefaultControllerGeneric.delete(id) -> DELETE /user/:id",
+    "6. DefaultControllerGeneric.delete(id)      -> DELETE /user/:id",
   ],
   Array [],
 ]
@@ -1006,6 +1118,10 @@ Array [
         "name": "data",
         "type": User,
       },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
     ],
   },
   Object {
@@ -1028,6 +1144,10 @@ Array [
         "name": "data",
         "type": User,
       },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
     ],
   },
   Object {
@@ -1040,6 +1160,10 @@ Array [
       Object {
         "name": "data",
         "type": User,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
       },
     ],
   },
@@ -1109,41 +1233,41 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list       -> GET    /api/v2/user",
+    "1. DefaultControllerGeneric.list            -> GET    /api/v2/user",
   ],
   Array [
-    "2. DefaultControllerGeneric.save(data) -> POST   /api/v2/user",
+    "2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v2/user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id)    -> GET    /api/v2/user/:id",
+    "3. DefaultControllerGeneric.get(id)         -> GET    /api/v2/user/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.modify     -> PATCH  /api/v2/user/:id",
+    "4. DefaultControllerGeneric.modify          -> PATCH  /api/v2/user/:id",
   ],
   Array [
-    "5. DefaultControllerGeneric.replace    -> PUT    /api/v2/user/:id",
+    "5. DefaultControllerGeneric.replace         -> PUT    /api/v2/user/:id",
   ],
   Array [
-    "6. DefaultControllerGeneric.delete(id) -> DELETE /api/v2/user/:id",
+    "6. DefaultControllerGeneric.delete(id)      -> DELETE /api/v2/user/:id",
   ],
   Array [],
   Array [
-    "1. DefaultControllerGeneric.list       -> GET    /api/v1/user",
+    "1. DefaultControllerGeneric.list            -> GET    /api/v1/user",
   ],
   Array [
-    "2. DefaultControllerGeneric.save(data) -> POST   /api/v1/user",
+    "2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id)    -> GET    /api/v1/user/:id",
+    "3. DefaultControllerGeneric.get(id)         -> GET    /api/v1/user/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.modify     -> PATCH  /api/v1/user/:id",
+    "4. DefaultControllerGeneric.modify          -> PATCH  /api/v1/user/:id",
   ],
   Array [
-    "5. DefaultControllerGeneric.replace    -> PUT    /api/v1/user/:id",
+    "5. DefaultControllerGeneric.replace         -> PUT    /api/v1/user/:id",
   ],
   Array [
-    "6. DefaultControllerGeneric.delete(id) -> DELETE /api/v1/user/:id",
+    "6. DefaultControllerGeneric.delete(id)      -> DELETE /api/v1/user/:id",
   ],
   Array [],
 ]
@@ -1212,40 +1336,40 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DefaultControllerGeneric.list       -> GET    /api/v1/user",
+    " 1. DefaultControllerGeneric.list            -> GET    /api/v1/user",
   ],
   Array [
-    " 2. DefaultControllerGeneric.save(data) -> POST   /api/v1/user",
+    " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/user",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id)    -> GET    /api/v1/user/:id",
+    " 3. DefaultControllerGeneric.get(id)         -> GET    /api/v1/user/:id",
   ],
   Array [
-    " 4. DefaultControllerGeneric.modify     -> PATCH  /api/v1/user/:id",
+    " 4. DefaultControllerGeneric.modify          -> PATCH  /api/v1/user/:id",
   ],
   Array [
-    " 5. DefaultControllerGeneric.replace    -> PUT    /api/v1/user/:id",
+    " 5. DefaultControllerGeneric.replace         -> PUT    /api/v1/user/:id",
   ],
   Array [
-    " 6. DefaultControllerGeneric.delete(id) -> DELETE /api/v1/user/:id",
+    " 6. DefaultControllerGeneric.delete(id)      -> DELETE /api/v1/user/:id",
   ],
   Array [
-    " 7. DefaultOneToMany...eneric.list      -> GET    /api/v1/user/:pid/animals",
+    " 7. DefaultOneToMany...eneric.list           -> GET    /api/v1/user/:pid/animals",
   ],
   Array [
-    " 8. DefaultOneToMany...eneric.save      -> POST   /api/v1/user/:pid/animals",
+    " 8. DefaultOneToMany...eneric.save           -> POST   /api/v1/user/:pid/animals",
   ],
   Array [
-    " 9. DefaultOneToMany...eneric.get       -> GET    /api/v1/user/:pid/animals/:id",
+    " 9. DefaultOneToMany...eneric.get            -> GET    /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "10. DefaultOneToMany...eneric.modify    -> PATCH  /api/v1/user/:pid/animals/:id",
+    "10. DefaultOneToMany...eneric.modify         -> PATCH  /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "11. DefaultOneToMany...eneric.replace   -> PUT    /api/v1/user/:pid/animals/:id",
+    "11. DefaultOneToMany...eneric.replace        -> PUT    /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "12. DefaultOneToMany...eneric.delete    -> DELETE /api/v1/user/:pid/animals/:id",
+    "12. DefaultOneToMany...eneric.delete         -> DELETE /api/v1/user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -1363,6 +1487,10 @@ Array [
         "name": "data",
         "type": Animal,
       },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
     ],
   },
   Object {
@@ -1393,6 +1521,10 @@ Array [
         "name": "data",
         "type": Animal,
       },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
     ],
   },
   Object {
@@ -1409,6 +1541,10 @@ Array [
       Object {
         "name": "data",
         "type": Animal,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
       },
     ],
   },
@@ -1491,40 +1627,40 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DefaultControllerGeneric.list       -> GET    /user",
+    " 1. DefaultControllerGeneric.list            -> GET    /user",
   ],
   Array [
-    " 2. DefaultControllerGeneric.save(data) -> POST   /user",
+    " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id)    -> GET    /user/:id",
+    " 3. DefaultControllerGeneric.get(id)         -> GET    /user/:id",
   ],
   Array [
-    " 4. DefaultControllerGeneric.modify     -> PATCH  /user/:id",
+    " 4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
   ],
   Array [
-    " 5. DefaultControllerGeneric.replace    -> PUT    /user/:id",
+    " 5. DefaultControllerGeneric.replace         -> PUT    /user/:id",
   ],
   Array [
-    " 6. DefaultControllerGeneric.delete(id) -> DELETE /user/:id",
+    " 6. DefaultControllerGeneric.delete(id)      -> DELETE /user/:id",
   ],
   Array [
-    " 7. DefaultOneToMany...eneric.list      -> GET    /user/:pid/animals",
+    " 7. DefaultOneToMany...eneric.list           -> GET    /user/:pid/animals",
   ],
   Array [
-    " 8. DefaultOneToMany...eneric.save      -> POST   /user/:pid/animals",
+    " 8. DefaultOneToMany...eneric.save           -> POST   /user/:pid/animals",
   ],
   Array [
-    " 9. DefaultOneToMany...eneric.get       -> GET    /user/:pid/animals/:id",
+    " 9. DefaultOneToMany...eneric.get            -> GET    /user/:pid/animals/:id",
   ],
   Array [
-    "10. DefaultOneToMany...eneric.modify    -> PATCH  /user/:pid/animals/:id",
+    "10. DefaultOneToMany...eneric.modify         -> PATCH  /user/:pid/animals/:id",
   ],
   Array [
-    "11. DefaultOneToMany...eneric.replace   -> PUT    /user/:pid/animals/:id",
+    "11. DefaultOneToMany...eneric.replace        -> PUT    /user/:pid/animals/:id",
   ],
   Array [
-    "12. DefaultOneToMany...eneric.delete    -> DELETE /user/:pid/animals/:id",
+    "12. DefaultOneToMany...eneric.delete         -> DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -1537,40 +1673,40 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DefaultControllerGeneric.list       -> GET    /user",
+    " 1. DefaultControllerGeneric.list            -> GET    /user",
   ],
   Array [
-    " 2. DefaultControllerGeneric.save(data) -> POST   /user",
+    " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id)    -> GET    /user/:id",
+    " 3. DefaultControllerGeneric.get(id)         -> GET    /user/:id",
   ],
   Array [
-    " 4. DefaultControllerGeneric.modify     -> PATCH  /user/:id",
+    " 4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
   ],
   Array [
-    " 5. DefaultControllerGeneric.replace    -> PUT    /user/:id",
+    " 5. DefaultControllerGeneric.replace         -> PUT    /user/:id",
   ],
   Array [
-    " 6. DefaultControllerGeneric.delete(id) -> DELETE /user/:id",
+    " 6. DefaultControllerGeneric.delete(id)      -> DELETE /user/:id",
   ],
   Array [
-    " 7. DefaultOneToMany...eneric.list      -> GET    /user/:pid/animals",
+    " 7. DefaultOneToMany...eneric.list           -> GET    /user/:pid/animals",
   ],
   Array [
-    " 8. DefaultOneToMany...eneric.save      -> POST   /user/:pid/animals",
+    " 8. DefaultOneToMany...eneric.save           -> POST   /user/:pid/animals",
   ],
   Array [
-    " 9. DefaultOneToMany...eneric.get       -> GET    /user/:pid/animals/:id",
+    " 9. DefaultOneToMany...eneric.get            -> GET    /user/:pid/animals/:id",
   ],
   Array [
-    "10. DefaultOneToMany...eneric.modify    -> PATCH  /user/:pid/animals/:id",
+    "10. DefaultOneToMany...eneric.modify         -> PATCH  /user/:pid/animals/:id",
   ],
   Array [
-    "11. DefaultOneToMany...eneric.replace   -> PUT    /user/:pid/animals/:id",
+    "11. DefaultOneToMany...eneric.replace        -> PUT    /user/:pid/animals/:id",
   ],
   Array [
-    "12. DefaultOneToMany...eneric.delete    -> DELETE /user/:pid/animals/:id",
+    "12. DefaultOneToMany...eneric.delete         -> DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -1612,6 +1748,10 @@ Array [
         "name": "data",
         "type": Animal,
       },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
     ],
   },
   Object {
@@ -1642,6 +1782,10 @@ Array [
         "name": "data",
         "type": Animal,
       },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
     ],
   },
   Object {
@@ -1658,6 +1802,10 @@ Array [
       Object {
         "name": "data",
         "type": Animal,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
       },
     ],
   },
@@ -1684,58 +1832,58 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DefaultControllerGeneric.list       -> GET    /animal",
+    " 1. DefaultControllerGeneric.list            -> GET    /animal",
   ],
   Array [
-    " 2. DefaultControllerGeneric.save(data) -> POST   /animal",
+    " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /animal",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id)    -> GET    /animal/:id",
+    " 3. DefaultControllerGeneric.get(id)         -> GET    /animal/:id",
   ],
   Array [
-    " 4. DefaultControllerGeneric.modify     -> PATCH  /animal/:id",
+    " 4. DefaultControllerGeneric.modify          -> PATCH  /animal/:id",
   ],
   Array [
-    " 5. DefaultControllerGeneric.replace    -> PUT    /animal/:id",
+    " 5. DefaultControllerGeneric.replace         -> PUT    /animal/:id",
   ],
   Array [
-    " 6. DefaultControllerGeneric.delete(id) -> DELETE /animal/:id",
+    " 6. DefaultControllerGeneric.delete(id)      -> DELETE /animal/:id",
   ],
   Array [
-    " 7. DefaultControllerGeneric.list       -> GET    /user",
+    " 7. DefaultControllerGeneric.list            -> GET    /user",
   ],
   Array [
-    " 8. DefaultControllerGeneric.save(data) -> POST   /user",
+    " 8. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    " 9. DefaultControllerGeneric.get(id)    -> GET    /user/:id",
+    " 9. DefaultControllerGeneric.get(id)         -> GET    /user/:id",
   ],
   Array [
-    "10. DefaultControllerGeneric.modify     -> PATCH  /user/:id",
+    "10. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
   ],
   Array [
-    "11. DefaultControllerGeneric.replace    -> PUT    /user/:id",
+    "11. DefaultControllerGeneric.replace         -> PUT    /user/:id",
   ],
   Array [
-    "12. DefaultControllerGeneric.delete(id) -> DELETE /user/:id",
+    "12. DefaultControllerGeneric.delete(id)      -> DELETE /user/:id",
   ],
   Array [
-    "13. DefaultOneToMany...eneric.list      -> GET    /user/:pid/animals",
+    "13. DefaultOneToMany...eneric.list           -> GET    /user/:pid/animals",
   ],
   Array [
-    "14. DefaultOneToMany...eneric.save      -> POST   /user/:pid/animals",
+    "14. DefaultOneToMany...eneric.save           -> POST   /user/:pid/animals",
   ],
   Array [
-    "15. DefaultOneToMany...eneric.get       -> GET    /user/:pid/animals/:id",
+    "15. DefaultOneToMany...eneric.get            -> GET    /user/:pid/animals/:id",
   ],
   Array [
-    "16. DefaultOneToMany...eneric.modify    -> PATCH  /user/:pid/animals/:id",
+    "16. DefaultOneToMany...eneric.modify         -> PATCH  /user/:pid/animals/:id",
   ],
   Array [
-    "17. DefaultOneToMany...eneric.replace   -> PUT    /user/:pid/animals/:id",
+    "17. DefaultOneToMany...eneric.replace        -> PUT    /user/:pid/animals/:id",
   ],
   Array [
-    "18. DefaultOneToMany...eneric.delete    -> DELETE /user/:pid/animals/:id",
+    "18. DefaultOneToMany...eneric.delete         -> DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -1748,58 +1896,58 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DefaultControllerGeneric.list       -> GET    /animal",
+    " 1. DefaultControllerGeneric.list            -> GET    /animal",
   ],
   Array [
-    " 2. DefaultControllerGeneric.save(data) -> POST   /animal",
+    " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /animal",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id)    -> GET    /animal/:id",
+    " 3. DefaultControllerGeneric.get(id)         -> GET    /animal/:id",
   ],
   Array [
-    " 4. DefaultControllerGeneric.modify     -> PATCH  /animal/:id",
+    " 4. DefaultControllerGeneric.modify          -> PATCH  /animal/:id",
   ],
   Array [
-    " 5. DefaultControllerGeneric.replace    -> PUT    /animal/:id",
+    " 5. DefaultControllerGeneric.replace         -> PUT    /animal/:id",
   ],
   Array [
-    " 6. DefaultControllerGeneric.delete(id) -> DELETE /animal/:id",
+    " 6. DefaultControllerGeneric.delete(id)      -> DELETE /animal/:id",
   ],
   Array [
-    " 7. DefaultControllerGeneric.list       -> GET    /user",
+    " 7. DefaultControllerGeneric.list            -> GET    /user",
   ],
   Array [
-    " 8. DefaultControllerGeneric.save(data) -> POST   /user",
+    " 8. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    " 9. DefaultControllerGeneric.get(id)    -> GET    /user/:id",
+    " 9. DefaultControllerGeneric.get(id)         -> GET    /user/:id",
   ],
   Array [
-    "10. DefaultControllerGeneric.modify     -> PATCH  /user/:id",
+    "10. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
   ],
   Array [
-    "11. DefaultControllerGeneric.replace    -> PUT    /user/:id",
+    "11. DefaultControllerGeneric.replace         -> PUT    /user/:id",
   ],
   Array [
-    "12. DefaultControllerGeneric.delete(id) -> DELETE /user/:id",
+    "12. DefaultControllerGeneric.delete(id)      -> DELETE /user/:id",
   ],
   Array [
-    "13. DefaultOneToMany...eneric.list      -> GET    /user/:pid/animals",
+    "13. DefaultOneToMany...eneric.list           -> GET    /user/:pid/animals",
   ],
   Array [
-    "14. DefaultOneToMany...eneric.save      -> POST   /user/:pid/animals",
+    "14. DefaultOneToMany...eneric.save           -> POST   /user/:pid/animals",
   ],
   Array [
-    "15. DefaultOneToMany...eneric.get       -> GET    /user/:pid/animals/:id",
+    "15. DefaultOneToMany...eneric.get            -> GET    /user/:pid/animals/:id",
   ],
   Array [
-    "16. DefaultOneToMany...eneric.modify    -> PATCH  /user/:pid/animals/:id",
+    "16. DefaultOneToMany...eneric.modify         -> PATCH  /user/:pid/animals/:id",
   ],
   Array [
-    "17. DefaultOneToMany...eneric.replace   -> PUT    /user/:pid/animals/:id",
+    "17. DefaultOneToMany...eneric.replace        -> PUT    /user/:pid/animals/:id",
   ],
   Array [
-    "18. DefaultOneToMany...eneric.delete    -> DELETE /user/:pid/animals/:id",
+    "18. DefaultOneToMany...eneric.delete         -> DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -1812,58 +1960,58 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DefaultControllerGeneric.list       -> GET    /api/v1/animal",
+    " 1. DefaultControllerGeneric.list            -> GET    /api/v1/animal",
   ],
   Array [
-    " 2. DefaultControllerGeneric.save(data) -> POST   /api/v1/animal",
+    " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/animal",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id)    -> GET    /api/v1/animal/:id",
+    " 3. DefaultControllerGeneric.get(id)         -> GET    /api/v1/animal/:id",
   ],
   Array [
-    " 4. DefaultControllerGeneric.modify     -> PATCH  /api/v1/animal/:id",
+    " 4. DefaultControllerGeneric.modify          -> PATCH  /api/v1/animal/:id",
   ],
   Array [
-    " 5. DefaultControllerGeneric.replace    -> PUT    /api/v1/animal/:id",
+    " 5. DefaultControllerGeneric.replace         -> PUT    /api/v1/animal/:id",
   ],
   Array [
-    " 6. DefaultControllerGeneric.delete(id) -> DELETE /api/v1/animal/:id",
+    " 6. DefaultControllerGeneric.delete(id)      -> DELETE /api/v1/animal/:id",
   ],
   Array [
-    " 7. DefaultControllerGeneric.list       -> GET    /api/v1/user",
+    " 7. DefaultControllerGeneric.list            -> GET    /api/v1/user",
   ],
   Array [
-    " 8. DefaultControllerGeneric.save(data) -> POST   /api/v1/user",
+    " 8. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/user",
   ],
   Array [
-    " 9. DefaultControllerGeneric.get(id)    -> GET    /api/v1/user/:id",
+    " 9. DefaultControllerGeneric.get(id)         -> GET    /api/v1/user/:id",
   ],
   Array [
-    "10. DefaultControllerGeneric.modify     -> PATCH  /api/v1/user/:id",
+    "10. DefaultControllerGeneric.modify          -> PATCH  /api/v1/user/:id",
   ],
   Array [
-    "11. DefaultControllerGeneric.replace    -> PUT    /api/v1/user/:id",
+    "11. DefaultControllerGeneric.replace         -> PUT    /api/v1/user/:id",
   ],
   Array [
-    "12. DefaultControllerGeneric.delete(id) -> DELETE /api/v1/user/:id",
+    "12. DefaultControllerGeneric.delete(id)      -> DELETE /api/v1/user/:id",
   ],
   Array [
-    "13. DefaultOneToMany...eneric.list      -> GET    /api/v1/user/:pid/animals",
+    "13. DefaultOneToMany...eneric.list           -> GET    /api/v1/user/:pid/animals",
   ],
   Array [
-    "14. DefaultOneToMany...eneric.save      -> POST   /api/v1/user/:pid/animals",
+    "14. DefaultOneToMany...eneric.save           -> POST   /api/v1/user/:pid/animals",
   ],
   Array [
-    "15. DefaultOneToMany...eneric.get       -> GET    /api/v1/user/:pid/animals/:id",
+    "15. DefaultOneToMany...eneric.get            -> GET    /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "16. DefaultOneToMany...eneric.modify    -> PATCH  /api/v1/user/:pid/animals/:id",
+    "16. DefaultOneToMany...eneric.modify         -> PATCH  /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "17. DefaultOneToMany...eneric.replace   -> PUT    /api/v1/user/:pid/animals/:id",
+    "17. DefaultOneToMany...eneric.replace        -> PUT    /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "18. DefaultOneToMany...eneric.delete    -> DELETE /api/v1/user/:pid/animals/:id",
+    "18. DefaultOneToMany...eneric.delete         -> DELETE /api/v1/user/:pid/animals/:id",
   ],
   Array [],
 ]
