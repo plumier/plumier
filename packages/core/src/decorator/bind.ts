@@ -1,9 +1,9 @@
 import { GetOption } from "cookies"
-import { decorateParameter, mergeDecorator } from "tinspector"
-
+import { decorateProperty, mergeDecorator, CustomPropertyDecorator } from "tinspector"
 import { BindingDecorator, CustomBinderFunction, HeaderPart, RequestPart } from "../binder"
 import { getChildValue } from "../common"
 import { api } from "./api"
+
 
 
 export namespace bind {
@@ -115,7 +115,7 @@ export namespace bind {
      *    
      *     method(@bind.formFile("file") cookie:FormFile){}
      */
-    export function formFile(name: string): ParameterDecorator {
+    export function formFile(name: string): CustomPropertyDecorator {
         return mergeDecorator(
             bind.custom(ctx => (ctx.request as any).files?.[name], "formFile") as any,
             api.name(name))
@@ -141,7 +141,6 @@ export namespace bind {
      * @param process callback function to process the Koa context
      */
     export function custom(process: CustomBinderFunction, name: string = "custom") {
-        return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", process, name })
+        return decorateProperty(<BindingDecorator>{ type: "ParameterBinding", process, name })
     }
 }
-

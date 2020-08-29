@@ -542,6 +542,18 @@ Array [
 ]
 `;
 
+exports[`Property Binding Generic Controller Should bind on post method using property declaration 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum dolor",
+    },
+  ],
+]
+`;
+
 exports[`Property Binding Generic Controller Should bind on put method 1`] = `
 Array [
   Array [
