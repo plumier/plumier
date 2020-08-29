@@ -30,7 +30,7 @@ import { SwaggerFacility } from "@plumier/swagger"
 import { Context } from "koa"
 import { join } from "path"
 import supertest from "supertest"
-import reflect, { generic, type } from "tinspector"
+import reflect, { generic, type, noop } from "tinspector"
 
 function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
     return new Plumier()
@@ -768,7 +768,7 @@ describe("Property Binding", () => {
             return new Plumier()
                 .set({
                     genericController: [MyControllerGeneric, DefaultOneToManyControllerGeneric],
-                    mode: "production", 
+                    mode: "production",
                     ...config
                 })
                 .set(new WebApiFacility())
@@ -785,6 +785,23 @@ describe("Property Binding", () => {
                     @bind.custom(x => "lorem ipsum dolor")
                     public random: string
                 ) { }
+            }
+            const koa = await createApp({ controller: User }).initialize()
+            await supertest(koa.callback())
+                .post("/user")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind on post method using property declaration", async () => {
+            @route.controller()
+            class User {
+                @noop()
+                public name: string
+                @noop()
+                public email: string
+                @bind.custom(x => "lorem ipsum dolor")
+                public random: string
             }
             const koa = await createApp({ controller: User }).initialize()
             await supertest(koa.callback())
@@ -884,7 +901,7 @@ describe("Property Binding", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
     })
-    describe("One To Many Controller", () => { 
+    describe("One To Many Controller", () => {
         const fn = jest.fn()
         class MockRepo<P, T> implements OneToManyRepository<P, T>{
             async find(pid: any, offset: number, limit: number, query: Partial<T>): Promise<T[]> {
@@ -894,7 +911,7 @@ describe("Property Binding", () => {
             async findParentById(id: any): Promise<P | undefined> {
                 return {} as any
             }
-            async insert(pid:any, data: Partial<T>): Promise<{ id: any }> {
+            async insert(pid: any, data: Partial<T>): Promise<{ id: any }> {
                 fn(data)
                 return { id: 123 }
             }
@@ -920,7 +937,7 @@ describe("Property Binding", () => {
             return new Plumier()
                 .set({
                     genericController: [DefaultControllerGeneric, MyControllerGeneric],
-                    mode: "production", 
+                    mode: "production",
                     ...config
                 })
                 .set(new WebApiFacility())
@@ -933,8 +950,8 @@ describe("Property Binding", () => {
                 constructor(
                     @route.controller()
                     @type(x => [User])
-                    users:User[]
-                ){}
+                    users: User[]
+                ) { }
             }
             @domain()
             class User {
@@ -958,8 +975,8 @@ describe("Property Binding", () => {
                 constructor(
                     @route.controller()
                     @type(x => [User])
-                    users:User[]
-                ){}
+                    users: User[]
+                ) { }
             }
             @domain()
             class User {
@@ -983,8 +1000,8 @@ describe("Property Binding", () => {
                 constructor(
                     @route.controller()
                     @type(x => [User])
-                    users:User[]
-                ){}
+                    users: User[]
+                ) { }
             }
             @domain()
             class User {
@@ -1008,8 +1025,8 @@ describe("Property Binding", () => {
                 constructor(
                     @route.controller()
                     @type(x => [User])
-                    users:User[]
-                ){}
+                    users: User[]
+                ) { }
             }
             @domain()
             class User {
@@ -1033,8 +1050,8 @@ describe("Property Binding", () => {
                 constructor(
                     @route.controller()
                     @type(x => [User])
-                    users:User[]
-                ){}
+                    users: User[]
+                ) { }
             }
             @domain()
             class User {
@@ -1058,8 +1075,8 @@ describe("Property Binding", () => {
                 constructor(
                     @route.controller()
                     @type(x => [User])
-                    users:User[]
-                ){}
+                    users: User[]
+                ) { }
             }
             @domain()
             class User {
