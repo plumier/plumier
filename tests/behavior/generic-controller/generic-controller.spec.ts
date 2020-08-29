@@ -20,6 +20,9 @@ import {
     RouteMetadata,
     response,
     DefaultRepository,
+    Repository,
+    bind,
+    OneToManyRepository,
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "@plumier/plumier"
@@ -27,7 +30,7 @@ import { SwaggerFacility } from "@plumier/swagger"
 import { Context } from "koa"
 import { join } from "path"
 import supertest from "supertest"
-import reflect, { generic } from "tinspector"
+import reflect, { generic, type } from "tinspector"
 
 function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
     return new Plumier()
@@ -726,6 +729,223 @@ describe("Route Generator", () => {
                 .set(new ControllerFacility({ controller: User, group: "v1", rootPath: "api/v1" }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+    })
+})
+
+describe("Property Binding", () => {
+    describe("Generic Controller", () => {
+        const fn = jest.fn()
+        class MockRepo<T> implements Repository<T>{
+            async find(offset: number, limit: number, query: Partial<T>): Promise<T[]> {
+                fn(offset, limit, query)
+                return []
+            }
+            async insert(data: Partial<T>): Promise<{ id: any }> {
+                fn(data)
+                return { id: 123 }
+            }
+            async findById(id: any): Promise<T | undefined> {
+                fn(id)
+                return {} as any
+            }
+            async update(id: any, data: Partial<T>): Promise<{ id: any }> {
+                fn(id, data)
+                return { id }
+            }
+            async delete(id: any): Promise<{ id: any }> {
+                fn(id)
+                return { id }
+            }
+        }
+        @generic.template("T", "TID")
+        @generic.type("T", "TID")
+        class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
+            constructor() { super(fac => new MockRepo<T>()) }
+        }
+        function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
+            return new Plumier()
+                .set({
+                    genericController: [MyControllerGeneric, DefaultOneToManyControllerGeneric],
+                    mode: "production", 
+                    ...config
+                })
+                .set(new WebApiFacility())
+                .set(new ControllerFacility(opt))
+        }
+        beforeEach(() => fn.mockClear())
+        it("Should bind on post method", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => "lorem ipsum dolor")
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: User }).initialize()
+            await supertest(koa.callback())
+                .post("/user")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind on put method", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => "lorem ipsum dolor")
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: User }).initialize()
+            await supertest(koa.callback())
+                .put("/user/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind on patch method", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => "lorem ipsum dolor")
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: User }).initialize()
+            await supertest(koa.callback())
+                .patch("/user/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+    })
+    describe("One To Many Controller", () => { 
+        const fn = jest.fn()
+        class MockRepo<P, T> implements OneToManyRepository<P, T>{
+            async find(pid: any, offset: number, limit: number, query: Partial<T>): Promise<T[]> {
+                fn(pid, offset, limit, query)
+                return []
+            }
+            async findParentById(id: any): Promise<P | undefined> {
+                return {} as any
+            }
+            async insert(pid:any, data: Partial<T>): Promise<{ id: any }> {
+                fn(data)
+                return { id: 123 }
+            }
+            async findById(id: any): Promise<T | undefined> {
+                fn(id)
+                return {} as any
+            }
+            async update(id: any, data: Partial<T>): Promise<{ id: any }> {
+                fn(id, data)
+                return { id }
+            }
+            async delete(id: any): Promise<{ id: any }> {
+                fn(id)
+                return { id }
+            }
+        }
+        @generic.template("P", "T", "PID", "TID")
+        @generic.type("P", "T", "PID", "TID")
+        class MyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{
+            constructor() { super(fac => new MockRepo<P, T>()) }
+        }
+        function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
+            return new Plumier()
+                .set({
+                    genericController: [DefaultControllerGeneric, MyControllerGeneric],
+                    mode: "production", 
+                    ...config
+                })
+                .set(new WebApiFacility())
+                .set(new ControllerFacility(opt))
+        }
+        beforeEach(() => fn.mockClear())
+        it("Should bind on post method", async () => {
+            @domain()
+            class Parent {
+                constructor(
+                    @route.controller()
+                    @type(x => [User])
+                    users:User[]
+                ){}
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => "lorem ipsum dolor")
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: Parent }).initialize()
+            await supertest(koa.callback())
+                .post("/parent/123/users")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind on put method", async () => {
+            @domain()
+            class Parent {
+                constructor(
+                    @route.controller()
+                    @type(x => [User])
+                    users:User[]
+                ){}
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => "lorem ipsum dolor")
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: Parent }).initialize()
+            await supertest(koa.callback())
+                .put("/parent/123/users/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind on patch method", async () => {
+            @domain()
+            class Parent {
+                constructor(
+                    @route.controller()
+                    @type(x => [User])
+                    users:User[]
+                ){}
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => "lorem ipsum dolor")
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: Parent }).initialize()
+            await supertest(koa.callback())
+                .patch("/parent/123/users/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
         })
     })
 })

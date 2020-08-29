@@ -1,5 +1,5 @@
 import reflect, { decorateClass, generic, GenericTypeDecorator } from "tinspector"
-import { val } from "typedconverter"
+import { val, convert, VisitorExtension } from "typedconverter"
 
 import { AuthorizeDecorator } from "./authorization"
 import { Class, entityHelper } from "./common"
@@ -19,7 +19,10 @@ import {
     OneToManyRepository,
     RelationPropertyDecorator,
     Repository,
+    MetadataImpl,
 } from "./types"
+import { Context } from 'koa'
+import { BindingDecorator } from './binder'
 
 // --------------------------------------------------------------------- //
 // ---------------------------- CONTROLLERS ---------------------------- //
@@ -60,8 +63,9 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
 
     @route.post("")
     @reflect.type(IdentifierResult, "TID")
-    save(@reflect.type("T") data: T): Promise<IdentifierResult<TID>> {
-        return this.repo.insert(data)
+    save(@reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
+        const newData = bindProperties(data, this.entityType, ctx)
+        return this.repo.insert(newData)
     }
 
     @route.get(":id")
@@ -72,16 +76,18 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
 
     @route.patch(":id")
     @reflect.type(IdentifierResult, "TID")
-    async modify(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") @val.partial("T") data: T): Promise<IdentifierResult<TID>> {
+    async modify(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") @val.partial("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findByIdOrNotFound(id)
-        return this.repo.update(id, data)
+        const newData = bindProperties(data, this.entityType, ctx)
+        return this.repo.update(id, newData)
     }
 
     @route.put(":id")
     @reflect.type(IdentifierResult, "TID")
-    async replace(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T): Promise<IdentifierResult<TID>> {
+    async replace(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findByIdOrNotFound(id)
-        return this.repo.update(id, data)
+        const newData = bindProperties(data, this.entityType, ctx)
+        return this.repo.update(id, newData)
     }
 
     @route.delete(":id")
@@ -131,9 +137,10 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 
     @route.post("")
     @reflect.type(IdentifierResult, "TID")
-    async save(@val.required() @reflect.type("PID") pid: PID, @reflect.type("T") data: T): Promise<IdentifierResult<TID>> {
+    async save(@val.required() @reflect.type("PID") pid: PID, @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
-        return this.repo.insert(pid, data)
+        const newData = bindProperties(data, this.entityType, ctx)
+        return this.repo.insert(pid, newData)
     }
 
     @route.get(":id")
@@ -145,18 +152,20 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 
     @route.patch(":id")
     @reflect.type(IdentifierResult, "TID")
-    async modify(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @val.partial("T") data: T): Promise<IdentifierResult<TID>> {
+    async modify(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @val.partial("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
         await this.findByIdOrNotFound(id)
-        return this.repo.update(id, data)
+        const newData = bindProperties(data, this.entityType, ctx)
+        return this.repo.update(id, newData)
     }
 
     @route.put(":id")
     @reflect.type(IdentifierResult, "TID")
-    async replace(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T): Promise<IdentifierResult<TID>> {
+    async replace(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
         await this.findByIdOrNotFound(id)
-        return this.repo.update(id, data)
+        const newData = bindProperties(data, this.entityType, ctx)
+        return this.repo.update(id, newData)
     }
 
     @route.delete(":id")
@@ -353,6 +362,18 @@ function getGenericControllerOneToOneRelations(type: Class) {
         }
     }
     return result
+}
+
+function bindProperties(value: any, type: Class, ctx: Context) {
+    const meta = reflect(type)
+    return meta.properties.reduce((prev, prop) => {
+        const binder = prop.decorators.find((x: BindingDecorator): x is BindingDecorator => x.type === "ParameterBinding")
+        const result = !binder ? value[prop.name] :
+            binder.process(ctx, new MetadataImpl(undefined, ctx.route!, { ...prop, parent: type }))
+        if(result !== undefined)
+            prev[prop.name] = result
+        return prev
+    }, {} as any)
 }
 
 export {
