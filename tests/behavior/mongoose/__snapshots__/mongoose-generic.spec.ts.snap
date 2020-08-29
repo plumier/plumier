@@ -46,6 +46,34 @@ Array [
 ]
 `;
 
+exports[`CRUD CRUD with versioning Should able to load relation entity with versioning 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MongooseOneToMan...eneric.list    -> GET    /users/:pid/tags",
+  ],
+  Array [
+    "2. MongooseOneToMan...eneric.save    -> POST   /users/:pid/tags",
+  ],
+  Array [
+    "3. MongooseOneToMan...eneric.get     -> GET    /users/:pid/tags/:id",
+  ],
+  Array [
+    "4. MongooseOneToMan...eneric.modify  -> PATCH  /users/:pid/tags/:id",
+  ],
+  Array [
+    "5. MongooseOneToMan...eneric.replace -> PUT    /users/:pid/tags/:id",
+  ],
+  Array [
+    "6. MongooseOneToMan...eneric.delete  -> DELETE /users/:pid/tags/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should find by name GET /users/:parentId/animals?offset&limit  1`] = `
 Array [
   Object {

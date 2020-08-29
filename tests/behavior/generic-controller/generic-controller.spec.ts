@@ -369,7 +369,6 @@ describe("Route Generator", () => {
                 constructor(
                     public name: string,
                     public email: string,
-                    @route.controller()
                     @reflect.type([Animal])
                     @relation()
                     @route.controller()
@@ -681,6 +680,31 @@ describe("Route Generator", () => {
             error(async () => ctl.update(123, {}))
             error(async () => ctl.insert(1, {}))
             error(async () => ctl.findParentById(1))
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should throw error when the relation doesn't have type information", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @route.controller()
+            @domain()
+            class User {
+                @noop()
+                name: string
+                @noop()
+                email: string
+                @route.controller()
+                animals: Animal[]
+            }
+            const fn = jest.fn()
+            try {
+                await createApp({ controller: User }).initialize()
+            } catch (e) {
+                fn(e)
+            }
             expect(fn.mock.calls).toMatchSnapshot()
         })
     })

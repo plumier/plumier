@@ -1814,6 +1814,14 @@ Array [
 
 exports[`Route Generator One To Many Controller Should throw error properly 1`] = `Array []`;
 
+exports[`Route Generator One To Many Controller Should throw error when the relation doesn't have type information 1`] = `
+Array [
+  Array [
+    [Error: PLUM1010: User.animals marked with @route.controller() but doesn't have type information],
+  ],
+]
+`;
+
 exports[`Route Generator One To Many Controller Should use string as default id if no ID type specified 1`] = `
 Array [
   Object {

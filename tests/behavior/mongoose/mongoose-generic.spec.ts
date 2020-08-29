@@ -1474,7 +1474,31 @@ describe("CRUD", () => {
             }
             mong.model(User)
             const mock = consoleLog.startMock()
-            await createApp({controller: User}, mong)
+            await createApp({ controller: User }, mong)
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
+        })
+
+        it("Should able to load relation entity with versioning", async () => {
+            const mong = new MongooseHelper()
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @route.controller()
+                @collection.ref(x => [Tag])
+                tags: Tag[]
+            }
+            @collection()
+            class Tag {
+                @reflect.noop()
+                name: string
+            }
+            mong.model(User)
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }, mong)
             expect(mock.mock.calls).toMatchSnapshot()
             consoleLog.clearMock()
         })
