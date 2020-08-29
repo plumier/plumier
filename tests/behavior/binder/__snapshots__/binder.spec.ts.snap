@@ -1,5 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Parameter Binding Custom parameter binding Should able to provide Promised value 1`] = `
+Object {
+  "b": 123,
+}
+`;
+
 exports[`Parameter Binding File parameter binding Should able to bind array of files 1`] = `
 Array [
   Object {
