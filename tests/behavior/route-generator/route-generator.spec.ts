@@ -1626,7 +1626,7 @@ describe("Route Ignore", () => {
         expect(routes).toMatchSnapshot()
     })
     it("Should able to ignore specific methods from class ignore", async () => {
-        @route.ignore({ action: ["get", "save"] })
+        @route.ignore({ applyTo: ["get", "save"] })
         class UsersController {
             @route.get("")
             get(id: string) { }
@@ -1642,7 +1642,7 @@ describe("Route Ignore", () => {
     })
 
     it("Should able to ignore specific methods from class ignore with multiple root route", async () => {
-        @route.ignore({ action: ["get", "save"] })
+        @route.ignore({ applyTo: ["get", "save"] })
         @route.root("users")
         @route.root("clients")
         class UsersController {
@@ -1659,7 +1659,7 @@ describe("Route Ignore", () => {
         expect(routes.map(x => ({ method: x.method, url: x.url }))).toMatchSnapshot()
     })
     it("Should able to ignore specific methods from class ignore with multiple route", async () => {
-        @route.ignore({ action: ["get", "save"] })
+        @route.ignore({ applyTo: ["get", "save"] })
         class UsersController {
             @route.get("")
             @route.get()

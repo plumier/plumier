@@ -35,7 +35,6 @@ Array [
       "decorators": Array [
         Object {
           "access": "all",
-          "action": Array [],
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Class",
@@ -43,7 +42,9 @@ Array [
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
             "allowMultiple": true,
+            "applyTo": Array [],
             "inherit": true,
+            "removeApplied": true,
           },
         },
       ],
@@ -57,7 +58,9 @@ Array [
               "url": undefined,
               Symbol(tinspector:decoratorOption): Object {
                 "allowMultiple": true,
+                "applyTo": Array [],
                 "inherit": true,
+                "removeApplied": true,
               },
             },
           ],
@@ -95,7 +98,6 @@ Array [
       "decorators": Array [
         Object {
           "access": "all",
-          "action": Array [],
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Method",
@@ -103,7 +105,9 @@ Array [
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
             "allowMultiple": true,
+            "applyTo": Array [],
             "inherit": true,
+            "removeApplied": true,
           },
         },
         Object {
@@ -112,7 +116,9 @@ Array [
           "url": undefined,
           Symbol(tinspector:decoratorOption): Object {
             "allowMultiple": true,
+            "applyTo": Array [],
             "inherit": true,
+            "removeApplied": true,
           },
         },
       ],
@@ -144,7 +150,6 @@ Array [
       "decorators": Array [
         Object {
           "access": "all",
-          "action": Array [],
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Parameter",
@@ -152,7 +157,9 @@ Array [
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
             "allowMultiple": true,
+            "applyTo": Array [],
             "inherit": true,
+            "removeApplied": true,
           },
         },
       ],
@@ -175,7 +182,6 @@ Array [
       "decorators": Array [
         Object {
           "access": "all",
-          "action": Array [],
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Parameter",
@@ -183,7 +189,9 @@ Array [
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
             "allowMultiple": true,
+            "applyTo": Array [],
             "inherit": true,
+            "removeApplied": true,
           },
         },
       ],
@@ -210,7 +218,6 @@ Array [
         "decorators": Array [
           Object {
             "access": "all",
-            "action": Array [],
             "authorize": customAuthorizer,
             "evaluation": "Dynamic",
             "location": "Method",
@@ -218,7 +225,9 @@ Array [
             "type": "plumier-meta:authorize",
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,
+              "applyTo": Array [],
               "inherit": true,
+              "removeApplied": true,
             },
           },
           Object {
@@ -227,7 +236,9 @@ Array [
             "url": undefined,
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,
+              "applyTo": Array [],
               "inherit": true,
+              "removeApplied": true,
             },
           },
         ],
@@ -276,7 +287,6 @@ Array [
             "decorators": Array [
               Object {
                 "access": "all",
-                "action": Array [],
                 "authorize": customAuthorizer,
                 "evaluation": "Dynamic",
                 "location": "Method",
@@ -284,7 +294,9 @@ Array [
                 "type": "plumier-meta:authorize",
                 Symbol(tinspector:decoratorOption): Object {
                   "allowMultiple": true,
+                  "applyTo": Array [],
                   "inherit": true,
+                  "removeApplied": true,
                 },
               },
               Object {
@@ -293,7 +305,9 @@ Array [
                 "url": undefined,
                 Symbol(tinspector:decoratorOption): Object {
                   "allowMultiple": true,
+                  "applyTo": Array [],
                   "inherit": true,
+                  "removeApplied": true,
                 },
               },
             ],
@@ -324,7 +338,6 @@ Array [
         "decorators": Array [
           Object {
             "access": "all",
-            "action": Array [],
             "authorize": customAuthorizer,
             "evaluation": "Dynamic",
             "location": "Method",
@@ -332,7 +345,9 @@ Array [
             "type": "plumier-meta:authorize",
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,
+              "applyTo": Array [],
               "inherit": true,
+              "removeApplied": true,
             },
           },
           Object {
@@ -341,7 +356,9 @@ Array [
             "url": undefined,
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,
+              "applyTo": Array [],
               "inherit": true,
+              "removeApplied": true,
             },
           },
         ],

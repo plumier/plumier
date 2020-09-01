@@ -1,5 +1,5 @@
 import { isAbsolute, join } from "path"
-import { ClassReflection, MethodReflection, reflect } from "tinspector"
+import { ClassReflection, MethodReflection, reflect, DecoratorOption, DecoratorOptionId } from "tinspector"
 
 import { Class, findFilesRecursive } from "./common"
 import {
@@ -15,7 +15,7 @@ import { GenericController, HttpMethod, RouteInfo, RouteMetadata } from "./types
 // --------------------------------------------------------------------- //
 
 interface RouteDecorator { name: "plumier-meta:route", method: HttpMethod, url?: string }
-interface IgnoreDecorator { name: "plumier-meta:ignore", action?: string | string[] }
+interface IgnoreDecorator { name: "plumier-meta:ignore" }
 interface RootDecorator { name: "plumier-meta:root", url: string }
 interface TransformOption {
    rootDir?: string
@@ -60,7 +60,7 @@ function getRootRoutes(root: string, controller: ClassReflection): string[] {
 
 function getRoot(rootPath: string, path: string) {
    // directoryAsPath should not working with glob
-   if(rootPath.indexOf("*") >= 0) return
+   if (rootPath.indexOf("*") >= 0) return
    const part = path.slice(rootPath.length).split("/").filter(x => !!x)
       .slice(0, -1)
    return (part.length === 0) ? undefined : appendRoute(...part)
@@ -137,15 +137,11 @@ function transformController(object: Class, opt: Required<TransformOption>) {
    const infos: RouteInfo[] = []
    // check for class @route.ignore()
    const ignoreDecorator = controller.decorators.find((x: IgnoreDecorator): x is IgnoreDecorator => x.name === "plumier-meta:ignore")
-   // if has @route.ignore() (without specify method) than ignore immediately
-   const ignoredMethods = ignoreDecorator?.action === undefined ? [] :
-      typeof ignoreDecorator.action === "string" ? [ignoreDecorator.action] : ignoreDecorator.action
-   if (ignoreDecorator && ignoredMethods.length === 0) return []
+   if (ignoreDecorator) 
+         return []
 
    for (const ctl of rootRoutes) {
       for (const method of controller.methods) {
-         // if method in ignored list then skip
-         if (ignoredMethods.some(x => x === method.name)) continue
          if (method.decorators.some((x: IgnoreDecorator | RouteDecorator) => x.name == "plumier-meta:ignore" || x.name == "plumier-meta:route"))
             infos.push(...transformMethodWithDecorator(ctl, controller, method, opt.group))
          else

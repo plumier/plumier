@@ -208,7 +208,7 @@ describe("Route Generator", () => {
         it("Should able to ignore some method of controller from entity", async () => {
             @route.controller()
             @domain()
-            @route.ignore({ action: ["get", "save"] })
+            @route.ignore({ applyTo: ["get", "save"] })
             class User {
                 constructor(
                     public name: string,
@@ -238,7 +238,7 @@ describe("Route Generator", () => {
         it("Should able to set authorization for specific method from entity", async () => {
             @route.controller()
             @domain()
-            @authorize.role("admin", { action: ["save", "replace", "delete", "modify"] })
+            @authorize.role("admin", { applyTo: ["save", "replace", "delete", "modify"] })
             class User {
                 constructor(
                     public name: string,
@@ -540,7 +540,7 @@ describe("Route Generator", () => {
                     @reflect.type([Animal])
                     @relation()
                     @route.controller()
-                    @route.ignore({ action: ["save", "list"] })
+                    @route.ignore({ applyTo: ["save", "list"] })
                     public animals: Animal[]
                 ) { }
             }
@@ -580,7 +580,7 @@ describe("Route Generator", () => {
                 public name: string
                 @reflect.noop()
                 public email: string
-                @authorize.role("admin", { action: ["save", "replace", "delete", "modify"] })
+                @authorize.role("admin", { applyTo: ["save", "replace", "delete", "modify"] })
                 @reflect.type([Animal])
                 @relation()
                 @route.controller()

@@ -1,4 +1,4 @@
-import { CustomPropertyDecorator, decorate, mergeDecorator } from "tinspector"
+import { CustomPropertyDecorator, decorate, mergeDecorator, DecoratorOption } from "tinspector"
 
 import { AuthorizeDecorator, Authorizer, AuthorizerFunction } from "../authorization"
 import { errorMessage } from "../types"
@@ -7,11 +7,17 @@ import { api } from "./api"
 
 type AccessModifier = "read" | "write" | "all"
 type FunctionEvaluation = "Static" | "Dynamic"
-interface CustomAuthorizeOption {
+
+interface AuthorizeSelectorOption {
     /**
-     * Filter authorizer into specific action(s), only work on controller scoped authorizer
+     * Apply authorizer into specific action, only work on controller scoped authorizer.
+     * 
+     * Should specify a correct action name(s)
      */
-    action?: string | string[],
+    applyTo?: string | string[]
+}
+
+interface CustomAuthorizeOption extends AuthorizeSelectorOption {
 
     /**
      * Text that will visible on route analysis
@@ -21,9 +27,9 @@ interface CustomAuthorizeOption {
     /**
      * Allow access only to specific modifier, only work on Parameter authorization and Filter authorization
      * 
-     * `get`: only allow user to retrieve value on specified field
+     * `read`: only allow user to retrieve value on specified field
      * 
-     * `set`: only allow user to set value on specified field
+     * `write`: only allow user to set value on specified field
      * 
      * `all`: allow user to both set and retrieve value on specified field
      */
@@ -37,15 +43,6 @@ interface CustomAuthorizeOption {
      * `Dynamic` will evaluated on every property serialization. Good for authorization require check to specific property value
      */
     evaluation?: FunctionEvaluation
-}
-
-interface AuthorizeSelectorOption {
-    /**
-     * Filter authorizer into specific action, only work on controller scoped authorizer.
-     * 
-     * Should specify a correct action name(s)
-     */
-    action: string | string[]
 }
 
 class AuthDecoratorImpl {
@@ -64,9 +61,8 @@ class AuthDecoratorImpl {
                 type: "plumier-meta:authorize",
                 tag: option.tag, authorize, location,
                 access: option.access, evaluation: option.evaluation,
-                action: option.action ?? []
             }
-        }, ["Class", "Parameter", "Method", "Property"])
+        }, ["Class", "Parameter", "Method", "Property"], typeof tag === "string" ? { applyTo: [] } : { ...tag })
     }
 
     /**
@@ -80,10 +76,9 @@ class AuthDecoratorImpl {
                 type: "plumier-meta:authorize",
                 tag: "Public",
                 evaluation: "Static",
-                action: opt?.action ?? [],
                 access: "all"
             }
-        }, ["Class", "Parameter", "Method", "Property"])
+        }, ["Class", "Parameter", "Method", "Property"], { ...opt })
     }
 
     private byRole(roles: any[], access: "all" | "read" | "write") {
@@ -159,14 +154,14 @@ class AuthDecoratorImpl {
     /**
      * Mark parameter or property as readonly, no Role can set its value
      */
-    readonly():CustomPropertyDecorator {
+    readonly(): CustomPropertyDecorator {
         return mergeDecorator(this.write("plumier::readonly"), api.readonly())
     }
 
     /**
      * Mark parameter or property as writeonly, no Role can read its value
      */
-    writeonly():CustomPropertyDecorator {
+    writeonly(): CustomPropertyDecorator {
         return mergeDecorator(this.read("plumier::writeonly"), api.writeonly())
     }
 }
@@ -174,4 +169,4 @@ class AuthDecoratorImpl {
 const authorize = new AuthDecoratorImpl()
 
 
-export { authorize, AuthDecoratorImpl }
+export { authorize, AuthDecoratorImpl, AuthorizeSelectorOption }

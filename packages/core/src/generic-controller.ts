@@ -1,4 +1,4 @@
-import reflect, { decorateClass, generic, GenericTypeDecorator } from "tinspector"
+import reflect, { decorateClass, generic, GenericTypeDecorator, DecoratorOptionId, DecoratorOption } from "tinspector"
 import { val, convert, VisitorExtension } from "typedconverter"
 
 import { AuthorizeDecorator } from "./authorization"
@@ -274,21 +274,22 @@ function copyDecorators(decorators: any[], controller: Class) {
                 }
                 return result
             }
+            const option: DecoratorOption = (authDec as any)[DecoratorOptionId]
             // add extra action filter for decorator @authorize.read() and @authorize.write() 
             // get will only applied to actions with GET method 
             // set will only applied to actions with mutation DELETE, PATCH, POST, PUT
             if (authDec.access === "read") {
-                authDec.action = findAction("get")
+                option.applyTo = findAction("get")
                 result.push(decorator)
             }
             if (authDec.access === "write") {
-                authDec.action = findAction("delete", "patch", "post", "put")
+                option.applyTo = findAction("delete", "patch", "post", "put")
                 result.push(decorator)
             }
         }
     }
     //reflect(ctl, { flushCache: true })
-    return result.map(x => decorateClass(x))
+    return result.map(x => decorateClass(x, x[DecoratorOptionId]))
 }
 
 function createGenericController(entity: Class, controller: Class<ControllerGeneric>, nameConversion: (x: string) => string) {
@@ -300,7 +301,7 @@ function createGenericController(entity: Class, controller: Class<ControllerGene
     const name = nameConversion(entity.name)
     // copy @route.ignore() and @authorize on entity to the controller to control route generation
     const meta = reflect(entity)
-    const decorators = copyDecorators(meta.decorators, controller)
+    const decorators = copyDecorators([...meta.decorators, ...meta.removedDecorators ?? []], controller)
     Reflect.decorate([...decorators, route.root(name), api.tag(entity.name)], Controller)
     return Controller
 }
@@ -344,7 +345,7 @@ function createGenericControllers(controller: Class, genericControllers: Generic
     for (const prop of meta.properties) {
         const decorator = prop.decorators.find((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
         if (!decorator) continue
-        if(!prop.type[0])
+        if (!prop.type[0])
             throw new Error(errorMessage.GenericControllerMissingTypeInfo.format(`${meta.name}.${prop.name}`))
         relations.push({ name: prop.name, type: prop.type[0], decorator })
     }

@@ -333,7 +333,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply authorization to specific method from controller", async () => {
-            @authorize.role("superadmin", { action: "get" })
+            @authorize.role("superadmin", { applyTo: "get" })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -362,7 +362,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply authorization to specific methods from controller", async () => {
-            @authorize.role("superadmin", { action: ["get", "save"] })
+            @authorize.role("superadmin", { applyTo: ["get", "save"] })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -401,7 +401,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply public authorization to specific method from controller", async () => {
-            @authorize.public({ action: "get" })
+            @authorize.public({ applyTo: "get" })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -428,7 +428,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply public authorization to specific methods from controller", async () => {
-            @authorize.public({ action: ["get", "save"] })
+            @authorize.public({ applyTo: ["get", "save"] })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -464,16 +464,18 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to mix controller scope authorizer with other decorators", async () => {
-            @route.ignore({ action: "save" })
-            @authorize.role("superadmin", { action: ["get", "save"] })
+            @route.ignore({ applyTo: "save" })
+            @authorize.role("superadmin", { applyTo: ["get", "save"] })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
                 save() { }
             }
-            const app = await fixture(AnimalController)
+            const mock = consoleLog.startMock()
+            const app = await fixture(AnimalController, { mode: "debug" })
                 .set(new JwtAuthFacility({ secret: SECRET }))
                 .initialize()
+            expect(mock.mock.calls).toMatchSnapshot()
             // get
             await Supertest(app.callback())
                 .get("/animal/get")
@@ -492,6 +494,7 @@ describe("JwtAuth", () => {
                 .get("/animal/list")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
                 .expect(200)
+            consoleLog.clearMock()
         })
     })
 
