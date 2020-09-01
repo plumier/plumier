@@ -23,7 +23,6 @@ Array [
       "decorators": Array [
         Object {
           "access": "all",
-          "action": Array [],
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
@@ -31,7 +30,9 @@ Array [
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
             "allowMultiple": true,
+            "applyTo": Array [],
             "inherit": true,
+            "removeApplied": true,
           },
         },
       ],
@@ -51,7 +52,6 @@ Array [
       "decorators": Array [
         Object {
           "access": "all",
-          "action": Array [],
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
@@ -59,7 +59,9 @@ Array [
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
             "allowMultiple": true,
+            "applyTo": Array [],
             "inherit": true,
+            "removeApplied": true,
           },
         },
       ],
@@ -91,6 +93,22 @@ Array [
 ]
 `;
 
+exports[`JwtAuth Basic Authorization Should able to mix controller scope authorizer with other decorators 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.get()  -> superadmin    GET /animal/get",
+  ],
+  Array [
+    "2. AnimalController.list() -> Authenticated GET /animal/list",
+  ],
+  Array [],
+]
+`;
+
 exports[`JwtAuth Default Configuration Should throw error when no secret provided nor environment variable 1`] = `
 Array [
   Array [
@@ -105,8 +123,7 @@ Array [
     Object {
       "decorators": Array [
         Object {
-          "access": "set",
-          "action": Array [],
+          "access": "write",
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
@@ -114,7 +131,9 @@ Array [
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
             "allowMultiple": true,
+            "applyTo": Array [],
             "inherit": true,
+            "removeApplied": true,
           },
         },
       ],
@@ -133,8 +152,7 @@ Array [
     Object {
       "decorators": Array [
         Object {
-          "access": "set",
-          "action": Array [],
+          "access": "write",
           "authorize": onlyAdmin,
           "evaluation": "Dynamic",
           "location": "Parameter",
@@ -142,7 +160,9 @@ Array [
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
             "allowMultiple": true,
+            "applyTo": Array [],
             "inherit": true,
+            "removeApplied": true,
           },
         },
       ],

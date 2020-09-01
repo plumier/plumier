@@ -270,8 +270,8 @@ import { domain, authorize, route } from "plumier"
 export class Item {
     constructor(
         public name: string,
-        @authorize.set("admin")
-        @authorize.get("admin", "staff")
+        @authorize.write("admin")
+        @authorize.read("admin", "staff")
         public basePrice: number,
         public price:number
     ) { }
@@ -281,9 +281,8 @@ export class Item {
 Using above code `basePrice` will only can be set by `admin` and retrieved by both `staff` and `admin`. 
 
 :::info
-Note that `@authorize.role("admin")` is the same as provide `@authorize.get("admin")` and `@authorize.set("admin")`
+Note that `@authorize.role("admin")` is the same as provide `@authorize.read("admin")` and `@authorize.write("admin")`
 :::
-
 
 ## Global Authorization
 As mentioned above, by default all routes is secured when `JwtAuthFacility` applied, you can override this default behavior by applying `authorize` on the `JwtAuthFacility` configuration like below:

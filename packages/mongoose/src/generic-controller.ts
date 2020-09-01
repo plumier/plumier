@@ -6,9 +6,11 @@ import {
     RepoBaseOneToManyControllerGeneric,
     Repository,
     val,
+    bind,
 } from "@plumier/core"
 import mongoose, { Document, Model } from "mongoose"
 import { generic } from "tinspector"
+import {Context} from "koa"
 
 import { globalHelper, MongooseHelper } from "./generator"
 
@@ -117,12 +119,12 @@ class MongooseControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID
         return super.get(id)
     }
 
-    modify(@val.mongoId() id: TID, data: T) {
-        return super.modify(id, data)
+    modify(@val.mongoId() id: TID, data: T, @bind.ctx() ctx:Context) {
+        return super.modify(id, data, ctx)
     }
 
-    replace(@val.mongoId() id: TID, data: T) {
-        return super.replace(id, data)
+    replace(@val.mongoId() id: TID, data: T, @bind.ctx() ctx:Context) {
+        return super.replace(id, data, ctx)
     }
 
     delete(@val.mongoId() id: TID) {
@@ -141,20 +143,20 @@ class MongooseOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMa
         return super.list(pid, offset, limit, query)
     }
 
-    save(@val.mongoId() pid: PID, data: T) {
-        return super.save(pid, data)
+    save(@val.mongoId() pid: PID, data: T, @bind.ctx() ctx:Context) {
+        return super.save(pid, data, ctx)
     }
 
     get(@val.mongoId() pid: PID, @val.mongoId() id: TID) {
         return super.get(pid, id)
     }
 
-    modify(@val.mongoId() pid: PID, @val.mongoId() id: TID, data: T) {
-        return super.modify(pid, id, data)
+    modify(@val.mongoId() pid: PID, @val.mongoId() id: TID, data: T, @bind.ctx() ctx:Context) {
+        return super.modify(pid, id, data, ctx)
     }
 
-    replace(@val.mongoId() pid: PID, @val.mongoId() id: TID, data: T) {
-        return super.replace(pid, id, data)
+    replace(@val.mongoId() pid: PID, @val.mongoId() id: TID, data: T, @bind.ctx() ctx:Context) {
+        return super.replace(pid, id, data, ctx)
     }
 
     delete(@val.mongoId() pid: PID, @val.mongoId() id: TID) {

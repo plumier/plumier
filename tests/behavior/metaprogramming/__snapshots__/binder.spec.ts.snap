@@ -13,7 +13,9 @@ Array [
             "url": undefined,
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,
+              "applyTo": Array [],
               "inherit": true,
+              "removeApplied": true,
             },
           },
         ],
@@ -28,7 +30,9 @@ Array [
                 "type": "ParameterBinding",
                 Symbol(tinspector:decoratorOption): Object {
                   "allowMultiple": true,
+                  "applyTo": Array [],
                   "inherit": true,
+                  "removeApplied": true,
                 },
               },
             ],
@@ -60,7 +64,9 @@ Array [
                 "url": undefined,
                 Symbol(tinspector:decoratorOption): Object {
                   "allowMultiple": true,
+                  "applyTo": Array [],
                   "inherit": true,
+                  "removeApplied": true,
                 },
               },
             ],
@@ -75,7 +81,9 @@ Array [
                     "type": "ParameterBinding",
                     Symbol(tinspector:decoratorOption): Object {
                       "allowMultiple": true,
+                      "applyTo": Array [],
                       "inherit": true,
+                      "removeApplied": true,
                     },
                   },
                 ],
@@ -105,7 +113,9 @@ Array [
             "type": "ParameterBinding",
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,
+              "applyTo": Array [],
               "inherit": true,
+              "removeApplied": true,
             },
           },
         ],

@@ -13,7 +13,7 @@ interface IgnoreOption {
    /**
     * Ignore specific actions. Only work on controller scope ignore
     */
-   action: string | string[]
+   applyTo: string | string[]
 }
 
 class RouteDecoratorImpl {
@@ -286,7 +286,7 @@ class RouteDecoratorImpl {
     //otherMethod not generated
     ```
     */
-   ignore(opt?: IgnoreOption) { return decorate(<IgnoreDecorator>{ [DecoratorId]: "route:ignore", name: "plumier-meta:ignore", action: opt?.action }, ["Class", "Method", "Property", "Parameter"], { allowMultiple: false }) }
+   ignore(opt?: IgnoreOption) { return decorate(<IgnoreDecorator>{ [DecoratorId]: "route:ignore", name: "plumier-meta:ignore" }, ["Class", "Method", "Property", "Parameter"], { allowMultiple: false, ...opt }) }
 
    /**
     * Mark an entity will be handled by a CRUD generic controller

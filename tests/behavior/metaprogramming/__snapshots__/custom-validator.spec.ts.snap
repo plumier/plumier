@@ -12,7 +12,9 @@ Array [
               "validator": greaterThan18,
               Symbol(tinspector:decoratorOption): Object {
                 "allowMultiple": true,
+                "applyTo": Array [],
                 "inherit": true,
+                "removeApplied": true,
               },
             },
           ],
@@ -42,7 +44,9 @@ Array [
           "validator": greaterThan18,
           Symbol(tinspector:decoratorOption): Object {
             "allowMultiple": true,
+            "applyTo": Array [],
             "inherit": true,
+            "removeApplied": true,
           },
         },
       ],
@@ -73,7 +77,9 @@ Array [
             "url": undefined,
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,
+              "applyTo": Array [],
               "inherit": true,
+              "removeApplied": true,
             },
           },
         ],
@@ -87,7 +93,9 @@ Array [
                 "validator": greaterThan18,
                 Symbol(tinspector:decoratorOption): Object {
                   "allowMultiple": true,
+                  "applyTo": Array [],
                   "inherit": true,
+                  "removeApplied": true,
                 },
               },
             ],
@@ -111,7 +119,9 @@ Array [
                 "validator": greaterThan18,
                 Symbol(tinspector:decoratorOption): Object {
                   "allowMultiple": true,
+                  "applyTo": Array [],
                   "inherit": true,
+                  "removeApplied": true,
                 },
               },
             ],
@@ -144,7 +154,9 @@ Array [
                 "url": undefined,
                 Symbol(tinspector:decoratorOption): Object {
                   "allowMultiple": true,
+                  "applyTo": Array [],
                   "inherit": true,
+                  "removeApplied": true,
                 },
               },
             ],
@@ -158,7 +170,9 @@ Array [
                     "validator": greaterThan18,
                     Symbol(tinspector:decoratorOption): Object {
                       "allowMultiple": true,
+                      "applyTo": Array [],
                       "inherit": true,
+                      "removeApplied": true,
                     },
                   },
                 ],
@@ -187,7 +201,9 @@ Array [
             "validator": greaterThan18,
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,
+              "applyTo": Array [],
               "inherit": true,
+              "removeApplied": true,
             },
           },
         ],

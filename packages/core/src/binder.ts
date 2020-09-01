@@ -66,12 +66,12 @@ function chain(...binder: Binder[]) {
 const binderChain = chain(bindDecorator, bindByName, bindBody)
 
 function binder(ctx: ActionContext) {
-    return ctx.route.action.parameters.map(x => binderChain(ctx, x))
+    return Promise.all(ctx.route.action.parameters.map(x => binderChain(ctx, x)))
 }
 
 class ParameterBinderMiddleware implements Middleware {
     async execute(invocation: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
-        (invocation.ctx as any).parameters = binder(invocation.ctx)
+        (invocation.ctx as any).parameters = await binder(invocation.ctx)
         return invocation.proceed()
     }
 }

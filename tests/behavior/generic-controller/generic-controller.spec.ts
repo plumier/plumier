@@ -20,6 +20,9 @@ import {
     RouteMetadata,
     response,
     DefaultRepository,
+    Repository,
+    bind,
+    OneToManyRepository,
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "@plumier/plumier"
@@ -27,7 +30,7 @@ import { SwaggerFacility } from "@plumier/swagger"
 import { Context } from "koa"
 import { join } from "path"
 import supertest from "supertest"
-import reflect, { generic } from "tinspector"
+import reflect, { generic, type, noop } from "tinspector"
 
 function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
     return new Plumier()
@@ -205,7 +208,7 @@ describe("Route Generator", () => {
         it("Should able to ignore some method of controller from entity", async () => {
             @route.controller()
             @domain()
-            @route.ignore({ action: ["get", "save"] })
+            @route.ignore({ applyTo: ["get", "save"] })
             class User {
                 constructor(
                     public name: string,
@@ -235,7 +238,7 @@ describe("Route Generator", () => {
         it("Should able to set authorization for specific method from entity", async () => {
             @route.controller()
             @domain()
-            @authorize.role("admin", { action: ["save", "replace", "delete", "modify"] })
+            @authorize.role("admin", { applyTo: ["save", "replace", "delete", "modify"] })
             class User {
                 constructor(
                     public name: string,
@@ -280,10 +283,10 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to set @authorize.get() from entity", async () => {
+        it("Should able to set @authorize.read() from entity", async () => {
             @route.controller()
             @domain()
-            @authorize.get("admin")
+            @authorize.read("admin")
             class User {
                 constructor(
                     public name: string,
@@ -296,10 +299,10 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to set @authorize.set() from entity", async () => {
+        it("Should able to set @authorize.write() from entity", async () => {
             @route.controller()
             @domain()
-            @authorize.set("admin")
+            @authorize.write("admin")
             class User {
                 constructor(
                     public name: string,
@@ -366,7 +369,6 @@ describe("Route Generator", () => {
                 constructor(
                     public name: string,
                     public email: string,
-                    @route.controller()
                     @reflect.type([Animal])
                     @relation()
                     @route.controller()
@@ -538,7 +540,7 @@ describe("Route Generator", () => {
                     @reflect.type([Animal])
                     @relation()
                     @route.controller()
-                    @route.ignore({ action: ["save", "list"] })
+                    @route.ignore({ applyTo: ["save", "list"] })
                     public animals: Animal[]
                 ) { }
             }
@@ -578,7 +580,7 @@ describe("Route Generator", () => {
                 public name: string
                 @reflect.noop()
                 public email: string
-                @authorize.role("admin", { action: ["save", "replace", "delete", "modify"] })
+                @authorize.role("admin", { applyTo: ["save", "replace", "delete", "modify"] })
                 @reflect.type([Animal])
                 @relation()
                 @route.controller()
@@ -590,7 +592,7 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to set @authorize.set() on relation", async () => {
+        it("Should able to set @authorize.write() on relation", async () => {
             class Animal {
                 @reflect.noop()
                 public name: string
@@ -600,7 +602,7 @@ describe("Route Generator", () => {
                 public name: string
                 @reflect.noop()
                 public email: string
-                @authorize.set("admin")
+                @authorize.write("admin")
                 @reflect.type([Animal])
                 @relation()
                 @route.controller()
@@ -612,7 +614,7 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to set @authorize.get() on relation", async () => {
+        it("Should able to set @authorize.read() on relation", async () => {
             class Animal {
                 @reflect.noop()
                 public name: string
@@ -622,7 +624,7 @@ describe("Route Generator", () => {
                 public name: string
                 @reflect.noop()
                 public email: string
-                @authorize.get("admin")
+                @authorize.read("admin")
                 @reflect.type([Animal])
                 @relation()
                 @route.controller()
@@ -634,7 +636,7 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to set @authorize.get() on relation", async () => {
+        it("Should able to set @authorize.read() on relation", async () => {
             class Animal {
                 @reflect.noop()
                 public name: string
@@ -678,6 +680,31 @@ describe("Route Generator", () => {
             error(async () => ctl.update(123, {}))
             error(async () => ctl.insert(1, {}))
             error(async () => ctl.findParentById(1))
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should throw error when the relation doesn't have type information", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @route.controller()
+            @domain()
+            class User {
+                @noop()
+                name: string
+                @noop()
+                email: string
+                @route.controller()
+                animals: Animal[]
+            }
+            const fn = jest.fn()
+            try {
+                await createApp({ controller: User }).initialize()
+            } catch (e) {
+                fn(e)
+            }
             expect(fn.mock.calls).toMatchSnapshot()
         })
     })
@@ -726,6 +753,370 @@ describe("Route Generator", () => {
                 .set(new ControllerFacility({ controller: User, group: "v1", rootPath: "api/v1" }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+    })
+})
+
+describe("Property Binding", () => {
+    const delayLorem = () => new Promise<string>(resolve => setTimeout(x => resolve("lorem ipsum"), 50))
+    describe("Generic Controller", () => {
+        const fn = jest.fn()
+        class MockRepo<T> implements Repository<T>{
+            async find(offset: number, limit: number, query: Partial<T>): Promise<T[]> {
+                fn(offset, limit, query)
+                return []
+            }
+            async insert(data: Partial<T>): Promise<{ id: any }> {
+                fn(data)
+                return { id: 123 }
+            }
+            async findById(id: any): Promise<T | undefined> {
+                fn(id)
+                return {} as any
+            }
+            async update(id: any, data: Partial<T>): Promise<{ id: any }> {
+                fn(id, data)
+                return { id }
+            }
+            async delete(id: any): Promise<{ id: any }> {
+                fn(id)
+                return { id }
+            }
+        }
+        @generic.template("T", "TID")
+        @generic.type("T", "TID")
+        class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
+            constructor() { super(fac => new MockRepo<T>()) }
+        }
+        function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
+            return new Plumier()
+                .set({
+                    genericController: [MyControllerGeneric, DefaultOneToManyControllerGeneric],
+                    mode: "production",
+                    ...config
+                })
+                .set(new WebApiFacility())
+                .set(new ControllerFacility(opt))
+        }
+        beforeEach(() => fn.mockClear())
+        it("Should bind on post method", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => "lorem ipsum dolor")
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: User }).initialize()
+            await supertest(koa.callback())
+                .post("/user")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind on post method using property declaration", async () => {
+            @route.controller()
+            class User {
+                @noop()
+                public name: string
+                @noop()
+                public email: string
+                @bind.custom(x => "lorem ipsum dolor")
+                public random: string
+            }
+            const koa = await createApp({ controller: User }).initialize()
+            await supertest(koa.callback())
+                .post("/user")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind promise on post method", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => delayLorem())
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: User }).initialize()
+            await supertest(koa.callback())
+                .post("/user")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind on put method", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => "lorem ipsum dolor")
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: User }).initialize()
+            await supertest(koa.callback())
+                .put("/user/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind promise on put method", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => delayLorem())
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: User }).initialize()
+            await supertest(koa.callback())
+                .put("/user/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind on patch method", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => "lorem ipsum dolor")
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: User }).initialize()
+            await supertest(koa.callback())
+                .patch("/user/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind promise on patch method", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => delayLorem())
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: User }).initialize()
+            await supertest(koa.callback())
+                .patch("/user/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+    })
+    describe("One To Many Controller", () => {
+        const fn = jest.fn()
+        class MockRepo<P, T> implements OneToManyRepository<P, T>{
+            async find(pid: any, offset: number, limit: number, query: Partial<T>): Promise<T[]> {
+                fn(pid, offset, limit, query)
+                return []
+            }
+            async findParentById(id: any): Promise<P | undefined> {
+                return {} as any
+            }
+            async insert(pid: any, data: Partial<T>): Promise<{ id: any }> {
+                fn(data)
+                return { id: 123 }
+            }
+            async findById(id: any): Promise<T | undefined> {
+                fn(id)
+                return {} as any
+            }
+            async update(id: any, data: Partial<T>): Promise<{ id: any }> {
+                fn(id, data)
+                return { id }
+            }
+            async delete(id: any): Promise<{ id: any }> {
+                fn(id)
+                return { id }
+            }
+        }
+        @generic.template("P", "T", "PID", "TID")
+        @generic.type("P", "T", "PID", "TID")
+        class MyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{
+            constructor() { super(fac => new MockRepo<P, T>()) }
+        }
+        function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
+            return new Plumier()
+                .set({
+                    genericController: [DefaultControllerGeneric, MyControllerGeneric],
+                    mode: "production",
+                    ...config
+                })
+                .set(new WebApiFacility())
+                .set(new ControllerFacility(opt))
+        }
+        beforeEach(() => fn.mockClear())
+        it("Should bind on post method", async () => {
+            @domain()
+            class Parent {
+                constructor(
+                    @route.controller()
+                    @type(x => [User])
+                    users: User[]
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => "lorem ipsum dolor")
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: Parent }).initialize()
+            await supertest(koa.callback())
+                .post("/parent/123/users")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind promise on post method", async () => {
+            @domain()
+            class Parent {
+                constructor(
+                    @route.controller()
+                    @type(x => [User])
+                    users: User[]
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => delayLorem())
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: Parent }).initialize()
+            await supertest(koa.callback())
+                .post("/parent/123/users")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind on put method", async () => {
+            @domain()
+            class Parent {
+                constructor(
+                    @route.controller()
+                    @type(x => [User])
+                    users: User[]
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => "lorem ipsum dolor")
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: Parent }).initialize()
+            await supertest(koa.callback())
+                .put("/parent/123/users/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind promise on put method", async () => {
+            @domain()
+            class Parent {
+                constructor(
+                    @route.controller()
+                    @type(x => [User])
+                    users: User[]
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => delayLorem())
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: Parent }).initialize()
+            await supertest(koa.callback())
+                .put("/parent/123/users/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind on patch method", async () => {
+            @domain()
+            class Parent {
+                constructor(
+                    @route.controller()
+                    @type(x => [User])
+                    users: User[]
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => "lorem ipsum dolor")
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: Parent }).initialize()
+            await supertest(koa.callback())
+                .patch("/parent/123/users/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should bind promise on patch method", async () => {
+            @domain()
+            class Parent {
+                constructor(
+                    @route.controller()
+                    @type(x => [User])
+                    users: User[]
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @bind.custom(x => delayLorem())
+                    public random: string
+                ) { }
+            }
+            const koa = await createApp({ controller: Parent }).initialize()
+            await supertest(koa.callback())
+                .patch("/parent/123/users/123")
+                .send({ name: "John", email: "john.doe@gmail.com" })
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
         })
     })
 })

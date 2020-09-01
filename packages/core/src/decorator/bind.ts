@@ -1,9 +1,9 @@
 import { GetOption } from "cookies"
-import { decorateParameter, mergeDecorator } from "tinspector"
-
+import { decorateProperty, mergeDecorator, CustomPropertyDecorator } from "tinspector"
 import { BindingDecorator, CustomBinderFunction, HeaderPart, RequestPart } from "../binder"
 import { getChildValue } from "../common"
 import { api } from "./api"
+
 
 
 export namespace bind {
@@ -91,9 +91,14 @@ export namespace bind {
      * Bind current login user to parameter
      *    
      *     method(@bind.user() user:User){}
+     * 
+     * If parameter provided, part of query property will be bound
+     * 
+     *     method(@bind.user("userId") id:string){}
+     *     method(@bind.user("role") role:string){}
      */
-    export function user() {
-        return ctxDecorator("user", "state.user")
+    export function user(part?: string) {
+        return ctxDecorator("user", ["state", "user", part].join("."))
     }
 
     /**
@@ -110,7 +115,7 @@ export namespace bind {
      *    
      *     method(@bind.formFile("file") cookie:FormFile){}
      */
-    export function formFile(name: string): ParameterDecorator {
+    export function formFile(name: string): CustomPropertyDecorator {
         return mergeDecorator(
             bind.custom(ctx => (ctx.request as any).files?.[name], "formFile") as any,
             api.name(name))
@@ -136,7 +141,6 @@ export namespace bind {
      * @param process callback function to process the Koa context
      */
     export function custom(process: CustomBinderFunction, name: string = "custom") {
-        return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", process, name })
+        return decorateProperty(<BindingDecorator>{ type: "ParameterBinding", process, name })
     }
 }
-

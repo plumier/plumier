@@ -609,6 +609,7 @@ export namespace errorMessage {
     export const PublicNotInParameter = "PLUM1007: @authorize.public() can not be applied to parameter"
     export const PropertyWithoutTypeInformation = "PLUM1008: Parameter binding skipped because property doesn't have type information in ({0})"
     export const GenericControllerImplementationNotFound = "PLUM1009: Generic controller implementation not installed"
+    export const GenericControllerMissingTypeInfo = "PLUM1010: {0} marked with @route.controller() but doesn't have type information"
 
     //PLUM2XXX internal app error
     export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate {0}. Domain model should not throw error inside constructor`

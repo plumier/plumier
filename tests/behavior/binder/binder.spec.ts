@@ -676,10 +676,10 @@ describe("Parameter Binding", () => {
             ) { }
         }
 
-        function fixture(controller:Class){
+        function fixture(controller: Class) {
             return new Plumier()
-                .set({mode: "production"})
-                .set(new WebApiFacility({controller, bodyParser: { includeUnparsed:true }}))
+                .set({ mode: "production" })
+                .set(new WebApiFacility({ controller, bodyParser: { includeUnparsed: true } }))
         }
 
         it("Should bind raw body", async () => {
@@ -960,6 +960,23 @@ describe("Parameter Binding", () => {
             expect(result.body).toMatchObject({ email: "ketut@gmail.com", role: "Admin" })
         })
 
+        it("Should able to bind part user data", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.user("email") email: string) {
+                    return { email }
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            const result = await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${TOKEN}`)
+                .expect(200)
+            expect(result.body).toMatchObject({ email: "ketut@gmail.com" })
+        })
+
         it("Should provide datatype properly", async () => {
             class AnimalController {
                 @route.get()
@@ -976,7 +993,6 @@ describe("Parameter Binding", () => {
                 .set("Authorization", `Bearer ${TOKEN}`)
                 .expect(200, { message: "OK" })
         })
-
 
         it("Should skip user validation", async () => {
             class AnimalController {
@@ -1070,6 +1086,18 @@ describe("Parameter Binding", () => {
                 'content-type': 'application/json',
                 connection: 'close'
             })
+        })
+        it("Should able to provide Promised value", async () => {
+            class AnimalController {
+                @route.get()
+                get(@bind.custom(ctx => Promise.resolve(123)) b: number) {
+                    return { b }
+                }
+            }
+            const result = await Supertest((await fixture(AnimalController).initialize()).callback())
+                .get("/animal/get")
+                .expect(200)
+            expect(result.body).toMatchSnapshot()
         })
     })
 
@@ -1257,10 +1285,10 @@ describe("Parameter Binding", () => {
         it("Should able to mix with non file fields", async () => {
             class AnimalController {
                 @route.post()
-                save(name:string, clock: FormFile) {
+                save(name: string, clock: FormFile) {
                     return [
-                        { name: clock.name, type: clock.type }, 
-                        { name }, 
+                        { name: clock.name, type: clock.type },
+                        { name },
                     ]
                 }
             }
@@ -1275,10 +1303,10 @@ describe("Parameter Binding", () => {
         it("Should able to set optional file while using other non file field", async () => {
             class AnimalController {
                 @route.post()
-                save(name:string, clock: FormFile) {
+                save(name: string, clock: FormFile) {
                     return [
-                        { name: clock?.name, type: clock?.type }, 
-                        { name }, 
+                        { name: clock?.name, type: clock?.type },
+                        { name },
                     ]
                 }
             }
@@ -1292,10 +1320,10 @@ describe("Parameter Binding", () => {
         it("Should able to set optional file array while using other non file field", async () => {
             class AnimalController {
                 @route.post()
-                save(name:string, @reflect.type([FormFile]) clock: FormFile[]) {
+                save(name: string, @reflect.type([FormFile]) clock: FormFile[]) {
                     return [
-                        { name: clock && clock[0]?.name, type: clock && clock[0]?.type }, 
-                        { name }, 
+                        { name: clock && clock[0]?.name, type: clock && clock[0]?.type },
+                        { name },
                     ]
                 }
             }

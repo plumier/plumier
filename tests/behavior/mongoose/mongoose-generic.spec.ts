@@ -1,4 +1,4 @@
-import { Class, Configuration, consoleLog, val, route, DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from "@plumier/core"
+import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog } from "@plumier/core"
 import model, {
     collection,
     models,
@@ -8,18 +8,13 @@ import model, {
     MongooseOneToManyControllerGeneric,
     MongooseOneToManyRepository,
     MongooseRepository,
-    Ref,
 } from "@plumier/mongoose"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
-import { join } from "path"
 import supertest from "supertest"
 import reflect, { generic } from "tinspector"
-
-import * as v1 from "./v1/models"
-import * as v2 from "./v2/models"
 
 jest.setTimeout(20000)
 
@@ -392,7 +387,7 @@ describe("CRUD", () => {
             const app = await new Plumier()
                 .set(new WebApiFacility())
                 .set(new MongooseFacility())
-                .set({ mode: "production", controller: User, genericController:[MyCustomGeneric, DefaultOneToManyControllerGeneric] })
+                .set({ mode: "production", controller: User, genericController: [MyCustomGeneric, DefaultOneToManyControllerGeneric] })
                 .initialize()
             await supertest(app.callback())
                 .post("/users")
@@ -1032,7 +1027,7 @@ describe("CRUD", () => {
             const app = await new Plumier()
                 .set(new WebApiFacility())
                 .set(new MongooseFacility())
-                .set({ mode: "production", controller: User, genericController:[DefaultControllerGeneric, MyCustomGeneric] })
+                .set({ mode: "production", controller: User, genericController: [DefaultControllerGeneric, MyCustomGeneric] })
                 .initialize()
             await supertest(app.callback())
                 .post(`/users/${user._id}/animals`)
@@ -1457,6 +1452,55 @@ describe("CRUD", () => {
                 .get(`/parents/${parent.id}/children`)
                 .expect(200)
             expect(body).toMatchSnapshot()
+        })
+    })
+    describe("CRUD with versioning", () => {
+        function createApp(option: Partial<Configuration>, helper: MongooseHelper) {
+            return new Plumier()
+                .set(new WebApiFacility())
+                .set(new MongooseFacility({ helper }))
+                .set(option || {})
+                .initialize()
+        }
+        it("Should able to load entity with versioning", async () => {
+            const mong = new MongooseHelper()
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            mong.model(User)
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }, mong)
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
+        })
+
+        it("Should able to load relation entity with versioning", async () => {
+            const mong = new MongooseHelper()
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @route.controller()
+                @collection.ref(x => [Tag])
+                tags: Tag[]
+            }
+            @collection()
+            class Tag {
+                @reflect.noop()
+                name: string
+            }
+            mong.model(User)
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }, mong)
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
         })
     })
 })
