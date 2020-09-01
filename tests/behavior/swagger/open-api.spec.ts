@@ -1315,7 +1315,7 @@ describe("Open API 3.0 Generation", () => {
             expect(body.paths["/users"].get.security).toMatchSnapshot()
         })
         it("Should not apply security on class scope public with filter", async () => {
-            @authorize.public({ action: "get" })
+            @authorize.public({ applyTo: "get" })
             class UsersController {
                 @route.get("")
                 get(id: string) {

@@ -41,7 +41,6 @@ interface AuthorizeDecorator {
     tag: string,
     location: "Class" | "Parameter" | "Method",
     evaluation: "Static" | "Dynamic"
-    action: string | string[]
 }
 
 interface Authorizer {
@@ -92,18 +91,8 @@ function getAuthorizeDecorators(info: RouteInfo, globalDecorator?: (...args: any
     // if action has decorators then return immediately to prioritize the action decorator
     const actionDecs = info.action.decorators.filter(createDecoratorFilter())
     if (actionDecs.length > 0) return actionDecs
-    const controllerDecs: AuthorizeDecorator[] = []
     // if controller has decorators then return immediately
-    for (const dec of info.controller.decorators) {
-        const decorator = dec as AuthorizeDecorator
-        if (decorator.type === "plumier-meta:authorize") {
-            const selector = typeof decorator.action === "string" ? [decorator.action] : decorator.action 
-            if(selector.length === 0) 
-                controllerDecs.push(decorator)
-            if(selector.some(x => x === info.action.name))
-                controllerDecs.push(decorator)
-        }
-    }
+    const controllerDecs = info.controller.decorators.filter(createDecoratorFilter())
     if (controllerDecs.length > 0) return controllerDecs
     return getGlobalDecorators(globalDecorator)
 }

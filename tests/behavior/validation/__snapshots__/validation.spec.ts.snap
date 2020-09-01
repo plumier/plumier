@@ -192,7 +192,9 @@ Object {
         "url": undefined,
         Symbol(tinspector:decoratorOption): Object {
           "allowMultiple": true,
+          "applyTo": Array [],
           "inherit": true,
+          "removeApplied": true,
         },
       },
     ],
@@ -206,7 +208,9 @@ Object {
             "validator": customValidator,
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,
+              "applyTo": Array [],
               "inherit": true,
+              "removeApplied": true,
             },
           },
         ],
@@ -238,7 +242,9 @@ Object {
             "url": undefined,
             Symbol(tinspector:decoratorOption): Object {
               "allowMultiple": true,
+              "applyTo": Array [],
               "inherit": true,
+              "removeApplied": true,
             },
           },
         ],
@@ -252,7 +258,9 @@ Object {
                 "validator": customValidator,
                 Symbol(tinspector:decoratorOption): Object {
                   "allowMultiple": true,
+                  "applyTo": Array [],
                   "inherit": true,
+                  "removeApplied": true,
                 },
               },
             ],
