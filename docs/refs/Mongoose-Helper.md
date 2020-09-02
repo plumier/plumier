@@ -272,6 +272,29 @@ const DummyModel = model(Dummy)
 const SecondDummyModel = model(Dummy)
 ```
 
+### Schema Generation Hook
+Its possible to provide hook when mongoose schema generated, so its possible to register the mongoose middleware from provided schema like below: 
+
+```typescript
+@collection({
+    hook: (schema) => {
+        schema.pre("save", async function (this: Dummy & mongoose.Document) {
+            const newString = await new Promise<string>(resolve => setTimeout(() => resolve("Delayed"), 100))
+            this.stringProp = newString
+        })
+    } 
+})
+class Dummy {
+    constructor(
+        public stringProp: string,
+        public numberProp: number,
+        public booleanProp: boolean,
+        public dateProp: Date
+    ) { }
+}
+const DummyModel = model(Dummy)
+```
+
 ## Relation with Cyclic Dependency 
 Its possible to map relation with cyclic dependency using mongoose helper
 
