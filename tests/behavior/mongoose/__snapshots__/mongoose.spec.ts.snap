@@ -161,6 +161,17 @@ Object {
 }
 `;
 
+exports[`Mongoose Schema Generation Should able to use preSave using decorator 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "booleanProp": true,
+  "dateProp": 2020-2-2,
+  "numberProp": 123,
+  "stringProp": "Delayed",
+}
+`;
+
 exports[`Mongoose Schema Generation Should work with cyclic reference model 1`] = `
 Object {
   "__v": 0,

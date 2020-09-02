@@ -295,6 +295,27 @@ class Dummy {
 const DummyModel = model(Dummy)
 ```
 
+### PreSave Decorator 
+You can add hook during schema generation, but for simple use case to hash password before saving is too messy if using hook and `pre` middleware. Plumier provided `@collection.preSave()` decorator to automatically call decorated method before save.
+
+```typescript
+@collection()
+class Dummy {
+    constructor(
+        public stringProp: string,
+        public numberProp: number,
+        public booleanProp: boolean,
+        public dateProp: Date
+    ) { }
+
+    @collection.preSave()
+    async beforeSave() {
+        this.stringProp = await new Promise<string>(resolve => setTimeout(() => resolve("Delayed"), 100))
+    }
+}
+const DummyModel = model(Dummy)
+```
+
 ## Relation with Cyclic Dependency 
 Its possible to map relation with cyclic dependency using mongoose helper
 

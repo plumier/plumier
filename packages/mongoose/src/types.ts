@@ -12,6 +12,7 @@ type ModelFactory = <T>(type: new (...args: any) => T) => mongoose.Model<T & mon
 interface ClassOptionDecorator { name: "ClassOption", option: NamedSchemaOption }
 interface PropertyOptionDecorator { name: "PropertyOption", option?: SchemaTypeOpts<any> }
 interface RefDecorator { name: "MongooseRef" }
+interface PreSaveDecorator { name: "MongoosePreSave" }
 interface ModelStore { name: string, collectionName: string, definition: any, option: NamedSchemaOption }
 interface AnalysisResult { name: string, collection: string, option: string, definition: string }
 
@@ -23,6 +24,6 @@ export {
     NamedSchemaOption, Ref,
     ModelFactory, PropertyOptionDecorator, RefDecorator,
     ClassOptionDecorator, ReferenceTypeNotRegistered, CanNotValidateNonProperty,
-    GeneratorHook, ModelStore, AnalysisResult
+    GeneratorHook, ModelStore, AnalysisResult, PreSaveDecorator
 }
 
