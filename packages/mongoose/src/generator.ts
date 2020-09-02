@@ -72,6 +72,8 @@ class MongooseHelper {
             const name = option.name!
             const definition = getDefinition(type, this.models)
             const schema = new this.client.Schema(definition, option)
+            if(option.hook)
+                option.hook(schema)
             const mongooseModel = this.client.model<T & Document>(name, schema)
             this.models.set(type, { name, collectionName: mongooseModel.collection.name, definition, option })
             return mongooseModel
