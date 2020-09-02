@@ -2,7 +2,7 @@ import { Class, isCustomClass } from "@plumier/core"
 import mong, { ConnectionOptions, Document, Mongoose } from "mongoose"
 import reflect, { ClassReflection, PropertyReflection } from "tinspector"
 
-import { ClassOptionDecorator, ModelStore, NamedSchemaOption, PropertyOptionDecorator, RefDecorator } from "./types"
+import { ClassOptionDecorator, ModelStore, NamedSchemaOption, PropertyOptionDecorator, RefDecorator, PreSaveDecorator } from "./types"
 
 
 
@@ -74,6 +74,14 @@ class MongooseHelper {
             const schema = new this.client.Schema(definition, option)
             if(option.hook)
                 option.hook(schema)
+            //@collection.preSave() hook
+            const preSaves = meta.methods.filter(m => m.decorators.some((x:PreSaveDecorator) => x.name === "MongoosePreSave"))
+            schema.pre("save", async function(){
+                for (const preSave of preSaves) {
+                    const method:Function = type.prototype[preSave.name].bind(this)
+                    await method()
+                }
+            })
             const mongooseModel = this.client.model<T & Document>(name, schema)
             this.models.set(type, { name, collectionName: mongooseModel.collection.name, definition, option })
             return mongooseModel

@@ -391,6 +391,32 @@ describe("Mongoose", () => {
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
         })
+        it("Should able to use preSave using decorator", async () => {
+            const { model } = new MongooseHelper(mongoose)
+            @collection()
+            class Dummy {
+                constructor(
+                    public stringProp: string,
+                    public numberProp: number,
+                    public booleanProp: boolean,
+                    public dateProp: Date
+                ) { }
+
+                @collection.preSave()
+                async beforeSave() {
+                    this.stringProp = await new Promise<string>(resolve => setTimeout(() => resolve("Delayed"), 100))
+                }
+            }
+            const DummyModel = model(Dummy)
+            const added = await DummyModel.create({
+                stringProp: "string",
+                numberProp: 123,
+                booleanProp: true,
+                dateProp: new Date(Date.UTC(2020, 2, 2))
+            })
+            const saved = await DummyModel.findById(added._id)
+            expect(saved).toMatchSnapshot()
+        })
     })
 
     describe("Schema Configuration", () => {
