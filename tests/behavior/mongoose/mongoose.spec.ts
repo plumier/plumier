@@ -361,6 +361,62 @@ describe("Mongoose", () => {
             expect(DummyModel.collection.name).toBe("lorems")
             expect(OtherDummyModel.collection.name).toBe("lorems")
         })
+
+        it("Should able to hook schema generation", async () => {
+            const { model } = new MongooseHelper(mongoose)
+            @collection({
+                hook: (schema) => {
+                    schema.pre("save", async function (this: Dummy & mongoose.Document) {
+                        const newString = await new Promise<string>(resolve => setTimeout(() => resolve("Delayed"), 100))
+                        this.stringProp = newString
+                    })
+                }
+            })
+            class Dummy {
+                constructor(
+                    public stringProp: string,
+                    public numberProp: number,
+                    public booleanProp: boolean,
+                    public dateProp: Date
+                ) { }
+            }
+            const DummyModel = model(Dummy)
+            const added = await DummyModel.create(<Dummy>{
+                excess: "lorem ipsum",
+                stringProp: "string",
+                numberProp: 123,
+                booleanProp: true,
+                dateProp: new Date(Date.UTC(2020, 2, 2))
+            })
+            const saved = await DummyModel.findById(added._id)
+            expect(saved).toMatchSnapshot()
+        })
+        it("Should able to use preSave using decorator", async () => {
+            const { model } = new MongooseHelper(mongoose)
+            @collection()
+            class Dummy {
+                constructor(
+                    public stringProp: string,
+                    public numberProp: number,
+                    public booleanProp: boolean,
+                    public dateProp: Date
+                ) { }
+
+                @collection.preSave()
+                async beforeSave() {
+                    this.stringProp = await new Promise<string>(resolve => setTimeout(() => resolve("Delayed"), 100))
+                }
+            }
+            const DummyModel = model(Dummy)
+            const added = await DummyModel.create({
+                stringProp: "string",
+                numberProp: 123,
+                booleanProp: true,
+                dateProp: new Date(Date.UTC(2020, 2, 2))
+            })
+            const saved = await DummyModel.findById(added._id)
+            expect(saved).toMatchSnapshot()
+        })
     })
 
     describe("Schema Configuration", () => {
@@ -750,14 +806,14 @@ describe("Facility", () => {
             class Image {
                 constructor(
                     @authorize.readonly()
-                    public id:string,
+                    public id: string,
                     public name: string
                 ) { }
             }
             @collection()
             class Animal {
                 constructor(
-                    public id:string,
+                    public id: string,
                     public name: string,
                     @collection.ref(Image)
                     public image: Image

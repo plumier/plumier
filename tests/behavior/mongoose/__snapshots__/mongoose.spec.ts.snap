@@ -142,11 +142,33 @@ Object {
 }
 `;
 
+exports[`Mongoose Schema Generation Should able to hook schema generation 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "booleanProp": true,
+  "dateProp": 2020-2-2,
+  "numberProp": 123,
+  "stringProp": "Delayed",
+}
+`;
+
 exports[`Mongoose Schema Generation Should able to rename collection with different name 1`] = `
 Object {
   "__v": 0,
   "_id": "MONGODB UNIQUE ID",
   "stringProp": "string",
+}
+`;
+
+exports[`Mongoose Schema Generation Should able to use preSave using decorator 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "booleanProp": true,
+  "dateProp": 2020-2-2,
+  "numberProp": 123,
+  "stringProp": "Delayed",
 }
 `;
 
