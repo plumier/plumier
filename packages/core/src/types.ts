@@ -132,7 +132,7 @@ export interface Facility {
 
 export class DefaultFacility implements Facility {
     async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> { return [] }
-    setup(app: Readonly<PlumierApplication>):void { }
+    setup(app: Readonly<PlumierApplication>): void { }
     async preInitialize(app: Readonly<PlumierApplication>) { }
     async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]) { }
 }
@@ -147,6 +147,10 @@ declare module "koa" {
         route?: Readonly<RouteInfo>
         routes: RouteInfo[]
         config: Readonly<Configuration>
+    }
+
+    interface Request {
+        addQuery(query: any): void
     }
 
     interface DefaultState {
@@ -472,7 +476,7 @@ export interface Configuration {
      * Generic controller name conversion to make plural route
      */
 
-     genericControllerNameConversion?: (x:string) => string
+    genericControllerNameConversion?: (x: string) => string
 }
 
 export interface PlumierConfiguration extends Configuration {

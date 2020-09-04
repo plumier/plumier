@@ -1,8 +1,9 @@
-import { route, domain, bind } from "@plumier/core"
-import Plumier, { WebApiFacility } from '@plumier/plumier'
+import { route, domain, bind, DefaultFacility, generateRoutes, PlumierApplication, toBoolean } from "@plumier/core"
+import Plumier, { ForceHttpsMiddleware, WebApiFacility, WebApiFacilityOption } from '@plumier/plumier'
 import supertest = require('supertest')
 import { Context } from 'koa'
 import { fixture } from '../helper'
+import reflect from '@plumier/tinspector'
 
 
 describe("Request Query", () => {
@@ -19,7 +20,6 @@ describe("Request Query", () => {
             },
         }
     }
-
 
     it("Should not cache query", async () => {
         class AnimalController {
@@ -92,7 +92,7 @@ describe("Request Query", () => {
     it("Query parameter should accessible case insensitively from ctx.request.query", async () => {
         class AnimalController {
             @route.get(":animalId")
-            query(animalId:string, @bind.query() q: any) {
+            query(animalId: string, @bind.query() q: any) {
                 return createResult(q)
             }
         }
@@ -109,7 +109,7 @@ describe("Request Query", () => {
     it("Query parameter should accessible case insensitively from ctx.query", async () => {
         class AnimalController {
             @route.get(":animalId")
-            query(animalId:string, @bind.ctx() q: Context) {
+            query(animalId: string, @bind.ctx() q: Context) {
                 return createResult(q.query)
             }
         }
@@ -123,4 +123,59 @@ describe("Request Query", () => {
             })
     })
 
+    it("Should able to pass object on query using square bracket", async () => {
+        @reflect.parameterProperties()
+        class Query {
+            constructor(
+                public num: number,
+                public str: string
+            ) { }
+        }
+        class AnimalController {
+            @route.get()
+            query(data: Query) {
+                return data
+            }
+        }
+        const app = await fixture(AnimalController)
+        const koa = await app.initialize()
+        await supertest(koa.callback())
+            .get("/animal/query?data[num]=123&data[str]=abcd")
+            .expect(200, { num: 123, str: "abcd" })
+    })
+
+    it("Should able to pass array on query using square bracket", async () => {
+        class AnimalController {
+            query(@bind.query() q: any) {
+                return q
+            }
+
+        }
+        const app = await fixture(AnimalController)
+        const koa = await app.initialize()
+        await supertest(koa.callback())
+            .get("/animal/query?data[]=123&data[]=abcd")
+            .expect(200, { data: ["123", "abcd"] })
+    })
+
+    it("Should not error when no addQuery logic provided", async () => {
+        class MyFacility extends DefaultFacility {
+            async generateRoutes(app: Readonly<PlumierApplication>) {
+                const { controller } = app.config
+                return generateRoutes(controller, { ...app.config })
+            }
+        }
+        class AnimalController {
+            query(@bind.query() q: any) {
+                return q
+            }
+        }
+        const app = await new Plumier()
+            .set(new MyFacility())
+            .set({ controller: AnimalController, mode: "production" })
+        const koa = await app.initialize()
+        await supertest(koa.callback())
+            .get("/animal/query?data=123&data=abcd")
+            .expect(200, { data: ["123", "abcd"] })
+    })
 })
