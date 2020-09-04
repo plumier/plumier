@@ -269,6 +269,7 @@ Parent {
   "child": Child {
     "name": "Poo",
   },
+  "id": undefined,
   "name": "Mimi",
 }
 `;

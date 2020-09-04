@@ -427,7 +427,7 @@ describe("TypeOrm", () => {
                 .send({ name: "Mimi", child: child.identifiers[0].id })
                 .expect(200)
             const result = await parentRepo.findOne(body.id, { relations: ["child"] })
-            delete result?.id
+            result!.id = undefined as any
             delete result?.child.id
             expect(result).toMatchSnapshot()
         })
