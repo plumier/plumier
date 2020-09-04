@@ -20,12 +20,12 @@
   "license": "MIT",
   "dependencies": {
     "@types/glob": "^7.1.3",
-    "@types/koa": "^2.11.3",
+    "@types/koa": "^2.11.4",
     "chalk": "^4.1.0",
     "glob": "^7.1.6",
     "path-to-regexp": "^6.1.0",
     "tinspector": "^3.2.2",
-    "tslib": "^2.0.0",
+    "tslib": "^2.0.1",
     "typedconverter": "^2.3.6"
   },
   "bugs": {
