@@ -35,20 +35,11 @@ function getHandler(ctx: Context): RouteMatcher | undefined {
     }
 }
 
-function createQuery(query: any, { keys, match }: RouteMatcher) {
-    const raw = keys.reduce((a, b, i) => {
+function createQuery({ keys, match }: RouteMatcher) {
+    return keys.reduce((a, b, i) => {
         a[b.name] = match![i + 1]
         return a;
-    }, query)
-    return new Proxy(raw, {
-        get: (target, name) => {
-            for (const key in target) {
-                if (key.toLowerCase() === name.toString().toLowerCase())
-                    return target[key];
-            }
-            return target[name]
-        }
-    })
+    }, {} as any)
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -66,9 +57,8 @@ function router(infos: RouteInfo[], config: Configuration) {
             ctx.state.caller = "system"
             const handler = getHandlerCached(ctx)
             if (handler) {
-                Object.defineProperty(ctx.request, "query", {
-                    value: createQuery(ctx.query, handler)
-                })
+                if (ctx.request.addQuery)
+                    ctx.request.addQuery(createQuery(handler))
                 ctx.route = handler.route
             }
             const pipe = createPipe(ctx)

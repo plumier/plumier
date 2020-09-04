@@ -13,9 +13,9 @@ import {
     toBoolean,
 } from "@plumier/core"
 import chalk from "chalk"
-import { Context } from "koa"
+import { BaseRequest, Context, Request } from "koa"
 import BodyParser from "koa-body"
-import { isAbsolute, join } from "path"
+import qs from "qs"
 
 export interface WebApiFacilityOption {
     controller?: string | string[] | Class | Class[],
@@ -24,6 +24,39 @@ export interface WebApiFacilityOption {
     trustProxyHeader?: boolean,
     forceHttps?: boolean,
     dependencyResolver?: DependencyResolver
+}
+
+interface CustomQuery {
+    _extraQuery: any
+    _querycache: any
+    querystring: string
+    query: any
+    addQuery(query: any): void
+}
+
+function createQuery(queryString: string, extra: any) {
+    const parsed = qs.parse(queryString)
+    if (!extra) return parsed
+    const raw = Object.keys(extra).reduce((result, q) => {
+        result[q] = extra[q]
+        return result
+    }, parsed as any)
+    return new Proxy(raw, {
+        get: (target, name) => {
+            for (const key in target) {
+                if (key.toLowerCase() === name.toString().toLowerCase())
+                    return target[key];
+            }
+            return target[name]
+        }
+    })
+}
+
+function copyDescriptor(dest: any, src: any) {
+    Object.getOwnPropertyNames(src).forEach((name) => {
+        var descriptor = Object.getOwnPropertyDescriptor(src, name)
+        Object.defineProperty(dest, name, descriptor!)
+    })
 }
 
 /**
@@ -61,6 +94,17 @@ export class WebApiFacility extends DefaultFacility {
             app.set({ controller: option.controller })
         if (option.trustProxyHeader)
             app.set({ trustProxyHeader: option.trustProxyHeader })
+        // update query 
+        copyDescriptor(app.koa.request, <CustomQuery>{
+            addQuery: function (query: any) {
+                this._extraQuery = query
+            },
+            get query() {
+                const str = this.querystring;
+                const cache = this._querycache = this._querycache || {};
+                return cache[str] || (cache[str] = createQuery(str, this._extraQuery));
+            }
+        })
     }
 }
 

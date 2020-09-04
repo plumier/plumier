@@ -48,8 +48,6 @@ function fixture() {
 }
 
 describe("Basic Controller", () => {
-
-
     it("Should able to perform GET request", async () => {
         const koa = await fixture().initialize()
         await Supertest(koa.callback())
