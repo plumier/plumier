@@ -1,12 +1,15 @@
-import { Class, consoleLog, route, authorize } from "@plumier/core"
-import { collection, model as globalModel, MongooseFacility, MongooseHelper, Ref } from "@plumier/mongoose"
+import { authorize, Class, route } from "@plumier/core"
+import { JwtAuthFacility } from "@plumier/jwt"
+import model, { collection, model as globalModel, MongooseFacility, MongooseHelper, Ref } from "@plumier/mongoose"
+import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import Plumier, { WebApiFacility } from "plumier"
 import supertest from "supertest"
 import reflect, { noop } from "tinspector"
+
 import { fixture } from "../helper"
-import { MongoMemoryServer } from "mongodb-memory-server-global"
-import { JwtAuthFacility } from '@plumier/jwt'
+import { ChildModel, } from "./cross-dependent/child"
+import { ParentModel, } from "./cross-dependent/parent"
 
 mongoose.set("useNewUrlParser", true)
 mongoose.set("useUnifiedTopology", true)
@@ -391,6 +394,7 @@ describe("Mongoose", () => {
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
         })
+
         it("Should able to use preSave using decorator", async () => {
             const { model } = new MongooseHelper(mongoose)
             @collection()
@@ -416,6 +420,120 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
+        })
+    })
+
+    describe("Proxy", () => {
+        it("Should work with simple model", async () => {
+            const { proxy } = new MongooseHelper(mongoose)
+            @collection()
+            class Dummy {
+                constructor(
+                    public stringProp: string,
+                    public numberProp: number,
+                    public booleanProp: boolean,
+                    public dateProp: Date
+                ) { }
+            }
+            const DummyModel = proxy(Dummy)
+            const added = await DummyModel.create(<Dummy>{
+                excess: "lorem ipsum",
+                stringProp: "string",
+                numberProp: 123,
+                booleanProp: true,
+                dateProp: new Date(Date.UTC(2020, 2, 2))
+            })
+            const saved = await DummyModel.findById(added._id)
+            expect(saved).toMatchSnapshot()
+        })
+        it("Should work with instance of simple model", async () => {
+            const { proxy } = new MongooseHelper(mongoose)
+            @collection()
+            class Dummy {
+                constructor(
+                    public stringProp: string,
+                    public numberProp: number,
+                    public booleanProp: boolean,
+                    public dateProp: Date
+                ) { }
+            }
+            const DummyModel = proxy(Dummy)
+            const added = await new DummyModel(<Dummy>{
+                excess: "lorem ipsum",
+                stringProp: "string",
+                numberProp: 123,
+                booleanProp: true,
+                dateProp: new Date(Date.UTC(2020, 2, 2))
+            }).save()
+            added.stringProp = "modified"
+            await added.save()
+            const saved = await DummyModel.findById(added._id)
+            expect(saved).toMatchSnapshot()
+        })
+        it("Should possible to call more than once", async () => {
+            const { proxy } = new MongooseHelper(mongoose)
+            @collection()
+            class Dummy {
+                constructor(
+                    public stringProp: string,
+                    public numberProp: number,
+                    public booleanProp: boolean,
+                    public dateProp: Date
+                ) { }
+            }
+            const DummyModel = proxy(Dummy)
+            const OtherDummyModel = proxy(Dummy)
+        })
+        it("Should able to provide toString()", async () => {
+            const { proxy } = new MongooseHelper(mongoose)
+            @collection()
+            class Dummy {
+                constructor(
+                    public stringProp: string,
+                    public numberProp: number,
+                    public booleanProp: boolean,
+                    public dateProp: Date
+                ) { }
+            }
+            const DummyModel = proxy(Dummy)
+            expect(DummyModel.toString()).toMatchSnapshot()
+        })
+        it("Should fix circular reference issue", async () => {
+            const { proxy } = new MongooseHelper(mongoose)
+            @collection()
+            class Child {
+                @noop()
+                name: string
+
+                @collection.ref(x => Parent)
+                parent: Ref<Parent>
+            }
+            const ChildModel = proxy(Child)
+            @collection()
+            class Parent {
+                @noop()
+                name: string
+
+                @collection.ref(x => [Child])
+                children: Child[]
+            }
+            const ParentModel = proxy(Parent)
+            const parent = await new ParentModel({ name: "parent" }).save()
+            const child = await new ChildModel({ name: "child" }).save()
+            child.parent = parent._id
+            await child.save()
+            parent.children = [child._id]
+            await parent.save()
+            const saved = await ParentModel.findById(parent.id).populate("children")
+            saved!.children[0].parent = undefined as any
+            expect(saved).toMatchSnapshot()
+        })
+        it("Should work with external circular dependency model", async () => {
+            const { model } = new MongooseHelper(mongoose)
+            const parent = await ParentModel.create({ name: "Parent" } as any)
+            const child = await ChildModel.create({ name: "Child" } as any)
+            expect(parent).toMatchSnapshot()
+            expect(child).toMatchSnapshot()
         })
     })
 

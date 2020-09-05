@@ -33,18 +33,69 @@ function getPropertyDefinition(parent: ClassReflection, prop: PropertyReflection
 
 function getDefinition(type: Class, store: Map<Class, ModelStore>) {
     const parent = reflect(type)
-    const result:any = {}
+    const result: any = {}
     for (const prop of parent.properties) {
-        if(prop.name === "id") continue
+        if (prop.name === "id") continue
         result[prop.name] = getPropertyDefinition(parent, prop, store)
     }
     return result;
 }
 
-function getOption(meta: ClassReflection):NamedSchemaOption {
+function getOption(meta: ClassReflection): NamedSchemaOption {
     const classOption: NamedSchemaOption = meta.decorators.filter((x: ClassOptionDecorator): x is ClassOptionDecorator => x.name === "ClassOption")
         .reduce((a, b) => Object.assign(a, b.option), {})
-    return {... classOption, name: classOption.name ?? meta.name }
+    return { ...classOption, name: classOption.name ?? meta.name }
+}
+
+// --------------------------------------------------------------------- //
+// --------------------------- PROXY HANDLER --------------------------- //
+// --------------------------------------------------------------------- //
+
+/*
+USE CASE REQUIRE PROXY
+
+@collection()
+export class Child {
+    @noop()
+    name:string 
+
+    @collection.ref(x => Parent)
+    children:Ref<Parent>
+}
+
+// below will throw error, because "model" unable to get the Parent datatype 
+// even its defined with callback or Ref<Parent> but still need to resolve immediately 
+// before the Parent available
+export const ChildModel = model(Child)
+
+@collection()
+export class Parent {
+    @noop()
+    name:string 
+
+    @collection.ref(x => [Child])
+    children:Child[]
+}
+
+export const ParentModel = model(Parent)
+*/
+
+class ModelProxyHandler<T> implements ProxyHandler<mong.Model<T & mong.Document>>{
+    constructor(private type: Class, private helper:MongooseHelper) { }
+
+    resolveModel():mong.Model<T & mong.Document>{
+        return this.helper.model(this.type)
+    }
+
+    get(target: mong.Model<T & mong.Document>, p: PropertyKey, receiver: any): any {
+        const Model = this.resolveModel()
+        return (Model as any)[p]
+    }
+
+    construct?(target: mong.Model<T & mong.Document>, argArray: any, newTarget?: any): object {
+        const Model = this.resolveModel()
+        return new Model(...argArray)
+    }
 }
 
 // --------------------------------------------------------------------- //
@@ -57,6 +108,7 @@ class MongooseHelper {
     constructor(mongoose?: Mongoose) {
         this.client = mongoose ?? new mong.Mongoose()
         this.model = this.model.bind(this)
+        this.proxy = this.proxy.bind(this)
         this.getModels = this.getModels.bind(this)
         this.connect = this.connect.bind(this)
         this.disconnect = this.disconnect.bind(this)
@@ -72,13 +124,13 @@ class MongooseHelper {
             const name = option.name!
             const definition = getDefinition(type, this.models)
             const schema = new this.client.Schema(definition, option)
-            if(option.hook)
+            if (option.hook)
                 option.hook(schema)
             //@collection.preSave() hook
-            const preSaves = meta.methods.filter(m => m.decorators.some((x:PreSaveDecorator) => x.name === "MongoosePreSave"))
-            schema.pre("save", async function(){
+            const preSaves = meta.methods.filter(m => m.decorators.some((x: PreSaveDecorator) => x.name === "MongoosePreSave"))
+            schema.pre("save", async function () {
                 for (const preSave of preSaves) {
-                    const method:Function = type.prototype[preSave.name].bind(this)
+                    const method: Function = type.prototype[preSave.name].bind(this)
                     await method()
                 }
             })
@@ -86,6 +138,9 @@ class MongooseHelper {
             this.models.set(type, { name, collectionName: mongooseModel.collection.name, definition, option })
             return mongooseModel
         }
+    }
+    proxy<T>(type: new (...args: any) => T): mong.Model<T & mong.Document, {}> {
+        return new Proxy(mong.Model as mong.Model<T & mong.Document>, new ModelProxyHandler<T>(type, this))
     }
     getModels() {
         return Array.from(this.models.keys())
@@ -99,6 +154,6 @@ class MongooseHelper {
 }
 
 const globalHelper = new MongooseHelper(mong)
-const { model, getModels, models } = globalHelper
+const { model, getModels, models, proxy } = globalHelper
 
-export { getDefinition, MongooseHelper, model, getModels, models, globalHelper }
+export { getDefinition, MongooseHelper, model, proxy, getModels, models, globalHelper }
