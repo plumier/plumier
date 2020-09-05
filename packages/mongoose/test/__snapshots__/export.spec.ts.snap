@@ -95,8 +95,10 @@ Object {
     "getModels": bound getModels,
     "model": bound model,
     "models": Map {},
+    "proxy": bound proxy,
   },
   "model": bound model,
   "models": Map {},
+  "proxy": bound proxy,
 }
 `;
