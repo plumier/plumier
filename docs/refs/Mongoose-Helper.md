@@ -322,7 +322,7 @@ Its possible to map relation with cyclic dependency using mongoose helper using 
 > Note when you define model with cyclic dependency its required to use `Ref<T>`  data type and use callback on the `@collection.ref()` parameter to prevent TypeScript `ReferenceError: Model is not defined` error.
 
 ```typescript
-import { collection, proxy } from "@plumier/mongoose"
+import { collection, proxy, Ref } from "@plumier/mongoose"
 
 @collection()
 class Child {
@@ -342,8 +342,8 @@ class Dummy {
     constructor(
         public name:string,
         // nested array of model 
-        @collection.ref([Child])
-        public children: Child[],
+        @collection.ref(x => [Child])
+        public children: Ref<Child[]>,
     ) { }
 }
 
