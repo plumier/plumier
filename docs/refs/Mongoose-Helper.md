@@ -317,11 +317,13 @@ const DummyModel = model(Dummy)
 ```
 
 ## Relation with Cyclic Dependency 
-Its possible to map relation with cyclic dependency using mongoose helper
+Its possible to map relation with cyclic dependency using mongoose helper using `proxy` method. `proxy` will defer schema generation until its first accessed, thus make it able to get the proper data type.
 
 > Note when you define model with cyclic dependency its required to use `Ref<T>`  data type and use callback on the `@collection.ref()` parameter to prevent TypeScript `ReferenceError: Model is not defined` error.
 
 ```typescript
+import { collection, proxy, Ref } from "@plumier/mongoose"
+
 @collection()
 class Child {
     constructor(
@@ -333,18 +335,19 @@ class Child {
     ){}
 }
 
+const ChildModel = proxy(Child)
+
 @collection()
 class Dummy {
     constructor(
         public name:string,
         // nested array of model 
-        @collection.ref([Child])
-        public children: Child[],
+        @collection.ref(x => [Child])
+        public children: Ref<Child[]>,
     ) { }
 }
 
-const ChildModel = model(Child)
-const DummyModel = model(Dummy)
+const DummyModel = proxy(Dummy)
 ```
 
 ## Unique Validation
