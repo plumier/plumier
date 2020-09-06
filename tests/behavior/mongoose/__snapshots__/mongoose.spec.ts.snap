@@ -47,6 +47,62 @@ Object {
 }
 `;
 
+exports[`Mongoose Proxy Should able to provide toString() 1`] = `"function () { [native code] }"`;
+
+exports[`Mongoose Proxy Should fix circular reference issue 1`] = `
+Object {
+  "__v": 1,
+  "_id": "MONGODB UNIQUE ID",
+  "children": Array [
+    Object {
+      "__v": 0,
+      "_id": "MONGODB UNIQUE ID",
+      "name": "child",
+    },
+  ],
+  "name": "parent",
+}
+`;
+
+exports[`Mongoose Proxy Should work with external circular dependency model 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "children": Array [],
+  "name": "Parent",
+}
+`;
+
+exports[`Mongoose Proxy Should work with external circular dependency model 2`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "name": "Child",
+}
+`;
+
+exports[`Mongoose Proxy Should work with instance of simple model 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "booleanProp": true,
+  "dateProp": 2020-2-2,
+  "numberProp": 123,
+  "stringProp": "modified",
+}
+`;
+
+exports[`Mongoose Proxy Should work with simple model 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "booleanProp": true,
+  "dateProp": 2020-2-2,
+  "numberProp": 123,
+  "stringProp": "string",
+}
+`;
+
 exports[`Mongoose Schema Configuration Should able to enable timestamps using decorator 1`] = `
 Object {
   "__v": 0,
