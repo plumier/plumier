@@ -7,6 +7,7 @@ import { HttpMethod } from "../types"
 
 interface GenericControllerDecorator {
    name: "plumier-meta:controller"
+   path?:string
 }
 
 interface IgnoreOption {
@@ -293,10 +294,10 @@ class RouteDecoratorImpl {
    /**
     * Mark an entity will be handled by a generic CRUD controller
     */
-   controller() {
+   controller(path?:string) {
       return decorate((...args: any[]) => {
          updateGenericControllerRegistry(args[0])
-         return <GenericControllerDecorator>{ name: "plumier-meta:controller" }
+         return <GenericControllerDecorator>{ name: "plumier-meta:controller", path }
       })
    }
 }

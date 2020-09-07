@@ -1,7 +1,9 @@
-import reflect, { decorateClass, generic, GenericTypeDecorator, DecoratorOptionId, DecoratorOption } from "tinspector"
-import { val, convert, VisitorExtension } from "typedconverter"
+import { Context } from "koa"
+import reflect, { decorateClass, DecoratorOption, DecoratorOptionId, generic, GenericTypeDecorator } from "tinspector"
+import { val } from "typedconverter"
 
 import { AuthorizeDecorator } from "./authorization"
+import { BindingDecorator } from "./binder"
 import { Class, entityHelper } from "./common"
 import { api } from "./decorator/api"
 import { bind } from "./decorator/bind"
@@ -15,14 +17,14 @@ import {
     GenericController,
     HttpMethod,
     HttpStatusError,
+    MetadataImpl,
     OneToManyControllerGeneric,
     OneToManyRepository,
     RelationPropertyDecorator,
     Repository,
-    MetadataImpl,
 } from "./types"
-import { Context } from 'koa'
-import { BindingDecorator } from './binder'
+
+import { pathToRegexp, Key } from "path-to-regexp"
 
 // --------------------------------------------------------------------- //
 // ---------------------------- CONTROLLERS ---------------------------- //
@@ -292,21 +294,37 @@ function copyDecorators(decorators: any[], controller: Class) {
     return result.map(x => decorateClass(x, x[DecoratorOptionId]))
 }
 
-function createGenericController(entity: Class, controller: Class<ControllerGeneric>, nameConversion: (x: string) => string) {
+function validatePath(path: string, entity:Class, oneToMany = false) {
+    const endWithParam = path.match(/\/:\w*$/)
+    if(!endWithParam) throw new Error(errorMessage.CustomRouteEndWithParameter.format(path, entity.name))
+    if(oneToMany){
+        
+    }
+}
+
+function createGenericController(entity: Class, decorator: GenericControllerDecorator, controller: Class<ControllerGeneric>, nameConversion: (x: string) => string) {
     // get type of ID column on entity
     const idType = entityHelper.getIdType(entity)
     // create controller type dynamically 
     const Controller = generic.create({ parent: controller, name: controller.name }, entity, idType)
     // add root decorator
-    const name = nameConversion(entity.name)
+    let routePath = nameConversion(entity.name)
+    if (decorator.path) {
+        const keys: Key[] = []
+        pathToRegexp(decorator.path, keys)
+        if (keys.length > 0) {
+            throw new Error(errorMessage.CustomRouteContainsParams.format(decorator.path, entity.name))
+        }
+        routePath = decorator.path
+    }
     // copy @route.ignore() and @authorize on entity to the controller to control route generation
     const meta = reflect(entity)
     const decorators = copyDecorators([...meta.decorators, ...meta.removedDecorators ?? []], controller)
-    Reflect.decorate([...decorators, route.root(name), api.tag(entity.name)], Controller)
+    Reflect.decorate([...decorators, route.root(routePath), api.tag(entity.name)], Controller)
     return Controller
 }
 
-function createOneToManyGenericController(entity: Class, relation: Class, relationProperty: string, controller: Class<OneToManyControllerGeneric>, nameConversion: (x: string) => string) {
+function createOneToManyGenericController(entity: Class, decorator: GenericControllerDecorator, relation: Class, relationProperty: string, controller: Class<OneToManyControllerGeneric>, nameConversion: (x: string) => string) {
     // get type of ID column on parent entity
     const parentIdType = entityHelper.getIdType(entity)
     // get type of ID column on entity
@@ -314,14 +332,28 @@ function createOneToManyGenericController(entity: Class, relation: Class, relati
     // create controller 
     const Controller = generic.create({ parent: controller, name: controller.name }, entity, relation, parentIdType, idType)
     // add root decorator
-    const name = `${nameConversion(entity.name)}/:pid/${relationProperty}`
+    let routePath = `${nameConversion(entity.name)}/:pid/${relationProperty}`
+    let routeMap: any = {}
+    if (decorator.path) {
+        const keys: Key[] = []
+        pathToRegexp(decorator.path, keys)
+        if (keys.length === 0) {
+            throw new Error(errorMessage.CustomRouteRequireParameter.format(decorator.path, entity.name))
+        }
+        if (keys.length > 1) {
+            throw new Error(errorMessage.CustomRouteContainsMultipleParams.format(decorator.path, entity.name))
+        }
+        const key = keys[0]
+        routePath = decorator.path
+        routeMap = { pid: key.name }
+    }
     // copy @route.ignore() on entity to the controller to control route generation
     const meta = reflect(entity)
     const entityDecorators = meta.properties.find(x => x.name === relationProperty)!.decorators
     const decorators = copyDecorators(entityDecorators, controller)
     Reflect.decorate([
         ...decorators,
-        route.root(name),
+        route.root(routePath, routeMap),
         api.tag(entity.name),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
         decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: relationProperty }),
@@ -337,7 +369,7 @@ function createGenericControllers(controller: Class, genericControllers: Generic
     // basic generic controller
     const basicDecorator = meta.decorators.find((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
     if (basicDecorator) {
-        const ctl = createGenericController(controller, genericControllers[0], nameConversion)
+        const ctl = createGenericController(controller, basicDecorator, genericControllers[0], nameConversion)
         controllers.push(ctl)
     }
     // one to many controller on each relation property
@@ -350,7 +382,7 @@ function createGenericControllers(controller: Class, genericControllers: Generic
         relations.push({ name: prop.name, type: prop.type[0], decorator })
     }
     for (const relation of relations) {
-        const ctl = createOneToManyGenericController(controller, relation.type, relation.name, genericControllers[1], nameConversion)
+        const ctl = createOneToManyGenericController(controller, relation.decorator, relation.type, relation.name, genericControllers[1], nameConversion)
         controllers.push(ctl)
     }
     return controllers

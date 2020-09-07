@@ -1,5 +1,61 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Custom Route Path Generic Controller Should generate routes with parameter property entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> GET    /other-user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> POST   /other-user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get(id)         -> GET    /other-user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> PATCH  /other-user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> PUT    /other-user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id)      -> DELETE /other-user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Custom Route Path Generic One To Many Controller Should able to provide custom route path 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultOneToMany...eneric.list    -> GET    /user/:userid/animal",
+  ],
+  Array [
+    "2. DefaultOneToMany...eneric.save    -> POST   /user/:userid/animal",
+  ],
+  Array [
+    "3. DefaultOneToMany...eneric.get     -> GET    /user/:userid/animal/:id",
+  ],
+  Array [
+    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:userid/animal/:id",
+  ],
+  Array [
+    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:userid/animal/:id",
+  ],
+  Array [
+    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:userid/animal/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`Open Api Generic Controller Should generate DELETE /animal/:id properly 1`] = `
 Array [
   Object {
@@ -544,6 +600,25 @@ Array [
 
 exports[`Property Binding Generic Controller Should bind on post method using property declaration 1`] = `
 Array [
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum dolor",
+    },
+  ],
+]
+`;
+
+exports[`Property Binding Generic Controller Should bind on post method using property declaration 2`] = `
+Array [
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John",
+      "random": "lorem ipsum dolor",
+    },
+  ],
   Array [
     Object {
       "email": "john.doe@gmail.com",
