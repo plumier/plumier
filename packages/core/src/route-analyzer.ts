@@ -21,7 +21,7 @@ function backingParameterTest(route: RouteMetadata, allRoutes: RouteMetadata[]):
    const ids = route.url.split("/")
       .filter(x => x.startsWith(":"))
       .map(x => x.substring(1).toLowerCase())
-   const missing = ids.filter(id => route.action.parameters.map(x => x.name.toLowerCase()).indexOf(id) === -1)
+   const missing = ids.filter(id => route.action.parameters.map(x => route.paramMapper.alias(x.name).toLowerCase()).indexOf(id) === -1)
    if (missing.length > 0) {
       return [{
          type: "error",

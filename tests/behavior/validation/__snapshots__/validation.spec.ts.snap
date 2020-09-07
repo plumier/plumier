@@ -187,6 +187,7 @@ Object {
   "action": Object {
     "decorators": Array [
       Object {
+        "map": undefined,
         "method": "post",
         "name": "plumier-meta:route",
         "url": undefined,
@@ -237,6 +238,7 @@ Object {
       Object {
         "decorators": Array [
           Object {
+            "map": undefined,
             "method": "post",
             "name": "plumier-meta:route",
             "url": undefined,
@@ -285,6 +287,12 @@ Object {
   "group": undefined,
   "kind": "ActionRoute",
   "method": "post",
+  "paramMapper": ParamMapper {
+    "map": Array [
+      Object {},
+      Object {},
+    ],
+  },
   "url": "/user/save",
 }
 `;

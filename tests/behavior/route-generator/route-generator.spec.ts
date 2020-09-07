@@ -10,6 +10,7 @@ import {
 } from "@plumier/core"
 import { join } from "path"
 import Plumier, { RestfulApiFacility, route, WebApiFacility, ControllerFacility } from "plumier"
+import supertest from 'supertest'
 import Supertest from "supertest"
 
 import { fixture } from "../helper"
@@ -139,7 +140,7 @@ describe("Route Generator", () => {
 
     it("Should able to transform using relative glob", async () => {
         const mock = consoleLog.startMock()
-        await fixture("nested/**/*.ts", {mode: "debug"})
+        await fixture("nested/**/*.ts", { mode: "debug" })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
@@ -147,7 +148,7 @@ describe("Route Generator", () => {
 
     it("Should able to transform using absolute glob", async () => {
         const mock = consoleLog.startMock()
-        await fixture(join(__dirname, "nested/**/*.ts"), {mode: "debug"})
+        await fixture(join(__dirname, "nested/**/*.ts"), { mode: "debug" })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
@@ -155,7 +156,7 @@ describe("Route Generator", () => {
 
     it("Should able to search all on nested directory", async () => {
         const mock = consoleLog.startMock()
-        await fixture(join(__dirname, "nested/**"), {mode: "debug"})
+        await fixture(join(__dirname, "nested/**"), { mode: "debug" })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
@@ -165,7 +166,7 @@ describe("Route Generator", () => {
         const mock = consoleLog.startMock()
         await new Plumier()
             .set(new WebApiFacility())
-            .set(new ControllerFacility({controller: "nested-w*/**/*.ts", directoryAsPath:true}))
+            .set(new ControllerFacility({ controller: "nested-w*/**/*.ts", directoryAsPath: true }))
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
@@ -1745,5 +1746,106 @@ describe("Route Grouping", () => {
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         consoleLog.clearMock()
+    })
+})
+
+describe("Route Mapping", () => {
+    describe("Route", () => {
+        it("Should able to map path parameter", async () => {
+            class AnimalsController {
+                @route.get(":id", { name: "id" })
+                get(name: string) {
+                    return { name }
+                }
+            }
+            const koa = await fixture(AnimalsController).initialize()
+            await supertest(koa.callback())
+                .get("/animals/lorem")
+                .expect(200, { name: "lorem" })
+        })
+        it("Should able to map multiple path parameters", async () => {
+            class AnimalsController {
+                @route.get(":id/:limit/:offset", { name: "id", take: "limit" })
+                get(name: string, take: string, offset: string) {
+                    return { name, take, offset }
+                }
+            }
+            const koa = await fixture(AnimalsController).initialize()
+            await supertest(koa.callback())
+                .get("/animals/name/take/offset")
+                .expect(200, { name: "name", take: "take", offset: "offset" })
+        })
+        it("Should able to map path parameter in multiple routes", async () => {
+            class AnimalsController {
+                @route.get(":id", { name: "id" })
+                @route.get("get/:name")
+                get(name: string) {
+                    return { name }
+                }
+            }
+            const koa = await fixture(AnimalsController).initialize()
+            await supertest(koa.callback())
+                .get("/animals/lorem")
+                .expect(200, { name: "lorem" })
+            await supertest(koa.callback())
+                .get("/animals/get/lorem")
+                .expect(200, { name: "lorem" })
+        })
+        it("Should able to map root parameter", async () => {
+            @route.root("animals/:id", { name: "id" })
+            class AnimalsController {
+                @route.get("")
+                get(name: string) {
+                    return { name }
+                }
+            }
+            const koa = await fixture(AnimalsController).initialize()
+            await supertest(koa.callback())
+                .get("/animals/lorem")
+                .expect(200, { name: "lorem" })
+        })
+        it("Should able to map root parameter with multiple decorators", async () => {
+            @route.root("animals/:id", { name: "id" })
+            @route.root("animals/:name/test")
+            class AnimalsController {
+                @route.get("")
+                get(name: string) {
+                    return { name }
+                }
+            }
+            const koa = await fixture(AnimalsController).initialize()
+            await supertest(koa.callback())
+                .get("/animals/lorem")
+                .expect(200, { name: "lorem" })
+            await supertest(koa.callback())
+                .get("/animals/lorem/test")
+                .expect(200, { name: "lorem" })
+        })
+    })
+    describe("Route Analysis", () => {
+        it("Should not cause route analysis error", async () => {
+            class AnimalsController {
+                @route.get(":id", { name: "id" })
+                get(name: string) {
+                    return { name }
+                }
+            }
+            const mock = consoleLog.startMock()
+            await fixture(AnimalsController, { mode: "debug" }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            consoleLog.clearMock()
+        })
+        it("Should show route analysis issue when misconfigured", async () => {
+            class AnimalsController {
+                @route.get(":id", { id: "name" })// <-- position wrong
+                get(name: string) {
+                    return { name }
+                }
+            }
+            const mock = consoleLog.startMock()
+            await fixture(AnimalsController, { mode: "debug" }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            consoleLog.clearMock()
+        })
     })
 })
