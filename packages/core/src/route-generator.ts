@@ -14,9 +14,9 @@ import { GenericController, HttpMethod, RouteInfo, RouteMetadata } from "./types
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-interface RouteDecorator { name: "plumier-meta:route", method: HttpMethod, url?: string }
+interface RouteDecorator { name: "plumier-meta:route", method: HttpMethod, url?: string, map: any }
 interface IgnoreDecorator { name: "plumier-meta:ignore" }
-interface RootDecorator { name: "plumier-meta:root", url: string }
+interface RootDecorator { name: "plumier-meta:root", url: string, map: any }
 interface TransformOption {
    rootDir?: string
    rootPath?: string,
@@ -29,6 +29,7 @@ interface ClassWithRoot {
    root: string,
    type: Class
 }
+interface RouteRoot { root: string, map: any }
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- HELPERS --------------------------------------- */
@@ -48,13 +49,18 @@ function striveController(name: string) {
    return name.replace(/controller$/i, "")
 }
 
-function getRootRoutes(root: string, controller: ClassReflection): string[] {
+function getRootRoutes(root: string, controller: ClassReflection): RouteRoot[] {
    const decs: RootDecorator[] = controller.decorators.filter((x: RootDecorator) => x.name == "plumier-meta:root")
    if (decs.length > 0) {
-      return decs.slice().reverse().map(x => transformDecorator(root, "", x))
+      const result = []
+      for (let i = decs.length; i--;) {
+         const item = decs[i]
+         result.push({ root: transformDecorator(root, "", item), map: item.map ?? {} })
+      }
+      return result
    }
    else {
-      return [appendRoute(root, striveController(controller.name))]
+      return [{ root: appendRoute(root, striveController(controller.name)), map: {} }]
    }
 }
 
@@ -80,6 +86,19 @@ async function findClassRecursive(path: string): Promise<ClassWithRoot[]> {
    return result
 }
 
+
+class ParamMapper {
+   constructor(private map:any[]){}
+   alias(parName:string) {
+      let result:string|undefined
+      for (const item of this.map) {
+         result = item[parName]
+         if(!!result) break
+      }
+      return result ?? parName
+   }
+}
+
 /* ------------------------------------------------------------------------------- */
 /* ---------------------------------- TRANSFORMER -------------------------------- */
 /* ------------------------------------------------------------------------------- */
@@ -97,28 +116,31 @@ function transformDecorator(root: string, actionName: string, actionDecorator: {
    }
 }
 
-function transformMethodWithDecorator(root: string, controller: ClassReflection, method: MethodReflection, group?: string): RouteInfo[] {
+function transformMethodWithDecorator(root: RouteRoot, controller: ClassReflection, method: MethodReflection, group?: string): RouteInfo[] {
    if (method.decorators.some((x: IgnoreDecorator) => x.name == "plumier-meta:ignore")) return []
    const result = { kind: "ActionRoute" as "ActionRoute", group, action: method, controller }
    const infos: RouteInfo[] = []
+   const rootMap = [root.map]
    for (const decorator of (method.decorators.slice().reverse() as RouteDecorator[])) {
       if (decorator.name === "plumier-meta:route")
          infos.push({
             ...result,
             method: decorator.method,
-            url: transformDecorator(root, method.name, decorator)
+            url: transformDecorator(root.root, method.name, decorator),
+            paramMapper: new ParamMapper(rootMap.concat(decorator.map ?? {}))
          })
    }
    return infos
 }
 
-function transformMethod(root: string, controller: ClassReflection, method: MethodReflection, group?: string): RouteInfo[] {
+function transformMethod(root: RouteRoot, controller: ClassReflection, method: MethodReflection, group?: string): RouteInfo[] {
    return [{
       kind: "ActionRoute",
       group, method: "get",
-      url: appendRoute(root, method.name),
+      url: appendRoute(root.root, method.name),
       controller,
-      action: method
+      action: method,
+      paramMapper: new ParamMapper([root.map]) 
    }]
 }
 
@@ -137,8 +159,8 @@ function transformController(object: Class, opt: Required<TransformOption>) {
    const infos: RouteInfo[] = []
    // check for class @route.ignore()
    const ignoreDecorator = controller.decorators.find((x: IgnoreDecorator): x is IgnoreDecorator => x.name === "plumier-meta:ignore")
-   if (ignoreDecorator) 
-         return []
+   if (ignoreDecorator)
+      return []
 
    for (const ctl of rootRoutes) {
       for (const method of controller.methods) {

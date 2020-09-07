@@ -103,7 +103,8 @@ export interface RouteInfo {
     method: HttpMethod
     action: MethodReflection
     controller: ClassReflection
-    access?: string
+    access?: string,
+    paramMapper: { alias: (name: string) => string }
 }
 
 export interface VirtualRoute {

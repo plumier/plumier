@@ -463,3 +463,30 @@ Array [
   },
 ]
 `;
+
+exports[`Route Mapping Route Analysis Should not cause route analysis error 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalsController.get(name) -> GET /animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Mapping Route Analysis Should show route analysis issue when misconfigured 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalsController.get(name) -> GET /animals/:id
+ - error PLUM1000: Route parameters (id) doesn't have appropriate backing parameter",
+  ],
+  Array [],
+]
+`;
