@@ -115,8 +115,8 @@ class MongooseControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID
         super(fac ?? (x => new MongooseRepository(x)))
     }
 
-    get(@val.mongoId() id: TID): Promise<T> {
-        return super.get(id)
+    get(@val.mongoId() id: TID, ctx:Context): Promise<T> {
+        return super.get(id, ctx)
     }
 
     modify(@val.mongoId() id: TID, data: T, @bind.ctx() ctx:Context) {
@@ -127,8 +127,8 @@ class MongooseControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID
         return super.replace(id, data, ctx)
     }
 
-    delete(@val.mongoId() id: TID) {
-        return super.delete(id)
+    delete(@val.mongoId() id: TID, ctx:Context) {
+        return super.delete(id, ctx)
     }
 }
 
@@ -139,16 +139,16 @@ class MongooseOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMa
         super(fac ?? ((p, t, rel) => new MongooseOneToManyRepository(p, t, rel)))
     }
 
-    list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, query: T) {
-        return super.list(pid, offset, limit, query)
+    list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, query: T, ctx:Context) {
+        return super.list(pid, offset, limit, query, ctx)
     }
 
     save(@val.mongoId() pid: PID, data: T, @bind.ctx() ctx:Context) {
         return super.save(pid, data, ctx)
     }
 
-    get(@val.mongoId() pid: PID, @val.mongoId() id: TID) {
-        return super.get(pid, id)
+    get(@val.mongoId() pid: PID, @val.mongoId() id: TID, ctx:Context) {
+        return super.get(pid, id, ctx)
     }
 
     modify(@val.mongoId() pid: PID, @val.mongoId() id: TID, data: T, @bind.ctx() ctx:Context) {
@@ -159,8 +159,8 @@ class MongooseOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMa
         return super.replace(pid, id, data, ctx)
     }
 
-    delete(@val.mongoId() pid: PID, @val.mongoId() id: TID) {
-        return super.delete(pid, id)
+    delete(@val.mongoId() pid: PID, @val.mongoId() id: TID, ctx:Context) {
+        return super.delete(pid, id, ctx)
     }
 }
 
