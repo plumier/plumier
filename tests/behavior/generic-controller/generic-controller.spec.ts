@@ -759,8 +759,8 @@ describe("Route Generator", () => {
 
 describe.only("Custom Route Path", () => {
     describe("Generic Controller", () => {
-        it("Should generate routes with parameter property entity", async () => {
-            @route.controller("lorem/:ipsum")
+        it.only("Should generate routes with parameter property entity", async () => {
+            @route.controller("user/:userId")
             @domain()
             class User {
                 constructor(
@@ -772,18 +772,10 @@ describe.only("Custom Route Path", () => {
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should throw error when provided parameter", async () => {
-            @route.controller("other-user/:id")
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            expect(createApp({ controller: User }).initialize())
-                .rejects.toThrow("PLUM1013: Custom route path other-user/:id in User must not contains route parameter")
-        })
+        it("Should contains correct query parameter", async () => { })
+        it("Should throw error when provided no parameter", async () => { })
+        it("Should throw error when provided more than one parameter", async () => { })
+        it("Should throw error when no parameter at the end", async () => { })
     })
     describe("Generic One To Many Controller", () => {
         it("Should able to provide custom route path", async () => {
@@ -800,7 +792,7 @@ describe.only("Custom Route Path", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @relation()
-                    @route.controller()
+                    @route.controller("user/:userId/animal/:animalId")
                     public animals: Animal[]
                 ) { }
             }
@@ -808,30 +800,11 @@ describe.only("Custom Route Path", () => {
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should contains appropriate query query parameter", async () => {
-            const fn = jest.fn()
-            @domain()
-            @authorize.custom(x)
-            class Animal {
-                constructor(
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string,
-                    @reflect.type([Animal])
-                    @relation()
-                    @route.controller("user/:userId/animal/:userId")
-                    public animals: Animal[]
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: User }).initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
+        it("Should contains correct query parameter", async () => { })
+        it("Should throw error when provided no parameter", async () => { })
+        it("Should throw error when provided only one parameter", async () => { })
+        it("Should throw error when provided more than two parameters", async () => { })
+        it("Should throw error when no parameter at the end", async () => { })
     })
 })
 
