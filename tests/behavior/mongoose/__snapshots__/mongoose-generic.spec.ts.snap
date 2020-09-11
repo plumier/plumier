@@ -25,22 +25,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. MongooseControllerGeneric.get(id)    -> GET    /users/:id",
+    "1. MongooseControllerGeneric.get(id, ctx) -> GET    /users/:id",
   ],
   Array [
-    "2. MongooseControllerGeneric.modify     -> PATCH  /users/:id",
+    "2. MongooseControllerGeneric.modify       -> PATCH  /users/:id",
   ],
   Array [
-    "3. MongooseControllerGeneric.replace    -> PUT    /users/:id",
+    "3. MongooseControllerGeneric.replace      -> PUT    /users/:id",
   ],
   Array [
-    "4. MongooseControllerGeneric.delete(id) -> DELETE /users/:id",
+    "4. MongooseControllerGeneric.delete       -> DELETE /users/:id",
   ],
   Array [
-    "5. MongooseControllerGeneric.list       -> GET    /users",
+    "5. MongooseControllerGeneric.list         -> GET    /users",
   ],
   Array [
-    "6. MongooseControllerGeneric.save       -> POST   /users",
+    "6. MongooseControllerGeneric.save         -> POST   /users",
   ],
   Array [],
 ]

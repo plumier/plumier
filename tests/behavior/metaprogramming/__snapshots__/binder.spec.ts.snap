@@ -8,6 +8,7 @@ Array [
       "action": Object {
         "decorators": Array [
           Object {
+            "map": undefined,
             "method": "get",
             "name": "plumier-meta:route",
             "url": undefined,
@@ -59,6 +60,7 @@ Array [
           Object {
             "decorators": Array [
               Object {
+                "map": undefined,
                 "method": "get",
                 "name": "plumier-meta:route",
                 "url": undefined,

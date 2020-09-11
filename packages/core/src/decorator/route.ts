@@ -17,7 +17,9 @@ interface IgnoreOption {
 }
 
 class RouteDecoratorImpl {
-   private decorateRoute(method: HttpMethod, url?: string) { return decorateMethod(<RouteDecorator>{ name: "plumier-meta:route", method, url }) }
+   private decorateRoute(method: HttpMethod, url?: string, map?: any) {
+      return decorateMethod(<RouteDecorator>{ name: "plumier-meta:route", method, url, map })
+   }
    /**
     * Mark method as POST method http handler
     ```
@@ -45,7 +47,7 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   post(url?: string) { return this.decorateRoute("post", url) }
+   post(url?: string, map?: any) { return this.decorateRoute("post", url, map) }
 
    /**
     * Mark method as GET method http handler
@@ -74,7 +76,7 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   get(url?: string) { return this.decorateRoute("get", url) }
+   get(url?: string, map?: any) { return this.decorateRoute("get", url, map) }
 
    /**
     * Mark method as PUT method http handler
@@ -103,7 +105,7 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   put(url?: string) { return this.decorateRoute("put", url) }
+   put(url?: string, map?: any) { return this.decorateRoute("put", url, map) }
 
    /**
     * Mark method as DELETE method http handler
@@ -132,7 +134,7 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   delete(url?: string) { return this.decorateRoute("delete", url) }
+   delete(url?: string, map?: any) { return this.decorateRoute("delete", url, map) }
 
    /**
     * Mark method as PATCH method http handler
@@ -161,7 +163,7 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   patch(url?: string) { return this.decorateRoute("patch", url) }
+   patch(url?: string, map?: any) { return this.decorateRoute("patch", url, map) }
 
    /**
     * Mark method as HEAD method http handler
@@ -190,7 +192,7 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   head(url?: string) { return this.decorateRoute("head", url) }
+   head(url?: string, map?: any) { return this.decorateRoute("head", url, map) }
 
    /**
     * Mark method as TRACE method http handler
@@ -219,7 +221,7 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   trace(url?: string) { return this.decorateRoute("trace", url) }
+   trace(url?: string, map?: any) { return this.decorateRoute("trace", url, map) }
 
    /**
     * Mark method as OPTIONS method http handler
@@ -248,7 +250,7 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   options(url?: string) { return this.decorateRoute("options", url) }
+   options(url?: string, map?: any) { return this.decorateRoute("options", url, map) }
 
    /**
     * Override controller name on route generation
@@ -271,7 +273,7 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   root(url: string) { return decorateClass(<RootDecorator>{ name: "plumier-meta:root", url }) }
+   root(url: string, map?: any) { return decorateClass(<RootDecorator>{ name: "plumier-meta:root", url, map }) }
 
    /**
     * Ignore method from route generation
@@ -289,14 +291,11 @@ class RouteDecoratorImpl {
    ignore(opt?: IgnoreOption) { return decorate(<IgnoreDecorator>{ [DecoratorId]: "route:ignore", name: "plumier-meta:ignore" }, ["Class", "Method", "Property", "Parameter"], { allowMultiple: false, ...opt }) }
 
    /**
-    * Mark an entity will be handled by a CRUD generic controller
+    * Mark an entity will be handled by a generic CRUD controller
     */
    controller() {
       return decorate((...args: any[]) => {
-         if (args.length === 3 && typeof args[2] === "number") 
-            updateGenericControllerRegistry(args[0])
-         else 
-            updateGenericControllerRegistry(args[0])
+         updateGenericControllerRegistry(args[0])
          return <GenericControllerDecorator>{ name: "plumier-meta:controller" }
       })
    }

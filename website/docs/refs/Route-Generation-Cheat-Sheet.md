@@ -151,6 +151,19 @@ export class AnimalController {
 GET /animal?id=<number>
 ```
 
+## Route Parameter Mapping
+Its possible to use different parameter name on route and the action parameter name like below 
+
+```typescript
+export class AnimalController {
+    @route.get(":id", { name: "id" })
+    get(name:number){}
+}
+```
+
+Above code means that the `id` route parameter will be bound to the `name` action parameter. Using this configuration will get rid the route analysis error.
+
+
 ## Example Restful Api
 
 Sum up of above rules you can construct clean Restful API routes like below:
@@ -214,6 +227,16 @@ export class AnimalController {
 ```
 GET /beast/<beastId>/get?id=<number>
 GET /list?last=<number>&limit=<number>
+```
+
+## Root Route Parameter Mapping 
+Same as the `@route` decorator, the `@route.root` also provide parameter mapping which work the same 
+
+```typescript
+@route.root("/beast/:beastId", { name: "beastId" })
+export class AnimalController {
+    get(name:number, id:number){}
+}
 ```
 
 ## Example Nested Restful API
@@ -355,7 +378,7 @@ export class ControllerBase {
     replace(){ }
 }
 
-@route.ignore({ action: ["save", "replace"] })
+@route.ignore({ applyTo: ["save", "replace"]})
 export class UsersController extends ControllerBase{}
 ```
 

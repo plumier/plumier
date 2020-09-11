@@ -3,6 +3,7 @@ import { Context, Request } from "koa"
 import { ParameterReflection } from "tinspector"
 
 import { isCustomClass } from "./common"
+import { RouteDecorator } from './route-generator'
 import { ActionContext, ActionResult, Invocation, Middleware, MetadataImpl, GlobalMetadata, FormFile } from "./types"
 
 
@@ -25,7 +26,7 @@ declare module "koa" {
 /* ----------------------------- BINDER FUNCTIONS -------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-type Binder = (ctx: Context, par: ParameterReflection) => any
+type Binder = (ctx: ActionContext, par: ParameterReflection) => any
 const NEXT = Symbol("__NEXT")
 
 function isFile(par: ParameterReflection) {
@@ -51,15 +52,16 @@ function bindDecorator(ctx: Context, par: ParameterReflection): any {
     return decorator.process(ctx, new MetadataImpl(undefined, ctx.route!, { ...par, parent: ctx.route!.controller.type }))
 }
 
-function bindByName(ctx: Context, par: ParameterReflection): any {
-    return getProperty(ctx.request.query, par.name)
+function bindByName(ctx: ActionContext, par: ParameterReflection): any {
+    const paramName = ctx.route.paramMapper.alias(par.name)
+    return getProperty(ctx.request.query, paramName)
         || getProperty(ctx.request.body, par.name)
         || getProperty((ctx.request as any).files, par.name)
         || NEXT
 }
 
 function chain(...binder: Binder[]) {
-    return (ctx: Context, par: ParameterReflection) => binder
+    return (ctx: ActionContext, par: ParameterReflection) => binder
         .reduce((a: any, b) => a === NEXT ? b(ctx, par) : a, NEXT)
 }
 

@@ -1,202 +1,456 @@
 ---
 id: generic-controller
-title: Generic Controller 
+title: Generic Controller
 ---
 
-Generic controller is Plumier ability to serve a common CRUD functionality based on your entity objects (usually an ORM/ODM entity object) using predefined generic controllers. This feature take advantage of inheritance and reflection to create generic controller specific to the entity on the fly.
+Generic controller takes advantage of reflection and inheritance to automatically create CRUD API based on ORM/ODM entities. Plumier provided functionalities for first class entity that make it possible to control CRUD API function and behavior from entities. 
 
-This is a strong opinionated feature that work only with specific ORM/ODM framework, but drastically increase productivity on creating CRUD API.
+## Enable Functionality 
+Generic controller supported TypeORM and Mongoose (with Plumier mongoose helper) entities to transform into CRUD API handled by generic controller implementation. Enable the generic controller by installing the `TypeORMFacility` or `MongooseFacility` on the Plumier application. 
 
-## Enable Facility
-
-To use this functionalities you need to set the appropriate generic controller facility. Currently now Plumier only supported TypeORM and Mongoose (with Plumier mongoose helper) to support generic controller. To use it you need to setup the Plumier application like below.
-
-```typescript title="TypeORM" {2,6,7}
+```typescript
 import Plumier, { WebApiFacility } from "plumier"
-import { TypeORMFacility, TypeORMGenericControllerFacility } from "@plumier/typeorm"
+import { TypeORMFacility } from "@plumier/typeorm"
 
 new Plumier()
     .set(new WebApiFacility())
     .set(new TypeORMFacility())
-    .set(new TypeORMGenericControllerFacility())
-    .listen(8000)
+    .set(new ControllerFacility({ controller: "<entities path or glob>" }))
 ```
 
-Above is configuration required when using TypeORM, it will automatically creates generic controller on the fly based on entities. 
+Or if you are using mongoose helper like below
 
-To use generic controller with Mongoose, you need to use `@plumier/mongoose` helper and configure the Plumier application like below
-
-```typescript title="Mongoose" {2,6,7}
+```typescript
 import Plumier, { WebApiFacility } from "plumier"
-import { MongooseFacility, MongooseGenericControllerFacility } from "@plumier/mongoose"
+import { MongooseFacility } from "@plumier/mongoose"
 
 new Plumier()
     .set(new WebApiFacility())
     .set(new MongooseFacility())
-    .set(new MongooseGenericControllerFacility())
-    .listen(8000)
+    .set(new ControllerFacility({ controller: "<entities path or glob>" }))
 ```
 
-## Routes Generator
+Above facilities is a common facility used if you are using TypeORM or Mongoose with Plumier. In context of generic controller above facilities will normalize entities to make it ready used by generic controller helpers. 
 
-After activated Plumier can generate routes by generic controller created for all registered entities
-
+## Mark Entity Handled by Generic Controller 
+After installing facility above you need to mark specific entity that will be generated into CRUD API with `@route.controller()` like below: 
 
 ```typescript
+import { Entity, PrimaryGeneratedColumn } from "typeorm"
+import { route } from "plumier"
+
+@route.controller()
 @Entity()
-export class User {
+class User {
     @PrimaryGeneratedColumn()
     id: number
 
     @Column()
-    name:string
+    email: string
+
+    @Column()
+    name: string
+}
+``` 
+
+Or if you using Mongoose helper 
+
+```typescript
+import { collection } from "@plumier/mongoose"
+import { route } from "plumier"
+
+@route.controller()
+@collection()
+class User {
+    constructor(
+        public id: string,
+        public email: string,
+        public name: string
+    ){}
+}
+``` 
+
+Above code will generate six routes handled by generic controller implementation. 
+
+| Method | Route                              | Description                                     |
+| ------ | ---------------------------------- | ----------------------------------------------- |
+| POST   | `/users`                           | Add new user                                    |
+| GET    | `/users/:id`                       | Get user by ID                                  |
+| PUT    | `/users/:id`                       | Replace user by ID (required validation used)   |
+| PATCH  | `/users/:id`                       | Modify user by ID (required validation ignored) |
+| DELETE | `/users/:id`                       | Delete user by ID                               |
+| GET    | `/users?limit&offset&filter&order` | Get list of users                               |
+
+
+'''info
+Swagger supported generic controller, since its just a common controller with a generic signature (make sure to enable the swagger functionality by installing `SwaggerFacility`).
+'''
+
+## Getting and Saving Simple Relation 
+
+Relational data with single value (one to one or many to one) by default will be populated on each request. For example if we have entity below: 
+
+```typescript
+@route.controller()
+@Entity()
+class Address {
+    
+    /** other columns **/
+
+    @Column()
+    city:string
+
+    @Column()
+    address:string
+}
+
+@route.controller()
+@Entity()
+class User {
+    
+    /** other columns **/
 
     @Column()
     email:string
+
+    @OneToOne(x => Address)
+    address:Address
 }
 ```
 
-Plumier will serve 6 routes for entities above with path name `/users` 
+Above code generates 6 routes for each `/address` and `/users`. `User` entity contains relation property to `Address` entity which is a one to one relation. Issuing `GET /users/:id` will automatically populate the address, thus the response will be like below
 
+```json
+{
+    "email": "john.doe@gmail.com",
+    // full address object populated
+    "address": {
+        "city": "Badung",
+        "address": "Jl Surapati No. 19 Kuta" 
+    }
+}
 ```
-Route Analysis Report
-1. TypeORMControllerGeneric.list       -> GET    /users
-2. TypeORMControllerGeneric.save(data) -> POST   /users
-3. TypeORMControllerGeneric.get(id)    -> GET    /users/:id
-4. TypeORMControllerGeneric.modify     -> PATCH  /users/:id
-5. TypeORMControllerGeneric.replace    -> PUT    /users/:id
-6. TypeORMControllerGeneric.delete(id) -> DELETE /users/:id
+
+While `GET /users/:id` returns the full address object, saving address (POST, PUT, PATCH) only require the ID of the address like below 
+
+```json
+POST /users/123 
+
+{
+    "email": "john.doe@gmail.com",
+    "address": 456 //<-- address ID
+}
 ```
 
-## One to Many Relation
+## Getting and Saving Array Relation 
 
-For one to many relation entity, Plumier will create an extra nested routes handles by special generic controller.
+For array relation (one to many relation), Plumier provide a nested route to easily perform CRUD operation on child relation. 
 
 ```typescript
 @Entity()
-export class User {
+class User {
     
-    /* ... other columns ... */
+    /** other columns **/
 
-    @OneToMany(x => Log, x => x.user)
-    logs:Log[]
+    @Column()
+    name:string
+
+    @route.controller()
+    @OneToMany(x => Email, x => x.user)
+    emails:Email[]
 }
 
 @Entity()
-export class Log {
+class Email {
+    
+    /** other columns **/
 
-    /* ... other columns ... */
+    @Column()
+    email:string
 
-    @ManyToOne(x => User, x => x.logs)
+    @Column()
+    description:string
+
+    @ManyToOne(x => User, x => x.emails)
     user:User
 }
 ```
 
-Above code will serve total of 18 routes, with 3 main path name: 
+Above code showing that we apply `@route.controller()` on the `User.emails` relation. Using this setup will make Plumier generate a nested routes like below 
 
-| Path Name         | Description                                                                      |
-| ----------------- | -------------------------------------------------------------------------------- |
-| `/user`           | CRUD functionality for `User` entity                                             |
-| `/logs`           | CRUD functionality for `Log` entity                                              |
-| `/user/:pid/logs` | Nested CRUD functionality for `Log` entity. Used to access log by User Id `:pid` |
+| Method | Route                                          | Description                |
+| ------ | ---------------------------------------------- | -------------------------- |
+| POST   | `/users/:pid/emails`                           | Add new user's email       |
+| GET    | `/users/:pid/emails/:id`                       | Get user's email by ID     |
+| PUT    | `/users/:pid/emails/:id`                       | Replace user's email by ID |
+| PATCH  | `/users/:pid/emails/:id`                       | Modify user's email by ID  |
+| DELETE | `/users/:pid/emails/:id`                       | Delete user's email by ID  |
+| GET    | `/users/:pid/emails?limit&offset&filter&order` | Get list of user's email   |
 
-## One To One or Many To One Relation
+## Control Access To The Entity Properties 
 
-Plumier will not generate extra routes for one-to-one or many-to-one property, instead plumier allows user to set their value by ID.
+Plumier provide functionality to protect your data easily, you can use `@authorize` decorator to authorize user to write or read your entity property. 
 
-```typescript
-@Entity()
-export class Item {
-
-    /* ... other columns ... */
-
-    @ManyToOne(x => Category)
-    category:Category
-}
-```
-
-`category` field can be populated with its ID (string or number based on its data type)
-
-```
-POST /items HTTP/1.1
-Host: localhost:8000
-Content-Type: application/json
-
-"{"
-```
-
-
-
-
-## How Its Works
-
-The idea of Generic controller is quite simple. For example A generic controller implementation of TypeORM for CRUD API is like below 
-
-```typescript 
-class ControllerBase<T> {
-    readonly repo = getManager().getRepository(< type of T >)
-
-    @route.post("")
-    save(data:T){
-        return repo.insert(data)
-    }
-
-    @route.get(":id")
-    get(id:number){
-        return repo.findOne(id)
-    }
-
-    @route.put(":id")
-    replace(id:number, data:T){
-        return repo.update(id, data)
-    }
-
-    @route.delete(":id")
-    delete(id:number){
-        return repo.delete(id)
-    }
-}
-```
-
-Above is a simple implementation of generic controller, it has some basic CRUD function that directly uses TypeORM repository. We can use above generic controller to create CRUD API for entity below.
+'''info
+Refer to [Authorization](Authorization.md) on how to setup user authorization on your Plumier application 
+'''
 
 ```typescript
+import { Entity, PrimaryGeneratedColumn } from "typeorm"
+import { route, authorize } from "plumier"
+
+@route.controller()
 @Entity()
-export class User {
+class User {
     @PrimaryGeneratedColumn()
     id: number
 
     @Column()
-    name:string
+    email: string
+
+    @authorize.writeonly()
+    @Column()
+    password: string
 
     @Column()
-    email:string
+    name: string
 
+    @authorize.write("SuperAdmin", "Admin")
     @Column()
-    password:string
-
-    @Column({ default: "User" })
-    role: "User" | "Admin" | "SuperAdmin"
+    role: "SuperAdmin" | "Admin" | "User"
 }
 ```
 
-The implementation of user controller simply like below (no more implementation or configuration required).
+Above code showing that we apply `@authorize` decorator on `password` and `role` property which contains sensitive data. Using above configuration `password` will not be visible on any response, and `role` only can be set by `SuperAdmin` and `Admin`. Below list of authorization you can use to protect property of the entity
+
+| Decorator                        | Description                                                                             |
+| -------------------------------- | --------------------------------------------------------------------------------------- |
+| `@authorize.role("SuperAdmin")`  | Protect property can be read and write by specific role (`SuperAdmin`)                  |
+| `@authorize.write("SuperAdmin")` | Protect property only can be write by specific role (`SuperAdmin`)                      |
+| `@authorize.read("SuperAdmin")`  | Protect property only can be read by specific role (`SuperAdmin`)                       |
+| `@authorize.readonly()`          | Protect property only can be read and no other role can write it                        |
+| `@authorize.writeonly()`         | Protect property only can be write and no other role can read it                        |
+| `@authorize.custom()`            | Protect property using [custom authorizer function](../extends/Custom-Authorization.md) |
+
+
+## Generic Controller Signatures
+
+Before we moving forward on how to secure generated routes, we will take a look at the generic controller signatures. Understanding of the generic controller signature is required to be able to secure route generated by generic controller that will be explained next. 
+
+Plumier provided two generic controller base class that will be inherited by ORM/ODM helper, there are `RepoBaseControllerGeneric<T, TID>` and `RepoBaseOneToManyControllerGeneric<P, T, PID, TID>`. 
+
+```typescript
+class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
+    // GET /entity-name?offset&limit&filter&order
+    @route.get("")
+    list(offset: number = 0, limit: number = 50, filter:T, order:string): Promise<T[]> {}
+
+    // POST /entity-name
+    @route.post("")
+    save(data: T): Promise<IdentifierResult<TID>> {}
+
+    // GET /entity-name/:id
+    @route.get(":id")
+    get(id: TID): Promise<T> {}
+
+    // PATCH /entity-name/:id
+    @route.patch(":id")
+    modify(id: TID, data: T): Promise<IdentifierResult<TID>> {}
+
+    // PUT /entity-name/:id
+    @route.put(":id")
+    replace(id: TID, data: T): Promise<IdentifierResult<TID>> {}
+
+    // DELETE /entity-name/:id
+    @route.delete(":id")
+    delete(id: TID): Promise<IdentifierResult<TID>> {}
+}
+```
+
+Above showing signature of the generic controller, some decorators removed to make the signature cleaner. 
+
+```typescript
+class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyControllerGeneric<P, T, PID, TID>{
+    // GET /entity-name/:pid/relation-name?offset&limit&filter&order
+    @route.get("")
+    async list(pid: PID, offset: number = 0, limit: number = 50, filter:T, order:string): Promise<T[]> {}
+
+    // POST /entity-name/:pid/relation-name
+    @route.post("")
+    async save(pid: PID, data: T, ctx: Context): Promise<IdentifierResult<TID>> {}
+
+    // GET /entity-name/:pid/relation-name/:id
+    @route.get(":id")
+    async get(pid: PID, id: TID): Promise<T> {}
+
+    // PATCH /entity-name/:pid/relation-name/:id
+    @route.patch(":id")
+    async modify(pid: PID, id: TID, @val.partial("T") data: T, ctx: Context): Promise<IdentifierResult<TID>> {}
+
+    // PUT /entity-name/:pid/relation-name/:id
+    @route.put(":id")
+    async replace(pid: PID, id: TID, data: T, ctx: Context): Promise<IdentifierResult<TID>> {}
+
+    // DELETE /entity-name/:pid/relation-name/:id
+    @route.delete(":id")
+    async delete(pid: PID, id: TID): Promise<IdentifierResult<TID>> {}
+}
+```
+
+By looking at above signature now you understand that each route handled by controller methods named: `list`, `save`, `get`, `modify`, `replace`, `delete`. Knowing this method names is required to authorize the generated routes.
+
+## Control Access To The Generated Routes 
+
+You can specify `@authorize` decorator on the entity class (above the class definition), which will automatically copied into the generated controller. Further more you can specify `applyTo` option on the decorator to apply authorization to specific generic controller method. 
+
+```typescript
+import { Entity, PrimaryGeneratedColumn } from "typeorm"
+import { route, authorize } from "plumier"
+
+@authorize.role("SuperAdmin", "Admin", { applyTo: ["save", "delete", "replace", "modify" ] })
+@route.controller()
+@Entity()
+class User {
+    
+    /** properties / columns */
+
+}
+```
+
+Above code showing that we apply `@authorize.role()` decorator on the `User` entity, during route generation process it will be copied into the generic controller. Option parameter `applyTo` will tell the reflection library to apply authorize decorator into specific generic controller methods which is name: `save`, `delete`, `replace` `modify`. Using above configuration the result of the 
+
+| Action    | Method | Route                              | Access            |
+| --------- | ------ | ---------------------------------- | ----------------- |
+| `save`    | POST   | `/users`                           | SuperAdmin, Admin |
+| `get`     | GET    | `/users/:id`                       | Any user          |
+| `replace` | PUT    | `/users/:id`                       | SuperAdmin, Admin |
+| `modify`  | PATCH  | `/users/:id`                       | SuperAdmin, Admin |
+| `delete`  | DELETE | `/users/:id`                       | SuperAdmin, Admin |
+| `list`    | GET    | `/users?limit&offset&filter&order` | Any user          |
+
+
+For nested routes (one to many relation) you can define `@authorize` decorator on the property relation like below 
+
+```typescript
+@Entity()
+class User {
+    
+    /** other columns **/
+
+    @route.controller()
+    @authorize.role("SuperAdmin", "Admin", { applyTo: ["save", "delete", "replace", "modify" ] })
+    @OneToMany(x => Email, x => x.user)
+    emails:Email[]
+}
+```
+
+Using above configuration the route access now is like below 
+
+| Action    | Method | Route                                          | Access            |
+| --------- | ------ | ---------------------------------------------- | ----------------- |
+| `save`    | POST   | `/users/:pid/emails`                           | SuperAdmin, Admin |
+| `get`     | GET    | `/users/:pid/emails/:id`                       | Any user          |
+| `replace` | PUT    | `/users/:pid/emails/:id`                       | SuperAdmin, Admin |
+| `modify`  | PATCH  | `/users/:pid/emails/:id`                       | SuperAdmin, Admin |
+| `delete`  | DELETE | `/users/:pid/emails/:id`                       | SuperAdmin, Admin |
+| `list`    | GET    | `/users/:pid/emails?limit&offset&filter&order` | Any user          |
+
+## Ignore Some Routes 
+
+In some case you may want to hide specific route generated. Use the `@route.ignore()` with the `applyTo` property to disable route being generated 
+
+```typescript
+import { Entity, PrimaryGeneratedColumn } from "typeorm"
+import { route } from "plumier"
+
+@route.ignore({ applyTo: [ "delete", "replace", "modify" ] })
+@route.controller()
+@Entity()
+class User {
+    
+    /** properties / columns */
+
+}
+```
+
+Using above configuration, method that specified on the `applyTo` option will be ignored during route generation. Above code will produce 
+
+| Action | Method | Route                              |
+| ------ | ------ | ---------------------------------- |
+| `save` | POST   | `/users`                           |
+| `get`  | GET    | `/users/:id`                       |
+| `list` | GET    | `/users?limit&offset&filter&order` |
+
+It also can be applied on the entity relation (one to many) to ignore some nested routes like below 
+
+
+```typescript
+@Entity()
+class User {
+    
+    /** other columns **/
+
+    @route.controller()
+    @route.ignore({ applyTo: [ "delete", "replace", "modify" ] })
+    @OneToMany(x => Email, x => x.user)
+    emails:Email[]
+}
+```
+
+Above code showing that we applied the ignore decorator on the entity relation, it will produce
+
+| Action | Method | Route                                          |
+| ------ | ------ | ---------------------------------------------- |
+| `save` | POST   | `/users/:pid/emails`                           |
+| `get`  | GET    | `/users/:pid/emails/:id`                       |
+| `list` | GET    | `/users/:pid/emails?limit&offset&filter&order` |
+
+## Use Custom Generic Controller 
+
+When the default generic controller doesn't match your need, you can provide your own custom generic controllers. For example the default generic controller for `DELETE` method is delete the records permanently. You can override this function by provide a new generic controller inherited from your ORM/ODM helper: 
+
+| Generic Controller                                   | Package           | Description                                            |
+| ---------------------------------------------------- | ----------------- | ------------------------------------------------------ |
+| `TypeORMControllerGeneric<T, TID>`                   | @plumier/typeorm  | TypeORM generic controller implementation              |
+| `TypeORMOneToManyControllerGeneric<P, T, PID, TID>`  | @plumier/typeorm  | TypeORM One To Many generic controller implementation  |
+| `MongooseControllerGeneric<T, TID>`                  | @plumier/mongoose | Mongoose generic controller implementation             |
+| `MongooseOneToManyControllerGeneric<P, T, PID, TID>` | @plumier/mongoose | Mongoose One To Many generic controller implementation |
+
+Then create a new generic controller for both based on any of above generic controller like below 
 
 ```typescript 
-class UsersController extends ControllerBase<User>{}
-``` 
+import {TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric} from "@plumier/typeorm"
 
-Plumier generates routes based on combination of controller name and action name, thats make controller inheritance is still allowed. Above code will make `UserController` inherit all the basic CRUD functionalities specific to `User` entity object, while keep maintain an independent endpoints.
+@generic.template("T", "TID")
+@generic.type("T", "TID")
+export class CustomControllerGeneric<T, TID> extends TypeORMControllerGeneric<T, TID> {
+    delete(id: TID, ctx: Context) {
+        return this.modify(id, { deleted: true } as any, ctx)
+    }
+}
 
-| Action                             | Method | Path          | Description       |
-| ---------------------------------- | ------ | ------------- | ----------------- |
-| `ControllerBase.save(data)`        | POST   | `/users     ` | Create user       |
-| `ControllerBase.get(id)`           | GET    | `/users/:id ` | Read user by ID   |
-| `ControllerBase.replace(id, data)` | PUT    | `/users/:id ` | Update user by ID |
-| `ControllerBase.delete(id)`        | DELETE | `/users/:id ` | Delete user by ID |
+@generic.template("P", "T", "PID", "TID")
+@generic.type("P", "T", "PID", "TID")
+export class CustomOneToManyControllerGeneric<P, T, PID, TID> extends TypeORMOneToManyControllerGeneric<P, T, PID, TID>{
+    delete(pid: PID, id: TID, ctx: Context) {
+        return this.modify(pid, id, { deleted: true } as any, ctx)
+    }
+}
+```
 
-:::info
-TypeScript implement generic type erasure, its mean generic type information erased after transpilation. IF you are curious how Plumier able to retrieve metadata information of generic class, see [here](https://github.com/plumier/tinspector#inspect-generic-class-information) how to setup the generic class for reflection.
-:::
+Above is example of custom generic controllers for TypeORM, we simply used the `modify` method of the generic controller to flag `deleted` property of the entity as `true`.
 
+Note that the `@generic.template()` and `@generic.type()` is required by the reflection library. 
 
+Next, we need to register above custom generic controller on the Plumier application like below 
+
+```typescript 
+new Plumier()
+    .set(new WebApiFacility())
+    .set(new TypeORMFacility())
+    .set({
+        genericController: [CustomControllerGeneric, CustomOneToManyControllerGeneric]
+    })
+```
+
+Make sure you register the controller under the `TypeORMFacility` or `MongooseFacility` to take effect. 
