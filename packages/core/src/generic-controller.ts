@@ -57,7 +57,7 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
 
     @route.get("")
     @reflect.type(["T"])
-    list(offset: number = 0, limit: number = 50, @reflect.type("T") @bind.query() @val.partial("T") query: T): Promise<T[]> {
+    list(offset: number = 0, limit: number = 50, @reflect.type("T") @bind.query() @val.partial("T") query: T, @bind.ctx() ctx: Context): Promise<T[]> {
         return this.repo.find(offset, limit, query)
     }
 
@@ -70,7 +70,7 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
 
     @route.get(":id")
     @reflect.type("T")
-    get(@val.required() @reflect.type("TID") id: TID): Promise<T> {
+    get(@val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<T> {
         return this.findByIdOrNotFound(id)
     }
 
@@ -92,7 +92,7 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
 
     @route.delete(":id")
     @reflect.type(IdentifierResult, "TID")
-    async delete(@val.required() @reflect.type("TID") id: TID): Promise<IdentifierResult<TID>> {
+    async delete(@val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findByIdOrNotFound(id)
         return this.repo.delete(id)
     }
@@ -130,7 +130,7 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 
     @route.get("")
     @reflect.type(["T"])
-    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @bind.query() @val.partial("T") query: T): Promise<T[]> {
+    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @bind.query() @val.partial("T") query: T, @bind.ctx() ctx: Context): Promise<T[]> {
         await this.findParentByIdOrNotFound(pid)
         return this.repo.find(pid, offset, limit, query)
     }
@@ -145,7 +145,7 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 
     @route.get(":id")
     @reflect.type("T")
-    async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID): Promise<T> {
+    async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<T> {
         await this.findParentByIdOrNotFound(pid)
         return this.findByIdOrNotFound(id)
     }
@@ -170,7 +170,7 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 
     @route.delete(":id")
     @reflect.type(IdentifierResult, "TID")
-    async delete(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID): Promise<IdentifierResult<TID>> {
+    async delete(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
         await this.findByIdOrNotFound(id)
         return this.repo.delete(id)
