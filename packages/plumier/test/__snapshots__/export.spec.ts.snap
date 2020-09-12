@@ -139,7 +139,7 @@ Object {
     "fromKoa": fromKoa,
   },
   "ParameterBinderMiddleware": ParameterBinderMiddleware,
-  "RestDecoratorImpl": RestDecoratorImpl,
+  "RestDecoratorImpl": undefined,
   "RestfulApiFacility": RestfulApiFacility,
   "RouteDecoratorImpl": RouteDecoratorImpl,
   "ValidatorMiddleware": ValidatorMiddleware,
@@ -177,7 +177,7 @@ Object {
     "json": json,
     "redirect": redirect,
   },
-  "rest": RestDecoratorImpl {},
+  "rest": undefined,
   "route": RouteDecoratorImpl {},
   "val": Object {
     "UUID": UUID,
