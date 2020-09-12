@@ -303,20 +303,6 @@ GET /dashboard/index
 
 > Absolute route when combined with multiple root route will cause conflict, consider to avoid them.
 
-## Rest Decorator 
-`@rest` decorator extends all `@route` functionalities except it will ignore method name when applied without parameter. 
-
-```typescript
-//controller/home-controller.ts
-export class HomeController {
-    @rest.get()
-    index(){
-        return "My Cool Animal API"
-    }
-}
-```
-
-Above code will generate `GET /home` route instead of `GET /home/index`. `@rest.get("")` and `@rest.get()` will behave the same.
 
 ## Ignore Route Generation
 By default Route Generation System will generate all methods inside controller into route. In some case you need to create an helper method inside controller but you don't want the method generated into route.
@@ -344,7 +330,7 @@ Above code showing that `helper` method will not be generated because it is mark
 ```typescript
 @route.ignore()
 export class HomeController {
-    @rest.get()
+    @route.get()
     index(){
         return "My Cool Animal API"
     }
@@ -358,11 +344,11 @@ If you have a controller with inheritance, you can ignore super class routes by 
 
 ```typescript
 export class ControllerBase {
-    @rest.get()
+    @route.get()
     get(){ }
-    @rest.post()
+    @route.post()
     save(){ }
-    @rest.put()
+    @route.put()
     replace(){ }
 }
 

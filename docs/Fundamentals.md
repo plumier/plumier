@@ -79,7 +79,7 @@ import {route} from "plumier"
 
 //file: ./controller/animal-controller.ts
 class AnimalsController {
-    @rest.get()
+    @route.get()
     get() { }
 }
 ```
