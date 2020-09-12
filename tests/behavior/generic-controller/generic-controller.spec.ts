@@ -31,6 +31,8 @@ import { Context } from "koa"
 import { join } from "path"
 import supertest from "supertest"
 import reflect, { generic, type, noop } from "tinspector"
+import { expectError } from '../helper'
+import { MyControllerGeneric } from './mocks'
 
 function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
     return new Plumier()
@@ -753,6 +755,240 @@ describe("Route Generator", () => {
                 .set(new ControllerFacility({ controller: User, group: "v1", rootPath: "api/v1" }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+    })
+})
+
+describe("Custom Route Path", () => {
+    describe("Generic Controller", () => {
+        it("Should generate routes with parameter property entity", async () => {
+            @route.controller("user/:userId")
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should contains correct query parameter", async () => {
+            @generic.template("T", "TID")
+            @generic.type("T", "TID")
+            class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
+                constructor() {
+                    super(x => ({} as Repository<T>))
+                }
+                get() {
+                    return {} as any
+                }
+            }
+            @route.controller("user/:userId")
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const fn = jest.fn()
+            const koa = await createApp({ controller: User }, { mode: "production" })
+                .use(x => {
+                    fn(x.ctx.query["userid"])
+                    return x.proceed()
+                })
+                .set({ genericController: [MyControllerGeneric, DefaultOneToManyControllerGeneric] })
+                .initialize()
+            await supertest(koa.callback())
+                .get("/user/1234")
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should throw error when provided no parameter", async () => { 
+            @route.controller("user")
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const fn = await expectError(createApp({ controller: User }).initialize())
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should throw error when provided more than one parameter", async () => { 
+            @route.controller("user/:userId/data/:dataId")
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const fn = await expectError(createApp({ controller: User }).initialize())
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should throw error when no parameter at the end", async () => { 
+            @route.controller("user/:userId/data")
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const fn = await expectError(createApp({ controller: User }).initialize())
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+    })
+    describe("Generic One To Many Controller", () => {
+        it("Should able to provide custom route path", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @reflect.type([Animal])
+                    @relation()
+                    @route.controller("user/:userId/animal/:animalId")
+                    public animals: Animal[]
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should contains correct query parameter", async () => {
+            @generic.template("P", "T", "PID", "TID")
+            @generic.type("P", "T", "PID", "TID")
+            class MyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{
+                constructor() { super(fac => ({} as any))} 
+                get() {
+                    return {} as any
+                }
+            }
+            @domain()
+            class Animal {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @reflect.type([Animal])
+                    @relation()
+                    @route.controller("user/:userId/animal/:animalId")
+                    public animals: Animal[]
+                ) { }
+            }
+            const fn = jest.fn()
+            const koa = await createApp({ controller: User }, { mode: "production" })
+                .use(x => {
+                    fn(x.ctx.query["userid"])
+                    fn(x.ctx.query["animalid"])
+                    return x.proceed()
+                })
+                .set({ genericController: [DefaultControllerGeneric, MyControllerGeneric] })
+                .initialize()
+            await supertest(koa.callback())
+                .get("/user/1234/animal/5678")
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should throw error when provided no parameter", async () => { 
+            @domain()
+            class Animal {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @reflect.type([Animal])
+                    @relation()
+                    @route.controller("user/animal")
+                    public animals: Animal[]
+                ) { }
+            }
+            const fn = await expectError(createApp({ controller: User }).initialize())
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should throw error when provided only one parameter", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @reflect.type([Animal])
+                    @relation()
+                    @route.controller("user/:userId")
+                    public animals: Animal[]
+                ) { }
+            }
+            const fn = await expectError(createApp({ controller: User }).initialize())
+            expect(fn.mock.calls).toMatchSnapshot()
+         })
+        it("Should throw error when provided more than two parameters", async () => { 
+            @domain()
+            class Animal {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @reflect.type([Animal])
+                    @relation()
+                    @route.controller("user/:userId/animal/:animalId/category/:categoryId")
+                    public animals: Animal[]
+                ) { }
+            }
+            const fn = await expectError(createApp({ controller: User }).initialize())
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should throw error when no parameter at the end", async () => { 
+            @domain()
+            class Animal {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @reflect.type([Animal])
+                    @relation()
+                    @route.controller("user/:userId/animal/:animalId/category")
+                    public animals: Animal[]
+                ) { }
+            }
+            const fn = await expectError(createApp({ controller: User }).initialize())
+            expect(fn.mock.calls).toMatchSnapshot()
         })
     })
 })
