@@ -15,6 +15,8 @@ import { join } from "path"
 
 import { fixture } from "../helper"
 
+jest.setTimeout(20000)
+
 describe("Validation", () => {
     it("Parameter should be optional by default", async () => {
         class AnimalController {
