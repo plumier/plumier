@@ -187,6 +187,65 @@ Above code showing that we apply `@route.controller()` on the `User.emails` rela
 | DELETE | `/users/:pid/emails/:id`                       | Delete user's email by ID  |
 | GET    | `/users/:pid/emails?limit&offset&filter&order` | Get list of user's email   |
 
+## Custom Path Name
+
+Plumier provide a default route path name based on entity name (pluralized), you can specify a new path name by provide it on the `@route.controller()` parameter. 
+
+```typescript
+import { Entity, PrimaryGeneratedColumn } from "typeorm"
+import { route } from "plumier"
+
+@route.controller("user-data/:uid")
+@Entity()
+class User {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @Column()
+    email: string
+
+    @Column()
+    name: string
+}
+``` 
+
+Above code showing that we specify custom path name `user-data/:uid`, it will generate routes like below
+
+| Method | Route                                  | Description                                     |
+| ------ | -------------------------------------- | ----------------------------------------------- |
+| POST   | `/user-data`                           | Add new user                                    |
+| GET    | `/user-data/:uid`                      | Get user by ID                                  |
+| PUT    | `/user-data/:uid`                      | Replace user by ID (required validation used)   |
+| PATCH  | `/user-data/:uid`                      | Modify user by ID (required validation ignored) |
+| DELETE | `/user-data/:uid`                      | Delete user by ID                               |
+| GET    | `/user-data?limit&offset&filter&order` | Get list of users                               |
+
+For nested generic controller you need to specify ID for parent and the child 
+
+```typescript
+@Entity()
+class User {
+    
+    /** other columns **/
+
+    @route.controller("user-data/:uid/email-data/:eid")
+    @OneToMany(x => Email, x => x.user)
+    emails:Email[]
+}
+```
+
+Above code will generate routes below 
+
+| Method | Route                                                  | Description                |
+| ------ | ------------------------------------------------------ | -------------------------- |
+| POST   | `/user-data/:uid/email-data`                           | Add new user's email       |
+| GET    | `/user-data/:uid/email-data/:eid`                      | Get user's email by ID     |
+| PUT    | `/user-data/:uid/email-data/:eid`                      | Replace user's email by ID |
+| PATCH  | `/user-data/:uid/email-data/:eid`                      | Modify user's email by ID  |
+| DELETE | `/user-data/:uid/email-data/:eid`                      | Delete user's email by ID  |
+| GET    | `/user-data/:uid/email-data?limit&offset&filter&order` | Get list of user's email   |
+
+
 ## Control Access To The Entity Properties 
 
 Plumier provide functionality to protect your data easily, you can use `@authorize` decorator to authorize user to write or read your entity property. 
