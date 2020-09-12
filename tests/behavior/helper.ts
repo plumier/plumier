@@ -27,3 +27,15 @@ mock.mockClear = (type:MockType) => {
         (type as any).prototype[method.name].mockClear();
     }
 }
+
+export async function expectError(operation:Promise<any>) {
+    const fn = jest.fn()
+    try{
+        await operation
+        return fn
+    }
+    catch(e){
+        fn(e)
+        return fn
+    }
+}

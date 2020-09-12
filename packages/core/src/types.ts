@@ -615,9 +615,9 @@ export namespace errorMessage {
     export const PropertyWithoutTypeInformation = "PLUM1008: Parameter binding skipped because property doesn't have type information in ({0})"
     export const GenericControllerImplementationNotFound = "PLUM1009: Generic controller implementation not installed"
     export const GenericControllerMissingTypeInfo = "PLUM1010: {0} marked with @route.controller() but doesn't have type information"
-    export const CustomRouteEndWithParameter = "PLUM1011: Custom route path {0} on {1} required path that ends with route parameter, example: animals/:animalId"
-    export const CustomRouteRequiredTwoParameters = "PLUM1012: Nested custom route path {0} on {1} must have two route parameters, example: users/:userId/animals/:animalId"
-    export const CustomRouteMustHaveOneParameter = "PLUM1013: Custom route path {0} on {1} must have one route parameter, example: animals/:animalId"
+    export const CustomRouteEndWithParameter = "PLUM1011: Custom route path '{0}' on {1} entity, require path that ends with route parameter, example: animals/:animalId"
+    export const CustomRouteRequiredTwoParameters = "PLUM1012: Nested custom route path '{0}' on {1} entity, must have two route parameters, example: users/:userId/animals/:animalId"
+    export const CustomRouteMustHaveOneParameter = "PLUM1013: Custom route path '{0}' on {1} entity, must have one route parameter, example: animals/:animalId"
     
 
     //PLUM2XXX internal app error

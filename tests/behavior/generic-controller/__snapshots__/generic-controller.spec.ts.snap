@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Custom Route Path Generic Controller Should contains correct query parameter 1`] = `
+Array [
+  Array [
+    "1234",
+  ],
+]
+`;
+
 exports[`Custom Route Path Generic Controller Should generate routes with parameter property entity 1`] = `
 Array [
   Array [],
@@ -7,50 +15,48 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DefaultControllerGeneric.list            -> GET    /user
- - error PLUM1001: Duplicate route found in DefaultControllerGeneric.list(offset, limit, query, ctx) DefaultControllerGeneric.list(offset, limit, query, ctx)",
+    "1. DefaultControllerGeneric.list            -> GET    /user",
   ],
   Array [
-    " 2. DefaultControllerGeneric.list            -> GET    /user
- - error PLUM1001: Duplicate route found in DefaultControllerGeneric.list(offset, limit, query, ctx) DefaultControllerGeneric.list(offset, limit, query, ctx)",
+    "2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    " 3. DefaultControllerGeneric.save(data, ctx) -> POST   /user
- - error PLUM1001: Duplicate route found in DefaultControllerGeneric.save(data, ctx) DefaultControllerGeneric.save(data, ctx)",
+    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:userid",
   ],
   Array [
-    " 4. DefaultControllerGeneric.save(data, ctx) -> POST   /user
- - error PLUM1001: Duplicate route found in DefaultControllerGeneric.save(data, ctx) DefaultControllerGeneric.save(data, ctx)",
+    "4. DefaultControllerGeneric.modify          -> PATCH  /user/:userid",
   ],
   Array [
-    " 5. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:userid
- - error PLUM1000: Route parameters (userid) doesn't have appropriate backing parameter",
+    "5. DefaultControllerGeneric.replace         -> PUT    /user/:userid",
   ],
   Array [
-    " 6. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id",
-  ],
-  Array [
-    " 7. DefaultControllerGeneric.modify          -> PATCH  /user/:userid
- - error PLUM1000: Route parameters (userid) doesn't have appropriate backing parameter",
-  ],
-  Array [
-    " 8. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
-  ],
-  Array [
-    " 9. DefaultControllerGeneric.replace         -> PUT    /user/:userid
- - error PLUM1000: Route parameters (userid) doesn't have appropriate backing parameter",
-  ],
-  Array [
-    "10. DefaultControllerGeneric.replace         -> PUT    /user/:id",
-  ],
-  Array [
-    "11. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:userid
- - error PLUM1000: Route parameters (userid) doesn't have appropriate backing parameter",
-  ],
-  Array [
-    "12. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
+    "6. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:userid",
   ],
   Array [],
+]
+`;
+
+exports[`Custom Route Path Generic Controller Should throw error when no parameter at the end 1`] = `
+Array [
+  Array [
+    [Error: PLUM1011: Custom route path 'user/:userId/data' on User entity, require path that ends with route parameter, example: animals/:animalId],
+  ],
+]
+`;
+
+exports[`Custom Route Path Generic Controller Should throw error when provided more than one parameter 1`] = `
+Array [
+  Array [
+    [Error: PLUM1013: Custom route path 'user/:userId/data/:dataId' on User entity, must have one route parameter, example: animals/:animalId],
+  ],
+]
+`;
+
+exports[`Custom Route Path Generic Controller Should throw error when provided no parameter 1`] = `
+Array [
+  Array [
+    [Error: PLUM1011: Custom route path 'user' on User entity, require path that ends with route parameter, example: animals/:animalId],
+  ],
 ]
 `;
 
@@ -67,18 +73,61 @@ Array [
     "2. DefaultOneToMany...eneric.save    -> POST   /user/:userid/animal",
   ],
   Array [
-    "3. DefaultOneToMany...eneric.get     -> GET    /user/:userid/animal/:id",
+    "3. DefaultOneToMany...eneric.get     -> GET    /user/:userid/animal/:animalid",
   ],
   Array [
-    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:userid/animal/:id",
+    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:userid/animal/:animalid",
   ],
   Array [
-    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:userid/animal/:id",
+    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:userid/animal/:animalid",
   ],
   Array [
-    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:userid/animal/:id",
+    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:userid/animal/:animalid",
   ],
   Array [],
+]
+`;
+
+exports[`Custom Route Path Generic One To Many Controller Should contains correct query parameter 1`] = `
+Array [
+  Array [
+    "1234",
+  ],
+  Array [
+    "5678",
+  ],
+]
+`;
+
+exports[`Custom Route Path Generic One To Many Controller Should throw error when no parameter at the end 1`] = `
+Array [
+  Array [
+    [Error: PLUM1011: Custom route path 'user/:userId/animal/:animalId/category' on User entity, require path that ends with route parameter, example: animals/:animalId],
+  ],
+]
+`;
+
+exports[`Custom Route Path Generic One To Many Controller Should throw error when provided more than two parameters 1`] = `
+Array [
+  Array [
+    [Error: PLUM1012: Nested custom route path 'user/:userId/animal/:animalId/category/:categoryId' on User entity, must have two route parameters, example: users/:userId/animals/:animalId],
+  ],
+]
+`;
+
+exports[`Custom Route Path Generic One To Many Controller Should throw error when provided no parameter 1`] = `
+Array [
+  Array [
+    [Error: PLUM1011: Custom route path 'user/animal' on User entity, require path that ends with route parameter, example: animals/:animalId],
+  ],
+]
+`;
+
+exports[`Custom Route Path Generic One To Many Controller Should throw error when provided only one parameter 1`] = `
+Array [
+  Array [
+    [Error: PLUM1012: Nested custom route path 'user/:userId' on User entity, must have two route parameters, example: users/:userId/animals/:animalId],
+  ],
 ]
 `;
 
@@ -626,25 +675,6 @@ Array [
 
 exports[`Property Binding Generic Controller Should bind on post method using property declaration 1`] = `
 Array [
-  Array [
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum dolor",
-    },
-  ],
-]
-`;
-
-exports[`Property Binding Generic Controller Should bind on post method using property declaration 2`] = `
-Array [
-  Array [
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum dolor",
-    },
-  ],
   Array [
     Object {
       "email": "john.doe@gmail.com",

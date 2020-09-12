@@ -42,6 +42,10 @@ class IdentifierResult<TID> {
 
 const RouteDecoratorID = Symbol("generic-controller:route")
 
+/**
+ * Custom route decorator to make it possible to override @route decorator from class scope decorator. 
+ * This is required for custom route path defined with @route.controller("custom/:customId")
+ */
 function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: string | string[] }) {
     return decorate(<RouteDecorator & { [DecoratorId]: any }>{
         [DecoratorId]: RouteDecoratorID,
@@ -340,7 +344,7 @@ function createGenericController(entity: Class, decorator: GenericControllerDeco
     // add root decorator
     let routePath = nameConversion(entity.name)
     let routeMap: any = {}
-    const routes:ClassDecorator[] = []
+    const routes: ClassDecorator[] = []
     if (decorator.path) {
         const keys = validatePath(decorator.path, entity)
         routePath = decorator.path.replace(lastParam, "")
@@ -350,7 +354,7 @@ function createGenericController(entity: Class, decorator: GenericControllerDeco
     // copy @route.ignore() and @authorize on entity to the controller to control route generation
     const meta = reflect(entity)
     const decorators = copyDecorators([...meta.decorators, ...meta.removedDecorators ?? []], controller)
-    Reflect.decorate([...decorators, ...routes, route.root(routePath, routeMap), api.tag(entity.name)], Controller)
+    Reflect.decorate([...decorators, ...routes, route.root(routePath, { map: routeMap }), api.tag(entity.name)], Controller)
     return Controller
 }
 
@@ -366,7 +370,7 @@ function createOneToManyGenericController(entity: Class, decorator: GenericContr
     let routeMap: any = {}
     const routes = []
     if (decorator.path) {
-        const keys = validatePath(decorator.path, entity)
+        const keys = validatePath(decorator.path, entity, true)
         routePath = decorator.path.replace(lastParam, "")
         routeMap = { pid: keys[0].name, id: keys[1].name }
         routes.push(...createRouteDecorators(keys[1].name.toString()))
@@ -378,7 +382,7 @@ function createOneToManyGenericController(entity: Class, decorator: GenericContr
     Reflect.decorate([
         ...decorators,
         ...routes,
-        route.root(routePath, routeMap),
+        route.root(routePath, { map: routeMap }),
         api.tag(entity.name),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
         decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: relationProperty }),
