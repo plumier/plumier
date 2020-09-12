@@ -8,6 +8,7 @@ import {
     RouteMetadata,
     RouteInfo
 } from "@plumier/core"
+import { noop } from '@plumier/tinspector'
 import { join } from "path"
 import Plumier, { RestfulApiFacility, route, WebApiFacility, ControllerFacility } from "plumier"
 import supertest from 'supertest'
@@ -1753,7 +1754,7 @@ describe("Route Mapping", () => {
     describe("Route", () => {
         it("Should able to map path parameter", async () => {
             class AnimalsController {
-                @route.get(":id", { name: "id" })
+                @route.get(":id", { map: { name: "id" } })
                 get(name: string) {
                     return { name }
                 }
@@ -1765,7 +1766,7 @@ describe("Route Mapping", () => {
         })
         it("Should able to map multiple path parameters", async () => {
             class AnimalsController {
-                @route.get(":id/:limit/:offset", { name: "id", take: "limit" })
+                @route.get(":id/:limit/:offset", { map: { name: "id", take: "limit" } })
                 get(name: string, take: string, offset: string) {
                     return { name, take, offset }
                 }
@@ -1777,7 +1778,7 @@ describe("Route Mapping", () => {
         })
         it("Should able to map path parameter in multiple routes", async () => {
             class AnimalsController {
-                @route.get(":id", { name: "id" })
+                @route.get(":id", { map: { name: "id" } })
                 @route.get("get/:name")
                 get(name: string) {
                     return { name }
@@ -1792,7 +1793,7 @@ describe("Route Mapping", () => {
                 .expect(200, { name: "lorem" })
         })
         it("Should able to map root parameter", async () => {
-            @route.root("animals/:id", { name: "id" })
+            @route.root("animals/:id", { map: { name: "id" } })
             class AnimalsController {
                 @route.get("")
                 get(name: string) {
@@ -1805,7 +1806,7 @@ describe("Route Mapping", () => {
                 .expect(200, { name: "lorem" })
         })
         it("Should able to map root parameter with multiple decorators", async () => {
-            @route.root("animals/:id", { name: "id" })
+            @route.root("animals/:id", { map: { name: "id" } })
             @route.root("animals/:name/test")
             class AnimalsController {
                 @route.get("")
@@ -1825,7 +1826,7 @@ describe("Route Mapping", () => {
     describe("Route Analysis", () => {
         it("Should not cause route analysis error", async () => {
             class AnimalsController {
-                @route.get(":id", { name: "id" })
+                @route.get(":id", { map: { name: "id" } })
                 get(name: string) {
                     return { name }
                 }
@@ -1837,7 +1838,7 @@ describe("Route Mapping", () => {
         })
         it("Should show route analysis issue when misconfigured", async () => {
             class AnimalsController {
-                @route.get(":id", { id: "name" })// <-- position wrong
+                @route.get(":id", { map: { id: "name" } })// <-- position wrong
                 get(name: string) {
                     return { name }
                 }
@@ -1847,5 +1848,47 @@ describe("Route Mapping", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             consoleLog.clearMock()
         })
+    })
+})
+
+describe("Apply Route from Class", () => {
+    it("Should able to apply route from controller", async () => {
+        @route.get(":name", { applyTo: "get" })
+        class AnimalsController {
+            @noop()
+            get(name: string) {
+                return { name }
+            }
+        }
+        const mock = consoleLog.startMock()
+        await fixture(AnimalsController, { mode: "debug" }).initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+    it("Should able to apply route from controller combine with map", async () => {
+        @route.get(":id", { applyTo: "get", map: { name: "id" } })
+        class AnimalsController {
+            @noop()
+            get(name: string) {
+                return { name }
+            }
+        }
+        const mock = consoleLog.startMock()
+        await fixture(AnimalsController, { mode: "debug" }).initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
+    })
+    it("Should able to apply simple route from controller", async () => {
+        @route.get({ applyTo: "get" })
+        class AnimalsController {
+            @noop()
+            get(name: string) {
+                return { name }
+            }
+        }
+        const mock = consoleLog.startMock()
+        await fixture(AnimalsController, { mode: "debug" }).initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        consoleLog.clearMock()
     })
 })
