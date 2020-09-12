@@ -1,5 +1,136 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Custom Route Path Generic Controller Should contains correct query parameter 1`] = `
+Array [
+  Array [
+    "1234",
+  ],
+]
+`;
+
+exports[`Custom Route Path Generic Controller Should generate routes with parameter property entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:userid",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> PATCH  /user/:userid",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> PUT    /user/:userid",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:userid",
+  ],
+  Array [],
+]
+`;
+
+exports[`Custom Route Path Generic Controller Should throw error when no parameter at the end 1`] = `
+Array [
+  Array [
+    [Error: PLUM1011: Custom route path 'user/:userId/data' on User entity, require path that ends with route parameter, example: animals/:animalId],
+  ],
+]
+`;
+
+exports[`Custom Route Path Generic Controller Should throw error when provided more than one parameter 1`] = `
+Array [
+  Array [
+    [Error: PLUM1013: Custom route path 'user/:userId/data/:dataId' on User entity, must have one route parameter, example: animals/:animalId],
+  ],
+]
+`;
+
+exports[`Custom Route Path Generic Controller Should throw error when provided no parameter 1`] = `
+Array [
+  Array [
+    [Error: PLUM1011: Custom route path 'user' on User entity, require path that ends with route parameter, example: animals/:animalId],
+  ],
+]
+`;
+
+exports[`Custom Route Path Generic One To Many Controller Should able to provide custom route path 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultOneToMany...eneric.list    -> GET    /user/:userid/animal",
+  ],
+  Array [
+    "2. DefaultOneToMany...eneric.save    -> POST   /user/:userid/animal",
+  ],
+  Array [
+    "3. DefaultOneToMany...eneric.get     -> GET    /user/:userid/animal/:animalid",
+  ],
+  Array [
+    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:userid/animal/:animalid",
+  ],
+  Array [
+    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:userid/animal/:animalid",
+  ],
+  Array [
+    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:userid/animal/:animalid",
+  ],
+  Array [],
+]
+`;
+
+exports[`Custom Route Path Generic One To Many Controller Should contains correct query parameter 1`] = `
+Array [
+  Array [
+    "1234",
+  ],
+  Array [
+    "5678",
+  ],
+]
+`;
+
+exports[`Custom Route Path Generic One To Many Controller Should throw error when no parameter at the end 1`] = `
+Array [
+  Array [
+    [Error: PLUM1011: Custom route path 'user/:userId/animal/:animalId/category' on User entity, require path that ends with route parameter, example: animals/:animalId],
+  ],
+]
+`;
+
+exports[`Custom Route Path Generic One To Many Controller Should throw error when provided more than two parameters 1`] = `
+Array [
+  Array [
+    [Error: PLUM1012: Nested custom route path 'user/:userId/animal/:animalId/category/:categoryId' on User entity, must have two route parameters, example: users/:userId/animals/:animalId],
+  ],
+]
+`;
+
+exports[`Custom Route Path Generic One To Many Controller Should throw error when provided no parameter 1`] = `
+Array [
+  Array [
+    [Error: PLUM1011: Custom route path 'user/animal' on User entity, require path that ends with route parameter, example: animals/:animalId],
+  ],
+]
+`;
+
+exports[`Custom Route Path Generic One To Many Controller Should throw error when provided only one parameter 1`] = `
+Array [
+  Array [
+    [Error: PLUM1012: Nested custom route path 'user/:userId' on User entity, must have two route parameters, example: users/:userId/animals/:animalId],
+  ],
+]
+`;
+
 exports[`Open Api Generic Controller Should generate DELETE /animal/:id properly 1`] = `
 Array [
   Object {
