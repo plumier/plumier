@@ -1,5 +1,5 @@
 import { Context } from "koa"
-import reflect, { decorateClass, DecoratorOption, DecoratorOptionId, generic, GenericTypeDecorator } from "tinspector"
+import reflect, { decorate, decorateClass, decorateMethod, DecoratorId, DecoratorOption, DecoratorOptionId, generic, GenericTypeDecorator } from "tinspector"
 import { val } from "typedconverter"
 
 import { AuthorizeDecorator } from "./authorization"
@@ -25,6 +25,7 @@ import {
 } from "./types"
 
 import { pathToRegexp, Key } from "path-to-regexp"
+import { symbol } from '@hapi/joi'
 
 // --------------------------------------------------------------------- //
 // ---------------------------- CONTROLLERS ---------------------------- //
@@ -37,6 +38,17 @@ class IdentifierResult<TID> {
         @reflect.type("TID")
         public id: TID
     ) { }
+}
+
+const RouteDecoratorID = Symbol("generic-controller:route")
+
+function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: string | string[] }) {
+    return decorate(<RouteDecorator & { [DecoratorId]: any }>{
+        [DecoratorId]: RouteDecoratorID,
+        name: "plumier-meta:route",
+        method,
+        url: path
+    }, ["Class", "Method"], { allowMultiple: false, ...option })
 }
 
 @generic.template("T", "TID")
@@ -57,26 +69,26 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
         return saved
     }
 
-    @route.get("")
+    @decorateRoute("get", "")
     @reflect.type(["T"])
     list(offset: number = 0, limit: number = 50, @reflect.type("T") @bind.query() @val.partial("T") query: T, @bind.ctx() ctx: Context): Promise<T[]> {
         return this.repo.find(offset, limit, query)
     }
 
-    @route.post("")
+    @decorateRoute("post", "")
     @reflect.type(IdentifierResult, "TID")
     async save(@reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         const newData = await bindProperties(data, this.entityType, ctx)
         return this.repo.insert(newData)
     }
 
-    @route.get(":id")
+    @decorateRoute("get", ":id")
     @reflect.type("T")
     get(@val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<T> {
         return this.findByIdOrNotFound(id)
     }
 
-    @route.patch(":id")
+    @decorateRoute("patch", ":id")
     @reflect.type(IdentifierResult, "TID")
     async modify(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") @val.partial("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findByIdOrNotFound(id)
@@ -84,7 +96,7 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
         return this.repo.update(id, newData)
     }
 
-    @route.put(":id")
+    @decorateRoute("put", ":id")
     @reflect.type(IdentifierResult, "TID")
     async replace(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findByIdOrNotFound(id)
@@ -92,7 +104,7 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
         return this.repo.update(id, newData)
     }
 
-    @route.delete(":id")
+    @decorateRoute("delete", ":id")
     @reflect.type(IdentifierResult, "TID")
     async delete(@val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findByIdOrNotFound(id)
@@ -130,14 +142,14 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
         return saved
     }
 
-    @route.get("")
+    @decorateRoute("get", "")
     @reflect.type(["T"])
     async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @bind.query() @val.partial("T") query: T, @bind.ctx() ctx: Context): Promise<T[]> {
         await this.findParentByIdOrNotFound(pid)
         return this.repo.find(pid, offset, limit, query)
     }
 
-    @route.post("")
+    @decorateRoute("post", "")
     @reflect.type(IdentifierResult, "TID")
     async save(@val.required() @reflect.type("PID") pid: PID, @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
@@ -145,14 +157,14 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
         return this.repo.insert(pid, newData)
     }
 
-    @route.get(":id")
+    @decorateRoute("get", ":id")
     @reflect.type("T")
     async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<T> {
         await this.findParentByIdOrNotFound(pid)
         return this.findByIdOrNotFound(id)
     }
 
-    @route.patch(":id")
+    @decorateRoute("patch", ":id")
     @reflect.type(IdentifierResult, "TID")
     async modify(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @val.partial("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
@@ -161,7 +173,7 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
         return this.repo.update(id, newData)
     }
 
-    @route.put(":id")
+    @decorateRoute("put", ":id")
     @reflect.type(IdentifierResult, "TID")
     async replace(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
@@ -170,7 +182,7 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
         return this.repo.update(id, newData)
     }
 
-    @route.delete(":id")
+    @decorateRoute("delete", ":id")
     @reflect.type(IdentifierResult, "TID")
     async delete(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
@@ -294,6 +306,18 @@ function copyDecorators(decorators: any[], controller: Class) {
     return result.map(x => decorateClass(x, x[DecoratorOptionId]))
 }
 
+
+function createRouteDecorators(id: string) {
+    return [
+        decorateRoute("post", "", { applyTo: "save" }),
+        decorateRoute("get", "", { applyTo: "list" }),
+        decorateRoute("get", `:${id}`, { applyTo: "get" }),
+        decorateRoute("put", `:${id}`, { applyTo: "replace" }),
+        decorateRoute("patch", `:${id}`, { applyTo: "modify" }),
+        decorateRoute("delete", `:${id}`, { applyTo: "delete" }),
+    ]
+}
+
 const lastParam = /\/:\w*$/
 
 function validatePath(path: string, entity: Class, oneToMany = false) {
@@ -316,15 +340,17 @@ function createGenericController(entity: Class, decorator: GenericControllerDeco
     // add root decorator
     let routePath = nameConversion(entity.name)
     let routeMap: any = {}
+    const routes:ClassDecorator[] = []
     if (decorator.path) {
         const keys = validatePath(decorator.path, entity)
         routePath = decorator.path.replace(lastParam, "")
         routeMap = { id: keys[0].name }
+        routes.push(...createRouteDecorators(keys[0].name.toString()))
     }
     // copy @route.ignore() and @authorize on entity to the controller to control route generation
     const meta = reflect(entity)
     const decorators = copyDecorators([...meta.decorators, ...meta.removedDecorators ?? []], controller)
-    Reflect.decorate([...decorators, route.root(routePath, routeMap), api.tag(entity.name)], Controller)
+    Reflect.decorate([...decorators, ...routes, route.root(routePath, routeMap), api.tag(entity.name)], Controller)
     return Controller
 }
 
@@ -338,10 +364,12 @@ function createOneToManyGenericController(entity: Class, decorator: GenericContr
     // add root decorator
     let routePath = `${nameConversion(entity.name)}/:pid/${relationProperty}`
     let routeMap: any = {}
+    const routes = []
     if (decorator.path) {
         const keys = validatePath(decorator.path, entity)
         routePath = decorator.path.replace(lastParam, "")
         routeMap = { pid: keys[0].name, id: keys[1].name }
+        routes.push(...createRouteDecorators(keys[1].name.toString()))
     }
     // copy @route.ignore() on entity to the controller to control route generation
     const meta = reflect(entity)
@@ -349,6 +377,7 @@ function createOneToManyGenericController(entity: Class, decorator: GenericContr
     const decorators = copyDecorators(entityDecorators, controller)
     Reflect.decorate([
         ...decorators,
+        ...routes,
         route.root(routePath, routeMap),
         api.tag(entity.name),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor

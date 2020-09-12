@@ -10,16 +10,27 @@ interface GenericControllerDecorator {
    path?:string
 }
 
-interface IgnoreOption {
+interface ApplyToOption {
    /**
     * Ignore specific actions. Only work on controller scope ignore
     */
-   applyTo: string | string[]
+   applyTo?: string | string[]
+}
+
+interface RootRouteOption {
+   map?: any
+}
+
+interface RouteOption extends RootRouteOption, ApplyToOption {
+   path?: string
 }
 
 class RouteDecoratorImpl {
-   private decorateRoute(method: HttpMethod, url?: string, map?: any) {
-      return decorateMethod(<RouteDecorator>{ name: "plumier-meta:route", method, url, map })
+   private decorateRoute(method: HttpMethod, pathOrOption?: string | RouteOption, option?: RouteOption) {
+      const opt = !!option ? { path: pathOrOption, ...option } : typeof pathOrOption === "string" ? { path: pathOrOption } : pathOrOption
+      return decorate(<RouteDecorator>{ name: "plumier-meta:route", method, url: opt?.path, map: opt?.map },
+         ["Class", "Method"],
+         { applyTo: opt?.applyTo ?? [] })
    }
    /**
     * Mark method as POST method http handler
@@ -48,7 +59,10 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   post(url?: string, map?: any) { return this.decorateRoute("post", url, map) }
+   post(): (...args: any[]) => void
+   post(option: RouteOption): (...args: any[]) => void
+   post(url: string, option?: RouteOption): (...args: any[]) => void
+   post(url?: string | RouteOption, option?: RouteOption) { return this.decorateRoute("post", url, option) }
 
    /**
     * Mark method as GET method http handler
@@ -77,7 +91,10 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   get(url?: string, map?: any) { return this.decorateRoute("get", url, map) }
+   get(): (...args: any[]) => void
+   get(option: RouteOption): (...args: any[]) => void
+   get(url: string, option?: RouteOption): (...args: any[]) => void
+   get(url?: string | RouteOption, option?: RouteOption) { return this.decorateRoute("get", url, option) }
 
    /**
     * Mark method as PUT method http handler
@@ -106,7 +123,10 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   put(url?: string, map?: any) { return this.decorateRoute("put", url, map) }
+   put(): (...args: any[]) => void
+   put(option: RouteOption): (...args: any[]) => void
+   put(url: string, option?: RouteOption): (...args: any[]) => void
+   put(url?: string | RouteOption, option?: RouteOption) { return this.decorateRoute("put", url, option) }
 
    /**
     * Mark method as DELETE method http handler
@@ -135,7 +155,10 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   delete(url?: string, map?: any) { return this.decorateRoute("delete", url, map) }
+   delete(): (...args: any[]) => void
+   delete(option: RouteOption): (...args: any[]) => void
+   delete(url: string, option?: RouteOption): (...args: any[]) => void
+   delete(url?: string | RouteOption, option?: RouteOption) { return this.decorateRoute("delete", url, option) }
 
    /**
     * Mark method as PATCH method http handler
@@ -164,7 +187,10 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   patch(url?: string, map?: any) { return this.decorateRoute("patch", url, map) }
+   patch(): (...args: any[]) => void
+   patch(option: RouteOption): (...args: any[]) => void
+   patch(url: string, option?: RouteOption): (...args: any[]) => void
+   patch(url?: string | RouteOption, option?: RouteOption) { return this.decorateRoute("patch", url, option) }
 
    /**
     * Mark method as HEAD method http handler
@@ -193,7 +219,10 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   head(url?: string, map?: any) { return this.decorateRoute("head", url, map) }
+   head(): (...args: any[]) => void
+   head(option: RouteOption): (...args: any[]) => void
+   head(url: string, option?: RouteOption): (...args: any[]) => void
+   head(url?: string | RouteOption, option?: RouteOption) { return this.decorateRoute("head", url, option) }
 
    /**
     * Mark method as TRACE method http handler
@@ -222,7 +251,10 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   trace(url?: string, map?: any) { return this.decorateRoute("trace", url, map) }
+   trace(): (...args: any[]) => void
+   trace(option: RouteOption): (...args: any[]) => void
+   trace(url: string, option?: RouteOption): (...args: any[]) => void
+   trace(url?: string | RouteOption, option?: RouteOption) { return this.decorateRoute("trace", url, option) }
 
    /**
     * Mark method as OPTIONS method http handler
@@ -251,7 +283,10 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   options(url?: string, map?: any) { return this.decorateRoute("options", url, map) }
+   options(): (...args: any[]) => void
+   options(option: RouteOption): (...args: any[]) => void
+   options(url: string, option?: RouteOption): (...args: any[]) => void
+   options(url?: string | RouteOption, option?: RouteOption) { return this.decorateRoute("options", url, option) }
 
    /**
     * Override controller name on route generation
@@ -274,7 +309,7 @@ class RouteDecoratorImpl {
     ```
     * @param url url override
     */
-   root(url: string, map?: any) { return decorateClass(<RootDecorator>{ name: "plumier-meta:root", url, map }) }
+   root(url: string, option?: RootRouteOption) { return decorateClass(<RootDecorator>{ name: "plumier-meta:root", url, map: option?.map }) }
 
    /**
     * Ignore method from route generation
@@ -289,7 +324,7 @@ class RouteDecoratorImpl {
     //otherMethod not generated
     ```
     */
-   ignore(opt?: IgnoreOption) { return decorate(<IgnoreDecorator>{ [DecoratorId]: "route:ignore", name: "plumier-meta:ignore" }, ["Class", "Method", "Property", "Parameter"], { allowMultiple: false, ...opt }) }
+   ignore(opt?: ApplyToOption) { return decorate(<IgnoreDecorator>{ [DecoratorId]: "route:ignore", name: "plumier-meta:ignore" }, ["Class", "Method", "Property", "Parameter"], { allowMultiple: false, ...opt }) }
 
    /**
     * Mark an entity will be handled by a generic CRUD controller

@@ -1,5 +1,44 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Apply Route from Class Should able to apply route from controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalsController.get(name) -> GET /animals/:name",
+  ],
+  Array [],
+]
+`;
+
+exports[`Apply Route from Class Should able to apply route from controller combine with map 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalsController.get(name) -> GET /animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Apply Route from Class Should able to apply simple route from controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalsController.get(name) -> GET /animals/get",
+  ],
+  Array [],
+]
+`;
+
 exports[`Extend Route Generator Should able to provide ActionRoutes from Facility 1`] = `
 Array [
   Array [],

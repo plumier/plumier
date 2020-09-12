@@ -7,26 +7,48 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list            -> GET    /user",
+    " 1. DefaultControllerGeneric.list            -> GET    /user
+ - error PLUM1001: Duplicate route found in DefaultControllerGeneric.list(offset, limit, query, ctx) DefaultControllerGeneric.list(offset, limit, query, ctx)",
   ],
   Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
+    " 2. DefaultControllerGeneric.list            -> GET    /user
+ - error PLUM1001: Duplicate route found in DefaultControllerGeneric.list(offset, limit, query, ctx) DefaultControllerGeneric.list(offset, limit, query, ctx)",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id
- - error PLUM1000: Route parameters (id) doesn't have appropriate backing parameter",
+    " 3. DefaultControllerGeneric.save(data, ctx) -> POST   /user
+ - error PLUM1001: Duplicate route found in DefaultControllerGeneric.save(data, ctx) DefaultControllerGeneric.save(data, ctx)",
   ],
   Array [
-    "4. DefaultControllerGeneric.modify          -> PATCH  /user/:id
- - error PLUM1000: Route parameters (id) doesn't have appropriate backing parameter",
+    " 4. DefaultControllerGeneric.save(data, ctx) -> POST   /user
+ - error PLUM1001: Duplicate route found in DefaultControllerGeneric.save(data, ctx) DefaultControllerGeneric.save(data, ctx)",
   ],
   Array [
-    "5. DefaultControllerGeneric.replace         -> PUT    /user/:id
- - error PLUM1000: Route parameters (id) doesn't have appropriate backing parameter",
+    " 5. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:userid
+ - error PLUM1000: Route parameters (userid) doesn't have appropriate backing parameter",
   ],
   Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id
- - error PLUM1000: Route parameters (id) doesn't have appropriate backing parameter",
+    " 6. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id",
+  ],
+  Array [
+    " 7. DefaultControllerGeneric.modify          -> PATCH  /user/:userid
+ - error PLUM1000: Route parameters (userid) doesn't have appropriate backing parameter",
+  ],
+  Array [
+    " 8. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
+  ],
+  Array [
+    " 9. DefaultControllerGeneric.replace         -> PUT    /user/:userid
+ - error PLUM1000: Route parameters (userid) doesn't have appropriate backing parameter",
+  ],
+  Array [
+    "10. DefaultControllerGeneric.replace         -> PUT    /user/:id",
+  ],
+  Array [
+    "11. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:userid
+ - error PLUM1000: Route parameters (userid) doesn't have appropriate backing parameter",
+  ],
+  Array [
+    "12. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
   ],
   Array [],
 ]
