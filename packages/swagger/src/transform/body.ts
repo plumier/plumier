@@ -3,34 +3,9 @@ import { ContentObject, ReferenceObject, RequestBodyObject, SchemaObject } from 
 import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
 
 import { describeParameters, ParameterNode } from "./parameter"
-import { getRequiredProps, transformType } from "./schema"
+import { addRelationProperties, getRequiredProps, transformType } from "./schema"
 import { TransformContext } from "./shared"
 
-function addSchema(target: SchemaObject | ReferenceObject, schema: SchemaObject): SchemaObject {
-    if ("type" in target && target.type === "array")
-        return { ...target, items: addSchema(target.items!, schema) }
-    if ("allOf" in target && target.allOf)
-        return { allOf: [...target.allOf, schema] }
-    else
-        return { allOf: [target, schema] }
-}
-
-function addRelationProperties(rootSchema: SchemaObject, modelType: (Class | Class[]), ctx: TransformContext): SchemaObject {
-    const type = Array.isArray(modelType) ? modelType[0] : modelType
-    const meta = reflect(type)
-    const result: SchemaObject = { type: "object", properties: {} }
-    for (const property of meta.properties) {
-        const relation = property.decorators.find((x: RelationDecorator): x is RelationDecorator => x.kind === "plumier-meta:relation")
-        if (relation) {
-            const isArray = property.typeClassification === "Array"
-            const propType = isArray ? property.type[0] : property.type
-            const idType = entityHelper.getIdType(propType)
-            result.properties![property.name] = transformType(isArray ? [idType] : idType, ctx)
-        }
-    }
-    const count = Object.keys(result.properties!).length
-    return count == 0 ? rootSchema : addSchema(rootSchema, result)
-}
 
 function transformJsonContent(schema: SchemaObject): ContentObject {
     return {
@@ -99,7 +74,7 @@ function transformBody(route: RouteInfo, ctx: TransformContext): RequestBodyObje
     const isFormFile = (par: ParameterNode) => (Array.isArray(par.type) && par.type[0] === FormFile) || par.type === FormFile || par.binding?.name === "formFile"
     if (route.method !== "post" && route.method !== "put" && route.method !== "patch") return
     const pars = describeParameters(route)
-        .filter(x => x.kind === "bodyCandidate")
+        .filter(x => x.kind === "undecided")
         .filter(x => !["ctx", "request", "user", "custom"].some(y => y === x.binding?.name))
     if (pars.some(x => isFormFile(x)))
         return transformFileBody(pars, ctx)

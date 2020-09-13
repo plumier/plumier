@@ -154,14 +154,6 @@ exports[`Open Api Generic Controller Should generate GET /animal properly 1`] = 
 Array [
   Object {
     "in": "query",
-    "name": "name",
-    "required": false,
-    "schema": Object {
-      "type": "string",
-    },
-  },
-  Object {
-    "in": "query",
     "name": "offset",
     "required": false,
     "schema": Object {
@@ -174,6 +166,14 @@ Array [
     "required": false,
     "schema": Object {
       "type": "number",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "filter",
+    "required": false,
+    "schema": Object {
+      "$ref": "#/components/schemas/Animal",
     },
   },
 ]
@@ -327,14 +327,6 @@ exports[`Open Api Generic One To Many Controller Should generate GET /animals pr
 Array [
   Object {
     "in": "query",
-    "name": "name",
-    "required": false,
-    "schema": Object {
-      "type": "string",
-    },
-  },
-  Object {
-    "in": "query",
     "name": "offset",
     "required": false,
     "schema": Object {
@@ -347,6 +339,29 @@ Array [
     "required": false,
     "schema": Object {
       "type": "number",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "filter",
+    "required": false,
+    "schema": Object {
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/Animal",
+        },
+        Object {
+          "properties": Object {
+            "tags": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+      ],
     },
   },
 ]
@@ -389,14 +404,6 @@ Array [
   },
   Object {
     "in": "query",
-    "name": "tag",
-    "required": false,
-    "schema": Object {
-      "type": "string",
-    },
-  },
-  Object {
-    "in": "query",
     "name": "offset",
     "required": false,
     "schema": Object {
@@ -409,6 +416,14 @@ Array [
     "required": false,
     "schema": Object {
       "type": "number",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "filter",
+    "required": false,
+    "schema": Object {
+      "$ref": "#/components/schemas/Tag",
     },
   },
 ]
@@ -1065,7 +1080,7 @@ Array [
         "type": Number,
       },
       Object {
-        "name": "query",
+        "name": "filter",
         "type": User,
       },
       Object {
@@ -1164,7 +1179,7 @@ Array [
         "type": Number,
       },
       Object {
-        "name": "query",
+        "name": "filter",
         "type": User,
       },
       Object {
@@ -1361,7 +1376,7 @@ Array [
         "type": Number,
       },
       Object {
-        "name": "query",
+        "name": "filter",
         "type": User,
       },
       Object {
@@ -1738,7 +1753,7 @@ Array [
         "type": Number,
       },
       Object {
-        "name": "query",
+        "name": "filter",
         "type": Animal,
       },
       Object {
@@ -2019,7 +2034,7 @@ Array [
         "type": Number,
       },
       Object {
-        "name": "query",
+        "name": "filter",
         "type": Animal,
       },
       Object {
