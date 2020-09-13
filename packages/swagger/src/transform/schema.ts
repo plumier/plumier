@@ -1,4 +1,4 @@
-import { Class, FormFile } from "@plumier/core"
+import { Class, entityHelper, FormFile, RelationDecorator } from "@plumier/core"
 import { ReferenceObject, SchemaObject } from "openapi3-ts"
 import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
 import { isRequired, TransformContext, isEnums, isPartialValidator, isApiWriteOnly, isApiReadOnly } from './shared'
@@ -74,5 +74,33 @@ function transformType(type: Class | Class[] | undefined, ctx: TransformContext,
     }
 }
 
-export { refFactory, transformType, getRequiredProps, TransformTypeOption }
+
+
+function addSchema(target: SchemaObject | ReferenceObject, schema: SchemaObject): SchemaObject {
+    if ("type" in target && target.type === "array")
+        return { ...target, items: addSchema(target.items!, schema) }
+    if ("allOf" in target && target.allOf)
+        return { allOf: [...target.allOf, schema] }
+    else
+        return { allOf: [target, schema] }
+}
+
+function addRelationProperties(rootSchema: SchemaObject, modelType: (Class | Class[]), ctx: TransformContext): SchemaObject {
+    const type = Array.isArray(modelType) ? modelType[0] : modelType
+    const meta = reflect(type)
+    const result: SchemaObject = { type: "object", properties: {} }
+    for (const property of meta.properties) {
+        const relation = property.decorators.find((x: RelationDecorator): x is RelationDecorator => x.kind === "plumier-meta:relation")
+        if (relation) {
+            const isArray = property.typeClassification === "Array"
+            const propType = isArray ? property.type[0] : property.type
+            const idType = entityHelper.getIdType(propType)
+            result.properties![property.name] = transformType(isArray ? [idType] : idType, ctx)
+        }
+    }
+    const count = Object.keys(result.properties!).length
+    return count == 0 ? rootSchema : addSchema(rootSchema, result)
+}
+
+export { refFactory, transformType, getRequiredProps, TransformTypeOption, addRelationProperties }
 

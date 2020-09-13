@@ -139,6 +139,77 @@ describe("Open API 3.0 Generation", () => {
             expect(body.paths["/users"].get.parameters).toMatchSnapshot()
         })
 
+        it("Should detect query parameter of type object", async () => {
+            @domain()
+            class Query {
+                constructor(
+                    public str: string,
+                    public num: number,
+                    public bool: boolean,
+                    public date: Date) { }
+            }
+            class UsersController {
+                @route.get("")
+                get(query: Query) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
+        })
+
+        it("Should hide query object relation", async () => {
+            @domain()
+            class SubQuery {
+                constructor(
+                    @primaryId()
+                    public id: number
+                ) { }
+            }
+            @domain()
+            class Query {
+                constructor(
+                    public str: string,
+                    public num: number,
+                    public bool: boolean,
+                    public date: Date,
+                    @relation()
+                    public sub: SubQuery
+                ) { }
+            }
+            class UsersController {
+                @route.get("")
+                get(query: Query) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
+        })
+
+        it("Should hide readonly field on query parameter object", async () => {
+            @domain()
+            class Query {
+                constructor(
+                    public name: string,
+                    public email: number,
+                    @authorize.readonly()
+                    public password: boolean) { }
+            }
+            class UsersController {
+                @route.get("")
+                get(query: Query) { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
+            expect(body.components.schemas.Query).toMatchSnapshot()
+        })
+
         it("Should detect query parameter with required", async () => {
             class UsersController {
                 @route.get("")

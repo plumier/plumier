@@ -139,8 +139,8 @@ class MongooseOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMa
         super(fac ?? ((p, t, rel) => new MongooseOneToManyRepository(p, t, rel)))
     }
 
-    list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, query: T, ctx:Context) {
-        return super.list(pid, offset, limit, query, ctx)
+    list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, filter: T, ctx:Context) {
+        return super.list(pid, offset, limit, filter, ctx)
     }
 
     save(@val.mongoId() pid: PID, data: T, @bind.ctx() ctx:Context) {

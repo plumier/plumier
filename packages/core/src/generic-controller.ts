@@ -1,5 +1,14 @@
 import { Context } from "koa"
-import reflect, { decorate, decorateClass, decorateMethod, DecoratorId, DecoratorOption, DecoratorOptionId, generic, GenericTypeDecorator } from "tinspector"
+import { Key, pathToRegexp } from "path-to-regexp"
+import reflect, {
+    decorate,
+    decorateClass,
+    DecoratorId,
+    DecoratorOption,
+    DecoratorOptionId,
+    generic,
+    GenericTypeDecorator,
+} from "tinspector"
 import { val } from "typedconverter"
 
 import { AuthorizeDecorator } from "./authorization"
@@ -23,9 +32,6 @@ import {
     RelationPropertyDecorator,
     Repository,
 } from "./types"
-
-import { pathToRegexp, Key } from "path-to-regexp"
-import { symbol } from '@hapi/joi'
 
 // --------------------------------------------------------------------- //
 // ---------------------------- CONTROLLERS ---------------------------- //
@@ -75,8 +81,8 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
 
     @decorateRoute("get", "")
     @reflect.type(["T"])
-    list(offset: number = 0, limit: number = 50, @reflect.type("T") @bind.query() @val.partial("T") query: T, @bind.ctx() ctx: Context): Promise<T[]> {
-        return this.repo.find(offset, limit, query)
+    list(offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, @bind.ctx() ctx: Context): Promise<T[]> {
+        return this.repo.find(offset, limit, filter)
     }
 
     @decorateRoute("post", "")
@@ -148,9 +154,9 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 
     @decorateRoute("get", "")
     @reflect.type(["T"])
-    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @bind.query() @val.partial("T") query: T, @bind.ctx() ctx: Context): Promise<T[]> {
+    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, @bind.ctx() ctx: Context): Promise<T[]> {
         await this.findParentByIdOrNotFound(pid)
-        return this.repo.find(pid, offset, limit, query)
+        return this.repo.find(pid, offset, limit, filter)
     }
 
     @decorateRoute("post", "")

@@ -1,13 +1,14 @@
+import { x } from '@hapi/joi'
 import { BindingDecorator, Class, FormFile, RouteInfo } from "@plumier/core"
 import { ParameterObject } from "openapi3-ts"
 import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
 
-import { transformType } from "./schema"
+import { addRelationProperties, transformType } from "./schema"
 import { isBind, isDescription, isName, isPartialValidator, isRequired, TransformContext, isGenericId, isApiReadOnly } from "./shared"
 
 interface ParameterNode {
-    // bodyCandidate: assume that all non decorated parameters can be body request
-    kind: "path" | "query" | "header" | "cookie" | "bodyCandidate"
+    // undecided: assume that all non decorated parameters can be body request
+    kind: "path" | "query" | "header" | "cookie" | "undecided"
     name: string,
     required: boolean
     binding?: BindingDecorator
@@ -17,7 +18,7 @@ interface ParameterNode {
 }
 
 function describeParameter(par: ParameterReflection, route: RouteInfo) {
-    const obj = <ParameterNode>{ kind: "bodyCandidate", name: par.name, typeName: par.typeClassification!, required: false, type: par.type, meta: par }
+    const obj = <ParameterNode>{ kind: "undecided", name: par.name, typeName: par.typeClassification!, required: false, type: par.type, meta: par }
     const urlParams = route.url.split("/").filter(x => x.startsWith(":")).map(x => x.substr(1))
     if (urlParams.some(x => x === par.name)) {
         obj.kind = "path"
@@ -39,7 +40,7 @@ function describeParameters(route: RouteInfo) {
 }
 
 function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObject[] {
-    if (node.typeName === "Class") {
+    if (node.typeName === "Class" && node.binding) {
         const meta = reflect(node.type as Class)
         const isPartial = !!node.meta.decorators.find(isPartialValidator)
         const result = []
@@ -59,10 +60,12 @@ function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObj
     }
     else {
         const desc = node.meta.decorators.find(isDescription)
+        const schema = transformType(node.type, ctx, { decorators: node.meta.decorators })
+        const schemaWithRelation = addRelationProperties(schema, node.type ?? Object, ctx)
         return [<ParameterObject>{
             name: node.name, in: node.kind,
             required: node.required,
-            schema: transformType(node.type, ctx, { decorators: node.meta.decorators }),
+            schema: schemaWithRelation,
             description: desc?.desc
         }]
     }
@@ -79,23 +82,27 @@ function transformNodes(nodes: ParameterNode[], ctx: TransformContext): Paramete
 function transformParameters(route: RouteInfo, ctx: TransformContext) {
     const nodes = describeParameters(route)
     const result: ParameterObject[] = []
-    const bodyCandidates = []
+    let candidates = []
     for (const node of nodes) {
         // skip ctx, request, body, user, custom, formFile
         if (["ctx", "request", "body", "user", "custom", "formFile"].some(x => x === node.binding?.name)) continue
         // skip form file name binding
         if ((Array.isArray(node.type) && node.type[0] === FormFile) || node.type === FormFile) continue
-        if (node.kind === "bodyCandidate") {
-            bodyCandidates.push(node)
+        if (node.kind === "undecided") {
+            candidates.push(node)
         }
         else {
             result.push(...transformNode(node, ctx))
         }
     }
-    // if in POST or PUT if all candidates is primitive type then its a name binding for body, return immediately
-    if ((route.method === "post" || route.method === "put" || route.method === "patch") && bodyCandidates.every(x => x.typeName === "Primitive")) return result
-    const queries = transformNodes(bodyCandidates.filter(x => x.typeName === "Primitive" || !x.type)
-        .map(x => ({ ...x, kind: "query" })), ctx)
+    if ((route.method === "post" || route.method === "put" || route.method === "patch")) {
+        // if post/put/patch if all candidates is primitive type then its a name binding for body, return immediately
+        if (candidates.every(x => x.typeName === "Primitive"))
+            return result
+        // if post/put/patch only take the primitives (because custom class is a body)
+        candidates = candidates.filter(x => x.typeName === "Primitive")
+    }
+    const queries = transformNodes(candidates.map(x => ({ ...x, kind: "query" })), ctx)
     result.push(...queries)
     return result
 }
