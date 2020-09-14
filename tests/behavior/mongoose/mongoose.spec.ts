@@ -1,6 +1,6 @@
 import { authorize, Class, route } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import model, { collection, model as globalModel, MongooseFacility, MongooseHelper, Ref } from "@plumier/mongoose"
+import model, { collection, getModels, model as globalModel, MongooseFacility, MongooseHelper, Ref } from "@plumier/mongoose"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import Plumier, { WebApiFacility } from "plumier"
@@ -136,6 +136,45 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
+        })
+
+        it("Should automatically generate schema for ref properties", async () => {
+            const { model, getModels } = new MongooseHelper(mongoose)
+            @collection()
+            class GrandChildNest {
+                constructor(
+                    public stringProp: string,
+                    public booleanProp: boolean
+                ) { }
+            }
+            @collection()
+            class ChildNest {
+                constructor(
+                    public stringProp: string,
+                    public booleanProp: boolean,
+                    @collection.ref([GrandChildNest])
+                    public child:GrandChildNest[]
+                ) { }
+            }
+            @collection()
+            class Nest {
+                constructor(
+                    public stringProp: string,
+                    public booleanProp: boolean,
+                    @collection.ref(ChildNest)
+                    public child:ChildNest
+                ) { }
+            }
+            @collection()
+            class Dummy {
+                constructor(
+                    @collection.ref(Nest)
+                    public child: Nest
+                ) { }
+            }
+            model(Dummy)
+            const models = getModels()
+            expect(models).toMatchSnapshot()
         })
 
         it("Should work domain with inheritance", async () => {

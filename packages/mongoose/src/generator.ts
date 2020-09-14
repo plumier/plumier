@@ -81,9 +81,9 @@ export const ParentModel = model(Parent)
 */
 
 class ModelProxyHandler<T> implements ProxyHandler<mong.Model<T & mong.Document>>{
-    constructor(private type: Class, private helper:MongooseHelper) { }
+    constructor(private type: Class, private helper: MongooseHelper) { }
 
-    resolveModel():mong.Model<T & mong.Document>{
+    resolveModel(): mong.Model<T & mong.Document> {
         return this.helper.model(this.type)
     }
 
@@ -98,9 +98,10 @@ class ModelProxyHandler<T> implements ProxyHandler<mong.Model<T & mong.Document>
     }
 }
 
-// --------------------------------------------------------------------- //
-// ------------------------------ ANALYZER ----------------------------- //
-// --------------------------------------------------------------------- //
+interface ModelContext {
+    path: Class[]
+}
+
 
 class MongooseHelper {
     readonly models = new Map<Class, ModelStore>()
@@ -113,7 +114,21 @@ class MongooseHelper {
         this.connect = this.connect.bind(this)
         this.disconnect = this.disconnect.bind(this)
     }
-    model<T>(type: new (...args: any) => T): mong.Model<T & mong.Document, {}> {
+
+    private preSave(meta: ClassReflection, schema: mong.Schema) {
+        const preSaves = meta.methods.filter(m => m.decorators.some((x: PreSaveDecorator) => x.name === "MongoosePreSave"))
+        schema.pre("save", async function () {
+            for (const preSave of preSaves) {
+                const method: Function = meta.type
+                    .prototype[preSave.name]
+                    // this --> function context to the document
+                    .bind(this)
+                await method()
+            }
+        })
+    }
+
+    model<T>(type: new (...args: any) => T, ctx: ModelContext = { path: [] }): mong.Model<T & mong.Document, {}> {
         const storedModel = this.models.get(type)
         if (storedModel) {
             return this.client.model(storedModel.name)
@@ -127,15 +142,18 @@ class MongooseHelper {
             if (option.hook)
                 option.hook(schema)
             //@collection.preSave() hook
-            const preSaves = meta.methods.filter(m => m.decorators.some((x: PreSaveDecorator) => x.name === "MongoosePreSave"))
-            schema.pre("save", async function () {
-                for (const preSave of preSaves) {
-                    const method: Function = type.prototype[preSave.name].bind(this)
-                    await method()
-                }
-            })
+            this.preSave(meta, schema)
             const mongooseModel = this.client.model<T & Document>(name, schema)
             this.models.set(type, { name, collectionName: mongooseModel.collection.name, definition, option })
+            // register through all the ref properties
+            for (const prop of meta.properties) {
+                const isRef = !!prop.decorators.find((x: RefDecorator) => x.name === "MongooseRef")
+                if (!isRef) continue
+                const dataType: Class = Array.isArray(prop.type) ? prop.type[0] : prop.type
+                // if already registered then continue
+                if (this.models.get(dataType)) continue
+                this.model(dataType, { path: ctx.path.concat(type) })
+            }
             return mongooseModel
         }
     }
