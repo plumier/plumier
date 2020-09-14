@@ -29,6 +29,7 @@ import {
     MetadataImpl,
     OneToManyControllerGeneric,
     OneToManyRepository,
+    OrderQuery,
     RelationPropertyDecorator,
     Repository,
 } from "./types"
@@ -61,6 +62,22 @@ function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: st
     }, ["Class", "Method"], { allowMultiple: false, ...option })
 }
 
+function parseOrder(order?: string) {
+    const tokens = order?.split(",").map(x => x.trim()) ?? []
+    const result: OrderQuery[] = []
+    for (const token of tokens) {
+        if (token.match(/^\-.*/)) {
+            const column = token.replace(/^\-/, "")
+            result.push({ column, order: -1 })
+        }
+        else {
+            const column = token.replace(/^\+/, "")
+            result.push({ column, order: 1 })
+        }
+    }
+    return result
+}
+
 @generic.template("T", "TID")
 class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
     readonly entityType: Class<T>
@@ -73,16 +90,17 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
     }
 
     @route.ignore()
-    protected async findByIdOrNotFound(id: TID): Promise<T> {
-        const saved = await this.repo.findById(id)
+    protected async findByIdOrNotFound(id: TID, select: string[] = []): Promise<T> {
+        const saved = await this.repo.findById(id, select)
         if (!saved) throw new HttpStatusError(404, `Record with ID ${id} not found`)
         return saved
     }
 
     @decorateRoute("get", "")
     @reflect.type(["T"])
-    list(offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, @bind.ctx() ctx: Context): Promise<T[]> {
-        return this.repo.find(offset, limit, filter)
+    list(offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
+        const dSelect = select?.split(",").map(x => x.trim()) ?? []
+        return this.repo.find(offset, limit, filter, dSelect, parseOrder(order))
     }
 
     @decorateRoute("post", "")
@@ -94,8 +112,9 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
 
     @decorateRoute("get", ":id")
     @reflect.type("T")
-    get(@val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<T> {
-        return this.findByIdOrNotFound(id)
+    get(@val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
+        const dSelect = select?.split(",").map(x => x.trim()) ?? []
+        return this.findByIdOrNotFound(id, dSelect)
     }
 
     @decorateRoute("patch", ":id")
@@ -139,8 +158,8 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
     }
 
     @route.ignore()
-    protected async findByIdOrNotFound(id: TID): Promise<T> {
-        const saved = await this.repo.findById(id)
+    protected async findByIdOrNotFound(id: TID, select: string[] = []): Promise<T> {
+        const saved = await this.repo.findById(id, select)
         if (!saved) throw new HttpStatusError(404, `Record with ID ${id} not found`)
         return saved
     }
@@ -154,9 +173,10 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 
     @decorateRoute("get", "")
     @reflect.type(["T"])
-    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, @bind.ctx() ctx: Context): Promise<T[]> {
+    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
+        const dSelect = select?.split(",").map(x => x.trim()) ?? []
         await this.findParentByIdOrNotFound(pid)
-        return this.repo.find(pid, offset, limit, filter)
+        return this.repo.find(pid, offset, limit, filter, dSelect, parseOrder(order))
     }
 
     @decorateRoute("post", "")
@@ -169,9 +189,10 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 
     @decorateRoute("get", ":id")
     @reflect.type("T")
-    async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<T> {
+    async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
+        const dSelect = select?.split(",").map(x => x.trim()) ?? []
         await this.findParentByIdOrNotFound(pid)
-        return this.findByIdOrNotFound(id)
+        return this.findByIdOrNotFound(id, dSelect)
     }
 
     @decorateRoute("patch", ":id")

@@ -122,6 +122,26 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
+        it.only("Should able to select by property GET /users?offset&limit&name", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                age: number
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe", age: 21 })))
+            const { body } = await supertest(app.callback())
+                .get("/users?select=name,age")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
         it("Should serve POST /users", async () => {
             @collection()
             @route.controller()
@@ -399,7 +419,7 @@ describe("CRUD", () => {
         async function createUser<T>(type: Class<T>) {
             const userRepo = new MongooseRepository(type)
             const inserted = await userRepo.insert({ email: "john.doe@gmail.com", name: "John Doe" } as any)
-            const saved = await userRepo.findById(inserted.id)
+            const saved = await userRepo.findById(inserted.id, [])
             return saved!
         }
         it("Should serve GET /users/:parentId/animals?offset&limit", async () => {

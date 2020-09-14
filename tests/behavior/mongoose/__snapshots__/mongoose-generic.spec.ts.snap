@@ -9,6 +9,211 @@ Array [
 ]
 `;
 
+exports[`CRUD CRUD Function Should able to select by property GET /users?offset&limit&name 1`] = `
+Array [
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+]
+`;
+
 exports[`CRUD CRUD Function Should set partial validation on query GET /users?offset&limit&name 1`] = `
 Array [
   Object {
@@ -25,22 +230,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. MongooseControllerGeneric.get(id, ctx) -> GET    /users/:id",
+    "1. MongooseControllerGeneric.get     -> GET    /users/:id",
   ],
   Array [
-    "2. MongooseControllerGeneric.modify       -> PATCH  /users/:id",
+    "2. MongooseControllerGeneric.modify  -> PATCH  /users/:id",
   ],
   Array [
-    "3. MongooseControllerGeneric.replace      -> PUT    /users/:id",
+    "3. MongooseControllerGeneric.replace -> PUT    /users/:id",
   ],
   Array [
-    "4. MongooseControllerGeneric.delete       -> DELETE /users/:id",
+    "4. MongooseControllerGeneric.delete  -> DELETE /users/:id",
   ],
   Array [
-    "5. MongooseControllerGeneric.list         -> GET    /users",
+    "5. MongooseControllerGeneric.list    -> GET    /users",
   ],
   Array [
-    "6. MongooseControllerGeneric.save         -> POST   /users",
+    "6. MongooseControllerGeneric.save    -> POST   /users",
   ],
   Array [],
 ]
@@ -155,7 +360,6 @@ Array [
 
 exports[`CRUD Nested CRUD One to Many Function Should serve PATCH /users/:parentId/animals/:id 1`] = `
 Object {
-  "__v": 0,
   "_id": "MONGODB UNIQUE ID",
   "name": "Poe",
 }
@@ -184,7 +388,6 @@ Object {
 
 exports[`CRUD Nested CRUD One to Many Function Should serve PUT /users/:parentId/animals/:id 1`] = `
 Object {
-  "__v": 0,
   "_id": "MONGODB UNIQUE ID",
   "name": "Poe",
 }
@@ -192,7 +395,6 @@ Object {
 
 exports[`CRUD Nested CRUD One to Many Function Should set partial validation on PATCH /users/:parentId/animals/:id 1`] = `
 Object {
-  "__v": 0,
   "_id": "MONGODB UNIQUE ID",
   "age": 4,
   "name": "Poe",
