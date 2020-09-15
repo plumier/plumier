@@ -98,10 +98,6 @@ class ModelProxyHandler<T> implements ProxyHandler<mong.Model<T & mong.Document>
     }
 }
 
-interface ModelContext {
-    path: Class[]
-}
-
 
 class MongooseHelper {
     readonly models = new Map<Class, ModelStore>()
@@ -128,7 +124,7 @@ class MongooseHelper {
         })
     }
 
-    model<T>(type: new (...args: any) => T, ctx: ModelContext = { path: [] }): mong.Model<T & mong.Document, {}> {
+    model<T>(type: new (...args: any) => T): mong.Model<T & mong.Document, {}> {
         const storedModel = this.models.get(type)
         if (storedModel) {
             return this.client.model(storedModel.name)
@@ -152,7 +148,7 @@ class MongooseHelper {
                 const dataType: Class = Array.isArray(prop.type) ? prop.type[0] : prop.type
                 // if already registered then continue
                 if (this.models.get(dataType)) continue
-                this.model(dataType, { path: ctx.path.concat(type) })
+                this.model(dataType)
             }
             return mongooseModel
         }
