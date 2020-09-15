@@ -78,6 +78,19 @@ function parseOrder(order?: string) {
     return result
 }
 
+function normalizeSelect(type: Class, dSelect: string[]) {
+    const defaultSelection = reflect(type).properties
+        // default, exclude array (one to many) properties 
+        .filter(x => x.name && !Array.isArray(x.type))
+        .map(x => x.name)
+    return dSelect.length === 0 ? defaultSelection : dSelect
+}
+
+function parseSelect(type: Class, select: string) {
+    const dSelect = select?.split(",").map(x => x.trim()) ?? []
+    return normalizeSelect(type, dSelect)
+}
+
 @generic.template("T", "TID")
 class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
     readonly entityType: Class<T>
@@ -91,7 +104,7 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
 
     @route.ignore()
     protected async findByIdOrNotFound(id: TID, select: string[] = []): Promise<T> {
-        const saved = await this.repo.findById(id, select)
+        const saved = await this.repo.findById(id, normalizeSelect(this.entityType, select))
         if (!saved) throw new HttpStatusError(404, `Record with ID ${id} not found`)
         return saved
     }
@@ -99,8 +112,7 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
     @decorateRoute("get", "")
     @reflect.type(["T"])
     list(offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
-        const dSelect = select?.split(",").map(x => x.trim()) ?? []
-        return this.repo.find(offset, limit, filter, dSelect, parseOrder(order))
+        return this.repo.find(offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
     }
 
     @decorateRoute("post", "")
@@ -113,8 +125,7 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
     @decorateRoute("get", ":id")
     @reflect.type("T")
     get(@val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
-        const dSelect = select?.split(",").map(x => x.trim()) ?? []
-        return this.findByIdOrNotFound(id, dSelect)
+        return this.findByIdOrNotFound(id, parseSelect(this.entityType, select))
     }
 
     @decorateRoute("patch", ":id")
@@ -159,7 +170,7 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 
     @route.ignore()
     protected async findByIdOrNotFound(id: TID, select: string[] = []): Promise<T> {
-        const saved = await this.repo.findById(id, select)
+        const saved = await this.repo.findById(id, normalizeSelect(this.entityType, select))
         if (!saved) throw new HttpStatusError(404, `Record with ID ${id} not found`)
         return saved
     }
@@ -174,9 +185,8 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
     @decorateRoute("get", "")
     @reflect.type(["T"])
     async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
-        const dSelect = select?.split(",").map(x => x.trim()) ?? []
         await this.findParentByIdOrNotFound(pid)
-        return this.repo.find(pid, offset, limit, filter, dSelect, parseOrder(order))
+        return this.repo.find(pid, offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
     }
 
     @decorateRoute("post", "")
@@ -190,9 +200,8 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
     @decorateRoute("get", ":id")
     @reflect.type("T")
     async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
-        const dSelect = select?.split(",").map(x => x.trim()) ?? []
         await this.findParentByIdOrNotFound(pid)
-        return this.findByIdOrNotFound(id, dSelect)
+        return this.findByIdOrNotFound(id, parseSelect(this.entityType, select))
     }
 
     @decorateRoute("patch", ":id")
