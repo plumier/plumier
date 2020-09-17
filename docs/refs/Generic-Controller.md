@@ -72,14 +72,14 @@ class User {
 
 Above code will generate six routes handled by generic controller implementation. 
 
-| Method | Route                              | Description                                     |
-| ------ | ---------------------------------- | ----------------------------------------------- |
-| POST   | `/users`                           | Add new user                                    |
-| GET    | `/users/:id`                       | Get user by ID                                  |
-| PUT    | `/users/:id`                       | Replace user by ID (required validation used)   |
-| PATCH  | `/users/:id`                       | Modify user by ID (required validation ignored) |
-| DELETE | `/users/:id`                       | Delete user by ID                               |
-| GET    | `/users?limit&offset&filter&order` | Get list of users                               |
+| Method | Route                                     | Description                                     |
+| ------ | ----------------------------------------- | ----------------------------------------------- |
+| POST   | `/users`                                  | Add new user                                    |
+| GET    | `/users/:id?select`                       | Get user by ID                                  |
+| PUT    | `/users/:id`                              | Replace user by ID (required validation used)   |
+| PATCH  | `/users/:id`                              | Modify user by ID (required validation ignored) |
+| DELETE | `/users/:id`                              | Delete user by ID                               |
+| GET    | `/users?limit&offset&filter&select&order` | Get list of users                               |
 
 
 '''info
@@ -178,14 +178,44 @@ class Email {
 
 Above code showing that we apply `@route.controller()` on the `User.emails` relation. Using this setup will make Plumier generate a nested routes like below 
 
-| Method | Route                                          | Description                |
-| ------ | ---------------------------------------------- | -------------------------- |
-| POST   | `/users/:pid/emails`                           | Add new user's email       |
-| GET    | `/users/:pid/emails/:id`                       | Get user's email by ID     |
-| PUT    | `/users/:pid/emails/:id`                       | Replace user's email by ID |
-| PATCH  | `/users/:pid/emails/:id`                       | Modify user's email by ID  |
-| DELETE | `/users/:pid/emails/:id`                       | Delete user's email by ID  |
-| GET    | `/users/:pid/emails?limit&offset&filter&order` | Get list of user's email   |
+| Method | Route                                                 | Description                |
+| ------ | ----------------------------------------------------- | -------------------------- |
+| POST   | `/users/:pid/emails`                                  | Add new user's email       |
+| GET    | `/users/:pid/emails/:id?select`                       | Get user's email by ID     |
+| PUT    | `/users/:pid/emails/:id`                              | Replace user's email by ID |
+| PATCH  | `/users/:pid/emails/:id`                              | Modify user's email by ID  |
+| DELETE | `/users/:pid/emails/:id`                              | Delete user's email by ID  |
+| GET    | `/users/:pid/emails?limit&offset&filter&select&order` | Get list of user's email   |
+
+## Query Strings
+
+Both get by id and get list route has some extra query string to manipulate the response match your need. 
+
+| Query String | Example                                            | Default        | Description                                     |
+| ------------ | -------------------------------------------------- | -------------- | ----------------------------------------------- |
+| `select`     | `GET /users?select=name,email,dob`                 | All properties | Select properties to include in JSON response   |
+| `limit`      | `GET /users?limit=20`                              | 50             | Limit number of records returned in response    |
+| `offset`     | `GET /users?offset=3`                              | 0              | Offset of the record set returned in response   |
+| `filter`     | `GET /users?filter[name]=john&filter[active]=true` | -              | Find records by property using exact comparison |
+| `order`      | `GET /users?order=-createdAt,name`                 | -              | Order by properties, `-` for descending order   |
+
+Above query string supported by generic controller and nested generic controller. 
+
+### Get By ID 
+Get by ID for generic controller and nested generic controller supported `select` query string like below 
+
+```
+GET /users/:id?select=name,email,dob
+GET /users/:pid/pets/:id?select=name,active,dob
+```
+
+### Get List 
+Get list supported all the query string, it can be combined in single request 
+
+```
+GET /users?select=name,email,dob&filter[email]=john.doe@gmail.com&order=-createdAt,name&offset=5
+GET /users/:pid/pets/:id?select=name,dob&filter[name]=bingo&order=-createdAt,name&offset=5
+```
 
 ## Custom Path Name
 
@@ -211,14 +241,14 @@ class User {
 
 Above code showing that we specify custom path name `user-data/:uid`, it will generate routes like below
 
-| Method | Route                                  | Description                                     |
-| ------ | -------------------------------------- | ----------------------------------------------- |
-| POST   | `/user-data`                           | Add new user                                    |
-| GET    | `/user-data/:uid`                      | Get user by ID                                  |
-| PUT    | `/user-data/:uid`                      | Replace user by ID (required validation used)   |
-| PATCH  | `/user-data/:uid`                      | Modify user by ID (required validation ignored) |
-| DELETE | `/user-data/:uid`                      | Delete user by ID                               |
-| GET    | `/user-data?limit&offset&filter&order` | Get list of users                               |
+| Method | Route                                         | Description                                     |
+| ------ | --------------------------------------------- | ----------------------------------------------- |
+| POST   | `/user-data`                                  | Add new user                                    |
+| GET    | `/user-data/:uid`                             | Get user by ID                                  |
+| PUT    | `/user-data/:uid`                             | Replace user by ID (required validation used)   |
+| PATCH  | `/user-data/:uid`                             | Modify user by ID (required validation ignored) |
+| DELETE | `/user-data/:uid`                             | Delete user by ID                               |
+| GET    | `/user-data?limit&offset&filter&select&order` | Get list of users                               |
 
 For nested generic controller you need to specify ID for parent and the child 
 
@@ -236,14 +266,14 @@ class User {
 
 Above code will generate routes below 
 
-| Method | Route                                                  | Description                |
-| ------ | ------------------------------------------------------ | -------------------------- |
-| POST   | `/user-data/:uid/email-data`                           | Add new user's email       |
-| GET    | `/user-data/:uid/email-data/:eid`                      | Get user's email by ID     |
-| PUT    | `/user-data/:uid/email-data/:eid`                      | Replace user's email by ID |
-| PATCH  | `/user-data/:uid/email-data/:eid`                      | Modify user's email by ID  |
-| DELETE | `/user-data/:uid/email-data/:eid`                      | Delete user's email by ID  |
-| GET    | `/user-data/:uid/email-data?limit&offset&filter&order` | Get list of user's email   |
+| Method | Route                                                         | Description                |
+| ------ | ------------------------------------------------------------- | -------------------------- |
+| POST   | `/user-data/:uid/email-data`                                  | Add new user's email       |
+| GET    | `/user-data/:uid/email-data/:eid`                             | Get user's email by ID     |
+| PUT    | `/user-data/:uid/email-data/:eid`                             | Replace user's email by ID |
+| PATCH  | `/user-data/:uid/email-data/:eid`                             | Modify user's email by ID  |
+| DELETE | `/user-data/:uid/email-data/:eid`                             | Delete user's email by ID  |
+| GET    | `/user-data/:uid/email-data?limit&offset&filter&select&order` | Get list of user's email   |
 
 
 ## Control Access To The Entity Properties 
@@ -378,14 +408,14 @@ class User {
 
 Above code showing that we apply `@authorize.role()` decorator on the `User` entity, during route generation process it will be copied into the generic controller. Option parameter `applyTo` will tell the reflection library to apply authorize decorator into specific generic controller methods which is name: `save`, `delete`, `replace` `modify`. Using above configuration the result of the 
 
-| Action    | Method | Route                              | Access            |
-| --------- | ------ | ---------------------------------- | ----------------- |
-| `save`    | POST   | `/users`                           | SuperAdmin, Admin |
-| `get`     | GET    | `/users/:id`                       | Any user          |
-| `replace` | PUT    | `/users/:id`                       | SuperAdmin, Admin |
-| `modify`  | PATCH  | `/users/:id`                       | SuperAdmin, Admin |
-| `delete`  | DELETE | `/users/:id`                       | SuperAdmin, Admin |
-| `list`    | GET    | `/users?limit&offset&filter&order` | Any user          |
+| Action    | Method | Route                                     | Access            |
+| --------- | ------ | ----------------------------------------- | ----------------- |
+| `save`    | POST   | `/users`                                  | SuperAdmin, Admin |
+| `get`     | GET    | `/users/:id`                              | Any user          |
+| `replace` | PUT    | `/users/:id`                              | SuperAdmin, Admin |
+| `modify`  | PATCH  | `/users/:id`                              | SuperAdmin, Admin |
+| `delete`  | DELETE | `/users/:id`                              | SuperAdmin, Admin |
+| `list`    | GET    | `/users?limit&offset&filter&select&order` | Any user          |
 
 
 For nested routes (one to many relation) you can define `@authorize` decorator on the property relation like below 
@@ -405,14 +435,14 @@ class User {
 
 Using above configuration the route access now is like below 
 
-| Action    | Method | Route                                          | Access            |
-| --------- | ------ | ---------------------------------------------- | ----------------- |
-| `save`    | POST   | `/users/:pid/emails`                           | SuperAdmin, Admin |
-| `get`     | GET    | `/users/:pid/emails/:id`                       | Any user          |
-| `replace` | PUT    | `/users/:pid/emails/:id`                       | SuperAdmin, Admin |
-| `modify`  | PATCH  | `/users/:pid/emails/:id`                       | SuperAdmin, Admin |
-| `delete`  | DELETE | `/users/:pid/emails/:id`                       | SuperAdmin, Admin |
-| `list`    | GET    | `/users/:pid/emails?limit&offset&filter&order` | Any user          |
+| Action    | Method | Route                                                 | Access            |
+| --------- | ------ | ----------------------------------------------------- | ----------------- |
+| `save`    | POST   | `/users/:pid/emails`                                  | SuperAdmin, Admin |
+| `get`     | GET    | `/users/:pid/emails/:id`                              | Any user          |
+| `replace` | PUT    | `/users/:pid/emails/:id`                              | SuperAdmin, Admin |
+| `modify`  | PATCH  | `/users/:pid/emails/:id`                              | SuperAdmin, Admin |
+| `delete`  | DELETE | `/users/:pid/emails/:id`                              | SuperAdmin, Admin |
+| `list`    | GET    | `/users/:pid/emails?limit&offset&filter&select&order` | Any user          |
 
 ## Ignore Some Routes 
 
@@ -434,11 +464,11 @@ class User {
 
 Using above configuration, method that specified on the `applyTo` option will be ignored during route generation. Above code will produce 
 
-| Action | Method | Route                              |
-| ------ | ------ | ---------------------------------- |
-| `save` | POST   | `/users`                           |
-| `get`  | GET    | `/users/:id`                       |
-| `list` | GET    | `/users?limit&offset&filter&order` |
+| Action | Method | Route                                     |
+| ------ | ------ | ----------------------------------------- |
+| `save` | POST   | `/users`                                  |
+| `get`  | GET    | `/users/:id`                              |
+| `list` | GET    | `/users?limit&offset&filter&select&order` |
 
 It also can be applied on the entity relation (one to many) to ignore some nested routes like below 
 
@@ -458,11 +488,11 @@ class User {
 
 Above code showing that we applied the ignore decorator on the entity relation, it will produce
 
-| Action | Method | Route                                          |
-| ------ | ------ | ---------------------------------------------- |
-| `save` | POST   | `/users/:pid/emails`                           |
-| `get`  | GET    | `/users/:pid/emails/:id`                       |
-| `list` | GET    | `/users/:pid/emails?limit&offset&filter&order` |
+| Action | Method | Route                                                 |
+| ------ | ------ | ----------------------------------------------------- |
+| `save` | POST   | `/users/:pid/emails`                                  |
+| `get`  | GET    | `/users/:pid/emails/:id`                              |
+| `list` | GET    | `/users/:pid/emails?limit&offset&filter&select&order` |
 
 ## Use Custom Generic Controller 
 
