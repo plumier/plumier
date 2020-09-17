@@ -16,7 +16,7 @@ import {
     primaryId,
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import Plumier, { ControllerFacility, WebApiFacility } from "@plumier/plumier"
+import Plumier, { ControllerFacility, WebApiFacility } from "plumier"
 import { refFactory, SwaggerFacility } from "@plumier/swagger"
 import { IncomingMessage } from "http"
 import { Context } from "koa"

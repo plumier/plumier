@@ -1,5 +1,12 @@
-import { Class, OneToManyRepository, Repository, getGenericControllerOneToOneRelations, OrderQuery, RelationDecorator } from "@plumier/core"
-import reflect from '@plumier/tinspector'
+import {
+    Class,
+    getGenericControllerOneToOneRelations,
+    OneToManyRepository,
+    OrderQuery,
+    RelationDecorator,
+    Repository,
+} from "@plumier/core"
+import reflect from "tinspector"
 import { getManager, Repository as NativeRepository } from "typeorm"
 
 function normalizeSelect<T>(type: Class<T>, selections: string[]): { select: (keyof T)[], relations: string[] } {

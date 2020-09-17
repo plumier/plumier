@@ -1,9 +1,10 @@
-import { route, domain, bind, DefaultFacility, generateRoutes, PlumierApplication, toBoolean } from "@plumier/core"
-import Plumier, { ForceHttpsMiddleware, WebApiFacility, WebApiFacilityOption } from '@plumier/plumier'
-import supertest = require('supertest')
-import { Context } from 'koa'
-import { fixture } from '../helper'
-import reflect from '@plumier/tinspector'
+import { bind, DefaultFacility, generateRoutes, PlumierApplication, route } from "@plumier/core"
+import Plumier from "plumier"
+import { Context } from "koa"
+import supertest = require("supertest")
+import reflect from "tinspector"
+
+import { fixture } from "../helper"
 
 
 describe("Request Query", () => {

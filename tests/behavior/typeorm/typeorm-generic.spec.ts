@@ -1,5 +1,5 @@
 import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from "@plumier/core"
-import Plumier, { WebApiFacility } from "@plumier/plumier"
+import Plumier, { WebApiFacility } from "plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
     TypeORMControllerGeneric,
