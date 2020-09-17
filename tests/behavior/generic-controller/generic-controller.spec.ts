@@ -285,38 +285,6 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to set @authorize.read() from entity", async () => {
-            @route.controller()
-            @domain()
-            @authorize.read("admin")
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: [User] })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set @authorize.write() from entity", async () => {
-            @route.controller()
-            @domain()
-            @authorize.write("admin")
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: [User] })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
         it("Should throw error when using default generic controller", async () => {
             @route.controller()
             @domain()
@@ -594,51 +562,7 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to set @authorize.write() on relation", async () => {
-            class Animal {
-                @reflect.noop()
-                public name: string
-            }
-            class User {
-                @reflect.noop()
-                public name: string
-                @reflect.noop()
-                public email: string
-                @authorize.write("admin")
-                @reflect.type([Animal])
-                @relation()
-                @route.controller()
-                public animals: Animal[]
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set @authorize.read() on relation", async () => {
-            class Animal {
-                @reflect.noop()
-                public name: string
-            }
-            class User {
-                @reflect.noop()
-                public name: string
-                @reflect.noop()
-                public email: string
-                @authorize.read("admin")
-                @reflect.type([Animal])
-                @relation()
-                @route.controller()
-                public animals: Animal[]
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set @authorize.read() on relation", async () => {
+        it("Should throw error when no generic controller impl found", async () => {
             class Animal {
                 @reflect.noop()
                 public name: string
