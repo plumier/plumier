@@ -122,6 +122,56 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
+        it("Should able to select by property GET /users?offset&limit&name", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                age: number
+                @reflect.noop()
+                random:string
+            }
+            model(User)
+            const random = new Date().getTime().toString(36)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            await Promise.all(Array(10).fill(1).map(x => repo.insert({ random, email: "john.doe@gmail.com", name: "John Doe", age: 21 })))
+            const { body } = await supertest(app.callback())
+                .get(`/users?filter[random]=${random}&select=name,age`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to order by property GET /users?offset&limit&name", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                age: number
+                @reflect.noop()
+                random:string
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            const random = new Date().getTime().toString(36)
+            await repo.insert({ random, email: "john.doe@gmail.com", name: "August", age: 23 })
+            await repo.insert({ random, email: "john.doe@gmail.com", name: "Anne", age: 21 })
+            await repo.insert({ random, email: "john.doe@gmail.com", name: "Borne", age: 21 })
+            await repo.insert({ random, email: "john.doe@gmail.com", name: "John", age: 22 })
+            await repo.insert({ random, email: "john.doe@gmail.com", name: "Juliet", age: 22 })
+            const { body } = await supertest(app.callback())
+                .get(`/users?filter[random]=${random}&order=age,-name&select=name,age`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
         it("Should serve POST /users", async () => {
             @collection()
             @route.controller()
@@ -160,6 +210,46 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body.email).toBe("john.doe@gmail.com")
             expect(body.name).toBe("John Doe")
+        })
+        it("Should select by property GET /users/:id", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                age:number
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe", age: 21 })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${data.id}?select=name,age`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should ignore wrong property name on select GET /users/:id", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                age:number
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe", age: 21 })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${data.id}?select=name,age,otherProp`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
         })
         it("Should check prover mongodb id on GET /users/:id", async () => {
             @collection()
@@ -399,7 +489,7 @@ describe("CRUD", () => {
         async function createUser<T>(type: Class<T>) {
             const userRepo = new MongooseRepository(type)
             const inserted = await userRepo.insert({ email: "john.doe@gmail.com", name: "John Doe" } as any)
-            const saved = await userRepo.findById(inserted.id)
+            const saved = await userRepo.findById(inserted.id, [])
             return saved!
         }
         it("Should serve GET /users/:parentId/animals?offset&limit", async () => {
@@ -549,6 +639,71 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
+        it("Should able to select by properties GET /users/:parentId/animals?offset&limit ", async () => {
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller()
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                tag:string
+                @reflect.noop()
+                age:number
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            await Promise.all(Array(10).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi`, tag: "The tags", age: 21 })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals?select=name,age`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to order by properties GET /users/:parentId/animals?offset&limit ", async () => {
+            @collection()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller()
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                tag:string
+                @reflect.noop()
+                age:number
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            await animalRepo.insert(user._id.toHexString(), { name: `Mimi`, age: 22 })
+            await animalRepo.insert(user._id.toHexString(), { name: `Abas`, age: 21 })
+            await animalRepo.insert(user._id.toHexString(), { name: `Alba`, age: 21 })
+            await animalRepo.insert(user._id.toHexString(), { name: `Juliet`, age: 22 })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals?order=-age,name&select=name,age`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
         it("Should serve POST /users/:parentId/animals", async () => {
             @collection()
             @route.controller()
@@ -662,6 +817,72 @@ describe("CRUD", () => {
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
             const { body } = await supertest(app.callback())
                 .get(`/users/${user._id}/animals/${inserted.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to select by property GET /users/:parentId/animals/:id", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller()
+                animals: Animal[]
+            }
+            @collection()
+            @route.controller()
+            class Animal {
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                tag:string
+                @reflect.noop()
+                age:number
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi`, tag: "The tag", age: 21 })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals/${inserted.id}?select=age,tag`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to select one to many relation by property GET /users/:parentId", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller()
+                animals: Animal[]
+            }
+            @collection()
+            @route.controller()
+            class Animal {
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                tag:string
+                @reflect.noop()
+                age:number
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi`, tag: "The tag", age: 21 })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}?select=name,email,animals`)
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
@@ -1118,6 +1339,60 @@ describe("CRUD", () => {
             const app = await createApp({ controller: [Animal, User], mode: "production" })
             const { body } = await supertest(app.callback())
                 .get(`/users/${user.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should not populate if not selected on get by ID", async () => {
+            @collection()
+            @route.controller()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => Animal)
+                animal: Animal
+            }
+            const AnimalModel = model(Animal)
+            const UserModel = model(User)
+            const animal = await new AnimalModel({ name: "Mimi" }).save()
+            const user = await new UserModel({ email: "john.doe@gmail.com", name: "John", animal }).save()
+            const app = await createApp({ controller: [Animal, User], mode: "production" })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}?select=email,name`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should not populate if not selected on get many", async () => {
+            @collection()
+            @route.controller()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => Animal)
+                animal: Animal
+            }
+            const AnimalModel = model(Animal)
+            const UserModel = model(User)
+            const animal = await new AnimalModel({ name: "Mimi" }).save()
+            const user = await new UserModel({ email: "john.doe@gmail.com", name: "John", animal }).save()
+            const app = await createApp({ controller: [Animal, User], mode: "production" })
+            const { body } = await supertest(app.callback())
+                .get(`/users?select=email,name`)
                 .expect(200)
             expect(body).toMatchSnapshot()
         })

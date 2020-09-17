@@ -21,7 +21,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:userid",
+    "3. DefaultControllerGeneric.get             -> GET    /user/:userid",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> PATCH  /user/:userid",
@@ -176,6 +176,22 @@ Array [
       "$ref": "#/components/schemas/Animal",
     },
   },
+  Object {
+    "in": "query",
+    "name": "select",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "order",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
 ]
 `;
 
@@ -191,6 +207,14 @@ Array [
     "in": "path",
     "name": "id",
     "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "select",
+    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -364,6 +388,22 @@ Array [
       ],
     },
   },
+  Object {
+    "in": "query",
+    "name": "select",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "order",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
 ]
 `;
 
@@ -379,6 +419,14 @@ Array [
     "in": "path",
     "name": "id",
     "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "select",
+    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -426,6 +474,22 @@ Array [
       "$ref": "#/components/schemas/Tag",
     },
   },
+  Object {
+    "in": "query",
+    "name": "select",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "order",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
 ]
 `;
 
@@ -449,6 +513,14 @@ Array [
     "in": "path",
     "name": "id",
     "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "select",
+    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -861,7 +933,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /api/v1/user/:id",
+    "3. DefaultControllerGeneric.get             -> GET    /api/v1/user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> PATCH  /api/v1/user/:id",
@@ -911,7 +983,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> admin         GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> admin         GET    /user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
@@ -939,7 +1011,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> admin         POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> Authenticated GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> admin         PATCH  /user/:id",
@@ -967,7 +1039,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> admin         POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> Authenticated GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> admin         PATCH  /user/:id",
@@ -995,7 +1067,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> admin POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> admin GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> admin GET    /user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> admin PATCH  /user/:id",
@@ -1023,7 +1095,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> Custom POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> Custom GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> Custom GET    /user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> Custom PATCH  /user/:id",
@@ -1051,7 +1123,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> Public POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> Public GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> Public GET    /user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> Public PATCH  /user/:id",
@@ -1084,6 +1156,14 @@ Array [
         "type": User,
       },
       Object {
+        "name": "select",
+        "type": String,
+      },
+      Object {
+        "name": "order",
+        "type": String,
+      },
+      Object {
         "name": "ctx",
         "type": Object,
       },
@@ -1107,6 +1187,10 @@ Array [
     "pars": Array [
       Object {
         "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "select",
         "type": String,
       },
       Object {
@@ -1183,6 +1267,14 @@ Array [
         "type": User,
       },
       Object {
+        "name": "select",
+        "type": String,
+      },
+      Object {
+        "name": "order",
+        "type": String,
+      },
+      Object {
         "name": "ctx",
         "type": Object,
       },
@@ -1207,6 +1299,10 @@ Array [
       Object {
         "name": "id",
         "type": Number,
+      },
+      Object {
+        "name": "select",
+        "type": String,
       },
       Object {
         "name": "ctx",
@@ -1271,22 +1367,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. MyCustomControllerGeneric.list         -> GET    /api/v1/user",
+    "1. MyCustomControllerGeneric.list    -> GET    /api/v1/user",
   ],
   Array [
-    "2. MyCustomControllerGeneric.save         -> POST   /api/v1/user",
+    "2. MyCustomControllerGeneric.save    -> POST   /api/v1/user",
   ],
   Array [
-    "3. MyCustomControllerGeneric.get(id, ctx) -> GET    /api/v1/user/:id",
+    "3. MyCustomControllerGeneric.get     -> GET    /api/v1/user/:id",
   ],
   Array [
-    "4. MyCustomControllerGeneric.modify       -> PATCH  /api/v1/user/:id",
+    "4. MyCustomControllerGeneric.modify  -> PATCH  /api/v1/user/:id",
   ],
   Array [
-    "5. MyCustomControllerGeneric.replace      -> PUT    /api/v1/user/:id",
+    "5. MyCustomControllerGeneric.replace -> PUT    /api/v1/user/:id",
   ],
   Array [
-    "6. MyCustomControllerGeneric.delete       -> DELETE /api/v1/user/:id",
+    "6. MyCustomControllerGeneric.delete  -> DELETE /api/v1/user/:id",
   ],
   Array [],
 ]
@@ -1305,7 +1401,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> GET    /user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
@@ -1333,7 +1429,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> GET    /user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
@@ -1380,6 +1476,14 @@ Array [
         "type": User,
       },
       Object {
+        "name": "select",
+        "type": String,
+      },
+      Object {
+        "name": "order",
+        "type": String,
+      },
+      Object {
         "name": "ctx",
         "type": Object,
       },
@@ -1403,6 +1507,10 @@ Array [
     "pars": Array [
       Object {
         "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "select",
         "type": String,
       },
       Object {
@@ -1521,7 +1629,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v2/user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /api/v2/user/:id",
+    "3. DefaultControllerGeneric.get             -> GET    /api/v2/user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> PATCH  /api/v2/user/:id",
@@ -1540,7 +1648,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /api/v1/user/:id",
+    "3. DefaultControllerGeneric.get             -> GET    /api/v1/user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> PATCH  /api/v1/user/:id",
@@ -1624,7 +1732,7 @@ Array [
     " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/user",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id, ctx)    -> GET    /api/v1/user/:id",
+    " 3. DefaultControllerGeneric.get             -> GET    /api/v1/user/:id",
   ],
   Array [
     " 4. DefaultControllerGeneric.modify          -> PATCH  /api/v1/user/:id",
@@ -1757,6 +1865,14 @@ Array [
         "type": Animal,
       },
       Object {
+        "name": "select",
+        "type": String,
+      },
+      Object {
+        "name": "order",
+        "type": String,
+      },
+      Object {
         "name": "ctx",
         "type": Object,
       },
@@ -1789,6 +1905,10 @@ Array [
       Object {
         "name": "id",
         "type": Number,
+      },
+      Object {
+        "name": "select",
+        "type": String,
       },
       Object {
         "name": "ctx",
@@ -1927,7 +2047,7 @@ Array [
     " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id",
+    " 3. DefaultControllerGeneric.get             -> GET    /user/:id",
   ],
   Array [
     " 4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
@@ -1973,7 +2093,7 @@ Array [
     " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id",
+    " 3. DefaultControllerGeneric.get             -> GET    /user/:id",
   ],
   Array [
     " 4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
@@ -2038,6 +2158,14 @@ Array [
         "type": Animal,
       },
       Object {
+        "name": "select",
+        "type": String,
+      },
+      Object {
+        "name": "order",
+        "type": String,
+      },
+      Object {
         "name": "ctx",
         "type": Object,
       },
@@ -2069,6 +2197,10 @@ Array [
       },
       Object {
         "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "select",
         "type": String,
       },
       Object {
@@ -2152,7 +2284,7 @@ Array [
     " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /animal",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id, ctx)    -> GET    /animal/:id",
+    " 3. DefaultControllerGeneric.get             -> GET    /animal/:id",
   ],
   Array [
     " 4. DefaultControllerGeneric.modify          -> PATCH  /animal/:id",
@@ -2170,7 +2302,7 @@ Array [
     " 8. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    " 9. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id",
+    " 9. DefaultControllerGeneric.get             -> GET    /user/:id",
   ],
   Array [
     "10. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
@@ -2216,7 +2348,7 @@ Array [
     " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /animal",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id, ctx)    -> GET    /animal/:id",
+    " 3. DefaultControllerGeneric.get             -> GET    /animal/:id",
   ],
   Array [
     " 4. DefaultControllerGeneric.modify          -> PATCH  /animal/:id",
@@ -2234,7 +2366,7 @@ Array [
     " 8. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    " 9. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id",
+    " 9. DefaultControllerGeneric.get             -> GET    /user/:id",
   ],
   Array [
     "10. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
@@ -2280,7 +2412,7 @@ Array [
     " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/animal",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id, ctx)    -> GET    /api/v1/animal/:id",
+    " 3. DefaultControllerGeneric.get             -> GET    /api/v1/animal/:id",
   ],
   Array [
     " 4. DefaultControllerGeneric.modify          -> PATCH  /api/v1/animal/:id",
@@ -2298,7 +2430,7 @@ Array [
     " 8. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/user",
   ],
   Array [
-    " 9. DefaultControllerGeneric.get(id, ctx)    -> GET    /api/v1/user/:id",
+    " 9. DefaultControllerGeneric.get             -> GET    /api/v1/user/:id",
   ],
   Array [
     "10. DefaultControllerGeneric.modify          -> PATCH  /api/v1/user/:id",
