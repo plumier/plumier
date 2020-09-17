@@ -1,6 +1,14 @@
-import { Class, getGenericControllerOneToOneRelations, OneToManyRepository, OrderQuery, relation, RelationDecorator, Repository } from "@plumier/core"
-import reflect from '@plumier/tinspector'
+import {
+    Class,
+    getGenericControllerOneToOneRelations,
+    OneToManyRepository,
+    OrderQuery,
+    relation,
+    RelationDecorator,
+    Repository,
+} from "@plumier/core"
 import mongoose, { Document, Model } from "mongoose"
+import reflect from "tinspector"
 
 import { globalHelper, MongooseHelper } from "./generator"
 

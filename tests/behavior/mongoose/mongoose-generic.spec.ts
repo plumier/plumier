@@ -9,7 +9,7 @@ import model, {
     MongooseOneToManyRepository,
     MongooseRepository,
 } from "@plumier/mongoose"
-import Plumier, { WebApiFacility } from "@plumier/plumier"
+import Plumier, { WebApiFacility } from "plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"

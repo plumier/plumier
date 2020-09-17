@@ -25,7 +25,7 @@ import {
     OneToManyRepository,
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "@plumier/plumier"
+import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import { Context } from "koa"
 import { join } from "path"

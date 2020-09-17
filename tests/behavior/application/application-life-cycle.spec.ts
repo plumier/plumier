@@ -1,12 +1,18 @@
-import { middleware, route, bind, MiddlewareFunction, CustomValidatorFunction, AuthorizerFunction, authorize, val } from "@plumier/core"
-import { Context } from 'koa'
-import Plumier, { WebApiFacility } from '@plumier/plumier'
-import supertest = require('supertest')
-import { sign } from 'jsonwebtoken'
-import { JwtAuthFacility } from '@plumier/jwt'
-
-
-
+import {
+    authorize,
+    AuthorizerFunction,
+    bind,
+    CustomValidatorFunction,
+    middleware,
+    MiddlewareFunction,
+    route,
+    val,
+} from "@plumier/core"
+import { JwtAuthFacility } from "@plumier/jwt"
+import { sign } from "jsonwebtoken"
+import { Context } from "koa"
+import Plumier, { WebApiFacility } from "plumier"
+import supertest = require("supertest")
 
 describe("Application life cycle", () => {
     it("Should provide correct application life cycle", async () => {
