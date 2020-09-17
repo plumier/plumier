@@ -313,33 +313,7 @@ function copyDecorators(decorators: any[], controller: Class) {
         // copy @authorize
         const authDec = (decorator as AuthorizeDecorator)
         if (authDec.type === "plumier-meta:authorize") {
-            // @authorize.role() should applied to all actions 
-            if (authDec.access === "all") {
-                result.push(decorator)
-                continue
-            }
-            const meta = reflect(controller)
-            const findAction = (...methods: HttpMethod[]) => {
-                const result = []
-                for (const action of meta.methods) {
-                    if (action.decorators.some((x: RouteDecorator) => x.name === "plumier-meta:route"
-                        && methods.some(m => m === x.method)))
-                        result.push(action.name)
-                }
-                return result
-            }
-            const option: DecoratorOption = (authDec as any)[DecoratorOptionId]
-            // add extra action filter for decorator @authorize.read() and @authorize.write() 
-            // get will only applied to actions with GET method 
-            // set will only applied to actions with mutation DELETE, PATCH, POST, PUT
-            if (authDec.access === "read") {
-                option.applyTo = findAction("get")
-                result.push(decorator)
-            }
-            if (authDec.access === "write") {
-                option.applyTo = findAction("delete", "patch", "post", "put")
-                result.push(decorator)
-            }
+            result.push(decorator)
         }
     }
     //reflect(ctl, { flushCache: true })
