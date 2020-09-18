@@ -494,6 +494,81 @@ Above code showing that we applied the ignore decorator on the entity relation, 
 | `get`  | GET    | `/users/:pid/emails/:id`                              |
 | `list` | GET    | `/users/:pid/emails?limit&offset&filter&select&order` |
 
+## Request Hook
+
+Request hook enables entity to have a method contains piece of code that will be executed during request. Request hook has some simple rule
+* It executed before the entity saved into the database
+* It will be executed only on request with http method `POST`, `PUT`, `PATCH`. By default it will execute on those three http methods except specified on the parameter.
+* It can be specified multiple request hook on single entity
+* It can have parameter with parameter binding
+
+```typescript
+import { Entity, PrimaryGeneratedColumn } from "typeorm"
+import { route, requestHook } from "plumier"
+import bcrypt from "bcrypt"
+
+@route.controller()
+@Entity()
+class User {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @Column()
+    email: string
+
+    @Column()
+    name: string
+
+    @Column()
+    password: string
+
+    @requestHook()
+    async hashPassword(){
+        this.password = await bcrypt.hash(data.password, 10)
+    }
+}
+``` 
+
+Above code will hash password before the entity saved into the database. Request hook has parameter binding feature, you can `@bind` any request part into the hook parameter, it works exactly like common [Parameter Binding](Parameter-Binding.md) which also support name binding, model binding and decorator binding.
+
+```typescript
+import { Entity, PrimaryGeneratedColumn } from "typeorm"
+import { route, requestHook } from "plumier"
+import bcrypt from "bcrypt"
+
+@route.controller()
+@Entity()
+class User {
+    
+    /** other properties **/
+
+    @requestHook()
+    async hook(@bind.ctx() ctx:Context){
+        // ctx will contains context
+    }
+}
+``` 
+
+Its possible to specify in which http method should the hook executed by specify http method on the request hook parameter
+
+```typescript
+import { Entity, PrimaryGeneratedColumn } from "typeorm"
+import { route, requestHook } from "plumier"
+import bcrypt from "bcrypt"
+
+@route.controller()
+@Entity()
+class User {
+    
+    /** other properties **/
+
+    @requestHook("put", "patch")
+    async hook(){
+        // this only executed on PUT and PATCH http method
+    }
+}
+``` 
+
 ## Use Custom Generic Controller 
 
 When the default generic controller doesn't match your need, you can provide your own custom generic controllers. For example the default generic controller for `DELETE` method is delete the records permanently. You can override this function by provide a new generic controller inherited from your ORM/ODM helper: 

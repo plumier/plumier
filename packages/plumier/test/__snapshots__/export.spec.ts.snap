@@ -172,6 +172,7 @@ Object {
   "middleware": Object {
     "use": use,
   },
+  "requestHook": requestHook,
   "response": Object {
     "json": json,
     "redirect": redirect,

@@ -1,4 +1,4 @@
-import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog } from "@plumier/core"
+import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog, requestHook } from "@plumier/core"
 import model, {
     collection,
     models,
@@ -483,6 +483,31 @@ describe("CRUD", () => {
                 .post("/users")
                 .send({ email: "john.doe@gmail.com", name: "John Doe" })
                 .expect(200)
+        })
+        it("Should able to use request hook", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                password:string
+
+                @requestHook()
+                hook(){
+                    this.password = "HASH"
+                }
+            }
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            const { body } = await supertest(app.callback())
+                .post("/users")
+                .send({email: "john.doe@gmail.com", name: "John Doe", password: "lorem ipsum"})
+                .expect(200)
+            const result = await repo.findById(body.id)
+            expect(result).toMatchSnapshot()
         })
     })
     describe("Nested CRUD One to Many Function", () => {
