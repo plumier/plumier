@@ -1,38 +1,39 @@
 import {
     ActionResult,
+    api,
     authorize,
+    bind,
     cleanupConsole,
     Configuration,
     consoleLog,
     DefaultControllerGeneric,
     DefaultFacility,
-    DefaultOneToManyRepository,
     DefaultOneToManyControllerGeneric,
+    DefaultOneToManyRepository,
+    DefaultRepository,
     IdentifierResult,
     Invocation,
     Middleware,
+    OneToManyRepository,
     PlumierApplication,
     primaryId,
     relation,
     RepoBaseControllerGeneric,
     RepoBaseOneToManyControllerGeneric,
+    Repository,
+    response,
     route,
     RouteMetadata,
-    response,
-    DefaultRepository,
-    Repository,
-    bind,
-    OneToManyRepository,
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import { Context } from "koa"
 import { join } from "path"
+import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "plumier"
 import supertest from "supertest"
-import reflect, { generic, type, noop } from "tinspector"
-import { expectError } from '../helper'
-import { MyControllerGeneric } from './mocks'
+import reflect, { generic, noop, type } from "tinspector"
+
+import { expectError } from "../helper"
 
 function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
     return new Plumier()
@@ -1387,6 +1388,21 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{id}"].put.parameters).toMatchSnapshot()
             expect(body.paths["/animal/{id}"].put.tags).toMatchSnapshot()
         })
+        it("Should able to add @api.tag() from entity", async () => {
+            @route.controller()
+            @api.tag("Animals")
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animal"].get.tags).toMatchSnapshot()
+        })
     })
 
     describe("Generic One To Many Controller", () => {
@@ -1688,6 +1704,28 @@ describe("Open Api", () => {
                 .expect(200)
             expect(body.paths["/animal/{pid}/tags/{id}"].put.parameters).toMatchSnapshot()
             expect(body.paths["/animal/{pid}/tags/{id}"].put.tags).toMatchSnapshot()
+        })
+        it("Should able to add @api.tags() from property", async () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+                @reflect.type(x => [Tag])
+                @relation()
+                @route.controller()
+                @api.tag("Tags")
+                tags: Tag[]
+            }
+            class Tag {
+                @reflect.noop()
+                tag: string
+            }
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animal/{pid}/tags"].get.tags).toMatchSnapshot()
         })
     })
 })

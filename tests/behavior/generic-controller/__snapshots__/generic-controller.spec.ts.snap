@@ -131,6 +131,12 @@ Array [
 ]
 `;
 
+exports[`Open Api Generic Controller Should able to add @api.tag() from entity 1`] = `
+Array [
+  "Animals",
+]
+`;
+
 exports[`Open Api Generic Controller Should generate DELETE /animal/:id properly 1`] = `
 Array [
   Object {
@@ -299,6 +305,12 @@ Object {
   },
   "type": "object",
 }
+`;
+
+exports[`Open Api Generic One To Many Controller Should able to add @api.tags() from property 1`] = `
+Array [
+  "Tags",
+]
 `;
 
 exports[`Open Api Generic One To Many Controller Should generate DELETE /animals/:id properly 1`] = `
