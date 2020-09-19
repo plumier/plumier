@@ -1,4 +1,4 @@
-import { api, DefaultFacility, GenericControllerDecorator, PlumierApplication, RelationDecorator } from "@plumier/core"
+import { api, DefaultFacility, GenericControllerDecorator, PlumierApplication, RelationDecorator, RequestHookMiddleware } from "@plumier/core"
 import Mongoose from "mongoose"
 import reflect from "tinspector"
 import { Result, ResultMessages, VisitorInvocation } from "typedconverter"
@@ -47,6 +47,7 @@ export class MongooseFacility extends DefaultFacility {
             genericController: [MongooseControllerGeneric, MongooseOneToManyControllerGeneric],
             genericControllerNameConversion: (x: string) => pluralize(x)
         })
+        app.use(new RequestHookMiddleware(), "Action")
     }
 
     async initialize(app: Readonly<PlumierApplication>) {

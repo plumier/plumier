@@ -6,14 +6,14 @@ import {
     entityHelper,
     findFilesRecursive,
     genericControllerRegistry,
+    globAsync,
     PlumierApplication,
     primaryId,
     relation,
     RelationDecorator,
-    globAsync,
+    RequestHookMiddleware,
 } from "@plumier/core"
 import { lstat } from "fs"
-import glob from "glob"
 import pluralize from "pluralize"
 import reflect, { noop } from "tinspector"
 import { Result, ResultMessages, VisitorInvocation } from "typedconverter"
@@ -133,6 +133,7 @@ class TypeORMFacility extends DefaultFacility {
             genericController: [TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric],
             genericControllerNameConversion: (x: string) => pluralize(x)
         })
+        app.use(new RequestHookMiddleware(), "Action")
     }
 
     async initialize(app: Readonly<PlumierApplication>) {

@@ -1,4 +1,4 @@
-import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from "@plumier/core"
+import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, requestHook } from "@plumier/core"
 import Plumier, { WebApiFacility } from "plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
@@ -417,6 +417,33 @@ describe("CRUD", () => {
                 .post("/users")
                 .send({ email: "john.doe@gmail.com", name: "John Doe" })
                 .expect(200)
+        })
+        it("Should able to use request hook", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @Column()
+                password:string
+
+                @requestHook()
+                hook(){
+                    this.password = "HASH"
+                }
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            const { body } = await supertest(app.callback())
+                .post("/users")
+                .send({email: "john.doe@gmail.com", name: "John Doe", password: "lorem ipsum"})
+                .expect(200)
+            const result = await repo.findOne(body.id)
+            expect(result).toMatchSnapshot()
         })
     })
     describe("Nested CRUD One to Many Function", () => {

@@ -174,7 +174,7 @@ export interface MiddlewareDecorator { name: "Middleware", value: (string | symb
 
 export interface Invocation<T = Context> {
     ctx: Readonly<T>
-    metadata?: GlobalMetadata
+    metadata?: T extends ActionContext ? Metadata : GlobalMetadata
     proceed(): Promise<ActionResult>
 }
 

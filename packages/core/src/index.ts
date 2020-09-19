@@ -16,11 +16,13 @@ export { bind } from "./decorator/bind";
 export { domain, middleware } from "./decorator/common";
 export { route, RouteDecoratorImpl, GenericControllerDecorator } from "./decorator/route";
 export { EntityIdDecorator, RelationDecorator, primaryId, relation } from "./decorator/entity";
+export { requestHook, RequestHookDecorator } from "./decorator/request-hook";
 export {
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
     IdentifierResult, getGenericControllerOneToOneRelations, genericControllerRegistry, DefaultOneToManyRepository, DefaultRepository
 } from "./generic-controller"
 export { HttpStatus } from "./http-status";
+export { RequestHookMiddleware } from "./request-hook"
 export { validate, ValidatorMiddleware, CustomValidator, ValidatorDecorator, CustomValidatorFunction, AsyncValidatorResult, ValidatorContext, } from "./validator"
 export {
     ActionResult, Application, Configuration, DefaultFacility,

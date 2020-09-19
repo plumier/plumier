@@ -1,6 +1,6 @@
 import { IncomingHttpHeaders } from "http"
 import { Context, Request } from "koa"
-import { ParameterReflection } from "tinspector"
+import { MethodReflection, ParameterReflection } from "tinspector"
 
 import { isCustomClass } from "./common"
 import { RouteDecorator } from './route-generator'
@@ -67,13 +67,13 @@ function chain(...binder: Binder[]) {
 
 const binderChain = chain(bindDecorator, bindByName, bindBody)
 
-function binder(ctx: ActionContext) {
-    return Promise.all(ctx.route.action.parameters.map(x => binderChain(ctx, x)))
+function binder(methodReflection: MethodReflection, ctx: ActionContext) {
+    return Promise.all(methodReflection.parameters.map(x => binderChain(ctx, x)))
 }
 
 class ParameterBinderMiddleware implements Middleware {
     async execute(invocation: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
-        (invocation.ctx as any).parameters = await binder(invocation.ctx)
+        (invocation.ctx as any).parameters = await binder(invocation.ctx.route.action, invocation.ctx)
         return invocation.proceed()
     }
 }

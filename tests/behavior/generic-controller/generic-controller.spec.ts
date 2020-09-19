@@ -21,6 +21,8 @@ import {
     RepoBaseControllerGeneric,
     RepoBaseOneToManyControllerGeneric,
     Repository,
+    requestHook,
+    RequestHookMiddleware,
     response,
     route,
     RouteMetadata,
@@ -59,6 +61,57 @@ class ErrorHandlerMiddleware implements Middleware {
                 .json({ error: e.message })
                 .setStatus(500)
         }
+    }
+}
+
+class MockRepo<T> implements Repository<T>{
+    constructor(private fn: jest.Mock) { }
+    async find(offset: number, limit: number, query: Partial<T>): Promise<T[]> {
+        this.fn(offset, limit, query)
+        return []
+    }
+    async insert(data: Partial<T>): Promise<{ id: any }> {
+        this.fn(data)
+        return { id: 123 }
+    }
+    async findById(id: any): Promise<T | undefined> {
+        this.fn(id)
+        return {} as any
+    }
+    async update(id: any, data: Partial<T>): Promise<{ id: any }> {
+        this.fn(id, data)
+        return { id }
+    }
+    async delete(id: any): Promise<{ id: any }> {
+        this.fn(id)
+        return { id }
+    }
+}
+
+class MockOneToManyRepo<P, T> implements OneToManyRepository<P, T>{
+    constructor(private fn: jest.Mock) { }
+    async find(pid: any, offset: number, limit: number, query: Partial<T>): Promise<T[]> {
+        this.fn(pid, offset, limit, query)
+        return []
+    }
+    async findParentById(id: any): Promise<P | undefined> {
+        return {} as any
+    }
+    async insert(pid: any, data: Partial<T>): Promise<{ id: any }> {
+        this.fn(data)
+        return { id: 123 }
+    }
+    async findById(id: any): Promise<T | undefined> {
+        this.fn(id)
+        return {} as any
+    }
+    async update(id: any, data: Partial<T>): Promise<{ id: any }> {
+        this.fn(id, data)
+        return { id }
+    }
+    async delete(id: any): Promise<{ id: any }> {
+        this.fn(id)
+        return { id }
     }
 }
 
@@ -731,7 +784,7 @@ describe("Custom Route Path", () => {
                 .expect(200)
             expect(fn.mock.calls).toMatchSnapshot()
         })
-        it("Should throw error when provided no parameter", async () => { 
+        it("Should throw error when provided no parameter", async () => {
             @route.controller("user")
             @domain()
             class User {
@@ -743,7 +796,7 @@ describe("Custom Route Path", () => {
             const fn = await expectError(createApp({ controller: User }).initialize())
             expect(fn.mock.calls).toMatchSnapshot()
         })
-        it("Should throw error when provided more than one parameter", async () => { 
+        it("Should throw error when provided more than one parameter", async () => {
             @route.controller("user/:userId/data/:dataId")
             @domain()
             class User {
@@ -755,7 +808,7 @@ describe("Custom Route Path", () => {
             const fn = await expectError(createApp({ controller: User }).initialize())
             expect(fn.mock.calls).toMatchSnapshot()
         })
-        it("Should throw error when no parameter at the end", async () => { 
+        it("Should throw error when no parameter at the end", async () => {
             @route.controller("user/:userId/data")
             @domain()
             class User {
@@ -795,7 +848,7 @@ describe("Custom Route Path", () => {
             @generic.template("P", "T", "PID", "TID")
             @generic.type("P", "T", "PID", "TID")
             class MyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{
-                constructor() { super(fac => ({} as any))} 
+                constructor() { super(fac => ({} as any)) }
                 get() {
                     return {} as any
                 }
@@ -831,7 +884,7 @@ describe("Custom Route Path", () => {
                 .expect(200)
             expect(fn.mock.calls).toMatchSnapshot()
         })
-        it("Should throw error when provided no parameter", async () => { 
+        it("Should throw error when provided no parameter", async () => {
             @domain()
             class Animal {
                 constructor(
@@ -872,8 +925,8 @@ describe("Custom Route Path", () => {
             }
             const fn = await expectError(createApp({ controller: User }).initialize())
             expect(fn.mock.calls).toMatchSnapshot()
-         })
-        it("Should throw error when provided more than two parameters", async () => { 
+        })
+        it("Should throw error when provided more than two parameters", async () => {
             @domain()
             class Animal {
                 constructor(
@@ -894,7 +947,7 @@ describe("Custom Route Path", () => {
             const fn = await expectError(createApp({ controller: User }).initialize())
             expect(fn.mock.calls).toMatchSnapshot()
         })
-        it("Should throw error when no parameter at the end", async () => { 
+        it("Should throw error when no parameter at the end", async () => {
             @domain()
             class Animal {
                 constructor(
@@ -922,32 +975,10 @@ describe("Property Binding", () => {
     const delayLorem = () => new Promise<string>(resolve => setTimeout(x => resolve("lorem ipsum"), 50))
     describe("Generic Controller", () => {
         const fn = jest.fn()
-        class MockRepo<T> implements Repository<T>{
-            async find(offset: number, limit: number, query: Partial<T>): Promise<T[]> {
-                fn(offset, limit, query)
-                return []
-            }
-            async insert(data: Partial<T>): Promise<{ id: any }> {
-                fn(data)
-                return { id: 123 }
-            }
-            async findById(id: any): Promise<T | undefined> {
-                fn(id)
-                return {} as any
-            }
-            async update(id: any, data: Partial<T>): Promise<{ id: any }> {
-                fn(id, data)
-                return { id }
-            }
-            async delete(id: any): Promise<{ id: any }> {
-                fn(id)
-                return { id }
-            }
-        }
         @generic.template("T", "TID")
         @generic.type("T", "TID")
         class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
-            constructor() { super(fac => new MockRepo<T>()) }
+            constructor() { super(fac => new MockRepo<T>(fn)) }
         }
         function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
             return new Plumier()
@@ -1088,35 +1119,10 @@ describe("Property Binding", () => {
     })
     describe("One To Many Controller", () => {
         const fn = jest.fn()
-        class MockRepo<P, T> implements OneToManyRepository<P, T>{
-            async find(pid: any, offset: number, limit: number, query: Partial<T>): Promise<T[]> {
-                fn(pid, offset, limit, query)
-                return []
-            }
-            async findParentById(id: any): Promise<P | undefined> {
-                return {} as any
-            }
-            async insert(pid: any, data: Partial<T>): Promise<{ id: any }> {
-                fn(data)
-                return { id: 123 }
-            }
-            async findById(id: any): Promise<T | undefined> {
-                fn(id)
-                return {} as any
-            }
-            async update(id: any, data: Partial<T>): Promise<{ id: any }> {
-                fn(id, data)
-                return { id }
-            }
-            async delete(id: any): Promise<{ id: any }> {
-                fn(id)
-                return { id }
-            }
-        }
         @generic.template("P", "T", "PID", "TID")
         @generic.type("P", "T", "PID", "TID")
         class MyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{
-            constructor() { super(fac => new MockRepo<P, T>()) }
+            constructor() { super(fac => new MockOneToManyRepo<P, T>(fn)) }
         }
         function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
             return new Plumier()
@@ -1727,5 +1733,221 @@ describe("Open Api", () => {
                 .expect(200)
             expect(body.paths["/animal/{pid}/tags"].get.tags).toMatchSnapshot()
         })
+    })
+})
+
+describe("Request Hook", () => {
+    const fn = jest.fn()
+    @generic.template("T", "TID")
+    @generic.type("T", "TID")
+    class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
+        constructor() { super(fac => new MockRepo<T>(fn)) }
+    }
+    @generic.template("P", "T", "PID", "TID")
+    @generic.type("P", "T", "PID", "TID")
+    class MyOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{
+        constructor() { super(fac => new MockOneToManyRepo<P, T>(fn)) }
+    }
+    function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
+        return new Plumier()
+            .set({ mode: "production", ...config })
+            .set(new WebApiFacility())
+            .set(new ControllerFacility(opt))
+            .use(new RequestHookMiddleware(), "Action")
+            .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
+    }
+    beforeEach(() => fn.mockClear())
+
+    it("Should able to hook request in generic controller", async () => {
+        @route.controller()
+        @domain()
+        class User {
+            constructor(
+                public name: string,
+                public email: string,
+                public password: string
+            ) { }
+
+            @requestHook()
+            hook() {
+                this.password = "HASH"
+            }
+        }
+        const app = await createApp({ controller: User }).initialize()
+        await supertest(app.callback())
+            .post("/user")
+            .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
+            .expect(200)
+        expect(fn.mock.calls).toMatchSnapshot()
+    })
+    it("Should able to hook request in one to many generic controller", async () => {
+        @domain()
+        class Parent {
+            constructor(
+                @route.controller()
+                @type(x => [User])
+                public users: User[]
+            ) { }
+        }
+        @domain()
+        class User {
+            constructor(
+                public name: string,
+                public email: string,
+                public password: string,
+            ) { }
+
+            @requestHook()
+            hook() {
+                this.password = "HASH"
+            }
+        }
+        const app = await createApp({ controller: [Parent] }).initialize()
+        await supertest(app.callback())
+            .post("/parent/123/users")
+            .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
+            .expect(200)
+        expect(fn.mock.calls).toMatchSnapshot()
+    })
+    it("Should able to hook request in specific http method", async () => {
+        @route.controller()
+        @domain()
+        class User {
+            constructor(
+                public name: string,
+                public email: string,
+                public password: string
+            ) { }
+
+            @requestHook("patch")
+            hook() {
+                this.password = "HASH"
+            }
+        }
+        const app = await createApp({ controller: User }).initialize()
+        await supertest(app.callback())
+            .patch("/user/123")
+            .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
+            .expect(200)
+        await supertest(app.callback())
+            .post("/user")
+            .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
+            .expect(200)
+        expect(fn.mock.calls).toMatchSnapshot()
+    })
+    it("Should able to hook request in multiple http methods", async () => {
+        @route.controller()
+        @domain()
+        class User {
+            constructor(
+                public name: string,
+                public email: string,
+                public password: string
+            ) { }
+
+            @requestHook("patch", "post")
+            hook() {
+                this.password = "HASH"
+            }
+        }
+        const app = await createApp({ controller: User }).initialize()
+        await supertest(app.callback())
+            .patch("/user/123")
+            .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
+            .expect(200)
+        await supertest(app.callback())
+            .post("/user")
+            .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
+            .expect(200)
+        await supertest(app.callback())
+            .put("/user/123")
+            .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
+            .expect(200)
+        expect(fn.mock.calls).toMatchSnapshot()
+    })
+    it("Should able to use multiple hook request", async () => {
+        @route.controller()
+        @domain()
+        class User {
+            constructor(
+                public name: string,
+                public email: string,
+                public password: string
+            ) { }
+
+            @requestHook()
+            hook() {
+                this.password = "HASH"
+            }
+
+            @requestHook()
+            otherHook() {
+                this.email = "hacked@gmail.com"
+            }
+        }
+        const app = await createApp({ controller: User }).initialize()
+        await supertest(app.callback())
+            .post("/user")
+            .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
+            .expect(200)
+        expect(fn.mock.calls).toMatchSnapshot()
+    })
+    it("Should able to bind query by name", async () => {
+        @domain()
+        class Parent {
+            constructor(
+                @route.controller()
+                @type(x => [User])
+                public users: User[]
+            ) { }
+        }
+        @domain()
+        class User {
+            constructor(
+                public name: string,
+                public email: string,
+                public password: string,
+            ) { }
+
+            @requestHook()
+            hook(pid:string) {
+                this.password = pid
+            }
+        }
+        const app = await createApp({ controller: [Parent] }).initialize()
+        await supertest(app.callback())
+            .post("/parent/123/users")
+            .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
+            .expect(200)
+        expect(fn.mock.calls).toMatchSnapshot()
+    })
+    it("Should able to bind by decorator", async () => {
+        @domain()
+        class Parent {
+            constructor(
+                @route.controller()
+                @type(x => [User])
+                public users: User[]
+            ) { }
+        }
+        @domain()
+        class User {
+            constructor(
+                public name: string,
+                public email: string,
+                public password: string,
+            ) { }
+
+            @requestHook()
+            hook(@bind.ctx() ctx:Context) {
+                fn(ctx.request.header["content-type"])
+            }
+        }
+        const app = await createApp({ controller: [Parent] }).initialize()
+        await supertest(app.callback())
+            .post("/parent/123/users")
+            .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
+            .expect(200)
+        expect(fn.mock.calls).toMatchSnapshot()
     })
 })

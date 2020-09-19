@@ -932,6 +932,126 @@ Array [
 ]
 `;
 
+exports[`Request Hook Should able to bind by decorator 1`] = `
+Array [
+  Array [
+    "application/json",
+  ],
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "lorem ipsum",
+    },
+  ],
+]
+`;
+
+exports[`Request Hook Should able to bind query by name 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "123",
+    },
+  ],
+]
+`;
+
+exports[`Request Hook Should able to hook request in generic controller 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "HASH",
+    },
+  ],
+]
+`;
+
+exports[`Request Hook Should able to hook request in multiple http methods 1`] = `
+Array [
+  Array [
+    "123",
+  ],
+  Array [
+    "123",
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "HASH",
+    },
+  ],
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "HASH",
+    },
+  ],
+  Array [
+    "123",
+  ],
+  Array [
+    "123",
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "lorem ipsum",
+    },
+  ],
+]
+`;
+
+exports[`Request Hook Should able to hook request in one to many generic controller 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "HASH",
+    },
+  ],
+]
+`;
+
+exports[`Request Hook Should able to hook request in specific http method 1`] = `
+Array [
+  Array [
+    "123",
+  ],
+  Array [
+    "123",
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "HASH",
+    },
+  ],
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "lorem ipsum",
+    },
+  ],
+]
+`;
+
+exports[`Request Hook Should able to use multiple hook request 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "hacked@gmail.com",
+      "name": "John Doe",
+      "password": "HASH",
+    },
+  ],
+]
+`;
+
 exports[`Route Generator Generic Controller Should able to change root path 1`] = `
 Array [
   Array [],
