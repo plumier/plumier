@@ -1,5 +1,6 @@
 import {
     ActionResult,
+    api,
     authorize,
     bind,
     cleanupConsole,
@@ -338,38 +339,6 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to set @authorize.read() from entity", async () => {
-            @route.controller()
-            @domain()
-            @authorize.read("admin")
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: [User] })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set @authorize.write() from entity", async () => {
-            @route.controller()
-            @domain()
-            @authorize.write("admin")
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: [User] })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
         it("Should throw error when using default generic controller", async () => {
             @route.controller()
             @domain()
@@ -647,51 +616,7 @@ describe("Route Generator", () => {
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to set @authorize.write() on relation", async () => {
-            class Animal {
-                @reflect.noop()
-                public name: string
-            }
-            class User {
-                @reflect.noop()
-                public name: string
-                @reflect.noop()
-                public email: string
-                @authorize.write("admin")
-                @reflect.type([Animal])
-                @relation()
-                @route.controller()
-                public animals: Animal[]
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set @authorize.read() on relation", async () => {
-            class Animal {
-                @reflect.noop()
-                public name: string
-            }
-            class User {
-                @reflect.noop()
-                public name: string
-                @reflect.noop()
-                public email: string
-                @authorize.read("admin")
-                @reflect.type([Animal])
-                @relation()
-                @route.controller()
-                public animals: Animal[]
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set @authorize.read() on relation", async () => {
+        it("Should throw error when no generic controller impl found", async () => {
             class Animal {
                 @reflect.noop()
                 public name: string
@@ -1469,6 +1394,21 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{id}"].put.parameters).toMatchSnapshot()
             expect(body.paths["/animal/{id}"].put.tags).toMatchSnapshot()
         })
+        it("Should able to add @api.tag() from entity", async () => {
+            @route.controller()
+            @api.tag("Animals")
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animal"].get.tags).toMatchSnapshot()
+        })
     })
 
     describe("Generic One To Many Controller", () => {
@@ -1770,6 +1710,28 @@ describe("Open Api", () => {
                 .expect(200)
             expect(body.paths["/animal/{pid}/tags/{id}"].put.parameters).toMatchSnapshot()
             expect(body.paths["/animal/{pid}/tags/{id}"].put.tags).toMatchSnapshot()
+        })
+        it("Should able to add @api.tags() from property", async () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+                @reflect.type(x => [Tag])
+                @relation()
+                @route.controller()
+                @api.tag("Tags")
+                tags: Tag[]
+            }
+            class Tag {
+                @reflect.noop()
+                tag: string
+            }
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animal/{pid}/tags"].get.tags).toMatchSnapshot()
         })
     })
 })

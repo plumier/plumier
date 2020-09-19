@@ -131,6 +131,12 @@ Array [
 ]
 `;
 
+exports[`Open Api Generic Controller Should able to add @api.tag() from entity 1`] = `
+Array [
+  "Animals",
+]
+`;
+
 exports[`Open Api Generic Controller Should generate DELETE /animal/:id properly 1`] = `
 Array [
   Object {
@@ -299,6 +305,12 @@ Object {
   },
   "type": "object",
 }
+`;
+
+exports[`Open Api Generic One To Many Controller Should able to add @api.tags() from property 1`] = `
+Array [
+  "Tags",
+]
 `;
 
 exports[`Open Api Generic One To Many Controller Should generate DELETE /animals/:id properly 1`] = `
@@ -1090,62 +1102,6 @@ Array [
 ]
 `;
 
-exports[`Route Generator Generic Controller Should able to set @authorize.read() from entity 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultControllerGeneric.list            -> admin         GET    /user",
-  ],
-  Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user",
-  ],
-  Array [
-    "3. DefaultControllerGeneric.get             -> admin         GET    /user/:id",
-  ],
-  Array [
-    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
-  ],
-  Array [
-    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
-  ],
-  Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /user/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`Route Generator Generic Controller Should able to set @authorize.write() from entity 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
-  ],
-  Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> admin         POST   /user",
-  ],
-  Array [
-    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
-  ],
-  Array [
-    "4. DefaultControllerGeneric.modify          -> admin         PATCH  /user/:id",
-  ],
-  Array [
-    "5. DefaultControllerGeneric.replace         -> admin         PUT    /user/:id",
-  ],
-  Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> admin         DELETE /user/:id",
-  ],
-  Array [],
-]
-`;
-
 exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity 1`] = `
 Array [
   Array [],
@@ -1902,62 +1858,6 @@ Array [
   ],
   Array [
     "4. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animals/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`Route Generator One To Many Controller Should able to set @authorize.read() on relation 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultOneToMany...eneric.list    -> admin         GET    /user/:pid/animals",
-  ],
-  Array [
-    "2. DefaultOneToMany...eneric.save    -> Authenticated POST   /user/:pid/animals",
-  ],
-  Array [
-    "3. DefaultOneToMany...eneric.get     -> admin         GET    /user/:pid/animals/:id",
-  ],
-  Array [
-    "4. DefaultOneToMany...eneric.modify  -> Authenticated PATCH  /user/:pid/animals/:id",
-  ],
-  Array [
-    "5. DefaultOneToMany...eneric.replace -> Authenticated PUT    /user/:pid/animals/:id",
-  ],
-  Array [
-    "6. DefaultOneToMany...eneric.delete  -> Authenticated DELETE /user/:pid/animals/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`Route Generator One To Many Controller Should able to set @authorize.write() on relation 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultOneToMany...eneric.list    -> Authenticated GET    /user/:pid/animals",
-  ],
-  Array [
-    "2. DefaultOneToMany...eneric.save    -> admin         POST   /user/:pid/animals",
-  ],
-  Array [
-    "3. DefaultOneToMany...eneric.get     -> Authenticated GET    /user/:pid/animals/:id",
-  ],
-  Array [
-    "4. DefaultOneToMany...eneric.modify  -> admin         PATCH  /user/:pid/animals/:id",
-  ],
-  Array [
-    "5. DefaultOneToMany...eneric.replace -> admin         PUT    /user/:pid/animals/:id",
-  ],
-  Array [
-    "6. DefaultOneToMany...eneric.delete  -> admin         DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]

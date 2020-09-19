@@ -14,7 +14,7 @@ import { val } from "typedconverter"
 import { AuthorizeDecorator } from "./authorization"
 import { BindingDecorator } from "./binder"
 import { Class, entityHelper } from "./common"
-import { api } from "./decorator/api"
+import { api, ApiTagDecorator } from "./decorator/api"
 import { bind } from "./decorator/bind"
 import { domain } from "./decorator/common"
 import { RelationDecorator } from "./decorator/entity"
@@ -313,36 +313,14 @@ function copyDecorators(decorators: any[], controller: Class) {
         // copy @authorize
         const authDec = (decorator as AuthorizeDecorator)
         if (authDec.type === "plumier-meta:authorize") {
-            // @authorize.role() should applied to all actions 
-            if (authDec.access === "all") {
-                result.push(decorator)
-                continue
-            }
-            const meta = reflect(controller)
-            const findAction = (...methods: HttpMethod[]) => {
-                const result = []
-                for (const action of meta.methods) {
-                    if (action.decorators.some((x: RouteDecorator) => x.name === "plumier-meta:route"
-                        && methods.some(m => m === x.method)))
-                        result.push(action.name)
-                }
-                return result
-            }
-            const option: DecoratorOption = (authDec as any)[DecoratorOptionId]
-            // add extra action filter for decorator @authorize.read() and @authorize.write() 
-            // get will only applied to actions with GET method 
-            // set will only applied to actions with mutation DELETE, PATCH, POST, PUT
-            if (authDec.access === "read") {
-                option.applyTo = findAction("get")
-                result.push(decorator)
-            }
-            if (authDec.access === "write") {
-                option.applyTo = findAction("delete", "patch", "post", "put")
-                result.push(decorator)
-            }
+            result.push(decorator)
+        }
+        // copy @api.tag
+        const apiTag = (decorator as ApiTagDecorator)
+        if (apiTag.kind === "ApiTag") {
+            result.push(decorator)
         }
     }
-    //reflect(ctl, { flushCache: true })
     return result.map(x => decorateClass(x, x[DecoratorOptionId]))
 }
 
@@ -390,7 +368,9 @@ function createGenericController(entity: Class, decorator: GenericControllerDeco
     // copy @route.ignore() and @authorize on entity to the controller to control route generation
     const meta = reflect(entity)
     const decorators = copyDecorators([...meta.decorators, ...meta.removedDecorators ?? []], controller)
-    Reflect.decorate([...decorators, ...routes, route.root(routePath, { map: routeMap }), api.tag(entity.name)], Controller)
+    Reflect.decorate([...decorators, ...routes, route.root(routePath, { map: routeMap })], Controller)
+    if (!meta.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag"))
+        Reflect.decorate([api.tag(entity.name)], Controller)
     return Controller
 }
 
@@ -413,16 +393,18 @@ function createOneToManyGenericController(entity: Class, decorator: GenericContr
     }
     // copy @route.ignore() on entity to the controller to control route generation
     const meta = reflect(entity)
-    const entityDecorators = meta.properties.find(x => x.name === relationProperty)!.decorators
+    const relProp = meta.properties.find(x => x.name === relationProperty)!
+    const entityDecorators = relProp.decorators
     const decorators = copyDecorators(entityDecorators, controller)
     Reflect.decorate([
         ...decorators,
         ...routes,
         route.root(routePath, { map: routeMap }),
-        api.tag(entity.name),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
         decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: relationProperty }),
     ], Controller)
+    if (!relProp.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag"))
+        Reflect.decorate([api.tag(entity.name)], Controller)
     return Controller
 }
 
