@@ -1,4 +1,4 @@
-import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, requestHook } from "@plumier/core"
+import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave } from "@plumier/core"
 import Plumier, { WebApiFacility } from "plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
@@ -431,7 +431,7 @@ describe("CRUD", () => {
                 @Column()
                 password:string
 
-                @requestHook()
+                @preSave()
                 hook(){
                     this.password = "HASH"
                 }

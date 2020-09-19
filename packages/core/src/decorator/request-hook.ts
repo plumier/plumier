@@ -1,10 +1,13 @@
 import { decorateMethod, decorateProperty } from "tinspector/src/decorators";
 
 
-interface RequestHookDecorator { kind: "plumier-meta:request-hook", method: ("post" | "put" | "patch")[] }
+interface RequestHookDecorator { kind: "plumier-meta:request-hook", type: "preSave" | "postSave", method: ("post" | "put" | "patch")[] }
 
-function requestHook(...method:("post"|"put"|"patch")[]) {
-    return decorateMethod(<RequestHookDecorator>{ kind: "plumier-meta:request-hook", method })
+function preSave(...method: ("post" | "put" | "patch")[]) {
+    return decorateMethod(<RequestHookDecorator>{ kind: "plumier-meta:request-hook", type: "preSave", method })
 }
 
-export { requestHook, RequestHookDecorator }
+function postSave(...method: ("post" | "put" | "patch")[]) {
+    return decorateMethod(<RequestHookDecorator>{ kind: "plumier-meta:request-hook", type: "postSave", method })
+}
+export { preSave, postSave, RequestHookDecorator }

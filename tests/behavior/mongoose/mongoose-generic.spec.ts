@@ -1,4 +1,4 @@
-import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog, requestHook } from "@plumier/core"
+import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog, preSave } from "@plumier/core"
 import model, {
     collection,
     models,
@@ -495,7 +495,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 password:string
 
-                @requestHook()
+                @preSave()
                 hook(){
                     this.password = "HASH"
                 }

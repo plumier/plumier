@@ -497,14 +497,14 @@ Above code showing that we applied the ignore decorator on the entity relation, 
 ## Request Hook
 
 Request hook enables entity to have a method contains piece of code that will be executed during request. Request hook has some simple rule
-* It executed before the entity saved into the database
+* It executed before or after the entity saved into the database, use decorator `@preSave()` and `@postSave()`
 * It will be executed only on request with http method `POST`, `PUT`, `PATCH`. By default it will execute on those three http methods except specified on the parameter.
-* It can be specified multiple request hook on single entity
+* It can be specified multiple request hooks on single entity
 * It can have parameter with parameter binding
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
-import { route, requestHook } from "plumier"
+import { route, preSave } from "plumier"
 import bcrypt from "bcrypt"
 
 @route.controller()
@@ -522,9 +522,14 @@ class User {
     @Column()
     password: string
 
-    @requestHook()
+    @preSave()
     async hashPassword(){
         this.password = await bcrypt.hash(data.password, 10)
+    }
+
+    @postSave()
+    async sendConfirmationEmail(){
+        await mailer.sendTemplate("confirmation-email")
     }
 }
 ``` 
@@ -533,7 +538,7 @@ Above code will hash password before the entity saved into the database. Request
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
-import { route, requestHook } from "plumier"
+import { route, preSave } from "plumier"
 import bcrypt from "bcrypt"
 
 @route.controller()
@@ -542,7 +547,7 @@ class User {
     
     /** other properties **/
 
-    @requestHook()
+    @preSave()
     async hook(@bind.ctx() ctx:Context){
         // ctx will contains context
     }
@@ -553,7 +558,7 @@ Its possible to specify in which http method should the hook executed by specify
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
-import { route, requestHook } from "plumier"
+import { route, preSave } from "plumier"
 import bcrypt from "bcrypt"
 
 @route.controller()
@@ -562,9 +567,14 @@ class User {
     
     /** other properties **/
 
-    @requestHook("put", "patch")
+    @preSave("put", "patch")
     async hook(){
-        // this only executed on PUT and PATCH http method
+        // this only executed on PUT and PATCH http method before entity saved
+    }
+
+    @postSave("put", "patch")
+    async postHook(){
+        // this only executed on PUT and PATCH http method after entity saved
     }
 }
 ``` 

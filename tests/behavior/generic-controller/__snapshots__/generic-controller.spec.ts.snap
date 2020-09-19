@@ -1052,6 +1052,24 @@ Array [
 ]
 `;
 
+exports[`Request Hook Should call request hook in proper order 1`] = `
+Array [
+  Array [
+    "PRE SAVE",
+  ],
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "lorem ipsum",
+    },
+  ],
+  Array [
+    "POST SAVE",
+  ],
+]
+`;
+
 exports[`Route Generator Generic Controller Should able to change root path 1`] = `
 Array [
   Array [],
