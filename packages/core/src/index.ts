@@ -16,7 +16,7 @@ export { bind } from "./decorator/bind";
 export { domain, middleware } from "./decorator/common";
 export { route, RouteDecoratorImpl, GenericControllerDecorator } from "./decorator/route";
 export { EntityIdDecorator, RelationDecorator, primaryId, relation } from "./decorator/entity";
-export { requestHook, RequestHookDecorator } from "./decorator/request-hook";
+export { preSave, postSave, RequestHookDecorator } from "./decorator/request-hook";
 export {
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
     IdentifierResult, getGenericControllerOneToOneRelations, genericControllerRegistry, DefaultOneToManyRepository, DefaultRepository

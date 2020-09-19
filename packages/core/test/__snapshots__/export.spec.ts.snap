@@ -222,11 +222,12 @@ Object {
   "middleware": Object {
     "use": use,
   },
+  "postSave": postSave,
+  "preSave": preSave,
   "primaryId": primaryId,
   "printAnalysis": printAnalysis,
   "printTable": printTable,
   "relation": relation,
-  "requestHook": requestHook,
   "response": Object {
     "json": json,
     "redirect": redirect,

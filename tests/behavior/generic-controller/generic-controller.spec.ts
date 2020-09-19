@@ -16,12 +16,13 @@ import {
     Middleware,
     OneToManyRepository,
     PlumierApplication,
+    postSave,
+    preSave,
     primaryId,
     relation,
     RepoBaseControllerGeneric,
     RepoBaseOneToManyControllerGeneric,
     Repository,
-    requestHook,
     RequestHookMiddleware,
     response,
     route,
@@ -1757,7 +1758,6 @@ describe("Request Hook", () => {
             .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
     }
     beforeEach(() => fn.mockClear())
-
     it("Should able to hook request in generic controller", async () => {
         @route.controller()
         @domain()
@@ -1768,9 +1768,36 @@ describe("Request Hook", () => {
                 public password: string
             ) { }
 
-            @requestHook()
+            @preSave()
             hook() {
                 this.password = "HASH"
+            }
+        }
+        const app = await createApp({ controller: User }).initialize()
+        await supertest(app.callback())
+            .post("/user")
+            .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
+            .expect(200)
+        expect(fn.mock.calls).toMatchSnapshot()
+    })
+    it("Should call request hook in proper order", async () => {
+        @route.controller()
+        @domain()
+        class User {
+            constructor(
+                public name: string,
+                public email: string,
+                public password: string
+            ) { }
+
+            @preSave()
+            preSave() {
+                fn("PRE SAVE")
+            }
+
+            @postSave()
+            postSave() {
+                fn("POST SAVE")
             }
         }
         const app = await createApp({ controller: User }).initialize()
@@ -1797,7 +1824,7 @@ describe("Request Hook", () => {
                 public password: string,
             ) { }
 
-            @requestHook()
+            @preSave()
             hook() {
                 this.password = "HASH"
             }
@@ -1819,7 +1846,7 @@ describe("Request Hook", () => {
                 public password: string
             ) { }
 
-            @requestHook("patch")
+            @preSave("patch")
             hook() {
                 this.password = "HASH"
             }
@@ -1845,7 +1872,7 @@ describe("Request Hook", () => {
                 public password: string
             ) { }
 
-            @requestHook("patch", "post")
+            @preSave("patch", "post")
             hook() {
                 this.password = "HASH"
             }
@@ -1875,12 +1902,12 @@ describe("Request Hook", () => {
                 public password: string
             ) { }
 
-            @requestHook()
+            @preSave()
             hook() {
                 this.password = "HASH"
             }
 
-            @requestHook()
+            @preSave()
             otherHook() {
                 this.email = "hacked@gmail.com"
             }
@@ -1909,7 +1936,7 @@ describe("Request Hook", () => {
                 public password: string,
             ) { }
 
-            @requestHook()
+            @preSave()
             hook(pid:string) {
                 this.password = pid
             }
@@ -1938,7 +1965,7 @@ describe("Request Hook", () => {
                 public password: string,
             ) { }
 
-            @requestHook()
+            @preSave()
             hook(@bind.ctx() ctx:Context) {
                 fn(ctx.request.header["content-type"])
             }

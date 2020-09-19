@@ -172,7 +172,8 @@ Object {
   "middleware": Object {
     "use": use,
   },
-  "requestHook": requestHook,
+  "postSave": postSave,
+  "preSave": preSave,
   "response": Object {
     "json": json,
     "redirect": redirect,
