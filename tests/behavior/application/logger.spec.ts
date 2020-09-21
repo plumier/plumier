@@ -1,6 +1,6 @@
 import { val, route, consoleLog, cleanupConsole, ActionResult } from "@plumier/core"
 import { fixture } from '../helper'
-import { LoggerFacility } from '@plumier/plumier'
+import { LoggerFacility } from 'plumier'
 import supertest from 'supertest'
 
 

@@ -3,7 +3,55 @@ id: generic-controller
 title: Generic Controller
 ---
 
-Generic controller takes advantage of reflection and inheritance to automatically create CRUD API based on ORM/ODM entities. Plumier provided functionalities for first class entity that make it possible to control CRUD API function and behavior from entities. 
+Generic controller is a common Plumier controller but uses generic type signature on the model. Usually in a CRUD API, a model can represent a request and response body.
+
+For example for CRUD animal controller, usually we created controller below 
+
+```typescript 
+class AnimalsController {
+    // GET /animals/:id
+    @route.get(":id")
+    get(id:string): Animal{ 
+      return repo.findOne(id)
+    }
+
+    // POST /animals
+    @route.post("")
+    save(data:Animal) {
+      return repo.save(data)
+    }
+}
+```
+
+Above code showing that the `GET /animals/:id` has response match with `Animal` model and the `POST /animals` has request body also match with `Animal` model. Controller above can be transform into a generic controller which make it more reusable.
+
+```typescript 
+class ControllerGeneric<T, TID> {
+    @route.get(":id")
+    get(id:TID): T{ 
+      return repo.findOne(id)
+    }
+
+    @route.post("")
+    save(data:T) {
+      return repo.save(data)
+    }
+}
+```
+
+By using inheritance, we can create some controllers based on above controller like below 
+
+```typescript 
+class AnimalController extends ControllerGeneric<Animal, Number>{ }
+
+class UsersController extends ControllerGeneric<User, Number>{ }
+
+class ClientsController extends ControllerGeneric<Client, Number>{ }
+```
+
+Above code will create six routes with different request and response schema. Using this trick, we can create CRUD API easily and consistently. 
+
+Plumier takes advantage of above reflection reflection library to automatically create controller based on specified generic controller which make it possible to automatically create CRUD API based on ORM/ODM entities.
 
 ## Enable Functionality 
 Generic controller supported TypeORM and Mongoose (with Plumier mongoose helper) entities to transform into CRUD API handled by generic controller implementation. Enable the generic controller by installing the `TypeORMFacility` or `MongooseFacility` on the Plumier application. 
@@ -72,14 +120,14 @@ class User {
 
 Above code will generate six routes handled by generic controller implementation. 
 
-| Method | Route                              | Description                                     |
-| ------ | ---------------------------------- | ----------------------------------------------- |
-| POST   | `/users`                           | Add new user                                    |
-| GET    | `/users/:id`                       | Get user by ID                                  |
-| PUT    | `/users/:id`                       | Replace user by ID (required validation used)   |
-| PATCH  | `/users/:id`                       | Modify user by ID (required validation ignored) |
-| DELETE | `/users/:id`                       | Delete user by ID                               |
-| GET    | `/users?limit&offset&filter&order` | Get list of users                               |
+| Method | Route                                     | Description                                     |
+| ------ | ----------------------------------------- | ----------------------------------------------- |
+| POST   | `/users`                                  | Add new user                                    |
+| GET    | `/users/:id?select`                       | Get user by ID                                  |
+| PUT    | `/users/:id`                              | Replace user by ID (required validation used)   |
+| PATCH  | `/users/:id`                              | Modify user by ID (required validation ignored) |
+| DELETE | `/users/:id`                              | Delete user by ID                               |
+| GET    | `/users?limit&offset&filter&select&order` | Get list of users                               |
 
 
 '''info
@@ -178,14 +226,44 @@ class Email {
 
 Above code showing that we apply `@route.controller()` on the `User.emails` relation. Using this setup will make Plumier generate a nested routes like below 
 
-| Method | Route                                          | Description                |
-| ------ | ---------------------------------------------- | -------------------------- |
-| POST   | `/users/:pid/emails`                           | Add new user's email       |
-| GET    | `/users/:pid/emails/:id`                       | Get user's email by ID     |
-| PUT    | `/users/:pid/emails/:id`                       | Replace user's email by ID |
-| PATCH  | `/users/:pid/emails/:id`                       | Modify user's email by ID  |
-| DELETE | `/users/:pid/emails/:id`                       | Delete user's email by ID  |
-| GET    | `/users/:pid/emails?limit&offset&filter&order` | Get list of user's email   |
+| Method | Route                                                 | Description                |
+| ------ | ----------------------------------------------------- | -------------------------- |
+| POST   | `/users/:pid/emails`                                  | Add new user's email       |
+| GET    | `/users/:pid/emails/:id?select`                       | Get user's email by ID     |
+| PUT    | `/users/:pid/emails/:id`                              | Replace user's email by ID |
+| PATCH  | `/users/:pid/emails/:id`                              | Modify user's email by ID  |
+| DELETE | `/users/:pid/emails/:id`                              | Delete user's email by ID  |
+| GET    | `/users/:pid/emails?limit&offset&filter&select&order` | Get list of user's email   |
+
+## Query Strings
+
+Both get by id and get list route has some extra query string to manipulate the response match your need. 
+
+| Query String | Example                                            | Default        | Description                                     |
+| ------------ | -------------------------------------------------- | -------------- | ----------------------------------------------- |
+| `select`     | `GET /users?select=name,email,dob`                 | All properties | Select properties to include in JSON response   |
+| `limit`      | `GET /users?limit=20`                              | 50             | Limit number of records returned in response    |
+| `offset`     | `GET /users?offset=3`                              | 0              | Offset of the record set returned in response   |
+| `filter`     | `GET /users?filter[name]=john&filter[active]=true` | -              | Find records by property using exact comparison |
+| `order`      | `GET /users?order=-createdAt,name`                 | -              | Order by properties, `-` for descending order   |
+
+Above query string supported by generic controller and nested generic controller. 
+
+### Get By ID 
+Get by ID for generic controller and nested generic controller supported `select` query string like below 
+
+```
+GET /users/:id?select=name,email,dob
+GET /users/:pid/pets/:id?select=name,active,dob
+```
+
+### Get List 
+Get list supported all the query string, it can be combined in single request 
+
+```
+GET /users?select=name,email,dob&filter[email]=john.doe@gmail.com&order=-createdAt,name&offset=5
+GET /users/:pid/pets/:id?select=name,dob&filter[name]=bingo&order=-createdAt,name&offset=5
+```
 
 ## Custom Path Name
 
@@ -211,14 +289,14 @@ class User {
 
 Above code showing that we specify custom path name `user-data/:uid`, it will generate routes like below
 
-| Method | Route                                  | Description                                     |
-| ------ | -------------------------------------- | ----------------------------------------------- |
-| POST   | `/user-data`                           | Add new user                                    |
-| GET    | `/user-data/:uid`                      | Get user by ID                                  |
-| PUT    | `/user-data/:uid`                      | Replace user by ID (required validation used)   |
-| PATCH  | `/user-data/:uid`                      | Modify user by ID (required validation ignored) |
-| DELETE | `/user-data/:uid`                      | Delete user by ID                               |
-| GET    | `/user-data?limit&offset&filter&order` | Get list of users                               |
+| Method | Route                                         | Description                                     |
+| ------ | --------------------------------------------- | ----------------------------------------------- |
+| POST   | `/user-data`                                  | Add new user                                    |
+| GET    | `/user-data/:uid`                             | Get user by ID                                  |
+| PUT    | `/user-data/:uid`                             | Replace user by ID (required validation used)   |
+| PATCH  | `/user-data/:uid`                             | Modify user by ID (required validation ignored) |
+| DELETE | `/user-data/:uid`                             | Delete user by ID                               |
+| GET    | `/user-data?limit&offset&filter&select&order` | Get list of users                               |
 
 For nested generic controller you need to specify ID for parent and the child 
 
@@ -236,23 +314,23 @@ class User {
 
 Above code will generate routes below 
 
-| Method | Route                                                  | Description                |
-| ------ | ------------------------------------------------------ | -------------------------- |
-| POST   | `/user-data/:uid/email-data`                           | Add new user's email       |
-| GET    | `/user-data/:uid/email-data/:eid`                      | Get user's email by ID     |
-| PUT    | `/user-data/:uid/email-data/:eid`                      | Replace user's email by ID |
-| PATCH  | `/user-data/:uid/email-data/:eid`                      | Modify user's email by ID  |
-| DELETE | `/user-data/:uid/email-data/:eid`                      | Delete user's email by ID  |
-| GET    | `/user-data/:uid/email-data?limit&offset&filter&order` | Get list of user's email   |
+| Method | Route                                                         | Description                |
+| ------ | ------------------------------------------------------------- | -------------------------- |
+| POST   | `/user-data/:uid/email-data`                                  | Add new user's email       |
+| GET    | `/user-data/:uid/email-data/:eid`                             | Get user's email by ID     |
+| PUT    | `/user-data/:uid/email-data/:eid`                             | Replace user's email by ID |
+| PATCH  | `/user-data/:uid/email-data/:eid`                             | Modify user's email by ID  |
+| DELETE | `/user-data/:uid/email-data/:eid`                             | Delete user's email by ID  |
+| GET    | `/user-data/:uid/email-data?limit&offset&filter&select&order` | Get list of user's email   |
 
 
 ## Control Access To The Entity Properties 
 
 Plumier provide functionality to protect your data easily, you can use `@authorize` decorator to authorize user to write or read your entity property. 
 
-'''info
+:::info
 Refer to [Authorization](Authorization.md) on how to setup user authorization on your Plumier application 
-'''
+:::
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
@@ -378,14 +456,14 @@ class User {
 
 Above code showing that we apply `@authorize.role()` decorator on the `User` entity, during route generation process it will be copied into the generic controller. Option parameter `applyTo` will tell the reflection library to apply authorize decorator into specific generic controller methods which is name: `save`, `delete`, `replace` `modify`. Using above configuration the result of the 
 
-| Action    | Method | Route                              | Access            |
-| --------- | ------ | ---------------------------------- | ----------------- |
-| `save`    | POST   | `/users`                           | SuperAdmin, Admin |
-| `get`     | GET    | `/users/:id`                       | Any user          |
-| `replace` | PUT    | `/users/:id`                       | SuperAdmin, Admin |
-| `modify`  | PATCH  | `/users/:id`                       | SuperAdmin, Admin |
-| `delete`  | DELETE | `/users/:id`                       | SuperAdmin, Admin |
-| `list`    | GET    | `/users?limit&offset&filter&order` | Any user          |
+| Action    | Method | Route                                     | Access            |
+| --------- | ------ | ----------------------------------------- | ----------------- |
+| `save`    | POST   | `/users`                                  | SuperAdmin, Admin |
+| `get`     | GET    | `/users/:id`                              | Any user          |
+| `replace` | PUT    | `/users/:id`                              | SuperAdmin, Admin |
+| `modify`  | PATCH  | `/users/:id`                              | SuperAdmin, Admin |
+| `delete`  | DELETE | `/users/:id`                              | SuperAdmin, Admin |
+| `list`    | GET    | `/users?limit&offset&filter&select&order` | Any user          |
 
 
 For nested routes (one to many relation) you can define `@authorize` decorator on the property relation like below 
@@ -405,14 +483,14 @@ class User {
 
 Using above configuration the route access now is like below 
 
-| Action    | Method | Route                                          | Access            |
-| --------- | ------ | ---------------------------------------------- | ----------------- |
-| `save`    | POST   | `/users/:pid/emails`                           | SuperAdmin, Admin |
-| `get`     | GET    | `/users/:pid/emails/:id`                       | Any user          |
-| `replace` | PUT    | `/users/:pid/emails/:id`                       | SuperAdmin, Admin |
-| `modify`  | PATCH  | `/users/:pid/emails/:id`                       | SuperAdmin, Admin |
-| `delete`  | DELETE | `/users/:pid/emails/:id`                       | SuperAdmin, Admin |
-| `list`    | GET    | `/users/:pid/emails?limit&offset&filter&order` | Any user          |
+| Action    | Method | Route                                                 | Access            |
+| --------- | ------ | ----------------------------------------------------- | ----------------- |
+| `save`    | POST   | `/users/:pid/emails`                                  | SuperAdmin, Admin |
+| `get`     | GET    | `/users/:pid/emails/:id`                              | Any user          |
+| `replace` | PUT    | `/users/:pid/emails/:id`                              | SuperAdmin, Admin |
+| `modify`  | PATCH  | `/users/:pid/emails/:id`                              | SuperAdmin, Admin |
+| `delete`  | DELETE | `/users/:pid/emails/:id`                              | SuperAdmin, Admin |
+| `list`    | GET    | `/users/:pid/emails?limit&offset&filter&select&order` | Any user          |
 
 ## Ignore Some Routes 
 
@@ -434,11 +512,11 @@ class User {
 
 Using above configuration, method that specified on the `applyTo` option will be ignored during route generation. Above code will produce 
 
-| Action | Method | Route                              |
-| ------ | ------ | ---------------------------------- |
-| `save` | POST   | `/users`                           |
-| `get`  | GET    | `/users/:id`                       |
-| `list` | GET    | `/users?limit&offset&filter&order` |
+| Action | Method | Route                                     |
+| ------ | ------ | ----------------------------------------- |
+| `save` | POST   | `/users`                                  |
+| `get`  | GET    | `/users/:id`                              |
+| `list` | GET    | `/users?limit&offset&filter&select&order` |
 
 It also can be applied on the entity relation (one to many) to ignore some nested routes like below 
 
@@ -458,11 +536,96 @@ class User {
 
 Above code showing that we applied the ignore decorator on the entity relation, it will produce
 
-| Action | Method | Route                                          |
-| ------ | ------ | ---------------------------------------------- |
-| `save` | POST   | `/users/:pid/emails`                           |
-| `get`  | GET    | `/users/:pid/emails/:id`                       |
-| `list` | GET    | `/users/:pid/emails?limit&offset&filter&order` |
+| Action | Method | Route                                                 |
+| ------ | ------ | ----------------------------------------------------- |
+| `save` | POST   | `/users/:pid/emails`                                  |
+| `get`  | GET    | `/users/:pid/emails/:id`                              |
+| `list` | GET    | `/users/:pid/emails?limit&offset&filter&select&order` |
+
+## Request Hook
+
+Request hook enables entity to have a method contains piece of code that will be executed during request. Request hook has some simple rule
+* It executed before or after the entity saved into the database, use decorator `@preSave()` and `@postSave()`
+* It will be executed only on request with http method `POST`, `PUT`, `PATCH`. By default it will execute on those three http methods except specified on the parameter.
+* It can be specified multiple request hooks on single entity
+* It can have parameter with parameter binding
+
+```typescript
+import { Entity, PrimaryGeneratedColumn } from "typeorm"
+import { route, preSave } from "plumier"
+import bcrypt from "bcrypt"
+
+@route.controller()
+@Entity()
+class User {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @Column()
+    email: string
+
+    @Column()
+    name: string
+
+    @Column()
+    password: string
+
+    @preSave()
+    async hashPassword(){
+        this.password = await bcrypt.hash(data.password, 10)
+    }
+
+    @postSave()
+    async sendConfirmationEmail(){
+        await mailer.sendTemplate("confirmation-email")
+    }
+}
+``` 
+
+Above code will hash password before the entity saved into the database. Request hook has parameter binding feature, you can `@bind` any request part into the hook parameter, it works exactly like common [Parameter Binding](Parameter-Binding.md) which also support name binding, model binding and decorator binding.
+
+```typescript
+import { Entity, PrimaryGeneratedColumn } from "typeorm"
+import { route, preSave } from "plumier"
+import bcrypt from "bcrypt"
+
+@route.controller()
+@Entity()
+class User {
+    
+    /** other properties **/
+
+    @preSave()
+    async hook(@bind.ctx() ctx:Context){
+        // ctx will contains context
+    }
+}
+``` 
+
+Its possible to specify in which http method should the hook executed by specify http method on the request hook parameter
+
+```typescript
+import { Entity, PrimaryGeneratedColumn } from "typeorm"
+import { route, preSave } from "plumier"
+import bcrypt from "bcrypt"
+
+@route.controller()
+@Entity()
+class User {
+    
+    /** other properties **/
+
+    @preSave("put", "patch")
+    async hook(){
+        // this only executed on PUT and PATCH http method before entity saved
+    }
+
+    @postSave("put", "patch")
+    async postHook(){
+        // this only executed on PUT and PATCH http method after entity saved
+    }
+}
+``` 
 
 ## Use Custom Generic Controller 
 

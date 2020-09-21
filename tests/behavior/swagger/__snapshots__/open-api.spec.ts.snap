@@ -1223,6 +1223,19 @@ Array [
 ]
 `;
 
+exports[`Open API 3.0 Generation Parameter Should detect query parameter of type object 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "query",
+    "required": false,
+    "schema": Object {
+      "$ref": "#/components/schemas/Query",
+    },
+  },
+]
+`;
+
 exports[`Open API 3.0 Generation Parameter Should detect query parameter with @bind.query() 1`] = `
 Array [
   Object {
@@ -1310,6 +1323,62 @@ Array [
     },
   },
 ]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should hide query object relation 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "query",
+    "required": false,
+    "schema": Object {
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/Query",
+        },
+        Object {
+          "properties": Object {
+            "sub": Object {
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      ],
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should hide readonly field on query parameter object 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "query",
+    "required": false,
+    "schema": Object {
+      "$ref": "#/components/schemas/Query",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Parameter Should hide readonly field on query parameter object 2`] = `
+Object {
+  "properties": Object {
+    "email": Object {
+      "type": "number",
+    },
+    "name": Object {
+      "type": "string",
+    },
+    "password": Object {
+      "readOnly": true,
+      "type": "boolean",
+    },
+  },
+  "type": "object",
+}
 `;
 
 exports[`Open API 3.0 Generation Parameter Should ignore @bind.body() parameter 1`] = `Array []`;

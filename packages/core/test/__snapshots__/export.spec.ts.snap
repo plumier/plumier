@@ -147,6 +147,7 @@ Object {
   "RedirectActionResult": RedirectActionResult,
   "RepoBaseControllerGeneric": RepoBaseControllerGeneric,
   "RepoBaseOneToManyControllerGeneric": RepoBaseOneToManyControllerGeneric,
+  "RequestHookMiddleware": RequestHookMiddleware,
   "RouteDecoratorImpl": RouteDecoratorImpl,
   "ValidationError": ValidationError,
   "ValidatorMiddleware": ValidatorMiddleware,
@@ -221,6 +222,8 @@ Object {
   "middleware": Object {
     "use": use,
   },
+  "postSave": postSave,
+  "preSave": preSave,
   "primaryId": primaryId,
   "printAnalysis": printAnalysis,
   "printTable": printTable,

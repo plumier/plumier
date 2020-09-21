@@ -77,7 +77,6 @@ module.exports = {
         docs: {
           // It is recommended to set document id as docs home page (`docs/` path).
           routeBasePath: '/',
-          homePageId: 'overview/get-started',
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl: 'https://github.com/plumier/plumier/edit/master/website/',

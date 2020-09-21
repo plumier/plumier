@@ -1,4 +1,4 @@
-import { route, val } from "@plumier/plumier"
+import { route, val } from "plumier"
 import { fixture } from "../helper"
 import supertest = require("supertest")
 import reflect from "tinspector"

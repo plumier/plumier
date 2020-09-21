@@ -9,12 +9,14 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from "ty
 import { TypeORMFacility } from '@plumier/typeorm'
 
 
+@route.controller()
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
     id: number
     @Column()
     name: string
+    @route.controller()
     @OneToMany(x => Animal, x => x.user)
     animal: Animal[]
 }

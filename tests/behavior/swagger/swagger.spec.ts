@@ -3,7 +3,7 @@ import supertest from "supertest"
 import { SwaggerFacility } from "@plumier/swagger"
 
 import { fixture } from "../helper"
-import Plumier, { WebApiFacility, ControllerFacility } from '@plumier/plumier'
+import Plumier, { WebApiFacility, ControllerFacility } from 'plumier'
 
 
 

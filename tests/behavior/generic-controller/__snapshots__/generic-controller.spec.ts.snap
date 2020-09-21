@@ -21,7 +21,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:userid",
+    "3. DefaultControllerGeneric.get             -> GET    /user/:userid",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> PATCH  /user/:userid",
@@ -131,6 +131,12 @@ Array [
 ]
 `;
 
+exports[`Open Api Generic Controller Should able to add @api.tag() from entity 1`] = `
+Array [
+  "Animals",
+]
+`;
+
 exports[`Open Api Generic Controller Should generate DELETE /animal/:id properly 1`] = `
 Array [
   Object {
@@ -154,14 +160,6 @@ exports[`Open Api Generic Controller Should generate GET /animal properly 1`] = 
 Array [
   Object {
     "in": "query",
-    "name": "name",
-    "required": false,
-    "schema": Object {
-      "type": "string",
-    },
-  },
-  Object {
-    "in": "query",
     "name": "offset",
     "required": false,
     "schema": Object {
@@ -174,6 +172,30 @@ Array [
     "required": false,
     "schema": Object {
       "type": "number",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "filter",
+    "required": false,
+    "schema": Object {
+      "$ref": "#/components/schemas/Animal",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "select",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "order",
+    "required": false,
+    "schema": Object {
+      "type": "string",
     },
   },
 ]
@@ -191,6 +213,14 @@ Array [
     "in": "path",
     "name": "id",
     "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "select",
+    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -277,6 +307,12 @@ Object {
 }
 `;
 
+exports[`Open Api Generic One To Many Controller Should able to add @api.tags() from property 1`] = `
+Array [
+  "Tags",
+]
+`;
+
 exports[`Open Api Generic One To Many Controller Should generate DELETE /animals/:id properly 1`] = `
 Array [
   Object {
@@ -327,14 +363,6 @@ exports[`Open Api Generic One To Many Controller Should generate GET /animals pr
 Array [
   Object {
     "in": "query",
-    "name": "name",
-    "required": false,
-    "schema": Object {
-      "type": "string",
-    },
-  },
-  Object {
-    "in": "query",
     "name": "offset",
     "required": false,
     "schema": Object {
@@ -347,6 +375,45 @@ Array [
     "required": false,
     "schema": Object {
       "type": "number",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "filter",
+    "required": false,
+    "schema": Object {
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/Animal",
+        },
+        Object {
+          "properties": Object {
+            "tags": Object {
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "type": "object",
+        },
+      ],
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "select",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "order",
+    "required": false,
+    "schema": Object {
+      "type": "string",
     },
   },
 ]
@@ -364,6 +431,14 @@ Array [
     "in": "path",
     "name": "id",
     "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "select",
+    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -389,14 +464,6 @@ Array [
   },
   Object {
     "in": "query",
-    "name": "tag",
-    "required": false,
-    "schema": Object {
-      "type": "string",
-    },
-  },
-  Object {
-    "in": "query",
     "name": "offset",
     "required": false,
     "schema": Object {
@@ -409,6 +476,30 @@ Array [
     "required": false,
     "schema": Object {
       "type": "number",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "filter",
+    "required": false,
+    "schema": Object {
+      "$ref": "#/components/schemas/Tag",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "select",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "order",
+    "required": false,
+    "schema": Object {
+      "type": "string",
     },
   },
 ]
@@ -434,6 +525,14 @@ Array [
     "in": "path",
     "name": "id",
     "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "select",
+    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -833,6 +932,144 @@ Array [
 ]
 `;
 
+exports[`Request Hook Should able to bind by decorator 1`] = `
+Array [
+  Array [
+    "application/json",
+  ],
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "lorem ipsum",
+    },
+  ],
+]
+`;
+
+exports[`Request Hook Should able to bind query by name 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "123",
+    },
+  ],
+]
+`;
+
+exports[`Request Hook Should able to hook request in generic controller 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "HASH",
+    },
+  ],
+]
+`;
+
+exports[`Request Hook Should able to hook request in multiple http methods 1`] = `
+Array [
+  Array [
+    "123",
+  ],
+  Array [
+    "123",
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "HASH",
+    },
+  ],
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "HASH",
+    },
+  ],
+  Array [
+    "123",
+  ],
+  Array [
+    "123",
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "lorem ipsum",
+    },
+  ],
+]
+`;
+
+exports[`Request Hook Should able to hook request in one to many generic controller 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "HASH",
+    },
+  ],
+]
+`;
+
+exports[`Request Hook Should able to hook request in specific http method 1`] = `
+Array [
+  Array [
+    "123",
+  ],
+  Array [
+    "123",
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "HASH",
+    },
+  ],
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "lorem ipsum",
+    },
+  ],
+]
+`;
+
+exports[`Request Hook Should able to use multiple hook request 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "hacked@gmail.com",
+      "name": "John Doe",
+      "password": "HASH",
+    },
+  ],
+]
+`;
+
+exports[`Request Hook Should call request hook in proper order 1`] = `
+Array [
+  Array [
+    "PRE SAVE",
+  ],
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "lorem ipsum",
+    },
+  ],
+  Array [
+    "POST SAVE",
+  ],
+]
+`;
+
 exports[`Route Generator Generic Controller Should able to change root path 1`] = `
 Array [
   Array [],
@@ -846,7 +1083,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /api/v1/user/:id",
+    "3. DefaultControllerGeneric.get             -> GET    /api/v1/user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> PATCH  /api/v1/user/:id",
@@ -883,62 +1120,6 @@ Array [
 ]
 `;
 
-exports[`Route Generator Generic Controller Should able to set @authorize.read() from entity 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultControllerGeneric.list            -> admin         GET    /user",
-  ],
-  Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user",
-  ],
-  Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> admin         GET    /user/:id",
-  ],
-  Array [
-    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
-  ],
-  Array [
-    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
-  ],
-  Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /user/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`Route Generator Generic Controller Should able to set @authorize.write() from entity 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
-  ],
-  Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> admin         POST   /user",
-  ],
-  Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> Authenticated GET    /user/:id",
-  ],
-  Array [
-    "4. DefaultControllerGeneric.modify          -> admin         PATCH  /user/:id",
-  ],
-  Array [
-    "5. DefaultControllerGeneric.replace         -> admin         PUT    /user/:id",
-  ],
-  Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> admin         DELETE /user/:id",
-  ],
-  Array [],
-]
-`;
-
 exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity 1`] = `
 Array [
   Array [],
@@ -952,7 +1133,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> admin         POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> Authenticated GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> admin         PATCH  /user/:id",
@@ -980,7 +1161,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> admin POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> admin GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> admin GET    /user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> admin PATCH  /user/:id",
@@ -1008,7 +1189,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> Custom POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> Custom GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> Custom GET    /user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> Custom PATCH  /user/:id",
@@ -1036,7 +1217,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> Public POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> Public GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> Public GET    /user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> Public PATCH  /user/:id",
@@ -1065,8 +1246,16 @@ Array [
         "type": Number,
       },
       Object {
-        "name": "query",
+        "name": "filter",
         "type": User,
+      },
+      Object {
+        "name": "select",
+        "type": String,
+      },
+      Object {
+        "name": "order",
+        "type": String,
       },
       Object {
         "name": "ctx",
@@ -1092,6 +1281,10 @@ Array [
     "pars": Array [
       Object {
         "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "select",
         "type": String,
       },
       Object {
@@ -1164,8 +1357,16 @@ Array [
         "type": Number,
       },
       Object {
-        "name": "query",
+        "name": "filter",
         "type": User,
+      },
+      Object {
+        "name": "select",
+        "type": String,
+      },
+      Object {
+        "name": "order",
+        "type": String,
       },
       Object {
         "name": "ctx",
@@ -1192,6 +1393,10 @@ Array [
       Object {
         "name": "id",
         "type": Number,
+      },
+      Object {
+        "name": "select",
+        "type": String,
       },
       Object {
         "name": "ctx",
@@ -1256,22 +1461,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. MyCustomControllerGeneric.list         -> GET    /api/v1/user",
+    "1. MyCustomControllerGeneric.list    -> GET    /api/v1/user",
   ],
   Array [
-    "2. MyCustomControllerGeneric.save         -> POST   /api/v1/user",
+    "2. MyCustomControllerGeneric.save    -> POST   /api/v1/user",
   ],
   Array [
-    "3. MyCustomControllerGeneric.get(id, ctx) -> GET    /api/v1/user/:id",
+    "3. MyCustomControllerGeneric.get     -> GET    /api/v1/user/:id",
   ],
   Array [
-    "4. MyCustomControllerGeneric.modify       -> PATCH  /api/v1/user/:id",
+    "4. MyCustomControllerGeneric.modify  -> PATCH  /api/v1/user/:id",
   ],
   Array [
-    "5. MyCustomControllerGeneric.replace      -> PUT    /api/v1/user/:id",
+    "5. MyCustomControllerGeneric.replace -> PUT    /api/v1/user/:id",
   ],
   Array [
-    "6. MyCustomControllerGeneric.delete       -> DELETE /api/v1/user/:id",
+    "6. MyCustomControllerGeneric.delete  -> DELETE /api/v1/user/:id",
   ],
   Array [],
 ]
@@ -1290,7 +1495,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> GET    /user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
@@ -1318,7 +1523,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> GET    /user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
@@ -1361,8 +1566,16 @@ Array [
         "type": Number,
       },
       Object {
-        "name": "query",
+        "name": "filter",
         "type": User,
+      },
+      Object {
+        "name": "select",
+        "type": String,
+      },
+      Object {
+        "name": "order",
+        "type": String,
       },
       Object {
         "name": "ctx",
@@ -1388,6 +1601,10 @@ Array [
     "pars": Array [
       Object {
         "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "select",
         "type": String,
       },
       Object {
@@ -1506,7 +1723,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v2/user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /api/v2/user/:id",
+    "3. DefaultControllerGeneric.get             -> GET    /api/v2/user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> PATCH  /api/v2/user/:id",
@@ -1525,7 +1742,7 @@ Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/user",
   ],
   Array [
-    "3. DefaultControllerGeneric.get(id, ctx)    -> GET    /api/v1/user/:id",
+    "3. DefaultControllerGeneric.get             -> GET    /api/v1/user/:id",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> PATCH  /api/v1/user/:id",
@@ -1609,7 +1826,7 @@ Array [
     " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/user",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id, ctx)    -> GET    /api/v1/user/:id",
+    " 3. DefaultControllerGeneric.get             -> GET    /api/v1/user/:id",
   ],
   Array [
     " 4. DefaultControllerGeneric.modify          -> PATCH  /api/v1/user/:id",
@@ -1664,62 +1881,6 @@ Array [
 ]
 `;
 
-exports[`Route Generator One To Many Controller Should able to set @authorize.read() on relation 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultOneToMany...eneric.list    -> admin         GET    /user/:pid/animals",
-  ],
-  Array [
-    "2. DefaultOneToMany...eneric.save    -> Authenticated POST   /user/:pid/animals",
-  ],
-  Array [
-    "3. DefaultOneToMany...eneric.get     -> admin         GET    /user/:pid/animals/:id",
-  ],
-  Array [
-    "4. DefaultOneToMany...eneric.modify  -> Authenticated PATCH  /user/:pid/animals/:id",
-  ],
-  Array [
-    "5. DefaultOneToMany...eneric.replace -> Authenticated PUT    /user/:pid/animals/:id",
-  ],
-  Array [
-    "6. DefaultOneToMany...eneric.delete  -> Authenticated DELETE /user/:pid/animals/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`Route Generator One To Many Controller Should able to set @authorize.write() on relation 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultOneToMany...eneric.list    -> Authenticated GET    /user/:pid/animals",
-  ],
-  Array [
-    "2. DefaultOneToMany...eneric.save    -> admin         POST   /user/:pid/animals",
-  ],
-  Array [
-    "3. DefaultOneToMany...eneric.get     -> Authenticated GET    /user/:pid/animals/:id",
-  ],
-  Array [
-    "4. DefaultOneToMany...eneric.modify  -> admin         PATCH  /user/:pid/animals/:id",
-  ],
-  Array [
-    "5. DefaultOneToMany...eneric.replace -> admin         PUT    /user/:pid/animals/:id",
-  ],
-  Array [
-    "6. DefaultOneToMany...eneric.delete  -> admin         DELETE /user/:pid/animals/:id",
-  ],
-  Array [],
-]
-`;
-
 exports[`Route Generator One To Many Controller Should able to specify ID type by providing decorator 1`] = `
 Array [
   Object {
@@ -1738,8 +1899,16 @@ Array [
         "type": Number,
       },
       Object {
-        "name": "query",
+        "name": "filter",
         "type": Animal,
+      },
+      Object {
+        "name": "select",
+        "type": String,
+      },
+      Object {
+        "name": "order",
+        "type": String,
       },
       Object {
         "name": "ctx",
@@ -1774,6 +1943,10 @@ Array [
       Object {
         "name": "id",
         "type": Number,
+      },
+      Object {
+        "name": "select",
+        "type": String,
       },
       Object {
         "name": "ctx",
@@ -1912,7 +2085,7 @@ Array [
     " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id",
+    " 3. DefaultControllerGeneric.get             -> GET    /user/:id",
   ],
   Array [
     " 4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
@@ -1958,7 +2131,7 @@ Array [
     " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id",
+    " 3. DefaultControllerGeneric.get             -> GET    /user/:id",
   ],
   Array [
     " 4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
@@ -2019,8 +2192,16 @@ Array [
         "type": Number,
       },
       Object {
-        "name": "query",
+        "name": "filter",
         "type": Animal,
+      },
+      Object {
+        "name": "select",
+        "type": String,
+      },
+      Object {
+        "name": "order",
+        "type": String,
       },
       Object {
         "name": "ctx",
@@ -2054,6 +2235,10 @@ Array [
       },
       Object {
         "name": "id",
+        "type": String,
+      },
+      Object {
+        "name": "select",
         "type": String,
       },
       Object {
@@ -2137,7 +2322,7 @@ Array [
     " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /animal",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id, ctx)    -> GET    /animal/:id",
+    " 3. DefaultControllerGeneric.get             -> GET    /animal/:id",
   ],
   Array [
     " 4. DefaultControllerGeneric.modify          -> PATCH  /animal/:id",
@@ -2155,7 +2340,7 @@ Array [
     " 8. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    " 9. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id",
+    " 9. DefaultControllerGeneric.get             -> GET    /user/:id",
   ],
   Array [
     "10. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
@@ -2201,7 +2386,7 @@ Array [
     " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /animal",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id, ctx)    -> GET    /animal/:id",
+    " 3. DefaultControllerGeneric.get             -> GET    /animal/:id",
   ],
   Array [
     " 4. DefaultControllerGeneric.modify          -> PATCH  /animal/:id",
@@ -2219,7 +2404,7 @@ Array [
     " 8. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
   ],
   Array [
-    " 9. DefaultControllerGeneric.get(id, ctx)    -> GET    /user/:id",
+    " 9. DefaultControllerGeneric.get             -> GET    /user/:id",
   ],
   Array [
     "10. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
@@ -2265,7 +2450,7 @@ Array [
     " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/animal",
   ],
   Array [
-    " 3. DefaultControllerGeneric.get(id, ctx)    -> GET    /api/v1/animal/:id",
+    " 3. DefaultControllerGeneric.get             -> GET    /api/v1/animal/:id",
   ],
   Array [
     " 4. DefaultControllerGeneric.modify          -> PATCH  /api/v1/animal/:id",
@@ -2283,7 +2468,7 @@ Array [
     " 8. DefaultControllerGeneric.save(data, ctx) -> POST   /api/v1/user",
   ],
   Array [
-    " 9. DefaultControllerGeneric.get(id, ctx)    -> GET    /api/v1/user/:id",
+    " 9. DefaultControllerGeneric.get             -> GET    /api/v1/user/:id",
   ],
   Array [
     "10. DefaultControllerGeneric.modify          -> PATCH  /api/v1/user/:id",

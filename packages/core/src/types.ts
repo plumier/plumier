@@ -174,7 +174,7 @@ export interface MiddlewareDecorator { name: "Middleware", value: (string | symb
 
 export interface Invocation<T = Context> {
     ctx: Readonly<T>
-    metadata?: GlobalMetadata
+    metadata?: T extends ActionContext ? Metadata : GlobalMetadata
     proceed(): Promise<ActionResult>
 }
 
@@ -372,19 +372,21 @@ export interface RelationPropertyDecorator { kind: "plumier-meta:relation-prop-n
 
 export type GenericController = [Class<ControllerGeneric>, Class<OneToManyControllerGeneric>]
 
+export interface OrderQuery { column: string, order: 1 | -1 }
+
 export interface Repository<T> {
-    find(offset: number, limit: number, query: Partial<T>): Promise<T[]>
+    find(offset: number, limit: number, query: Partial<T>, select: string[], order: OrderQuery[]): Promise<T[]>
     insert(data: Partial<T>): Promise<{ id: any }>
-    findById(id: any): Promise<T | undefined>
+    findById(id: any, select: string[]): Promise<T | undefined>
     update(id: any, data: Partial<T>): Promise<{ id: any }>
     delete(id: any): Promise<{ id: any }>
 }
 
 export interface OneToManyRepository<P, T> {
-    find(pid: any, offset: number, limit: number, query: Partial<T>): Promise<T[]>
+    find(pid: any, offset: number, limit: number, query: Partial<T>, select: string[], order: OrderQuery[]): Promise<T[]>
     insert(pid: any, data: Partial<T>): Promise<{ id: any }>
     findParentById(id: any): Promise<P | undefined>
-    findById(id: any): Promise<T | undefined>
+    findById(id: any, select:string[]): Promise<T | undefined>
     update(id: any, data: Partial<T>): Promise<{ id: any }>
     delete(id: any): Promise<{ id: any }>
 }
@@ -618,7 +620,7 @@ export namespace errorMessage {
     export const CustomRouteEndWithParameter = "PLUM1011: Custom route path '{0}' on {1} entity, require path that ends with route parameter, example: animals/:animalId"
     export const CustomRouteRequiredTwoParameters = "PLUM1012: Nested custom route path '{0}' on {1} entity, must have two route parameters, example: users/:userId/animals/:animalId"
     export const CustomRouteMustHaveOneParameter = "PLUM1013: Custom route path '{0}' on {1} entity, must have one route parameter, example: animals/:animalId"
-    
+
 
     //PLUM2XXX internal app error
     export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate {0}. Domain model should not throw error inside constructor`

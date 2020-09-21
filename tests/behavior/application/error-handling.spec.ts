@@ -1,9 +1,9 @@
-import { HttpStatusError, middleware, Class, ActionResult, route, consoleLog } from "@plumier/core"
+import { ActionResult, Class, consoleLog, HttpStatusError, middleware, route } from "@plumier/core"
 import { join } from "path"
+import Plumier, { WebApiFacility } from "plumier"
 import Supertest from "supertest"
 
 import { fixture } from "../helper"
-import Plumier, { WebApiFacility } from '@plumier/plumier';
 
 
 describe("Error Handling", () => {

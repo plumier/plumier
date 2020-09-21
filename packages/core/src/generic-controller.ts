@@ -1,11 +1,20 @@
 import { Context } from "koa"
-import reflect, { decorate, decorateClass, decorateMethod, DecoratorId, DecoratorOption, DecoratorOptionId, generic, GenericTypeDecorator } from "tinspector"
+import { Key, pathToRegexp } from "path-to-regexp"
+import reflect, {
+    decorate,
+    decorateClass,
+    DecoratorId,
+    DecoratorOption,
+    DecoratorOptionId,
+    generic,
+    GenericTypeDecorator,
+} from "tinspector"
 import { val } from "typedconverter"
 
 import { AuthorizeDecorator } from "./authorization"
 import { BindingDecorator } from "./binder"
 import { Class, entityHelper } from "./common"
-import { api } from "./decorator/api"
+import { api, ApiTagDecorator } from "./decorator/api"
 import { bind } from "./decorator/bind"
 import { domain } from "./decorator/common"
 import { RelationDecorator } from "./decorator/entity"
@@ -20,12 +29,10 @@ import {
     MetadataImpl,
     OneToManyControllerGeneric,
     OneToManyRepository,
+    OrderQuery,
     RelationPropertyDecorator,
     Repository,
 } from "./types"
-
-import { pathToRegexp, Key } from "path-to-regexp"
-import { symbol } from '@hapi/joi'
 
 // --------------------------------------------------------------------- //
 // ---------------------------- CONTROLLERS ---------------------------- //
@@ -55,6 +62,35 @@ function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: st
     }, ["Class", "Method"], { allowMultiple: false, ...option })
 }
 
+function parseOrder(order?: string) {
+    const tokens = order?.split(",").map(x => x.trim()) ?? []
+    const result: OrderQuery[] = []
+    for (const token of tokens) {
+        if (token.match(/^\-.*/)) {
+            const column = token.replace(/^\-/, "")
+            result.push({ column, order: -1 })
+        }
+        else {
+            const column = token.replace(/^\+/, "")
+            result.push({ column, order: 1 })
+        }
+    }
+    return result
+}
+
+function normalizeSelect(type: Class, dSelect: string[]) {
+    const defaultSelection = reflect(type).properties
+        // default, exclude array (one to many) properties 
+        .filter(x => x.name && !Array.isArray(x.type))
+        .map(x => x.name)
+    return dSelect.length === 0 ? defaultSelection : dSelect
+}
+
+function parseSelect(type: Class, select: string) {
+    const dSelect = select?.split(",").map(x => x.trim()) ?? []
+    return normalizeSelect(type, dSelect)
+}
+
 @generic.template("T", "TID")
 class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
     readonly entityType: Class<T>
@@ -67,16 +103,16 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
     }
 
     @route.ignore()
-    protected async findByIdOrNotFound(id: TID): Promise<T> {
-        const saved = await this.repo.findById(id)
+    protected async findByIdOrNotFound(id: TID, select: string[] = []): Promise<T> {
+        const saved = await this.repo.findById(id, normalizeSelect(this.entityType, select))
         if (!saved) throw new HttpStatusError(404, `Record with ID ${id} not found`)
         return saved
     }
 
     @decorateRoute("get", "")
     @reflect.type(["T"])
-    list(offset: number = 0, limit: number = 50, @reflect.type("T") @bind.query() @val.partial("T") query: T, @bind.ctx() ctx: Context): Promise<T[]> {
-        return this.repo.find(offset, limit, query)
+    list(offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
+        return this.repo.find(offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
     }
 
     @decorateRoute("post", "")
@@ -88,8 +124,8 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
 
     @decorateRoute("get", ":id")
     @reflect.type("T")
-    get(@val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<T> {
-        return this.findByIdOrNotFound(id)
+    get(@val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
+        return this.findByIdOrNotFound(id, parseSelect(this.entityType, select))
     }
 
     @decorateRoute("patch", ":id")
@@ -133,8 +169,8 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
     }
 
     @route.ignore()
-    protected async findByIdOrNotFound(id: TID): Promise<T> {
-        const saved = await this.repo.findById(id)
+    protected async findByIdOrNotFound(id: TID, select: string[] = []): Promise<T> {
+        const saved = await this.repo.findById(id, normalizeSelect(this.entityType, select))
         if (!saved) throw new HttpStatusError(404, `Record with ID ${id} not found`)
         return saved
     }
@@ -148,9 +184,9 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 
     @decorateRoute("get", "")
     @reflect.type(["T"])
-    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @bind.query() @val.partial("T") query: T, @bind.ctx() ctx: Context): Promise<T[]> {
+    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
         await this.findParentByIdOrNotFound(pid)
-        return this.repo.find(pid, offset, limit, query)
+        return this.repo.find(pid, offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
     }
 
     @decorateRoute("post", "")
@@ -163,9 +199,9 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 
     @decorateRoute("get", ":id")
     @reflect.type("T")
-    async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<T> {
+    async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
         await this.findParentByIdOrNotFound(pid)
-        return this.findByIdOrNotFound(id)
+        return this.findByIdOrNotFound(id, parseSelect(this.entityType, select))
     }
 
     @decorateRoute("patch", ":id")
@@ -277,36 +313,14 @@ function copyDecorators(decorators: any[], controller: Class) {
         // copy @authorize
         const authDec = (decorator as AuthorizeDecorator)
         if (authDec.type === "plumier-meta:authorize") {
-            // @authorize.role() should applied to all actions 
-            if (authDec.access === "all") {
-                result.push(decorator)
-                continue
-            }
-            const meta = reflect(controller)
-            const findAction = (...methods: HttpMethod[]) => {
-                const result = []
-                for (const action of meta.methods) {
-                    if (action.decorators.some((x: RouteDecorator) => x.name === "plumier-meta:route"
-                        && methods.some(m => m === x.method)))
-                        result.push(action.name)
-                }
-                return result
-            }
-            const option: DecoratorOption = (authDec as any)[DecoratorOptionId]
-            // add extra action filter for decorator @authorize.read() and @authorize.write() 
-            // get will only applied to actions with GET method 
-            // set will only applied to actions with mutation DELETE, PATCH, POST, PUT
-            if (authDec.access === "read") {
-                option.applyTo = findAction("get")
-                result.push(decorator)
-            }
-            if (authDec.access === "write") {
-                option.applyTo = findAction("delete", "patch", "post", "put")
-                result.push(decorator)
-            }
+            result.push(decorator)
+        }
+        // copy @api.tag
+        const apiTag = (decorator as ApiTagDecorator)
+        if (apiTag.kind === "ApiTag") {
+            result.push(decorator)
         }
     }
-    //reflect(ctl, { flushCache: true })
     return result.map(x => decorateClass(x, x[DecoratorOptionId]))
 }
 
@@ -354,7 +368,9 @@ function createGenericController(entity: Class, decorator: GenericControllerDeco
     // copy @route.ignore() and @authorize on entity to the controller to control route generation
     const meta = reflect(entity)
     const decorators = copyDecorators([...meta.decorators, ...meta.removedDecorators ?? []], controller)
-    Reflect.decorate([...decorators, ...routes, route.root(routePath, { map: routeMap }), api.tag(entity.name)], Controller)
+    Reflect.decorate([...decorators, ...routes, route.root(routePath, { map: routeMap })], Controller)
+    if (!meta.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag"))
+        Reflect.decorate([api.tag(entity.name)], Controller)
     return Controller
 }
 
@@ -377,16 +393,18 @@ function createOneToManyGenericController(entity: Class, decorator: GenericContr
     }
     // copy @route.ignore() on entity to the controller to control route generation
     const meta = reflect(entity)
-    const entityDecorators = meta.properties.find(x => x.name === relationProperty)!.decorators
+    const relProp = meta.properties.find(x => x.name === relationProperty)!
+    const entityDecorators = relProp.decorators
     const decorators = copyDecorators(entityDecorators, controller)
     Reflect.decorate([
         ...decorators,
         ...routes,
         route.root(routePath, { map: routeMap }),
-        api.tag(entity.name),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
         decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: relationProperty }),
     ], Controller)
+    if (!relProp.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag"))
+        Reflect.decorate([api.tag(entity.name)], Controller)
     return Controller
 }
 

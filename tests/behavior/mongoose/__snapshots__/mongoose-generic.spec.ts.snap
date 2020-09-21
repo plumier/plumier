@@ -1,5 +1,30 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CRUD CRUD Function Should able to order by property GET /users?offset&limit&name 1`] = `
+Array [
+  Object {
+    "age": 21,
+    "name": "Borne",
+  },
+  Object {
+    "age": 21,
+    "name": "Anne",
+  },
+  Object {
+    "age": 22,
+    "name": "Juliet",
+  },
+  Object {
+    "age": 22,
+    "name": "John",
+  },
+  Object {
+    "age": 23,
+    "name": "August",
+  },
+]
+`;
+
 exports[`CRUD CRUD Function Should able to query by property GET /users?offset&limit&name 1`] = `
 Array [
   Object {
@@ -7,6 +32,75 @@ Array [
     "name": "Jean Doe",
   },
 ]
+`;
+
+exports[`CRUD CRUD Function Should able to select by property GET /users?offset&limit&name 1`] = `
+Array [
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "age": 21,
+    "name": "John Doe",
+  },
+]
+`;
+
+exports[`CRUD CRUD Function Should able to use request hook 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "email": "john.doe@gmail.com",
+  "name": "John Doe",
+  "password": "HASH",
+}
+`;
+
+exports[`CRUD CRUD Function Should ignore wrong property name on select GET /users/:id 1`] = `
+Object {
+  "age": 21,
+  "name": "John Doe",
+}
+`;
+
+exports[`CRUD CRUD Function Should select by property GET /users/:id 1`] = `
+Object {
+  "age": 21,
+  "name": "John Doe",
+}
 `;
 
 exports[`CRUD CRUD Function Should set partial validation on query GET /users?offset&limit&name 1`] = `
@@ -25,22 +119,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. MongooseControllerGeneric.get(id, ctx) -> GET    /users/:id",
+    "1. MongooseControllerGeneric.get     -> GET    /users/:id",
   ],
   Array [
-    "2. MongooseControllerGeneric.modify       -> PATCH  /users/:id",
+    "2. MongooseControllerGeneric.modify  -> PATCH  /users/:id",
   ],
   Array [
-    "3. MongooseControllerGeneric.replace      -> PUT    /users/:id",
+    "3. MongooseControllerGeneric.replace -> PUT    /users/:id",
   ],
   Array [
-    "4. MongooseControllerGeneric.delete       -> DELETE /users/:id",
+    "4. MongooseControllerGeneric.delete  -> DELETE /users/:id",
   ],
   Array [
-    "5. MongooseControllerGeneric.list         -> GET    /users",
+    "5. MongooseControllerGeneric.list    -> GET    /users",
   ],
   Array [
-    "6. MongooseControllerGeneric.save         -> POST   /users",
+    "6. MongooseControllerGeneric.save    -> POST   /users",
   ],
   Array [],
 ]
@@ -72,6 +166,93 @@ Array [
   ],
   Array [],
 ]
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should able to order by properties GET /users/:parentId/animals?offset&limit  1`] = `
+Array [
+  Object {
+    "age": 22,
+    "name": "Juliet",
+  },
+  Object {
+    "age": 22,
+    "name": "Mimi",
+  },
+  Object {
+    "age": 21,
+    "name": "Abas",
+  },
+  Object {
+    "age": 21,
+    "name": "Alba",
+  },
+]
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should able to select by properties GET /users/:parentId/animals?offset&limit  1`] = `
+Array [
+  Object {
+    "age": 21,
+    "name": "Mimi",
+  },
+  Object {
+    "age": 21,
+    "name": "Mimi",
+  },
+  Object {
+    "age": 21,
+    "name": "Mimi",
+  },
+  Object {
+    "age": 21,
+    "name": "Mimi",
+  },
+  Object {
+    "age": 21,
+    "name": "Mimi",
+  },
+  Object {
+    "age": 21,
+    "name": "Mimi",
+  },
+  Object {
+    "age": 21,
+    "name": "Mimi",
+  },
+  Object {
+    "age": 21,
+    "name": "Mimi",
+  },
+  Object {
+    "age": 21,
+    "name": "Mimi",
+  },
+  Object {
+    "age": 21,
+    "name": "Mimi",
+  },
+]
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should able to select by property GET /users/:parentId/animals/:id 1`] = `
+Object {
+  "age": 21,
+  "tag": "The tag",
+}
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should able to select one to many relation by property GET /users/:parentId 1`] = `
+Object {
+  "animals": Array [
+    Object {
+      "age": 21,
+      "name": "Mimi",
+      "tag": "The tag",
+    },
+  ],
+  "email": "john.doe@gmail.com",
+  "name": "John Doe",
+}
 `;
 
 exports[`CRUD Nested CRUD One to Many Function Should find by name GET /users/:parentId/animals?offset&limit  1`] = `
@@ -234,6 +415,218 @@ Object {
 }
 `;
 
+exports[`CRUD One To One Function Should not populate if not selected on get by ID 1`] = `
+Object {
+  "email": "john.doe@gmail.com",
+  "name": "John",
+}
+`;
+
+exports[`CRUD One To One Function Should not populate if not selected on get many 1`] = `
+Array [
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
+]
+`;
+
 exports[`CRUD One To One Function Should not populated one to many 1`] = `
 Object {
   "__v": 0,
@@ -256,10 +649,6 @@ Object {
 
 exports[`CRUD One To One Function Should not populated one to many 2`] = `
 Object {
-  "animals": Array [
-    Object {},
-    Object {},
-  ],
   "name": "John",
 }
 `;
@@ -350,10 +739,6 @@ Object {
 
 exports[`CRUD One To One on Nested Object Should not populated one to many 2`] = `
 Object {
-  "animals": Array [
-    Object {},
-    Object {},
-  ],
   "name": "John",
 }
 `;

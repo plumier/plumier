@@ -1,6 +1,6 @@
 ---
 id: swagger
-title: Swagger and Open API 3.0
+title: Swagger
 ---
 
 Plumier provide facility to generate Open API 3.0 Specification commonly used by [Swagger](https://swagger.io/) UI. The API specification directly generated from controllers metadata. 

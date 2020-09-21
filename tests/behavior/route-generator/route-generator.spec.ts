@@ -6,15 +6,15 @@ import {
     generateRoutes,
     PlumierApplication,
     RouteMetadata,
-    RouteInfo
 } from "@plumier/core"
-import { noop } from '@plumier/tinspector'
 import { join } from "path"
-import Plumier, { RestfulApiFacility, route, WebApiFacility, ControllerFacility } from "plumier"
-import supertest from 'supertest'
-import Supertest from "supertest"
+import Plumier, { ControllerFacility, RestfulApiFacility, route, WebApiFacility } from "plumier"
+import supertest from "supertest"
+import { noop } from "tinspector"
 
 import { fixture } from "../helper"
+
+
 
 describe("Route Generator", () => {
     it("Should transform regular method to GET", async () => {
@@ -24,16 +24,16 @@ describe("Route Generator", () => {
         const app = await fixture(AnimalController)
             .set({ rootDir: __dirname })
             .initialize()
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .get("/animal/method")
             .expect(200)
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .post("/animal/method")
             .expect(404)
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .put("/animal/method")
             .expect(404)
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .delete("/animal/method")
             .expect(404)
     })
@@ -44,10 +44,10 @@ describe("Route Generator", () => {
         }
         const app = await fixture(AnimalClass)
             .initialize()
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .get("/animal/method")
             .expect(404)
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .get("/animalclass/method")
             .expect(404)
     })
@@ -59,10 +59,10 @@ describe("Route Generator", () => {
         }
         const app = await fixture(AnimalClass)
             .initialize()
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .get("/animal/method")
             .expect(200)
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .get("/animalclass/method")
             .expect(404)
     })
@@ -77,10 +77,10 @@ describe("Route Generator", () => {
         }
         const app = await fixture(AnimalController)
             .initialize()
-        await Supertest(app.callback()).get("/home").expect(200, "OK")
-        await Supertest(app.callback()).get("/about").expect(200, "OK")
-        await Supertest(app.callback()).get("/new").expect(200, "OK")
-        await Supertest(app.callback()).get("/transaction").expect(200, "OK")
+        await supertest(app.callback()).get("/home").expect(200, "OK")
+        await supertest(app.callback()).get("/about").expect(200, "OK")
+        await supertest(app.callback()).get("/new").expect(200, "OK")
+        await supertest(app.callback()).get("/transaction").expect(200, "OK")
     })
 
     it("Should allow case insensitive backing parameter", async () => {
@@ -92,7 +92,7 @@ describe("Route Generator", () => {
         }
         const app = await fixture(AnimalController)
             .initialize()
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .get("/animal/123")
             .expect(200, { AnimalId: "123" })
     })
@@ -107,7 +107,7 @@ describe("Route Generator", () => {
         }
         const app = await fixture(AnimalController)
             .initialize()
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .get("/beast/123/animal/123")
             .expect(200, { BeastId: "123", AnimalId: "123" })
     })
@@ -115,10 +115,10 @@ describe("Route Generator", () => {
     it("Should transform nested controller", async () => {
         const app = await fixture(join(__dirname, "nested"))
             .initialize()
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .get("/api/v1/animal/get")
             .expect(200)
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .get("/api/v2/animal/get")
             .expect(200)
     })
@@ -184,7 +184,7 @@ describe("Route Generator", () => {
     it("Should able to rename class name using relative route in nested controller", async () => {
         const app = await fixture(join(__dirname, "nested"))
             .initialize()
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .get("/api/v1/kitty/get")
             .expect(200)
     })
@@ -192,7 +192,7 @@ describe("Route Generator", () => {
     it("Should skip nested route using absolute root route in nested controller", async () => {
         const app = await fixture(join(__dirname, "nested"))
             .initialize()
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .get("/quack/get")
             .expect(200)
     })
@@ -200,7 +200,7 @@ describe("Route Generator", () => {
     it("Should skip nested route using absolute method route in nested controller", async () => {
         const app = await fixture(join(__dirname, "nested"))
             .initialize()
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .get("/chicken")
             .expect(200)
     })
@@ -213,7 +213,7 @@ describe("Route Generator", () => {
         }
         const app = await fixture(AnimalController)
             .initialize()
-        await Supertest(app.callback())
+        await supertest(app.callback())
             .get("/beast/method")
             .expect(200)
     })
@@ -234,7 +234,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/animal/method")
                 .expect(200)
         })
@@ -248,7 +248,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/animal/method?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -262,7 +262,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/animal/get?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -276,7 +276,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/get?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -290,7 +290,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/animal?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -306,7 +306,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/animal/other")
                 .expect(404)
         })
@@ -320,7 +320,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/animal/a/100/b/hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -334,7 +334,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/animal/a/100?b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -349,7 +349,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/beast/a/100?b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -364,7 +364,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/beast/wolf/a/100?b=hello")
                 .expect(200, { type: "wolf", a: 100, b: "hello" })
         })
@@ -376,7 +376,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/beast/a")
                 .expect(404)
         })
@@ -390,7 +390,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .post("/animal/method")
                 .expect(200)
         })
@@ -404,7 +404,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .post("/animal/method?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -418,7 +418,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .post("/animal/get?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -432,7 +432,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .post("/get?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -446,7 +446,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .post("/animal?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -462,7 +462,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .post("/animal/other")
                 .expect(404)
         })
@@ -476,7 +476,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .post("/animal/a/100/b/hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -490,7 +490,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .post("/animal/a/100?b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -505,7 +505,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .post("/beast/a/100?b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -520,7 +520,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .post("/beast/wolf/a/100?b=hello")
                 .expect(200, { type: "wolf", a: 100, b: "hello" })
         })
@@ -532,7 +532,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .post("/beast/a")
                 .expect(404)
         })
@@ -546,7 +546,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .put("/animal/method")
                 .expect(200)
         })
@@ -560,7 +560,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .put("/animal/method?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -574,7 +574,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .put("/animal/get?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -588,7 +588,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .put("/get?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -602,7 +602,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .put("/animal?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -618,7 +618,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .put("/animal/other")
                 .expect(404)
         })
@@ -632,7 +632,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .put("/animal/a/100/b/hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -646,7 +646,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .put("/animal/a/100?b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -661,7 +661,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .put("/beast/a/100?b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -676,7 +676,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .put("/beast/wolf/a/100?b=hello")
                 .expect(200, { type: "wolf", a: 100, b: "hello" })
         })
@@ -688,7 +688,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .put("/beast/a")
                 .expect(404)
         })
@@ -702,7 +702,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .delete("/animal/method")
                 .expect(200)
         })
@@ -716,7 +716,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .delete("/animal/method?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -730,7 +730,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .delete("/animal/get?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -744,7 +744,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .delete("/get?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -758,7 +758,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .delete("/animal?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -774,7 +774,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .delete("/animal/other")
                 .expect(404)
         })
@@ -788,7 +788,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .delete("/animal/a/100/b/hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -802,7 +802,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .delete("/animal/a/100?b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -817,7 +817,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .delete("/beast/a/100?b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -832,7 +832,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .delete("/beast/wolf/a/100?b=hello")
                 .expect(200, { type: "wolf", a: 100, b: "hello" })
         })
@@ -844,7 +844,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .delete("/beast/a")
                 .expect(404)
         })
@@ -858,7 +858,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .patch("/animal/method")
                 .expect(200)
         })
@@ -872,7 +872,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .patch("/animal/method?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -886,7 +886,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .patch("/animal/get?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -900,7 +900,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .patch("/get?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -914,7 +914,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .patch("/animal?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -930,7 +930,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .patch("/animal/other")
                 .expect(404)
         })
@@ -944,7 +944,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .patch("/animal/a/100/b/hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -958,7 +958,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .patch("/animal/a/100?b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -973,7 +973,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .patch("/beast/a/100?b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -988,7 +988,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .patch("/beast/wolf/a/100?b=hello")
                 .expect(200, { type: "wolf", a: 100, b: "hello" })
         })
@@ -1000,7 +1000,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .patch("/beast/a")
                 .expect(404)
         })
@@ -1014,7 +1014,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .head("/animal/method")
                 .expect(200)
         })
@@ -1028,7 +1028,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .head("/animal/method?a=100&b=hello")
                 .expect(200, {})
         })
@@ -1042,7 +1042,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .head("/animal/get?a=100&b=hello")
                 .expect(200, {})
         })
@@ -1056,7 +1056,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .head("/get?a=100&b=hello")
                 .expect(200, {})
         })
@@ -1070,7 +1070,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .head("/animal?a=100&b=hello")
                 .expect(200, {})
         })
@@ -1086,7 +1086,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .head("/animal/other")
                 .expect(404)
         })
@@ -1100,7 +1100,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .head("/animal/a/100/b/hello")
                 .expect(200, {})
         })
@@ -1114,7 +1114,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .head("/animal/a/100?b=hello")
                 .expect(200, {})
         })
@@ -1129,7 +1129,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .head("/beast/a/100?b=hello")
                 .expect(200, {})
         })
@@ -1144,7 +1144,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .head("/beast/wolf/a/100?b=hello")
                 .expect(200, {})
         })
@@ -1156,7 +1156,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .head("/beast/a")
                 .expect(404)
         })
@@ -1170,7 +1170,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .options("/animal/method")
                 .expect(200)
         })
@@ -1184,7 +1184,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .options("/animal/method?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -1198,7 +1198,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .options("/animal/get?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -1212,7 +1212,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .options("/get?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -1226,7 +1226,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .options("/animal?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -1242,7 +1242,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .options("/animal/other")
                 .expect(404)
         })
@@ -1256,7 +1256,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .options("/animal/a/100/b/hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -1270,7 +1270,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .options("/animal/a/100?b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -1285,7 +1285,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .options("/beast/a/100?b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -1300,7 +1300,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .options("/beast/wolf/a/100?b=hello")
                 .expect(200, { type: "wolf", a: 100, b: "hello" })
         })
@@ -1312,7 +1312,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .options("/beast/a")
                 .expect(404)
         })
@@ -1326,7 +1326,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .trace("/animal/method")
                 .expect(200)
         })
@@ -1340,7 +1340,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .trace("/animal/method?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -1354,7 +1354,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .trace("/animal/get?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -1368,7 +1368,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .trace("/get?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -1382,7 +1382,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .trace("/animal?a=100&b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -1398,7 +1398,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .trace("/animal/other")
                 .expect(404)
         })
@@ -1412,7 +1412,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .trace("/animal/a/100/b/hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -1426,7 +1426,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .trace("/animal/a/100?b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -1441,7 +1441,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .trace("/beast/a/100?b=hello")
                 .expect(200, { a: 100, b: "hello" })
         })
@@ -1456,7 +1456,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .trace("/beast/wolf/a/100?b=hello")
                 .expect(200, { type: "wolf", a: 100, b: "hello" })
         })
@@ -1468,7 +1468,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .trace("/beast/a")
                 .expect(404)
         })
@@ -1482,7 +1482,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/beast/method")
                 .expect(200)
         })
@@ -1494,7 +1494,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/beast/method")
                 .expect(200)
         })
@@ -1506,7 +1506,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/beast/method")
                 .expect(200)
         })
@@ -1519,7 +1519,7 @@ describe("Route Generator", () => {
             }
             const app = await fixture(AnimalController)
                 .initialize()
-            await Supertest(app.callback())
+            await supertest(app.callback())
                 .get("/beast/no-method")
                 .expect(200)
         })

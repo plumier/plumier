@@ -66,44 +66,6 @@ const plumier = new Plumier()
 | `TwitterOAuthFacility`   | `PLUM_TWITTER_CLIENT_ID`   | `PLUM_TWITTER_CLIENT_SECRET`   |
 
 
-## Showing The Login Page
-
-Plumier provided endpoints that will be redirected to the social media login page. It generate the required parameter including the csrf token and then redirect the request to the generated url.
-
-| Endpoint                   | Served By               | Description                     |
-| -------------------------- | ----------------------- | ------------------------------- |
-| `GET /auth/facebook/login` | `FacebookOAuthFacility` | Redirect to Facebook login page |
-| `GET /auth/google/login`   | `GoogleOAuthFacility`   | Redirect to Google login page   |
-| `GET /auth/github/login`   | `GitHubOAuthFacility`   | Redirect to GitHub login page   |
-| `GET /auth/gitlab/login`   | `GitLabOAuthFacility`   | Redirect to GitLab login page   |
-| `GET /auth/tiwtter/login`   | `TwitterOAuthFacility`   | Redirect to Twitter login page   |
-
-Above endpoint can be change accordingly see [customization](#customization) section for more detail.
-
-### Social Media Login Button
-
-Use the provided endpoints above to create the social media login button, by showing a dialog window popup or redirect the user to the Facebook login screen.
-
-```html
-<a href="/auth/facebook/login">Login with Facebook</a>
-```
-
-Code above will redirect the user to the Facebook login screen.
-
-Or you can show a popup dialog window like below:
-
-```html
-<script>
-    function showFacebookDialog(){
-        window.open("/auth/facebook/login", "Login using Facebook", "toolbar=no, width=500, height=500")
-    }
-</script>
-
-<button onclick="showFacebookDialog()">Login with Facebook</button>
-```
-
-When user click the link or button above, user will redirected to the Facebook login page properly.
-
 ## Redirect URI Handler 
 Plumier provided `@redirectUri()` decorator to easily mark controller as a social media redirect uri. To create a controller as a redirect uri handler simply mark the method with the decorator like below.
 
@@ -193,6 +155,43 @@ interface OAuthUser<T = {}> {
 * `email`, `gender`, `dateOfBirth` is optional, its based on your OAuth application access
 * `raw` is the raw value of the social media profile result.
 
+## Showing The Login Page
+
+Plumier provided endpoints that will be redirected to the social media login page. It generate the required parameter including the csrf token and then redirect the request to the generated url.
+
+| Endpoint                   | Served By               | Description                     |
+| -------------------------- | ----------------------- | ------------------------------- |
+| `GET /auth/facebook/login` | `FacebookOAuthFacility` | Redirect to Facebook login page |
+| `GET /auth/google/login`   | `GoogleOAuthFacility`   | Redirect to Google login page   |
+| `GET /auth/github/login`   | `GitHubOAuthFacility`   | Redirect to GitHub login page   |
+| `GET /auth/gitlab/login`   | `GitLabOAuthFacility`   | Redirect to GitLab login page   |
+| `GET /auth/tiwtter/login`   | `TwitterOAuthFacility`   | Redirect to Twitter login page   |
+
+Above endpoint can be change accordingly see [customization](#customization) section for more detail.
+
+### Social Media Login Button
+
+Use the provided endpoints above to create the social media login button, by showing a dialog window popup or redirect the user to the Facebook login screen.
+
+```html
+<a href="/auth/facebook/login">Login with Facebook</a>
+```
+
+Code above will redirect the user to the Facebook login screen.
+
+Or you can show a popup dialog window like below:
+
+```html
+<script>
+    function showFacebookDialog(){
+        window.open("/auth/facebook/login", "Login using Facebook", "toolbar=no, width=500, height=500")
+    }
+</script>
+
+<button onclick="showFacebookDialog()">Login with Facebook</button>
+```
+
+When user click the link or button above, user will redirected to the Facebook login page properly.
 ## Sending Message Back To Main Window
 When social medial login process done using a popup dialog window, it needs a way to signal the main window that the login process successful or not. 
 
@@ -240,13 +239,6 @@ Its required to check the `ev.origin` of the message event because any window po
 ## Customization
 Plumier social login functionalities can be customize to match your need. 
 
-### Custom CSRF Token Secret Endpoint
-CSRF Token Secret can be customize from the `OAuthFacility` like below 
-
-```typescript
-new Plumier()
-    .set(new OAuthFacility({ csrfEndpoint: "/auth/identity" }))
-```
 
 ### Custom Login Endpoint 
 Login endpoint served by OAuth provider facility can be customized accordingly from the facility

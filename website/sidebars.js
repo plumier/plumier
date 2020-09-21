@@ -1,9 +1,7 @@
 module.exports = {
   overview: [
+    "overview/overview",
     "overview/get-started",
-    "overview/framework-skeleton",
-    "overview/generic-controller",
-    "overview/functionalities",
     "overview/typeorm-helper",
     "overview/mongoose-helper",
     "overview/swagger",
@@ -16,6 +14,7 @@ module.exports = {
     "Framework Reference": [
       "refs/entry-point",
       "refs/controller",
+      "refs/generic-controller",
       "refs/parameter-binding",
       "refs/converters",
       "refs/validation",

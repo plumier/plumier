@@ -1,5 +1,5 @@
-import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from "@plumier/core"
-import Plumier, { WebApiFacility } from "@plumier/plumier"
+import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave } from "@plumier/core"
+import Plumier, { WebApiFacility } from "plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
     TypeORMControllerGeneric,
@@ -84,7 +84,7 @@ describe("CRUD", () => {
             await repo.insert({ email: "jane.doe@gmail.com", name: "John Doe" })
             await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
             const { body } = await supertest(app.callback())
-                .get("/users?email=jane.doe@gmail.com")
+                .get("/users?filter[email]=jane.doe@gmail.com")
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
@@ -106,7 +106,52 @@ describe("CRUD", () => {
             await repo.insert({ email: "jane.dane@gmail.com", name: "John Doe" })
             await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
             const { body } = await supertest(app.callback())
-                .get("/users?email=jane.dane@gmail.com")
+                .get("/users?filter[email]=jane.dane@gmail.com")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to select by properties GET /users?offset&limit", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            await repo.insert({ email: "jane.doe@gmail.com", name: "John Doe" })
+            await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?select=id,email")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to order by properties GET /users?offset&limit", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @Column()
+                age: number
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            await repo.insert({ email: "john.doe@gmail.com", name: "August", age: 23 })
+            await repo.insert({ email: "john.doe@gmail.com", name: "Anne", age: 21 })
+            await repo.insert({ email: "john.doe@gmail.com", name: "Borne", age: 21 })
+            await repo.insert({ email: "john.doe@gmail.com", name: "John", age: 22 })
+            await repo.insert({ email: "john.doe@gmail.com", name: "Juliet", age: 22 })
+            const { body } = await supertest(app.callback())
+                .get("/users?order=age,-name&select=age,name")
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
@@ -150,6 +195,48 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body.email).toBe("john.doe@gmail.com")
             expect(body.name).toBe("John Doe")
+        })
+        it("Should able to select by properties GET /users/:id", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @Column()
+                age: number
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe", age: 21 })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${data.raw}?select=age,name`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should ignore wrong property name on select GET /users/:id", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @Column()
+                age: number
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe", age: 21 })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${data.raw}?select=age,name,otherProp`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
         })
         it("Should throw 404 if not found GET /users/:id", async () => {
             @Entity()
@@ -331,6 +418,33 @@ describe("CRUD", () => {
                 .send({ email: "john.doe@gmail.com", name: "John Doe" })
                 .expect(200)
         })
+        it("Should able to use request hook", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @Column()
+                password:string
+
+                @preSave()
+                hook(){
+                    this.password = "HASH"
+                }
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            const { body } = await supertest(app.callback())
+                .post("/users")
+                .send({email: "john.doe@gmail.com", name: "John Doe", password: "lorem ipsum"})
+                .expect(200)
+            const result = await repo.findOne(body.id)
+            expect(result).toMatchSnapshot()
+        })
     })
     describe("Nested CRUD One to Many Function", () => {
         async function createUser<T>(type: Class<T>): Promise<T> {
@@ -435,7 +549,7 @@ describe("CRUD", () => {
             animalRepo.insert({ name: `Jojo`, user })
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
             const { body } = await supertest(app.callback())
-                .get(`/users/${user.id}/animals?name=Jojo`)
+                .get(`/users/${user.id}/animals?filter[name]=Jojo`)
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
@@ -470,7 +584,80 @@ describe("CRUD", () => {
             animalRepo.insert({ name: `Jeje`, user })
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
             const { body } = await supertest(app.callback())
-                .get(`/users/${user.id}/animals?name=Jeje`)
+                .get(`/users/${user.id}/animals?filter[name]=Jeje`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to select by property GET /users/:parentId/animals?offset&limit", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @route.controller()
+                animals: Animal[]
+            }
+            @Entity()
+            @route.controller()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @Column()
+                age: number
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi`, user, age: 21 })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}/animals?select=name,age`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to order by property GET /users/:parentId/animals?offset&limit", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @route.controller()
+                animals: Animal[]
+            }
+            @Entity()
+            @route.controller()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @Column()
+                age: number
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            await animalRepo.insert({ user, name: `Mimi`, age: 22 })
+            await animalRepo.insert({ user, name: `Abas`, age: 21 })
+            await animalRepo.insert({ user, name: `Alba`, age: 21 })
+            await animalRepo.insert({ user, name: `Juliet`, age: 22 })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}/animals?order=-age,name&select=name,age`)
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
@@ -573,6 +760,41 @@ describe("CRUD", () => {
             const inserted = await animalRepo.insert({ name: `Mimi`, user })
             const { body } = await supertest(app.callback())
                 .get(`/users/${user.id}/animals/${inserted.raw}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to select by properties /users/:parentId/animals/:id", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @route.controller()
+                animals: Animal[]
+            }
+            @Entity()
+            @route.controller()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @Column()
+                age:number
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            const inserted = await animalRepo.insert({ name: `Mimi`, age: 21, user })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}/animals/${inserted.raw}?select=name,age`)
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
