@@ -1,4 +1,4 @@
-import { reflect } from "tinspector/src/reflect"
+import { reflect } from "tinspector"
 
 import { binder } from "./binder"
 import { Class } from "./common"
