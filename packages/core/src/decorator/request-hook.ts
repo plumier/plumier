@@ -1,4 +1,4 @@
-import { decorateMethod, decorateProperty } from "tinspector/src/decorators";
+import { decorateMethod, decorateProperty } from "tinspector";
 
 
 interface RequestHookDecorator { kind: "plumier-meta:request-hook", type: "preSave" | "postSave", method: ("post" | "put" | "patch")[] }
