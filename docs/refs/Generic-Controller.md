@@ -501,6 +501,7 @@ Request hook enables entity to have a method contains piece of code that will be
 * It will be executed only on request with http method `POST`, `PUT`, `PATCH`. By default it will execute on those three http methods except specified on the parameter.
 * It can be specified multiple request hooks on single entity
 * It can have parameter with parameter binding
+* It possible to bind ActionResult (execution result of the controller) on request hook `@postSave()`
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
@@ -550,6 +551,11 @@ class User {
     @preSave()
     async hook(@bind.ctx() ctx:Context){
         // ctx will contains context
+    }
+
+    @postSave("put", "patch")
+    async postHook(@bind.actionResult() result:ActionResult){
+        // result contains execution result of the controller
     }
 }
 ``` 

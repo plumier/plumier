@@ -1,6 +1,6 @@
 import { GetOption } from "cookies"
-import { decorateProperty, mergeDecorator, CustomPropertyDecorator } from "tinspector"
-import { BindingDecorator, CustomBinderFunction, HeaderPart, RequestPart } from "../binder"
+import { decorateProperty, mergeDecorator, CustomPropertyDecorator, decorateParameter } from "tinspector"
+import { BindActionResult, BindingDecorator, CustomBinderFunction, HeaderPart, RequestPart } from "../binder"
 import { getChildValue } from "../common"
 import { api } from "./api"
 
@@ -142,5 +142,14 @@ export namespace bind {
      */
     export function custom(process: CustomBinderFunction, name: string = "custom") {
         return decorateProperty(<BindingDecorator>{ type: "ParameterBinding", process, name })
+    }
+
+    /**
+     * Bind ActionResult of the action execution.
+     * 
+     * This binder only works on request hook postSave 
+     */
+    export function actionResult() {
+        return decorateParameter(<BindActionResult>{ kind: "plumier-meta:bind-action-result" })
     }
 }

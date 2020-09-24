@@ -12,6 +12,8 @@ import { ActionContext, ActionResult, Invocation, Middleware, MetadataImpl, Glob
 // --------------------------------------------------------------------- // 
 
 interface BindingDecorator { type: "ParameterBinding", process: CustomBinderFunction, name: string }
+interface BindActionResult { kind: "plumier-meta:bind-action-result" }
+
 type RequestPart = keyof Request
 type HeaderPart = keyof IncomingHttpHeaders
 type CustomBinderFunction = (ctx: Context, metadata: GlobalMetadata) => any
@@ -47,7 +49,7 @@ function bindBody(ctx: Context, par: ParameterReflection): any {
 }
 
 function bindDecorator(ctx: Context, par: ParameterReflection): any {
-    const decorator: BindingDecorator = par.decorators.find((x: BindingDecorator) => x.type == "ParameterBinding")
+    const decorator: BindingDecorator = par.decorators.find((x: BindingDecorator) => x.type === "ParameterBinding")
     if (!decorator) return NEXT
     return decorator.process(ctx, new MetadataImpl(undefined, ctx.route!, { ...par, parent: ctx.route!.controller.type }))
 }
@@ -78,4 +80,4 @@ class ParameterBinderMiddleware implements Middleware {
     }
 }
 
-export { RequestPart, HeaderPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction }
+export { RequestPart, HeaderPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction, BindActionResult }

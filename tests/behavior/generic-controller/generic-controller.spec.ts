@@ -1977,4 +1977,33 @@ describe("Request Hook", () => {
             .expect(200)
         expect(fn.mock.calls).toMatchSnapshot()
     })
+    it("Should able to bind ActionResult on postSave", async () => {
+        @domain()
+        class Parent {
+            constructor(
+                @route.controller()
+                @type(x => [User])
+                public users: User[]
+            ) { }
+        }
+        @domain()
+        class User {
+            constructor(
+                public name: string,
+                public email: string,
+                public password: string,
+            ) { }
+
+            @postSave()
+            hook(@bind.actionResult() result:ActionResult) {
+                fn(result)
+            }
+        }
+        const app = await createApp({ controller: [Parent] }).initialize()
+        await supertest(app.callback())
+            .post("/parent/123/users")
+            .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
+            .expect(200)
+        expect(fn.mock.calls).toMatchSnapshot()
+    })
 })
