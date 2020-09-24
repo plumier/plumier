@@ -166,6 +166,7 @@ Object {
   "appendRoute": appendRoute,
   "authorize": AuthDecoratorImpl {},
   "bind": Object {
+    "actionResult": actionResult,
     "body": body,
     "cookie": cookie,
     "ctx": ctx,
