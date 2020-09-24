@@ -4,46 +4,60 @@ title: Overview
 slug: /
 ---
 
-Plumier is A TypeScript backend framework focuses on development productivity, with dedicated reflection library to help you create a robust, secure and fast API delightfully.
-
-The main goal is to make your development time fast by providing built-in functionalities based on reflection, such as:
-
-* Generic controller to automatically create Restful CRUD API from your ORM entities
-* Type conversion to automatically convert request body into model type declaration
-* Parameter bindings to automatically bind request body or query into controller parameter
-* Authorization to restrict access to API endpoints including restrict read/write to request body properties 
-* Auto generated Open API 3.0 schema from controllers
-* Perform rich meta programming on top of TypeScript language to create new Plumier functionalities
-* Social media logins
-
-The simplest Plumier application consist of two parts: **Application bootstrap** and a **controller**. This simple application can be written in single TypeScript file like below:
-
-```typescript 
-import Plumier, { WebApiFacility } from "plumier"
-
-// controller
-export class HelloController {
-    index(name:string) {
-        return { say: `Hello ${name}` }
-    }
-}
-
-// application bootstrap
-new Plumier()
-    .set(new WebApiFacility({ controller: __filename }))
-    .listen(8000)
-```
-
-Above code host an API listens to port 8000 and serve an endpoint `GET /hello/index?name=<string>`. 
-
-## Bootstrap Application
-The bootstrap application consists of two steps: initialization and listen to the port for incoming http request. 
+Plumier is A TypeScript backend framework focuses on development productivity, with dedicated reflection library to help you create a robust, secure and fast API delightfully. The main goal is to make your development time fast by providing built-in functionalities based on reflection.
 
 ```typescript
+import Plumier, { authorize, ControllerFacility, route, WebApiFacility } from "plumier"
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { JwtAuthFacility } from "@plumier/jwt"
+import { SwaggerFacility } from "@plumier/swagger"
+import { TypeORMFacility } from "@plumier/typeorm"
+
+// @route.controller() means ask Plumier 
+// to create generic controller on the fly based on entity
+@route.controller()
+@Entity()
+export class Item {
+    @PrimaryGeneratedColumn()
+    id:number 
+
+    @Column()
+    name:string
+
+    // only Admin and SuperAdmin can set the price
+    @authorize.write("Admin", "SuperAdmin")
+    @Column()
+    price:number 
+}
+
+// plumier main entry (bootstrap application)
 new Plumier()
+    // install JSON api facility
     .set(new WebApiFacility())
+    // search for controllers or entities marked with @route.controller()
+    .set(new ControllerFacility({ controller: __filename, rootPath: "api/v1"}))
+    // install jwt authorization facility
+    .set(new JwtAuthFacility())
+    // install typeorm and generic controller facility 
+    .set(new TypeORMFacility())
+    // install swagger and open api 3 facility
+    .set(new SwaggerFacility())
+    // listen to port
     .listen(8000)
 ```
+
+Above code will host six Restful API endpoints 
+
+| Method | Path                       | Description                                              |
+| ------ | -------------------------- | -------------------------------------------------------- |
+| POST   | /items                     | Register item                                            |
+| GET    | /items?filter&select&order | Get items list with paging, filter, order and projection |
+| GET    | /items/:id                 | Get single item by id                                    |
+| PUT    | /items/:id                 | Replace item  by id                                      |
+| PATCH  | /items/:id                 | Modify item property by id                               |
+| DELETE | /items/:id                 | Delete item by id                                        |
+
+
 
 
 ## Facility
@@ -124,9 +138,52 @@ Plumier provided several `ActionResult` derived class for development convenient
 
 Refer to [action result documentation](../refs/Action-Result.md) for more information.
 
-### Generic Controller
+### Generic Controller 
 
-Generic controller takes advantage of reflection and inheritance to automatically create CRUD API based on ORM/ODM entities. Plumier provided functionalities for first class entity that make it possible to control CRUD API function and behavior from entities. 
+Plumier provided Generic Controllers to easily create CRUD API from your ORM entities. Using entity as DTO (data transfer object) in some frameworks may lead to some issue, but Plumier has [First Class Entity](../refs/First-Class-Entity.md) features to make it safe to use entity as DTO.
+
+Plumier provided several generic controllers for simple or nested CRUD API. To use it, mark entities with `@route.controller()` that will be handled by generic controller to create CRUD API instantly.
+
+```typescript  {6,16}
+import Plumier, { WebApiFacility, route } from "plumier"
+import { Entity, PrimaryGeneratedColumn } from "typeorm"
+import { TypeORMFacility } from "@plumier/typeorm"
+
+// TypeORM entity
+@route.controller()
+@Entity()
+class Item {
+    @PrimaryGeneratedColumn()
+    id:number 
+
+    @Column()
+    name:string
+
+    // only Admin and SuperAdmin can set the price
+    @authorize.write("Admin", "SuperAdmin")
+    @Column()
+    price:number 
+}
+
+// Plumier application bootstrap
+new Plumier()
+    .set(new WebApiFacility({ controller: __filename }))
+    .set(new TypeORMFacility())
+    .listen(8000)
+```
+
+Above code will host six Restful API endpoints 
+
+| Method | Path                       | Description                                              |
+| ------ | -------------------------- | -------------------------------------------------------- |
+| POST   | /items                     | Register item                                            |
+| GET    | /items?filter&select&order | Get items list with paging, filter, order and projection |
+| GET    | /items/:id                 | Get single item by id                                    |
+| PUT    | /items/:id                 | Replace item  by id                                      |
+| PATCH  | /items/:id                 | Modify item property by id                               |
+| DELETE | /items/:id                 | Delete item by id                                        |
+
+
 
 
 
@@ -390,7 +447,7 @@ Above code have the same behavior with the previous one, but showing that the va
 
 Refer to [Validation](../refs/Validation.md) for more information
 
-## Basic Authorization
+## Endpoint Authorization
 Plumier provided authorization decorator to easily securing access to the endpoints. This functionality automatically enabled when the `JwtAuthFacility` installed on Plumier application. Once installed all endpoints secured (not accessible by non login user) except decorated with `@authorize.public()`
 
 Plumier authorization required a valid JWT key passed within the `Authorization` header or a cookie named `Authorization`, Plumier automatically returned back response with status code: 
@@ -428,5 +485,8 @@ class AnimalsController {
 Authorization can be applied in parameter and domain model, further more it can restrict access of some property in the request and response body. 
 
 Refer to [Authorization](../refs/Authorization.md) for more information.
+
+## Data Authorization 
+Plumier provided authorization to secure your data (request/response), you can specify authorization on your model property
 
 ## Metaprogramming

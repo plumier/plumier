@@ -932,6 +932,28 @@ Array [
 ]
 `;
 
+exports[`Request Hook Should able to bind ActionResult on postSave 1`] = `
+Array [
+  Array [
+    Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "lorem ipsum",
+    },
+  ],
+  Array [
+    ActionResult {
+      "body": Object {
+        "id": 123,
+      },
+      "cookies": Array [],
+      "headers": Object {},
+      "status": 200,
+    },
+  ],
+]
+`;
+
 exports[`Request Hook Should able to bind by decorator 1`] = `
 Array [
   Array [

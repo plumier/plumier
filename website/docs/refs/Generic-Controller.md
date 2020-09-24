@@ -3,30 +3,12 @@ id: generic-controller
 title: Generic Controller
 ---
 
-Generic controller is a common Plumier controller but uses generic type signature on the model. Usually in a CRUD API, a model can represent a request and response body.
+Generic controller is a common Plumier controller with generic type signature, it take advantage of inheritance to possibly serve CRUD API based on ORM entity. 
 
-For example for CRUD animal controller, usually we created controller below 
-
-```typescript 
-class AnimalsController {
-    // GET /animals/:id
-    @route.get(":id")
-    get(id:string): Animal{ 
-      return repo.findOne(id)
-    }
-
-    // POST /animals
-    @route.post("")
-    save(data:Animal) {
-      return repo.save(data)
-    }
-}
-```
-
-Above code showing that the `GET /animals/:id` has response match with `Animal` model and the `POST /animals` has request body also match with `Animal` model. Controller above can be transform into a generic controller which make it more reusable.
+For example, below is a Plumier common controller with generic type `T` and `TID`. `T` represent the request and response body, `TID` represent the ID data type of the entity.
 
 ```typescript 
-class ControllerGeneric<T, TID> {
+class ControllerBase<T, TID> {
     @route.get(":id")
     get(id:TID): T{ 
       return repo.findOne(id)
@@ -39,21 +21,36 @@ class ControllerGeneric<T, TID> {
 }
 ```
 
-By using inheritance, we can create some controllers based on above controller like below 
+Above controller will not able to generates into some routes, but it already has functionality to connect to database using repository and able to handle request of type `GET` by id and `POST` with a request body. 
 
-```typescript 
-class AnimalController extends ControllerGeneric<Animal, Number>{ }
+By using inheritance, we can create a controller using above controller with specific request and response body based on entity supplied as generic parameter like below
 
-class UsersController extends ControllerGeneric<User, Number>{ }
+```typescript
+// TypeORM entity
+@Entity()
+class Animal {
+    @PrimaryGeneratedColumn()
+    id: number
 
-class ClientsController extends ControllerGeneric<Client, Number>{ }
+    @Column()
+    name: string
+
+    @Column()
+    species: string
+}
+
+// below controller will be generated into
+// GET  /animals/:id
+// POST /animals
+class AnimalsController extends ControllerBase<Animal, Number>{ }
 ```
 
-Above code will create six routes with different request and response schema. Using this trick, we can create CRUD API easily and consistently. 
+Plumier will able to generate above controller into two routes, `GET /animals/:id` which returns response body type with `Animal` type schema and the `id` is of type number, and `POST /animals` which the receives request body with `Animal` type schema. 
 
-Plumier takes advantage of above reflection reflection library to automatically create controller based on specified generic controller which make it possible to automatically create CRUD API based on ORM/ODM entities.
+With above trick, we can create several routes with the same functionality consistently based on ORM entity. Further more plumier provided facility to create controller that inherit from generic controller programmatically, and provided decorator to mark which entity will be handled by a generic controller.
 
 ## Enable Functionality 
+
 Generic controller supported TypeORM and Mongoose (with Plumier mongoose helper) entities to transform into CRUD API handled by generic controller implementation. Enable the generic controller by installing the `TypeORMFacility` or `MongooseFacility` on the Plumier application. 
 
 ```typescript
@@ -549,6 +546,7 @@ Request hook enables entity to have a method contains piece of code that will be
 * It will be executed only on request with http method `POST`, `PUT`, `PATCH`. By default it will execute on those three http methods except specified on the parameter.
 * It can be specified multiple request hooks on single entity
 * It can have parameter with parameter binding
+* It possible to bind ActionResult (execution result of the controller) on request hook `@postSave()`
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
@@ -598,6 +596,11 @@ class User {
     @preSave()
     async hook(@bind.ctx() ctx:Context){
         // ctx will contains context
+    }
+
+    @postSave("put", "patch")
+    async postHook(@bind.actionResult() result:ActionResult){
+        // result contains execution result of the controller
     }
 }
 ``` 
