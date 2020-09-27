@@ -103,9 +103,23 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         return (parent as any)[this.relation]
     }
 
+    private getReverseProperty(){
+        const meta = reflect(this.type)
+        for (const prop of meta.properties) {
+            if(prop.type === this.parent && prop.decorators.some((x:RelationDecorator) => x.kind === "plumier-meta:relation"))
+                return prop.name
+        }
+    }
+
     async insert(pid: string, doc: Partial<T>): Promise<{ id: any }> {
         const parent = await this.ParentModel.findById(pid);
+        const reverseProp = this.getReverseProperty()
+        if(reverseProp){
+            // add parent navigation
+            (doc as any)[reverseProp] = parent!.id
+        }
         const result = await new this.Model(doc).save();
+        // add children navigation
         (parent as any)[this.relation].push(result._id)
         await parent!.save()
         return { id: result._id.toHexString() }
