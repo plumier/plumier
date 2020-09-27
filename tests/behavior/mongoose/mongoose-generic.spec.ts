@@ -133,7 +133,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 age: number
                 @reflect.noop()
-                random:string
+                random: string
             }
             model(User)
             const random = new Date().getTime().toString(36)
@@ -156,7 +156,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 age: number
                 @reflect.noop()
-                random:string
+                random: string
             }
             model(User)
             const app = await createApp({ controller: User, mode: "production" })
@@ -220,7 +220,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @reflect.noop()
-                age:number
+                age: number
             }
             model(User)
             const app = await createApp({ controller: User, mode: "production" })
@@ -240,7 +240,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @reflect.noop()
-                age:number
+                age: number
             }
             model(User)
             const app = await createApp({ controller: User, mode: "production" })
@@ -493,10 +493,10 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @reflect.noop()
-                password:string
+                password: string
 
                 @preSave()
-                hook(){
+                hook() {
                     this.password = "HASH"
                 }
             }
@@ -504,7 +504,7 @@ describe("CRUD", () => {
             const repo = new MongooseRepository(User)
             const { body } = await supertest(app.callback())
                 .post("/users")
-                .send({email: "john.doe@gmail.com", name: "John Doe", password: "lorem ipsum"})
+                .send({ email: "john.doe@gmail.com", name: "John Doe", password: "lorem ipsum" })
                 .expect(200)
             const result = await repo.findById(body.id)
             expect(result).toMatchSnapshot()
@@ -680,9 +680,9 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @reflect.noop()
-                tag:string
+                tag: string
                 @reflect.noop()
-                age:number
+                age: number
             }
             model(Animal)
             model(User)
@@ -711,9 +711,9 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @reflect.noop()
-                tag:string
+                tag: string
                 @reflect.noop()
-                age:number
+                age: number
             }
             model(Animal)
             model(User)
@@ -762,6 +762,72 @@ describe("CRUD", () => {
                 .expect(200)
             const inserted = await repo.Model.findById(user._id).populate("animals")
             expect(inserted).toMatchSnapshot()
+        })
+        it("Should save navigation properties POST /users/:parentId/animals", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller()
+                animals: Animal[]
+            }
+            @collection()
+            @route.controller()
+            class Animal {
+                @reflect.noop()
+                name: string
+                @collection.ref(x => User)
+                user: User
+            }
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const repo = new MongooseRepository(User)
+            await supertest(app.callback())
+                .post(`/users/${user._id}/animals`)
+                .send({ name: "Mimi" })
+                .expect(200)
+            const parent = await repo.Model.findById(user._id).populate({
+                path: "animals",
+                populate: {
+                    path: "user",
+                    select: { animals: 0 }
+                }
+            })
+            expect(parent).toMatchSnapshot()
+        })
+        it("Should not save navigation properties for non populate properties POST /users/:parentId/animals", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller()
+                animals: Animal[]
+            }
+            @collection()
+            @route.controller()
+            class Animal {
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                user: User
+            }
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const repo = new MongooseRepository(User)
+            await supertest(app.callback())
+                .post(`/users/${user._id}/animals`)
+                .send({ name: "Mimi" })
+                .expect(200)
+            const parent = await repo.Model.findById(user._id).populate({ path: "animals" })
+            expect(parent).toMatchSnapshot()
         })
         it("Should check prover mongodb id on POST /users/:parentId/animals", async () => {
             @collection()
@@ -833,6 +899,8 @@ describe("CRUD", () => {
             class Animal {
                 @reflect.noop()
                 name: string
+                @collection.ref(x => User)
+                user: User
             }
             model(Animal)
             model(User)
@@ -863,9 +931,9 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @reflect.noop()
-                tag:string
+                tag: string
                 @reflect.noop()
-                age:number
+                age: number
             }
             model(Animal)
             model(User)
@@ -896,9 +964,9 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @reflect.noop()
-                tag:string
+                tag: string
                 @reflect.noop()
-                age:number
+                age: number
             }
             model(Animal)
             model(User)
