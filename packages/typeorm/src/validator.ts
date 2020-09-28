@@ -1,7 +1,7 @@
+import { Class } from "@plumier/core"
+import { CustomPropertyDecorator } from "tinspector"
 import { val } from "typedconverter"
-import { Class } from '@plumier/core'
-import { CustomPropertyDecorator } from '@plumier/tinspector'
-import { getManager } from 'typeorm'
+import { getManager } from "typeorm"
 
 async function isUnique(value: string, target: Class, field: string, method: string) {
     //case insensitive comparison
