@@ -21,6 +21,6 @@ declare module "typedconverter" {
     }
 }
 
-val.unique = (helper) => val.custom(async (value, info) => {
+val.unique = (helper?:MongooseHelper) => val.custom(async (value, info) => {
     return isUnique(value, info.parent && info.parent.type, info.name, info.ctx.method.toLocaleLowerCase(), helper)
 })

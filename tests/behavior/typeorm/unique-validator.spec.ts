@@ -1,38 +1,30 @@
 import { Class, HttpMethod, route, val } from "@plumier/core"
-import { collection, model, MongooseFacility, MongooseHelper } from "@plumier/mongoose"
-import { MongoMemoryServer } from "mongodb-memory-server-global"
-import Mongoose from "mongoose"
+import { TypeORMFacility } from "@plumier/typeorm"
 import supertest = require("supertest")
-import { decorate } from "tinspector"
+import { Column, Entity, getManager, PrimaryGeneratedColumn } from "typeorm"
 
 import { fixture } from "../helper"
-
-Mongoose.set("useNewUrlParser", true)
-Mongoose.set("useUnifiedTopology", true)
-Mongoose.set("useFindAndModify", false)
+import { cleanup, getConn } from "./helper"
 
 jest.setTimeout(20000)
 
 describe("unique validator", () => {
-    beforeEach(() => Mongoose.models = {})
-    afterAll(async () => await Mongoose.disconnect())
-    beforeAll(async () => {
-        const mongod = new MongoMemoryServer()
-        await Mongoose.connect(await mongod.getUri())
-    })
+    afterEach(async () => {
+        await cleanup()
+    });
 
     async function setup<T extends object>({ controller, domain, initUser, testUser, method }: { controller: Class; domain: Class; initUser?: T; testUser: T; method?: HttpMethod }) {
         const httpMethod = method || "post"
         const koa = await fixture(controller)
-            .set(new MongooseFacility()).initialize()
+            .set(new TypeORMFacility({ connection: getConn([domain]) })).initialize()
         koa.on("error", () => { })
         //setup user
-        const UserModel = model(domain)
-        await UserModel.deleteMany({})
+        const repo = getManager().getRepository(domain)
+        await repo.delete({})
         if (!!initUser)
-            await new UserModel(initUser).save()
+            await repo.insert({...initUser})
         if (httpMethod !== "post")
-            await new UserModel(testUser).save()
+            await repo.insert({...testUser})
         //test
         return await supertest(koa.callback())
         [httpMethod || "post"]("/user/save")
@@ -40,13 +32,15 @@ describe("unique validator", () => {
     }
 
     it("Should return invalid if data already exist", async () => {
-        @collection()
+        @Entity()
         class User {
-            constructor(
-                public name: string,
-                @val.unique()
-                public email: string
-            ) { }
+            @PrimaryGeneratedColumn()
+            id:number
+            @Column()
+            public name: string
+            @Column()
+            @val.unique()
+            public email: string
         }
         class UserController {
             @route.post()
@@ -60,13 +54,15 @@ describe("unique validator", () => {
     })
 
     it("Should check data with case insensitive", async () => {
-        @collection()
+        @Entity()
         class User {
-            constructor(
-                public name: string,
-                @val.unique()
-                public email: string
-            ) { }
+            @PrimaryGeneratedColumn()
+            id:number
+            @Column()
+            public name: string
+            @Column()
+            @val.unique()
+            public email: string
         }
         class UserController {
             @route.post()
@@ -82,13 +78,15 @@ describe("unique validator", () => {
     })
 
     it("Should not check if partial part provided", async () => {
-        @collection()
+        @Entity()
         class User {
-            constructor(
-                public name: string,
-                @val.unique()
-                public email: string
-            ) { }
+            @PrimaryGeneratedColumn()
+            id:number
+            @Column()
+            public name: string
+            @Column()
+            @val.unique()
+            public email: string
         }
         class UserController {
             @route.post()
@@ -103,13 +101,15 @@ describe("unique validator", () => {
     })
 
     it("Should return valid if data not exist", async () => {
-        @collection()
+        @Entity()
         class User {
-            constructor(
-                public name: string,
-                @val.unique()
-                public email: string
-            ) { }
+            @PrimaryGeneratedColumn()
+            id:number
+            @Column()
+            public name: string
+            @Column()
+            @val.unique()
+            public email: string
         }
         class UserController {
             @route.post()
@@ -123,13 +123,15 @@ describe("unique validator", () => {
     })
 
     it("Should return valid if data not exist but other data exists", async () => {
-        @collection()
+        @Entity()
         class User {
-            constructor(
-                public name: string,
-                @val.unique()
-                public email: string
-            ) { }
+            @PrimaryGeneratedColumn()
+            id:number
+            @Column()
+            public name: string
+            @Column()
+            @val.unique()
+            public email: string
         }
         class UserController {
             @route.post()
@@ -144,13 +146,15 @@ describe("unique validator", () => {
     })
 
     it("Should return valid if data is optional and provided undefined", async () => {
-        @collection()
+        @Entity()
         class User {
-            constructor(
-                public name: string,
-                @val.unique()
-                public email: string | undefined
-            ) { }
+            @PrimaryGeneratedColumn()
+            id:number
+            @Column()
+            public name: string
+            @Column()
+            @val.unique()
+            public email: string
         }
         class UserController {
             @route.post()
@@ -164,12 +168,15 @@ describe("unique validator", () => {
     })
 
     it("Should throw error if applied outside class", async () => {
-        @collection()
+        @Entity()
         class User {
-            constructor(
-                @val.unique()
-                public email: string | undefined
-            ) { }
+            @PrimaryGeneratedColumn()
+            id:number
+            @Column()
+            public name: string
+            @Column()
+            @val.unique()
+            public email: string
         }
         class UserController {
             @route.post()
@@ -183,13 +190,15 @@ describe("unique validator", () => {
     })
 
     it("Should check on PUT method", async () => {
-        @collection()
+        @Entity()
         class User {
-            constructor(
-                public name: string,
-                @val.unique()
-                public email: string
-            ) { }
+            @PrimaryGeneratedColumn()
+            id:number
+            @Column()
+            public name: string
+            @Column()
+            @val.unique()
+            public email: string
         }
         class UserController {
             @route.put()
@@ -209,65 +218,23 @@ describe("unique validator", () => {
     })
 
     it("Should check on PATCH method", async () => {
-        @collection()
+        @Entity()
         class User {
-            constructor(
-                public name: string,
-                @val.unique()
-                public email: string
-            ) { }
+            @PrimaryGeneratedColumn()
+            id:number
+            @Column()
+            public name: string
+            @Column()
+            @val.unique()
+            public email: string
         }
         class UserController {
             @route.patch()
             save(user: User) { }
         }
-
         const user = { name: "Ketut", email: "ketut@gmail.com" }
         const res = await setup({ controller: UserController, domain: User, initUser: user, testUser: user, method: "patch" })
         expect(res.status).toBe(422)
         expect(res.body).toEqual({ status: 422, message: [{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }] })
-    })
-
-    it("Should able to use isolated helper", async () => {
-        const mongod = new MongoMemoryServer()
-        const helper = new MongooseHelper()
-        @collection()
-        class Animal {
-            constructor(
-                public name: string,
-            ) { }
-        }
-        helper.model(Animal)
-        @collection()
-        class User {
-            constructor(
-                public name: string,
-                @val.unique(helper)
-                public email: string,
-                @collection.ref(x => [Animal])
-                public animals: Animal[]
-            ) { }
-        }
-        const UserModel = helper.model(User)
-        class UserController {
-            @route.post()
-            save(user: User) { }
-        }
-        const koa = await fixture(UserController)
-            .set(new MongooseFacility({
-                uri: await mongod.getUri(),
-                helper
-            })).initialize()
-        //setup user
-        const user = { name: "Ketut", email: "ketut@gmail.com" }
-        await UserModel.deleteMany({})
-        await new UserModel(user).save()
-        //test
-        const res = await supertest(koa.callback())
-            .post("/user/save")
-            .send(user)
-        expect(res.status).toBe(422)
-        expect(res.body).toEqual({ status: 422, message: [{ messages: ["ketut@gmail.com already exists"], path: ["user", "email"] }] })
-        await helper.disconnect()
     })
 })
