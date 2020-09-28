@@ -2006,4 +2006,27 @@ describe("Request Hook", () => {
             .expect(200)
         expect(fn.mock.calls).toMatchSnapshot()
     })
+    it("Should not executed on GET method with model parameter", async () => {
+        const myFn = jest.fn()
+        @route.controller()
+        @domain()
+        class User {
+            constructor(
+                public name: string,
+                public email: string,
+                public password: string
+            ) { }
+
+            @preSave()
+            hook() {
+                myFn("CALLED")
+            }
+        }
+        const app = await createApp({ controller: User }).initialize()
+        await supertest(app.callback())
+            .get("/user")
+            .expect(200)
+        expect(myFn.mock.calls).toMatchSnapshot()
+    })
+
 })

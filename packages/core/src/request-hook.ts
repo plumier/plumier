@@ -5,9 +5,11 @@ import { Class } from "./common"
 import { RequestHookDecorator } from "./decorator/request-hook"
 import { ActionContext, ActionResult, Invocation, Middleware } from "./types"
 
-async function executeHooks(invocation: Invocation<ActionContext>, type: "preSave"|"postSave", result?:ActionResult) {
+async function executeHooks(invocation: Invocation<ActionContext>, type: "preSave" | "postSave", result?: ActionResult) {
     const metadata = invocation.metadata!
     const ctx = invocation.ctx;
+    // only execute hooks under POST PUT PATCH
+    if (!["POST", "PUT", "PATCH"].some(x => x === ctx.method)) return
     for (const par of metadata.action.parameters) {
         if (par.typeClassification === "Class" && par.type) {
             const meta = reflect(par.type as Class)
@@ -19,7 +21,7 @@ async function executeHooks(invocation: Invocation<ActionContext>, type: "preSav
                 const boundPars = await binder(hook, ctx)
                 // bind action result 
                 const pars = boundPars.map((x, i) => {
-                    const par = hook.parameters[i].decorators.find((x:BindActionResult) => x.kind === "plumier-meta:bind-action-result")
+                    const par = hook.parameters[i].decorators.find((x: BindActionResult) => x.kind === "plumier-meta:bind-action-result")
                     return !!par ? result : x
                 })
                 const value = metadata.actionParams.get(par.name);
