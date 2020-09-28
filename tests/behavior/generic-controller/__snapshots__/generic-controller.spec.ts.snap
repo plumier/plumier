@@ -744,198 +744,10 @@ Object {
 }
 `;
 
-exports[`Property Binding Generic Controller Should bind on patch method 1`] = `
-Array [
-  Array [
-    "123",
-  ],
-  Array [
-    "123",
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum dolor",
-    },
-  ],
-]
-`;
-
-exports[`Property Binding Generic Controller Should bind on post method 1`] = `
-Array [
-  Array [
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum dolor",
-    },
-  ],
-]
-`;
-
-exports[`Property Binding Generic Controller Should bind on post method using property declaration 1`] = `
-Array [
-  Array [
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum dolor",
-    },
-  ],
-]
-`;
-
-exports[`Property Binding Generic Controller Should bind on put method 1`] = `
-Array [
-  Array [
-    "123",
-  ],
-  Array [
-    "123",
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum dolor",
-    },
-  ],
-]
-`;
-
-exports[`Property Binding Generic Controller Should bind promise on patch method 1`] = `
-Array [
-  Array [
-    "123",
-  ],
-  Array [
-    "123",
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum",
-    },
-  ],
-]
-`;
-
-exports[`Property Binding Generic Controller Should bind promise on post method 1`] = `
-Array [
-  Array [
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum",
-    },
-  ],
-]
-`;
-
-exports[`Property Binding Generic Controller Should bind promise on put method 1`] = `
-Array [
-  Array [
-    "123",
-  ],
-  Array [
-    "123",
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum",
-    },
-  ],
-]
-`;
-
-exports[`Property Binding One To Many Controller Should bind on patch method 1`] = `
-Array [
-  Array [
-    "123",
-  ],
-  Array [
-    "123",
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum dolor",
-    },
-  ],
-]
-`;
-
-exports[`Property Binding One To Many Controller Should bind on post method 1`] = `
-Array [
-  Array [
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum dolor",
-    },
-  ],
-]
-`;
-
-exports[`Property Binding One To Many Controller Should bind on put method 1`] = `
-Array [
-  Array [
-    "123",
-  ],
-  Array [
-    "123",
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum dolor",
-    },
-  ],
-]
-`;
-
-exports[`Property Binding One To Many Controller Should bind promise on patch method 1`] = `
-Array [
-  Array [
-    "123",
-  ],
-  Array [
-    "123",
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum",
-    },
-  ],
-]
-`;
-
-exports[`Property Binding One To Many Controller Should bind promise on post method 1`] = `
-Array [
-  Array [
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum",
-    },
-  ],
-]
-`;
-
-exports[`Property Binding One To Many Controller Should bind promise on put method 1`] = `
-Array [
-  Array [
-    "123",
-  ],
-  Array [
-    "123",
-    Object {
-      "email": "john.doe@gmail.com",
-      "name": "John",
-      "random": "lorem ipsum",
-    },
-  ],
-]
-`;
-
 exports[`Request Hook Should able to bind ActionResult on postSave 1`] = `
 Array [
   Array [
-    Object {
+    User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
       "password": "lorem ipsum",
@@ -960,7 +772,7 @@ Array [
     "application/json",
   ],
   Array [
-    Object {
+    User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
       "password": "lorem ipsum",
@@ -972,7 +784,7 @@ Array [
 exports[`Request Hook Should able to bind query by name 1`] = `
 Array [
   Array [
-    Object {
+    User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
       "password": "123",
@@ -984,7 +796,7 @@ Array [
 exports[`Request Hook Should able to hook request in generic controller 1`] = `
 Array [
   Array [
-    Object {
+    User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
       "password": "HASH",
@@ -1000,14 +812,14 @@ Array [
   ],
   Array [
     "123",
-    Object {
+    User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
       "password": "HASH",
     },
   ],
   Array [
-    Object {
+    User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
       "password": "HASH",
@@ -1018,7 +830,7 @@ Array [
   ],
   Array [
     "123",
-    Object {
+    User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
       "password": "lorem ipsum",
@@ -1030,7 +842,7 @@ Array [
 exports[`Request Hook Should able to hook request in one to many generic controller 1`] = `
 Array [
   Array [
-    Object {
+    User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
       "password": "HASH",
@@ -1046,14 +858,14 @@ Array [
   ],
   Array [
     "123",
-    Object {
+    User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
       "password": "HASH",
     },
   ],
   Array [
-    Object {
+    User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
       "password": "lorem ipsum",
@@ -1065,7 +877,7 @@ Array [
 exports[`Request Hook Should able to use multiple hook request 1`] = `
 Array [
   Array [
-    Object {
+    User {
       "email": "hacked@gmail.com",
       "name": "John Doe",
       "password": "HASH",
@@ -1080,7 +892,7 @@ Array [
     "PRE SAVE",
   ],
   Array [
-    Object {
+    User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
       "password": "lorem ipsum",
