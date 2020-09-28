@@ -1092,6 +1092,8 @@ Array [
 ]
 `;
 
+exports[`Request Hook Should not executed on GET method with model parameter 1`] = `Array []`;
+
 exports[`Route Generator Generic Controller Should able to change root path 1`] = `
 Array [
   Array [],
