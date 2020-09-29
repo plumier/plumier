@@ -240,7 +240,8 @@ async function checkAuthorize(ctx: ActionContext) {
         //check user access
         await checkUserAccessToRoute(decorator, info)
         //if ok check parameter access
-        await checkUserAccessToParameters(route.action.parameters, parameters, { ...info, type: "Parameter" })
+        if (["POST", "PUT", "PATCH", "DELETE"].some(x => x === ctx.method))
+            await checkUserAccessToParameters(route.action.parameters, parameters, { ...info, type: "Parameter" })
     }
 }
 

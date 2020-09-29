@@ -1147,6 +1147,9 @@ describe("JwtAuth", () => {
             class AnimalController {
                 @route.post()
                 save(data: Animal) { return "Hello" }
+
+                @route.get()
+                get(data: Animal) { return data }
             }
 
             it("Should be able to authorize parameter", async () => {
@@ -1205,6 +1208,17 @@ describe("JwtAuth", () => {
                     .post("/animal/save")
                     .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
                     .send({ id: "123", name: "Mimi", deceased: "Yes" })
+                    .expect(200)
+            })
+        
+            it("Should skip authorization on GET method", async () => {
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .get("/animal/get?data[deceased]=true")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .expect(200)
             })
         })
