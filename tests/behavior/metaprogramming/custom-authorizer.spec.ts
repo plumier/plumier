@@ -108,14 +108,14 @@ describe("Custom Authorizer", () => {
             return true
         }
         class AnimalController {
-            @route.get()
-            get(@authorize.custom(customAuthorizer) id: number) { return { id } }
+            @route.post()
+            save(@authorize.custom(customAuthorizer) id: number) { return { id } }
         }
         const app = await fixture(AnimalController)
             .set(new JwtAuthFacility({ secret }))
             .initialize()
         await supertest(app.callback())
-            .get("/animal/get?id=1234")
+            .post("/animal/save?id=1234")
             .set({ Authorization: `Bearer ${token}` })
             .expect(200, { id: 1234 })
         expect(fn.mock.calls).toMatchSnapshot()
