@@ -25,3 +25,7 @@
 .main-wrapper .hero {
   padding: 8rem 0;
 }
+
+.menu {
+  overflow-x: initial;
+}

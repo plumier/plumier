@@ -27,12 +27,19 @@ For example you have a simple form with a file input named `file` like below
 Note that the action of the form pointed to `/animal/save`. The name of the file input is `file`. Using that information you can create the controller like below
 
 ```typescript
+import { FormFile, route } from "plumier"
+import { readFile } from "fs"
+import { promisify } from "util"
+
+const readFileAsync = promisify(readFile)
+
 export class AnimalController {
     @route.post()
-    save(file: FormFile) {
+    async save(file: FormFile) {
         // process the file 
         // crop or create thumbnail 
         // re-upload to cloud storage
+        const buf = await readFileAsync(file.path)
     }
 }
 ```
@@ -96,7 +103,9 @@ export class AnimalController {
 }
 ```
 
-Above code will restrict the size of uploaded file only 3MB allowed. The `@val.file()` validator receive string/number as default to limit the file size. It can receive object parameter for more options. 
+Above code will restrict the size of uploaded file only 3MB allowed. The `@val.file()` validator receive string/number as default to limit the file size. Internally the bytes string notation uses [bytes](https://www.npmjs.com/package/bytes) to parse the string. 
+
+File validation also receive object parameter for more options. 
 
 ```typescript
 export class AnimalController {

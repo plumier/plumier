@@ -6,15 +6,15 @@ title: Get Started
 This documentation will show you how to create a secure CRUD restful API with a proper validation and authorization. We will use Plumier Generic Controller to automatically host CRUD restful API based on your ORM entities. 
 
 
-| Method | Path                       | Access         | Description                           |
-| ------ | -------------------------- | -------------- | ------------------------------------- |
-| POST   | /api/v1/users              | Public         | Register user                         |
-| GET    | /api/v1/users?offset&limit | Admin          | Get all users                         |
-| GET    | /api/v1/users/:id          | Owner or Admin | Get single user by id                 |
-| PUT    | /api/v1/users/:id          | Owner or Admin | Replace user with new user info by id |
-| PATCH  | /api/v1/users/:id          | Owner or Admin | Modify user by id                     |
-| DELETE | /api/v1/users/:id          | Owner or Admin | Delete user by id                     |
-| POST   | /auth/login                | Public         | Login endpoint                        |
+| Method | Path                | Access         | Description                           |
+| ------ | ------------------- | -------------- | ------------------------------------- |
+| POST   | `/api/v1/users`     | Public         | Register user                         |
+| GET    | `/api/v1/users`     | Admin          | Get all users                         |
+| GET    | `/api/v1/users/:id` | Owner or Admin | Get single user by id                 |
+| PUT    | `/api/v1/users/:id` | Owner or Admin | Replace user with new user info by id |
+| PATCH  | `/api/v1/users/:id` | Owner or Admin | Modify user by id                     |
+| DELETE | `/api/v1/users/:id` | Owner or Admin | Delete user by id                     |
+| POST   | `/auth/login`       | Public         | Login endpoint                        |
 
 ## Requirements 
 

@@ -16,23 +16,20 @@ Complete example using social media login can be found in these GitHub repositor
 ## Enable Functionalities 
 Plumier social media login is not enabled by default, to enable the functionalities use some provided Facility from `@plumier/social-login` package. 
 
-| Facility                | Description                                                                          |
-| ----------------------- | ------------------------------------------------------------------------------------ |
-| `OAuthFacility`         | Provided general function to work with OAuth 2, such as the CSRF Secret endpoint etc |
-| `FacebookOAuthFacility` | Provide Facebook specific social login functionalities                               |
-| `GoogleOAuthFacility`   | Provide Google specific social login functionalities                                 |
-| `GitHubOAuthFacility`   | Provide GitHub specific social login functionalities                                 |
-| `GitLabOAuthFacility`   | Provide GitLab specific social login functionalities                                 |
-| `TwitterOAuthFacility`   | Provide Twitter specific social login functionalities                                 |
+| Facility                | Description                                            |
+| ----------------------- | ------------------------------------------------------ |
+| `FacebookOAuthFacility` | Provide Facebook specific social login functionalities |
+| `GoogleOAuthFacility`   | Provide Google specific social login functionalities   |
+| `GitHubOAuthFacility`   | Provide GitHub specific social login functionalities   |
+| `GitLabOAuthFacility`   | Provide GitLab specific social login functionalities   |
+| `TwitterOAuthFacility`  | Provide Twitter specific social login functionalities  |
 
-`OAuthFacility` facility is mandatory because its provide the common functionalities required to perform OAuth process.
 
 To enable the social login functionality, register above facility on the Plumier application like below: 
 
 ```typescript
 const plumier = new Plumier()
     .set(new WebApiFacility())
-    .set(new OAuthFacility())
     .set(new FacebookOAuthFacility({ 
         clientId: <FACEBOOK APP ID>, 
         clientSecret: <FACEBOOK APP SECRET> 
@@ -49,7 +46,6 @@ All OAuth provider facility can be instantiated without parameters, It will auto
 ```typescript
 const plumier = new Plumier()
     .set(new WebApiFacility())
-    .set(new OAuthFacility())
     .set(new FacebookOAuthFacility())
     .initialize()
 ```
@@ -63,11 +59,11 @@ const plumier = new Plumier()
 | `GoogleOAuthFacility`   | `PLUM_GOOGLE_CLIENT_ID`   | `PLUM_GOOGLE_CLIENT_SECRET`   |
 | `GitHubOAuthFacility`   | `PLUM_GITHUB_CLIENT_ID`   | `PLUM_GITHUB_CLIENT_SECRET`   |
 | `GitLabOAuthFacility`   | `PLUM_GITLAB_CLIENT_ID`   | `PLUM_GITLAB_CLIENT_SECRET`   |
-| `TwitterOAuthFacility`   | `PLUM_TWITTER_CLIENT_ID`   | `PLUM_TWITTER_CLIENT_SECRET`   |
+| `TwitterOAuthFacility`  | `PLUM_TWITTER_CLIENT_ID`  | `PLUM_TWITTER_CLIENT_SECRET`  |
 
 
 ## Redirect URI Handler 
-Plumier provided `@redirectUri()` decorator to easily mark controller as a social media redirect uri. To create a controller as a redirect uri handler simply mark the method with the decorator like below.
+Plumier provided `@redirectUri()` decorator to easily mark action as a social media redirect uri. To create an action as a redirect uri handler simply mark the action with the decorator like below.
 
 ```typescript
 class AuthController {
@@ -165,7 +161,7 @@ Plumier provided endpoints that will be redirected to the social media login pag
 | `GET /auth/google/login`   | `GoogleOAuthFacility`   | Redirect to Google login page   |
 | `GET /auth/github/login`   | `GitHubOAuthFacility`   | Redirect to GitHub login page   |
 | `GET /auth/gitlab/login`   | `GitLabOAuthFacility`   | Redirect to GitLab login page   |
-| `GET /auth/tiwtter/login`   | `TwitterOAuthFacility`   | Redirect to Twitter login page   |
+| `GET /auth/tiwtter/login`  | `TwitterOAuthFacility`  | Redirect to Twitter login page  |
 
 Above endpoint can be change accordingly see [customization](#customization) section for more detail.
 

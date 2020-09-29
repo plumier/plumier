@@ -183,7 +183,7 @@ Above code showing that the middleware applied on the controller, its mean it wi
 Custom parameter binding extends the parameter binding functionalities, signature of custom parameter binding is like below
 
 ```typescript 
-type CustomBinderFunction = (ctx:Context) => any
+type CustomBinderFunction = (ctx:Context) => any | Promise
 ```
 
 Custom parameter binder receive single parameter which of type Context and return the value that will be bound to the parameter. 

@@ -2,6 +2,7 @@ module.exports = {
   overview: [
     "overview/overview",
     "overview/get-started",
+    "overview/reflection-basic",
     "overview/typeorm-helper",
     "overview/mongoose-helper",
     "overview/swagger",
@@ -15,6 +16,7 @@ module.exports = {
       "refs/entry-point",
       "refs/controller",
       "refs/generic-controller",
+      "refs/first-class-entity",
       "refs/parameter-binding",
       "refs/converters",
       "refs/validation",

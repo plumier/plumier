@@ -1,67 +1,243 @@
 ---
 id: overview
-title: Overview
+title: Plumier in 5 Minutes
 slug: /
 ---
 
-Plumier is A TypeScript backend framework focuses on development productivity, with dedicated reflection library to help you create a robust, secure and fast API delightfully. The main goal is to make your development time fast by providing built-in functionalities based on reflection.
+Plumier is A TypeScript backend framework focuses on development productivity with dedicated reflection library to help you create a robust, secure and fast API delightfully. 
+
+## Map ORM Entities into CRUD APIs
+
+Plumier provided generic controllers to increase your productivity developing secure Restful API. Generic controllers are reusable controllers with a generic type signature, its take advantage of reflection and inheritance to provide Restful CRUD function with some useful operation such as filtering, ordering and response projection out of the box. Using it you will be able to create CRUD API rapidly based on your ORM entities (TypeORM entity, Mongoose with mongoose helper).
+
+:::info 
+In some frameworks you may avoid mapping ORM entities directly into CRUD APIs because its may lead into some issues. Plumier has [First Class Entity](../refs/First-Class-Entity.md) which provided functionalities to make it possible to map Entity into CRUD APIs safely.
+:::
+
+You use generic controller by decorating your entity with `@route.controller()` then Plumier automatically create derived controller based on your entity on the fly. 
+
+```typescript {4,12}
+import { route } from "plumier"
+import { Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"
+
+@route.controller()
+@Entity()
+export class Post {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    /** other properties **/
+
+    @route.controller()
+    @OneToMany(x => Item, x => x.post)
+    comments: Comment[]
+}
+```
+
+Above code is a common TypeORM entities marked with Plumier decorators. The `Category` entity marked with `@route.controller()` it tells Plumier that the entity should be handled by a generic controller which handled endpoints below
+
+| Method | Path         | Description                                                 |
+| ------ | ------------ | ----------------------------------------------------------- |
+| POST   | `/posts`     | Create new post                                             |
+| GET    | `/posts`     | Get list of posts with paging, filter, order and projection |
+| GET    | `/posts/:id` | Get single post by id with projection                       |
+| PUT    | `/posts/:id` | Replace post  by id                                         |
+| PATCH  | `/posts/:id` | Modify post property by id                                  |
+| DELETE | `/posts/:id` | Delete post by id                                           |
+
+The other `@route.controller()` decorator on the `Category.items` property tells Plumier to create another controller on the fly with nested behavior which will handle routes below: 
+
+| Method | Path                       | Description                                                           |
+| ------ | -------------------------- | --------------------------------------------------------------------- |
+| POST   | `/posts/:pid/comments`     | Create new post's comment                                             |
+| GET    | `/posts/:pid/comments`     | Get list of post's comments with paging, filter, order and projection |
+| GET    | `/posts/:pid/comments/:id` | Get single post's comment by id with projection                       |
+| PUT    | `/posts/:pid/comments/:id` | Replace post's comment  by id                                         |
+| PATCH  | `/posts/:pid/comments/:id` | Modify post's comment property by id                                  |
+| DELETE | `/posts/:pid/comments/:id` | Delete post's comment by id                                           |
+
+Nested generic controller will automatically populate the values for relation properties (children relation property and reverse property). 
+
+Generic controller functionalities are highly customizable, you can define your own route path, disable some routes, hook the saving process and even you can provide your own custom generic controller. 
+
+:::info Documentation
+Read more detail information about Generic Controller in this [documentation](../refs/Generic-Controller.md)
+::::
+
+## Security 
+
+Plumier has a powerful authorization system to protect your API endpoints and data based on your user roles. The authorization can be enabled by installing `JwtAuthFacility` (we will learn about Facility on the next section). 
+
+Before proceeding on security functionality, its important to notice that Plumier role system is depends on the JWT claim named `role`. You define the login user role by specify user role during JWT signing process like below.
 
 ```typescript
-import Plumier, { authorize, ControllerFacility, route, WebApiFacility } from "plumier"
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
-import { JwtAuthFacility } from "@plumier/jwt"
-import { SwaggerFacility } from "@plumier/swagger"
-import { TypeORMFacility } from "@plumier/typeorm"
+import { route } from "plumier"
+import { sign } from "jsonwebtoken"
 
-// @route.controller() means ask Plumier 
-// to create generic controller on the fly based on entity
+export class AuthController {
+    @route.post()
+    login(data:Login) {
+
+        /** other login process **/
+
+        const token = sign({ role: user.role, /* other claims */  }, <secret>)
+        return { token }
+    }
+}
+```
+
+Role claim can be any string such as `SuperAdmin`, `Supervisor`, `Staff`, `Admin`, `User` etc. Further more this roles can be used to secure your API endpoints or data using `@authorize` decorator like below 
+
+```typescript {4,13,17}
+import { route } from "plumier"
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+
 @route.controller()
 @Entity()
 export class Item {
     @PrimaryGeneratedColumn()
-    id:number 
+    id: number
 
     @Column()
-    name:string
+    name: string
 
-    // only Admin and SuperAdmin can set the price
-    @authorize.write("Admin", "SuperAdmin")
+    @authorize.role("Supervisor")
     @Column()
-    price:number 
+    basePrice: string
+
+    @authorize.write("Supervisor")
+    @Column()
+    price: string
 }
-
-// plumier main entry (bootstrap application)
-new Plumier()
-    // install JSON api facility
-    .set(new WebApiFacility())
-    // search for controllers or entities marked with @route.controller()
-    .set(new ControllerFacility({ controller: __filename, rootPath: "api/v1"}))
-    // install jwt authorization facility
-    .set(new JwtAuthFacility())
-    // install typeorm and generic controller facility 
-    .set(new TypeORMFacility())
-    // install swagger and open api 3 facility
-    .set(new SwaggerFacility())
-    // listen to port
-    .listen(8000)
 ```
 
-Above code will host six Restful API endpoints 
+Code above showing that the entity handled by a generic controller. The `basePrice` property protected by `@authorize.role("Supervisor")` which means this property only can be read and write by user with `Supervisor` role. While `price` property protected with `@authorize.write("Supervisor")` will make it visible to everyone but only can be set by `Supervisor`. 
 
-| Method | Path                       | Description                                              |
-| ------ | -------------------------- | -------------------------------------------------------- |
-| POST   | /items                     | Register item                                            |
-| GET    | /items?filter&select&order | Get items list with paging, filter, order and projection |
-| GET    | /items/:id                 | Get single item by id                                    |
-| PUT    | /items/:id                 | Replace item  by id                                      |
-| PATCH  | /items/:id                 | Modify item property by id                               |
-| DELETE | /items/:id                 | Delete item by id                                        |
+There are more authorization decorator available
+
+| Decorator                        | Description                                                                                       |
+| -------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `@authorize.role("SuperAdmin")`  | Protect action or property can be read and write by specific role (`SuperAdmin`)                  |
+| `@authorize.write("SuperAdmin")` | Protect property only can be write by specific role (`SuperAdmin`)                                |
+| `@authorize.read("SuperAdmin")`  | Protect property only can be read by specific role (`SuperAdmin`)                                 |
+| `@authorize.readonly()`          | Protect property only can be read and no other role can write it                                  |
+| `@authorize.writeonly()`         | Protect property only can be write and no other role can read it                                  |
+| `@authorize.custom()`            | Protect action or property using [custom authorizer function](../extends/Custom-Authorization.md) |
+
+Furthermore the `@authorize.role()` and `@authorize.custom()` can be used to secure API endpoints based on user role. 
+
+:::info documentation 
+Refer to [this documentation](../refs/Authorization.md) to get detail information about authorization
+:::
+
+:::info documentation 
+Refer to [this documentation](../refs/Generic-Controller.md#control-access-to-the-generated-routes) to get detail information on securing generic controller routes. 
+:::
 
 
+## Plumier Controller 
 
+Generic controller is just an implementation of Plumier controller with generic class signature. Even though generic controller can be fully customized to match your app requirements, in some case its may required to use a controller manually to handle user request. 
 
-## Facility
-Facility is a component used to configure Plumier application to add a new functionalities. It consist of ordered middlewares, some initialization process before the application started and some application configuration. Plumier provided some facilities for development convenient, here are some facilities that commonly used
+The term of Controller in Plumier is the same as in other MVC framework. Plumier controller is a plain class end with `Controller` for example `class UsersController`. A route automatically generated based on `/controller/action`. This behavior can be customized using `@route` decorator see more detail route cheat sheet [here](../refs/Route-Generation-Cheat-Sheet.md)
+
+```typescript
+import { route } from "plumier"
+
+export class UsersController {
+    // GET /users/:id
+    @route.get(":id")
+    get(id:string) { }
+}
+```
+
+Action parameter can be bound into request part such as query, body, header etc. Request values received automatically converted into data type match with action parameter data type. 
+
+```typescript
+import { route } from "plumier"
+
+export class UsersController {
+    // GET /users/list
+    @route.get()
+    list(offset:number = 0, limit:number = 50, active:boolean = true) {
+        
+    }
+}
+```
+
+Above controller generated into `GET /users/list?limit&offset&active`. All parameters are optional with their default values. Note that the value automatically converted match with parameter data type, giving these request are valid
+
+```
+GET /users/list 
+GET /users/list?limit=20
+GET /users/list?offset=20&limit=20
+GET /users/list?offset=10&active=true
+GET /users/list?active=1
+```
+
+Important to notice that boolean parameter can be filled with: `yes`, `no`, `true`, `false`, `1`, `0`. And parameter of type datetime can be filled with `2020-12-31` or `2020-10-05T23:28:33.598Z` 
+
+Parameters also can be bound with request body by providing a parameter of type of custom object to hold the request body like example below
+
+```typescript
+import { route, domain } from "plumier"
+
+@domain()
+export class Login {
+    constructor(
+        public email:string,
+        public password:string,
+    ){}
+}
+
+export class AuthController {
+    // POST /auth/login
+    @route.post()
+    login(data:Login) {
+        
+    }
+}
+```
+
+Above controller will be generated into `POST /auth/login` with request body `{ "email":<string>, "password": <string> }` 
+
+:::info documentation
+Refer to the complete documentation of controller routing [here](../refs/Route-Generation-Cheat-Sheet.md), 
+:::
+
+:::info documentation
+Refer to the complete documentation of parameter binding [here](../refs/Parameter-Binding.md), 
+:::
+
+:::info documentation
+Refer to the complete documentation type converter [here](../refs/Converters.md), 
+:::
+
+## Application Bootstrap
+
+The entry point of Plumier application is an instance of `Plumier`. `Plumier` consist of features that can be enabled/disabled by installing `Facility`. 
+
+Facility is a component used to configure Plumier application to add a new functionalities. It consist of ordered middlewares, some initialization process before the application started and some application configurations.
+
+```typescript
+import { JwtAuthFacility } from "@plumier/jwt"
+import { SwaggerFacility } from "@plumier/swagger"
+import { TypeORMFacility } from "@plumier/typeorm"
+import Plumier, { WebApiFacility, ControllerFacility } from "plumier"
+
+new Plumier()
+    .set(new WebApiFacility())
+    .set(new ControllerFacility({ 
+      controller: "./**/*controller.{ts,js}", 
+      rootPath: "api/v1"
+    }))
+    .set(new JwtAuthFacility())
+    .set(new TypeORMFacility())
+    .set(new SwaggerFacility())
+    .listen(8000);
+```
+
+Above code will start Plumier application with some installed features and listens to the port 8000. Plumier provided some facilities for development convenient they are:
 
 | Facility              | Includes                                                                               | Package                 |
 | --------------------- | -------------------------------------------------------------------------------------- | ----------------------- |
@@ -76,129 +252,11 @@ Facility is a component used to configure Plumier application to add a new funct
 | `SwaggerFacility`     | Serve Swagger UI and generate Open API 3.0 automatically                               | `@plumier/swagger`      |
 
 
-## Controller 
-The term of Controller in Plumier is the same as in other MVC framework. Controller is a group of actions handled the request. Controller should follow a simple rules
-1. Controller name should be ends with `Controller`, for example `export class UsersController { }` 
-2. By default controller files should be put inside directory named `controller` in the same level with the bootstrap application file. But this behavior can be changed by using `ControllerFacility`
-
-```typescript 
-import { route } from "plumier"
-
-//file: ./controller/animal-controller.ts
-class AnimalsController {
-    @route.get()
-    get() { }
-}
-```
-
-### Controller Return Value
-Controller's return value by default will rendered into JSON response with status code 200. Controller allowed to returned value or promised value. 
-
-```typescript 
-class AnimalController {
-    @route.get(":id")
-    get(id:string){
-        //return static value
-        return { name: "Mimi" }
-    }
-}
-```
-
-Or return promised value returned by database library
-
-```typescript 
-class AnimalController {
-    @route.get(":id")
-    get(id:string){
-        // mongoose model
-        return AnimalModel.findById(id)
-    }
-}
-```
-
-For more advanced result, controller should returned any object derived from `ActionResult` class. Using `ActionResult` possibly to set more advanced response values such as cookie, header etc.
-
-```typescript 
-class AnimalController {
-    @route.get(":id")
-    get(id:string){
-        return new ActionResult({ name: "Mimi" })
-            .setCookie("Name", "Value")
-    }
-}
-```
-
-Plumier provided several `ActionResult` derived class for development convenient. 
-
-| Action                 | Alias                 | Description                | Package                 |
-| ---------------------- | --------------------- | -------------------------- | ----------------------- |
-| `ActionResult`         | `response.json()`     | Return json response       | `plumier`               |
-| `RedirectActionResult` | `response.redirect()` | Redirect response          | `plumier`               |
-| `FileActionResult`     | `response.file()`     | Serve static file response | `@plumier/serve-static` |
-
-Refer to [action result documentation](../refs/Action-Result.md) for more information.
-
-### Generic Controller 
-
-Plumier provided Generic Controllers to easily create CRUD API from your ORM entities. Using entity as DTO (data transfer object) in some frameworks may lead to some issue, but Plumier has [First Class Entity](../refs/First-Class-Entity.md) features to make it safe to use entity as DTO.
-
-Plumier provided several generic controllers for simple or nested CRUD API. To use it, mark entities with `@route.controller()` that will be handled by generic controller to create CRUD API instantly.
-
-```typescript  {6,16}
-import Plumier, { WebApiFacility, route } from "plumier"
-import { Entity, PrimaryGeneratedColumn } from "typeorm"
-import { TypeORMFacility } from "@plumier/typeorm"
-
-// TypeORM entity
-@route.controller()
-@Entity()
-class Item {
-    @PrimaryGeneratedColumn()
-    id:number 
-
-    @Column()
-    name:string
-
-    // only Admin and SuperAdmin can set the price
-    @authorize.write("Admin", "SuperAdmin")
-    @Column()
-    price:number 
-}
-
-// Plumier application bootstrap
-new Plumier()
-    .set(new WebApiFacility({ controller: __filename }))
-    .set(new TypeORMFacility())
-    .listen(8000)
-```
-
-Above code will host six Restful API endpoints 
-
-| Method | Path                       | Description                                              |
-| ------ | -------------------------- | -------------------------------------------------------- |
-| POST   | /items                     | Register item                                            |
-| GET    | /items?filter&select&order | Get items list with paging, filter, order and projection |
-| GET    | /items/:id                 | Get single item by id                                    |
-| PUT    | /items/:id                 | Replace item  by id                                      |
-| PATCH  | /items/:id                 | Modify item property by id                               |
-| DELETE | /items/:id                 | Delete item by id                                        |
-
-
-
-
-
-
-
-
-
-
 ## Project Layout 
-Plumier doesn't strictly provided on how to layout your project files, instead its provide flexibility on how the project files match your convenient. For example in the above code the application and controller are in a single file, Plumier allows you to have that kind of structure if you have tiny project with a few source code.
-
-Below are some common project structure usually used by developers, You can choose any of them match your like.
+Plumier doesn't strictly provided the project layout, but it provided flexibility to layout your project files match your need. Below are some common project structure usually used by developers, You can choose any of them match your like.
 
 ### Single File Style
-This style usually used by Express for small app with a fewer code. To use this style setup your application bootstrap like below 
+This style usually used by Express for small app with a fewer code. Put all controllers and entities in a single file and configure the bootstrap application like below.
 
 ```typescript
 new Plumier()
@@ -264,7 +322,7 @@ This style usually used by modern frameworks, files separated by module per dire
 - tsconfig.json
 ```
 
-Use `ControllerFacility` facility to locate the controller location. Plumier will automatically search through all files to find controllers.
+Use `ControllerFacility` to locate the controller location. Plumier will automatically search through all files to find controllers.
 
 ```typescript
 new Plumier()
@@ -272,221 +330,3 @@ new Plumier()
     .set(new ControllerFacility({ controller: "./*/*.controller.{ts,js}" }))
     .listen(8000)
 ```
-
-## Routing
-Route automatically generated from controller name, method name and parameter names.
-
-```typescript 
-class AnimalsController {
-    get(id:string) { }
-}
-```
-
-```
-GET /animals/get?id=123
-```
-
-Default http method used is `GET`, the controller name `AnimalsController` generated into `animals` note that the `Controller` word is removed. Method name kept intact `get`. Methods parameter `id` bound with the request query `id`. 
-
-Furthermore this behavior can be customized using the `@route` decorator. 
-
-```typescript 
-import {route} from "plumier"
-
-class AnimalsController {
-    @route.get(":id")
-    get(id:number) { }
-
-    @route.post("")
-    save(data:Animal){ }
-
-    @route.put(":id")
-    modify(id:number, data:Animal){ }
-}
-```
-
-```
-GET  /animals/:id
-POST /animals
-PUT  /animals/:id
-```
-
-String parameter passed into the route parameter `@route.get(":id")` will rename the method name, thus its become `GET /animals/:id`, note that the controller name kept intact `animals`, the `get` method name changed into `:id`. 
-
-When empty string provided `@route.post("")` the method name will be ignored, thus its become `POST /animals`, note the `save` method name ignored from the url.
-
-This behavior enable Plumier to construct more flexible route such as nested route easily.
-
-Refer to [route generation cheat sheet](../refs/Route-Generation-Cheat-Sheet.md) for more information.
-
-## Parameter Binding
-To access request values (body, headers, cookie etc) from inside controllers, Plumier provided parameter binding to automatically bound request value into parameters. Plumier parameter binding uses reflection library to extract controller metadata that make it possible to bound method parameter using convention over configuration and minimize the usage of decorators.
-
-Plumier supported three kind of parameter binding. Its applied into method's parameter using priority.
-1. Decorator parameter binding (highest priority). Decorator parameter binding use special decorator `@bind`.
-2. Name parameter binding (medium priority). Apply request values based on name.
-3. Model parameter binding (lowest priority). Apply request body into parameter where the parameter type is a class that its property match with request body properties.
-   
-Using above rule having controller below 
-
-```typescript
-class AnimalsController {
-    @route.get()
-    get(species:string){}
-}
-```
-
-By issuing `GET /animals/get?species=canine` will automatically bound the `species` parameter of the query string into the `species` parameter of the method, using Name Parameter Binding. 
-
-```typescript
-class AnimalsController {
-    @route.get()
-    get(@bind.header("x-forwarded-proto") forward:string){}
-}
-```
-
-Above code will bound the `forward` parameter with request header `x-forwarded-proto` using Decorator Parameter Binding
-
-```typescript 
-@domain()
-class Animal {
-    constructor(
-        public name:string,
-        public active:boolean,
-        public dateOfBirth:Date
-    )
-}
-
-class AnimalsController {
-    @route.post("")
-    save(data:Animal){ }
-}
-```
-
-By issuing `POST /animals` with a request body `{ "name": "Mimi", "active": "Yes", "dateOfBirth": "2018-12-3" }` will automatically bound the request body into the `data` parameter using Model Parameter Binding, because `data` is a custom class and doesn't have any decorator nor match any request name. 
-
-Refer to [Parameter Binding](../refs/Parameter-Binding.md) for more information
-
-## Type Conversion 
-Plumier convert value automatically based on parameter data type used in parameter binding like example below
-
-```typescript
-class AnimalsController {
-    @route.post()
-    get(birthday:Date, deceased:boolean){}
-}
-```
-
-Above controller has `birthday` parameter of type `Date` and `deceased` parameter of type `boolean`, further it can handle request like below
-
-```
-GET /animals/get?birthday=2001-2-30&deceased=true
-```
-
-The value `2001-2-3` automatically converted into date and `true` into boolean. Type conversion can work on every part of request (query, header, body etc) as long as you specify data type in parameter used for parameter binding. 
-
-For generic datatype and array, TypeScript can't provide proper type information for the reflection library, to solve that you need to specify the data type manually using decorator. 
-
-```typescript 
-import tinspector from "tinspector"
-
-@domain()
-class Animal {
-    constructor(
-        public name:string,
-        public active:boolean,
-        public dateOfBirth:Date
-    )
-}
-
-class AnimalsController {
-    @route.post("")
-    save(@reflect.type([Animal]) data:Animal[]){ }
-}
-```
-
-Above controller has `data` parameter of type array of `Animal`. We specify `@reflect.type([Animal])` to inform the reflection library about the type information. Note that for array type we specify an array `[Animal]`. 
-
-Refer to [Converters](../refs/Converters.md) for more information
-
-## Validation
-Just like type conversion, validation also checked automatically before the controller executed. Plumier provided comprehensive decorator based validation functionalities. Decorator can be applied directly on the parameter or in the domain properties.
-
-```typescript
-import { val } from "plumier"
-
-class AuthController {
-    @route.post()
-    login(@val.email() email:string, password:string){}
-}
-```
-
-Above code showing that the `@val.email()` validator applied into the parameter directly. Using controller above when API consumer provided invalid email address the response with status 422 automatically returned without having to touch the controller. This is an intended behavior because further you can create your own custom validator easily.
-
-`@val` decorator can be applied anywhere on the domain property in a deep nested children.
-
-```typescript
-import { val } from "plumier"
-
-@domain()
-class Login {
-    constructor(
-        @val.email()
-        public email:string,
-        public password:string
-    ){}
-}
-
-class AuthController {
-    @route.post()
-    login(data:Login){}
-}
-```
-
-Above code have the same behavior with the previous one, but showing that the validation now moved into a class property.  
-
-Refer to [Validation](../refs/Validation.md) for more information
-
-## Endpoint Authorization
-Plumier provided authorization decorator to easily securing access to the endpoints. This functionality automatically enabled when the `JwtAuthFacility` installed on Plumier application. Once installed all endpoints secured (not accessible by non login user) except decorated with `@authorize.public()`
-
-Plumier authorization required a valid JWT key passed within the `Authorization` header or a cookie named `Authorization`, Plumier automatically returned back response with status code: 
-1. 403 (Forbidden) If JWT key not provided in header or cookie, except the endpoint mark with `@authorize.public()`.
-2. 401 (Unauthorized) If current login user Role doesn't match with authorized endpoint specified in `@authorize.role(<allowed role>)`.
-
-`JwtAuthFacility` automatically verify the JWT and check the `role` property inside the JWT Claim if its match with the accessed role described by the `@authorize.role(<allowed role>)`. Example of valid JWT Claim: 
-
-```typescript
-import {sign} from "jsonwebtoken"
-
-const token = sign({ userId: <id>, role: "User" }, process.env.JWT_SECRET)
-```
-
-Note that the `role` property is required, it can be a `string` or `string[]`. 
-
-```typescript
-class AnimalsController {
-    @authorize.role("Admin", "User")
-    @route.get(":id")
-    get(id:string){ }
-
-    @authorize.role("Admin")
-    @route.post("")
-    save(data:Animal){ }
-}
-```
-
-| Route               | Access        |
-| ------------------- | ------------- |
-| `GET  /animals/:id` | Admin or User |
-| `POST /animals`     | Admin only    |
-
-
-Authorization can be applied in parameter and domain model, further more it can restrict access of some property in the request and response body. 
-
-Refer to [Authorization](../refs/Authorization.md) for more information.
-
-## Data Authorization 
-Plumier provided authorization to secure your data (request/response), you can specify authorization on your model property
-
-## Metaprogramming
