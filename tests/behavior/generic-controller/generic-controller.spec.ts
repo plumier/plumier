@@ -1093,6 +1093,34 @@ describe("Open Api", () => {
                 .expect(200)
             expect(body.paths["/animal"].get.tags).toMatchSnapshot()
         })
+        it("Should able to provide correct parameter name when using custom path name", async () => {
+            @route.controller("animals/:aid")
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animals/{aid}"].get.parameters).toMatchSnapshot()
+        })
+        it("Should able to provide custom parameter with case", async () => {
+            @route.controller("animals/:aId")
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animals/{aid}"].get.parameters).toMatchSnapshot()
+        })
     })
 
     describe("Generic One To Many Controller", () => {
@@ -1417,6 +1445,48 @@ describe("Open Api", () => {
                 .expect(200)
             expect(body.paths["/animal/{pid}/tags"].get.tags).toMatchSnapshot()
         })
+        it("Should able to provide correct parameter name when using custom path name", async () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+                @reflect.type(x => [Tag])
+                @relation()
+                @route.controller("animals/:aid/tags/:tid")
+                tags: Tag[]
+            }
+            class Tag {
+                @reflect.noop()
+                tag: string
+            }
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animals/{aid}/tags/{tid}"].get.parameters).toMatchSnapshot()
+        })
+        it("Should able to provide custom parameter with case", async () => {
+            class Animal {
+                @reflect.noop()
+                name: string
+                @reflect.type(x => [Tag])
+                @relation()
+                @route.controller("animals/:aId/tags/:tId")
+                tags: Tag[]
+            }
+            class Tag {
+                @reflect.noop()
+                tag: string
+            }
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animals/{aid}/tags/{tid}"].get.parameters).toMatchSnapshot()
+        })
     })
 })
 
@@ -1620,7 +1690,7 @@ describe("Request Hook", () => {
             ) { }
 
             @preSave()
-            hook(pid:string) {
+            hook(pid: string) {
                 this.password = pid
             }
         }
@@ -1649,7 +1719,7 @@ describe("Request Hook", () => {
             ) { }
 
             @preSave()
-            hook(@bind.ctx() ctx:Context) {
+            hook(@bind.ctx() ctx: Context) {
                 fn(ctx.request.header["content-type"])
             }
         }
@@ -1678,7 +1748,7 @@ describe("Request Hook", () => {
             ) { }
 
             @postSave()
-            hook(@bind.actionResult() result:ActionResult) {
+            hook(@bind.actionResult() result: ActionResult) {
                 fn(result)
             }
         }
