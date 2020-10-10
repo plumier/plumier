@@ -39,7 +39,7 @@ function describeParameters(route: RouteInfo) {
     return route.action.parameters.map(x => describeParameter(x, route))
 }
 
-function transformNode(mapper: { alias: (name: string) => string }, node: ParameterNode, ctx: TransformContext): ParameterObject[] {
+function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObject[] {
     if (node.typeName === "Class" && node.binding) {
         const meta = reflect(node.type as Class)
         const isPartial = !!node.meta.decorators.find(isPartialValidator)
@@ -51,9 +51,8 @@ function transformNode(mapper: { alias: (name: string) => string }, node: Parame
             if (prop.decorators.find(isGenericId)) continue
             // skip readOnly property
             if (prop.decorators.find(isApiReadOnly)) continue
-
             result.push(<ParameterObject>{
-                name: mapper.alias(prop.name), in: node.kind, required: isPartial ? false : !!prop.decorators.find(isRequired),
+                name: prop.name, in: node.kind, required: isPartial ? false : !!prop.decorators.find(isRequired),
                 schema: transformType(prop.type, ctx, { decorators: prop.decorators }),
             })
         }
@@ -64,7 +63,7 @@ function transformNode(mapper: { alias: (name: string) => string }, node: Parame
         const schema = transformType(node.type, ctx, { decorators: node.meta.decorators })
         const schemaWithRelation = addRelationProperties(schema, node.type ?? Object, ctx)
         return [<ParameterObject>{
-            name: mapper.alias(node.name), in: node.kind,
+            name: node.name, in: node.kind,
             required: node.required,
             schema: schemaWithRelation,
             description: desc?.desc
@@ -72,10 +71,10 @@ function transformNode(mapper: { alias: (name: string) => string }, node: Parame
     }
 }
 
-function transformNodes(mapper: { alias: (name: string) => string }, nodes: ParameterNode[], ctx: TransformContext): ParameterObject[] {
+function transformNodes(nodes: ParameterNode[], ctx: TransformContext): ParameterObject[] {
     const result = []
     for (const node of nodes) {
-        result.push(...transformNode(mapper, node, ctx))
+        result.push(...transformNode(node, ctx))
     }
     return result
 }
@@ -93,7 +92,7 @@ function transformParameters(route: RouteInfo, ctx: TransformContext) {
             candidates.push(node)
         }
         else {
-            result.push(...transformNode(route.paramMapper, node, ctx))
+            result.push(...transformNode(node, ctx))
         }
     }
     if ((route.method === "post" || route.method === "put" || route.method === "patch")) {
@@ -103,7 +102,7 @@ function transformParameters(route: RouteInfo, ctx: TransformContext) {
         // if post/put/patch only take the primitives (because custom class is a body)
         candidates = candidates.filter(x => x.typeName === "Primitive")
     }
-    const queries = transformNodes(route.paramMapper, candidates.map(x => ({ ...x, kind: "query" })), ctx)
+    const queries = transformNodes(candidates.map(x => ({ ...x, kind: "query" })), ctx)
     result.push(...queries)
     return result
 }
