@@ -140,7 +140,7 @@ Array [
 exports[`Open Api Generic Controller Should able to provide correct parameter name when using custom path name 1`] = `
 Array [
   Object {
-    "in": "query",
+    "in": "path",
     "name": "aid",
     "required": true,
     "schema": Object {
@@ -337,7 +337,7 @@ Array [
 exports[`Open Api Generic One To Many Controller Should able to provide correct parameter name when using custom path name 1`] = `
 Array [
   Object {
-    "in": "query",
+    "in": "path",
     "name": "aid",
     "required": true,
     "schema": Object {
@@ -345,7 +345,7 @@ Array [
     },
   },
   Object {
-    "in": "query",
+    "in": "path",
     "name": "tid",
     "required": true,
     "schema": Object {
