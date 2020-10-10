@@ -21,7 +21,7 @@ class User {
         @val.required()
         public email: string,
         public dateOfBirth: Date,
-        @relation(Number)
+        @relation()
         public animal:Animal
     ) { }
 }
