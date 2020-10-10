@@ -20,9 +20,9 @@ interface ParameterNode {
 function describeParameter(par: ParameterReflection, route: RouteInfo) {
     const obj = <ParameterNode>{ kind: "undecided", name: par.name, typeName: par.typeClassification!, required: false, type: par.type, meta: par }
     const urlParams = route.url.split("/").filter(x => x.startsWith(":")).map(x => x.substr(1))
-    if (urlParams.some(x => x === route.paramMapper.alias(par.name))) {
+    if (urlParams.some(x => x.toLowerCase() === route.paramMapper.alias(par.name).toLowerCase())) {
         obj.kind = "path"
-        obj.name = route.paramMapper.alias(par.name)
+        obj.name = route.paramMapper.alias(par.name).toLowerCase()
     }
     for (const dec of par.decorators) {
         if (isRequired(dec)) obj.required = true
