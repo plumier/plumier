@@ -137,6 +137,27 @@ Array [
 ]
 `;
 
+exports[`Open Api Generic Controller Should able to provide correct parameter name when using custom path name 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "aid",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "select",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+]
+`;
+
 exports[`Open Api Generic Controller Should generate DELETE /animal/:id properly 1`] = `
 Array [
   Object {
@@ -310,6 +331,35 @@ Object {
 exports[`Open Api Generic One To Many Controller Should able to add @api.tags() from property 1`] = `
 Array [
   "Tags",
+]
+`;
+
+exports[`Open Api Generic One To Many Controller Should able to provide correct parameter name when using custom path name 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "aid",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "tid",
+    "required": true,
+    "schema": Object {
+      "type": "string",
+    },
+  },
+  Object {
+    "in": "query",
+    "name": "select",
+    "required": false,
+    "schema": Object {
+      "type": "string",
+    },
+  },
 ]
 `;
 
