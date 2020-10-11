@@ -993,6 +993,7 @@ describe("Open API 3.0 Generation", () => {
                 .post("/swagger/swagger.json")
                 .expect(200)
             expect(body.components.schemas.User).toMatchSnapshot()
+            expect(body.components.schemas.Tag).toMatchSnapshot()
         })
         it("Should use reference on nested object if object already registered", async () => {
             @domain()
@@ -1043,6 +1044,7 @@ describe("Open API 3.0 Generation", () => {
                 .post("/swagger/swagger.json")
                 .expect(200)
             expect(body.components.schemas.User).toMatchSnapshot()
+            expect(body.components.schemas.Tag).toMatchSnapshot()
         })
         it("Should use reference on nested array object if array element already registered", async () => {
             @domain()
@@ -1107,6 +1109,7 @@ describe("Open API 3.0 Generation", () => {
                 .expect(200)
             expect(body.components.schemas.Animal).toMatchSnapshot()
             expect(body.components.schemas.User).toMatchSnapshot()
+            expect(body.components.schemas.Tag).toMatchSnapshot()
         })
         it("Should able to generate object with cross reference", async () => {
             @domain()
@@ -1135,6 +1138,36 @@ describe("Open API 3.0 Generation", () => {
                 get(): Tag { return {} as any }
             }
             const app = await createApp([UsersController, TagsController])
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas.User).toMatchSnapshot()
+            expect(body.components.schemas.Tag).toMatchSnapshot()
+        })
+        it("Should able to generate object with unregistered object with self reference", async () => {
+            @domain()
+            class User {
+                constructor(
+                    public userName: string,
+                    public password: string,
+                    @reflect.type(x => [Tag])
+                    public tags: Tag[]
+                ) { }
+            }
+            // tag is not registered
+            @domain()
+            class Tag {
+                constructor(
+                    public tag: string,
+                    @reflect.type(x => [Tag])
+                    public children: Tag[]
+                ) { }
+            }
+            class UsersController {
+                @route.get("")
+                get(): User { return {} as any }
+            }
+            const app = await createApp([UsersController])
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
@@ -1280,6 +1313,7 @@ describe("Open API 3.0 Generation", () => {
                 .expect(200)
             expect(body.paths["/users"].post.responses["200"]).toMatchSnapshot()
             expect(body.components.schemas.User).toMatchSnapshot()
+            expect(body.components.schemas.Tag).toMatchSnapshot()
         })
     })
 
@@ -1643,6 +1677,7 @@ describe("Open API 3.0 Generation", () => {
                 .post("/swagger/swagger.json")
                 .expect(200)
             expect(body.components.schemas.User).toMatchSnapshot()
+            expect(body.components.schemas.Animal).toMatchSnapshot()
         })
         it("Should able to set readonly property on nested model", async () => {
             @domain()
@@ -1695,6 +1730,7 @@ describe("Open API 3.0 Generation", () => {
             }
             class UsersController {
                 @route.post("")
+                @type(User)
                 save(user: User) { }
             }
             const app = await createApp(UsersController)
@@ -1702,6 +1738,7 @@ describe("Open API 3.0 Generation", () => {
                 .post("/swagger/swagger.json")
                 .expect(200)
             expect(body.components.schemas.User).toMatchSnapshot()
+            expect(body.components.schemas.Animal).toMatchSnapshot()
         })
         it("Should able to set readonly property on nested array model", async () => {
             @domain()
