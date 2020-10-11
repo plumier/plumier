@@ -865,7 +865,16 @@ Object {
   "properties": Object {
     "animals": Object {
       "items": Object {
-        "$ref": "#/components/schemas/Animal",
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Animal",
+          },
+          Object {
+            "readOnly": true,
+            "type": "object",
+            "writeOnly": true,
+          },
+        ],
       },
       "readOnly": true,
       "type": "array",

@@ -37,6 +37,43 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Component Schema Should able to generate object with unregistered object with self reference 1`] = `
+Object {
+  "properties": Object {
+    "password": Object {
+      "type": "string",
+    },
+    "tags": Object {
+      "items": Object {
+        "$ref": "#/components/schemas/Tag",
+      },
+      "type": "array",
+    },
+    "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should able to generate object with unregistered object with self reference 2`] = `
+Object {
+  "properties": Object {
+    "children": Object {
+      "items": Object {
+        "$ref": "#/components/schemas/Tag",
+      },
+      "type": "array",
+    },
+    "tag": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
 exports[`Open API 3.0 Generation Component Schema Should able to mix registered an non registered object 1`] = `
 Object {
   "properties": Object {
@@ -55,17 +92,23 @@ Object {
       "type": "string",
     },
     "tag": Object {
-      "properties": Object {
-        "animal": Object {
-          "$ref": "#/components/schemas/Animal",
-        },
-        "tag": Object {
-          "type": "string",
-        },
-      },
-      "type": "object",
+      "$ref": "#/components/schemas/Tag",
     },
     "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should able to mix registered an non registered object 3`] = `
+Object {
+  "properties": Object {
+    "animal": Object {
+      "$ref": "#/components/schemas/Animal",
+    },
+    "tag": Object {
       "type": "string",
     },
   },
@@ -179,16 +222,22 @@ Object {
     },
     "tag": Object {
       "items": Object {
-        "properties": Object {
-          "tag": Object {
-            "type": "string",
-          },
-        },
-        "type": "object",
+        "$ref": "#/components/schemas/Tag",
       },
       "type": "array",
     },
     "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should create inline array object if nested object not registered 2`] = `
+Object {
+  "properties": Object {
+    "tag": Object {
       "type": "string",
     },
   },
@@ -203,14 +252,20 @@ Object {
       "type": "string",
     },
     "tag": Object {
-      "properties": Object {
-        "tag": Object {
-          "type": "string",
-        },
-      },
-      "type": "object",
+      "$ref": "#/components/schemas/Tag",
     },
     "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should create inline object on nested object if not registered 2`] = `
+Object {
+  "properties": Object {
+    "tag": Object {
       "type": "string",
     },
   },
@@ -620,7 +675,15 @@ Object {
   "properties": Object {
     "animal": Object {
       "items": Object {
-        "$ref": "#/components/schemas/Animal",
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Animal",
+          },
+          Object {
+            "readOnly": true,
+            "type": "object",
+          },
+        ],
       },
       "readOnly": true,
       "type": "array",
@@ -644,15 +707,15 @@ Object {
   "properties": Object {
     "animal": Object {
       "items": Object {
-        "properties": Object {
-          "id": Object {
-            "type": "number",
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Animal",
           },
-          "name": Object {
-            "type": "string",
+          Object {
+            "readOnly": true,
+            "type": "object",
           },
-        },
-        "type": "object",
+        ],
       },
       "readOnly": true,
       "type": "array",
@@ -671,20 +734,33 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Decorators Should able to set readonly property on nested inline array model 2`] = `
+Object {
+  "properties": Object {
+    "id": Object {
+      "type": "number",
+    },
+    "name": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
 exports[`Open API 3.0 Generation Decorators Should able to set readonly property on nested inline model 1`] = `
 Object {
   "properties": Object {
     "animal": Object {
-      "properties": Object {
-        "id": Object {
-          "type": "number",
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/Animal",
         },
-        "name": Object {
-          "type": "string",
+        Object {
+          "readOnly": true,
+          "type": "object",
         },
-      },
-      "readOnly": true,
-      "type": "object",
+      ],
     },
     "id": Object {
       "type": "number",
@@ -693,6 +769,20 @@ Object {
       "type": "string",
     },
     "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Decorators Should able to set readonly property on nested inline model 2`] = `
+Object {
+  "properties": Object {
+    "id": Object {
+      "type": "number",
+    },
+    "name": Object {
       "type": "string",
     },
   },
@@ -751,7 +841,15 @@ Object {
   "properties": Object {
     "animal": Object {
       "items": Object {
-        "$ref": "#/components/schemas/Animal",
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Animal",
+          },
+          Object {
+            "type": "object",
+            "writeOnly": true,
+          },
+        ],
       },
       "type": "array",
       "writeOnly": true,
@@ -775,15 +873,15 @@ Object {
   "properties": Object {
     "animal": Object {
       "items": Object {
-        "properties": Object {
-          "id": Object {
-            "type": "number",
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Animal",
           },
-          "name": Object {
-            "type": "string",
+          Object {
+            "type": "object",
+            "writeOnly": true,
           },
-        },
-        "type": "object",
+        ],
       },
       "type": "array",
       "writeOnly": true,
@@ -806,16 +904,15 @@ exports[`Open API 3.0 Generation Decorators Should able to set write only proper
 Object {
   "properties": Object {
     "animal": Object {
-      "properties": Object {
-        "id": Object {
-          "type": "number",
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/Animal",
         },
-        "name": Object {
-          "type": "string",
+        Object {
+          "type": "object",
+          "writeOnly": true,
         },
-      },
-      "type": "object",
-      "writeOnly": true,
+      ],
     },
     "id": Object {
       "type": "number",
@@ -2643,16 +2740,22 @@ Object {
     },
     "tag": Object {
       "items": Object {
-        "properties": Object {
-          "tag": Object {
-            "type": "string",
-          },
-        },
-        "type": "object",
+        "$ref": "#/components/schemas/Tag",
       },
       "type": "array",
     },
     "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API 3.0 Generation Response Should detect nested object array response 3`] = `
+Object {
+  "properties": Object {
+    "tag": Object {
       "type": "string",
     },
   },
@@ -2714,18 +2817,21 @@ Object {
     },
     "type": "object",
   },
+  "Tag": Object {
+    "properties": Object {
+      "tag": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
   "User": Object {
     "properties": Object {
       "password": Object {
         "type": "string",
       },
       "tag": Object {
-        "properties": Object {
-          "tag": Object {
-            "type": "string",
-          },
-        },
-        "type": "object",
+        "$ref": "#/components/schemas/Tag",
       },
       "userName": Object {
         "type": "string",
