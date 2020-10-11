@@ -1,9 +1,9 @@
 import { Class, isCustomClass } from "@plumier/core"
-import { ComponentsObject, ReferenceObject, SchemaObject, SecuritySchemeObject } from "openapi3-ts"
+import { ComponentsObject, SchemaObject, SecuritySchemeObject } from "openapi3-ts"
 import reflect from "tinspector"
 
-import { refFactory, transformType, TransformTypeOption } from "./schema"
-import { TransformContext, isApiReadOnly, isApiWriteOnly } from "./shared"
+import { refFactory, transformType } from "./schema"
+import { TransformContext } from "./shared"
 
 type SchemasObject = { [key: string]: SchemaObject }
 
@@ -33,33 +33,30 @@ const defaultSchemas: { [key: string]: SchemaObject } = {
     }
 }
 
-
-function createArraySchema(obj: Class[], ctx: TransformContext): SchemaObject {
-    const exists = ctx.map.get(obj[0])
-    if (exists) return transformType(obj, ctx)
-    return {
-        type: "array",
-        items: createSchema(obj[0], ctx)
-    }
-}
-
-function createSchema(obj: Class | Class[], ctx: TransformContext): SchemaObject {
-    if (Array.isArray(obj)) return createArraySchema(obj, ctx)
+function createSchema(obj: Class, ctx: TransformContext): SchemaObject {
     const meta = reflect(obj)
-    const types = Array.from(ctx.map.keys())
     const properties: SchemasObject = {}
     for (const prop of meta.properties) {
-        // if the type is not registered then make inline object
-        if (isCustomClass(prop.type) && !types.some(x => x === prop.type)) {
-            const writeOnly = !!prop.decorators.find(isApiWriteOnly) ? true : undefined
-            const readOnly = !!prop.decorators.find(isApiReadOnly) ? true : undefined
-            const schema = createSchema(prop.type, ctx)
-            properties[prop.name] = { ...schema, readOnly, writeOnly }
-        }
-        else
-            properties[prop.name] = transformType(prop.type, ctx, { decorators: prop.decorators })
+        properties[prop.name] = transformType(prop.type, ctx, { decorators: prop.decorators })
     }
     return { type: "object", properties }
+}
+
+function getUnregisterDependentTypes(type: Class, ctx: TransformContext): Class[] {
+    const meta = reflect(type)
+    const registered = Array.from(ctx.map.keys())
+    const types = []
+    for (const prop of meta.properties) {
+        const propType = Array.isArray(prop.type) ? prop.type[0] : prop.type
+        if (isCustomClass(propType) && !registered.some(x => x === propType)) {
+            //register the property type immediately to prevent circular loop
+            refFactory(ctx.map)(propType)
+            const childTypes = getUnregisterDependentTypes(propType, ctx)
+            types.push(...childTypes)
+            types.push(propType)
+        }
+    }
+    return types;
 }
 
 function transformComponent(ctx: TransformContext): ComponentsObject {
@@ -67,7 +64,15 @@ function transformComponent(ctx: TransformContext): ComponentsObject {
     const types = Array.from(ctx.map.keys())
     const bearer: SecuritySchemeObject = { type: "http", scheme: "bearer", bearerFormat: "JWT" }
     const schemas: SchemasObject = types.reduce((a, b) => {
-        return { ...a, [getRef(b)!]: createSchema(b, ctx) }
+        const result = { ...a }
+        // loop through unregistered dependent types
+        const dependents = getUnregisterDependentTypes(b, ctx)
+        for (const type of dependents) {
+            result[getRef(type)!] = createSchema(type, ctx)
+        }
+        // create schema of the type
+        result[getRef(b)!] = createSchema(b, ctx)
+        return result
     }, defaultSchemas)
     const result: ComponentsObject = { schemas }
     if (ctx.config.enableAuthorization)

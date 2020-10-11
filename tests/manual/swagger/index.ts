@@ -2,17 +2,12 @@ import { domain, route, val, authorize, FormFile, api, relation } from "@plumier
 import { SwaggerFacility } from "@plumier/swagger"
 import Plumier, { WebApiFacility } from "plumier"
 import { JwtAuthFacility } from '@plumier/jwt'
-import reflect from "tinspector"
+import reflect, { type } from "tinspector"
 
-@domain()
-class Animal {
-    constructor(
-        public name:string
-    ){}
-}
 
+@route.controller()
 @domain()
-class User {
+export class User {
     constructor(
         @api.readonly()
         id:number,
@@ -22,28 +17,20 @@ class User {
         public email: string,
         public dateOfBirth: Date,
         @relation()
-        public animal:Animal
+        @type(x => [Animal])
+        public animal:Animal[]
     ) { }
 }
 
-@api.tag("Lorem")
-export class UsersController {
-
-    @route.post("")
-    save(user: User) { }
-
-    @route.post("/animal")
-    animal(user: Animal) { }
-
-    @authorize.public()
-    @route.get(":id")
-    @reflect.type(User)
-    get(id: string, @api.description("lorem ipsum") @val.enums({enums: ["animal", "human"]}) type:string) { }
-
-    @api.description("Lorem ipsum dolor")
-    @route.post("upload")
-    upload( user: FormFile) { }
+@domain()
+export class Animal {
+    constructor(
+        public name:string,
+        @relation()
+        public owner:Animal
+    ){}
 }
+
 
 new Plumier()
     .set(new WebApiFacility({ controller: __dirname }))
