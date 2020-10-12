@@ -1,4 +1,4 @@
-import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog, preSave } from "@plumier/core"
+import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog, preSave, authorize } from "@plumier/core"
 import model, {
     collection,
     models,
@@ -32,7 +32,8 @@ afterAll(async () => {
     //await mong?.stop()
     await mongoose.disconnect()
 })
-beforeEach(() => {
+beforeEach(async () => {
+    await mongoose.connection.dropDatabase()
     models.clear()
     mongoose.models = {}
     mongoose.connection.models = {}
@@ -88,6 +89,7 @@ describe("CRUD", () => {
             @route.controller()
             class User {
                 @reflect.noop()
+                @authorize.filter()
                 email: string
                 @reflect.noop()
                 name: string
@@ -102,6 +104,65 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
+        it("Should able to filter with exact value GET /users?filter", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                @authorize.filter()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            await repo.insert({ email: "jean.doe@gmail.com", name: "Jean Doe" })
+            await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?filter[email]=jean.doe@gmail.com")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with partial value GET /users?filter", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                @authorize.filter({ type: "partial" })
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            await repo.insert({ email: "jean.doe@gmail.com", name: "Jean Doe" })
+            await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?filter[email]=jean")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should ignore filter on non marked property GET /users?filter", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            await repo.insert({ email: "jean.doe@gmail.com", name: "Jean Doe" })
+            await Promise.all(Array(10).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?filter[email]=jean")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
         it("Should set partial validation on query GET /users?offset&limit&name", async () => {
             @collection()
             @route.controller()
@@ -109,6 +170,7 @@ describe("CRUD", () => {
                 @val.required()
                 @reflect.noop()
                 email: string
+                @authorize.filter()
                 @reflect.noop()
                 name: string
             }
@@ -617,6 +679,7 @@ describe("CRUD", () => {
             @route.controller()
             class Animal {
                 @reflect.noop()
+                @authorize.filter()
                 name: string
             }
             model(Animal)
@@ -628,6 +691,98 @@ describe("CRUD", () => {
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
             const { body } = await supertest(app.callback())
                 .get(`/users/${user._id}/animals?filter[name]=Jojo`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should filter with exact value GET /users/:parentId/animals?filter ", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller()
+                animals: Animal[]
+            }
+            @collection()
+            @route.controller()
+            class Animal {
+                @reflect.noop()
+                @authorize.filter()
+                name: string
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            await animalRepo.insert(user._id.toHexString(), { name: `Jojo` })
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals?filter[name]=Jojo`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should filter with partial value GET /users/:parentId/animals?filter ", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller()
+                animals: Animal[]
+            }
+            @collection()
+            @route.controller()
+            class Animal {
+                @reflect.noop()
+                @authorize.filter({type: "partial"})
+                name: string
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            await animalRepo.insert(user._id.toHexString(), { name: `Jojo` })
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals?filter[name]=jo`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should ignore filter on non marked property GET /users/:parentId/animals?filter ", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller()
+                animals: Animal[]
+            }
+            @collection()
+            @route.controller()
+            class Animal {
+                @reflect.noop()
+                name: string
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            await animalRepo.insert(user._id.toHexString(), { name: `Jojo` })
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals?filter[name]=jo`)
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
@@ -650,6 +805,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @reflect.noop()
+                @authorize.filter()
                 age: number
             }
             model(Animal)

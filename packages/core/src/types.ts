@@ -368,14 +368,18 @@ export class FormFile {
 // ------------------------- GENERIC CONTROLLER ------------------------ //
 // --------------------------------------------------------------------- //
 
+export type FilterQueryType = "exact" | "partial"
+
 export interface RelationPropertyDecorator { kind: "plumier-meta:relation-prop-name", name: string }
 
 export type GenericController = [Class<ControllerGeneric>, Class<OneToManyControllerGeneric>]
 
 export interface OrderQuery { column: string, order: 1 | -1 }
 
+export interface FilterQuery { type: FilterQueryType, propertyName:string, value: any }
+
 export interface Repository<T> {
-    find(offset: number, limit: number, query: Partial<T>, select: string[], order: OrderQuery[]): Promise<T[]>
+    find(offset: number, limit: number, query: FilterQuery[], select: string[], order: OrderQuery[]): Promise<T[]>
     insert(data: Partial<T>): Promise<{ id: any }>
     findById(id: any, select: string[]): Promise<T | undefined>
     update(id: any, data: Partial<T>): Promise<{ id: any }>
@@ -383,10 +387,10 @@ export interface Repository<T> {
 }
 
 export interface OneToManyRepository<P, T> {
-    find(pid: any, offset: number, limit: number, query: Partial<T>, select: string[], order: OrderQuery[]): Promise<T[]>
+    find(pid: any, offset: number, limit: number, query: FilterQuery[], select: string[], order: OrderQuery[]): Promise<T[]>
     insert(pid: any, data: Partial<T>): Promise<{ id: any }>
     findParentById(id: any): Promise<P | undefined>
-    findById(id: any, select:string[]): Promise<T | undefined>
+    findById(id: any, select: string[]): Promise<T | undefined>
     update(id: any, data: Partial<T>): Promise<{ id: any }>
     delete(id: any): Promise<{ id: any }>
 }

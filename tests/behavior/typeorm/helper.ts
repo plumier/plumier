@@ -20,7 +20,7 @@ export async function cleanup() {
         (storage as any).relations = [];
         if (conn.isConnected) {
             // delete all tables
-            await conn.synchronize(true)
+            await conn.dropDatabase()
             await conn.close();
         }
     }
