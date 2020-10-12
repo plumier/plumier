@@ -153,8 +153,8 @@ describe("CRUD", () => {
             await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
             const { body } = await supertest(app.callback())
                 .get("/users?filter[email]=jane.doe@gmail.com")
-                .expect(200)
-            expect(body.length).toBeGreaterThan(1)
+                .expect(422)
+            expect(body).toMatchSnapshot()
         })
         it("Should set partial validation on GET /users?offset&limit", async () => {
             @Entity()
@@ -728,8 +728,8 @@ describe("CRUD", () => {
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
             const { body } = await supertest(app.callback())
                 .get(`/users/${user.id}/animals?filter[name]=Jojo%`)
-                .expect(200)
-            expect(body.length).toBeGreaterThan(1)
+                .expect(422)
+            expect(body).toMatchSnapshot()
         })
         it("Should set partial validation GET /users/:parentId/animals?offset&limit", async () => {
             @Entity()

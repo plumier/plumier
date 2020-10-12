@@ -161,7 +161,7 @@ describe("CRUD", () => {
             await Promise.all(Array(10).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
             const { body } = await supertest(app.callback())
                 .get("/users?filter[email]=jean")
-                .expect(200)
+                .expect(422)
             expect(body).toMatchSnapshot()
         })
         it("Should set partial validation on query GET /users?offset&limit&name", async () => {
@@ -195,7 +195,7 @@ describe("CRUD", () => {
                 name: string
                 @reflect.noop()
                 age: number
-                @reflect.noop()
+                @authorize.filter()
                 random: string
             }
             model(User)
@@ -218,7 +218,7 @@ describe("CRUD", () => {
                 name: string
                 @reflect.noop()
                 age: number
-                @reflect.noop()
+                @authorize.filter()
                 random: string
             }
             model(User)
@@ -784,7 +784,7 @@ describe("CRUD", () => {
             await Promise.all(Array(10).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
             const { body } = await supertest(app.callback())
                 .get(`/users/${user._id}/animals?filter[name]=jo`)
-                .expect(200)
+                .expect(422)
             expect(body).toMatchSnapshot()
         })
         it("Should set partial validation on query on GET /users/:parentId/animals?offset&limit", async () => {

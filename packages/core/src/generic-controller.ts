@@ -8,8 +8,9 @@ import reflect, {
     DecoratorOptionId,
     generic,
     GenericTypeDecorator,
+    ParameterReflection,
 } from "tinspector"
-import { val } from "typedconverter"
+import { Result, val } from "typedconverter"
 
 import { AuthorizeDecorator } from "./authorization"
 import { BindingDecorator } from "./binder"
@@ -105,6 +106,21 @@ function parseFilter(type: Class, filter: any) {
     return result
 }
 
+function validFilter() {
+    return val.custom((value, info) => {
+        const meta = reflect((info.metadata.current as any).type as Class)
+        const issues = []
+        for (const prop of meta.properties) {
+            const dec = prop.decorators.find((x: FilterDecorator) => x.kind === "plumier-meta:filter")
+            const propValue = value[prop.name]
+            if (!dec && propValue)
+                issues.push(prop.name)
+        }
+        if (issues.length > 0)
+            return `Invalid filter query ${issues.map(x => `filter[${x}]`)}`
+    })
+}
+
 @generic.template("T", "TID")
 class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
     readonly entityType: Class<T>
@@ -125,8 +141,7 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
 
     @decorateRoute("get", "")
     @reflect.type(["T"])
-    list(offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
-
+    list(offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") @validFilter() filter: T, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
         return this.repo.find(offset, limit, parseFilter(this.entityType, filter), parseSelect(this.entityType, select), parseOrder(order))
     }
 
@@ -196,7 +211,7 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 
     @decorateRoute("get", "")
     @reflect.type(["T"])
-    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
+    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") @validFilter() filter: T, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
         await this.findParentByIdOrNotFound(pid)
         return this.repo.find(pid, offset, limit, parseFilter(this.entityType, filter), parseSelect(this.entityType, select), parseOrder(order))
     }
