@@ -33,7 +33,8 @@ afterAll(async () => {
     await mongoose.disconnect()
 })
 beforeEach(async () => {
-    await mongoose.connection.dropDatabase()
+    await mongoose.connection.collections["users"]?.deleteMany({})
+    await mongoose.connection.collections["animals"]?.deleteMany({})
     models.clear()
     mongoose.models = {}
     mongoose.connection.models = {}
@@ -780,7 +781,7 @@ describe("CRUD", () => {
             const user = await createUser(User)
             const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
             await animalRepo.insert(user._id.toHexString(), { name: `Jojo` })
-            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
+            await Promise.all(Array(10).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
             const { body } = await supertest(app.callback())
                 .get(`/users/${user._id}/animals?filter[name]=jo`)
                 .expect(200)
