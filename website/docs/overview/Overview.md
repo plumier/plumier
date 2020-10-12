@@ -40,7 +40,7 @@ export class Post {
 }
 ```
 
-Above code is a common TypeORM entities marked with Plumier decorators. The `Category` entity marked with `@route.controller()` it tells Plumier that the entity should be handled by a generic controller which handled endpoints below
+Above code is a common TypeORM entities marked with Plumier decorators. The `Category` entity marked with `@route.controller()` it tells Plumier that the entity should be handled by a generic controller. Code above will generated into routes that follow Restful best practice like below.
 
 | Method | Path         | Description                                                 |
 | ------ | ------------ | ----------------------------------------------------------- |
@@ -51,10 +51,11 @@ Above code is a common TypeORM entities marked with Plumier decorators. The `Cat
 | PATCH  | `/posts/:id` | Modify post property by id                                  |
 | DELETE | `/posts/:id` | Delete post by id                                           |
 
-The route generated follows the Restful API Best practice. Generic controller provided functionalities to refine the API response, such as filter, paging, order and projection. Using above generated API you may request like below.
+Generic controller provided functionalities to refine the API response, such as filter, paging, order and projection. Using above generated API you may request like below.
 
 ```bash
 # Filter response based on slug property using exact comparison
+# Filter require more specific conf
 GET /posts?filter[slug]=my_cool_post
 
 # Paginate response to narrow filter result 
@@ -200,6 +201,10 @@ Refer to [this documentation](../refs/Authorization.md) to get detail informatio
 :::info documentation 
 Refer to [this documentation](../refs/Generic-Controller.md#control-access-to-the-generated-routes) to get detail information on securing generic controller routes. 
 :::
+
+
+### Filter Data Based on Your User Role
+
 
 ### Generate Open API 3.0 Schema from Controllers
 
