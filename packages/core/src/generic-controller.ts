@@ -15,6 +15,7 @@ import { AuthorizeDecorator } from "./authorization"
 import { BindingDecorator } from "./binder"
 import { Class, entityHelper } from "./common"
 import { api, ApiTagDecorator } from "./decorator/api"
+import { FilterDecorator } from './decorator/authorize'
 import { bind } from "./decorator/bind"
 import { domain } from "./decorator/common"
 import { RelationDecorator } from "./decorator/entity"
@@ -23,6 +24,7 @@ import { IgnoreDecorator, RouteDecorator } from "./route-generator"
 import {
     ControllerGeneric,
     errorMessage,
+    FilterQuery,
     GenericController,
     HttpMethod,
     HttpStatusError,
@@ -91,6 +93,18 @@ function parseSelect(type: Class, select: string) {
     return normalizeSelect(type, dSelect)
 }
 
+function parseFilter(type: Class, filter: any) {
+    const result: FilterQuery[] = []
+    const meta = reflect(type)
+    for (const prop of meta.properties) {
+        const dec = prop.decorators.find((x: FilterDecorator): x is FilterDecorator => x.kind === "plumier-meta:filter")
+        if (dec) {
+            result.push({ type: dec.type, propertyName: prop.name, value: filter[prop.name] ?? dec.default })
+        }
+    }
+    return result
+}
+
 @generic.template("T", "TID")
 class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
     readonly entityType: Class<T>
@@ -112,7 +126,8 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
     @decorateRoute("get", "")
     @reflect.type(["T"])
     list(offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
-        return this.repo.find(offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
+
+        return this.repo.find(offset, limit, parseFilter(this.entityType, filter), parseSelect(this.entityType, select), parseOrder(order))
     }
 
     @decorateRoute("post", "")
@@ -183,7 +198,7 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
     @reflect.type(["T"])
     async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
         await this.findParentByIdOrNotFound(pid)
-        return this.repo.find(pid, offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
+        return this.repo.find(pid, offset, limit, parseFilter(this.entityType, filter), parseSelect(this.entityType, select), parseOrder(order))
     }
 
     @decorateRoute("post", "")
@@ -226,7 +241,7 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 }
 
 class DefaultRepository<T> implements Repository<T> {
-    find(offset: number, limit: number, query: Partial<T>): Promise<T[]> {
+    find(offset: number, limit: number, query: FilterQuery[]): Promise<T[]> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
     insert(data: Partial<T>): Promise<{ id: any }> {
@@ -244,7 +259,7 @@ class DefaultRepository<T> implements Repository<T> {
 }
 
 class DefaultOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
-    find(pid: any, offset: number, limit: number, query: Partial<T>): Promise<T[]> {
+    find(pid: any, offset: number, limit: number, query: FilterQuery[]): Promise<T[]> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
     insert(pid: any, data: Partial<T>): Promise<{ id: any }> {

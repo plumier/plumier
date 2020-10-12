@@ -246,12 +246,38 @@ User {
 }
 `;
 
-exports[`CRUD CRUD Function Should find by query GET /users?offset&limit 1`] = `
+exports[`CRUD CRUD Function Should filter by exact value GET /users?filter 1`] = `
 Array [
   Object {
     "email": "jane.doe@gmail.com",
     "id": 1,
     "name": "John Doe",
+  },
+]
+`;
+
+exports[`CRUD CRUD Function Should filter by partial value GET /users?filter 1`] = `
+Array [
+  Object {
+    "email": "jane.doe@gmail.com",
+    "id": 1,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "jane.moe@gmail.com",
+    "id": 2,
+    "name": "John Doe",
+  },
+]
+`;
+
+exports[`CRUD CRUD Function Should filter with default value GET /users?filter 1`] = `
+Array [
+  Object {
+    "deleted": false,
+    "email": "jane.moe@gmail.com",
+    "id": 2,
+    "name": "John Moe",
   },
 ]
 `;
@@ -506,11 +532,40 @@ Array [
 ]
 `;
 
-exports[`CRUD Nested CRUD One to Many Function Should find by query GET /users/:parentId/animals?offset&limit 1`] = `
+exports[`CRUD Nested CRUD One to Many Function Should filter with default value GET /users/:parentId/animals?filter 1`] = `
+Array [
+  Object {
+    "deleted": false,
+    "id": 1,
+    "name": "Jojo Subejo",
+    "user": Object {
+      "email": "john.doe@gmail.com",
+      "id": 1,
+      "name": "John Doe",
+    },
+  },
+]
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should filter with exact value GET /users/:parentId/animals?filter 1`] = `
 Array [
   Object {
     "id": 1,
     "name": "Jojo",
+    "user": Object {
+      "email": "john.doe@gmail.com",
+      "id": 1,
+      "name": "John Doe",
+    },
+  },
+]
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should filter with partial value GET /users/:parentId/animals?filter 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "name": "Jojo Subejo",
     "user": Object {
       "email": "john.doe@gmail.com",
       "id": 1,

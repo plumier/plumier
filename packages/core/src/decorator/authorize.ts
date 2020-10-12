@@ -1,11 +1,11 @@
-import { CustomPropertyDecorator, decorate, mergeDecorator, DecoratorOption } from "tinspector"
+import { CustomPropertyDecorator, decorate, mergeDecorator, DecoratorOption, decorateProperty } from "tinspector"
 
 import { AuthorizeDecorator, Authorizer, AuthorizerFunction } from "../authorization"
-import { errorMessage } from "../types"
+import { errorMessage, FilterQueryType } from "../types"
 import { api } from "./api"
 
 
-type AccessModifier = "read" | "write" | "all"
+type AccessModifier = "read" | "write" | "all" | "filter"
 type FunctionEvaluation = "Static" | "Dynamic"
 
 interface AuthorizeSelectorOption {
@@ -25,7 +25,7 @@ interface CustomAuthorizeOption extends AuthorizeSelectorOption {
     tag?: string,
 
     /**
-     * Allow access only to specific modifier, only work on Parameter authorization and Filter authorization
+     * Allow access only to specific modifier
      * 
      * `read`: only allow user to retrieve value on specified field
      * 
@@ -36,13 +36,24 @@ interface CustomAuthorizeOption extends AuthorizeSelectorOption {
     access?: AccessModifier,
 
     /**
-     * Specify how the authorizer execution will evaluated during response serialization. Only work on Filter authorization
+     * Specify how the authorizer execution will evaluated during response serialization
      * 
      * `Static` will evaluated once for each properties applied. Good for performance, but unable to access current property value 
      * 
      * `Dynamic` will evaluated on every property serialization. Good for authorization require check to specific property value
      */
     evaluation?: FunctionEvaluation
+}
+
+interface FilterAuthorizeOption {
+    type?: FilterQueryType
+    default?: any
+}
+
+interface FilterDecorator {
+    kind: "plumier-meta:filter",
+    type: FilterQueryType
+    default?: any
 }
 
 class AuthDecoratorImpl {
@@ -81,7 +92,7 @@ class AuthDecoratorImpl {
         }, ["Class", "Parameter", "Method", "Property"], { ...opt })
     }
 
-    private byRole(roles: any[], access: "all" | "read" | "write") {
+    private byRole(roles: any[], access: AccessModifier) {
         const last = roles[roles.length - 1]
         const defaultOpt = { access, methods: [] }
         const opt: AuthorizeSelectorOption = typeof last === "string" ? defaultOpt : { ...defaultOpt, ...last }
@@ -152,6 +163,62 @@ class AuthDecoratorImpl {
     }
 
     /**
+     * Authorize domain property to allow filter by specific role
+     * @param role Allowed role
+     * @param option filter type option
+     */
+    filter(option?: FilterAuthorizeOption): CustomPropertyDecorator
+
+    /**
+     * Authorize domain property to allow filter by specific role
+     * @param role Allowed role
+     * @param option filter type option
+     */
+    filter(role: string, option?: FilterAuthorizeOption): CustomPropertyDecorator
+    /**
+     * Authorize domain property to allow filter by specific role
+     * @param role1 Allowed role
+     * @param role2 Allowed role
+     * @param option filter type option
+     */
+    filter(role1: string, role2: string, option?: FilterAuthorizeOption): CustomPropertyDecorator
+    /**
+     * Authorize domain property to allow filter by specific role
+     * @param role1 Allowed role
+     * @param role2 Allowed role
+     * @param role3 Allowed role
+     * @param option filter type option
+     */
+    filter(role1: string, role2: string, role3: string, option?: FilterAuthorizeOption): CustomPropertyDecorator
+    /**
+     * Authorize domain property to allow filter by specific role
+     * @param role1 Allowed role
+     * @param role2 Allowed role
+     * @param role3 Allowed role
+     * @param role4 Allowed role
+     * @param option filter type option
+     */
+    filter(role1: string, role2: string, role3: string, role4: string, option?: FilterAuthorizeOption): CustomPropertyDecorator
+    /**
+     * Authorize domain property to allow filter by specific role
+     * @param role1 Allowed role
+     * @param role2 Allowed role
+     * @param role3 Allowed role
+     * @param role4 Allowed role
+     * @param role5 Allowed role
+     * @param option filter type option
+     */
+    filter(role1: string, role2: string, role3: string, role4: string, role5: string, option?: FilterAuthorizeOption): CustomPropertyDecorator
+    filter(...roles: any[]): CustomPropertyDecorator {
+        const last = roles[roles.length - 1]
+        const option: FilterAuthorizeOption = typeof last === "string" ? { type: "exact" } : { type: last?.type ?? "exact", ...last }
+        return mergeDecorator(
+            this.byRole(roles, "filter"),
+            decorateProperty(<FilterDecorator>{ kind: "plumier-meta:filter", ...option })
+        )
+    }
+
+    /**
      * Mark parameter or property as readonly, no Role can set its value
      */
     readonly(): CustomPropertyDecorator {
@@ -169,4 +236,4 @@ class AuthDecoratorImpl {
 const authorize = new AuthDecoratorImpl()
 
 
-export { authorize, AuthDecoratorImpl, AuthorizeSelectorOption }
+export { authorize, AuthDecoratorImpl, AuthorizeSelectorOption, FilterDecorator, FilterAuthorizeOption }

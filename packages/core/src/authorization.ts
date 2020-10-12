@@ -1,6 +1,7 @@
 import { ParameterReflection, PropertyReflection, reflect, Reflection, ClassReflection } from "tinspector"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
+import { FilterDecorator } from './decorator/authorize'
 import { HttpStatus } from "./http-status"
 import {
     ActionContext,
@@ -164,7 +165,8 @@ function createContext(ctx: ParamCheckContext, value: any, meta: ClassReflection
     return info
 }
 
-async function checkParameter(meta: PropertyReflection | ParameterReflection, value: any, ctx: ParamCheckContext) {
+async function checkParameter(meta: PropertyReflection | ParameterReflection, value: any, ctx: ParamCheckContext): Promise<string[]> {
+    const filterDecorator = meta.decorators.find((x: FilterDecorator) => x.kind === "plumier-meta:filter")
     if (value === undefined) return []
     else if (Array.isArray(meta.type)) {
         const newMeta = { ...meta, type: meta.type[0] };
@@ -179,6 +181,10 @@ async function checkParameter(meta: PropertyReflection | ParameterReflection, va
         const classMeta = reflect(<Class>meta.type)
         const values = classMeta.properties.map(x => value[x.name])
         return checkParameters(classMeta.properties, values, { ...ctx, parent: meta.type, parentValue: value })
+    }
+    // for GET method by default will be allowed except filter decorator specified
+    else if (ctx.info.ctx.method === "GET" && !filterDecorator) {
+        return []
     }
     else {
         const decorators = meta.decorators.filter(createDecoratorFilter())
@@ -231,7 +237,6 @@ async function getRole(user: any, roleField: RoleField): Promise<string[]> {
     }
 }
 
-
 async function checkAuthorize(ctx: ActionContext) {
     if (ctx.config.enableAuthorization) {
         const { route, parameters, config } = ctx
@@ -240,14 +245,12 @@ async function checkAuthorize(ctx: ActionContext) {
         //check user access
         await checkUserAccessToRoute(decorator, info)
         //if ok check parameter access
-        if (["POST", "PUT", "PATCH", "DELETE"].some(x => x === ctx.method))
-            await checkUserAccessToParameters(route.action.parameters, parameters, { ...info, type: "Parameter" })
+        await checkUserAccessToParameters(route.action.parameters, parameters, { ...info, type: "Parameter" })
     }
 }
 
-
 // --------------------------------------------------------------------- //
-// ------------------------ AUTHORIZATION FILTER ----------------------- //
+// ----------------------- RESPONSE AUTHORIZATION ---------------------- //
 // --------------------------------------------------------------------- //
 
 type FilterNode = ArrayNode | ClassNode | ValueNode
@@ -338,7 +341,7 @@ async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): P
     else return raw
 }
 
-async function filterResult(raw: ActionResult, ctx: ActionContext): Promise<ActionResult> {
+async function responseAuthorize(raw: ActionResult, ctx: ActionContext): Promise<ActionResult> {
     const type = ctx.route.action.returnType
     if (type !== Promise && type && raw.status === 200 && raw.body) {
         const info = await createAuthContext(ctx, "Filter")
@@ -361,7 +364,7 @@ class AuthorizerMiddleware implements Middleware {
     async execute(invocation: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
         await checkAuthorize(invocation.ctx)
         const result = await invocation.proceed()
-        return filterResult(result, invocation.ctx)
+        return responseAuthorize(result, invocation.ctx)
     }
 }
 

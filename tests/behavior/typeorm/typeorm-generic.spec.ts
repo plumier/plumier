@@ -1,4 +1,4 @@
-import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave } from "@plumier/core"
+import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave, authorize } from "@plumier/core"
 import Plumier, { WebApiFacility } from "plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
@@ -68,7 +68,75 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body.length).toBe(50)
         })
-        it("Should find by query GET /users?offset&limit", async () => {
+        it("Should filter by exact value GET /users?filter", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                @authorize.filter()
+                email: string
+                @Column()
+                name: string
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            await repo.insert({ email: "jane.doe@gmail.com", name: "John Doe" })
+            await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?filter[email]=jane.doe@gmail.com")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should filter by partial value GET /users?filter", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                @authorize.filter({ type: "partial" })
+                email: string
+                @Column()
+                name: string
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            await repo.insert({ email: "jane.doe@gmail.com", name: "John Doe" })
+            await repo.insert({ email: "jane.moe@gmail.com", name: "John Doe" })
+            await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?filter[email]=jane%")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should filter with default value GET /users?filter", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @authorize.filter({ type: "partial" })
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @authorize.filter({ default: false })
+                @Column({ default: false })
+                deleted: boolean
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            await repo.insert({ email: "jane.doe@gmail.com", name: "John Doe", deleted: true })
+            await repo.insert({ email: "jane.moe@gmail.com", name: "John Moe" })
+            await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?filter[email]=jane%")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should ignore filter on non marked property GET /users?filter", async () => {
             @Entity()
             @route.controller()
             class User {
@@ -86,7 +154,7 @@ describe("CRUD", () => {
             const { body } = await supertest(app.callback())
                 .get("/users?filter[email]=jane.doe@gmail.com")
                 .expect(200)
-            expect(body).toMatchSnapshot()
+            expect(body.length).toBeGreaterThan(1)
         })
         it("Should set partial validation on GET /users?offset&limit", async () => {
             @Entity()
@@ -95,6 +163,7 @@ describe("CRUD", () => {
                 @PrimaryGeneratedColumn()
                 id: number
                 @Column()
+                @authorize.filter()
                 @val.required()
                 email: string
                 @Column()
@@ -429,10 +498,10 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @Column()
-                password:string
+                password: string
 
                 @preSave()
-                hook(){
+                hook() {
                     this.password = "HASH"
                 }
             }
@@ -440,7 +509,7 @@ describe("CRUD", () => {
             const repo = getManager().getRepository(User)
             const { body } = await supertest(app.callback())
                 .post("/users")
-                .send({email: "john.doe@gmail.com", name: "John Doe", password: "lorem ipsum"})
+                .send({ email: "john.doe@gmail.com", name: "John Doe", password: "lorem ipsum" })
                 .expect(200)
             const result = await repo.findOne(body.id)
             expect(result).toMatchSnapshot()
@@ -519,7 +588,116 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body.length).toBe(50)
         })
-        it("Should find by query GET /users/:parentId/animals?offset&limit", async () => {
+        it("Should filter with exact value GET /users/:parentId/animals?filter", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @route.controller()
+                animals: Animal[]
+            }
+            @Entity()
+            @route.controller()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                @authorize.filter()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            await animalRepo.insert({ name: `Jojo`, user })
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}/animals?filter[name]=Jojo`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should filter with partial value GET /users/:parentId/animals?filter", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @route.controller()
+                animals: Animal[]
+            }
+            @Entity()
+            @route.controller()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                @authorize.filter({ type: "partial" })
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            await animalRepo.insert({ name: `Jojo Subejo`, user })
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}/animals?filter[name]=Jojo%`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should filter with default value GET /users/:parentId/animals?filter", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @route.controller()
+                animals: Animal[]
+            }
+            @Entity()
+            @route.controller()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                @authorize.filter({ type: "partial" })
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+                @authorize.filter({ default: false })
+                @Column({ default: false })
+                deleted: boolean
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            await animalRepo.insert({ name: `Jojo Subejo`, user })
+            await animalRepo.insert({ name: `Jojo Sutarjo`, user, deleted:true })
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}/animals?filter[name]=jojo%`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should ignore filter on non marked property GET /users/:parentId/animals?filter", async () => {
             @Entity()
             @route.controller()
             class User {
@@ -546,12 +724,12 @@ describe("CRUD", () => {
             const app = await createApp([User, Animal], { mode: "production" })
             const user = await createUser(User)
             const animalRepo = getManager().getRepository(Animal)
-            animalRepo.insert({ name: `Jojo`, user })
+            await animalRepo.insert({ name: `Jojo Subejo`, user })
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
             const { body } = await supertest(app.callback())
-                .get(`/users/${user.id}/animals?filter[name]=Jojo`)
+                .get(`/users/${user.id}/animals?filter[name]=Jojo%`)
                 .expect(200)
-            expect(body).toMatchSnapshot()
+            expect(body.length).toBeGreaterThan(1)
         })
         it("Should set partial validation GET /users/:parentId/animals?offset&limit", async () => {
             @Entity()
@@ -574,6 +752,7 @@ describe("CRUD", () => {
                 @val.required()
                 id: number
                 @Column()
+                @authorize.filter()
                 name: string
                 @ManyToOne(x => User, x => x.animals)
                 user: User
@@ -785,7 +964,7 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @Column()
-                age:number
+                age: number
                 @ManyToOne(x => User, x => x.animals)
                 user: User
             }

@@ -1,5 +1,6 @@
 import {
     Class,
+    FilterQuery,
     getGenericControllerOneToOneRelations,
     OneToManyRepository,
     OrderQuery,
@@ -7,7 +8,7 @@ import {
     Repository,
 } from "@plumier/core"
 import reflect from "tinspector"
-import { getManager, Repository as NativeRepository } from "typeorm"
+import { FindOneOptions, getManager, Repository as NativeRepository, Like } from "typeorm"
 
 function normalizeSelect<T>(type: Class<T>, selections: string[]): { select: (keyof T)[], relations: string[] } {
     const meta = reflect(type)
@@ -31,6 +32,14 @@ function parseOrder<T>(order: OrderQuery[]): { [P in keyof T]?: 1 | -1 } {
     }, {} as any)
 }
 
+function transformFilter(filters: FilterQuery[]) {
+    const result: any = {}
+    for (const filter of filters) {
+        result[filter.propertyName] = filter.type === "exact" ? filter.value : Like(filter.value)
+    }
+    return result
+}
+
 class TypeORMRepository<T> implements Repository<T> {
     protected readonly nativeRepository: NativeRepository<T>
     protected readonly oneToOneRelations: string[]
@@ -39,12 +48,12 @@ class TypeORMRepository<T> implements Repository<T> {
         this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
-    find(offset: number, limit: number, query: Partial<T>, selection: string[], order: OrderQuery[]): Promise<T[]> {
+    find(offset: number, limit: number, query: FilterQuery[], selection: string[], order: OrderQuery[]): Promise<T[]> {
         const { select, relations } = normalizeSelect(this.type, selection)
         return this.nativeRepository.find({
             skip: offset,
             take: limit,
-            where: query,
+            where: transformFilter(query),
             relations, select,
             order: parseOrder(order)
         })
@@ -84,11 +93,11 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
         this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
-    async find(pid: any, offset: number, limit: number, query: Partial<T>, selection: string[], order: OrderQuery[]): Promise<T[]> {
+    async find(pid: any, offset: number, limit: number, query: FilterQuery[], selection: string[], order: OrderQuery[]): Promise<T[]> {
         const { select, relations } = normalizeSelect(this.type, selection)
         return this.nativeRepository.find({
             where:
-                { [this.inversePropertyName]: pid, ...query },
+                { [this.inversePropertyName]: pid, ...transformFilter(query) },
             skip: offset,
             take: limit,
             relations, select,
