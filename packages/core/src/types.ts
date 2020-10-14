@@ -10,7 +10,7 @@ import reflect, {
     ParameterReflection,
     PropertyReflection,
 } from "tinspector"
-import { VisitorExtension } from "typedconverter"
+import { Result, VisitorExtension, VisitorInvocation } from "typedconverter"
 import { promisify } from "util"
 
 import { RoleField } from "./authorization"
@@ -368,7 +368,7 @@ export class FormFile {
 // ------------------------- GENERIC CONTROLLER ------------------------ //
 // --------------------------------------------------------------------- //
 
-export type FilterQueryType = "exact" | "partial"
+export type FilterQueryType = "exact" | "partial" | "range"
 
 export interface RelationPropertyDecorator { kind: "plumier-meta:relation-prop-name", name: string }
 
@@ -376,10 +376,12 @@ export type GenericController = [Class<ControllerGeneric>, Class<OneToManyContro
 
 export interface OrderQuery { column: string, order: 1 | -1 }
 
-export interface FilterQuery { type: FilterQueryType, propertyName:string, value: any }
+export interface FilterQuery { type: FilterQueryType, partial?: "start" | "end" | "both", value: any }
+
+export type FilterEntity<T> = { [k in keyof T]: FilterQuery }
 
 export interface Repository<T> {
-    find(offset: number, limit: number, query: FilterQuery[], select: string[], order: OrderQuery[]): Promise<T[]>
+    find(offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<T[]>
     insert(data: Partial<T>): Promise<{ id: any }>
     findById(id: any, select: string[]): Promise<T | undefined>
     update(id: any, data: Partial<T>): Promise<{ id: any }>
@@ -387,7 +389,7 @@ export interface Repository<T> {
 }
 
 export interface OneToManyRepository<P, T> {
-    find(pid: any, offset: number, limit: number, query: FilterQuery[], select: string[], order: OrderQuery[]): Promise<T[]>
+    find(pid: any, offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<T[]>
     insert(pid: any, data: Partial<T>): Promise<{ id: any }>
     findParentById(id: any): Promise<P | undefined>
     findById(id: any, select: string[]): Promise<T | undefined>
@@ -409,6 +411,7 @@ export abstract class OneToManyControllerGeneric<P = any, T = any, PID = any, TI
 // --------------------------- CONFIGURATION --------------------------- //
 // --------------------------------------------------------------------- //
 
+export type CustomConverter = (next:VisitorInvocation, ctx: ActionContext) => Result
 
 export interface Configuration {
     mode: "debug" | "production"
@@ -439,7 +442,7 @@ export interface Configuration {
     /**
      * Set type converter visitor provided by typedconverter
      */
-    typeConverterVisitors?: VisitorExtension[],
+    typeConverterVisitors: CustomConverter[],
 
 
     /**

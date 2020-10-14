@@ -1,4 +1,4 @@
-import { api, DefaultFacility, GenericControllerDecorator, PlumierApplication, RelationDecorator, RequestHookMiddleware } from "@plumier/core"
+import { ActionContext, api, DefaultFacility, filterConverters, GenericControllerDecorator, PlumierApplication, RelationDecorator, RequestHookMiddleware } from "@plumier/core"
 import Mongoose from "mongoose"
 import reflect from "tinspector"
 import { Result, ResultMessages, VisitorInvocation } from "typedconverter"
@@ -28,7 +28,7 @@ function convertValue(value: any, path: string): Result {
     }
 }
 
-function validateRelation(i: VisitorInvocation): Result {
+function relationConverter(i: VisitorInvocation): Result {
     if (i.value && i.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation"))
         return convertValue(i.value, i.path)
     else
@@ -51,7 +51,7 @@ export class MongooseFacility extends DefaultFacility {
     }
 
     async initialize(app: Readonly<PlumierApplication>) {
-        app.set({ typeConverterVisitors: [validateRelation] })
+        app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter, ...filterConverters] })
         const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
         const helper = this.option.helper ?? { connect: Mongoose.connect, getModels }
         if (uri) {

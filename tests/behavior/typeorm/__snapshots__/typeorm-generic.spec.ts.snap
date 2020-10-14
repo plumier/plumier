@@ -271,26 +271,16 @@ Array [
 ]
 `;
 
-exports[`CRUD CRUD Function Should filter with default value GET /users?filter 1`] = `
-Array [
-  Object {
-    "deleted": false,
-    "email": "jane.moe@gmail.com",
-    "id": 2,
-    "name": "John Moe",
-  },
-]
-`;
-
 exports[`CRUD CRUD Function Should ignore filter on non marked property GET /users?filter 1`] = `
 Object {
   "message": Array [
     Object {
       "messages": Array [
-        "Invalid filter query filter[email]",
+        "Property filter.email is not filterable",
       ],
       "path": Array [
         "filter",
+        "email",
       ],
     },
   ],
@@ -548,21 +538,6 @@ Array [
 ]
 `;
 
-exports[`CRUD Nested CRUD One to Many Function Should filter with default value GET /users/:parentId/animals?filter 1`] = `
-Array [
-  Object {
-    "deleted": false,
-    "id": 1,
-    "name": "Jojo Subejo",
-    "user": Object {
-      "email": "john.doe@gmail.com",
-      "id": 1,
-      "name": "John Doe",
-    },
-  },
-]
-`;
-
 exports[`CRUD Nested CRUD One to Many Function Should filter with exact value GET /users/:parentId/animals?filter 1`] = `
 Array [
   Object {
@@ -596,10 +571,11 @@ Object {
   "message": Array [
     Object {
       "messages": Array [
-        "Invalid filter query filter[name]",
+        "Property filter.name is not filterable",
       ],
       "path": Array [
         "filter",
+        "name",
       ],
     },
   ],

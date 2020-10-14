@@ -210,6 +210,12 @@ Object {
     "UnableToConvertValue": "Unable to convert \\"{0}\\" into {1}",
     "UnableToInstantiateModel": "PLUM2000: Unable to instantiate {0}. Domain model should not throw error inside constructor",
   },
+  "filterConverters": Array [
+    exactFilterConverter,
+    partialFilterConverter,
+    rangeFilterConverter,
+    filterConverter,
+  ],
   "findClassRecursive": findClassRecursive,
   "findFilesRecursive": findFilesRecursive,
   "generateRoutes": generateRoutes,

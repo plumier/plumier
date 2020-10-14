@@ -241,7 +241,7 @@ class Item {
     id: number
     
     // filter with partial comparison (LIKE)
-    @authorize.filter({ type: "partial" })
+    @authorize.filter()
     @Column()
     name: string
 

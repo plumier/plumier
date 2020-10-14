@@ -33,7 +33,8 @@ export class Plumier implements PlumierApplication {
             roleField: "role",
             enableAuthorization: false,
             rootDir: "__UNSET__",
-            trustProxyHeader: false
+            trustProxyHeader: false,
+            typeConverterVisitors: []
         }
     }
 

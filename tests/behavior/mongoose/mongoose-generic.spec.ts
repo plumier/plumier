@@ -130,7 +130,7 @@ describe("CRUD", () => {
             @route.controller()
             class User {
                 @reflect.noop()
-                @authorize.filter({ type: "partial" })
+                @authorize.filter()
                 email: string
                 @reflect.noop()
                 name: string
@@ -141,7 +141,7 @@ describe("CRUD", () => {
             await repo.insert({ email: "jean.doe@gmail.com", name: "Jean Doe" })
             await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
             const { body } = await supertest(app.callback())
-                .get("/users?filter[email]=jean")
+                .get("/users?filter[email]=jean*")
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
@@ -742,7 +742,7 @@ describe("CRUD", () => {
             @route.controller()
             class Animal {
                 @reflect.noop()
-                @authorize.filter({type: "partial"})
+                @authorize.filter()
                 name: string
             }
             model(Animal)
@@ -753,7 +753,7 @@ describe("CRUD", () => {
             await animalRepo.insert(user._id.toHexString(), { name: `Jojo` })
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
             const { body } = await supertest(app.callback())
-                .get(`/users/${user._id}/animals?filter[name]=jo`)
+                .get(`/users/${user._id}/animals?filter[name]=jo*`)
                 .expect(200)
             expect(body).toMatchSnapshot()
         })

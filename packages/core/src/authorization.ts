@@ -1,7 +1,6 @@
 import { ParameterReflection, PropertyReflection, reflect, Reflection, ClassReflection } from "tinspector"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
-import { FilterDecorator } from './decorator/authorize'
 import { HttpStatus } from "./http-status"
 import {
     ActionContext,
@@ -21,7 +20,7 @@ import {
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
-
+type AccessModifier = "read" | "write" | "all" | "filter"
 type AuthorizerType = "Route" | "Filter" | "Parameter"
 interface AuthorizationContext {
     value?: any
@@ -38,7 +37,7 @@ type AuthorizerFunction = (info: AuthorizationContext, location: "Class" | "Para
 interface AuthorizeDecorator {
     type: "plumier-meta:authorize",
     authorize: string | AuthorizerFunction | Authorizer
-    access: "read" | "write" | "all"
+    access: AccessModifier
     tag: string,
     location: "Class" | "Parameter" | "Method",
     evaluation: "Static" | "Dynamic"
@@ -166,7 +165,7 @@ function createContext(ctx: ParamCheckContext, value: any, meta: ClassReflection
 }
 
 async function checkParameter(meta: PropertyReflection | ParameterReflection, value: any, ctx: ParamCheckContext): Promise<string[]> {
-    const filterDecorator = meta.decorators.find((x: FilterDecorator) => x.kind === "plumier-meta:filter")
+    const filterDecorator = meta.decorators.find(createDecoratorFilter(x => x.access === "filter"))
     if (value === undefined) return []
     else if (Array.isArray(meta.type)) {
         const newMeta = { ...meta, type: meta.type[0] };
@@ -371,5 +370,6 @@ class AuthorizerMiddleware implements Middleware {
 export {
     AuthorizerFunction, RoleField, Authorizer, checkAuthorize, AuthorizeDecorator,
     getAuthorizeDecorators, updateRouteAuthorizationAccess, AuthorizerMiddleware,
-    CustomAuthorizer, CustomAuthorizerFunction, AuthorizationContext, AuthorizerContext
+    CustomAuthorizer, CustomAuthorizerFunction, AuthorizationContext, AuthorizerContext,
+    AccessModifier
 }

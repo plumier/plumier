@@ -1,5 +1,5 @@
 import { Class, route, consoleLog } from "@plumier/core"
-import { TypeORMFacility } from "@plumier/typeorm"
+import { transformFilter, TypeORMFacility } from "@plumier/typeorm"
 import { join } from "path"
 import supertest from "supertest"
 import reflect from "tinspector"
@@ -231,7 +231,6 @@ describe("TypeOrm", () => {
             delete process.env.TYPEORM_SYNCHRONIZE
         })
     })
-
     describe("Update relation with ID", () => {
         function createApp(entities: (string | Function)[], controller: Class) {
             return fixture(controller)
@@ -506,6 +505,27 @@ describe("TypeOrm", () => {
                 .expect(200)
             const result = await parentRepo.findOne(body.id, { relations: ["child"] })
             expect(result).toMatchSnapshot()
+        })
+    })
+
+    describe("Filter Transformer", () => {
+        it("Should transform exact filter", () => {
+            expect(transformFilter({ name: { type: "exact", value: "lorem" } })).toMatchSnapshot()
+        })
+        it("Should transform partial filter", () => {
+            expect(transformFilter({ name: { type: "partial", partial: "start", value: "lorem" } })).toMatchSnapshot()
+            expect(transformFilter({ name: { type: "partial", partial: "end", value: "lorem" } })).toMatchSnapshot()
+            expect(transformFilter({ name: { type: "partial", partial: "both", value: "lorem" } })).toMatchSnapshot()
+        })
+        it("Should transform range filter", () => {
+            expect(transformFilter({ name: { type: "range", value: [1,2] } })).toMatchSnapshot()
+        })
+        it("Should able to combine all", () => {
+            expect(transformFilter({ 
+                name: { type: "exact", value: "lorem" } ,
+                age: { type: "range", value: [1,2] },
+                address: { type: "partial", partial: "end", value: "lorem" } 
+            })).toMatchSnapshot()
         })
     })
 })
