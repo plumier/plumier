@@ -5,6 +5,7 @@ import {
     getGenericControllerOneToOneRelations,
     OneToManyRepository,
     OrderQuery,
+    parseSelect,
     relation,
     RelationDecorator,
     Repository,
@@ -19,6 +20,21 @@ function getProjection(select: string[]) {
         a[x] = 1
         return a
     }, {} as any)
+}
+
+function getPopulate(type: Class, parentProjections:any) {
+    const meta = reflect(type)
+    const getProp = (prop: string) => meta.properties.find(x => x.name === prop)
+    const populate = []
+    for (const proj in parentProjections) {
+        const prop = getProp(proj)
+        if(!prop || prop.typeClassification === "Primitive") continue;
+        populate.push({
+            path: proj,
+            select: parseSelect(Array.isArray(prop.type) ? prop.type[0] : prop.type)
+        })
+    }
+    return populate
 }
 
 function transformFilter<T>(filters: FilterEntity<T>) {
@@ -56,12 +72,7 @@ class MongooseRepository<T> implements Repository<T>{
             }, {} as any)
             q.sort(sort)
         }
-        const meta = reflect(this.type)
-        const relations = meta.properties.filter(prop => prop.decorators.some((x: RelationDecorator) => x.kind === "plumier-meta:relation"))
-        for (const prop of relations) {
-            if (projection[prop.name])
-                q.populate(prop.name)
-        }
+        q.populate(getPopulate(this.type, projection))
         return q.skip(offset).limit(limit) as any
     }
 
@@ -72,13 +83,9 @@ class MongooseRepository<T> implements Repository<T>{
 
     findById(id: any, select: string[] = []): Promise<(T & mongoose.Document) | undefined> {
         const projection = getProjection(select)
+        const populate = getPopulate(this.type, projection)
         const q = this.Model.findById(id, projection)
-        const meta = reflect(this.type)
-        const relations = meta.properties.filter(prop => prop.decorators.some((x: RelationDecorator) => x.kind === "plumier-meta:relation"))
-        for (const prop of relations) {
-            if (projection[prop.name])
-                q.populate(prop.name)
-        }
+            .populate(populate)
         return q as any
     }
 
@@ -96,12 +103,10 @@ class MongooseRepository<T> implements Repository<T>{
 class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
     readonly Model: Model<T & Document>
     readonly ParentModel: Model<P & Document>
-    protected readonly oneToOneRelations: string[]
     constructor(protected parent: Class<P>, protected type: Class<T>, protected relation: string, helper?: MongooseHelper) {
         const hlp = helper ?? globalHelper
         this.Model = hlp.model(type)
         this.ParentModel = hlp.model(parent)
-        this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
     async find(pid: string, offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
@@ -115,7 +120,7 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
                 path: this.relation,
                 match: transformFilter(query),
                 options: { skip: offset, limit, sort },
-                populate: this.oneToOneRelations.map(x => ({ path: x })),
+                populate: getPopulate(this.type, proj),
                 select: proj,
             })
         return (parent as any)[this.relation]
@@ -150,9 +155,7 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
     findById(id: any, select: string[] = []): Promise<(T & mongoose.Document) | undefined> {
         const proj = getProjection(select)
         const q = this.Model.findById(id, proj)
-        for (const prop of this.oneToOneRelations) {
-            q.populate(prop)
-        }
+            .populate(getPopulate(this.type, proj))
         return q as any
     }
 

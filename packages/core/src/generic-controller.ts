@@ -78,7 +78,7 @@ function normalizeSelect(type: Class, dSelect: string[]) {
     return dSelect.length === 0 ? defaultSelection : dSelect
 }
 
-function parseSelect(type: Class, select: string) {
+function parseSelect(type: Class, select?: string) {
     const dSelect = select?.split(",").map(x => x.trim()) ?? []
     return normalizeSelect(type, dSelect)
 }
@@ -454,4 +454,5 @@ export {
     IdentifierResult, createGenericControllers, genericControllerRegistry, updateGenericControllerRegistry,
     RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, getGenericControllerOneToOneRelations,
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, DefaultRepository, DefaultOneToManyRepository,
+    parseSelect
 }
