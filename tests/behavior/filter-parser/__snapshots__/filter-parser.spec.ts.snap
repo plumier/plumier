@@ -1,0 +1,269 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Filter Parser Exact Filter Should parse exact filter on type number properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "name": Object {
+        "type": "exact",
+        "value": 12345,
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Exact Filter Should parse exact filter properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "name": Object {
+        "type": "exact",
+        "value": "mimi",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Exact Filter Should validate filter properly 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Unable to convert \\"lorem\\" into Number",
+      ],
+      "path": Array [
+        "filter",
+        "name",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Partial Filter Should not allowed on type other than string 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Partial filter only applicable on string field",
+      ],
+      "path": Array [
+        "filter",
+        "name",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Partial Filter Should parse partial filter at both properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "name": Object {
+        "partial": "both",
+        "type": "partial",
+        "value": "mimi",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Partial Filter Should parse partial filter at the end properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "name": Object {
+        "partial": "end",
+        "type": "partial",
+        "value": "mimi",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Partial Filter Should parse partial filter at the start properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "name": Object {
+        "partial": "start",
+        "type": "partial",
+        "value": "mimi",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Range Filter Should not allow data type other than number and date 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Range filter only applicable on date and number filed",
+      ],
+      "path": Array [
+        "filter",
+        "name",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Range Filter Should parse date range filter properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "birthDate": Object {
+        "type": "range",
+        "value": Array [
+          DATE NOW,
+          DATE NOW,
+        ],
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Range Filter Should parse iso date range filter properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "birthDate": Object {
+        "type": "range",
+        "value": Array [
+          DATE NOW,
+          DATE NOW,
+        ],
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Range Filter Should parse number range filter properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "age": Object {
+        "type": "range",
+        "value": Array [
+          1,
+          3,
+        ],
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Range Filter Should validate date value properly 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Unable to convert \\"lorem\\" into date",
+      ],
+      "path": Array [
+        "filter",
+        "birthDate",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Range Filter Should validate number value properly 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Unable to convert \\"lorem\\" into number",
+      ],
+      "path": Array [
+        "filter",
+        "age",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Range Filter Should validate right hand date value properly 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Unable to convert \\"lorem\\" into date",
+      ],
+      "path": Array [
+        "filter",
+        "birthDate",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Range Filter Should validate right hand number value properly 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Unable to convert \\"lorem\\" into number",
+      ],
+      "path": Array [
+        "filter",
+        "age",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Should not allow non authorized filter 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Property filter.name is not filterable",
+      ],
+      "path": Array [
+        "filter",
+        "name",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;

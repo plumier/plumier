@@ -11,8 +11,7 @@ import {
     DefaultOneToManyControllerGeneric,
     DefaultOneToManyRepository,
     DefaultRepository,
-    FilterQuery,
-    FilterQueryType,
+    FilterEntity,
     IdentifierResult,
     Invocation,
     Middleware,
@@ -39,6 +38,7 @@ import supertest from "supertest"
 import reflect, { generic, noop, type } from "tinspector"
 
 import { expectError } from "../helper"
+
 
 function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
     return new Plumier()
@@ -69,7 +69,7 @@ class ErrorHandlerMiddleware implements Middleware {
 
 class MockRepo<T> implements Repository<T>{
     constructor(private fn: jest.Mock) { }
-    async find(offset: number, limit: number, query: FilterQuery[]): Promise<T[]> {
+    async find(offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         this.fn(offset, limit, query)
         return []
     }
@@ -93,7 +93,7 @@ class MockRepo<T> implements Repository<T>{
 
 class MockOneToManyRepo<P, T> implements OneToManyRepository<P, T>{
     constructor(private fn: jest.Mock) { }
-    async find(pid: any, offset: number, limit: number, query: FilterQuery[]): Promise<T[]> {
+    async find(pid: any, offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         this.fn(pid, offset, limit, query)
         return []
     }
@@ -1783,5 +1783,4 @@ describe("Request Hook", () => {
             .expect(200)
         expect(myFn.mock.calls).toMatchSnapshot()
     })
-
 })

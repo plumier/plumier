@@ -1,11 +1,10 @@
 import { CustomPropertyDecorator, decorate, mergeDecorator, DecoratorOption, decorateProperty } from "tinspector"
 
-import { AuthorizeDecorator, Authorizer, AuthorizerFunction } from "../authorization"
+import { AccessModifier, AuthorizeDecorator, Authorizer, AuthorizerFunction } from "../authorization"
 import { errorMessage, FilterQueryType } from "../types"
 import { api } from "./api"
 
 
-type AccessModifier = "read" | "write" | "all" | "filter"
 type FunctionEvaluation = "Static" | "Dynamic"
 
 interface AuthorizeSelectorOption {
@@ -47,12 +46,6 @@ interface CustomAuthorizeOption extends AuthorizeSelectorOption {
 
 interface FilterAuthorizeOption {
     type?: FilterQueryType
-    default?: any
-}
-
-interface FilterDecorator {
-    kind: "plumier-meta:filter",
-    type: FilterQueryType
     default?: any
 }
 
@@ -148,7 +141,7 @@ class AuthDecoratorImpl {
 
     /**
      * Authorize entity or parameter or domain property only can be retrieved by specific role
-     * @param role List of allowed roles
+     * @param roles List of allowed roles
      */
     read(...roles: string[]) {
         return this.byRole(roles, "read")
@@ -156,66 +149,18 @@ class AuthDecoratorImpl {
 
     /**
      * Authorize entity  parameter or domain property only can be set by specific role
-     * @param role List of allowed role
+     * @param roles List of allowed roles
      */
     write(...roles: string[]) {
         return this.byRole(roles, "write")
     }
 
     /**
-     * Authorize domain property to allow filter by specific role
-     * @param role Allowed role
-     * @param option filter type option
+     * Authorize a domain property to be used as query string filter
+     * @param roles List of allowed roles
      */
-    filter(option?: FilterAuthorizeOption): CustomPropertyDecorator
-
-    /**
-     * Authorize domain property to allow filter by specific role
-     * @param role Allowed role
-     * @param option filter type option
-     */
-    filter(role: string, option?: FilterAuthorizeOption): CustomPropertyDecorator
-    /**
-     * Authorize domain property to allow filter by specific role
-     * @param role1 Allowed role
-     * @param role2 Allowed role
-     * @param option filter type option
-     */
-    filter(role1: string, role2: string, option?: FilterAuthorizeOption): CustomPropertyDecorator
-    /**
-     * Authorize domain property to allow filter by specific role
-     * @param role1 Allowed role
-     * @param role2 Allowed role
-     * @param role3 Allowed role
-     * @param option filter type option
-     */
-    filter(role1: string, role2: string, role3: string, option?: FilterAuthorizeOption): CustomPropertyDecorator
-    /**
-     * Authorize domain property to allow filter by specific role
-     * @param role1 Allowed role
-     * @param role2 Allowed role
-     * @param role3 Allowed role
-     * @param role4 Allowed role
-     * @param option filter type option
-     */
-    filter(role1: string, role2: string, role3: string, role4: string, option?: FilterAuthorizeOption): CustomPropertyDecorator
-    /**
-     * Authorize domain property to allow filter by specific role
-     * @param role1 Allowed role
-     * @param role2 Allowed role
-     * @param role3 Allowed role
-     * @param role4 Allowed role
-     * @param role5 Allowed role
-     * @param option filter type option
-     */
-    filter(role1: string, role2: string, role3: string, role4: string, role5: string, option?: FilterAuthorizeOption): CustomPropertyDecorator
-    filter(...roles: any[]): CustomPropertyDecorator {
-        const last = roles[roles.length - 1]
-        const option: FilterAuthorizeOption = typeof last === "string" ? { type: "exact" } : { type: last?.type ?? "exact", ...last }
-        return mergeDecorator(
-            this.byRole(roles, "filter"),
-            decorateProperty(<FilterDecorator>{ kind: "plumier-meta:filter", ...option })
-        )
+    filter(...roles: string[]): CustomPropertyDecorator {
+        return this.byRole(roles, "filter")
     }
 
     /**
@@ -236,4 +181,4 @@ class AuthDecoratorImpl {
 const authorize = new AuthDecoratorImpl()
 
 
-export { authorize, AuthDecoratorImpl, AuthorizeSelectorOption, FilterDecorator, FilterAuthorizeOption }
+export { authorize, AuthDecoratorImpl, AuthorizeSelectorOption, FilterAuthorizeOption }

@@ -1,5 +1,6 @@
 import {
     Class,
+    FilterEntity,
     FilterQuery,
     getGenericControllerOneToOneRelations,
     OneToManyRepository,
@@ -20,11 +21,18 @@ function getProjection(select: string[]) {
     }, {} as any)
 }
 
-
-function transformFilter(filters: FilterQuery[]) {
+function transformFilter<T>(filters: FilterEntity<T>) {
     const result: any = {}
-    for (const filter of filters) {
-        result[filter.propertyName] = filter.type === "exact" ? filter.value : { "$regex": filter.value, "$options": "i" }
+    for (const key in filters) {
+        const filter = filters[key]
+        if (filter.type === "range")
+            result[key] = { "$gte": filter.value[0], "$lte": filter.value[1] }
+        else if (filter.type === "partial") {
+            const value = filter.partial === "end" ? `^${filter.value}` : filter.partial === "start" ? `${filter.value}$` : filter.value
+            result[key] = { "$regex": value, "$options": "i" }
+        }
+        else
+            result[key] = filter.value
     }
     return result
 }
@@ -38,7 +46,7 @@ class MongooseRepository<T> implements Repository<T>{
         this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
-    find(offset: number, limit: number, query: FilterQuery[], select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
+    find(offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
         const projection = getProjection(select)
         const q = this.Model.find(transformFilter(query) as any, projection)
         if (order.length > 0) {
@@ -96,7 +104,7 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
-    async find(pid: string, offset: number, limit: number, query: FilterQuery[], select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
+    async find(pid: string, offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
         const proj = getProjection(select)
         const sort = order.reduce((a, b) => {
             a[b.column] = b.order
@@ -159,4 +167,4 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
     }
 }
 
-export { MongooseRepository, MongooseOneToManyRepository }
+export { MongooseRepository, MongooseOneToManyRepository, transformFilter }

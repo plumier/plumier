@@ -1,6 +1,7 @@
 import {
     bind,
     Class,
+    FilterEntity,
     OneToManyRepository,
     RepoBaseControllerGeneric,
     RepoBaseOneToManyControllerGeneric,
@@ -43,7 +44,7 @@ class MongooseOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMa
         super(fac ?? ((p, t, rel) => new MongooseOneToManyRepository(p, t, rel)))
     }
 
-    list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, filter: T, select: string, order: string, ctx: Context) {
+    list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, filter: FilterEntity<T>, select: string, order: string, ctx: Context) {
         return super.list(pid, offset, limit, filter, select, order, ctx)
     }
 

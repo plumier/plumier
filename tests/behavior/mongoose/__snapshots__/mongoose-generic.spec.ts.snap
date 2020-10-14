@@ -112,10 +112,11 @@ Object {
   "message": Array [
     Object {
       "messages": Array [
-        "Invalid filter query filter[email]",
+        "Property filter.email is not filterable",
       ],
       "path": Array [
         "filter",
+        "email",
       ],
     },
   ],
@@ -318,10 +319,11 @@ Object {
   "message": Array [
     Object {
       "messages": Array [
-        "Invalid filter query filter[name]",
+        "Property filter.name is not filterable",
       ],
       "path": Array [
         "filter",
+        "name",
       ],
     },
   ],

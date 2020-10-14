@@ -201,15 +201,15 @@ class User {
     @PrimaryGeneratedColumn()
     id: number
 
-    // filter with exact comparison (no parameter specified)
+    // authorize name field to be search able by everyone
     @authorize.filter()
     @Column()
-    email: string
-
-    // filter with partial comparison (LIKE)
-    @authorize.filter({ type: "partial" })
-    @Column()
     name: string
+
+    // authorize email field to be search able by admin
+    @authorize.filter("Admin")
+    @Column()
+    email: string
 }
 ``` 
 
@@ -220,43 +220,19 @@ Using above code enabled us to query the response result like below
 GET /users?filter[email]=john.doe@gmail.com
 
 # filter by name, will return all users name start with john
-GET /users?filter[name]=john%
+GET /users?filter[name]=john*
 
 # combine both filter, will return with AND operator
-GET /users?filter[email]=john.doe@gmail.com&filter[name]=john%
+GET /users?filter[email]=john.doe@gmail.com&filter[name]=john
 ```
 
-### Restrict Access To Filter 
+Several filter supported based on property data type 
 
-In some case you may provided filter that is sensitive to some user, for example in `Item` entity, the `basePrice` is sensitive to a common user but should be filter able by admin. 
-
-```typescript {10,14}
-import { Entity, PrimaryGeneratedColumn } from "typeorm"
-import { route } from "plumier"
-
-@route.controller()
-@Entity()
-class Item {
-    @PrimaryGeneratedColumn()
-    id: number
-    
-    // filter with partial comparison (LIKE)
-    @authorize.filter({ type: "partial" })
-    @Column()
-    name: string
-
-    // exact filter, only allowed for Admin
-    @authorize.filter("Admin")
-    @Column()
-    basePrice:number
-    
-    @Column()
-    price:number
-}
-``` 
-
-Using above code, only user with role `Admin` can access `GET /items?filter[basePrice]=200` other user fill get 401.
-
+| Filter  | Description                                          | Data Type    | Example                     |
+| ------- | ---------------------------------------------------- | ------------ | --------------------------- |
+| Exact   | Filter by exact value                                | All          | `/users?filter[age]=3`      |
+| Partial | Filter by partial value using `*` (at beginning/end) | String       | `/users?filter[name]=john*` |
+| Range   | Filter by range with pattern `start...end`           | Date, Number | `/users?filter[age]=1...18` |
 
 ## Query Strings
 

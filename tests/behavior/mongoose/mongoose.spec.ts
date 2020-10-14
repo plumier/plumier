@@ -1,6 +1,6 @@
 import { authorize, Class, route } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import model, { collection, getModels, model as globalModel, MongooseFacility, MongooseHelper, Ref } from "@plumier/mongoose"
+import model, { collection, getModels, model as globalModel, MongooseFacility, MongooseHelper, Ref, transformFilter } from "@plumier/mongoose"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import Plumier, { WebApiFacility } from "plumier"
@@ -1055,3 +1055,23 @@ describe("Facility", () => {
     })
 })
 
+describe("Filter Transformer", () => {
+    it("Should transform exact filter", () => {
+        expect(transformFilter({ name: { type: "exact", value: "lorem" } })).toMatchSnapshot()
+    })
+    it("Should transform partial filter", () => {
+        expect(transformFilter({ name: { type: "partial", partial: "start", value: "lorem" } })).toMatchSnapshot()
+        expect(transformFilter({ name: { type: "partial", partial: "end", value: "lorem" } })).toMatchSnapshot()
+        expect(transformFilter({ name: { type: "partial", partial: "both", value: "lorem" } })).toMatchSnapshot()
+    })
+    it("Should transform range filter", () => {
+        expect(transformFilter({ name: { type: "range", value: [1,2] } })).toMatchSnapshot()
+    })
+    it("Should able to combine all", () => {
+        expect(transformFilter({ 
+            name: { type: "exact", value: "lorem" } ,
+            age: { type: "range", value: [1,2] },
+            address: { type: "partial", partial: "end", value: "lorem" } 
+        })).toMatchSnapshot()
+    })
+})
