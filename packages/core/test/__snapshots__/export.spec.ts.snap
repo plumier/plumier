@@ -229,6 +229,7 @@ Object {
   "middleware": Object {
     "use": use,
   },
+  "parseSelect": parseSelect,
   "postSave": postSave,
   "preSave": preSave,
   "primaryId": primaryId,

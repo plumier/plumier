@@ -203,6 +203,25 @@ Array [
 ]
 `;
 
+exports[`CRUD Nested CRUD One to Many Function Should able to filter one on one relation GET /users/:parentId/animals?filter  1`] = `
+Array [
+  Object {
+    "name": "Jojo",
+    "user": Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+    },
+  },
+  Object {
+    "name": "Jeju",
+    "user": Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+    },
+  },
+]
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should able to order by properties GET /users/:parentId/animals?offset&limit  1`] = `
 Array [
   Object {
@@ -376,9 +395,6 @@ exports[`CRUD Nested CRUD One to Many Function Should serve GET /users/:parentId
 Object {
   "name": "Mimi",
   "user": Object {
-    "animals": Array [
-      Object {},
-    ],
     "email": "john.doe@gmail.com",
     "name": "John Doe",
   },
