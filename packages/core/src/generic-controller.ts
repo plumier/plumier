@@ -4,15 +4,14 @@ import reflect, {
     decorate,
     decorateClass,
     DecoratorId,
-    DecoratorOption,
     DecoratorOptionId,
     generic,
     GenericTypeDecorator,
+    type,
 } from "tinspector"
 import { val } from "typedconverter"
 
 import { AuthorizeDecorator } from "./authorization"
-import { BindingDecorator } from "./binder"
 import { Class, entityHelper } from "./common"
 import { api, ApiTagDecorator } from "./decorator/api"
 import { bind } from "./decorator/bind"
@@ -23,10 +22,10 @@ import { IgnoreDecorator, RouteDecorator } from "./route-generator"
 import {
     ControllerGeneric,
     errorMessage,
+    FilterEntity,
     GenericController,
     HttpMethod,
     HttpStatusError,
-    MetadataImpl,
     OneToManyControllerGeneric,
     OneToManyRepository,
     OrderQuery,
@@ -34,9 +33,12 @@ import {
     Repository,
 } from "./types"
 
+
 // --------------------------------------------------------------------- //
-// ---------------------------- CONTROLLERS ---------------------------- //
+// ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
+
+const RouteDecoratorID = Symbol("generic-controller:route")
 
 @domain()
 @generic.template("TID")
@@ -47,20 +49,10 @@ class IdentifierResult<TID> {
     ) { }
 }
 
-const RouteDecoratorID = Symbol("generic-controller:route")
 
-/**
- * Custom route decorator to make it possible to override @route decorator from class scope decorator. 
- * This is required for custom route path defined with @route.controller("custom/:customId")
- */
-function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: string | string[] }) {
-    return decorate(<RouteDecorator & { [DecoratorId]: any }>{
-        [DecoratorId]: RouteDecoratorID,
-        name: "plumier-meta:route",
-        method,
-        url: path
-    }, ["Class", "Method"], { allowMultiple: false, ...option })
-}
+// --------------------------------------------------------------------- //
+// ------------------------------ HELPERS ------------------------------ //
+// --------------------------------------------------------------------- //
 
 function parseOrder(order?: string) {
     const tokens = order?.split(",").map(x => x.trim()) ?? []
@@ -91,6 +83,11 @@ function parseSelect(type: Class, select: string) {
     return normalizeSelect(type, dSelect)
 }
 
+// --------------------------------------------------------------------- //
+// ---------------------------- CONTROLLERS ---------------------------- //
+// --------------------------------------------------------------------- //
+
+
 @generic.template("T", "TID")
 class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
     readonly entityType: Class<T>
@@ -111,7 +108,7 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
 
     @decorateRoute("get", "")
     @reflect.type(["T"])
-    list(offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
+    list(offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
         return this.repo.find(offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
     }
 
@@ -181,7 +178,7 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 
     @decorateRoute("get", "")
     @reflect.type(["T"])
-    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: T, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
+    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
         await this.findParentByIdOrNotFound(pid)
         return this.repo.find(pid, offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
     }
@@ -226,7 +223,7 @@ class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyCon
 }
 
 class DefaultRepository<T> implements Repository<T> {
-    find(offset: number, limit: number, query: Partial<T>): Promise<T[]> {
+    find(offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
     insert(data: Partial<T>): Promise<{ id: any }> {
@@ -244,7 +241,7 @@ class DefaultRepository<T> implements Repository<T> {
 }
 
 class DefaultOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
-    find(pid: any, offset: number, limit: number, query: Partial<T>): Promise<T[]> {
+    find(pid: any, offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
     insert(pid: any, data: Partial<T>): Promise<{ id: any }> {
@@ -277,8 +274,22 @@ class DefaultOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMan
 }
 
 // --------------------------------------------------------------------- //
-// ------------------------------- HELPER ------------------------------ //
+// -------------------------------- MAIN ------------------------------- //
 // --------------------------------------------------------------------- //
+
+/**
+ * Custom route decorator to make it possible to override @route decorator from class scope decorator. 
+ * This is required for custom route path defined with @route.controller("custom/:customId")
+ */
+function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: string | string[] }) {
+    return decorate(<RouteDecorator & { [DecoratorId]: any }>{
+        [DecoratorId]: RouteDecoratorID,
+        name: "plumier-meta:route",
+        method,
+        url: path
+    }, ["Class", "Method"], { allowMultiple: false, ...option })
+}
+
 
 const genericControllerRegistry = new Map<Class, boolean>()
 
@@ -402,7 +413,6 @@ function createOneToManyGenericController(entity: Class, decorator: GenericContr
     return Controller
 }
 
-
 function createGenericControllers(controller: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
     const setting = genericControllerRegistry.get(controller)
     const meta = reflect(controller)
@@ -443,5 +453,5 @@ function getGenericControllerOneToOneRelations(type: Class) {
 export {
     IdentifierResult, createGenericControllers, genericControllerRegistry, updateGenericControllerRegistry,
     RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, getGenericControllerOneToOneRelations,
-    DefaultControllerGeneric, DefaultOneToManyControllerGeneric, DefaultRepository, DefaultOneToManyRepository
+    DefaultControllerGeneric, DefaultOneToManyControllerGeneric, DefaultRepository, DefaultOneToManyRepository,
 }

@@ -11,6 +11,7 @@ import {
     DefaultOneToManyControllerGeneric,
     DefaultOneToManyRepository,
     DefaultRepository,
+    FilterEntity,
     IdentifierResult,
     Invocation,
     Middleware,
@@ -37,6 +38,7 @@ import supertest from "supertest"
 import reflect, { generic, noop, type } from "tinspector"
 
 import { expectError } from "../helper"
+
 
 function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
     return new Plumier()
@@ -67,7 +69,7 @@ class ErrorHandlerMiddleware implements Middleware {
 
 class MockRepo<T> implements Repository<T>{
     constructor(private fn: jest.Mock) { }
-    async find(offset: number, limit: number, query: Partial<T>): Promise<T[]> {
+    async find(offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         this.fn(offset, limit, query)
         return []
     }
@@ -91,7 +93,7 @@ class MockRepo<T> implements Repository<T>{
 
 class MockOneToManyRepo<P, T> implements OneToManyRepository<P, T>{
     constructor(private fn: jest.Mock) { }
-    async find(pid: any, offset: number, limit: number, query: Partial<T>): Promise<T[]> {
+    async find(pid: any, offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         this.fn(pid, offset, limit, query)
         return []
     }
@@ -374,7 +376,7 @@ describe("Route Generator", () => {
             const ctl = new DefaultRepository()
             error(async () => ctl.delete(123))
             error(async () => ctl.findById(123))
-            error(async () => ctl.find(1, 2, {}))
+            error(async () => ctl.find(1, 2, []))
             error(async () => ctl.update(123, {}))
             error(async () => ctl.insert({}))
             expect(fn.mock.calls).toMatchSnapshot()
@@ -657,7 +659,7 @@ describe("Route Generator", () => {
             const ctl = new DefaultOneToManyRepository()
             error(async () => ctl.delete(123))
             error(async () => ctl.findById(123))
-            error(async () => ctl.find(1, 1, 2, {}))
+            error(async () => ctl.find(1, 1, 2, []))
             error(async () => ctl.update(123, {}))
             error(async () => ctl.insert(1, {}))
             error(async () => ctl.findParentById(1))
@@ -1781,5 +1783,4 @@ describe("Request Hook", () => {
             .expect(200)
         expect(myFn.mock.calls).toMatchSnapshot()
     })
-
 })

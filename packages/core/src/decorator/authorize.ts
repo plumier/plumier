@@ -1,11 +1,10 @@
-import { CustomPropertyDecorator, decorate, mergeDecorator, DecoratorOption } from "tinspector"
+import { CustomPropertyDecorator, decorate, mergeDecorator, DecoratorOption, decorateProperty } from "tinspector"
 
-import { AuthorizeDecorator, Authorizer, AuthorizerFunction } from "../authorization"
-import { errorMessage } from "../types"
+import { AccessModifier, AuthorizeDecorator, Authorizer, AuthorizerFunction } from "../authorization"
+import { errorMessage, FilterQueryType } from "../types"
 import { api } from "./api"
 
 
-type AccessModifier = "read" | "write" | "all"
 type FunctionEvaluation = "Static" | "Dynamic"
 
 interface AuthorizeSelectorOption {
@@ -25,7 +24,7 @@ interface CustomAuthorizeOption extends AuthorizeSelectorOption {
     tag?: string,
 
     /**
-     * Allow access only to specific modifier, only work on Parameter authorization and Filter authorization
+     * Allow access only to specific modifier
      * 
      * `read`: only allow user to retrieve value on specified field
      * 
@@ -36,13 +35,18 @@ interface CustomAuthorizeOption extends AuthorizeSelectorOption {
     access?: AccessModifier,
 
     /**
-     * Specify how the authorizer execution will evaluated during response serialization. Only work on Filter authorization
+     * Specify how the authorizer execution will evaluated during response serialization
      * 
      * `Static` will evaluated once for each properties applied. Good for performance, but unable to access current property value 
      * 
      * `Dynamic` will evaluated on every property serialization. Good for authorization require check to specific property value
      */
     evaluation?: FunctionEvaluation
+}
+
+interface FilterAuthorizeOption {
+    type?: FilterQueryType
+    default?: any
 }
 
 class AuthDecoratorImpl {
@@ -81,7 +85,7 @@ class AuthDecoratorImpl {
         }, ["Class", "Parameter", "Method", "Property"], { ...opt })
     }
 
-    private byRole(roles: any[], access: "all" | "read" | "write") {
+    private byRole(roles: any[], access: AccessModifier) {
         const last = roles[roles.length - 1]
         const defaultOpt = { access, methods: [] }
         const opt: AuthorizeSelectorOption = typeof last === "string" ? defaultOpt : { ...defaultOpt, ...last }
@@ -137,7 +141,7 @@ class AuthDecoratorImpl {
 
     /**
      * Authorize entity or parameter or domain property only can be retrieved by specific role
-     * @param role List of allowed roles
+     * @param roles List of allowed roles
      */
     read(...roles: string[]) {
         return this.byRole(roles, "read")
@@ -145,10 +149,18 @@ class AuthDecoratorImpl {
 
     /**
      * Authorize entity  parameter or domain property only can be set by specific role
-     * @param role List of allowed role
+     * @param roles List of allowed roles
      */
     write(...roles: string[]) {
         return this.byRole(roles, "write")
+    }
+
+    /**
+     * Authorize a domain property to be used as query string filter
+     * @param roles List of allowed roles
+     */
+    filter(...roles: string[]): CustomPropertyDecorator {
+        return this.byRole(roles, "filter")
     }
 
     /**
@@ -169,4 +181,4 @@ class AuthDecoratorImpl {
 const authorize = new AuthDecoratorImpl()
 
 
-export { authorize, AuthDecoratorImpl, AuthorizeSelectorOption }
+export { authorize, AuthDecoratorImpl, AuthorizeSelectorOption, FilterAuthorizeOption }

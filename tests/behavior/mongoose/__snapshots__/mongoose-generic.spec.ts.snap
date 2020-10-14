@@ -1,5 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CRUD CRUD Function Should able to filter with exact value GET /users?filter 1`] = `
+Array [
+  Object {
+    "email": "jean.doe@gmail.com",
+    "name": "Jean Doe",
+  },
+]
+`;
+
+exports[`CRUD CRUD Function Should able to filter with partial value GET /users?filter 1`] = `
+Array [
+  Object {
+    "email": "jean.doe@gmail.com",
+    "name": "Jean Doe",
+  },
+]
+`;
+
 exports[`CRUD CRUD Function Should able to order by property GET /users?offset&limit&name 1`] = `
 Array [
   Object {
@@ -86,6 +104,23 @@ Object {
   "email": "john.doe@gmail.com",
   "name": "John Doe",
   "password": "HASH",
+}
+`;
+
+exports[`CRUD CRUD Function Should ignore filter on non marked property GET /users?filter 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Property filter.email is not filterable",
+      ],
+      "path": Array [
+        "filter",
+        "email",
+      ],
+    },
+  ],
+  "status": 422,
 }
 `;
 
@@ -255,12 +290,45 @@ Object {
 }
 `;
 
+exports[`CRUD Nested CRUD One to Many Function Should filter with exact value GET /users/:parentId/animals?filter  1`] = `
+Array [
+  Object {
+    "name": "Jojo",
+  },
+]
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should filter with partial value GET /users/:parentId/animals?filter  1`] = `
+Array [
+  Object {
+    "name": "Jojo",
+  },
+]
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should find by name GET /users/:parentId/animals?offset&limit  1`] = `
 Array [
   Object {
     "name": "Jojo",
   },
 ]
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should ignore filter on non marked property GET /users/:parentId/animals?filter  1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Property filter.name is not filterable",
+      ],
+      "path": Array [
+        "filter",
+        "name",
+      ],
+    },
+  ],
+  "status": 422,
+}
 `;
 
 exports[`CRUD Nested CRUD One to Many Function Should not save navigation properties for non populate properties POST /users/:parentId/animals 1`] = `
@@ -474,203 +542,7 @@ exports[`CRUD One To One Function Should not populate if not selected on get man
 Array [
   Object {
     "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
-  },
-  Object {
-    "email": "john.doe@gmail.com",
-    "name": "John Doe",
+    "name": "John",
   },
 ]
 `;

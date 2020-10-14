@@ -188,6 +188,53 @@ Above code showing that we apply `@route.controller()` on the `User.emails` rela
 | DELETE | `/users/:pid/emails/:id`        | Delete user's email by ID                                           |
 | GET    | `/users/:pid/emails`            | Get list of user's emails with paging, filter, order and projection |
 
+
+## Filters 
+Generic controller provided filter query string to narrow API response. To be able to filter specific field, the appropriate property needs to be authorized. 
+
+```typescript {10,14}
+import { Entity, PrimaryGeneratedColumn } from "typeorm"
+import { route } from "plumier"
+
+@route.controller()
+@Entity()
+class User {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    // authorize name field to be search able by everyone
+    @authorize.filter()
+    @Column()
+    name: string
+
+    // authorize email field to be search able by admin
+    @authorize.filter("Admin")
+    @Column()
+    email: string
+}
+``` 
+
+Using above code enabled us to query the response result like below 
+
+```
+# filter by email
+GET /users?filter[email]=john.doe@gmail.com
+
+# filter by name, will return all users name start with john
+GET /users?filter[name]=john*
+
+# combine both filter, will return with AND operator
+GET /users?filter[email]=john.doe@gmail.com&filter[name]=john
+```
+
+Several filter supported based on property data type 
+
+| Filter  | Description                                          | Data Type    | Example                     |
+| ------- | ---------------------------------------------------- | ------------ | --------------------------- |
+| Exact   | Filter by exact value                                | All          | `/users?filter[age]=3`      |
+| Partial | Filter by partial value using `*` (at beginning/end) | String       | `/users?filter[name]=john*` |
+| Range   | Filter by range with pattern `start...end`           | Date, Number | `/users?filter[age]=1...18` |
+
 ## Query Strings
 
 Both get by id and get list route has some extra query string to manipulate the response match your need. 

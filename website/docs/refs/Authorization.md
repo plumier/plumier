@@ -225,8 +225,8 @@ export class UsersController {
 
 Using above code, only admin can disabled the user, if user doesn't have admin role Plumier will return 401 with informative error result.
 
-## Authorization Filter 
-Applying authorize decorator on a domain property automatically filter data returned based on client role like example below
+## Projection Authorization 
+Applying authorize decorator on a domain property automatically project data returned based on client role like example below
 
 ```typescript
 import reflect from "tinspector"
@@ -283,6 +283,33 @@ Using above code `basePrice` will only can be set by `admin` and retrieved by bo
 :::info
 Note that `@authorize.role("admin")` is the same as provide `@authorize.read("admin")` and `@authorize.write("admin")`
 :::
+
+## Filter Authorization 
+You can specify parameter or model property that filterable using specific role by using `@authorize.filter()`. 
+
+```typescript
+import reflect from "tinspector"
+import { domain, authorize, route } from "plumier"
+
+@domain()
+export class Item {
+    constructor(
+        public name: string,
+        @authorize.write("admin")
+        @authorize.read("admin", "staff")
+        @authorize.filter("admin")
+        public basePrice: number,
+        public price:number
+    ) { }
+}
+
+export class ItemsController {
+    @route.get()
+    list(filter:Item){}
+}
+```
+
+By using above code `/items/list?filter[basePrice]=100` wil restricted only to `admin`.
 
 ## Global Authorization
 As mentioned above, by default all routes is secured when `JwtAuthFacility` applied, you can override this default behavior by applying `authorize` on the `JwtAuthFacility` configuration like below:

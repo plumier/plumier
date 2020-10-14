@@ -1,5 +1,7 @@
 import {
     Class,
+    FilterEntity,
+    FilterQuery,
     getGenericControllerOneToOneRelations,
     OneToManyRepository,
     OrderQuery,
@@ -19,6 +21,22 @@ function getProjection(select: string[]) {
     }, {} as any)
 }
 
+function transformFilter<T>(filters: FilterEntity<T>) {
+    const result: any = {}
+    for (const key in filters) {
+        const filter = filters[key]
+        if (filter.type === "range")
+            result[key] = { "$gte": filter.value[0], "$lte": filter.value[1] }
+        else if (filter.type === "partial") {
+            const value = filter.partial === "end" ? `^${filter.value}` : filter.partial === "start" ? `${filter.value}$` : filter.value
+            result[key] = { "$regex": value, "$options": "i" }
+        }
+        else
+            result[key] = filter.value
+    }
+    return result
+}
+
 class MongooseRepository<T> implements Repository<T>{
     readonly Model: Model<T & Document>
     protected readonly oneToOneRelations: string[]
@@ -28,9 +46,9 @@ class MongooseRepository<T> implements Repository<T>{
         this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
-    find(offset: number, limit: number, query: Partial<T>, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
+    find(offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
         const projection = getProjection(select)
-        const q = this.Model.find(query as any, projection)
+        const q = this.Model.find(transformFilter(query) as any, projection)
         if (order.length > 0) {
             const sort = order.reduce((a, b) => {
                 a[b.column] = b.order
@@ -39,7 +57,7 @@ class MongooseRepository<T> implements Repository<T>{
             q.sort(sort)
         }
         const meta = reflect(this.type)
-        const relations = meta.properties.filter(prop => prop.decorators.some((x:RelationDecorator) => x.kind === "plumier-meta:relation"))
+        const relations = meta.properties.filter(prop => prop.decorators.some((x: RelationDecorator) => x.kind === "plumier-meta:relation"))
         for (const prop of relations) {
             if (projection[prop.name])
                 q.populate(prop.name)
@@ -56,7 +74,7 @@ class MongooseRepository<T> implements Repository<T>{
         const projection = getProjection(select)
         const q = this.Model.findById(id, projection)
         const meta = reflect(this.type)
-        const relations = meta.properties.filter(prop => prop.decorators.some((x:RelationDecorator) => x.kind === "plumier-meta:relation"))
+        const relations = meta.properties.filter(prop => prop.decorators.some((x: RelationDecorator) => x.kind === "plumier-meta:relation"))
         for (const prop of relations) {
             if (projection[prop.name])
                 q.populate(prop.name)
@@ -86,7 +104,7 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
-    async find(pid: string, offset: number, limit: number, query: Partial<T>, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
+    async find(pid: string, offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
         const proj = getProjection(select)
         const sort = order.reduce((a, b) => {
             a[b.column] = b.order
@@ -95,7 +113,7 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         const parent = await this.ParentModel.findById(pid)
             .populate({
                 path: this.relation,
-                match: query,
+                match: transformFilter(query),
                 options: { skip: offset, limit, sort },
                 populate: this.oneToOneRelations.map(x => ({ path: x })),
                 select: proj,
@@ -103,10 +121,10 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         return (parent as any)[this.relation]
     }
 
-    private getReverseProperty(){
+    private getReverseProperty() {
         const meta = reflect(this.type)
         for (const prop of meta.properties) {
-            if(prop.type === this.parent && prop.decorators.some((x:RelationDecorator) => x.kind === "plumier-meta:relation"))
+            if (prop.type === this.parent && prop.decorators.some((x: RelationDecorator) => x.kind === "plumier-meta:relation"))
                 return prop.name
         }
     }
@@ -114,7 +132,7 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
     async insert(pid: string, doc: Partial<T>): Promise<{ id: any }> {
         const parent = await this.ParentModel.findById(pid);
         const reverseProp = this.getReverseProperty()
-        if(reverseProp){
+        if (reverseProp) {
             // add parent navigation
             (doc as any)[reverseProp] = parent!.id
         }
@@ -149,4 +167,4 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
     }
 }
 
-export { MongooseRepository, MongooseOneToManyRepository }
+export { MongooseRepository, MongooseOneToManyRepository, transformFilter }

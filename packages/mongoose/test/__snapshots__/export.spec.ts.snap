@@ -100,5 +100,6 @@ Object {
   "model": bound model,
   "models": Map {},
   "proxy": bound proxy,
+  "transformFilter": transformFilter,
 }
 `;

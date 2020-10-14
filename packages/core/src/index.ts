@@ -17,9 +17,10 @@ export { domain, middleware } from "./decorator/common";
 export { route, RouteDecoratorImpl, GenericControllerDecorator } from "./decorator/route";
 export { EntityIdDecorator, RelationDecorator, primaryId, relation } from "./decorator/entity";
 export { preSave, postSave, RequestHookDecorator } from "./decorator/request-hook";
+export { filterConverters } from "./filter-parser"
 export {
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
-    IdentifierResult, getGenericControllerOneToOneRelations, genericControllerRegistry, DefaultOneToManyRepository, DefaultRepository
+    IdentifierResult, getGenericControllerOneToOneRelations, genericControllerRegistry, DefaultOneToManyRepository, DefaultRepository,
 } from "./generic-controller"
 export { HttpStatus } from "./http-status";
 export { RequestHookMiddleware } from "./request-hook"
@@ -29,8 +30,9 @@ export {
     DependencyResolver, Facility, HttpMethod, HttpStatusError, Invocation, KoaMiddleware,
     Middleware, MiddlewareFunction, MiddlewareDecorator, MiddlewareUtil, PlumierApplication, PlumierConfiguration, RedirectActionResult,
     ActionContext, RouteInfo, RouteAnalyzerFunction, RouteAnalyzerIssue,
-    ValidationError, errorMessage, DefaultDependencyResolver,
-    CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie,
+    ValidationError, errorMessage, DefaultDependencyResolver, CustomConverter,
+    CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie, FilterEntity,
     Metadata, GlobalMetadata, Omit, Optional, RouteMetadata, VirtualRoute,
-    GenericController, ControllerGeneric, OneToManyControllerGeneric, Repository, OneToManyRepository, OrderQuery
+    GenericController, ControllerGeneric, OneToManyControllerGeneric, Repository, OneToManyRepository, OrderQuery, 
+    FilterQuery, FilterQueryType,
 } from "./types";

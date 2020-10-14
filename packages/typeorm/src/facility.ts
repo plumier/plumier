@@ -1,9 +1,11 @@
 import {
+    ActionContext,
     api,
     authorize,
     Class,
     DefaultFacility,
     entityHelper,
+    filterConverters,
     findFilesRecursive,
     genericControllerRegistry,
     globAsync,
@@ -58,7 +60,7 @@ function convertValue(value: any, path: string, type: Class): Result {
     }
 }
 
-function validateRelation(i: VisitorInvocation): Result {
+function relationConverter(i: VisitorInvocation): Result {
     if (i.value && i.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation"))
         return convertValue(i.value, i.path, i.type)
     else
@@ -88,7 +90,7 @@ async function loadEntities(connection?: ConnectionOptions) {
     }
     // just skip error in setup method 
     // it will caught properly during db connect on initialize
-    catch{ }
+    catch { }
 }
 
 class TypeORMFacility extends DefaultFacility {
@@ -100,7 +102,7 @@ class TypeORMFacility extends DefaultFacility {
 
     async preInitialize(app: Readonly<PlumierApplication>) {
         // set type converter module to allow updating relation by id
-        app.set({ typeConverterVisitors: [validateRelation] })
+        app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter, ...filterConverters] })
         // load all entities to be able to take the metadata storage
         await loadEntities(this.option.connection)
         // assign tinspector decorators, so Plumier can understand the entity metadata

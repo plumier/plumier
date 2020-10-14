@@ -10,6 +10,7 @@ import {
     ValidationError,
     MetadataImpl,
     Metadata,
+    CustomConverter,
 } from "./types"
 
 // --------------------------------------------------------------------- //
@@ -114,9 +115,10 @@ async function validateNode(node: CustomValidatorNode, ctx: ActionContext): Prom
     }))
 }
 
-function validateSync(ctx: ActionContext, visitors: tc.VisitorExtension[]): ValidationResult {
+function validateSync(ctx: ActionContext, customVisitors: CustomConverter[]): ValidationResult {
     const result = []
     const issues: tc.ResultMessages[] = []
+    const visitors = customVisitors.map(v => (next: tc.VisitorInvocation) => v(next, ctx))
     for (const [index, parMeta] of ctx.route.action.parameters.entries()) {
         const rawParameter = ctx.parameters[index]
         const parValue = tc.validate(rawParameter, {
@@ -159,7 +161,7 @@ function mergeMessage(messages: tc.ResultMessages[]) {
 async function validate(ctx: ActionContext) {
     if (ctx.route.action.parameters.length === 0) return []
     const nodes: CustomValidatorNode[] = []
-    const visitors = [customValidatorNodeVisitor(nodes), ...(ctx.config.typeConverterVisitors || [])]
+    const visitors = [customValidatorNodeVisitor(nodes), ...ctx.config.typeConverterVisitors]
     const syncResult = validateSync(ctx, visitors)
     const asyncResult = await validateAsync(ctx, nodes)
     const issues = syncResult.issues.concat(asyncResult.issues)

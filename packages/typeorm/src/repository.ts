@@ -1,5 +1,7 @@
 import {
     Class,
+    FilterEntity,
+    FilterQuery,
     getGenericControllerOneToOneRelations,
     OneToManyRepository,
     OrderQuery,
@@ -7,7 +9,7 @@ import {
     Repository,
 } from "@plumier/core"
 import reflect from "tinspector"
-import { getManager, Repository as NativeRepository } from "typeorm"
+import { Between, getManager, Like, Repository as NativeRepository } from "typeorm"
 
 function normalizeSelect<T>(type: Class<T>, selections: string[]): { select: (keyof T)[], relations: string[] } {
     const meta = reflect(type)
@@ -31,6 +33,23 @@ function parseOrder<T>(order: OrderQuery[]): { [P in keyof T]?: 1 | -1 } {
     }, {} as any)
 }
 
+function transformFilter<T>(filters: FilterEntity<T>) {
+    const result: any = {}
+    for (const key in filters) {
+        const filter = filters[key]
+        if (filter.type === "range")
+            result[key] = Between(filter.value[0], filter.value[1])
+        else if (filter.type === "partial") {
+            const value = filter.partial === "end" ? `${filter.value}%` :
+                filter.partial === "start" ? `%${filter.value}` : `%${filter.value}%`
+            result[key] = Like(value)
+        }
+        else
+            result[key] = filter.value
+    }
+    return result
+}
+
 class TypeORMRepository<T> implements Repository<T> {
     protected readonly nativeRepository: NativeRepository<T>
     protected readonly oneToOneRelations: string[]
@@ -39,12 +58,12 @@ class TypeORMRepository<T> implements Repository<T> {
         this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
-    find(offset: number, limit: number, query: Partial<T>, selection: string[], order: OrderQuery[]): Promise<T[]> {
+    find(offset: number, limit: number, query: FilterEntity<T>, selection: string[], order: OrderQuery[]): Promise<T[]> {
         const { select, relations } = normalizeSelect(this.type, selection)
         return this.nativeRepository.find({
             skip: offset,
             take: limit,
-            where: query,
+            where: transformFilter(query),
             relations, select,
             order: parseOrder(order)
         })
@@ -84,11 +103,11 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
         this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
-    async find(pid: any, offset: number, limit: number, query: Partial<T>, selection: string[], order: OrderQuery[]): Promise<T[]> {
+    async find(pid: any, offset: number, limit: number, query: FilterEntity<T>, selection: string[], order: OrderQuery[]): Promise<T[]> {
         const { select, relations } = normalizeSelect(this.type, selection)
         return this.nativeRepository.find({
             where:
-                { [this.inversePropertyName]: pid, ...query },
+                { [this.inversePropertyName]: pid, ...transformFilter(query) },
             skip: offset,
             take: limit,
             relations, select,
@@ -126,4 +145,4 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
     }
 }
 
-export { TypeORMRepository, TypeORMOneToManyRepository }
+export { TypeORMRepository, TypeORMOneToManyRepository, transformFilter }

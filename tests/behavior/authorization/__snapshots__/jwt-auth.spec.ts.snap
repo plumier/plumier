@@ -16,83 +16,6 @@ Array [
 ]
 `;
 
-exports[`JwtAuth Authorization Filter Custom Authorizer Should able to access current property metadata 1`] = `
-Array [
-  Array [
-    Object {
-      "decorators": Array [
-        Object {
-          "access": "all",
-          "authorize": onlyAdmin,
-          "evaluation": "Dynamic",
-          "location": "Parameter",
-          "tag": "Custom",
-          "type": "plumier-meta:authorize",
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "applyTo": Array [],
-            "inherit": true,
-            "removeApplied": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "index": 0,
-      "isParameter": true,
-      "kind": "Property",
-      "name": "name",
-      "parent": User,
-      "set": undefined,
-      "type": String,
-      "typeClassification": "Primitive",
-    },
-  ],
-  Array [
-    Object {
-      "decorators": Array [
-        Object {
-          "access": "all",
-          "authorize": onlyAdmin,
-          "evaluation": "Dynamic",
-          "location": "Parameter",
-          "tag": "Custom",
-          "type": "plumier-meta:authorize",
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "applyTo": Array [],
-            "inherit": true,
-            "removeApplied": true,
-          },
-        },
-      ],
-      "get": undefined,
-      "index": 1,
-      "isParameter": true,
-      "kind": "Property",
-      "name": "password",
-      "parent": User,
-      "set": undefined,
-      "type": String,
-      "typeClassification": "Primitive",
-    },
-  ],
-]
-`;
-
-exports[`JwtAuth Authorization Filter Custom Authorizer Should able to access value and parent value 1`] = `
-Array [
-  Array [
-    Object {
-      "parentValue": User {
-        "name": "admin",
-        "password": "secret",
-      },
-      "value": "secret",
-    },
-  ],
-]
-`;
-
 exports[`JwtAuth Basic Authorization Should able to mix controller scope authorizer with other decorators 1`] = `
 Array [
   Array [],
@@ -189,6 +112,83 @@ Array [
         "id": "123",
       },
       "value": "Yes",
+    },
+  ],
+]
+`;
+
+exports[`JwtAuth Projection Authorization Custom Authorizer Should able to access current property metadata 1`] = `
+Array [
+  Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "access": "all",
+          "authorize": onlyAdmin,
+          "evaluation": "Dynamic",
+          "location": "Parameter",
+          "tag": "Custom",
+          "type": "plumier-meta:authorize",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "name",
+      "parent": User,
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "access": "all",
+          "authorize": onlyAdmin,
+          "evaluation": "Dynamic",
+          "location": "Parameter",
+          "tag": "Custom",
+          "type": "plumier-meta:authorize",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 1,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "password",
+      "parent": User,
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+]
+`;
+
+exports[`JwtAuth Projection Authorization Custom Authorizer Should able to access value and parent value 1`] = `
+Array [
+  Array [
+    Object {
+      "parentValue": User {
+        "name": "admin",
+        "password": "secret",
+      },
+      "value": "secret",
     },
   ],
 ]
