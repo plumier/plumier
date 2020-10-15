@@ -368,7 +368,7 @@ export class FormFile {
 // ------------------------- GENERIC CONTROLLER ------------------------ //
 // --------------------------------------------------------------------- //
 
-export type FilterQueryType = "exact" | "partial" | "range"
+export type FilterQueryType = "equal" | "partial" | "range" | "gte" | "gt" | "lte" | "lt" | "ne"
 
 export interface RelationPropertyDecorator { kind: "plumier-meta:relation-prop-name", name: string }
 
@@ -378,7 +378,7 @@ export interface OrderQuery { column: string, order: 1 | -1 }
 
 export interface FilterQuery { type: FilterQueryType, partial?: "start" | "end" | "both", value: any }
 
-export type FilterEntity<T> = { [k in keyof T]: FilterQuery }
+export type FilterEntity<T = any> = { [k in keyof T]: FilterQuery }
 
 export interface Repository<T> {
     find(offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<T[]>

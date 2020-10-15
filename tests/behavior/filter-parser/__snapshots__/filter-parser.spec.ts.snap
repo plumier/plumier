@@ -1,13 +1,137 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Filter Parser Exact Filter Should parse exact filter on type number properly 1`] = `
+exports[`Filter Parser Conditional Filter Should parse gt filter properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "age": Object {
+        "type": "gt",
+        "value": "3",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Conditional Filter Should parse gte filter properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "age": Object {
+        "type": "gte",
+        "value": "3",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Conditional Filter Should parse lt filter properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "age": Object {
+        "type": "lt",
+        "value": "3",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Conditional Filter Should parse lte filter properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "age": Object {
+        "type": "lte",
+        "value": "3",
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Conditional Filter Should validate type 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "GTE >= filter only applicable on date and number filed",
+      ],
+      "path": Array [
+        "filter",
+        "age",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Conditional Filter Should validate value 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Unable to convert \\"lorem\\" into Number",
+      ],
+      "path": Array [
+        "filter",
+        "age",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Equal Filter Should parse equal filter on type boolean properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "active": Object {
+        "type": "equal",
+        "value": true,
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Equal Filter Should parse equal filter on type date properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "dob": Object {
+        "type": "equal",
+        "value": DATE NOW,
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Equal Filter Should parse equal filter on type number properly 1`] = `
 Array [
   Array [
     0,
     50,
     User {
       "name": Object {
-        "type": "exact",
+        "type": "equal",
         "value": 12345,
       },
     },
@@ -15,14 +139,14 @@ Array [
 ]
 `;
 
-exports[`Filter Parser Exact Filter Should parse exact filter properly 1`] = `
+exports[`Filter Parser Equal Filter Should parse equal filter properly 1`] = `
 Array [
   Array [
     0,
     50,
     User {
       "name": Object {
-        "type": "exact",
+        "type": "equal",
         "value": "mimi",
       },
     },
@@ -30,7 +154,7 @@ Array [
 ]
 `;
 
-exports[`Filter Parser Exact Filter Should validate filter properly 1`] = `
+exports[`Filter Parser Equal Filter Should validate filter properly 1`] = `
 Object {
   "message": Array [
     Object {
@@ -45,6 +169,66 @@ Object {
   ],
   "status": 422,
 }
+`;
+
+exports[`Filter Parser Not Equal Filter Should parse ne filter on boolean properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "age": Object {
+        "type": "ne",
+        "value": true,
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Not Equal Filter Should parse ne filter on date properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "age": Object {
+        "type": "ne",
+        "value": DATE NOW,
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Not Equal Filter Should parse ne filter on number properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "age": Object {
+        "type": "ne",
+        "value": 3,
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Not Equal Filter Should parse ne filter on string data properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "age": Object {
+        "type": "ne",
+        "value": "3",
+      },
+    },
+  ],
+]
 `;
 
 exports[`Filter Parser Partial Filter Should not allowed on type other than string 1`] = `

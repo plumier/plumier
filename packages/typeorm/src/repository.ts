@@ -9,7 +9,7 @@ import {
     Repository,
 } from "@plumier/core"
 import reflect from "tinspector"
-import { Between, getManager, Like, Repository as NativeRepository } from "typeorm"
+import { Between, getManager, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not, Repository as NativeRepository } from "typeorm"
 
 function normalizeSelect<T>(type: Class<T>, selections: string[]): { select: (keyof T)[], relations: string[] } {
     const meta = reflect(type)
@@ -33,19 +33,28 @@ function parseOrder<T>(order: OrderQuery[]): { [P in keyof T]?: 1 | -1 } {
     }, {} as any)
 }
 
+
 function transformFilter<T>(filters: FilterEntity<T>) {
+    type Transformer = (filter: FilterQuery) => any
+    const transformMap: { [key: string]: Transformer } = {
+        "range": (filter: FilterQuery) => (Between(filter.value[0], filter.value[1])),
+        "partial": (filter: FilterQuery) => {
+            const value = filter.partial === "end" ? `${filter.value}%` :
+                filter.partial === "start" ? `%${filter.value}` : `%${filter.value}%`
+            return Like(value)
+        },
+        "equal": (filter: FilterQuery) => filter.value,
+        "ne": (filter: FilterQuery) => (Not(filter.value)),
+        "gte": (filter: FilterQuery) => (MoreThanOrEqual(filter.value)),
+        "lte": (filter: FilterQuery) => (LessThanOrEqual(filter.value)),
+        "gt": (filter: FilterQuery) => (MoreThan(filter.value)),
+        "lt": (filter: FilterQuery) => (LessThan(filter.value)),
+    }
     const result: any = {}
     for (const key in filters) {
         const filter = filters[key]
-        if (filter.type === "range")
-            result[key] = Between(filter.value[0], filter.value[1])
-        else if (filter.type === "partial") {
-            const value = filter.partial === "end" ? `${filter.value}%` :
-                filter.partial === "start" ? `%${filter.value}` : `%${filter.value}%`
-            result[key] = Like(value)
-        }
-        else
-            result[key] = filter.value
+        const transform = transformMap[filter.type]
+        result[key] = transform(filter)
     }
     return result
 }

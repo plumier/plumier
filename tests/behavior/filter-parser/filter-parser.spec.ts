@@ -296,8 +296,8 @@ describe("Filter Parser", () => {
             expect(body).toMatchSnapshot()
         })
     })
-    describe("Exact Filter", () => {
-        it("Should parse exact filter properly", async () => {
+    describe("Equal Filter", () => {
+        it("Should parse equal filter properly", async () => {
             @route.controller()
             @domain()
             class User {
@@ -312,7 +312,7 @@ describe("Filter Parser", () => {
                 .expect(200)
             expect(fn.mock.calls).toMatchSnapshot()
         })
-        it("Should parse exact filter on type number properly", async () => {
+        it("Should parse equal filter on type number properly", async () => {
             @route.controller()
             @domain()
             class User {
@@ -324,6 +324,37 @@ describe("Filter Parser", () => {
             const app = await createApp({ controller: User }).initialize()
             await supertest(app.callback())
                 .get(`/user?filter[name]=12345`)
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should parse equal filter on type date properly", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @authorize.filter()
+                    public dob: Date,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            const date = new Date()
+            await supertest(app.callback())
+                .get(`/user?filter[dob]=${date.toISOString()}`)
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should parse equal filter on type boolean properly", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @authorize.filter()
+                    public active: boolean,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            await supertest(app.callback())
+                .get(`/user?filter[active]=true`)
                 .expect(200)
             expect(fn.mock.calls).toMatchSnapshot()
         })
@@ -341,6 +372,161 @@ describe("Filter Parser", () => {
                 .get(`/user?filter[name]=lorem`)
                 .expect(422)
             expect(body).toMatchSnapshot()
+        })
+    })
+    describe("Conditional Filter", () => {
+        it("Should parse gte filter properly", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @authorize.filter()
+                    public age: number,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            await supertest(app.callback())
+                .get(`/user?filter[age]=>=3`)
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should parse lte filter properly", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @authorize.filter()
+                    public age: number,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            await supertest(app.callback())
+                .get(`/user?filter[age]=<=3`)
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should parse lt filter properly", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @authorize.filter()
+                    public age: number,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            await supertest(app.callback())
+                .get(`/user?filter[age]=<3`)
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should parse gt filter properly", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @authorize.filter()
+                    public age: number,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            await supertest(app.callback())
+                .get(`/user?filter[age]=>3`)
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should validate value", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @authorize.filter()
+                    public age: number,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            const { body } = await supertest(app.callback())
+                .get(`/user?filter[age]=>=lorem`)
+                .expect(422)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should validate type", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @authorize.filter()
+                    public age: string,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            const { body } = await supertest(app.callback())
+                .get(`/user?filter[age]=>=lorem`)
+                .expect(422)
+            expect(body).toMatchSnapshot()
+        })
+    })
+    describe("Not Equal Filter", () => {
+        it("Should parse ne filter on string data properly", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @authorize.filter()
+                    public age: string,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            await supertest(app.callback())
+                .get(`/user?filter[age]=!3`)
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should parse ne filter on number properly", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @authorize.filter()
+                    public age: number,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            await supertest(app.callback())
+                .get(`/user?filter[age]=!3`)
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should parse ne filter on date properly", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @authorize.filter()
+                    public age: Date,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            const date = new Date()
+            await supertest(app.callback())
+                .get(`/user?filter[age]=!${date.toISOString()}`)
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should parse ne filter on boolean properly", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @authorize.filter()
+                    public age: boolean,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            await supertest(app.callback())
+                .get(`/user?filter[age]=!true`)
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
         })
     })
 })

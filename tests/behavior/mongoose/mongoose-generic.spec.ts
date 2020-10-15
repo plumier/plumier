@@ -2224,3 +2224,68 @@ describe("Repository", () => {
         expect(saved).toMatchSnapshot()
     })
 })
+
+describe("Filter", () => {
+    @route.controller()
+    @collection()
+    class Parent {
+        @authorize.filter()
+        string: string
+        @authorize.filter()
+        number: number
+        @authorize.filter()
+        boolean: boolean
+        @route.controller()
+        @collection.ref(x => [Child])
+        children: Child[]
+    }
+    class Child {
+        @authorize.filter()
+        string: string
+        @authorize.filter()
+        number: number
+        @authorize.filter()
+        boolean: boolean
+        @collection.ref(x => Parent)
+        parent: Parent
+    }
+    function createApp() {
+        return new Plumier()
+            .set(new WebApiFacility({ controller: Parent }))
+            .set(new MongooseFacility())
+            .set({ mode: "production" })
+            .initialize()
+    }
+    describe("Generic Controller", () => {
+        beforeAll(async () => {
+            const repo = new MongooseRepository(Parent)
+            await repo.insert({ string: "lorem", number: 1, boolean: true })
+            await repo.insert({ string: "ipsum", number: 2, boolean: false })
+            await repo.insert({ string: "dolor", number: 3, boolean: false })
+        })
+        it("Should able to filter with exact value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[string]=lorem")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with range value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[number]=2...3")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it.only("Should able to filter with not equal value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[boolean]=!true")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+    })
+    describe("Generic One To Many Controller", () => {
+        
+    })
+})

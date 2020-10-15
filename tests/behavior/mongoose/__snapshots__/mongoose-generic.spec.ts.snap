@@ -701,6 +701,52 @@ Object {
 }
 `;
 
+exports[`Filter Generic Controller Should able to filter with exact value 1`] = `
+Array [
+  Object {
+    "boolean": true,
+    "number": 1,
+    "string": "lorem",
+  },
+]
+`;
+
+exports[`Filter Generic Controller Should able to filter with not equal value 1`] = `
+Array [
+  Object {},
+  Object {},
+  Object {},
+  Object {},
+  Object {},
+  Object {},
+  Object {
+    "boolean": false,
+    "number": 2,
+    "string": "ipsum",
+  },
+  Object {
+    "boolean": false,
+    "number": 3,
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter Generic Controller Should able to filter with range value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "number": 2,
+    "string": "ipsum",
+  },
+  Object {
+    "boolean": false,
+    "number": 3,
+    "string": "dolor",
+  },
+]
+`;
+
 exports[`Open API Should mark createdAt property as readonly  1`] = `
 Object {
   "properties": Object {
