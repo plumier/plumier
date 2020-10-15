@@ -203,6 +203,25 @@ Array [
 ]
 `;
 
+exports[`CRUD Nested CRUD One to Many Function Should able to filter one on one relation GET /users/:parentId/animals?filter  1`] = `
+Array [
+  Object {
+    "name": "Jojo",
+    "user": Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+    },
+  },
+  Object {
+    "name": "Jeju",
+    "user": Object {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+    },
+  },
+]
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should able to order by properties GET /users/:parentId/animals?offset&limit  1`] = `
 Array [
   Object {
@@ -376,9 +395,6 @@ exports[`CRUD Nested CRUD One to Many Function Should serve GET /users/:parentId
 Object {
   "name": "Mimi",
   "user": Object {
-    "animals": Array [
-      Object {},
-    ],
     "email": "john.doe@gmail.com",
     "name": "John Doe",
   },
@@ -711,14 +727,58 @@ Array [
 ]
 `;
 
+exports[`Filter Generic Controller Should able to filter with gt value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "number": 3,
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter Generic Controller Should able to filter with gte value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "number": 2,
+    "string": "ipsum",
+  },
+  Object {
+    "boolean": false,
+    "number": 3,
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter Generic Controller Should able to filter with lt value 1`] = `
+Array [
+  Object {
+    "boolean": true,
+    "number": 1,
+    "string": "lorem",
+  },
+]
+`;
+
+exports[`Filter Generic Controller Should able to filter with lte value 1`] = `
+Array [
+  Object {
+    "boolean": true,
+    "number": 1,
+    "string": "lorem",
+  },
+  Object {
+    "boolean": false,
+    "number": 2,
+    "string": "ipsum",
+  },
+]
+`;
+
 exports[`Filter Generic Controller Should able to filter with not equal value 1`] = `
 Array [
-  Object {},
-  Object {},
-  Object {},
-  Object {},
-  Object {},
-  Object {},
   Object {
     "boolean": false,
     "number": 2,
@@ -745,6 +805,220 @@ Array [
     "string": "dolor",
   },
 ]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with exact value 1`] = `
+Array [
+  Object {
+    "boolean": true,
+    "number": 1,
+    "parent": Object {
+      "boolean": true,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "lorem",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with gt value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "number": 3,
+    "parent": Object {
+      "boolean": true,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with gte value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "number": 2,
+    "parent": Object {
+      "boolean": true,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "ipsum",
+  },
+  Object {
+    "boolean": false,
+    "number": 3,
+    "parent": Object {
+      "boolean": true,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with lt value 1`] = `
+Array [
+  Object {
+    "boolean": true,
+    "number": 1,
+    "parent": Object {
+      "boolean": true,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "lorem",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with lte value 1`] = `
+Array [
+  Object {
+    "boolean": true,
+    "number": 1,
+    "parent": Object {
+      "boolean": true,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "lorem",
+  },
+  Object {
+    "boolean": false,
+    "number": 2,
+    "parent": Object {
+      "boolean": true,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "ipsum",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with not equal value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "number": 2,
+    "parent": Object {
+      "boolean": true,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "ipsum",
+  },
+  Object {
+    "boolean": false,
+    "number": 3,
+    "parent": Object {
+      "boolean": true,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with not equal value on relation property 1`] = `
+Array [
+  Object {
+    "boolean": true,
+    "number": 1,
+    "parent": Object {
+      "boolean": true,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "lorem",
+  },
+  Object {
+    "boolean": false,
+    "number": 2,
+    "parent": Object {
+      "boolean": true,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "ipsum",
+  },
+  Object {
+    "boolean": false,
+    "number": 3,
+    "parent": Object {
+      "boolean": true,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with range value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "number": 2,
+    "parent": Object {
+      "boolean": true,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "ipsum",
+  },
+  Object {
+    "boolean": false,
+    "number": 3,
+    "parent": Object {
+      "boolean": true,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should give proper validation when asked to query equals on nested property 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Nested type filters are not supported",
+      ],
+      "path": Array [
+        "filter",
+        "parent",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter One To Many Generic Controller Should give proper validation when asked to query not equals on nested property 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Nested type filters are not supported",
+      ],
+      "path": Array [
+        "filter",
+        "parent",
+      ],
+    },
+  ],
+  "status": 422,
+}
 `;
 
 exports[`Open API Should mark createdAt property as readonly  1`] = `

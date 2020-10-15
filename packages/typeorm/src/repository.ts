@@ -60,7 +60,7 @@ function transformFilter<T>(filters: FilterEntity<T>) {
 }
 
 class TypeORMRepository<T> implements Repository<T> {
-    protected readonly nativeRepository: NativeRepository<T>
+    readonly nativeRepository: NativeRepository<T>
     protected readonly oneToOneRelations: string[]
     constructor(protected type: Class<T>) {
         this.nativeRepository = getManager().getRepository(type)
@@ -100,8 +100,8 @@ class TypeORMRepository<T> implements Repository<T> {
 }
 
 class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
-    protected readonly nativeRepository: NativeRepository<T>
-    protected readonly nativeParentRepository: NativeRepository<P>
+    readonly nativeRepository: NativeRepository<T>
+    readonly nativeParentRepository: NativeRepository<P>
     protected readonly inversePropertyName: string
     protected readonly oneToOneRelations: string[]
     constructor(protected parent: Class<P>, protected type: Class<T>, protected relation: string) {

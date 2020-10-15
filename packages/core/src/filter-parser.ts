@@ -2,7 +2,8 @@ import { Result, VisitorInvocation } from "typedconverter"
 import { defaultConverters } from 'typedconverter/src/converter'
 
 import { AuthorizeDecorator } from "./authorization"
-import { Class } from './common'
+import { Class, entityHelper, isCustomClass } from './common'
+import { RelationDecorator } from './decorator/entity'
 import { ActionContext, FilterQuery } from "./types"
 
 
@@ -12,6 +13,21 @@ const isNumber = (value: string) => !Number.isNaN(Number(value))
 const isDate = (value: string) => !Number.isNaN(new Date(value).getTime())
 const isComparableValue = (value: string) => isNumber(value) || isDate(value)
 const isComparableType = (type: Class) => type === Date || type === Number
+
+function convert(decorators: any[], type: Class, value: string): [any, string?] {
+    if (isCustomClass(type)) {
+        if (decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation")) {
+            const idType = entityHelper.getIdType(type)
+            const converter = defaultConverters.get(idType)!
+            return [converter(value)]
+        }
+        return [, "Nested type filters are not supported"]
+    }
+    const converter = defaultConverters.get(type)!
+    const result = converter(value)
+    if (!result) return [, `Unable to convert "${value}" into ${type.name}`]
+    return [result]
+}
 
 function filterConverter(i: VisitorInvocation, ctx: ActionContext) {
     if (notFilter(i, ctx)) return i.proceed()
@@ -50,17 +66,6 @@ function rangeFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
     return Result.error(i.value, i.path, "Range filter only applicable on date and number filed")
 }
 
-function notEqualConverter(i: VisitorInvocation, ctx: ActionContext) {
-    if (notFilter(i, ctx)) return i.proceed()
-    const token = i.value.toString()
-    if (!token.startsWith("!")) return i.proceed()
-    const converter = defaultConverters.get(i.type)
-    if(!converter) return i.proceed()
-    const raw = token.substring(1)
-    const value = converter(raw)
-    return Result.create(<FilterQuery>{ type: "ne", value })
-}
-
 function conditionalFilter(i: VisitorInvocation, ctx: ActionContext, sign: string, type: "gte" | "gt" | "lte" | "lt") {
     if (notFilter(i, ctx)) return i.proceed()
     const token = i.value.toString()
@@ -89,11 +94,21 @@ function lessThanConverter(i: VisitorInvocation, ctx: ActionContext) {
     return conditionalFilter(i, ctx, "<", "lt")
 }
 
+function notEqualConverter(i: VisitorInvocation, ctx: ActionContext) {
+    if (notFilter(i, ctx)) return i.proceed()
+    const token = i.value.toString()
+    if (!token.startsWith("!")) return i.proceed()
+    const raw = token.substring(1)
+    const [value, error] = convert(i.decorators, i.type, raw)
+    if (error) return Result.error(i.value, i.path, error)
+    return Result.create(<FilterQuery>{ type: "ne", value: value })
+}
+
 function exactFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
-    if (notFilter(i, ctx)) return i.proceed()    
-    const result = i.proceed()
-    if (!!result.issues) return result
-    return Result.create(<FilterQuery>{ type: "equal", value: result.value })
+    if (notFilter(i, ctx)) return i.proceed()
+    const [value, error] = convert(i.decorators, i.type, i.value.toString())
+    if (error) return Result.error(i.value, i.path, error)
+    return Result.create(<FilterQuery>{ type: "equal", value: value })
 }
 
 // order of the converter from the most important

@@ -510,7 +510,7 @@ describe("TypeOrm", () => {
 
     describe("Filter Transformer", () => {
         it("Should transform exact filter", () => {
-            expect(transformFilter({ name: { type: "exact", value: "lorem" } })).toMatchSnapshot()
+            expect(transformFilter({ name: { type: "equal", value: "lorem" } })).toMatchSnapshot()
         })
         it("Should transform partial filter", () => {
             expect(transformFilter({ name: { type: "partial", partial: "start", value: "lorem" } })).toMatchSnapshot()
@@ -522,7 +522,7 @@ describe("TypeOrm", () => {
         })
         it("Should able to combine all", () => {
             expect(transformFilter({ 
-                name: { type: "exact", value: "lorem" } ,
+                name: { type: "equal", value: "lorem" } ,
                 age: { type: "range", value: [1,2] },
                 address: { type: "partial", partial: "end", value: "lorem" } 
             })).toMatchSnapshot()
