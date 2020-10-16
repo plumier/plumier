@@ -1084,6 +1084,174 @@ Array [
 ]
 `;
 
+exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity using action mutation 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> admin         POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> admin         PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> admin         PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> admin         DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity using actions delete 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> admin         DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity using actions get 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> admin         GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> admin         GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity using actions patch 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> admin         PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity using actions post 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> admin         POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity using actions put 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> admin         PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`Route Generator Generic Controller Should able to set authorization from entity 1`] = `
 Array [
   Array [],

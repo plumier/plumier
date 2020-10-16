@@ -89,7 +89,7 @@ function parseSelect(type: Class, select?: string) {
 
 
 @generic.template("T", "TID")
-class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
+class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerGeneric<T, TID>{
     readonly entityType: Class<T>
     readonly repo: Repository<T>
 
@@ -147,7 +147,7 @@ class RepoBaseControllerGeneric<T, TID> implements ControllerGeneric<T, TID>{
 }
 
 @generic.template("P", "T", "PID", "TID")
-class RepoBaseOneToManyControllerGeneric<P, T, PID, TID> implements OneToManyControllerGeneric<P, T, PID, TID>{
+class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, TID = String> implements OneToManyControllerGeneric<P, T, PID, TID>{
     readonly entityType: Class<T>
     readonly parentEntityType: Class<P>
     readonly relation: string
@@ -450,9 +450,52 @@ function getGenericControllerOneToOneRelations(type: Class) {
     return result
 }
 
+type ActionMember = keyof RepoBaseControllerGeneric | keyof RepoBaseOneToManyControllerGeneric
+
+/**
+ * Get list of generic controller actions handles specific http methods
+ * @param httpMethods http methods
+ */
+function actions(...httpMethods: ("post" | "put" | "patch" | "delete" | "get")[]): { applyTo: ActionMember[] }
+/**
+ * Get list of generic controller actions handles "post", "put", "patch" and "delete"
+ * @param mutation 
+ */
+function actions(mutation: "mutations"): { applyTo: ActionMember[] }
+function actions(...httpMethods: string[]): { applyTo: ActionMember[] } {
+    const result: ActionMember[] = []
+    for (const method of httpMethods) {
+        switch (method) {
+            case "post":
+                result.push("save")
+                break;
+            case "delete":
+                result.push("delete")
+                break;
+            case "get":
+                result.push("get")
+                result.push("list")
+                break;
+            case "put":
+                result.push("replace")
+                break;
+            case "patch":
+                result.push("modify")
+                break;
+            case "mutations":
+                result.push("save")
+                result.push("modify")
+                result.push("replace")
+                result.push("delete")
+                break;
+        }
+    }
+    return { applyTo: result };
+}
+
 export {
     IdentifierResult, createGenericControllers, genericControllerRegistry, updateGenericControllerRegistry,
     RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, getGenericControllerOneToOneRelations,
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, DefaultRepository, DefaultOneToManyRepository,
-    parseSelect
+    parseSelect, actions
 }
