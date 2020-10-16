@@ -16,42 +16,40 @@ In some frameworks you may avoid mapping ORM entities directly into CRUD APIs be
 
 You use generic controller by decorating your entity with `@route.controller()` then Plumier automatically create derived controller based on your entity on the fly. 
 
-```typescript {4-5,11,15-17,21-22}
-import { route, authorize, actions } from "plumier"
+```typescript {4}
+import { route } from "plumier"
 import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn } from "typeorm"
 
-@authorize.role("Admin", actions("put", "post", "patch", "delete")})
 @route.controller()
-@Entity()[]
-export class Item {
+@Entity()
+export class Post {
     @PrimaryGeneratedColumn()
     id: number
 
-    @authorize.filter()
     @Column()
-    name:string
+    slug:string
 
-    @authorize.filter("Admin")
-    @authorize.read("Admin")
-    @authorize.write("Admin")
     @Column()
-    basePrice:number
+    title:string
 
-    @authorize.filter()
-    @authorize.write("Admin")
     @Column()
-    price:number
+    content:string
+
+    @CreateDateColumn()
+    createdAt:Date
 }
 ```
 
-Above code is a common TypeORM entities marked with Plumier decorators. The `Category` entity marked with `@route.controller()` it tells Plumier that the entity should be handled by a generic controller. 
+Above code is a common TypeORM entities marked with Plumier decorators. The `Category` entity marked with `@route.controller()` it tells Plumier that the entity should be handled by a generic controller. Code above will generated into routes that follow Restful best practice like below.
 
-```
-POST /items 
-
-{ }
-```
-
+| Method | Path         | Description                                                 |
+| ------ | ------------ | ----------------------------------------------------------- |
+| POST   | `/posts`     | Create new post                                             |
+| GET    | `/posts`     | Get list of posts with paging, filter, order and projection |
+| GET    | `/posts/:id` | Get single post by id with projection                       |
+| PUT    | `/posts/:id` | Replace post  by id                                         |
+| PATCH  | `/posts/:id` | Modify post property by id                                  |
+| DELETE | `/posts/:id` | Delete post by id                                           |
 
 Generic controller provided functionalities to refine the API response, such as filter, paging, order and projection. Using above generated API you may request like below.
 
@@ -137,17 +135,21 @@ new Plumier()
 
 Before proceeding on security functionality, its important to notice that Plumier role system is depends on the JWT claim named `role`. You define the login user role by specify user role during JWT signing process like below.
 
-```typescript {10}
+```typescript {12}
 import { route } from "plumier"
 import { sign } from "jsonwebtoken"
 
 export class AuthController {
+    // POST /auth/login
     @route.post()
-    login(data:Login) {
-
-        /** other login process **/
-
-        const token = sign({ role: user.role, /* other claims */  }, <secret>)
+    async login(email:string, password:string) {
+        // other login process
+        const user = await repo.findByEmail(email)
+        const token = sign({ 
+          // role claim is mandatory 
+          role: user.role, 
+          // other claims 
+        }, process.env.YOUR_JWT_SECRET)
         return { token }
     }
 }
@@ -155,10 +157,12 @@ export class AuthController {
 
 Role claim can be any string such as `SuperAdmin`, `Supervisor`, `Staff`, `Admin`, `User` etc. Further more this roles can be used to secure your API endpoints or data using `@authorize` decorator like below 
 
-```typescript {14,20}
+```typescript {5,16-17,22}
 import { route } from "plumier"
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
 
+// only supervisor has mutation access (post,put,patch,delete) to the API endpoints
+@authorize.role("Supervisor", actions("mutations"))
 @route.controller()
 @Entity()
 export class Item {
@@ -168,13 +172,13 @@ export class Item {
     @Column()
     name: string
 
-    // only Supervisor can read/write
-    @authorize.role("Supervisor")
+    // only Supervisor can read/write basePrice property
+    @authorize.write("Supervisor")
+    @authorize.read("Supervisor")
     @Column()
     basePrice: string
 
-    // can be read by everyone 
-    // can be write only by Supervisor
+    // price can be read by everyone but can be write only by Supervisor
     @authorize.write("Supervisor")
     @Column()
     price: string
@@ -187,7 +191,7 @@ There are more authorization decorator available
 
 | Decorator                  | Description                                                                                       |
 | -------------------------- | ------------------------------------------------------------------------------------------------- |
-| `@authorize.role(<role>)`  | Protect action or property can be read and write by specific role                                 |
+| `@authorize.role(<role>)`  | Protect API endpoints by specific role                                                            |
 | `@authorize.write(<role>)` | Protect property only can be write by specific role                                               |
 | `@authorize.read(<role>)`  | Protect property only can be read by specific role                                                |
 | `@authorize.readonly()`    | Protect property only can be read and no other role can write it                                  |
