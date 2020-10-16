@@ -2,6 +2,7 @@ import {
     Class,
     FilterEntity,
     FilterQuery,
+    FilterQueryType,
     getGenericControllerOneToOneRelations,
     OneToManyRepository,
     OrderQuery,
@@ -38,17 +39,26 @@ function getPopulate(type: Class, parentProjections:any) {
 }
 
 function transformFilter<T>(filters: FilterEntity<T>) {
+    type Transformer = (filter: FilterQuery) => any
+    const transformMap: { [key: string]: Transformer } = {
+        "range": (filter: FilterQuery) => ({ "$gte": filter.value[0], "$lte": filter.value[1] }),
+        "partial": (filter: FilterQuery) => {
+            const value = filter.partial === "end" ? `^${filter.value}` :
+                filter.partial === "start" ? `${filter.value}$` : filter.value
+            return { "$regex": value, "$options": "i" }
+        },
+        "equal": (filter: FilterQuery) => filter.value,
+        "ne": (filter: FilterQuery) => ({ "$ne": filter.value }),
+        "gte": (filter: FilterQuery) => ({ "$gte": filter.value }),
+        "lte": (filter: FilterQuery) => ({ "$lte": filter.value }),
+        "gt": (filter: FilterQuery) => ({ "$gt": filter.value }),
+        "lt": (filter: FilterQuery) => ({ "$lt": filter.value }),
+    }
     const result: any = {}
     for (const key in filters) {
         const filter = filters[key]
-        if (filter.type === "range")
-            result[key] = { "$gte": filter.value[0], "$lte": filter.value[1] }
-        else if (filter.type === "partial") {
-            const value = filter.partial === "end" ? `^${filter.value}` : filter.partial === "start" ? `${filter.value}$` : filter.value
-            result[key] = { "$regex": value, "$options": "i" }
-        }
-        else
-            result[key] = filter.value
+        const transform = transformMap[filter.type]
+        result[key] = transform(filter)
     }
     return result
 }

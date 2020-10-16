@@ -745,7 +745,7 @@ describe("CRUD", () => {
                 name: string
                 @authorize.filter()
                 @collection.ref(x => User)
-                user:User
+                user: User
             }
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
@@ -2256,5 +2256,203 @@ describe("Repository", () => {
         const inserted = await repo.insert(parent.id, { name: "Mimi" })
         const saved = await UserModel.findById(parent.id).populate("animals")
         expect(saved).toMatchSnapshot()
+    })
+})
+
+describe("Filter", () => {
+    @route.controller()
+    @collection()
+    class Parent {
+        @authorize.filter()
+        string: string
+        @authorize.filter()
+        number: number
+        @authorize.filter()
+        boolean: boolean
+        @route.controller()
+        @collection.ref(x => [Child])
+        children: Child[]
+    }
+    class Child {
+        @authorize.filter()
+        string: string
+        @authorize.filter()
+        number: number
+        @authorize.filter()
+        boolean: boolean
+        @authorize.filter()
+        @collection.ref(x => Parent)
+        parent: Parent
+    }
+    function createApp(controller: Class = Parent) {
+        return new Plumier()
+            .set(new WebApiFacility({ controller }))
+            .set(new MongooseFacility())
+            .set({ mode: "production" })
+            .initialize()
+    }
+    describe("Generic Controller", () => {
+        beforeAll(async () => {
+            const repo = new MongooseRepository(Parent)
+            await repo.Model.deleteMany({})
+            await repo.insert({ string: "lorem", number: 1, boolean: true })
+            await repo.insert({ string: "ipsum", number: 2, boolean: false })
+            await repo.insert({ string: "dolor", number: 3, boolean: false })
+        })
+        it("Should able to filter with exact value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[string]=lorem")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with range value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[number]=2...3")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with not equal value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[boolean]=!true")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with gte value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[number]=>=2")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with gt value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[number]=>2")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with lte value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[number]=<=2")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with lt value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[number]=<2")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+    })
+    describe("One To Many Generic Controller", () => {
+        let parent: { id: string };
+        let otherParent: { id: string };
+        beforeAll(async () => {
+            const parentRepo = new MongooseRepository(Parent)
+            const repo = new MongooseOneToManyRepository(Parent, Child, "children")
+            await repo.Model.deleteMany({})
+            parent = await parentRepo.insert({ string: "lorem", number: 1, boolean: true })
+            otherParent = await parentRepo.insert({ string: "lorem", number: 1, boolean: true })
+            await repo.insert(parent.id, { string: "lorem", number: 1, boolean: true })
+            await repo.insert(parent.id, { string: "ipsum", number: 2, boolean: false })
+            await repo.insert(parent.id, { string: "dolor", number: 3, boolean: false })
+        })
+        it("Should able to filter with exact value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[string]=lorem`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should give proper validation when asked to query equals on nested property", async () => {
+            @route.controller()
+            class Child {
+                @authorize.filter()
+                string: string
+                @authorize.filter()
+                number: number
+                @authorize.filter()
+                boolean: boolean
+                @authorize.filter()
+                parent: Parent
+            }
+            const app = await createApp(Child)
+            const { body } = await supertest(app.callback())
+                .get(`/children?filter[parent]=${otherParent.id}`)
+                .expect(422)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with range value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[number]=2...3`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with not equal value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[boolean]=!true`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with not equal value on relation property", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[parent]=!${otherParent.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should give proper validation when asked to query not equals on nested property", async () => {
+            @route.controller()
+            class Child {
+                @authorize.filter()
+                string: string
+                @authorize.filter()
+                number: number
+                @authorize.filter()
+                boolean: boolean
+                @authorize.filter()
+                parent: Parent
+            }
+            const app = await createApp(Child)
+            const { body } = await supertest(app.callback())
+                .get(`/children?filter[parent]=!${otherParent.id}`)
+                .expect(422)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with gte value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[number]=>=2`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with gt value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[number]=>2`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with lte value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[number]=<=2`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with lt value", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[number]=<2`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
     })
 })
