@@ -33,7 +33,7 @@ import { JwtAuthFacility } from "@plumier/jwt"
 import { SwaggerFacility } from "@plumier/swagger"
 import { Context } from "koa"
 import { join } from "path"
-import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "plumier"
+import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility, actions } from "plumier"
 import supertest from "supertest"
 import reflect, { generic, noop, type } from "tinspector"
 
@@ -298,6 +298,102 @@ describe("Route Generator", () => {
             @route.controller()
             @domain()
             @authorize.role("admin", { applyTo: ["save", "replace", "delete", "modify"] })
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to set authorization for specific method from entity using action mutation", async () => {
+            @route.controller()
+            @domain()
+            @authorize.role("admin", actions("mutations"))
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to set authorization for specific method from entity using actions get", async () => {
+            @route.controller()
+            @domain()
+            @authorize.role("admin", actions("get"))
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to set authorization for specific method from entity using actions put", async () => {
+            @route.controller()
+            @domain()
+            @authorize.role("admin", actions("put"))
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to set authorization for specific method from entity using actions post", async () => {
+            @route.controller()
+            @domain()
+            @authorize.role("admin", actions("post"))
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to set authorization for specific method from entity using actions patch", async () => {
+            @route.controller()
+            @domain()
+            @authorize.role("admin", actions("patch"))
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User })
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to set authorization for specific method from entity using actions delete", async () => {
+            @route.controller()
+            @domain()
+            @authorize.role("admin", actions("delete"))
             class User {
                 constructor(
                     public name: string,

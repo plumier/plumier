@@ -151,6 +151,7 @@ Object {
   "RouteDecoratorImpl": RouteDecoratorImpl,
   "ValidationError": ValidationError,
   "ValidatorMiddleware": ValidatorMiddleware,
+  "actions": actions,
   "analyzeModel": analyzeModel,
   "analyzeRoutes": analyzeRoutes,
   "api": Object {
