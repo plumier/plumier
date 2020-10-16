@@ -16,40 +16,42 @@ In some frameworks you may avoid mapping ORM entities directly into CRUD APIs be
 
 You use generic controller by decorating your entity with `@route.controller()` then Plumier automatically create derived controller based on your entity on the fly. 
 
-```typescript {4}
-import { route } from "plumier"
+```typescript {4-5,11,15-17,21-22}
+import { route, authorize, actions } from "plumier"
 import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn } from "typeorm"
 
+@authorize.role("Admin", actions("put", "post", "patch", "delete")})
 @route.controller()
-@Entity()
-export class Post {
+@Entity()[]
+export class Item {
     @PrimaryGeneratedColumn()
     id: number
 
+    @authorize.filter()
     @Column()
-    slug:string
+    name:string
 
+    @authorize.filter("Admin")
+    @authorize.read("Admin")
+    @authorize.write("Admin")
     @Column()
-    title:string
+    basePrice:number
 
+    @authorize.filter()
+    @authorize.write("Admin")
     @Column()
-    content:string
-
-    @CreateDateColumn()
-    createdAt:Date
+    price:number
 }
 ```
 
-Above code is a common TypeORM entities marked with Plumier decorators. The `Category` entity marked with `@route.controller()` it tells Plumier that the entity should be handled by a generic controller. Code above will generated into routes that follow Restful best practice like below.
+Above code is a common TypeORM entities marked with Plumier decorators. The `Category` entity marked with `@route.controller()` it tells Plumier that the entity should be handled by a generic controller. 
 
-| Method | Path         | Description                                                 |
-| ------ | ------------ | ----------------------------------------------------------- |
-| POST   | `/posts`     | Create new post                                             |
-| GET    | `/posts`     | Get list of posts with paging, filter, order and projection |
-| GET    | `/posts/:id` | Get single post by id with projection                       |
-| PUT    | `/posts/:id` | Replace post  by id                                         |
-| PATCH  | `/posts/:id` | Modify post property by id                                  |
-| DELETE | `/posts/:id` | Delete post by id                                           |
+```
+POST /items 
+
+{ }
+```
+
 
 Generic controller provided functionalities to refine the API response, such as filter, paging, order and projection. Using above generated API you may request like below.
 

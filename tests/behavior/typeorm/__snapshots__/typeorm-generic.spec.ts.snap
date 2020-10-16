@@ -854,6 +854,274 @@ Object {
 }
 `;
 
+exports[`Filter Generic Controller Should able to filter with exact value 1`] = `
+Array [
+  Object {
+    "boolean": true,
+    "id": 1,
+    "number": 1,
+    "string": "lorem",
+  },
+]
+`;
+
+exports[`Filter Generic Controller Should able to filter with gt value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "id": 3,
+    "number": 3,
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter Generic Controller Should able to filter with gte value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "id": 2,
+    "number": 2,
+    "string": "ipsum",
+  },
+  Object {
+    "boolean": false,
+    "id": 3,
+    "number": 3,
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter Generic Controller Should able to filter with lt value 1`] = `
+Array [
+  Object {
+    "boolean": true,
+    "id": 1,
+    "number": 1,
+    "string": "lorem",
+  },
+]
+`;
+
+exports[`Filter Generic Controller Should able to filter with lte value 1`] = `
+Array [
+  Object {
+    "boolean": true,
+    "id": 1,
+    "number": 1,
+    "string": "lorem",
+  },
+  Object {
+    "boolean": false,
+    "id": 2,
+    "number": 2,
+    "string": "ipsum",
+  },
+]
+`;
+
+exports[`Filter Generic Controller Should able to filter with not equal value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "id": 2,
+    "number": 2,
+    "string": "ipsum",
+  },
+  Object {
+    "boolean": false,
+    "id": 3,
+    "number": 3,
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter Generic Controller Should able to filter with range value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "id": 2,
+    "number": 2,
+    "string": "ipsum",
+  },
+  Object {
+    "boolean": false,
+    "id": 3,
+    "number": 3,
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with exact value 1`] = `
+Array [
+  Object {
+    "boolean": true,
+    "id": 1,
+    "number": 1,
+    "parent": Object {
+      "boolean": true,
+      "id": 1,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "lorem",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with gt value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "id": 3,
+    "number": 3,
+    "parent": Object {
+      "boolean": true,
+      "id": 1,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with gte value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "id": 2,
+    "number": 2,
+    "parent": Object {
+      "boolean": true,
+      "id": 1,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "ipsum",
+  },
+  Object {
+    "boolean": false,
+    "id": 3,
+    "number": 3,
+    "parent": Object {
+      "boolean": true,
+      "id": 1,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with lt value 1`] = `
+Array [
+  Object {
+    "boolean": true,
+    "id": 1,
+    "number": 1,
+    "parent": Object {
+      "boolean": true,
+      "id": 1,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "lorem",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with lte value 1`] = `
+Array [
+  Object {
+    "boolean": true,
+    "id": 1,
+    "number": 1,
+    "parent": Object {
+      "boolean": true,
+      "id": 1,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "lorem",
+  },
+  Object {
+    "boolean": false,
+    "id": 2,
+    "number": 2,
+    "parent": Object {
+      "boolean": true,
+      "id": 1,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "ipsum",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with not equal value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "id": 2,
+    "number": 2,
+    "parent": Object {
+      "boolean": true,
+      "id": 1,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "ipsum",
+  },
+  Object {
+    "boolean": false,
+    "id": 3,
+    "number": 3,
+    "parent": Object {
+      "boolean": true,
+      "id": 1,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter One To Many Generic Controller Should able to filter with range value 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "id": 2,
+    "number": 2,
+    "parent": Object {
+      "boolean": true,
+      "id": 1,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "ipsum",
+  },
+  Object {
+    "boolean": false,
+    "id": 3,
+    "number": 3,
+    "parent": Object {
+      "boolean": true,
+      "id": 1,
+      "number": 1,
+      "string": "lorem",
+    },
+    "string": "dolor",
+  },
+]
+`;
+
 exports[`Open API Should mark guid column as readonly 1`] = `
 Object {
   "properties": Object {

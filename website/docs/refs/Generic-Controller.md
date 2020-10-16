@@ -229,11 +229,16 @@ GET /users?filter[email]=john.doe@gmail.com&filter[name]=john
 
 Several filter supported based on property data type 
 
-| Filter  | Description                                          | Data Type    | Example                     |
-| ------- | ---------------------------------------------------- | ------------ | --------------------------- |
-| Exact   | Filter by exact value                                | All          | `/users?filter[age]=3`      |
-| Partial | Filter by partial value using `*` (at beginning/end) | String       | `/users?filter[name]=john*` |
-| Range   | Filter by range with pattern `start...end`           | Date, Number | `/users?filter[age]=1...18` |
+| Filter    | Description                                          | Data Type    | Example                     |
+| --------- | ---------------------------------------------------- | ------------ | --------------------------- |
+| Equal     | Filter by exact value                                | All          | `/users?filter[age]=3`      |
+| Partial   | Filter by partial value using `*` (at beginning/end) | String       | `/users?filter[name]=john*` |
+| Range     | Filter by range with pattern `start...end`           | Date, Number | `/users?filter[age]=1...18` |
+| GTE       | Filter by greater than or equal using `>=`           | Date, Number | `/users?filter[age]=>=20`   |
+| LTE       | Filter by less than or equal using `<=`              | Date, Number | `/users?filter[age]=<=20`   |
+| GT        | Filter by greater than using `>`                     | Date, Number | `/users?filter[age]=>20`    |
+| LT        | Filter by less than using `<`                        | Date, Number | `/users?filter[age]=<20`    |
+| Not Equal | Filter by not equal using `!`                        | All          | `/users?filter[age]=!20`    |
 
 ## Query Strings
 

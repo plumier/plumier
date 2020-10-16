@@ -13,13 +13,166 @@ import { generic } from "tinspector"
 import { Column, Entity, getManager, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm"
 
 import { cleanup, getConn } from "./helper"
+import Koa from "koa"
 
 
 jest.setTimeout(20000)
 
-afterEach(async () => {
-    await cleanup()
-});
+describe("Filter", () => {
+    @route.controller()
+    @Entity()
+    class Parent {
+        @PrimaryGeneratedColumn()
+        id: number
+
+        @Column()
+        @authorize.filter()
+        string: string
+
+        @Column()
+        @authorize.filter()
+        number: number
+
+        @Column()
+        @authorize.filter()
+        boolean: boolean
+
+        @route.controller()
+        @OneToMany(x => Child, x => x.parent)
+        children: Child[]
+    }
+    @Entity()
+    class Child {
+        @PrimaryGeneratedColumn()
+        id: number
+
+        @Column()
+        @authorize.filter()
+        string: string
+
+        @Column()
+        @authorize.filter()
+        number: number
+
+        @Column()
+        @authorize.filter()
+        boolean: boolean
+
+        @ManyToOne(x => Parent, x => x.children)
+        parent: Parent
+    }
+    function createApp() {
+        return new Plumier()
+            .set(new WebApiFacility({ controller: Parent }))
+            .set(new TypeORMFacility({ connection: getConn([Parent, Child]) }))
+            .set({ mode: "production" })
+            .initialize()
+    }
+    let app: Koa
+    let parent: { id: string };
+    beforeAll(async () => {
+        app = await createApp()
+        const parentRepo = new TypeORMRepository(Parent)
+        const repo = new TypeORMOneToManyRepository(Parent, Child, "children")
+        await parentRepo.nativeRepository.delete({})
+        await repo.nativeRepository.delete({})
+        parent = await parentRepo.insert(<Parent>{ string: "lorem", number: 1, boolean: true })
+        await parentRepo.insert(<Parent>{ string: "ipsum", number: 2, boolean: false })
+        await parentRepo.insert(<Parent>{ string: "dolor", number: 3, boolean: false })
+        await repo.insert(parent.id, <Child>{ string: "lorem", number: 1, boolean: true })
+        await repo.insert(parent.id, <Child>{ string: "ipsum", number: 2, boolean: false })
+        await repo.insert(parent.id, <Child>{ string: "dolor", number: 3, boolean: false })
+    })
+    afterAll(async () => { await cleanup() })
+    describe("Generic Controller", () => {
+        it("Should able to filter with exact value", async () => {
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[string]=lorem")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with range value", async () => {
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[number]=2...3")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with not equal value", async () => {
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[boolean]=!true")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with gte value", async () => {
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[number]=>=2")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with gt value", async () => {
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[number]=>2")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with lte value", async () => {
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[number]=<=2")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with lt value", async () => {
+            const { body } = await supertest(app.callback())
+                .get("/parents?filter[number]=<2")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+    })
+    describe("One To Many Generic Controller", () => {
+        it("Should able to filter with exact value", async () => {
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[string]=lorem`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with range value", async () => {
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[number]=2...3`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with not equal value", async () => {
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[boolean]=!true`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with gte value", async () => {
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[number]=>=2`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with gt value", async () => {
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[number]=>2`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with lte value", async () => {
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[number]=<=2`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to filter with lt value", async () => {
+            const { body } = await supertest(app.callback())
+                .get(`/parents/${parent.id}/children?filter[number]=<2`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+    })
+})
 
 describe("CRUD", () => {
     function createApp(entities: Function[], opt?: Partial<Configuration>) {
@@ -29,6 +182,9 @@ describe("CRUD", () => {
             .set({ ...opt, controller: entities as any })
             .initialize()
     }
+    afterEach(async () => {
+        await cleanup()
+    });
     describe("CRUD Function", () => {
         it("Should serve GET /users?offset&limit", async () => {
             @Entity()
@@ -111,7 +267,7 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
-        
+
         it("Should ignore filter on non marked property GET /users?filter", async () => {
             @Entity()
             @route.controller()
@@ -1709,6 +1865,9 @@ describe("Open API", () => {
             .set({ mode: "production", controller: entities as any })
             .initialize()
     }
+    afterEach(async () => {
+        await cleanup()
+    });
     it("Should mark id column as readonly", async () => {
         @Entity()
         @route.controller()
