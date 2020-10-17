@@ -1,13 +1,8 @@
-import { Result, VisitorInvocation } from "typedconverter"
-import { defaultConverters } from 'typedconverter'
-
-import { AuthorizeDecorator } from "./authorization"
+import { defaultConverters, Result, VisitorInvocation } from "typedconverter"
 import { Class, entityHelper, isCustomClass } from './common'
 import { RelationDecorator } from './decorator/entity'
 import { ActionContext, FilterQuery } from "./types"
 
-
-const findAuthorizeFilter = (x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize" && x.access === "filter"
 const notFilter = (i: VisitorInvocation, ctx: ActionContext) => ctx.method !== "GET" || !i.parent || i.value === undefined || i.value === null
 const isNumber = (value: string) => !Number.isNaN(Number(value))
 const isDate = (value: string) => !Number.isNaN(new Date(value).getTime())
@@ -27,13 +22,6 @@ function convert(decorators: any[], type: Class, value: string): [any, string?] 
     const result = converter(value)
     if (!result) return [, `Unable to convert "${value}" into ${type.name}`]
     return [result]
-}
-
-function filterConverter(i: VisitorInvocation, ctx: ActionContext) {
-    if (notFilter(i, ctx)) return i.proceed()
-    if (!i.decorators.find(findAuthorizeFilter))
-        return Result.error(i.value, i.path, `Property ${i.path} is not filterable`)
-    return i.proceed()
 }
 
 function partialFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
@@ -113,7 +101,6 @@ function exactFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
 
 // order of the converter from the most important
 export const filterConverters = [
-    filterConverter,
     greaterThanOrEqualConverter,
     lessThanOrEqualConverter,
     greaterThanConverter,

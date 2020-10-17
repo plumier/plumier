@@ -434,20 +434,3 @@ Object {
   "status": 422,
 }
 `;
-
-exports[`Filter Parser Should not allow non authorized filter 1`] = `
-Object {
-  "message": Array [
-    Object {
-      "messages": Array [
-        "Property filter.name is not filterable",
-      ],
-      "path": Array [
-        "filter",
-        "name",
-      ],
-    },
-  ],
-  "status": 422,
-}
-`;
