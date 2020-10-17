@@ -95,6 +95,56 @@ describe("Filter Parser", () => {
             .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
     }
     beforeEach(() => fn.mockClear())
+    it("Should not allow non authorized filter", async () => {
+        @route.controller()
+        @domain()
+        class User {
+            constructor(
+                public name: string,
+                public age: number
+            ) { }
+        }
+        const app = await createApp({ controller: User }).initialize()
+        const { body } = await supertest(app.callback())
+            .get("/user?filter[name]=abcd")
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+    it("Should not allow non authorized filter multiple", async () => {
+        @route.controller()
+        @domain()
+        class User {
+            constructor(
+                public name: string,
+                public age: number
+            ) { }
+        }
+        const app = await createApp({ controller: User }).initialize()
+        const { body } = await supertest(app.callback())
+            .get("/user?filter[name]=abcd&filter[age]=2")
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+    it("Should not not conflict with other authorization", async () => {
+        const user = sign({ userId: 123, role: "User" }, "lorem")
+        @route.controller()
+        @domain()
+        class User {
+            constructor(
+                @authorize.write("Admin")
+                @authorize.filter()
+                public name: string,
+                public age: number
+            ) { }
+        }
+        const app = await createApp({ controller: User })
+            .set(new JwtAuthFacility({ secret: "lorem" }))
+            .initialize()
+        await supertest(app.callback())
+            .get("/user?filter[name]=abcd")
+            .set("Authorization", `Bearer ${user}`)
+            .expect(200)
+    })
     it("Should not conflict with @bind", async () => {
         const user = sign({ userId: 123, role: "User" }, "lorem")
         class LoginUser {
@@ -112,7 +162,7 @@ describe("Filter Parser", () => {
         const app = await createApp({ controller: UserController })
             .set(new JwtAuthFacility({ secret: "lorem" }))
             .initialize()
-        const {body} = await supertest(app.callback())
+        const { body } = await supertest(app.callback())
             .get("/user")
             .set("Authorization", `Bearer ${user}`)
             .expect(200)

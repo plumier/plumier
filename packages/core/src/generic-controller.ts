@@ -1,3 +1,4 @@
+import "./filter-parser"
 import { Context } from "koa"
 import { Key, pathToRegexp } from "path-to-regexp"
 import reflect, {
@@ -108,7 +109,7 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
 
     @decorateRoute("get", "")
     @reflect.type(["T"])
-    list(offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
+    list(offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") @val.filter() filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
         return this.repo.find(offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
     }
 
@@ -178,7 +179,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
 
     @decorateRoute("get", "")
     @reflect.type(["T"])
-    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
+    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") @val.filter() filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
         await this.findParentByIdOrNotFound(pid)
         return this.repo.find(pid, offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
     }
