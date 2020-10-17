@@ -1,10 +1,12 @@
 import { defaultConverters, Result, VisitorInvocation } from "typedconverter"
 
+import { AuthorizeDecorator } from "./authorization"
 import { Class, entityHelper, isCustomClass } from "./common"
 import { RelationDecorator } from "./decorator/entity"
 import { ActionContext, FilterQuery } from "./types"
 
-const notFilter = (i: VisitorInvocation, ctx: ActionContext) => ctx.method !== "GET" || !i.parent || i.value === undefined || i.value === null
+const findAuthorizeFilter = (x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize" && x.access === "filter"
+const notFilter = (i: VisitorInvocation, ctx: ActionContext) => !i.decorators.find(findAuthorizeFilter) || ctx.method !== "GET" || !i.parent || i.value === undefined || i.value === null
 const isNumber = (value: string) => !Number.isNaN(Number(value))
 const isDate = (value: string) => !Number.isNaN(new Date(value).getTime())
 const isComparableValue = (value: string) => isNumber(value) || isDate(value)
