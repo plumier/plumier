@@ -1,5 +1,5 @@
 import { Result, VisitorInvocation } from "typedconverter"
-import { defaultConverters } from 'typedconverter/src/converter'
+import { defaultConverters } from 'typedconverter'
 
 import { AuthorizeDecorator } from "./authorization"
 import { Class, entityHelper, isCustomClass } from './common'
