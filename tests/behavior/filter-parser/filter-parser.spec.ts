@@ -112,10 +112,11 @@ describe("Filter Parser", () => {
         const app = await createApp({ controller: UserController })
             .set(new JwtAuthFacility({ secret: "lorem" }))
             .initialize()
-        await supertest(app.callback())
+        const {body} = await supertest(app.callback())
             .get("/user")
             .set("Authorization", `Bearer ${user}`)
             .expect(200)
+        expect(body).toMatchSnapshot()
     })
     describe("Range Filter", () => {
         it("Should parse number range filter properly", async () => {
