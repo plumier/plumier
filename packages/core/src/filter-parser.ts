@@ -1,6 +1,7 @@
 import { defaultConverters, Result, VisitorInvocation } from "typedconverter"
-import { Class, entityHelper, isCustomClass } from './common'
-import { RelationDecorator } from './decorator/entity'
+
+import { Class, entityHelper, isCustomClass } from "./common"
+import { RelationDecorator } from "./decorator/entity"
 import { ActionContext, FilterQuery } from "./types"
 
 const notFilter = (i: VisitorInvocation, ctx: ActionContext) => ctx.method !== "GET" || !i.parent || i.value === undefined || i.value === null
