@@ -91,7 +91,7 @@ class AuthDecoratorImpl {
         const opt: AuthorizeSelectorOption = typeof last === "string" ? defaultOpt : { ...defaultOpt, ...last }
         const allRoles: string[] = typeof last === "string" ? roles : roles.slice(0, roles.length - 1)
         return this.custom(async (info) => {
-            return allRoles.filter(x => !!x).some(x => info.role.some(y => x === y))
+            return allRoles.length === 0 || allRoles.filter(x => !!x).some(x => info.role.some(y => x === y))
         }, { ...opt, tag: allRoles.join("|"), evaluation: "Static" })
     }
 

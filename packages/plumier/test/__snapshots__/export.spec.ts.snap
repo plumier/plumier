@@ -199,6 +199,7 @@ Object {
     "email": email,
     "enums": ,
     "file": ,
+    "filter": ,
     "float": float,
     "fqdn": fqdn,
     "fullWidth": fullWidth,

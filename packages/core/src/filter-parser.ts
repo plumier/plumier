@@ -1,9 +1,14 @@
-import { defaultConverters, Result, VisitorInvocation } from "typedconverter"
+import { defaultConverters, Result, val, VisitorInvocation } from "typedconverter"
 
 import { AuthorizeDecorator } from "./authorization"
 import { Class, entityHelper, isCustomClass } from "./common"
 import { RelationDecorator } from "./decorator/entity"
 import { ActionContext, FilterQuery } from "./types"
+import reflect from "tinspector"
+
+// --------------------------------------------------------------------- //
+// ------------------------------- HELPER ------------------------------ //
+// --------------------------------------------------------------------- //
 
 const findAuthorizeFilter = (x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize" && x.access === "filter"
 const notFilter = (i: VisitorInvocation, ctx: ActionContext) => !i.decorators.find(findAuthorizeFilter) || ctx.method !== "GET" || !i.parent || i.value === undefined || i.value === null
@@ -26,6 +31,35 @@ function convert(decorators: any[], type: Class, value: string): [any, string?] 
     if (!result) return [, `Unable to convert "${value}" into ${type.name}`]
     return [result]
 }
+
+// --------------------------------------------------------------------- //
+// ----------------------------- VALIDATOR ----------------------------- //
+// --------------------------------------------------------------------- //
+
+declare module "typedconverter" {
+    namespace val {
+        export function filter(): (...args:any[]) => void
+    }
+}
+
+val.filter = () => {
+    return val.custom((value, info) => {
+        const meta = reflect((info.metadata.current as any).type as Class)
+        const issues = []
+        for (const prop of meta.properties) {
+            const dec = prop.decorators.find(findAuthorizeFilter)
+            const propValue = value[prop.name]
+            if (!dec && propValue)
+                issues.push(prop.name)
+        }
+        if (issues.length > 0)
+            return `Query ${issues.map(x => `filter[${x}]`).join(", ")} ${issues.length > 1 ? "are" : "is"} not available`
+    })
+}
+
+// --------------------------------------------------------------------- //
+// ------------------------------- PARSER ------------------------------ //
+// --------------------------------------------------------------------- //
 
 function partialFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
     if (notFilter(i, ctx)) return i.proceed()

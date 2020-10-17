@@ -146,7 +146,6 @@ interface ParamCheckContext {
 async function executeDecorators(decorators: AuthorizeDecorator[], info: AuthorizationContext, path: string) {
     const result: string[] = []
     for (const dec of decorators) {
-        if (dec.access === "read") continue;
         const allowed = await executeDecorator(dec, info)
         if (!allowed)
             result.push(path)
@@ -165,7 +164,6 @@ function createContext(ctx: ParamCheckContext, value: any, meta: ClassReflection
 }
 
 async function checkParameter(meta: PropertyReflection | ParameterReflection, value: any, ctx: ParamCheckContext): Promise<string[]> {
-    const filterDecorator = meta.decorators.find(createDecoratorFilter(x => x.access === "filter"))
     if (value === undefined) return []
     else if (Array.isArray(meta.type)) {
         const newMeta = { ...meta, type: meta.type[0] };
@@ -181,12 +179,9 @@ async function checkParameter(meta: PropertyReflection | ParameterReflection, va
         const values = classMeta.properties.map(x => value[x.name])
         return checkParameters(classMeta.properties, values, { ...ctx, parent: meta.type, parentValue: value })
     }
-    // for GET method by default will be allowed except filter decorator specified
-    else if (ctx.info.ctx.method === "GET" && !filterDecorator) {
-        return []
-    }
     else {
-        const decorators = meta.decorators.filter(createDecoratorFilter())
+        const decorators = ctx.info.ctx.method === "GET" ? meta.decorators.filter(createDecoratorFilter(x => x.access === "filter")) :
+            meta.decorators.filter(createDecoratorFilter(x => x.access === "write" || x.access === "all"))
         const info = createContext(ctx, value, meta)
         return executeDecorators(decorators, info, ctx.path.join("."))
     }

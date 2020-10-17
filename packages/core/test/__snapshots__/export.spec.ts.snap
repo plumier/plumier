@@ -266,6 +266,7 @@ Object {
     "divisibleBy": divisibleBy,
     "email": email,
     "enums": ,
+    "filter": ,
     "float": float,
     "fqdn": fqdn,
     "fullWidth": fullWidth,
