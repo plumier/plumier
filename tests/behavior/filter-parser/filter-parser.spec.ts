@@ -1,5 +1,6 @@
 import {
     authorize,
+    bind,
     Configuration,
     DefaultFacility,
     filterConverters,
@@ -11,9 +12,11 @@ import {
     Repository,
     route,
 } from "@plumier/core"
+import { JwtAuthFacility } from '@plumier/jwt'
+import { sign } from 'jsonwebtoken'
 import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "plumier"
 import supertest from "supertest"
-import { generic } from "tinspector"
+import { generic, noop } from "tinspector"
 
 class MockRepo<T> implements Repository<T>{
     constructor(private fn: jest.Mock) { }
@@ -92,19 +95,27 @@ describe("Filter Parser", () => {
             .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
     }
     beforeEach(() => fn.mockClear())
-    it("Should not allow non authorized filter", async () => {
-        @route.controller()
-        @domain()
-        class User {
-            constructor(
-                public name: string,
-            ) { }
+    it("Should not conflict with @bind", async () => {
+        const user = sign({ userId: 123, role: "User" }, "lorem")
+        class LoginUser {
+            @noop()
+            userId: number
+            @noop()
+            role: string
         }
-        const app = await createApp({ controller: User }).initialize()
-        const { body } = await supertest(app.callback())
-            .get("/user?filter[name]=abcd")
-            .expect(422)
-        expect(body).toMatchSnapshot()
+        class UserController {
+            @route.get("")
+            get(@bind.user() user: LoginUser) {
+                return user
+            }
+        }
+        const app = await createApp({ controller: UserController })
+            .set(new JwtAuthFacility({ secret: "lorem" }))
+            .initialize()
+        await supertest(app.callback())
+            .get("/user")
+            .set("Authorization", `Bearer ${user}`)
+            .expect(200)
     })
     describe("Range Filter", () => {
         it("Should parse number range filter properly", async () => {

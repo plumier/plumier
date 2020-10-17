@@ -220,7 +220,6 @@ Object {
     greaterThanConverter,
     lessThanOrEqualConverter,
     greaterThanOrEqualConverter,
-    filterConverter,
   ],
   "findClassRecursive": findClassRecursive,
   "findFilesRecursive": findFilesRecursive,
