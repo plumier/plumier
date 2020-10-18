@@ -130,7 +130,7 @@ export class UsersController {
         //implementation
     }
 
-    @authorize.role("Admin") // <--- add this line
+    @authorize.route("Admin") // <--- add this line
     @route.get("")
     list(offset: number, limit: number) {
         //implementation

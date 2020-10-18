@@ -27,13 +27,13 @@ export class User extends Domain {
         public email: string,
         public password: string,
         public name: string,
-        @authorize.role("Admin") // <-- add this line
+        @authorize.write("Admin") // <-- add this line
         public role: UserRole
     ) { super() }
 }
 ```
 
-By adding `@authorize.role("Admin")` above `role` property like above code, it will prevent `User`  role modify the property. If `User` role tries to set the value, Plumier will return Unauthorized error with http status code 401.
+By adding `@authorize.write("Admin")` above `role` property like above code, it will prevent `User`  role modify the property. If `User` role tries to set the value, Plumier will return Unauthorized error with http status code 401.
 
 ## Securing Domain With Default Value
 If you review our domain closely you will notice that there are another security hole that possibly cause some issue on our domain, take a look at our domains below

@@ -87,7 +87,7 @@ describe("JwtAuth", () => {
                 .expect(200)
         })
 
-        it("Should allow only specific user if @authorize.role() defined", async () => {
+        it("Should allow only specific user if @authorize.route() defined", async () => {
             class AnimalController {
                 @authorize.route("superadmin")
                 get() { return "Hello" }
@@ -110,7 +110,7 @@ describe("JwtAuth", () => {
                 .expect(200)
         })
 
-        it("Should allow only some user if @authorize.role() defined", async () => {
+        it("Should allow only some user if @authorize.route() defined", async () => {
             class AnimalController {
                 @authorize.route("superadmin", "admin")
                 get() { return "Hello" }
@@ -133,7 +133,7 @@ describe("JwtAuth", () => {
                 .expect(200)
         })
 
-        it("Should allow decorate @authorize.role() in class scope", async () => {
+        it("Should allow decorate @authorize.route() in class scope", async () => {
             @authorize.route("superadmin")
             class AnimalController {
                 get() { return "Hello" }
@@ -240,7 +240,7 @@ describe("JwtAuth", () => {
             expect(fn).toBeCalled()
         })
 
-        it("Should allow using multiple @authorize.role() decorators", async () => {
+        it("Should allow using multiple @authorize.route() decorators", async () => {
             class AnimalController {
                 @authorize.route("superadmin")
                 @authorize.route("admin")
@@ -264,7 +264,7 @@ describe("JwtAuth", () => {
                 .expect(200)
         })
 
-        it("Should allow authorize using @authorize.public() and @authorize.role() in the same action", async () => {
+        it("Should allow authorize using @authorize.public() and @authorize.route() in the same action", async () => {
             class AnimalController {
                 @authorize.public()
                 @authorize.route("admin")
