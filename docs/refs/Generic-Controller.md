@@ -366,7 +366,7 @@ Above code showing that we apply `@authorize` decorator on `password` and `role`
 
 | Decorator                        | Description                                                                             |
 | -------------------------------- | --------------------------------------------------------------------------------------- |
-| `@authorize.role("SuperAdmin")`  | Protect property can be read and write by specific role (`SuperAdmin`)                  |
+| `@authorize.route("SuperAdmin")`  | Protect route can be accessed by specific role (`SuperAdmin`)                  |
 | `@authorize.write("SuperAdmin")` | Protect property only can be write by specific role (`SuperAdmin`)                      |
 | `@authorize.read("SuperAdmin")`  | Protect property only can be read by specific role (`SuperAdmin`)                       |
 | `@authorize.readonly()`          | Protect property only can be read and no other role can write it                        |
@@ -448,7 +448,7 @@ You can specify `@authorize` decorator on the entity class (above the class defi
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
 import { route, authorize } from "plumier"
 
-@authorize.role("SuperAdmin", "Admin", { applyTo: ["save", "delete", "replace", "modify" ] })
+@authorize.route("SuperAdmin", "Admin", { applyTo: ["save", "delete", "replace", "modify" ] })
 @route.controller()
 @Entity()
 class User {
@@ -458,7 +458,7 @@ class User {
 }
 ```
 
-Above code showing that we apply `@authorize.role()` decorator on the `User` entity, during route generation process it will be copied into the generic controller. Option parameter `applyTo` will tell the reflection library to apply authorize decorator into specific generic controller methods which is name: `save`, `delete`, `replace` `modify`. Using above configuration the result of the 
+Above code showing that we apply `@authorize.route()` decorator on the `User` entity, during route generation process it will be copied into the generic controller. Option parameter `applyTo` will tell the reflection library to apply authorize decorator into specific generic controller methods which is name: `save`, `delete`, `replace` `modify`. Using above configuration the result of the 
 
 | Action    | Method | Route                                     | Access            |
 | --------- | ------ | ----------------------------------------- | ----------------- |
@@ -479,7 +479,7 @@ class User {
     /** other columns **/
 
     @route.controller()
-    @authorize.role("SuperAdmin", "Admin", { applyTo: ["save", "delete", "replace", "modify" ] })
+    @authorize.route("SuperAdmin", "Admin", { applyTo: ["save", "delete", "replace", "modify" ] })
     @OneToMany(x => Email, x => x.user)
     emails:Email[]
 }

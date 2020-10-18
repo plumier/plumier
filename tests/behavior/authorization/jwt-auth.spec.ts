@@ -87,9 +87,9 @@ describe("JwtAuth", () => {
                 .expect(200)
         })
 
-        it("Should allow only specific user if @authorize.role() defined", async () => {
+        it("Should allow only specific user if @authorize.route() defined", async () => {
             class AnimalController {
-                @authorize.role("superadmin")
+                @authorize.route("superadmin")
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -110,9 +110,9 @@ describe("JwtAuth", () => {
                 .expect(200)
         })
 
-        it("Should allow only some user if @authorize.role() defined", async () => {
+        it("Should allow only some user if @authorize.route() defined", async () => {
             class AnimalController {
-                @authorize.role("superadmin", "admin")
+                @authorize.route("superadmin", "admin")
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -133,8 +133,8 @@ describe("JwtAuth", () => {
                 .expect(200)
         })
 
-        it("Should allow decorate @authorize.role() in class scope", async () => {
-            @authorize.role("superadmin")
+        it("Should allow decorate @authorize.route() in class scope", async () => {
+            @authorize.route("superadmin")
             class AnimalController {
                 get() { return "Hello" }
                 hello() { return "Hello" }
@@ -162,9 +162,9 @@ describe("JwtAuth", () => {
         })
 
         it("Should method scoped authorization REPLACE class scope authorization", async () => {
-            @authorize.role("superadmin")
+            @authorize.route("superadmin")
             class AnimalController {
-                @authorize.role("user")
+                @authorize.route("user")
                 get() { return "Hello" }
                 hello() { return "Hello" }
             }
@@ -193,7 +193,7 @@ describe("JwtAuth", () => {
         it("Should able to define role with different name", async () => {
             const CUSTOM_ROLE_TOKEN = sign({ email: "ketut@gmail.com", position: "superadmin" }, SECRET)
             class AnimalController {
-                @authorize.role("superadmin")
+                @authorize.route("superadmin")
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -208,7 +208,7 @@ describe("JwtAuth", () => {
 
         it("Should able to define role without share it in the token", async () => {
             class AnimalController {
-                @authorize.role("superadmin")
+                @authorize.route("superadmin")
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -240,10 +240,10 @@ describe("JwtAuth", () => {
             expect(fn).toBeCalled()
         })
 
-        it("Should allow using multiple @authorize.role() decorators", async () => {
+        it("Should allow using multiple @authorize.route() decorators", async () => {
             class AnimalController {
-                @authorize.role("superadmin")
-                @authorize.role("admin")
+                @authorize.route("superadmin")
+                @authorize.route("admin")
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -264,10 +264,10 @@ describe("JwtAuth", () => {
                 .expect(200)
         })
 
-        it("Should allow authorize using @authorize.public() and @authorize.role() in the same action", async () => {
+        it("Should allow authorize using @authorize.public() and @authorize.route() in the same action", async () => {
             class AnimalController {
                 @authorize.public()
-                @authorize.role("admin")
+                @authorize.route("admin")
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -290,7 +290,7 @@ describe("JwtAuth", () => {
 
         it("Should able to send token using cookie", async () => {
             class AnimalController {
-                @authorize.role("admin")
+                @authorize.route("admin")
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -312,7 +312,7 @@ describe("JwtAuth", () => {
 
         it("Should able to send token using cookie with custom name", async () => {
             class AnimalController {
-                @authorize.role("admin")
+                @authorize.route("admin")
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -333,7 +333,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply authorization to specific method from controller", async () => {
-            @authorize.role("superadmin", { applyTo: "get" })
+            @authorize.route("superadmin", { applyTo: "get" })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -362,7 +362,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply authorization to specific methods from controller", async () => {
-            @authorize.role("superadmin", { applyTo: ["get", "save"] })
+            @authorize.route("superadmin", { applyTo: ["get", "save"] })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -465,7 +465,7 @@ describe("JwtAuth", () => {
 
         it("Should able to mix controller scope authorizer with other decorators", async () => {
             @route.ignore({ applyTo: "save" })
-            @authorize.role("superadmin", { applyTo: ["get", "save"] })
+            @authorize.route("superadmin", { applyTo: ["get", "save"] })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
@@ -501,13 +501,12 @@ describe("JwtAuth", () => {
     describe("Custom Authorization", () => {
         it("Should able to use @authorize.custom()", async () => {
             class AnimalController {
-                @authorize.custom(i => i.role.some(x => x === "admin"))
+                @authorize.custom(i => i.role.some(x => x === "admin"), { access: "route" })
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({ secret: SECRET }))
                 .initialize()
-
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
@@ -524,7 +523,7 @@ describe("JwtAuth", () => {
 
         it("Should able to use async @authorize.custom()", async () => {
             class AnimalController {
-                @authorize.custom(async i => i.role.some(x => x === "admin"))
+                @authorize.custom(async i => i.role.some(x => x === "admin"), { access: "route" })
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -545,7 +544,7 @@ describe("JwtAuth", () => {
             }
 
             class AnimalController {
-                @authorize.custom(new IsAdmin())
+                @authorize.custom(new IsAdmin(), { access: "route" })
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -559,7 +558,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to get decorator position in class scope", async () => {
-            @authorize.custom((i, pos) => pos === "Class" && i.role.some(x => x === "admin"))
+            @authorize.custom((i, pos) => pos === "Class" && i.role.some(x => x === "admin"), { access: "route" })
             class AnimalController {
                 get() { return "Hello" }
             }
@@ -575,7 +574,7 @@ describe("JwtAuth", () => {
 
         it("Should able to get decorator position in method scope", async () => {
             class AnimalController {
-                @authorize.custom((i, pos) => pos === "Method" && i.role.some(x => x === "admin"))
+                @authorize.custom((i, pos) => pos === "Method" && i.role.some(x => x === "admin"), { access: "route" })
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -591,7 +590,7 @@ describe("JwtAuth", () => {
         it("Should able to get decorator position in parameter scope", async () => {
             class AnimalController {
                 get(
-                    @authorize.custom((i, pos) => pos === "Parameter" && i.role.some(x => x === "admin"))
+                    @authorize.custom((i, pos) => pos === "Parameter" && i.role.some(x => x === "admin"), { access: "route" })
                     data: string) { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -607,7 +606,7 @@ describe("JwtAuth", () => {
         it("Should able to get parameter value in parameter scope", async () => {
             class AnimalController {
                 get(
-                    @authorize.custom(i => i.value === "123" && i.role.some(x => x === "admin"))
+                    @authorize.custom(i => i.value === "123" && i.role.some(x => x === "admin"), { access: "route" })
                     data: string) { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -622,7 +621,7 @@ describe("JwtAuth", () => {
 
         it("Should able to get context information", async () => {
             class AnimalController {
-                @authorize.custom(i => i.ctx.path === "/animal/get" && i.role.some(x => x === "admin"))
+                @authorize.custom(i => i.ctx.path === "/animal/get" && i.role.some(x => x === "admin"), { access: "route" })
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -640,7 +639,7 @@ describe("JwtAuth", () => {
                 @authorize.custom(i => {
                     expect(i.ctx.parameters).toMatchObject(["abc", 123, false])
                     return true
-                })
+                }, { access: "route" })
                 get(str: string, num: number, bool: boolean) { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -667,7 +666,7 @@ describe("JwtAuth", () => {
 
         it("Should able to use separate implementation", async () => {
             class AnimalController {
-                @authorize.custom("isOwner")
+                @authorize.custom("isOwner", { access: "route" })
                 @route.get()
                 save(email: string) { return "Hello" }
             }
@@ -713,7 +712,7 @@ describe("JwtAuth", () => {
                 save() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.role("superadmin") }))
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.route("superadmin") }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -727,7 +726,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able override global auth on controller", async () => {
-            @authorize.role("user")
+            @authorize.route("user")
             class AnimalController {
                 get() { return "Hello" }
                 @route.post()
@@ -748,7 +747,7 @@ describe("JwtAuth", () => {
 
         it("Should able override global auth on action", async () => {
             class AnimalController {
-                @authorize.role("user")
+                @authorize.route("user")
                 get() { return "Hello" }
                 @route.post()
                 save() { return "Hello" }
@@ -784,7 +783,7 @@ describe("JwtAuth", () => {
 
         it("Should print Admin if specified in method", async () => {
             class AnimalController {
-                @authorize.role("Admin")
+                @authorize.route("Admin")
                 get() { }
             }
             consoleLog.startMock()
@@ -797,7 +796,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should print Admin if specified in class", async () => {
-            @authorize.role("Admin")
+            @authorize.route("Admin")
             class AnimalController {
                 get() { }
             }
@@ -812,7 +811,7 @@ describe("JwtAuth", () => {
 
         it("Should print Custom if provided @authorize.custom", async () => {
             class AnimalController {
-                @authorize.custom(async i => true)
+                @authorize.custom(async i => true, { access: "route" })
                 get() { }
             }
             consoleLog.startMock()
@@ -839,7 +838,7 @@ describe("JwtAuth", () => {
 
         it("Should print Admin even if provided in global", async () => {
             class AnimalController {
-                @authorize.role("Admin")
+                @authorize.route("Admin")
                 get() { }
             }
             consoleLog.startMock()
@@ -853,8 +852,8 @@ describe("JwtAuth", () => {
 
         it("Should print All if provided multiple", async () => {
             class AnimalController {
-                @authorize.role("Admin")
-                @authorize.role("User")
+                @authorize.route("Admin")
+                @authorize.route("User")
                 get() { }
             }
             consoleLog.startMock()
@@ -868,7 +867,7 @@ describe("JwtAuth", () => {
 
         it("Should print All if provided by comma", async () => {
             class AnimalController {
-                @authorize.role("Admin", "User")
+                @authorize.route("Admin", "User")
                 get() { }
             }
             consoleLog.startMock()
@@ -885,11 +884,11 @@ describe("JwtAuth", () => {
                 authenticated() { }
                 @authorize.public()
                 public() { }
-                @authorize.role("Admin")
+                @authorize.route("Admin")
                 admin() { }
-                @authorize.role("User")
+                @authorize.route("User")
                 user() { }
-                @authorize.role("Admin", "User")
+                @authorize.route("Admin", "User")
                 mix() { }
             }
             consoleLog.startMock()
@@ -913,11 +912,11 @@ describe("JwtAuth", () => {
                 authenticated() { }
                 @authorize.public()
                 public() { }
-                @authorize.role("Admin")
+                @authorize.route("Admin")
                 admin() { }
-                @authorize.role("User")
+                @authorize.route("User")
                 user() { }
-                @authorize.role("Admin", "User")
+                @authorize.route("Admin", "User")
                 mix() { }
             }
             consoleLog.startMock()
@@ -1005,11 +1004,11 @@ describe("JwtAuth", () => {
         const QA_ROLE_TOKEN = sign({ email: "ketut@gmail.com", role: ["level3"] }, SECRET)
 
         class AnimalController {
-            @authorize.role("level1")
+            @authorize.route("level1")
             level1() { return "Hello" }
-            @authorize.role("level2")
+            @authorize.route("level2")
             level2() { return "Hello" }
-            @authorize.role("level3")
+            @authorize.route("level3")
             level3() { return "Hello" }
         }
 
@@ -1076,9 +1075,9 @@ describe("JwtAuth", () => {
             class AnimalController {
                 @route.post()
                 save(name: string,
-                    @authorize.role("admin")
+                    @authorize.write("admin")
                     id: number | undefined,
-                    @authorize.role("admin")
+                    @authorize.write("admin")
                     deceased: boolean | undefined) { return "Hello" }
             }
 
@@ -1117,30 +1116,15 @@ describe("JwtAuth", () => {
                     .send({ id: "123", name: "Mimi", deceased: "Yes" })
                     .expect(200)
             })
-
-            it("Should throw error if @authorize.public() used for parameter authorization", () => {
-                try {
-                    class AnimalController {
-                        @route.post()
-                        save(name: string,
-                            @authorize.public()
-                            id: number | undefined,
-                            deceased: boolean | undefined) { return "Hello" }
-                    }
-                }
-                catch (e) {
-                    expect(e.message).toContain("PLUM1007")
-                }
-            })
         })
 
         describe("Object Parameter Authorization", () => {
             @domain()
             class Animal {
                 constructor(name: string,
-                    @authorize.role("admin")
+                    @authorize.write("admin")
                     id: number | undefined,
-                    @authorize.role("admin")
+                    @authorize.write("admin")
                     deceased: boolean | undefined) { }
             }
 
@@ -1227,9 +1211,9 @@ describe("JwtAuth", () => {
             @domain()
             class Animal {
                 constructor(name: string,
-                    @authorize.role("admin")
+                    @authorize.write("admin")
                     id: number | undefined,
-                    @authorize.role("admin")
+                    @authorize.write("admin")
                     deceased: boolean | undefined) { }
             }
 
@@ -1552,7 +1536,7 @@ describe("JwtAuth", () => {
                 it("Should authorize with all modifier", async () => {
                     class AnimalController {
                         @route.post()
-                        save(@authorize.role("admin")
+                        save(@authorize.write("admin")
                         id: number | undefined) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
@@ -1574,7 +1558,7 @@ describe("JwtAuth", () => {
                 it("Should authorize if not specified", async () => {
                     class AnimalController {
                         @route.post()
-                        save(@authorize.role("admin")
+                        save(@authorize.write("admin")
                         id: number | undefined) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
@@ -1619,8 +1603,8 @@ describe("JwtAuth", () => {
                     class AnimalController {
                         @route.post()
                         save(
-                            @authorize.role("admin")
-                            @authorize.role("user")
+                            @authorize.write("admin")
+                            @authorize.write("user")
                             id: number | undefined) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
@@ -1671,7 +1655,7 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.role("admin")
+                            @authorize.write("admin")
                             public id: number | undefined) { }
                     }
                     class AnimalController {
@@ -1698,7 +1682,7 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.role("admin")
+                            @authorize.write("admin")
                             public id: number | undefined) { }
                     }
                     class AnimalController {
@@ -1752,8 +1736,8 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.role("admin")
-                            @authorize.role("user")
+                            @authorize.write("admin")
+                            @authorize.write("user")
                             public id: number | undefined) { }
                     }
                     class AnimalController {
@@ -1814,7 +1798,7 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.role("admin")
+                            @authorize.write("admin")
                             public id: number | undefined) { }
                     }
                     @domain()
@@ -1847,7 +1831,7 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.role("admin")
+                            @authorize.write("admin")
                             public id: number | undefined) { }
                     }
                     @domain()
@@ -1913,8 +1897,8 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.role("admin")
-                            @authorize.role("user")
+                            @authorize.write("admin")
+                            @authorize.write("user")
                             public id: number | undefined) { }
                     }
                     @domain()
@@ -1975,7 +1959,7 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.role("admin")
+                            @authorize.write("admin")
                             public id: number | undefined) { }
                     }
                     class AnimalController {
@@ -2002,7 +1986,7 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.role("admin")
+                            @authorize.write("admin")
                             public id: number | undefined) { }
                     }
                     class AnimalController {
@@ -2056,8 +2040,8 @@ describe("JwtAuth", () => {
                     @domain()
                     class Entity {
                         constructor(
-                            @authorize.role("admin")
-                            @authorize.role("user")
+                            @authorize.write("admin")
+                            @authorize.write("user")
                             public id: number | undefined) { }
                     }
                     class AnimalController {
@@ -2289,7 +2273,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.role("admin")
+                        @authorize.read("admin")
                         public password: string
                     ) { }
                 }
@@ -2436,7 +2420,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.role("admin")
+                        @authorize.read("admin")
                         public password: string
                     ) { }
                 }
@@ -2599,7 +2583,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.role("admin")
+                        @authorize.read("admin")
                         public password: string
                     ) { }
                 }
@@ -2630,7 +2614,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.role("admin")
+                        @authorize.read("admin")
                         public password: string,
                         @reflect.type(x => Parent)
                         public parent: any
@@ -2669,7 +2653,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.custom(onlyAdmin)
+                        @authorize.custom(onlyAdmin, { access: "read" })
                         public password: string
                     ) { }
                 }
@@ -2699,7 +2683,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.custom(onlyAdmin)
+                        @authorize.custom(onlyAdmin, { access: "read" })
                         public password: string
                     ) { }
                 }
@@ -2729,7 +2713,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.custom(onlyAdmin)
+                        @authorize.custom(onlyAdmin, { access: "read" })
                         public password: string
                     ) { }
                 }
@@ -2807,7 +2791,7 @@ describe("JwtAuth", () => {
                 class User {
                     constructor(
                         public name: string,
-                        @authorize.custom(onlyAdmin)
+                        @authorize.custom(onlyAdmin, { access: "read" })
                         public password: string
                     ) { }
                 }
@@ -2835,9 +2819,9 @@ describe("JwtAuth", () => {
                 @domain()
                 class User {
                     constructor(
-                        @authorize.custom(onlyAdmin)
+                        @authorize.custom(onlyAdmin, { access: "read" })
                         public name: string,
-                        @authorize.custom(onlyAdmin)
+                        @authorize.custom(onlyAdmin, { access: "read" })
                         public password: string
                     ) { }
                 }

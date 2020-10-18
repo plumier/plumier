@@ -281,7 +281,7 @@ describe("Route Generator", () => {
         it("Should able to set authorization from entity", async () => {
             @route.controller()
             @domain()
-            @authorize.role("admin")
+            @authorize.route("admin")
             class User {
                 constructor(
                     public name: string,
@@ -297,7 +297,7 @@ describe("Route Generator", () => {
         it("Should able to set authorization for specific method from entity", async () => {
             @route.controller()
             @domain()
-            @authorize.role("admin", { applyTo: ["save", "replace", "delete", "modify"] })
+            @authorize.route("admin", { applyTo: ["save", "replace", "delete", "modify"] })
             class User {
                 constructor(
                     public name: string,
@@ -313,7 +313,7 @@ describe("Route Generator", () => {
         it("Should able to set authorization for specific method from entity using action mutation", async () => {
             @route.controller()
             @domain()
-            @authorize.role("admin", actions("mutations"))
+            @authorize.route("admin", actions("mutations"))
             class User {
                 constructor(
                     public name: string,
@@ -329,7 +329,7 @@ describe("Route Generator", () => {
         it("Should able to set authorization for specific method from entity using actions get", async () => {
             @route.controller()
             @domain()
-            @authorize.role("admin", actions("get"))
+            @authorize.route("admin", actions("get"))
             class User {
                 constructor(
                     public name: string,
@@ -345,7 +345,7 @@ describe("Route Generator", () => {
         it("Should able to set authorization for specific method from entity using actions put", async () => {
             @route.controller()
             @domain()
-            @authorize.role("admin", actions("put"))
+            @authorize.route("admin", actions("put"))
             class User {
                 constructor(
                     public name: string,
@@ -361,7 +361,7 @@ describe("Route Generator", () => {
         it("Should able to set authorization for specific method from entity using actions post", async () => {
             @route.controller()
             @domain()
-            @authorize.role("admin", actions("post"))
+            @authorize.route("admin", actions("post"))
             class User {
                 constructor(
                     public name: string,
@@ -377,7 +377,7 @@ describe("Route Generator", () => {
         it("Should able to set authorization for specific method from entity using actions patch", async () => {
             @route.controller()
             @domain()
-            @authorize.role("admin", actions("patch"))
+            @authorize.route("admin", actions("patch"))
             class User {
                 constructor(
                     public name: string,
@@ -393,7 +393,7 @@ describe("Route Generator", () => {
         it("Should able to set authorization for specific method from entity using actions delete", async () => {
             @route.controller()
             @domain()
-            @authorize.role("admin", actions("delete"))
+            @authorize.route("admin", actions("delete"))
             class User {
                 constructor(
                     public name: string,
@@ -425,7 +425,7 @@ describe("Route Generator", () => {
         it("Should able to set custom authorizer from entity", async () => {
             @route.controller()
             @domain()
-            @authorize.custom(x => x.user.role === "Admin")
+            @authorize.custom(x => x.user.role === "Admin", { access: "route" })
             class User {
                 constructor(
                     public name: string,
@@ -681,7 +681,7 @@ describe("Route Generator", () => {
                 public name: string
                 @reflect.noop()
                 public email: string
-                @authorize.role("admin")
+                @authorize.route("admin")
                 @reflect.type([Animal])
                 @relation()
                 @route.controller()
@@ -703,7 +703,7 @@ describe("Route Generator", () => {
                 public name: string
                 @reflect.noop()
                 public email: string
-                @authorize.role("admin", { applyTo: ["save", "replace", "delete", "modify"] })
+                @authorize.route("admin", { applyTo: ["save", "replace", "delete", "modify"] })
                 @reflect.type([Animal])
                 @relation()
                 @route.controller()

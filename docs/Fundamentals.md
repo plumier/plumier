@@ -305,9 +305,9 @@ Plumier provided authorization decorator to easily securing access to the endpoi
 
 Plumier authorization required a valid JWT key passed within the `Authorization` header or a cookie named `Authorization`, Plumier automatically returned back response with status code: 
 1. 403 (Forbidden) If JWT key not provided in header or cookie, except the endpoint mark with `@authorize.public()`.
-2. 401 (Unauthorized) If current login user Role doesn't match with authorized endpoint specified in `@authorize.role(<allowed role>)`.
+2. 401 (Unauthorized) If current login user Role doesn't match with authorized endpoint specified in `@authorize.route(<allowed role>)`.
 
-`JwtAuthFacility` automatically verify the JWT and check the `role` property inside the JWT Claim if its match with the accessed role described by the `@authorize.role(<allowed role>)`. Example of valid JWT Claim: 
+`JwtAuthFacility` automatically verify the JWT and check the `role` property inside the JWT Claim if its match with the accessed role described by the `@authorize.route(<allowed role>)`. Example of valid JWT Claim: 
 
 ```typescript
 import {sign} from "jsonwebtoken"
@@ -319,11 +319,11 @@ Note that the `role` property is required, it can be a `string` or `string[]`.
 
 ```typescript
 class AnimalsController {
-    @authorize.role("Admin", "User")
+    @authorize.route("Admin", "User")
     @route.get(":id")
     get(id:string){ }
 
-    @authorize.role("Admin")
+    @authorize.route("Admin")
     @route.post("")
     save(data:Animal){ }
 }

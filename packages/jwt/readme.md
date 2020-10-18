@@ -79,7 +79,7 @@ class UsersController {
 
     // GET /users?offset&limit
     // only accessible by Admin
-    @authorize.role("Admin")
+    @authorize.route("Admin")
     @route.get("")
     list(offset:number, limit:number) { }
 
@@ -135,7 +135,7 @@ class User {
         public email:string,
         public dateOfBirth:Date,
         //restrict access only to Admin
-        @authorize.role("Admin") 
+        @authorize.write("Admin") 
         public role: "Admin" | "User",
         public active:boolean
     ){}
