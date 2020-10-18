@@ -17,7 +17,7 @@ describe("Custom Authorizer", () => {
         }
         class AnimalController {
             @route.get()
-            @authorize.custom(customAuthorizer)
+            @authorize.custom(customAuthorizer, { access: "route" })
             get(id: number) { return { id } }
         }
         const app = await fixture(AnimalController)
@@ -38,7 +38,7 @@ describe("Custom Authorizer", () => {
             fn(metadata.actionParams)
             return true
         }
-        @authorize.custom(customAuthorizer)
+        @authorize.custom(customAuthorizer, { access: "route" })
         class AnimalController {
             @route.get()
             get(id: number) { return { id } }
@@ -61,7 +61,7 @@ describe("Custom Authorizer", () => {
             fn(metadata.current)
             return true
         }
-        @authorize.custom(customAuthorizer)
+        @authorize.custom(customAuthorizer, { access: "route" })
         class AnimalController {
             @route.get()
             get(id: number) { return { id } }
@@ -86,7 +86,7 @@ describe("Custom Authorizer", () => {
         }
         class AnimalController {
             @route.get()
-            @authorize.custom(customAuthorizer)
+            @authorize.custom(customAuthorizer, { access: "route" })
             get(id: number) { return { id } }
         }
         const app = await fixture(AnimalController)
@@ -109,7 +109,7 @@ describe("Custom Authorizer", () => {
         }
         class AnimalController {
             @route.post()
-            save(@authorize.custom(customAuthorizer) id: number) { return { id } }
+            save(@authorize.custom(customAuthorizer, { access: "write" }) id: number) { return { id } }
         }
         const app = await fixture(AnimalController)
             .set(new JwtAuthFacility({ secret }))
@@ -131,7 +131,7 @@ describe("Custom Authorizer", () => {
         }
         @domain()
         class Animal {
-            constructor(@authorize.custom(customAuthorizer) public name: string) { }
+            constructor(@authorize.custom(customAuthorizer, { access: "write" }) public name: string) { }
         }
         class AnimalController {
             @route.post()

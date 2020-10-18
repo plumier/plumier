@@ -47,7 +47,7 @@ describe("Application life cycle", () => {
         class AnimalController {
             @middleware.use(createMdw("action 1"))
             @middleware.use(createMdw("action 2"))
-            @authorize.custom(customAuthorizer)
+            @authorize.custom(customAuthorizer, { access: "route" })
             @route.get()
             index(@bind.custom(customBinder) @val.custom(customValidator) data: string) {
                 spy("action")
@@ -58,7 +58,7 @@ describe("Application life cycle", () => {
         const koa = await new Plumier()
             .set(new WebApiFacility({ controller: AnimalController }))
             .set(new JwtAuthFacility({ secret: SECRET }))
-            .set({mode: "production"})
+            .set({ mode: "production" })
             .use(createMdw("global 1"))
             .use(createMdw("global 2"))
             .use(createMdw("action 1"), "Action")
@@ -92,7 +92,7 @@ describe("Application life cycle", () => {
         }
 
         class AnimalController {
-            @authorize.custom(customAuthorizer)
+            @authorize.custom(customAuthorizer, { access: "route" })
             @route.get()
             index(@val.custom(customValidator) data: number) {
                 spy("action")
@@ -103,7 +103,7 @@ describe("Application life cycle", () => {
         const koa = await new Plumier()
             .set(new WebApiFacility({ controller: AnimalController }))
             .set(new JwtAuthFacility({ secret: SECRET }))
-            .set({mode: "production"})
+            .set({ mode: "production" })
             .initialize()
 
         await supertest(koa.callback())

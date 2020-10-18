@@ -7,7 +7,7 @@ import { api } from "./api"
 
 type FunctionEvaluation = "Static" | "Dynamic"
 
-interface AuthorizeSelectorOption {
+interface ApplyToOption {
     /**
      * Apply authorizer into specific action, only work on controller scoped authorizer.
      * 
@@ -16,13 +16,7 @@ interface AuthorizeSelectorOption {
     applyTo?: string | string[]
 }
 
-interface CustomAuthorizeOption extends AuthorizeSelectorOption {
-
-    /**
-     * Text that will visible on route analysis
-     */
-    tag?: string,
-
+interface AuthorizeSelectorOption extends ApplyToOption{
     /**
      * Allow access only to specific modifier
      * 
@@ -30,9 +24,17 @@ interface CustomAuthorizeOption extends AuthorizeSelectorOption {
      * 
      * `write`: only allow user to set value on specified field
      * 
-     * `all`: allow user to both set and retrieve value on specified field
+     * `route`: allow user to both set and retrieve value on specified field
      */
-    access?: AccessModifier,
+    access: AccessModifier,
+}
+
+interface CustomAuthorizeOption extends AuthorizeSelectorOption {
+
+    /**
+     * Text that will visible on route analysis
+     */
+    tag?: string,
 
     /**
      * Specify how the authorizer execution will evaluated during response serialization
@@ -57,30 +59,28 @@ class AuthDecoratorImpl {
      * @param modifier modifier access (for property and parameter authorizer)
      * @param tag authorizer name visible on route generator
      */
-    custom(authorize: symbol | string | AuthorizerFunction | Authorizer, tag: string | CustomAuthorizeOption = "Custom") {
+    custom(authorize: symbol | string | AuthorizerFunction | Authorizer, opt: CustomAuthorizeOption) {
+        const option = { tag:"Custom", evaluation: "Dynamic", ...opt  } 
         return decorate((...args: any[]) => {
-            const option = typeof tag === "string" ? { tag, access: "all", evaluation: "Dynamic" } : { tag: "Custom", access: "all", evaluation: "Dynamic", ...tag }
             const location = args.length === 1 ? "Class" : args.length === 2 ? "Method" : "Parameter"
             return <AuthorizeDecorator>{
                 type: "plumier-meta:authorize",
                 tag: option.tag, authorize, location,
                 access: option.access, evaluation: option.evaluation,
             }
-        }, ["Class", "Parameter", "Method", "Property"], typeof tag === "string" ? { applyTo: [] } : { ...tag })
+        }, ["Class", "Parameter", "Method", "Property"], option)
     }
 
     /**
      * Authorize controller or action accessible by public
      */
-    public(opt?: AuthorizeSelectorOption) {
+    public(opt?: ApplyToOption) : (target:any, name?:string) => void {
         return decorate((...args: any[]) => {
-            if (args.length === 3 && typeof args[2] === "number")
-                throw new Error(errorMessage.PublicNotInParameter)
             return <AuthorizeDecorator>{
                 type: "plumier-meta:authorize",
                 tag: "Public",
                 evaluation: "Static",
-                access: "all"
+                access: "route"
             }
         }, ["Class", "Parameter", "Method", "Property"], { ...opt })
     }
@@ -96,37 +96,37 @@ class AuthDecoratorImpl {
     }
 
     /**
-     * Authorize controller, action, parameter or domain property to be accessible by specific role
+     * Authorize controller or action to be accessible by specific role
      * @param role Allowed role
      * @param option Selector option. Only for controller scoped authorizer
      */
-    role(role: string, option?: AuthorizeSelectorOption): (...args: any[]) => void
+    route(role: string, option?: ApplyToOption): (target:any, name?:string) => void
     /**
-     * Authorize controller, action, parameter or domain property to be accessible by specific role(s)
+     * Authorize controller or action to be accessible by specific role(s)
      * @param role1 Allowed role
      * @param role2 Allowed role
      * @param option Selector option. Only for controller scoped authorizer
      */
-    role(role1: string, role2: string, option?: AuthorizeSelectorOption): (...args: any[]) => void
+    route(role1: string, role2: string, option?: ApplyToOption): (target:any, name?:string) => void
     /**
-     * Authorize controller, action, parameter or domain property to be accessible by specific role(s)
+     * Authorize controller or action to be accessible by specific role(s)
      * @param role1 Allowed role
      * @param role2 Allowed role
      * @param role3 Allowed role
      * @param option Selector option. Only for controller scoped authorizer
      */
-    role(role1: string, role2: string, role3: string, option?: AuthorizeSelectorOption): (...args: any[]) => void
+    route(role1: string, role2: string, role3: string, option?: ApplyToOption): (target:any, name?:string) => void
     /**
-     * Authorize controller, action, parameter or domain property to be accessible by specific role(s)
+     * Authorize controller or action to be accessible by specific role(s)
      * @param role1 Allowed role
      * @param role2 Allowed role
      * @param role3 Allowed role
      * @param role4 Allowed role
      * @param option Selector option. Only for controller scoped authorizer
      */
-    role(role1: string, role2: string, role3: string, role4: string, option?: AuthorizeSelectorOption): (...args: any[]) => void
+    route(role1: string, role2: string, role3: string, role4: string, option?: ApplyToOption): (target:any, name?:string) => void
     /**
-     * Authorize controller, action, parameter or domain property to be accessible by specific role(s)
+     * Authorize controller or action to be accessible by specific role(s)
      * @param role1 Allowed role
      * @param role2 Allowed role
      * @param role3 Allowed role
@@ -134,16 +134,16 @@ class AuthDecoratorImpl {
      * @param role5 Allowed role
      * @param option Selector option. Only for controller scoped authorizer
      */
-    role(role1: string, role2: string, role3: string, role4: string, role5: string, option?: AuthorizeSelectorOption): (...args: any[]) => void
-    role(...roles: any[]) {
-        return this.byRole(roles, "all")
+    route(role1: string, role2: string, role3: string, role4: string, role5: string, option?: ApplyToOption): (target:any, name?:string) => void
+    route(...roles: any[]) {
+        return this.byRole(roles, "route")
     }
 
     /**
      * Authorize entity or parameter or domain property only can be retrieved by specific role
      * @param roles List of allowed roles
      */
-    read(...roles: string[]) {
+    read(...roles: string[]): CustomPropertyDecorator {
         return this.byRole(roles, "read")
     }
 
@@ -151,7 +151,7 @@ class AuthDecoratorImpl {
      * Authorize entity  parameter or domain property only can be set by specific role
      * @param roles List of allowed roles
      */
-    write(...roles: string[]) {
+    write(...roles: string[]):CustomPropertyDecorator {
         return this.byRole(roles, "write")
     }
 

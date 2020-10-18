@@ -34,7 +34,7 @@ Array [
       },
       "decorators": Array [
         Object {
-          "access": "all",
+          "access": "route",
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Class",
@@ -98,7 +98,7 @@ Array [
     Object {
       "decorators": Array [
         Object {
-          "access": "all",
+          "access": "route",
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Method",
@@ -151,7 +151,7 @@ Array [
     Object {
       "decorators": Array [
         Object {
-          "access": "all",
+          "access": "write",
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Parameter",
@@ -183,7 +183,7 @@ Array [
     Object {
       "decorators": Array [
         Object {
-          "access": "all",
+          "access": "write",
           "authorize": customAuthorizer,
           "evaluation": "Dynamic",
           "location": "Parameter",
@@ -219,7 +219,7 @@ Array [
       "action": Object {
         "decorators": Array [
           Object {
-            "access": "all",
+            "access": "route",
             "authorize": customAuthorizer,
             "evaluation": "Dynamic",
             "location": "Method",
@@ -289,7 +289,7 @@ Array [
           Object {
             "decorators": Array [
               Object {
-                "access": "all",
+                "access": "route",
                 "authorize": customAuthorizer,
                 "evaluation": "Dynamic",
                 "location": "Method",
@@ -341,7 +341,7 @@ Array [
       "current": Object {
         "decorators": Array [
           Object {
-            "access": "all",
+            "access": "route",
             "authorize": customAuthorizer,
             "evaluation": "Dynamic",
             "location": "Method",

@@ -15,10 +15,10 @@ class Animal {
 }
 
 interface AnimalRepository {
-    save(animal: Animal):any
-    get(id: string):Animal
-    authorize(user: any) :boolean
-    validate(val: any):string
+    save(animal: Animal): any
+    get(id: string): Animal
+    authorize(user: any): boolean
+    validate(val: any): string
 }
 
 class AnimalRepositoryImpl implements AnimalRepository {
@@ -91,7 +91,7 @@ class AnimalsController {
         return this.repository.save(animal)
     }
 
-    @authorize.custom("authorizer")
+    @authorize.custom("authorizer", { access: "route" })
     secret() {
         return { secret: "secret" }
     }
