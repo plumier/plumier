@@ -457,13 +457,13 @@ type ActionMember = keyof RepoBaseControllerGeneric | keyof RepoBaseOneToManyCon
  * Get list of generic controller actions handles specific http methods
  * @param httpMethods http methods
  */
-function actions(...httpMethods: ("post" | "put" | "patch" | "delete" | "get")[]): { applyTo: ActionMember[] }
+function applyTo(...httpMethods: ("post" | "put" | "patch" | "delete" | "get")[]): { applyTo: ActionMember[] }
 /**
  * Get list of generic controller actions handles "post", "put", "patch" and "delete"
  * @param mutation 
  */
-function actions(mutation: "mutations"): { applyTo: ActionMember[] }
-function actions(...httpMethods: string[]): { applyTo: ActionMember[] } {
+function applyTo(mutation: "mutations"): { applyTo: ActionMember[] }
+function applyTo(...httpMethods: string[]): { applyTo: ActionMember[] } {
     const result: ActionMember[] = []
     for (const method of httpMethods) {
         switch (method) {
@@ -498,5 +498,5 @@ export {
     IdentifierResult, createGenericControllers, genericControllerRegistry, updateGenericControllerRegistry,
     RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, getGenericControllerOneToOneRelations,
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, DefaultRepository, DefaultOneToManyRepository,
-    parseSelect, actions
+    parseSelect, applyTo
 }

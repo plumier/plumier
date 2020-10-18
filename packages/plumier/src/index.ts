@@ -9,7 +9,7 @@ export {
     val, validate, ValidatorContext, ValidatorMiddleware, 
     RouteDecoratorImpl, CustomBinderFunction, CustomAuthorizerFunction, CustomAuthorizer,
     AuthorizerContext, CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie,
-    api, preSave, postSave, actions
+    api, preSave, postSave, applyTo
 } from "@plumier/core"
 export * from "./facility"
 import "./validator"
