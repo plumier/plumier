@@ -143,7 +143,6 @@ Object {
   "RouteDecoratorImpl": RouteDecoratorImpl,
   "ValidatorMiddleware": ValidatorMiddleware,
   "WebApiFacility": WebApiFacility,
-  "actions": actions,
   "api": Object {
     "description": description,
     "enums": enums,
@@ -154,6 +153,7 @@ Object {
     "tag": tag,
     "writeonly": writeonly,
   },
+  "applyTo": applyTo,
   "authorize": AuthDecoratorImpl {},
   "bind": Object {
     "actionResult": actionResult,

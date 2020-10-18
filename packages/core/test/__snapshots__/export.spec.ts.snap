@@ -151,7 +151,6 @@ Object {
   "RouteDecoratorImpl": RouteDecoratorImpl,
   "ValidationError": ValidationError,
   "ValidatorMiddleware": ValidatorMiddleware,
-  "actions": actions,
   "analyzeModel": analyzeModel,
   "analyzeRoutes": analyzeRoutes,
   "api": Object {
@@ -165,6 +164,7 @@ Object {
     "writeonly": writeonly,
   },
   "appendRoute": appendRoute,
+  "applyTo": applyTo,
   "authorize": AuthDecoratorImpl {},
   "bind": Object {
     "actionResult": actionResult,
