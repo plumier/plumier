@@ -43,7 +43,7 @@ class AuthController{
 }
 ```
 
-Value of the role can be a string or an array of string that will be used by `@authorize.role(<user role>)`. 
+Value of the role can be a string or an array of string that will be used by `@authorize.route(<user role>)`. 
 
 ## Custom Field Name
 By default `JwtAuthFacility` will look for `role` field in your signed token. If you don't like the `role` field on the signed token you can specify the `roleField` with the name of the field in your token.
@@ -97,8 +97,8 @@ export class ProductsController {
 | `GET /products/<id>` | public |
 
 
-## Role Authorization 
-Authorize access to specific route using `@authorize.role(<list of role>)`
+## Route Authorization 
+Authorize access to specific route using `@authorize.route(<list of role>)`
 
 ```typescript
 export class ProductsController {
@@ -106,7 +106,7 @@ export class ProductsController {
     @route.get(":id")
     get(id: string) { }
 
-    @authorize.role("admin")
+    @authorize.route("admin")
     @route.post("")
     save(data: Product) {}
 }
@@ -122,7 +122,7 @@ export class ProductsController {
 Decorated action one by one will be cumbersome, you can apply `@authorize` decorator on controller to apply authorization on all routes contained.
 
 ```typescript
-@authorize.role("admin")
+@authorize.route("admin")
 export class ProductsController {
     @route.get(":id")
     get(id: string) { }
@@ -142,7 +142,7 @@ export class ProductsController {
 From controller scoped authorization you can specify which actions will be applied by setting the `action` option like below 
 
 ```typescript
-@authorize.role("admin", { action: ["save", "replace"] })
+@authorize.route("admin", { selector: ["save", "replace"] })
 export class ProductsController {
     @route.get(":id")
     get(id: string) { }
@@ -166,9 +166,9 @@ export class ProductsController {
 If controller and action decorated with `@authorize` decorator, the action authorization will replace the controller authorization
 
 ```typescript
-@authorize.role("admin")
+@authorize.route("admin")
 export class ProductsController {
-    @authorize.role("admin", "user")
+    @authorize.route("admin", "user")
     @route.get(":id")
     get(id: string) { }
 
@@ -210,7 +210,7 @@ export class User {
     constructor(
         public name: string,
         //only admin can send deceased
-        @authorize.role("admin")
+        @authorize.write("admin")
         public disabled: boolean | undefined
     ) { }
 }
@@ -237,7 +237,7 @@ export class Item {
     constructor(
         public name: string,
         // basePrice only can be set by admin and viewed by admin
-        @authorize.role("admin")
+        @authorize.read("admin")
         public basePrice: number,
         public price:number
     ) { }
@@ -280,9 +280,6 @@ export class Item {
 
 Using above code `basePrice` will only can be set by `admin` and retrieved by both `staff` and `admin`. 
 
-:::info
-Note that `@authorize.role("admin")` is the same as provide `@authorize.read("admin")` and `@authorize.write("admin")`
-:::
 
 ## Filter Authorization 
 You can specify parameter or model property that filterable using specific role by using `@authorize.filter()`. 

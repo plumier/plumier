@@ -1393,7 +1393,7 @@ describe("Open API 3.0 Generation", () => {
         })
         it("Should apply security on secured operation by role", async () => {
             class UsersController {
-                @authorize.role("admin")
+                @authorize.route("admin")
                 @route.get("")
                 get(id: string) {
                     return {} as any
@@ -1435,7 +1435,7 @@ describe("Open API 3.0 Generation", () => {
         })
         it("Should apply security response on secured operation by role", async () => {
             class UsersController {
-                @authorize.role("admin")
+                @authorize.route("admin")
                 @route.get("")
                 get(id: string) {
                     return {} as any

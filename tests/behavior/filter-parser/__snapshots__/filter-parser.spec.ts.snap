@@ -440,14 +440,36 @@ Object {
   "message": Array [
     Object {
       "messages": Array [
-        "Property filter.name is not filterable",
+        "Query filter[name] is not available",
       ],
       "path": Array [
         "filter",
-        "name",
       ],
     },
   ],
   "status": 422,
+}
+`;
+
+exports[`Filter Parser Should not allow non authorized filter multiple 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Query filter[name], filter[age] are not available",
+      ],
+      "path": Array [
+        "filter",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Should not conflict with @bind 1`] = `
+Object {
+  "role": "User",
+  "userId": 123,
 }
 `;

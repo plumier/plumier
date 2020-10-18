@@ -301,7 +301,7 @@ Above snippet showing that we applied `public` authorization into the `POST /aut
 
 ```typescript
 export class UsersController {
-    @authorize.role("Admin")
+    @authorize.route("Admin")
     @route.post()
     role(userId:number, role:string){
         //implementation
@@ -320,7 +320,7 @@ export class User {
         public id:number,
         public name:string,
         public email:string,
-        @authorize.role("Admin")
+        @authorize.wirte("Admin")
         public role: "User" | "Admin"
     )
 }

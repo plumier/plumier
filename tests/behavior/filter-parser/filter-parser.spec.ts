@@ -1,5 +1,6 @@
 import {
     authorize,
+    bind,
     Configuration,
     DefaultFacility,
     filterConverters,
@@ -11,9 +12,11 @@ import {
     Repository,
     route,
 } from "@plumier/core"
+import { JwtAuthFacility } from '@plumier/jwt'
+import { sign } from 'jsonwebtoken'
 import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "plumier"
 import supertest from "supertest"
-import { generic } from "tinspector"
+import { generic, noop } from "tinspector"
 
 class MockRepo<T> implements Repository<T>{
     constructor(private fn: jest.Mock) { }
@@ -98,12 +101,71 @@ describe("Filter Parser", () => {
         class User {
             constructor(
                 public name: string,
+                public age: number
             ) { }
         }
         const app = await createApp({ controller: User }).initialize()
         const { body } = await supertest(app.callback())
             .get("/user?filter[name]=abcd")
             .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+    it("Should not allow non authorized filter multiple", async () => {
+        @route.controller()
+        @domain()
+        class User {
+            constructor(
+                public name: string,
+                public age: number
+            ) { }
+        }
+        const app = await createApp({ controller: User }).initialize()
+        const { body } = await supertest(app.callback())
+            .get("/user?filter[name]=abcd&filter[age]=2")
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
+    it("Should not not conflict with other authorization", async () => {
+        const user = sign({ userId: 123, role: "User" }, "lorem")
+        @route.controller()
+        @domain()
+        class User {
+            constructor(
+                @authorize.write("Admin")
+                @authorize.filter()
+                public name: string,
+                public age: number
+            ) { }
+        }
+        const app = await createApp({ controller: User })
+            .set(new JwtAuthFacility({ secret: "lorem" }))
+            .initialize()
+        await supertest(app.callback())
+            .get("/user?filter[name]=abcd")
+            .set("Authorization", `Bearer ${user}`)
+            .expect(200)
+    })
+    it("Should not conflict with @bind", async () => {
+        const user = sign({ userId: 123, role: "User" }, "lorem")
+        class LoginUser {
+            @noop()
+            userId: number
+            @noop()
+            role: string
+        }
+        class UserController {
+            @route.get("")
+            get(@bind.user() user: LoginUser) {
+                return user
+            }
+        }
+        const app = await createApp({ controller: UserController })
+            .set(new JwtAuthFacility({ secret: "lorem" }))
+            .initialize()
+        const { body } = await supertest(app.callback())
+            .get("/user")
+            .set("Authorization", `Bearer ${user}`)
+            .expect(200)
         expect(body).toMatchSnapshot()
     })
     describe("Range Filter", () => {

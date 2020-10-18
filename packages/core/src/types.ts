@@ -620,7 +620,6 @@ export namespace errorMessage {
     export const ActionParameterDoesNotHaveTypeInfo = "PLUM1004: Parameter binding skipped because action parameters doesn't have type information in ({0})"
     export const ModelWithoutTypeInformation = "PLUM1005: Parameter binding skipped because {0} doesn't have type information on its properties"
     export const ArrayWithoutTypeInformation = "PLUM1006: Parameter binding skipped because array element doesn't have type information in ({0})"
-    export const PublicNotInParameter = "PLUM1007: @authorize.public() can not be applied to parameter"
     export const PropertyWithoutTypeInformation = "PLUM1008: Parameter binding skipped because property doesn't have type information in ({0})"
     export const GenericControllerImplementationNotFound = "PLUM1009: Generic controller implementation not installed"
     export const GenericControllerMissingTypeInfo = "PLUM1010: {0} marked with @route.controller() but doesn't have type information"

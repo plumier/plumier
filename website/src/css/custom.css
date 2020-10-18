@@ -12,13 +12,19 @@
   --ifm-color-primary-light: rgb(70, 203, 174);
   --ifm-color-primary-lighter: rgb(102, 212, 189);
   --ifm-color-primary-lightest: rgb(146, 224, 208);
-  --ifm-code-font-size: 85%;
+  /* table */
   --ifm-table-cell-padding: 3px 12px;
-  --ifm-code-border-radius:2px;
-  --ifm-code-padding-vertical: 2px;
-  --ifm-code-padding-horizontal: 2px;
+  /* inline code & color */
+  --ifm-code-font-size: 95%;
+  --ifm-code-background:none;
+  --ifm-code-color: rgb(153, 117, 0);
+  --ifm-code-padding-vertical: 0;
+  --ifm-code-padding-horizontal: 0;
+  /* navigation left border */
+  --ifm-toc-border-color: none;
 }
 
+/* code highlight */
 .docusaurus-highlight-code-line {
   background-color: rgb(68, 94, 66);
   display: block;
@@ -26,10 +32,7 @@
   padding: 0 var(--ifm-pre-padding);
 }
 
-.main-wrapper .hero {
-  padding: 8rem 0;
-}
-
+/* prevent scroll on left menu */
 .menu {
   overflow-x: initial;
 }

@@ -1,14 +1,17 @@
-import { Result, VisitorInvocation } from "typedconverter"
-import { defaultConverters } from 'typedconverter/src/converter'
+import { defaultConverters, Result, val, VisitorInvocation } from "typedconverter"
 
 import { AuthorizeDecorator } from "./authorization"
-import { Class, entityHelper, isCustomClass } from './common'
-import { RelationDecorator } from './decorator/entity'
+import { Class, entityHelper, isCustomClass } from "./common"
+import { RelationDecorator } from "./decorator/entity"
 import { ActionContext, FilterQuery } from "./types"
+import reflect from "tinspector"
 
+// --------------------------------------------------------------------- //
+// ------------------------------- HELPER ------------------------------ //
+// --------------------------------------------------------------------- //
 
 const findAuthorizeFilter = (x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize" && x.access === "filter"
-const notFilter = (i: VisitorInvocation, ctx: ActionContext) => ctx.method !== "GET" || !i.parent || i.value === undefined || i.value === null
+const notFilter = (i: VisitorInvocation, ctx: ActionContext) => !i.decorators.find(findAuthorizeFilter) || ctx.method !== "GET" || !i.parent || i.value === undefined || i.value === null
 const isNumber = (value: string) => !Number.isNaN(Number(value))
 const isDate = (value: string) => !Number.isNaN(new Date(value).getTime())
 const isComparableValue = (value: string) => isNumber(value) || isDate(value)
@@ -29,12 +32,34 @@ function convert(decorators: any[], type: Class, value: string): [any, string?] 
     return [result]
 }
 
-function filterConverter(i: VisitorInvocation, ctx: ActionContext) {
-    if (notFilter(i, ctx)) return i.proceed()
-    if (!i.decorators.find(findAuthorizeFilter))
-        return Result.error(i.value, i.path, `Property ${i.path} is not filterable`)
-    return i.proceed()
+// --------------------------------------------------------------------- //
+// ----------------------------- VALIDATOR ----------------------------- //
+// --------------------------------------------------------------------- //
+
+declare module "typedconverter" {
+    namespace val {
+        export function filter(): (...args:any[]) => void
+    }
 }
+
+val.filter = () => {
+    return val.custom((value, info) => {
+        const meta = reflect((info.metadata.current as any).type as Class)
+        const issues = []
+        for (const prop of meta.properties) {
+            const dec = prop.decorators.find(findAuthorizeFilter)
+            const propValue = value[prop.name]
+            if (!dec && propValue)
+                issues.push(prop.name)
+        }
+        if (issues.length > 0)
+            return `Query ${issues.map(x => `filter[${x}]`).join(", ")} ${issues.length > 1 ? "are" : "is"} not available`
+    })
+}
+
+// --------------------------------------------------------------------- //
+// ------------------------------- PARSER ------------------------------ //
+// --------------------------------------------------------------------- //
 
 function partialFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
     if (notFilter(i, ctx)) return i.proceed()
@@ -113,7 +138,6 @@ function exactFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
 
 // order of the converter from the most important
 export const filterConverters = [
-    filterConverter,
     greaterThanOrEqualConverter,
     lessThanOrEqualConverter,
     greaterThanConverter,

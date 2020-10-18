@@ -271,23 +271,6 @@ Array [
 ]
 `;
 
-exports[`CRUD CRUD Function Should ignore filter on non marked property GET /users?filter 1`] = `
-Object {
-  "message": Array [
-    Object {
-      "messages": Array [
-        "Property filter.email is not filterable",
-      ],
-      "path": Array [
-        "filter",
-        "email",
-      ],
-    },
-  ],
-  "status": 422,
-}
-`;
-
 exports[`CRUD CRUD Function Should ignore wrong property name on select GET /users/:id 1`] = `
 Object {
   "age": 21,
@@ -564,23 +547,6 @@ Array [
     },
   },
 ]
-`;
-
-exports[`CRUD Nested CRUD One to Many Function Should ignore filter on non marked property GET /users/:parentId/animals?filter 1`] = `
-Object {
-  "message": Array [
-    Object {
-      "messages": Array [
-        "Property filter.name is not filterable",
-      ],
-      "path": Array [
-        "filter",
-        "name",
-      ],
-    },
-  ],
-  "status": 422,
-}
 `;
 
 exports[`CRUD Nested CRUD One to Many Function Should serve GET /users/:parentId/animals/:id 1`] = `

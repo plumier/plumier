@@ -16,7 +16,7 @@ In some frameworks you may avoid mapping ORM entities directly into CRUD APIs be
 
 You use generic controller by decorating your entity with `@route.controller()` then Plumier automatically create derived controller based on your entity on the fly. 
 
-```typescript {4}
+```typescript {4,10,14,21}
 import { route } from "plumier"
 import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn } from "typeorm"
 
@@ -26,40 +26,50 @@ export class Post {
     @PrimaryGeneratedColumn()
     id: number
 
+    @authorize.filter()
     @Column()
     slug:string
 
+    @authorize.filter()
     @Column()
     title:string
 
     @Column()
     content:string
 
+    @authorize.filter()
     @CreateDateColumn()
     createdAt:Date
 }
 ```
 
-Above code is a common TypeORM entities marked with Plumier decorators. The `Category` entity marked with `@route.controller()` it tells Plumier that the entity should be handled by a generic controller. Code above will generated into routes that follow Restful best practice like below.
+Above code is a common TypeORM entities marked with Plumier decorators. The `Category` entity marked with `@route.controller()` it tells Plumier that the entity should be handled by a generic controller. `@authorize.filter()` will tell Plumier to allow API consumer to perform filter based on those properties. 
 
-| Method | Path         | Description                                                 |
-| ------ | ------------ | ----------------------------------------------------------- |
-| POST   | `/posts`     | Create new post                                             |
-| GET    | `/posts`     | Get list of posts with paging, filter, order and projection |
-| GET    | `/posts/:id` | Get single post by id with projection                       |
-| PUT    | `/posts/:id` | Replace post  by id                                         |
-| PATCH  | `/posts/:id` | Modify post property by id                                  |
-| DELETE | `/posts/:id` | Delete post by id                                           |
+Code above will generated into routes that follow Restful best practice like below.
+
+| Method | Path                                      | Description                                                 |
+| ------ | ----------------------------------------- | ----------------------------------------------------------- |
+| POST   | `/posts`                                  | Create new post                                             |
+| GET    | `/posts?offset&limit&filter&select&order` | Get list of posts with paging, filter, order and projection |
+| GET    | `/posts/:id?select`                       | Get single post by id with projection                       |
+| PUT    | `/posts/:id`                              | Replace post  by id                                         |
+| PATCH  | `/posts/:id`                              | Modify post property by id                                  |
+| DELETE | `/posts/:id`                              | Delete post by id                                           |
 
 Generic controller provided functionalities to refine the API response, such as filter, paging, order and projection. Using above generated API you may request like below.
 
 ```bash
-# Filter response based on slug property using exact comparison
-# Filter require more specific conf
+# Filter response based on slug property using equals comparison
 GET /posts?filter[slug]=my_cool_post
 
+# Or perform range filter between dates using triple dots
+GET /posts?filter[createdAt]=2020-9-1...2020-10-1
+
+# Or perform search on title that starts with word programming using asterisk
+GET /posts?filter[title]=programming*
+
 # Paginate response to narrow filter result 
-GET /posts?filter[slug]=my_cool_post&offset=20&limit=50
+GET /posts?offset=20&limit=50
 
 # Order response by createdAt desc and slug asc
 GET /posts?order=-createdAt,slug
@@ -70,9 +80,9 @@ GET /posts?select=title,content
 
 Generic controller functionalities are highly customizable, you can define your own route path, disable some routes, hook the saving process and even you can provide your own custom generic controller. 
 
-### Map ORM Relation Into Nested CRUD API
+### Map One To Many Into Nested CRUD API
 
-ORM entities may contains relations to represent join to another table, Plumier provided nested generic controller to perform parent-child  operation easily.
+ORM entities may contains relations to represent join to another table, Plumier provided nested generic controller to perform parent children  operation easily.
 
 ```typescript {11}
 import { route } from "plumier"
@@ -91,7 +101,7 @@ export class Post {
 }
 ```
 
-Above code showing that the relation property `comments` marked with `@route.controller()` decorators. It tells Plumier to create a nested generic controller to perform parent-child operation. Above code will generated into routes below.
+Above code showing that the relation property `comments` marked with `@route.controller()` decorators. It tells Plumier to create a nested generic controller to perform parent children operation. Above code will generated into routes below.
 
 | Method | Path                       | Description                                                           |
 | ------ | -------------------------- | --------------------------------------------------------------------- |
@@ -102,16 +112,34 @@ Above code showing that the relation property `comments` marked with `@route.con
 | PATCH  | `/posts/:pid/comments/:id` | Modify post's comment property by id                                  |
 | DELETE | `/posts/:pid/comments/:id` | Delete post's comment by id                                           |
 
-To do the parent-child operation on Post and Comment its required to use the Post ID on the route like below 
+To do the parent children operation on Post and Comment its required to use the Post ID on the route parameter. For example if the `Comment` entity declared like below
+
+```typescript 
+@Entity()
+export class Comment {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @ManyToOne(x => User)
+    user: User 
+
+    @Column()
+    comment:string
+}
+```
+
+Your POST request to create a new comment to specific post is like below
 
 ```bash
 # create new comments for Post with ID 12345
-POST /posts/12345/comments 
-{ body }
-
-# get all comments for Post with ID 12345
-GET /posts/12345/comments?offset=20&limit=50
+POST /posts/12345/comments HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+{ "user": 5678, "comment": "Great article" }
 ```
+
+Above request will add comment to the post with ID `12345`. Note also that the `user` property can be filled with User ID `5678`.
+
 
 Nested generic controller also supported query parameter to refine the response result explained earlier. 
 
@@ -157,12 +185,12 @@ export class AuthController {
 
 Role claim can be any string such as `SuperAdmin`, `Supervisor`, `Staff`, `Admin`, `User` etc. Further more this roles can be used to secure your API endpoints or data using `@authorize` decorator like below 
 
-```typescript {5,16-17,22}
-import { route } from "plumier"
+```typescript {5,16}
+import { route, applyTo, authorize } from "plumier"
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
 
-// only supervisor has mutation access (post,put,patch,delete) to the API endpoints
-@authorize.role("Supervisor", actions("mutations"))
+// only Supervisor and Owner has access to mutation route endpoints
+@authorize.route("Supervisor", "Owner", applyTo("mutations"))
 @route.controller()
 @Entity()
 export class Item {
@@ -172,33 +200,43 @@ export class Item {
     @Column()
     name: string
 
-    // only Supervisor can read/write basePrice property
-    @authorize.write("Supervisor")
-    @authorize.read("Supervisor")
+    // only Supervisor and Owner can see basePrice on response result
+    @authorize.read("Supervisor", "Owner")
     @Column()
     basePrice: string
 
-    // price can be read by everyone but can be write only by Supervisor
-    @authorize.write("Supervisor")
     @Column()
     price: string
 }
 ```
 
-Code above showing that the entity handled by a generic controller. The `basePrice` property protected by `@authorize.role("Supervisor")` which means this property only can be read and write by user with `Supervisor` role. While `price` property protected with `@authorize.write("Supervisor")` will make it visible to everyone but only can be set by `Supervisor`. 
+Code above showing that the entity handled by a generic controller and decorated with some `@authorize` decorators. It will be generated into routes below.
+
+| Method | Path         | Accessible By     | Description                                                 |
+| ------ | ------------ | ----------------- | ----------------------------------------------------------- |
+| POST   | `/items`     | Supervisor, Owner | Create new post                                             |
+| GET    | `/items`     | Any login user    | Get list of items with paging, filter, order and projection |
+| GET    | `/items/:id` | Any login user    | Get single post by id with projection                       |
+| PUT    | `/items/:id` | Supervisor, Owner | Replace post  by id                                         |
+| PATCH  | `/items/:id` | Supervisor, Owner | Modify post property by id                                  |
+| DELETE | `/items/:id` | Supervisor, Owner | Delete post by id                                           |
+
+Note that mutation routes with http method `POST`, `PUT`, `PATCH`, `DELETE` only authorized to the `Supervisor` and `Owner` role, while the `GET` endpoints (get by id, and list) authorized to all login users. 
+
+The `basePrice` decorated with `@authorize.read()` which will show/hide the response result based on user role. Its mean the `basePrice` will only visible to `Supervisor` and `Owner`  
 
 There are more authorization decorator available
 
-| Decorator                  | Description                                                                                       |
-| -------------------------- | ------------------------------------------------------------------------------------------------- |
-| `@authorize.role(<role>)`  | Protect API endpoints by specific role                                                            |
-| `@authorize.write(<role>)` | Protect property only can be write by specific role                                               |
-| `@authorize.read(<role>)`  | Protect property only can be read by specific role                                                |
-| `@authorize.readonly()`    | Protect property only can be read and no other role can write it                                  |
-| `@authorize.writeonly()`   | Protect property only can be write and no other role can read it                                  |
-| `@authorize.custom()`      | Protect action or property using [custom authorizer function](../extends/Custom-Authorization.md) |
+| Decorator                   | Description                                                                                       |
+| --------------------------- | ------------------------------------------------------------------------------------------------- |
+| `@authorize.route(<role>)`  | Protect API endpoints by specific role                                                            |
+| `@authorize.filter(<role>)` | Allow user to filter property by specific role                                                    |
+| `@authorize.write(<role>)`  | Protect property only can be write by specific role                                               |
+| `@authorize.read(<role>)`   | Protect property only can be read by specific role                                                |
+| `@authorize.readonly()`     | Protect property only can be read and no other role can write it                                  |
+| `@authorize.writeonly()`    | Protect property only can be write and no other role can read it                                  |
+| `@authorize.custom()`       | Protect action or property using [custom authorizer function](../extends/Custom-Authorization.md) |
 
-Furthermore the `@authorize.role()` and `@authorize.custom()` can be used to secure API endpoints based on user role. 
 
 :::info documentation 
 Refer to [this documentation](../refs/Authorization.md) to get detail information about authorization
@@ -208,13 +246,52 @@ Refer to [this documentation](../refs/Authorization.md) to get detail informatio
 Refer to [this documentation](../refs/Generic-Controller.md#control-access-to-the-generated-routes) to get detail information on securing generic controller routes. 
 :::
 
+### Validate User Data Declaratively 
 
-### Filter Data Based on Your User Role
+Plumier provided comprehensive list of validator, uses [ValidatorJS](https://www.npmjs.com/package/validator) internally. You specify validation using `@val` decorator. 
 
+```typescript {9-11,15,19}
+import { val } from "plumier"
+import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn } from "typeorm"
+
+@Entity()
+export class User {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @val.email()
+    @val.unique()
+    @val.required()
+    @Column()
+    email: string
+
+    @val.required()
+    @Column()
+    name:string
+
+    @val.url()
+    @Column()
+    profilePicture:string
+}
+```
+
+There are more than 40 validators to use to secure your API consumer request. 
+
+:::info
+Refer to [validator documentation](../refs/Validation.md) for more information 
+:::
 
 ### Generate Open API 3.0 Schema from Controllers
 
 Plumier provided `SwaggerFacility` to automatically generate Open API 3.0 schema from both controller and generic controller. Open API 3.0 Schema automatically generated by reading and transforming controller's metadata on the fly. 
+
+```typescript {5}
+import { SwaggerFacility } from "@plumier/swagger"
+
+new Plumier()
+  /* other facilities */
+  .set(new SwaggerFacility()) 
+```
 
 The generated Open API 3.0 schema can be customized minimally, but mostly everything will just work out of the box. `SwaggerFacility` hosts the SwaggerUI under `/swagger` endpoint.
 
@@ -224,7 +301,7 @@ The generated Open API 3.0 schema can be customized minimally, but mostly everyt
 
 Generic controller is just an implementation of Plumier controller with generic class signature. Even though generic controller can be fully customized to match your app requirements, in some case its may required to use a controller manually to handle user request. 
 
-The term of Controller in Plumier is the same as in other MVC framework. Plumier controller is a plain class end with `Controller` for example `class UsersController`. A route automatically generated based on `/controller/action`. This behavior can be customized using `@route` decorator see more detail route cheat sheet [here](../refs/Route-Generation-Cheat-Sheet.md)
+The term of Controller in Plumier is the same as in other MVC framework. Plumier controller is a plain class end with `Controller` for example `class UsersController`. A route automatically generated based on `/controller/action`. This behavior can be customized using `@route` decorator.
 
 ```typescript
 import { route } from "plumier"
@@ -232,10 +309,28 @@ import { route } from "plumier"
 export class UsersController {
     // GET /users/:id
     @route.get(":id")
-    get(id:string) { }
+    get(id:string) { 
+
+      // return value or Promise that 
+      // automatically rendered into JSON response
+      return repo.findOne(id)
+    }
 }
 ```
 
+Controller can return any value including `Promise`, this value then rendered into JSON response automatically. You can have more control to the response by returning the `ActionResult` or use the built-in `response` function.
+
+| Action                 | Alias                 | Description                | Package                 |
+| ---------------------- | --------------------- | -------------------------- | ----------------------- |
+| `ActionResult`         | `response.json()`     | Return json response       | `plumier`               |
+| `RedirectActionResult` | `response.redirect()` | Redirect response          | `plumier`               |
+| `FileActionResult`     | `response.file()`     | Serve static file response | `@plumier/serve-static` |
+
+:::info documentation
+Refer to the complete documentation about [routing](../refs/Route-Generation-Cheat-Sheet.md)
+:::
+
+### Bind Request Part Into Action's Parameter
 Action parameter can be bound into request part such as query, body, header etc. Request values received automatically converted into data type match with action parameter data type. 
 
 ```typescript
@@ -286,8 +381,33 @@ export class AuthController {
 
 Above controller will be generated into `POST /auth/login` with request body `{ "email":<string>, "password": <string> }` 
 
+Plumier provided decorators to bind specific request body to parameter, you can use the `@bind` decorator on specific parameter. 
+
+```typescript {6}
+import { route, bind } from "plumier"
+
+export class UsersController {
+    // GET /users/:id
+    @route.get(":id")
+    get(id:string, @bind.user() user:LoginUser) { }
+}
+```
+
+Here are list of supported parameter binding decorators 
+
+| Binding           | Description                                                                                                             |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `@bind.user()`    | Bind current login user (JWT claims) into parameter                                                                     |
+| `@bind.ctx()`     | Bind request context into parameter                                                                                     |
+| `@bind.request()` | Bind request into parameter                                                                                             |
+| `@bind.body()`    | Bind request body into parameter (optional, or use a custom class type to automatically bind request body to parameter) |
+| `@bind.query()`   | Bind request query into parameter                                                                                       |
+| `@bind.header()`  | Bind request header into parameter                                                                                      |
+| `@bind.cookie()`  | Bind request cookie into parameter                                                                                      |
+| `@bind.custom()`  | Bind custom parameter binding implementation into parameter                                                             |
+
 :::info documentation
-Refer to the complete documentation about [routing](../refs/Route-Generation-Cheat-Sheet.md), [parameter binding](../refs/Parameter-Binding.md) and [type converter](../refs/Converters.md)
+Refer to the complete documentation about [parameter binding](../refs/Parameter-Binding.md) and [type converter](../refs/Converters.md)
 :::
 
 ### Plug Facilities Into Application Bootstrap
@@ -340,10 +460,6 @@ new Plumier()
 ```
 
 By providing `__filename` you ask Plumier to search your controllers in the same file. 
-
-:::caution
-If using `__filename` as source of controller, its required to export your controller to make reflection library able to locate it.
-:::
 
 ### Classic MVC Style 
 This is default style supported by Plumier. Classic MVC style app separate project files by functionalities such as `controllers`, `models`, `repositories`, `entities`, `services` etc.

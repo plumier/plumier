@@ -6,9 +6,9 @@ import { secret } from "../options"
 @domain()
 class Domain {
     constructor(
-        @authorize.role("Machine")
+        @authorize.route("Machine")
         id: number = 0,
-        @authorize.role("Machine")
+        @authorize.route("Machine")
         createdAt: Date = new Date()
     ) { }
 }
@@ -19,7 +19,7 @@ class User extends Domain {
         public email: string,
         public displayName: string,
         public age: number,
-        @authorize.role("Admin")
+        @authorize.route("Admin")
         role: "Admin" | "User"
     ) { super() }
 }

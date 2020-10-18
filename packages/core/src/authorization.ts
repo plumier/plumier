@@ -20,7 +20,7 @@ import {
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
-type AccessModifier = "read" | "write" | "all" | "filter"
+type AccessModifier = "read" | "write" | "route" | "filter"
 type AuthorizerType = "Route" | "Filter" | "Parameter"
 interface AuthorizationContext {
     value?: any
@@ -87,16 +87,15 @@ function getGlobalDecorators(globalDecorator?: (...args: any[]) => void) {
     else return []
 }
 
-function getAuthorizeDecorators(info: RouteInfo, globalDecorator?: (...args: any[]) => void) {
+function getRouteAuthorizeDecorators(info: RouteInfo, globalDecorator?: (...args: any[]) => void) {
     // if action has decorators then return immediately to prioritize the action decorator
-    const actionDecs = info.action.decorators.filter(createDecoratorFilter())
+    const actionDecs = info.action.decorators.filter(createDecoratorFilter(x => x.access === "route"))
     if (actionDecs.length > 0) return actionDecs
     // if controller has decorators then return immediately
-    const controllerDecs = info.controller.decorators.filter(createDecoratorFilter())
+    const controllerDecs = info.controller.decorators.filter(createDecoratorFilter(x => x.access === "route"))
     if (controllerDecs.length > 0) return controllerDecs
     return getGlobalDecorators(globalDecorator)
 }
-
 
 async function createAuthContext(ctx: ActionContext, type: AuthorizerType): Promise<AuthorizationContext> {
     const { route, parameters, state, config } = ctx
@@ -146,7 +145,6 @@ interface ParamCheckContext {
 async function executeDecorators(decorators: AuthorizeDecorator[], info: AuthorizationContext, path: string) {
     const result: string[] = []
     for (const dec of decorators) {
-        if (dec.access === "read") continue;
         const allowed = await executeDecorator(dec, info)
         if (!allowed)
             result.push(path)
@@ -165,7 +163,6 @@ function createContext(ctx: ParamCheckContext, value: any, meta: ClassReflection
 }
 
 async function checkParameter(meta: PropertyReflection | ParameterReflection, value: any, ctx: ParamCheckContext): Promise<string[]> {
-    const filterDecorator = meta.decorators.find(createDecoratorFilter(x => x.access === "filter"))
     if (value === undefined) return []
     else if (Array.isArray(meta.type)) {
         const newMeta = { ...meta, type: meta.type[0] };
@@ -181,12 +178,9 @@ async function checkParameter(meta: PropertyReflection | ParameterReflection, va
         const values = classMeta.properties.map(x => value[x.name])
         return checkParameters(classMeta.properties, values, { ...ctx, parent: meta.type, parentValue: value })
     }
-    // for GET method by default will be allowed except filter decorator specified
-    else if (ctx.info.ctx.method === "GET" && !filterDecorator) {
-        return []
-    }
     else {
-        const decorators = meta.decorators.filter(createDecoratorFilter())
+        const decorators = ctx.info.ctx.method === "GET" ? meta.decorators.filter(createDecoratorFilter(x => x.access === "filter")) :
+            meta.decorators.filter(createDecoratorFilter(x => x.access === "write"))
         const info = createContext(ctx, value, meta)
         return executeDecorators(decorators, info, ctx.path.join("."))
     }
@@ -216,7 +210,7 @@ function updateRouteAuthorizationAccess(routes: RouteMetadata[], config: Configu
     if (config.enableAuthorization) {
         routes.forEach(x => {
             if (x.kind === "ActionRoute") {
-                const decorators = getAuthorizeDecorators(x, config.globalAuthorizationDecorators)
+                const decorators = getRouteAuthorizeDecorators(x, config.globalAuthorizationDecorators)
                 if (decorators.length > 0)
                     x.access = decorators.map(x => x.tag).join("|")
                 else
@@ -240,7 +234,7 @@ async function checkAuthorize(ctx: ActionContext) {
     if (ctx.config.enableAuthorization) {
         const { route, parameters, config } = ctx
         const info = await createAuthContext(ctx, "Route")
-        const decorator = getAuthorizeDecorators(route, config.globalAuthorizationDecorators)
+        const decorator = getRouteAuthorizeDecorators(route, config.globalAuthorizationDecorators)
         //check user access
         await checkUserAccessToRoute(decorator, info)
         //if ok check parameter access
@@ -269,7 +263,7 @@ interface ClassNode {
 }
 
 async function createPropertyNode(prop: PropertyReflection, info: AuthorizerContext) {
-    const decorators = prop.decorators.filter(createDecoratorFilter(x => x.access === "read" || x.access === "all"))
+    const decorators = prop.decorators.filter(createDecoratorFilter(x => x.access === "read"))
     // if no authorize decorator then always allow to access
     let authorizer: (boolean | Authorizer)[] = [decorators.length === 0]
     for (const dec of decorators) {
@@ -369,7 +363,7 @@ class AuthorizerMiddleware implements Middleware {
 
 export {
     AuthorizerFunction, RoleField, Authorizer, checkAuthorize, AuthorizeDecorator,
-    getAuthorizeDecorators, updateRouteAuthorizationAccess, AuthorizerMiddleware,
+    getRouteAuthorizeDecorators, updateRouteAuthorizationAccess, AuthorizerMiddleware,
     CustomAuthorizer, CustomAuthorizerFunction, AuthorizationContext, AuthorizerContext,
     AccessModifier
 }
