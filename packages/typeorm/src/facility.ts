@@ -10,8 +10,7 @@ import {
     genericControllerRegistry,
     globAsync,
     PlumierApplication,
-    primaryId,
-    relation,
+    entity,
     RelationDecorator,
     RequestHookMiddleware,
 } from "@plumier/core"
@@ -19,7 +18,7 @@ import { lstat } from "fs"
 import pluralize from "pluralize"
 import reflect, { noop } from "tinspector"
 import { Result, ResultMessages, VisitorInvocation } from "typedconverter"
-import { ConnectionOptions, createConnection, getConnectionOptions, getMetadataArgsStorage } from "typeorm"
+import { ConnectionOptions, createConnection, getConnection, getConnectionOptions, getMetadataArgsStorage } from "typeorm"
 import { promisify } from "util"
 import validator from "validator"
 
@@ -110,7 +109,7 @@ class TypeORMFacility extends DefaultFacility {
         for (const col of storage.columns) {
             Reflect.decorate([noop()], (col.target as Function).prototype, col.propertyName, void 0)
             if (col.options.primary)
-                Reflect.decorate([primaryId(), authorize.readonly()], (col.target as Function).prototype, col.propertyName, void 0)
+                Reflect.decorate([entity.primaryId(), authorize.readonly()], (col.target as Function).prototype, col.propertyName, void 0)
         }
         for (const col of storage.relations) {
             const rawType: Class = (col as any).type()
@@ -118,14 +117,14 @@ class TypeORMFacility extends DefaultFacility {
             Reflect.decorate([reflect.type(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
             if (col.relationType === "many-to-one") {
                 // TODO
-                Reflect.decorate([relation({ inverse: true })], (col.target as Function).prototype, col.propertyName, void 0)
+                Reflect.decorate([entity.relation({ inverse: true })], (col.target as Function).prototype, col.propertyName, void 0)
             }
             else {
                 const cache = genericControllerRegistry.get(rawType)
                 // if entity handled with generic controller then hide all one to many relation
                 if (cache)
                     Reflect.decorate([api.readonly(), api.writeonly()], (col.target as Function).prototype, col.propertyName, void 0)
-                Reflect.decorate([relation()], (col.target as Function).prototype, col.propertyName, void 0)
+                Reflect.decorate([entity.relation()], (col.target as Function).prototype, col.propertyName, void 0)
             }
         }
     }

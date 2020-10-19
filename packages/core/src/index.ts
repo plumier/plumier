@@ -15,7 +15,7 @@ export { ApiDescriptionDecorator, ApiEnumDecorator, ApiFieldNameDecorator, ApiRe
 export { bind } from "./decorator/bind";
 export { domain, middleware } from "./decorator/common";
 export { route, RouteDecoratorImpl, GenericControllerDecorator } from "./decorator/route";
-export { EntityIdDecorator, RelationDecorator, primaryId, relation } from "./decorator/entity";
+export { EntityIdDecorator, RelationDecorator, entity } from "./decorator/entity";
 export { preSave, postSave, RequestHookDecorator } from "./decorator/request-hook";
 export { filterConverters } from "./filter-parser"
 export {

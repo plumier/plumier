@@ -121,6 +121,16 @@ Object {
 }
 `;
 
+exports[`CRUD CRUD Function Should serve delete using deleteColumn DELETE /users/:id 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "deleted": true,
+  "email": "john.doe@gmail.com",
+  "name": "John Doe",
+}
+`;
+
 exports[`CRUD CRUD Function Should set partial validation on query GET /users?offset&limit&name 1`] = `
 Array [
   Object {
@@ -289,6 +299,15 @@ Object {
   ],
   "email": "john.doe@gmail.com",
   "name": "John Doe",
+}
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should able to serve delete with deleteColumn DELETE /users/:parentId/animals/:id 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "deleted": true,
+  "name": "Mimi",
 }
 `;
 
