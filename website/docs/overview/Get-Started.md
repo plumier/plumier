@@ -3,18 +3,31 @@ id: get-started
 title: Get Started
 ---
 
-This documentation will show you how to create a secure CRUD restful API with a proper validation and authorization. We will use Plumier Generic Controller to automatically host CRUD restful API based on your ORM entities. 
+This tutorial will walk you through creating a Restful API managing a Todo data with some security features. The detail requirements of our API will be like below.
 
+* User register using email, name and password .
+* Provided login using email and password which returned JWT token. 
+* The user roles are `User` which is a common user, has restricted access to the system. And `Admin` which has more privilege, and mostly has control to all APIs. 
+* Provided administration API for user data, such as user list, change user role, remove user which accessible by Admin.
+* Provide CRUD for TODO data, any user can create TODO, but only the owner of TODO or `Admin` can modify and delete it. 
+* Provide CRUD to add comment to specific TODO, andy user can add comments to specific TODO.
+* Provide endpoint to upload picture used for user profile picture
 
-| Method | Path                | Access         | Description                           |
-| ------ | ------------------- | -------------- | ------------------------------------- |
-| POST   | `/api/v1/users`     | Public         | Register user                         |
-| GET    | `/api/v1/users`     | Admin          | Get all users                         |
-| GET    | `/api/v1/users/:id` | Owner or Admin | Get single user by id                 |
-| PUT    | `/api/v1/users/:id` | Owner or Admin | Replace user with new user info by id |
-| PATCH  | `/api/v1/users/:id` | Owner or Admin | Modify user by id                     |
-| DELETE | `/api/v1/users/:id` | Owner or Admin | Delete user by id                     |
-| POST   | `/auth/login`       | Public         | Login endpoint                        |
+List of endpoints will be created for above requirements are like below.
+
+| Http Method      | Path                       | Accessible By          | Description                                  |
+| ---------------- | -------------------------- | ---------------------- | -------------------------------------------- |
+| POST             | `/users`                   | Public                 | User registration                            |
+| GET              | `/users?filter`            | Admin                  | Get list of users for user administration    |
+| PATCH            | `/users/:id`               | Admin                  | Change user role by ID                       |
+| POST             | `/login`                   | Public                 | User login                                   |
+| POST             | `/todos`                   | All login users        | Create a TODO                                |
+| PUT PATCH DELETE | `/todos/:id`               | Admin or Owner of TODO | Modify/delete TODO                           |
+| GET              | `/todos/:id?select`        | All login users        | Get TODO by id                               |
+| GET              | `/todos?filter`            | Public                 | Get list of TODOs with filter and pagination |
+| POST             | `/todos/:pid/comments`     | All login users        | Add comment to specific todo                 |
+| PUT PATCH DELETE | `/todos/:pid/comments/:id` | All login users        | Modify/remove comment to specific todo       |
+
 
 ## Requirements 
 
@@ -65,7 +78,7 @@ npm install
 ```
 
 ## Project Starter File Structure
-Open the project directory using IDE or text editor you like, on this example we will use VSCode. 
+Open the project directory using your favorite text editor or IDE, on this example we will use VSCode. 
 
 Plumier blank project starter contains minimal files required to create API with Node.js and TypeScript. The project structure is like below
 
@@ -78,7 +91,9 @@ Plumier blank project starter contains minimal files required to create API with
 
 There are more project starter available on the `plumier/starter` repository on each appropriate branch. 
 
-## Add TypeORM
+## Add Dependencies
+
+Next step we will install some NPM package required to build our API. The project starter already provided some basic packages required. 
 
 Next we will install [TypeORM](https://typeorm.io) package for data access, we will use SQLite 3 database to store the user data. TypeORM supported several databases so it will be possible to change your configuration later appropriately. 
 
@@ -89,6 +104,17 @@ npm i --save typeorm @plumier/typeorm sqlite3
 ```
 
 Above code will install TypeORM package, Plumier TypeORM helper and SQLite driver into the package configuration file.  
+
+
+```
+npm i --save @plumier/jwt jsonwebtoken @types/jsonwebtoken @plumier/jwt bcryptjs @types/bcryptjs
+```
+
+
+```
+npm i --save @plumier/swagger
+```
+
 
 ## User Entity 
 
