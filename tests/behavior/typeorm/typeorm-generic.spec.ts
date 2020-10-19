@@ -1,4 +1,4 @@
-import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave, authorize } from "@plumier/core"
+import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave, authorize, entity } from "@plumier/core"
 import Plumier, { WebApiFacility } from "plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
@@ -10,7 +10,7 @@ import {
 } from "@plumier/typeorm"
 import supertest from "supertest"
 import { generic } from "tinspector"
-import { Column, Entity, getManager, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, getManager, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, CreateDateColumn } from "typeorm"
 
 import { cleanup, getConn } from "./helper"
 import Koa from "koa"
@@ -555,6 +555,30 @@ describe("CRUD", () => {
                 .expect(200)
             const modified = await repo.findOne(body.id)
             expect(modified).toBeUndefined()
+        })
+        it("Should serve delete with deleteColumn DELETE /users/:id", async () => {
+
+            @Entity()
+            @route.controller()
+            class User  {
+                @PrimaryGeneratedColumn()
+                id:number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @entity.deleteColumn()
+                @Column({default:false})
+                deleted:boolean;
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+            const { body } = await supertest(app.callback())
+                .delete(`/users/${data.raw}`)
+                .expect(200)
+            const modified = await repo.findOne(body.id)
+            expect(modified).toMatchSnapshot()
         })
         it("Should throw 404 if not found DELETE /users/:id", async () => {
             @Entity()
@@ -1246,6 +1270,43 @@ describe("CRUD", () => {
                 .expect(200)
             const modified = await animalRepo.findOne(body.id)
             expect(modified).toBeUndefined()
+        })
+        it("Should serve delete with deleteColumn DELETE /users/:parentId/animals/:id", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @route.controller()
+                animals: Animal[]
+            }
+            @Entity()
+            @route.controller()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+                @entity.deleteColumn()
+                @Column({default:false})
+                deleted:boolean;
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            const inserted = await animalRepo.insert({ name: `Mimi`, user })
+            const { body } = await supertest(app.callback())
+                .delete(`/users/${user.id}/animals/${inserted.raw}`)
+                .expect(200)
+            const modified = await animalRepo.findOne(body.id)
+            expect(modified).toMatchSnapshot()
         })
         it("Should throw 404 if not found DELETE /users/:parentId/animals/:id", async () => {
             @Entity()

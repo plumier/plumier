@@ -19,8 +19,7 @@ import {
     PlumierApplication,
     postSave,
     preSave,
-    primaryId,
-    relation,
+    entity,
     RepoBaseControllerGeneric,
     RepoBaseOneToManyControllerGeneric,
     Repository,
@@ -176,7 +175,7 @@ describe("Route Generator", () => {
             @domain()
             class User {
                 constructor(
-                    @primaryId()
+                    @entity.primaryId()
                     public id: number,
                     public name: string,
                     public email: string
@@ -193,7 +192,7 @@ describe("Route Generator", () => {
             @domain()
             class User {
                 constructor(
-                    @primaryId()
+                    @entity.primaryId()
                     public id: string,
                     public name: string,
                     public email: string
@@ -493,7 +492,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @relation()
+                    @entity.relation()
                     @route.controller()
                     public animals: Animal[]
                 ) { }
@@ -516,7 +515,7 @@ describe("Route Generator", () => {
                     public email: string,
                     @route.controller()
                     @reflect.type([Animal])
-                    @relation()
+                    @entity.relation()
                     @route.controller()
                     public animals: Animal[]
                 ) { }
@@ -537,7 +536,7 @@ describe("Route Generator", () => {
                 @reflect.noop()
                 email: string
                 @reflect.type([Animal])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 animals: Animal[]
             }
@@ -549,7 +548,7 @@ describe("Route Generator", () => {
             @domain()
             class Animal {
                 constructor(
-                    @primaryId()
+                    @entity.primaryId()
                     public id: number,
                     public name: string
                 ) { }
@@ -557,12 +556,12 @@ describe("Route Generator", () => {
             @domain()
             class User {
                 constructor(
-                    @primaryId()
+                    @entity.primaryId()
                     public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @relation()
+                    @entity.relation()
                     @route.controller()
                     public animals: Animal[]
                 ) { }
@@ -586,7 +585,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @relation()
+                    @entity.relation()
                     @route.controller()
                     public animals: Animal[]
                 ) { }
@@ -611,7 +610,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @relation()
+                    @entity.relation()
                     @route.controller()
                     public animals: Animal[]
                 ) { }
@@ -634,7 +633,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @relation()
+                    @entity.relation()
                     @route.controller()
                     public animals: Animal[]
                 ) { }
@@ -661,7 +660,7 @@ describe("Route Generator", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @relation()
+                    @entity.relation()
                     @route.controller()
                     @route.ignore({ applyTo: ["save", "list"] })
                     public animals: Animal[]
@@ -683,7 +682,7 @@ describe("Route Generator", () => {
                 public email: string
                 @authorize.route("admin")
                 @reflect.type([Animal])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 public animals: Animal[]
             }
@@ -705,7 +704,7 @@ describe("Route Generator", () => {
                 public email: string
                 @authorize.route("admin", { applyTo: ["save", "replace", "delete", "modify"] })
                 @reflect.type([Animal])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 public animals: Animal[]
             }
@@ -726,7 +725,7 @@ describe("Route Generator", () => {
                 @reflect.noop()
                 public email: string
                 @reflect.type([Animal])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 public animals: Animal[]
             }
@@ -820,7 +819,7 @@ describe("Route Generator", () => {
                     public email: string,
                     @route.controller()
                     @reflect.type([Animal])
-                    @relation()
+                    @entity.relation()
                     @route.controller()
                     public animals: Animal[]
                 ) { }
@@ -934,7 +933,7 @@ describe("Custom Route Path", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @relation()
+                    @entity.relation()
                     @route.controller("user/:userId/animal/:animalId")
                     public animals: Animal[]
                 ) { }
@@ -964,7 +963,7 @@ describe("Custom Route Path", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @relation()
+                    @entity.relation()
                     @route.controller("user/:userId/animal/:animalId")
                     public animals: Animal[]
                 ) { }
@@ -996,7 +995,7 @@ describe("Custom Route Path", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @relation()
+                    @entity.relation()
                     @route.controller("user/animal")
                     public animals: Animal[]
                 ) { }
@@ -1017,7 +1016,7 @@ describe("Custom Route Path", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @relation()
+                    @entity.relation()
                     @route.controller("user/:userId")
                     public animals: Animal[]
                 ) { }
@@ -1038,7 +1037,7 @@ describe("Custom Route Path", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @relation()
+                    @entity.relation()
                     @route.controller("user/:userId/animal/:animalId/category/:categoryId")
                     public animals: Animal[]
                 ) { }
@@ -1059,7 +1058,7 @@ describe("Custom Route Path", () => {
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
-                    @relation()
+                    @entity.relation()
                     @route.controller("user/:userId/animal/:animalId/category")
                     public animals: Animal[]
                 ) { }
@@ -1228,7 +1227,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 tags: Tag[]
             }
@@ -1251,7 +1250,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 tags: Tag[]
             }
@@ -1274,7 +1273,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 tags: Tag[]
             }
@@ -1297,7 +1296,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 tags: Tag[]
             }
@@ -1320,7 +1319,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 tags: Tag[]
             }
@@ -1343,7 +1342,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 tags: Tag[]
             }
@@ -1366,7 +1365,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 tags: Tag[]
             }
@@ -1389,7 +1388,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 tags: Tag[]
             }
@@ -1412,7 +1411,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 tags: Tag[]
             }
@@ -1435,7 +1434,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 tags: Tag[]
             }
@@ -1458,7 +1457,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 tags: Tag[]
             }
@@ -1481,7 +1480,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 tags: Tag[]
             }
@@ -1504,7 +1503,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 tags: Tag[]
             }
@@ -1526,7 +1525,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller()
                 @api.tag("Tags")
                 tags: Tag[]
@@ -1548,7 +1547,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller("animals/:aid/tags/:tid")
                 tags: Tag[]
             }
@@ -1569,7 +1568,7 @@ describe("Open Api", () => {
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
-                @relation()
+                @entity.relation()
                 @route.controller("animals/:aId/tags/:tId")
                 tags: Tag[]
             }

@@ -187,6 +187,11 @@ Object {
   },
   "domain": domain,
   "ellipsis": ellipsis,
+  "entity": Object {
+    "deleteColumn": deleteColumn,
+    "primaryId": primaryId,
+    "relation": relation,
+  },
   "entityHelper": Object {
     "getIdProp": getIdProp,
     "getIdType": getIdType,
@@ -236,10 +241,8 @@ Object {
   "parseSelect": parseSelect,
   "postSave": postSave,
   "preSave": preSave,
-  "primaryId": primaryId,
   "printAnalysis": printAnalysis,
   "printTable": printTable,
-  "relation": relation,
   "response": Object {
     "json": json,
     "redirect": redirect,

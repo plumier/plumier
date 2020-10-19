@@ -171,6 +171,11 @@ Object {
   "binder": binder,
   "default": Plumier,
   "domain": domain,
+  "entity": Object {
+    "deleteColumn": deleteColumn,
+    "primaryId": primaryId,
+    "relation": relation,
+  },
   "middleware": Object {
     "use": use,
   },

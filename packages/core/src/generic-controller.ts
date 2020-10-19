@@ -17,7 +17,7 @@ import { Class, entityHelper } from "./common"
 import { api, ApiTagDecorator } from "./decorator/api"
 import { bind } from "./decorator/bind"
 import { domain } from "./decorator/common"
-import { RelationDecorator } from "./decorator/entity"
+import { DeleteColumnDecorator, RelationDecorator } from "./decorator/entity"
 import { GenericControllerDecorator, route } from "./decorator/route"
 import { IgnoreDecorator, RouteDecorator } from "./route-generator"
 import {
@@ -84,6 +84,11 @@ function parseSelect(type: Class, select?: string) {
     return normalizeSelect(type, dSelect)
 }
 
+function getDeletedProperty(type: Class) {
+    const meta = reflect(type)
+    return meta.properties.find(x => x.decorators.some((d: DeleteColumnDecorator) => d.kind === "plumier-meta:delete-column"))
+}
+
 // --------------------------------------------------------------------- //
 // ---------------------------- CONTROLLERS ---------------------------- //
 // --------------------------------------------------------------------- //
@@ -142,8 +147,14 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
     @decorateRoute("delete", ":id")
     @reflect.type(IdentifierResult, "TID")
     async delete(@val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
+        const prop = getDeletedProperty(this.entityType)
         await this.findByIdOrNotFound(id)
-        return this.repo.delete(id)
+        if (!prop) {
+            return this.repo.delete(id)
+        }
+        else {
+            return this.repo.update(id, { [prop.name]: true } as any)
+        }
     }
 }
 
@@ -219,7 +230,13 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     async delete(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
         await this.findByIdOrNotFound(id)
-        return this.repo.delete(id)
+        const prop = getDeletedProperty(this.entityType)
+        if (!prop) {
+            return this.repo.delete(id)
+        }
+        else {
+            return this.repo.update(id, { [prop.name]: true } as any)
+        }
     }
 }
 
@@ -290,7 +307,6 @@ function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: st
         url: path
     }, ["Class", "Method"], { allowMultiple: false, ...option })
 }
-
 
 const genericControllerRegistry = new Map<Class, boolean>()
 

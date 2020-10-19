@@ -1,18 +1,19 @@
 import {
+    authorize,
     Class,
+    entity,
     FilterEntity,
     FilterQuery,
-    FilterQueryType,
     getGenericControllerOneToOneRelations,
     OneToManyRepository,
     OrderQuery,
     parseSelect,
-    relation,
     RelationDecorator,
     Repository,
 } from "@plumier/core"
 import mongoose, { Document, Model } from "mongoose"
 import reflect from "tinspector"
+import { collection } from './decorator'
 
 import { globalHelper, MongooseHelper } from "./generator"
 
@@ -23,13 +24,13 @@ function getProjection(select: string[]) {
     }, {} as any)
 }
 
-function getPopulate(type: Class, parentProjections:any) {
+function getPopulate(type: Class, parentProjections: any) {
     const meta = reflect(type)
     const getProp = (prop: string) => meta.properties.find(x => x.name === prop)
     const populate = []
     for (const proj in parentProjections) {
         const prop = getProp(proj)
-        if(!prop || prop.typeClassification === "Primitive") continue;
+        if (!prop || prop.typeClassification === "Primitive") continue;
         populate.push({
             path: proj,
             select: parseSelect(Array.isArray(prop.type) ? prop.type[0] : prop.type)

@@ -1,4 +1,4 @@
-import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog, preSave, authorize } from "@plumier/core"
+import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog, preSave, authorize, entity } from "@plumier/core"
 import model, {
     collection,
     models,
@@ -471,6 +471,28 @@ describe("CRUD", () => {
                 .expect(200)
             const modified = await repo.findById(body.id)
             expect(modified).toBeNull()
+        })
+        it("Should serve delete using deleteColumn DELETE /users/:id", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.property({default: false})
+                @entity.deleteColumn()
+                deleted:boolean
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+            const { body } = await supertest(app.callback())
+                .delete(`/users/${data.id}`)
+                .expect(200)
+            const modified = await repo.findById(body.id)
+            expect(modified).toMatchSnapshot()
         })
         it("Should check prover mongodb id on DELETE /users/:id", async () => {
             @collection()
@@ -1403,6 +1425,39 @@ describe("CRUD", () => {
                 .expect(200)
             const modified = await animalRepo.findById(body.id)
             expect(modified).toBeNull()
+        })
+        it("Should able to serve delete with deleteColumn DELETE /users/:parentId/animals/:id", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller()
+                animals: Animal[]
+            }
+            @collection()
+            @route.controller()
+            class Animal {
+                @reflect.noop()
+                name: string
+                @collection.property({default: false})
+                @entity.deleteColumn()
+                deleted:boolean
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
+            const { body } = await supertest(app.callback())
+                .delete(`/users/${user._id}/animals/${inserted.id}`)
+                .expect(200)
+            const modified = await animalRepo.findById(body.id)
+            expect(modified).toMatchSnapshot()
         })
         it("Should check prover mongodb id DELETE /users/:parentId/animals/:id", async () => {
             @collection()

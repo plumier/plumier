@@ -278,6 +278,15 @@ Object {
 }
 `;
 
+exports[`CRUD CRUD Function Should serve delete with deleteColumn DELETE /users/:id 1`] = `
+User {
+  "deleted": true,
+  "email": "john.doe@gmail.com",
+  "id": 1,
+  "name": "John Doe",
+}
+`;
+
 exports[`CRUD CRUD Function Should set partial validation on GET /users?offset&limit 1`] = `
 Array [
   Object {
@@ -590,6 +599,14 @@ exports[`CRUD Nested CRUD One to Many Function Should serve PUT /users/:parentId
 Animal {
   "id": 1,
   "name": "Poe",
+}
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should serve delete with deleteColumn DELETE /users/:parentId/animals/:id 1`] = `
+Animal {
+  "deleted": true,
+  "id": 1,
+  "name": "Mimi",
 }
 `;
 
