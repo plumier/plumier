@@ -7,26 +7,22 @@ This tutorial will walk you through creating a Restful API managing a Todo data 
 
 * User register using email, name and password .
 * Provided login using email and password which returned JWT token. 
-* The user roles are `User` which is a common user, has restricted access to the system. And `Admin` which has more privilege, and mostly has control to all APIs. 
-* Provided administration API for user data, such as user list, change user role, remove user which accessible by Admin.
-* Provide CRUD for TODO data, any user can create TODO, but only the owner of TODO or `Admin` can modify and delete it. 
-* Provide CRUD to add comment to specific TODO, andy user can add comments to specific TODO.
+* Provide CRUD for TODO data, any user can create TODO, but only the owner of TODO can modify and delete it. 
+* Provide CRUD to add comment to specific TODO, any user can add comments to specific TODO, but only the owner can modify and delete it
 * Provide endpoint to upload picture used for user profile picture
 
 List of endpoints will be created for above requirements are like below.
 
-| Http Method      | Path                       | Accessible By          | Description                                  |
-| ---------------- | -------------------------- | ---------------------- | -------------------------------------------- |
-| POST             | `/users`                   | Public                 | User registration                            |
-| GET              | `/users?filter`            | Admin                  | Get list of users for user administration    |
-| PATCH            | `/users/:id`               | Admin                  | Change user role by ID                       |
-| POST             | `/login`                   | Public                 | User login                                   |
-| POST             | `/todos`                   | All login users        | Create a TODO                                |
-| PUT PATCH DELETE | `/todos/:id`               | Admin or Owner of TODO | Modify/delete TODO                           |
-| GET              | `/todos/:id?select`        | All login users        | Get TODO by id                               |
-| GET              | `/todos?filter`            | Public                 | Get list of TODOs with filter and pagination |
-| POST             | `/todos/:pid/comments`     | All login users        | Add comment to specific todo                 |
-| PUT PATCH DELETE | `/todos/:pid/comments/:id` | All login users        | Modify/remove comment to specific todo       |
+| Functions                                    | Path                       | Http Method      | Accessible By    |
+| -------------------------------------------- | -------------------------- | ---------------- | ---------------- |
+| User registration                            | `/users`                   | POST             | Public           |
+| User login                                   | `/login`                   | POST             | Public           |
+| Create a TODO                                | `/todos`                   | POST             | All login users  |
+| Modify/delete TODO by ID                     | `/todos/:id`               | PUT PATCH DELETE | Owner of TODO    |
+| Get TODO by id                               | `/todos/:id?select`        | GET              | All login users  |
+| Get list of TODOs with filter and pagination | `/todos?filter`            | GET              | Public           |
+| Add comment to specific todo                 | `/todos/:pid/comments`     | POST             | All login users  |
+| Modify/remove comment to specific todo       | `/todos/:pid/comments/:id` | PUT PATCH DELETE | Owner of comment |
 
 
 ## Requirements 
@@ -115,37 +111,65 @@ npm i --save @plumier/jwt jsonwebtoken @types/jsonwebtoken @plumier/jwt bcryptjs
 npm i --save @plumier/swagger
 ```
 
+## Bootstrap Application 
+
+```typescript
+import Plumier, { ControllerFacility, WebApiFacility } from "plumier";
+import dotenv from "dotenv"
+import { TypeORMFacility } from "@plumier/typeorm";
+import { JwtAuthFacility } from "@plumier/jwt";
+import { SwaggerFacility } from "@plumier/swagger";
+
+dotenv.config()
+
+new Plumier()
+    .set(new WebApiFacility())
+    .set(new TypeORMFacility())
+    .set(new ControllerFacility({controller: "./*/*-entity.{ts,js}"}))
+    .set(new JwtAuthFacility())
+    .set(new SwaggerFacility())
+    .listen(process.env.PORT ?? 8000)
+```
 
 ## User Entity 
 
 Now we can start modelling our User by creating TypeORM entity. We define `User` entity with properties below 
 
 ```typescript title="File: src/user/user-entity.ts"
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { applyTo, authorize, preSave, route, val } from "plumier"
+import { Column, Entity } from "typeorm"
 
+import { EntityBase } from "../_shared/entity-base"
+import { genSalt, hash } from "bcryptjs"
+
+@authorize.public(applyTo("post"))
+@route.ignore(applyTo("get", "put", "patch", "delete"))
+@route.controller()
 @Entity()
-export class User {
-    @PrimaryGeneratedColumn()
-    id: number
-
+export class User extends EntityBase {
+    @val.email()
+    @val.unique()
     @Column()
     email: string
 
-    @Column()
-    name: string
-
+    @authorize.writeonly()
     @Column()
     password: string
 
+    @val.required()
+    @Column()
+    name: string
+
+    @val.url()
     @Column({ default: "User" })
-    role: "User" | "Admin"
+    role: "Admin" | "User"
+
+    @preSave("post")
+    async hashPassword() {
+        this.password = await hash(this.password, await genSalt())
+    }
 }
 ```
-
-## Generic Controller 
-
-In this step we will use Plumier Generic Controller to automatically host a CRUD restful endpoints.
-Now we are ready to program our first Plumier application. First we will create TypeORM entity and let Plumier automatically generate CRUD endpoints for us
 
 
 
