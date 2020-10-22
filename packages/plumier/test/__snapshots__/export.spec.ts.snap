@@ -139,6 +139,7 @@ Object {
     "fromKoa": fromKoa,
   },
   "ParameterBinderMiddleware": ParameterBinderMiddleware,
+  "PolicyAuthorizer": PolicyAuthorizer,
   "RestfulApiFacility": RestfulApiFacility,
   "RouteDecoratorImpl": RouteDecoratorImpl,
   "ValidatorMiddleware": ValidatorMiddleware,
@@ -154,6 +155,7 @@ Object {
     "writeonly": writeonly,
   },
   "applyTo": applyTo,
+  "authPolicy": authPolicy,
   "authorize": AuthDecoratorImpl {},
   "bind": Object {
     "actionResult": actionResult,
@@ -176,6 +178,8 @@ Object {
     "primaryId": primaryId,
     "relation": relation,
   },
+  "entityPolicy": entityPolicy,
+  "entityProvider": entityProvider,
   "middleware": Object {
     "use": use,
   },

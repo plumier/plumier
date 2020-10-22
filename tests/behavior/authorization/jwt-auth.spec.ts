@@ -2892,4 +2892,35 @@ describe("JwtAuth", () => {
                 .expect(401, { status: 401, message: 'Unauthorized to populate parameter paths (filter.password, filter.email)' })
         })
     })
+
+    describe.only("Authorization Policy", () => {
+        it("Should able to use Public", async () => {
+            class AnimalController {
+                @authorize.route("Public")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(200)
+        })
+        it("Should able to use Authenticated", async () => {
+            class AnimalController {
+                @authorize.route("Authenticated")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(403)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
+    })
 })

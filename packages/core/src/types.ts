@@ -13,7 +13,7 @@ import reflect, {
 import { Result, VisitorExtension, VisitorInvocation } from "typedconverter"
 import { promisify } from "util"
 
-import { RoleField } from "./authorization"
+import { EntityProviderQuery, RoleField } from "./authorization"
 import { Class } from "./common"
 import { HttpStatus } from "./http-status"
 
@@ -408,6 +408,33 @@ export abstract class OneToManyControllerGeneric<P = any, T = any, PID = any, TI
 }
 
 // --------------------------------------------------------------------- //
+// --------------------------- AUTHORIZATION --------------------------- //
+// --------------------------------------------------------------------- // 
+
+export type AccessModifier = "read" | "write" | "route" | "filter"
+
+export interface AuthorizationContext {
+    value?: any
+    parentValue?: any
+    role: string[]
+    user: any
+    ctx: ActionContext
+    metadata: Metadata
+    access: AccessModifier
+    policies: string[]
+    policyAuthorizer: Authorizer
+}
+
+export interface Authorizer {
+    authorize(info: AuthorizationContext, location: "Class" | "Parameter" | "Method"): boolean | Promise<boolean>
+}
+
+export interface AuthPolicy {
+    equals(id: string, ctx: AuthorizationContext): boolean
+    authorize(ctx: AuthorizationContext): Promise<boolean>
+}
+
+// --------------------------------------------------------------------- //
 // --------------------------- CONFIGURATION --------------------------- //
 // --------------------------------------------------------------------- //
 
@@ -487,6 +514,16 @@ export interface Configuration {
      */
 
     genericControllerNameConversion?: (x: string) => string
+
+    /**
+     * Provide function to query entity for entity policy authorization 
+     */
+    entityProviderQuery?:EntityProviderQuery
+
+    /**
+     * Custom authorization policy
+     */
+    authPolicies?: AuthPolicy[]
 }
 
 export interface PlumierConfiguration extends Configuration {

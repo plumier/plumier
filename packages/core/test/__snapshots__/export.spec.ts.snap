@@ -144,6 +144,7 @@ Object {
   },
   "OneToManyControllerGeneric": OneToManyControllerGeneric,
   "ParameterBinderMiddleware": ParameterBinderMiddleware,
+  "PolicyAuthorizer": PolicyAuthorizer,
   "RedirectActionResult": RedirectActionResult,
   "RepoBaseControllerGeneric": RepoBaseControllerGeneric,
   "RepoBaseOneToManyControllerGeneric": RepoBaseOneToManyControllerGeneric,
@@ -165,6 +166,7 @@ Object {
   },
   "appendRoute": appendRoute,
   "applyTo": applyTo,
+  "authPolicy": authPolicy,
   "authorize": AuthDecoratorImpl {},
   "bind": Object {
     "actionResult": actionResult,
@@ -196,6 +198,8 @@ Object {
     "getIdProp": getIdProp,
     "getIdType": getIdType,
   },
+  "entityPolicy": entityPolicy,
+  "entityProvider": entityProvider,
   "errorMessage": Object {
     "ActionParameterDoesNotHaveTypeInfo": "PLUM1004: Parameter binding skipped because action parameters doesn't have type information in ({0})",
     "ArrayWithoutTypeInformation": "PLUM1006: Parameter binding skipped because array element doesn't have type information in ({0})",
