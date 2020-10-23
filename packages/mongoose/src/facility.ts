@@ -3,7 +3,7 @@ import Mongoose from "mongoose"
 import reflect from "tinspector"
 import { Result, ResultMessages, VisitorInvocation } from "typedconverter"
 
-import { getModels, MongooseHelper } from "./generator"
+import { getModels, MongooseHelper, model as globalModel } from "./generator"
 import { RefDecorator } from "./types"
 import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from './generic-controller'
 import pluralize from 'pluralize'
@@ -51,9 +51,14 @@ export class MongooseFacility extends DefaultFacility {
     }
 
     async initialize(app: Readonly<PlumierApplication>) {
-        app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter, ...filterConverters] })
         const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
-        const helper = this.option.helper ?? { connect: Mongoose.connect, getModels }
+        const helper = this.option.helper ?? { connect: Mongoose.connect, getModels, model: globalModel, }
+        app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter, ...filterConverters] })
+        app.set({
+            responseProjectionTransformer: (p, v) => {
+                return (p.name === "id" && v && v.constructor === Buffer) ? undefined : v
+            }
+        })
         if (uri) {
             await helper.connect(uri)
         }

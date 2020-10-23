@@ -1,6 +1,6 @@
 import { CustomPropertyDecorator, decorate, mergeDecorator, DecoratorOption, decorateProperty, decorateClass, decorateMethod } from "tinspector"
 
-import { AccessModifier, AuthorizeDecorator, Authorizer, AuthorizerFunction, EntityPolicyProviderDecorator, EntityProviderQuery } from "../authorization"
+import { AccessModifier, AuthorizeDecorator, Authorizer, AuthorizerFunction, EntityPolicyProviderDecorator, EntityProviderQuery, Public } from "../authorization"
 import { Class } from '../common'
 import { errorMessage, FilterQueryType } from "../types"
 import { api } from "./api"
@@ -76,14 +76,7 @@ class AuthDecoratorImpl {
      * Authorize controller or action accessible by public
      */
     public(opt?: ApplyToOption): (target: any, name?: string) => void {
-        return decorate((...args: any[]) => {
-            return <AuthorizeDecorator>{
-                type: "plumier-meta:authorize",
-                tag: "Public",
-                evaluation: "Static",
-                access: "route"
-            }
-        }, ["Class", "Parameter", "Method", "Property"], { ...opt })
+        return this.custom({ policies: [Public] }, { access: "route", tag: Public, ...opt })
     }
 
     private byRole(roles: any[], access: AccessModifier) {
@@ -91,7 +84,7 @@ class AuthDecoratorImpl {
         const defaultOpt = { access, methods: [] }
         const opt: AuthorizeSelectorOption = typeof last === "string" ? defaultOpt : { ...defaultOpt, ...last }
         const allRoles: string[] = typeof last === "string" ? roles : roles.slice(0, roles.length - 1)
-        return this.custom({ policies: allRoles }, { ...opt, tag: allRoles.join("|"), evaluation: "Static" })
+        return this.custom({ policies: allRoles }, { ...opt, tag: allRoles.join("|"), evaluation: "Dynamic" })
     }
 
     /**
@@ -178,7 +171,7 @@ class AuthDecoratorImpl {
 }
 
 function entityProvider(entity: Class, idParam: string) {
-    return decorateMethod(<EntityPolicyProviderDecorator>{ entity, idParam })
+    return decorateMethod(<EntityPolicyProviderDecorator>{ kind: "plumier-meta:entity-policy-provider", entity, idParam })
 }
 
 const authorize = new AuthDecoratorImpl()

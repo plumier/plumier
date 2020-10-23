@@ -10,7 +10,7 @@ import reflect, {
     ParameterReflection,
     PropertyReflection,
 } from "tinspector"
-import { Result, VisitorExtension, VisitorInvocation } from "typedconverter"
+import { Result, VisitorInvocation } from "typedconverter"
 import { promisify } from "util"
 
 import { EntityProviderQuery, RoleField } from "./authorization"
@@ -421,8 +421,6 @@ export interface AuthorizationContext {
     ctx: ActionContext
     metadata: Metadata
     access: AccessModifier
-    policies: string[]
-    policyAuthorizer: Authorizer
 }
 
 export interface Authorizer {
@@ -431,14 +429,14 @@ export interface Authorizer {
 
 export interface AuthPolicy {
     equals(id: string, ctx: AuthorizationContext): boolean
-    authorize(ctx: AuthorizationContext): Promise<boolean>
+    authorize(ctx: AuthorizationContext, location: 'Class' | 'Parameter' | 'Method'): Promise<boolean>
 }
 
 // --------------------------------------------------------------------- //
 // --------------------------- CONFIGURATION --------------------------- //
 // --------------------------------------------------------------------- //
 
-export type CustomConverter = (next:VisitorInvocation, ctx: ActionContext) => Result
+export type CustomConverter = (next: VisitorInvocation, ctx: ActionContext) => Result
 
 export interface Configuration {
     mode: "debug" | "production"
@@ -518,12 +516,17 @@ export interface Configuration {
     /**
      * Provide function to query entity for entity policy authorization 
      */
-    entityProviderQuery?:EntityProviderQuery
+    entityProviderQuery?: EntityProviderQuery
 
     /**
      * Custom authorization policy
      */
-    authPolicies?: AuthPolicy[]
+    authPolicies?: Class<AuthPolicy>[]
+
+    /**
+     * Response projection transformer
+     */
+    responseProjectionTransformer?: (prop: PropertyReflection, value: any) => any
 }
 
 export interface PlumierConfiguration extends Configuration {
@@ -604,7 +607,7 @@ export class ParameterMetadata {
     }
 }
 
-export class MetadataImpl {
+export class MetadataImpl implements Metadata {
     /**
      * Controller metadata object graph
      */
@@ -624,19 +627,19 @@ export class MetadataImpl {
      * Action's parameters metadata, contains access to parameter values, parameter names etc. 
      * This property not available on Custom Parameter Binder and Global Middleware
      */
-    actionParams?: ParameterMetadata
+    actionParams: ParameterMetadata
 
     /**
      * Metadata information where target (Validator/Authorizer/Middleware) applied, can be a Property, Parameter, Method, Class. 
      */
     current?: CurrentMetadataType
 
-    constructor(params: any[] | undefined, routeInfo: RouteInfo, current?: CurrentMetadataType) {
+    constructor(params: any[], routeInfo: RouteInfo, current?: CurrentMetadataType) {
         this.controller = routeInfo.controller
         this.action = routeInfo.action
         this.access = routeInfo.access
-        if (params)
-            this.actionParams = new ParameterMetadata(params, routeInfo.action.parameters)
+        //if (params)
+        this.actionParams = new ParameterMetadata(params, routeInfo.action.parameters)
         this.current = current
     }
 }

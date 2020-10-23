@@ -3,6 +3,7 @@
 exports[`Module Export Should export module properly 1`] = `
 Object {
   "ActionResult": ActionResult,
+  "Authenticated": "Authenticated",
   "ControllerFacility": ControllerFacility,
   "DefaultDependencyResolver": DefaultDependencyResolver,
   "DefaultFacility": DefaultFacility,
@@ -140,6 +141,7 @@ Object {
   },
   "ParameterBinderMiddleware": ParameterBinderMiddleware,
   "PolicyAuthorizer": PolicyAuthorizer,
+  "Public": "Public",
   "RestfulApiFacility": RestfulApiFacility,
   "RouteDecoratorImpl": RouteDecoratorImpl,
   "ValidatorMiddleware": ValidatorMiddleware,

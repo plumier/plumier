@@ -1,3 +1,4 @@
+import { Context } from 'koa'
 import { ClassReflection, ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
@@ -13,6 +14,7 @@ import {
     Configuration,
     HttpStatusError,
     Invocation,
+    Metadata,
     MetadataImpl,
     Middleware,
     RouteInfo,
@@ -46,34 +48,6 @@ type RoleField = string | ((value: any) => Promise<string[]>)
 /* ------------------------------- HELPERS --------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function createAuthorizer(decorator: AuthorizeDecorator, info: AuthorizationContext): Authorizer {
-    const authorize = decorator.authorize
-    if (typeof authorize === "function")
-        return { authorize }
-    else if (hasKeyOf<Authorizer>(authorize, "authorize"))
-        return authorize
-    else if (hasKeyOf<{ policies: string[] }>(authorize, "policies"))
-        return info.policyAuthorizer
-    else
-        return info.ctx.config.dependencyResolver.resolve(authorize)
-}
-
-function executeDecorator(decorator: AuthorizeDecorator, info: AuthorizationContext) {
-    const instance = createAuthorizer(decorator, info)
-    const policies = hasKeyOf<{ policies: string[] }>(decorator.authorize, "policies") ? decorator.authorize.policies : []
-    return instance.authorize({ ...info, policies }, decorator.location)
-}
-
-async function executeDecorators(decorators: AuthorizeDecorator[], info: AuthorizationContext, path: string) {
-    const result: string[] = []
-    for (const dec of decorators) {
-        const allowed = await executeDecorator(dec, info)
-        if (!allowed)
-            result.push(path)
-    }
-    return result
-}
-
 function createDecoratorFilter(predicate: (x: AuthorizeDecorator) => boolean = x => true) {
     return (x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize" && predicate(x)
 }
@@ -98,17 +72,26 @@ function getRouteAuthorizeDecorators(info: RouteInfo, globalDecorator?: (...args
     return getGlobalDecorators(globalDecorator)
 }
 
-async function createAuthContext(ctx: ActionContext, access: AccessModifier, authPolicies: AuthPolicy[]): Promise<AuthorizationContext> {
+async function createAuthContext(ctx: ActionContext, access: AccessModifier): Promise<AuthorizationContext> {
     const { route, parameters, state, config } = ctx
     const userRoles = await getRole(state.user, config.roleField)
     return <AuthorizationContext>{
-        role: userRoles, user: state.user, route, ctx, access, policies: [],
+        role: userRoles, user: state.user, route, ctx, access, policyIds: [],
         metadata: new MetadataImpl(ctx.parameters, ctx.route, {} as any),
-        policyAuthorizer: new PolicyAuthorizer(authPolicies)
     }
 }
 
+function throwAuthError(ctx: AuthorizerContext) {
+    if (ctx.role.length === 0) throw new HttpStatusError(HttpStatus.Forbidden, "Forbidden")
+    else throw new HttpStatusError(HttpStatus.Unauthorized, "Unauthorized")
+}
 
+function getErrorLocation(metadata: Metadata) {
+    const current = metadata.current!
+    if (current.kind === "Class")
+        return `class ${current.name}` 
+    return `${current.kind.toLowerCase()} ${current.parent!.name}.${current.name}`
+}
 
 // --------------------------------------------------------------------- //
 // ------------------------ AUTHORIZATION POLICY ----------------------- //
@@ -116,35 +99,31 @@ async function createAuthContext(ctx: ActionContext, access: AccessModifier, aut
 
 const Public = "Public"
 const Authenticated = "Authenticated"
-type EntityProviderQuery<T = any> = (entity: Class, id: any) => T
+type EntityProviderQuery<T = any> = (entity: Class, id: any) => Promise<T>
 interface EntityPolicyProviderDecorator { kind: "plumier-meta:entity-policy-provider", entity: Class, idParam: string }
-type EntityPolicyAuthorizerFunction<T> = (ctx: AuthorizerContext, entity:T) => boolean | Promise<boolean>
-
+type EntityPolicyAuthorizerFunction<T> = (ctx: AuthorizerContext, entity: T) => boolean | Promise<boolean>
 
 interface AuthPolicyBuilder {
     policies: AuthPolicy[]
 }
 
 class PolicyAuthorizer implements Authorizer {
-    private readonly policies: AuthPolicy[] = [
-        new PublicAuthPolicy(),
-        new AuthorizedAuthPolicy()
+    private readonly policies: Class<AuthPolicy>[] = [
+        PublicAuthPolicy, AuthorizedAuthPolicy
     ]
-    constructor(policies: AuthPolicy[]) {
+    constructor(policies: Class<AuthPolicy>[], private keys: string[]) {
         this.policies.push(...policies)
     }
     async authorize(ctx: AuthorizationContext, location: 'Class' | 'Parameter' | 'Method'): Promise<boolean> {
         // test for auth policy first
-        for (const authPolicy of this.policies.reverse()) {
-            for (const policy of ctx.policies) {
-                if (authPolicy.equals(policy, ctx)) return authPolicy.authorize(ctx)
+        for (const Auth of this.policies.reverse()) {
+            const authPolicy = new Auth()
+            for (const policy of this.keys) {
+                if (authPolicy.equals(policy, ctx)) return authPolicy.authorize(ctx, location)
             }
         }
-        // if non match, check for user role
-        return ctx.role.some(x => ctx.policies.some(y => y === x))
-    }
-    add(policy: AuthPolicy) {
-        this.policies.push(policy)
+        // if none match, check for user role
+        return ctx.role.some(x => this.keys.some(y => y === x))
     }
 }
 
@@ -171,34 +150,47 @@ class CustomAuthPolicy implements AuthPolicy {
     equals(id: string, ctx: AuthorizationContext): boolean {
         return id === this.id
     }
-    async authorize(ctx: AuthorizationContext): Promise<boolean> {
-        if (typeof this.authorizer === "function")
-            return this.authorize(ctx)
-        else
-            return this.authorizer.authorize(ctx, "Class")
+    async authorize(ctx: AuthorizationContext, location: 'Class' | 'Parameter' | 'Method'): Promise<boolean> {
+        try {
+            if (typeof this.authorizer === "function")
+                return this.authorizer(ctx, location)
+            else
+                return this.authorizer.authorize(ctx, "Class")
+        }
+        catch (e) {
+            const message = e instanceof Error ? e.stack : e
+            const location = getErrorLocation(ctx.metadata)
+            throw new Error(`Error occur inside authorization policy ${this.id} on ${location} \n ${message}`)
+        }
     }
 }
 
 class EntityAuthPolicy<T> implements AuthPolicy {
     constructor(private id: string, private entity: Class<T>, private authorizer: EntityPolicyAuthorizerFunction<T>) { }
     private getEntity(ctx: AuthorizerContext): { entity: Class, id: any } {
-        if (ctx.access === "route") {
+        if (ctx.access === "route" || ctx.access === "write") {
             // when the entity provider is Route 
             // take the provided Entity from decorator 
             // take the entity ID value from the Action Parameter
-            const { entity, idParam }: EntityPolicyProviderDecorator = ctx.metadata.action.decorators
+            const dec: EntityPolicyProviderDecorator | undefined = ctx.metadata.action.decorators
                 .find((x: EntityPolicyProviderDecorator) => x.kind === "plumier-meta:entity-policy-provider")
-            const id = ctx.metadata.actionParams.get(idParam)
-            return { entity, id }
+            if (!dec) {
+                const meta = ctx.metadata
+                throw new Error(`Action ${meta.controller.name}.${meta.action.name} doesn't have Entity Policy Provider information`)
+            }
+            const id = ctx.metadata.actionParams!.get(dec.idParam)
+            return { entity: dec.entity, id }
         }
         else {
             // when the entity provider is Read/Write/Filter
             // take the provided entity from the parent type from context
             // take the entity ID value using @primaryId() decorator
-            const entity = ctx.metadata.current?.parent!
+            const entity = ctx.metadata.current!.parent!
             const meta = reflect(entity)
-            const prop = meta.properties.find(p => p.decorators.some((x: EntityIdDecorator) => x.kind === "plumier-meta:entity-id"))!
-            const id = ctx.parentValue[prop.name]!
+            const prop = meta.properties.find(p => p.decorators.some((x: EntityIdDecorator) => x.kind === "plumier-meta:entity-id"))
+            if (!prop)
+                throw new Error(`Entity ${entity.name} doesn't have primary ID information required for entity policy`)
+            const id = ctx.parentValue[prop.name]
             return { entity, id }
         }
     }
@@ -210,41 +202,59 @@ class EntityAuthPolicy<T> implements AuthPolicy {
         if (!ctx.ctx.config.entityProviderQuery)
             throw new Error("No entity provider query found in application configuration")
         const provider = this.getEntity(ctx)
-        const entity = ctx.ctx.config.entityProviderQuery(provider.entity, provider.id)
-        return this.authorizer(ctx, entity)
+        const entity = await ctx.ctx.config.entityProviderQuery(provider.entity, provider.id)
+        try {
+            return this.authorizer(ctx, entity)
+        }
+        catch (e) {
+            const message = e instanceof Error ? e.stack : e
+            const location = getErrorLocation(ctx.metadata)
+            throw new Error(`Error occur inside authorization policy ${this.id} for entity ${this.entity.name} on ${location} \n ${message}`)
+        }
     }
 }
-
-class DefaultAuthPolicyBuilder implements AuthPolicyBuilder {
-    readonly policies: AuthPolicy[] = []
-    constructor(policies: AuthPolicy[] = []) {
-        this.policies = policies
-    }
-    define(id: string, authorizer: CustomAuthorizerFunction | CustomAuthorizer) {
-        this.policies.push(new CustomAuthPolicy(id, authorizer))
-        return this
-    }
-}
-
-class EntityPolicyBuilder<T> implements AuthPolicyBuilder {
-    readonly policies: AuthPolicy[] = []
-    constructor(private entity: Class<T>, policies: AuthPolicy[] = []) {
-        this.policies = policies
-    }
-    define(id: string, authorizer: EntityPolicyAuthorizerFunction<T>) {
-        this.policies.push(new EntityAuthPolicy<T>(id, this.entity, authorizer))
-        return this
-    }
-}
-
-const globalAuthPolicies: AuthPolicy[] = []
 
 function authPolicy() {
-    return new DefaultAuthPolicyBuilder(globalAuthPolicies)
+    return {
+        define: (id: string, authorizer: CustomAuthorizerFunction | CustomAuthorizer):Class<AuthPolicy> => {
+            class Policy extends CustomAuthPolicy {
+                constructor() { super(id, authorizer) }
+            }
+            return Policy
+        }
+    }
 }
 
 function entityPolicy<T>(entity: Class<T>) {
-    return new EntityPolicyBuilder(entity, globalAuthPolicies)
+    return {
+        define: (id: string, authorizer: EntityPolicyAuthorizerFunction<T>): Class<AuthPolicy> => {
+            class Policy extends EntityAuthPolicy<T> {
+                constructor() { super(id, entity, authorizer) }
+            }
+            return Policy
+        }
+    }
+}
+
+// --------------------------------------------------------------------- //
+// ---------------------- MAIN AUTHORIZER FUNCTION --------------------- //
+// --------------------------------------------------------------------- //
+
+function createAuthorizer(decorator: AuthorizeDecorator, info: AuthorizationContext): Authorizer {
+    const authorize = decorator.authorize
+    if (typeof authorize === "function")
+        return { authorize }
+    else if (hasKeyOf<Authorizer>(authorize, "authorize"))
+        return authorize
+    else if (hasKeyOf<{ policies: string[] }>(authorize, "policies"))
+        return new PolicyAuthorizer(info.ctx.config.authPolicies ?? [], authorize.policies)
+    else
+        return info.ctx.config.dependencyResolver.resolve(authorize)
+}
+
+function executeAuthorizer(decorator: AuthorizeDecorator, info: AuthorizationContext) {
+    const instance = createAuthorizer(decorator, info)
+    return instance.authorize(info, decorator.location)
 }
 
 // --------------------------------------------------------------------- //
@@ -262,15 +272,14 @@ function fixContext(decorator: AuthorizeDecorator, info: AuthorizerContext) {
 }
 
 async function checkUserAccessToRoute(decorators: AuthorizeDecorator[], info: AuthorizationContext) {
-    if (decorators.some(x => x.tag === "Public")) return
-    if (info.role.length === 0) throw new HttpStatusError(HttpStatus.Forbidden, "Forbidden")
-    const conditions = await Promise.all(decorators.map(x => executeDecorator(x, fixContext(x, info))))
-    //use OR condition
-    //if ALL condition doesn't authorize user then throw
-    if (conditions.length > 0 && conditions.every(x => x === false))
-        throw new HttpStatusError(HttpStatus.Unauthorized, "Unauthorized")
+    // if no rule applied but Authenticated then pass
+    if (decorators.length === 0 && !!info.user) return
+    const conditions = await Promise.all(decorators.map(x => executeAuthorizer(x, fixContext(x, info))))
+    // if authorized once then pass
+    if (conditions.some(x => x === true)) return
+    // if not then throw error accordingly
+    throwAuthError(info)
 }
-
 
 // --------------------------------------------------------------------- //
 // ---------------------- PARAMETER AUTHORIZATION ---------------------- //
@@ -281,6 +290,16 @@ interface ParamCheckContext {
     info: AuthorizationContext
     parent: Class
     parentValue?: any
+}
+
+async function executeAuthorizers(decorators: AuthorizeDecorator[], info: AuthorizationContext, path: string) {
+    const result: string[] = []
+    for (const dec of decorators) {
+        const allowed = await executeAuthorizer(dec, info)
+        if (!allowed)
+            result.push(path)
+    }
+    return result
 }
 
 function createContext(ctx: ParamCheckContext, value: any, meta: ClassReflection | PropertyReflection | ParameterReflection) {
@@ -313,7 +332,7 @@ async function checkParameter(meta: PropertyReflection | ParameterReflection, va
         const decorators = ctx.info.ctx.method === "GET" ? meta.decorators.filter(createDecoratorFilter(x => x.access === "filter")) :
             meta.decorators.filter(createDecoratorFilter(x => x.access === "write"))
         const info = createContext(ctx, value, meta)
-        return executeDecorators(decorators, info, ctx.path.join("."))
+        return executeAuthorizers(decorators, info, ctx.path.join("."))
     }
 }
 
@@ -361,10 +380,10 @@ async function getRole(user: any, roleField: RoleField): Promise<string[]> {
     }
 }
 
-async function checkAuthorize(ctx: ActionContext, policies: AuthPolicy[]) {
+async function checkAuthorize(ctx: ActionContext) {
     if (ctx.config.enableAuthorization) {
         const { route, parameters, config } = ctx
-        const info = await createAuthContext(ctx, "route", policies)
+        const info = await createAuthContext(ctx, "route")
         const decorator = getRouteAuthorizeDecorators(route, config.globalAuthorizationDecorators)
         //check user access
         await checkUserAccessToRoute(decorator, info)
@@ -398,9 +417,7 @@ async function createPropertyNode(prop: PropertyReflection, info: AuthorizerCont
     // if no authorize decorator then always allow to access
     let authorizer: (boolean | Authorizer)[] = [decorators.length === 0]
     for (const dec of decorators) {
-        const auth = dec.evaluation === "Static" ? await executeDecorator(dec, info) : createAuthorizer(dec, info)
-        authorizer.push(auth)
-        if (auth === true) break
+        authorizer.push(createAuthorizer(dec, info))
     }
     return { name: prop.name, authorizer }
 }
@@ -415,11 +432,12 @@ async function compileType(type: Class | Class[], ctx: AuthorizerContext, parent
         const meta = reflect(type)
         const properties = []
         for (const prop of meta.properties) {
-            const propNode = await createPropertyNode(prop, ctx)
+            const meta = { ...prop, parent: type }
+            const propCtx = { ...ctx, metadata: new MetadataImpl(ctx.ctx.parameters, ctx.ctx.route, meta) }
+            const propNode = await createPropertyNode(prop, propCtx)
             properties.push({
-                ...propNode,
-                meta: { ...prop, parent: type },
-                type: await compileType(prop.type, ctx, parentTypes.concat(type))
+                ...propNode, meta,
+                type: await compileType(prop.type, propCtx, parentTypes.concat(type))
             })
         }
         return { kind: "Class", properties }
@@ -443,7 +461,9 @@ async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): P
     if (node.kind === "Array") {
         const result = []
         for (const item of raw) {
-            result.push(await filterType(item, node.child, ctx))
+            const val = await filterType(item, node.child, ctx)
+            if (val !== undefined)
+                result.push(val)
         }
         return result
     }
@@ -457,18 +477,22 @@ async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): P
                 metadata: { ...ctx.metadata, current: prop.meta }
             })
             if (authorized) {
-                result[prop.name] = await filterType(value, prop.type, ctx)
+                const candidate = await filterType(value, prop.type, ctx)
+                const transform = ctx.ctx.config.responseProjectionTransformer ?? ((a, b) => b)
+                const val = transform(prop.meta, candidate)
+                if (val !== undefined)
+                    result[prop.name] = val
             }
         }
-        return result
+        return Object.keys(result).length === 0 && result.constructor === Object ? undefined : result
     }
     else return raw
 }
 
-async function responseAuthorize(raw: ActionResult, ctx: ActionContext, policies: AuthPolicy[]): Promise<ActionResult> {
+async function responseAuthorize(raw: ActionResult, ctx: ActionContext): Promise<ActionResult> {
     const type = ctx.route.action.returnType
     if (type !== Promise && type && raw.status === 200 && raw.body) {
-        const info = await createAuthContext(ctx, "read", policies)
+        const info = await createAuthContext(ctx, "read")
         const node = await compileType(type, info, [])
         raw.body = await filterType(raw.body, node, info)
         return raw
@@ -486,11 +510,9 @@ async function responseAuthorize(raw: ActionResult, ctx: ActionContext, policies
 class AuthorizerMiddleware implements Middleware {
     constructor() { }
     async execute(invocation: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
-        const configPolicies = invocation.ctx.config.authPolicies || []
-        const policies = configPolicies.length === 0 ? globalAuthPolicies : configPolicies
-        await checkAuthorize(invocation.ctx, policies)
+        await checkAuthorize(invocation.ctx)
         const result = await invocation.proceed()
-        return responseAuthorize(result, invocation.ctx, policies)
+        return responseAuthorize(result, invocation.ctx)
     }
 }
 
@@ -499,5 +521,6 @@ export {
     getRouteAuthorizeDecorators, updateRouteAuthorizationAccess, AuthorizerMiddleware,
     CustomAuthorizer, CustomAuthorizerFunction, AuthorizationContext, AuthorizerContext,
     AccessModifier, EntityPolicyProviderDecorator, EntityProviderQuery,
-    authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer
+    authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, Public, Authenticated,
+    AuthPolicy, CustomAuthPolicy, EntityAuthPolicy
 }

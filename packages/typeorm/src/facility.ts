@@ -18,7 +18,7 @@ import { lstat } from "fs"
 import pluralize from "pluralize"
 import reflect, { noop } from "tinspector"
 import { Result, ResultMessages, VisitorInvocation } from "typedconverter"
-import { ConnectionOptions, createConnection, getConnection, getConnectionOptions, getMetadataArgsStorage } from "typeorm"
+import { ConnectionOptions, createConnection, getConnection, getConnectionOptions, getManager, getMetadataArgsStorage } from "typeorm"
 import { promisify } from "util"
 import validator from "validator"
 
