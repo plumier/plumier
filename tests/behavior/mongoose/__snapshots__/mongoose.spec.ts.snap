@@ -448,6 +448,7 @@ Object {
 
 exports[`Response Projection Transformer Should not transform Ref if not populated on nested array 1`] = `
 Object {
+  "child": Array [],
   "name": "Tada",
 }
 `;

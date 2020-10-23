@@ -316,7 +316,7 @@ async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): P
             if (val !== undefined)
                 result.push(val)
         }
-        return result.length === 0 ? undefined : result
+        return result
     }
     else if (node.kind === "Class") {
         const result: any = {}
