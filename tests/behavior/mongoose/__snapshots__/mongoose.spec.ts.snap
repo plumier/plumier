@@ -440,9 +440,37 @@ Object {
 }
 `;
 
-exports[`Response Projection Transformer Should transform ID properly 1`] = `
+exports[`Response Projection Transformer Should not transform Ref if not populated 1`] = `
 Object {
-  "child": Object {},
+  "name": "Tada",
+}
+`;
+
+exports[`Response Projection Transformer Should not transform Ref if not populated on nested array 1`] = `
+Object {
+  "child": Array [],
+  "name": "Tada",
+}
+`;
+
+exports[`Response Projection Transformer Should transform Ref if populated 1`] = `
+Object {
+  "child": Object {
+    "booleanProp": true,
+    "stringProp": "string",
+  },
+  "name": "Tada",
+}
+`;
+
+exports[`Response Projection Transformer Should transform Ref if populated on nested array 1`] = `
+Object {
+  "child": Array [
+    Object {
+      "booleanProp": true,
+      "stringProp": "string",
+    },
+  ],
   "name": "Tada",
 }
 `;
