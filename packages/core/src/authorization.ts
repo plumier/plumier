@@ -326,7 +326,9 @@ async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): P
                 metadata: { ...ctx.metadata, current: prop.meta }
             })
             if (authorized) {
-                result[prop.name] = await filterType(value, prop.type, ctx)
+                const candidate = await filterType(value, prop.type, ctx)
+                const transform = ctx.ctx.config.responseProjectionTransformer ?? ((a, b) => b)
+                result[prop.name] = transform(prop.meta, candidate)
             }
         }
         return result

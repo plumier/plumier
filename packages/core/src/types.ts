@@ -487,6 +487,11 @@ export interface Configuration {
      */
 
     genericControllerNameConversion?: (x: string) => string
+
+    /**
+     * Response projection transformer
+     */
+    responseProjectionTransformer?: (prop:PropertyReflection, value:any) => any
 }
 
 export interface PlumierConfiguration extends Configuration {
