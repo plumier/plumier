@@ -52,6 +52,11 @@ export class MongooseFacility extends DefaultFacility {
 
     async initialize(app: Readonly<PlumierApplication>) {
         app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter, ...filterConverters] })
+        app.set({
+            responseProjectionTransformer: (p, v) => {
+                return (p.name === "id" && v && v.constructor === Buffer) ? undefined : v
+            }
+        })
         const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
         const helper = this.option.helper ?? { connect: Mongoose.connect, getModels }
         if (uri) {
