@@ -2636,11 +2636,11 @@ describe("JwtAuth", () => {
                 await Supertest(app.callback())
                     .get("/users/get")
                     .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                    .expect(200, { user: { name: "admin", password: "secret", parent: {} } })
+                    .expect(200, { user: { name: "admin", password: "secret" } })
                 await Supertest(app.callback())
                     .get("/users/get")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
-                    .expect(200, { user: { name: "admin", parent: {} } })
+                    .expect(200, { user: { name: "admin" } })
             })
         })
 

@@ -1091,7 +1091,7 @@ describe("Response Projection Transformer", () => {
         mongoose.connection.models = {}
     })
 
-    it("Should transform ID properly", async () => {
+    it("Should not transform Ref if not populated", async () => {
         const { model } = new MongooseHelper(mongoose)
         @collection({ toJSON: { virtuals: true }, toObject: { virtuals: true } })
         class Nest {
@@ -1134,6 +1134,146 @@ describe("Response Projection Transformer", () => {
         const { body } = await supertest(app.callback())
             .get("/dummy/get")
             .expect(200)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should transform Ref if populated", async () => {
+        const { model } = new MongooseHelper(mongoose)
+        @collection({ toJSON: { virtuals: true }, toObject: { virtuals: true } })
+        class Nest {
+            constructor(
+                public id: string,
+                public stringProp: string,
+                public booleanProp: boolean
+            ) { }
+        }
+        @collection({ toJSON: { virtuals: true }, toObject: { virtuals: true } })
+        class Dummy {
+            constructor(
+                public name:string,
+                @collection.ref(Nest)
+                public child: Nest
+            ) { }
+        }
+        const NestModel = model(Nest)
+        const DummyModel = model(Dummy)
+        const child = await NestModel.create(<Nest>{
+            stringProp: "string",
+            booleanProp: true,
+        })
+        const added = await DummyModel.create(<Dummy>{
+            name:"Tada",
+            child: child._id
+        })
+        class DummyController {
+            @route.get()
+            @type(Dummy)
+            get() {
+                return DummyModel.findById(added._id).populate("child")
+            }
+        }
+        delete process.env.PLUM_MONGODB_URI 
+        const app = await fixture(DummyController)
+            .set(new JwtAuthFacility({ secret: "lorem", global: authorize.public() }))
+            .set(new MongooseFacility())
+            .initialize()
+        const { body } = await supertest(app.callback())
+            .get("/dummy/get")
+            .expect(200)
+        delete body.child.id
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should not transform Ref if not populated on nested array", async () => {
+        const { model } = new MongooseHelper(mongoose)
+        @collection({ toJSON: { virtuals: true }, toObject: { virtuals: true } })
+        class Nest {
+            constructor(
+                public id: string,
+                public stringProp: string,
+                public booleanProp: boolean
+            ) { }
+        }
+        @collection({ toJSON: { virtuals: true }, toObject: { virtuals: true } })
+        class Dummy {
+            constructor(
+                public name:string,
+                @collection.ref([Nest])
+                public child: Nest[]
+            ) { }
+        }
+        const NestModel = model(Nest)
+        const DummyModel = model(Dummy)
+        const child = await NestModel.create(<Nest>{
+            stringProp: "string",
+            booleanProp: true,
+        })
+        const added = await DummyModel.create(<Dummy>{
+            name:"Tada",
+            child: [child._id]
+        })
+        class DummyController {
+            @route.get()
+            @type(Dummy)
+            get() {
+                return DummyModel.findById(added._id)
+            }
+        }
+        delete process.env.PLUM_MONGODB_URI 
+        const app = await fixture(DummyController)
+            .set(new JwtAuthFacility({ secret: "lorem", global: authorize.public() }))
+            .set(new MongooseFacility())
+            .initialize()
+        const { body } = await supertest(app.callback())
+            .get("/dummy/get")
+            .expect(200)
+        expect(body).toMatchSnapshot()
+    })
+
+    it("Should transform Ref if populated on nested array", async () => {
+        const { model } = new MongooseHelper(mongoose)
+        @collection({ toJSON: { virtuals: true }, toObject: { virtuals: true } })
+        class Nest {
+            constructor(
+                public id: string,
+                public stringProp: string,
+                public booleanProp: boolean
+            ) { }
+        }
+        @collection({ toJSON: { virtuals: true }, toObject: { virtuals: true } })
+        class Dummy {
+            constructor(
+                public name:string,
+                @collection.ref([Nest])
+                public child: Nest[]
+            ) { }
+        }
+        const NestModel = model(Nest)
+        const DummyModel = model(Dummy)
+        const child = await NestModel.create(<Nest>{
+            stringProp: "string",
+            booleanProp: true,
+        })
+        const added = await DummyModel.create(<Dummy>{
+            name:"Tada",
+            child: [child._id]
+        })
+        class DummyController {
+            @route.get()
+            @type(Dummy)
+            get() {
+                return DummyModel.findById(added._id).populate("child")
+            }
+        }
+        delete process.env.PLUM_MONGODB_URI 
+        const app = await fixture(DummyController)
+            .set(new JwtAuthFacility({ secret: "lorem", global: authorize.public() }))
+            .set(new MongooseFacility())
+            .initialize()
+        const { body } = await supertest(app.callback())
+            .get("/dummy/get")
+            .expect(200)
+        delete body.child[0].id
         expect(body).toMatchSnapshot()
     })
 })

@@ -312,9 +312,11 @@ async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): P
     if (node.kind === "Array") {
         const result = []
         for (const item of raw) {
-            result.push(await filterType(item, node.child, ctx))
+            const val = await filterType(item, node.child, ctx)
+            if (val !== undefined)
+                result.push(val)
         }
-        return result
+        return result.length === 0 ? undefined : result
     }
     else if (node.kind === "Class") {
         const result: any = {}
@@ -328,10 +330,12 @@ async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): P
             if (authorized) {
                 const candidate = await filterType(value, prop.type, ctx)
                 const transform = ctx.ctx.config.responseProjectionTransformer ?? ((a, b) => b)
-                result[prop.name] = transform(prop.meta, candidate)
+                const val = transform(prop.meta, candidate)
+                if (val !== undefined)
+                    result[prop.name] = val
             }
         }
-        return result
+        return Object.keys(result).length === 0 && result.constructor === Object ? undefined : result
     }
     else return raw
 }
