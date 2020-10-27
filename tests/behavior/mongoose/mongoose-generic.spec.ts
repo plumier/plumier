@@ -14,7 +14,7 @@ import { SwaggerFacility } from "@plumier/swagger"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import supertest from "supertest"
-import reflect, { generic } from "tinspector"
+import reflect, { generic, type } from "tinspector"
 
 jest.setTimeout(20000)
 
@@ -480,9 +480,9 @@ describe("CRUD", () => {
                 email: string
                 @reflect.noop()
                 name: string
-                @collection.property({default: false})
+                @collection.property({ default: false })
                 @entity.deleteColumn()
-                deleted:boolean
+                deleted: boolean
             }
             model(User)
             const app = await createApp({ controller: User, mode: "production" })
@@ -574,6 +574,26 @@ describe("CRUD", () => {
                 .expect(200)
             const result = await repo.findById(body.id)
             expect(result).toMatchSnapshot()
+        })
+        it("Should serve data with native array", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @reflect.type([String])
+                address: string[]
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe", address: ["Address1", "Address2"] })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${data.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
         })
     })
     describe("Nested CRUD One to Many Function", () => {
@@ -1443,9 +1463,9 @@ describe("CRUD", () => {
             class Animal {
                 @reflect.noop()
                 name: string
-                @collection.property({default: false})
+                @collection.property({ default: false })
                 @entity.deleteColumn()
-                deleted:boolean
+                deleted: boolean
             }
             model(Animal)
             model(User)
@@ -1544,6 +1564,39 @@ describe("CRUD", () => {
                 .post(`/users/${user._id}/animals`)
                 .send({ name: "Mimi" })
                 .expect(200)
+        })
+        it("Should serve data with native array GET /users/:parentId/animals/:id", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller()
+                animals: Animal[]
+            }
+            @collection()
+            @route.controller()
+            class Animal {
+                @reflect.noop()
+                name: string
+                @collection.ref(x => User)
+                user: User
+                @type([String])
+                tags: string[]
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi`, tags: ["Lorem", "Ipsum"] })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals/${inserted.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
         })
     })
     describe("One To One Function", () => {

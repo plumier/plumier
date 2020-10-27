@@ -8,6 +8,7 @@ import reflect, {
     DecoratorOptionId,
     generic,
     GenericTypeDecorator,
+    PropertyReflection,
     type,
 } from "tinspector"
 import { val } from "typedconverter"
@@ -72,9 +73,10 @@ function parseOrder(order?: string) {
 }
 
 function normalizeSelect(type: Class, dSelect: string[]) {
+    const isArrayRelation = (prop:PropertyReflection) => Array.isArray(prop.type) && !!prop.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation");
     const defaultSelection = reflect(type).properties
         // default, exclude array (one to many) properties 
-        .filter(x => x.name && !Array.isArray(x.type))
+        .filter(x => x.name && !isArrayRelation(x))
         .map(x => x.name)
     return dSelect.length === 0 ? defaultSelection : dSelect
 }
