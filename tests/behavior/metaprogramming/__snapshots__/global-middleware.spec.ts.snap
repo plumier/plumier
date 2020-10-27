@@ -23,6 +23,20 @@ Array [
         "returnType": undefined,
         "typeClassification": undefined,
       },
+      "actionParams": ParameterMetadata {
+        "meta": Array [
+          Object {
+            "decorators": Array [],
+            "fields": Object {},
+            "index": 0,
+            "kind": "Parameter",
+            "name": "id",
+            "type": undefined,
+            "typeClassification": undefined,
+          },
+        ],
+        "parameters": undefined,
+      },
       "controller": Object {
         "ctor": Object {
           "kind": "Constructor",

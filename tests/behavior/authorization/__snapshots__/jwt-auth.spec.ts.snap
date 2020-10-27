@@ -40,6 +40,25 @@ Array [
 ]
 `;
 
+exports[`JwtAuth Entity Policy Should be able to secure read access to property using entity policy 1`] = `
+Object {
+  "basePrice": 100,
+  "id": 1,
+  "name": "Vanilla",
+  "price": 200,
+  "shop": 1,
+}
+`;
+
+exports[`JwtAuth Entity Policy Should be able to secure read access to property using entity policy 2`] = `
+Object {
+  "id": 1,
+  "name": "Vanilla",
+  "price": 200,
+  "shop": 1,
+}
+`;
+
 exports[`JwtAuth Parameter Authorization Custom Parameter Authorizer Should be able get current metadata information 1`] = `
 Array [
   Array [

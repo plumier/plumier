@@ -48,6 +48,32 @@ Array [
         "returnType": undefined,
         "typeClassification": undefined,
       },
+      "actionParams": ParameterMetadata {
+        "meta": Array [
+          Object {
+            "decorators": Array [
+              Object {
+                "name": "custom",
+                "process": customBinder,
+                "type": "ParameterBinding",
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "applyTo": Array [],
+                  "inherit": true,
+                  "removeApplied": true,
+                },
+              },
+            ],
+            "fields": Object {},
+            "index": 0,
+            "kind": "Parameter",
+            "name": "id",
+            "type": Number,
+            "typeClassification": "Primitive",
+          },
+        ],
+        "parameters": Array [],
+      },
       "controller": Object {
         "ctor": Object {
           "kind": "Constructor",

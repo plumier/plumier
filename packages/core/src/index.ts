@@ -2,7 +2,10 @@
 import { val } from "typedconverter"
 import "./decorator/val"
 export { val }
-export { AuthorizerFunction, checkAuthorize, RoleField, Authorizer, CustomAuthorizer, CustomAuthorizerFunction, AuthorizationContext, AuthorizerContext, AuthorizeDecorator, updateRouteAuthorizationAccess } from "./authorization";
+export { AuthorizerFunction, checkAuthorize, RoleField, Authorizer, CustomAuthorizer, CustomAuthorizerFunction, 
+    AuthorizationContext, AuthorizerContext, AuthorizeDecorator, updateRouteAuthorizationAccess,
+    authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, Public, Authenticated, 
+    AuthPolicy, CustomAuthPolicy, EntityAuthPolicy } from "./authorization";
 export { HeaderPart, RequestPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction } from "./binder";
 export { invoke } from "./application-pipeline";
 export { response } from "./response";
@@ -10,7 +13,7 @@ export { generateRoutes, findClassRecursive, appendRoute, IgnoreDecorator, Route
 export { analyzeRoutes, printAnalysis } from "./route-analyzer";
 export { router } from "./router";
 export { Class, consoleLog, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass, printTable, toBoolean, cleanupConsole, ellipsis, analyzeModel, AnalysisMessage, entityHelper, globAsync } from "./common";
-export { AuthDecoratorImpl, authorize } from "./decorator/authorize";
+export { AuthDecoratorImpl, authorize, entityProvider } from "./decorator/authorize";
 export { ApiDescriptionDecorator, ApiEnumDecorator, ApiFieldNameDecorator, ApiRequiredDecorator, ApiResponseDecorator, ApiTagDecorator, api, ApiReadOnlyDecorator, ApiWriteOnlyDecorator } from "./decorator/api"
 export { bind } from "./decorator/bind";
 export { domain, middleware } from "./decorator/common";

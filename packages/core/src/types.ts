@@ -10,10 +10,10 @@ import reflect, {
     ParameterReflection,
     PropertyReflection,
 } from "tinspector"
-import { Result, VisitorExtension, VisitorInvocation } from "typedconverter"
+import { Result, VisitorInvocation } from "typedconverter"
 import { promisify } from "util"
 
-import { RoleField } from "./authorization"
+import { EntityProviderQuery, RoleField } from "./authorization"
 import { Class } from "./common"
 import { HttpStatus } from "./http-status"
 
@@ -408,10 +408,35 @@ export abstract class OneToManyControllerGeneric<P = any, T = any, PID = any, TI
 }
 
 // --------------------------------------------------------------------- //
+// --------------------------- AUTHORIZATION --------------------------- //
+// --------------------------------------------------------------------- // 
+
+export type AccessModifier = "read" | "write" | "route" | "filter"
+
+export interface AuthorizationContext {
+    value?: any
+    parentValue?: any
+    role: string[]
+    user: any
+    ctx: ActionContext
+    metadata: Metadata
+    access: AccessModifier
+}
+
+export interface Authorizer {
+    authorize(info: AuthorizationContext, location: "Class" | "Parameter" | "Method"): boolean | Promise<boolean>
+}
+
+export interface AuthPolicy {
+    equals(id: string, ctx: AuthorizationContext): boolean
+    authorize(ctx: AuthorizationContext, location: 'Class' | 'Parameter' | 'Method'): Promise<boolean>
+}
+
+// --------------------------------------------------------------------- //
 // --------------------------- CONFIGURATION --------------------------- //
 // --------------------------------------------------------------------- //
 
-export type CustomConverter = (next:VisitorInvocation, ctx: ActionContext) => Result
+export type CustomConverter = (next: VisitorInvocation, ctx: ActionContext) => Result
 
 export interface Configuration {
     mode: "debug" | "production"
@@ -489,9 +514,19 @@ export interface Configuration {
     genericControllerNameConversion?: (x: string) => string
 
     /**
+     * Provide function to query entity for entity policy authorization 
+     */
+    entityProviderQuery?: EntityProviderQuery
+
+    /**
+     * Custom authorization policy
+     */
+    authPolicies?: Class<AuthPolicy>[]
+
+    /**
      * Response projection transformer
      */
-    responseProjectionTransformer?: (prop:PropertyReflection, value:any) => any
+    responseProjectionTransformer?: (prop: PropertyReflection, value: any) => any
 }
 
 export interface PlumierConfiguration extends Configuration {
@@ -572,7 +607,7 @@ export class ParameterMetadata {
     }
 }
 
-export class MetadataImpl {
+export class MetadataImpl implements Metadata {
     /**
      * Controller metadata object graph
      */
@@ -592,19 +627,19 @@ export class MetadataImpl {
      * Action's parameters metadata, contains access to parameter values, parameter names etc. 
      * This property not available on Custom Parameter Binder and Global Middleware
      */
-    actionParams?: ParameterMetadata
+    actionParams: ParameterMetadata
 
     /**
      * Metadata information where target (Validator/Authorizer/Middleware) applied, can be a Property, Parameter, Method, Class. 
      */
     current?: CurrentMetadataType
 
-    constructor(params: any[] | undefined, routeInfo: RouteInfo, current?: CurrentMetadataType) {
+    constructor(params: any[], routeInfo: RouteInfo, current?: CurrentMetadataType) {
         this.controller = routeInfo.controller
         this.action = routeInfo.action
         this.access = routeInfo.access
-        if (params)
-            this.actionParams = new ParameterMetadata(params, routeInfo.action.parameters)
+        //if (params)
+        this.actionParams = new ParameterMetadata(params, routeInfo.action.parameters)
         this.current = current
     }
 }

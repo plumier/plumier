@@ -4,13 +4,16 @@ exports[`Module Export Should export module properly 1`] = `
 Object {
   "ActionResult": ActionResult,
   "AuthDecoratorImpl": AuthDecoratorImpl,
+  "Authenticated": "Authenticated",
   "ControllerGeneric": ControllerGeneric,
+  "CustomAuthPolicy": CustomAuthPolicy,
   "DefaultControllerGeneric": DefaultControllerGeneric,
   "DefaultDependencyResolver": DefaultDependencyResolver,
   "DefaultFacility": DefaultFacility,
   "DefaultOneToManyControllerGeneric": DefaultOneToManyControllerGeneric,
   "DefaultOneToManyRepository": DefaultOneToManyRepository,
   "DefaultRepository": DefaultRepository,
+  "EntityAuthPolicy": EntityAuthPolicy,
   "FormFile": FormFile,
   "HttpStatus": Object {
     "100": "Continue",
@@ -144,6 +147,8 @@ Object {
   },
   "OneToManyControllerGeneric": OneToManyControllerGeneric,
   "ParameterBinderMiddleware": ParameterBinderMiddleware,
+  "PolicyAuthorizer": PolicyAuthorizer,
+  "Public": "Public",
   "RedirectActionResult": RedirectActionResult,
   "RepoBaseControllerGeneric": RepoBaseControllerGeneric,
   "RepoBaseOneToManyControllerGeneric": RepoBaseOneToManyControllerGeneric,
@@ -165,6 +170,7 @@ Object {
   },
   "appendRoute": appendRoute,
   "applyTo": applyTo,
+  "authPolicy": authPolicy,
   "authorize": AuthDecoratorImpl {},
   "bind": Object {
     "actionResult": actionResult,
@@ -196,6 +202,8 @@ Object {
     "getIdProp": getIdProp,
     "getIdType": getIdType,
   },
+  "entityPolicy": entityPolicy,
+  "entityProvider": entityProvider,
   "errorMessage": Object {
     "ActionParameterDoesNotHaveTypeInfo": "PLUM1004: Parameter binding skipped because action parameters doesn't have type information in ({0})",
     "ArrayWithoutTypeInformation": "PLUM1006: Parameter binding skipped because array element doesn't have type information in ({0})",

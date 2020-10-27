@@ -3,6 +3,7 @@
 exports[`Module Export Should export module properly 1`] = `
 Object {
   "ActionResult": ActionResult,
+  "Authenticated": "Authenticated",
   "ControllerFacility": ControllerFacility,
   "DefaultDependencyResolver": DefaultDependencyResolver,
   "DefaultFacility": DefaultFacility,
@@ -139,6 +140,8 @@ Object {
     "fromKoa": fromKoa,
   },
   "ParameterBinderMiddleware": ParameterBinderMiddleware,
+  "PolicyAuthorizer": PolicyAuthorizer,
+  "Public": "Public",
   "RestfulApiFacility": RestfulApiFacility,
   "RouteDecoratorImpl": RouteDecoratorImpl,
   "ValidatorMiddleware": ValidatorMiddleware,
@@ -154,6 +157,7 @@ Object {
     "writeonly": writeonly,
   },
   "applyTo": applyTo,
+  "authPolicy": authPolicy,
   "authorize": AuthDecoratorImpl {},
   "bind": Object {
     "actionResult": actionResult,
@@ -176,6 +180,8 @@ Object {
     "primaryId": primaryId,
     "relation": relation,
   },
+  "entityPolicy": entityPolicy,
+  "entityProvider": entityProvider,
   "middleware": Object {
     "use": use,
   },
