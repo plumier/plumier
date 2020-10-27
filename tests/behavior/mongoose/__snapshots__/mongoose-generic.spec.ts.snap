@@ -121,6 +121,17 @@ Object {
 }
 `;
 
+exports[`CRUD CRUD Function Should serve data with native array 1`] = `
+Object {
+  "address": Array [
+    "Address1",
+    "Address2",
+  ],
+  "email": "john.doe@gmail.com",
+  "name": "John Doe",
+}
+`;
+
 exports[`CRUD CRUD Function Should serve delete using deleteColumn DELETE /users/:id 1`] = `
 Object {
   "__v": 0,
@@ -485,6 +496,20 @@ Object {
   "__v": 0,
   "_id": "MONGODB UNIQUE ID",
   "name": "Poe",
+}
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should serve data with native array GET /users/:parentId/animals/:id 1`] = `
+Object {
+  "name": "Mimi",
+  "tags": Array [
+    "Lorem",
+    "Ipsum",
+  ],
+  "user": Object {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+  },
 }
 `;
 

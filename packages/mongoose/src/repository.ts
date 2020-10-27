@@ -31,6 +31,7 @@ function getPopulate(type: Class, parentProjections: any) {
     for (const proj in parentProjections) {
         const prop = getProp(proj)
         if (!prop || prop.typeClassification === "Primitive") continue;
+        if (!prop.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation")) continue;
         populate.push({
             path: proj,
             select: parseSelect(Array.isArray(prop.type) ? prop.type[0] : prop.type)
