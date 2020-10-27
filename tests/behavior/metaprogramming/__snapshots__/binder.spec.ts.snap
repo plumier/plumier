@@ -72,7 +72,7 @@ Array [
             "typeClassification": "Primitive",
           },
         ],
-        "parameters": undefined,
+        "parameters": Array [],
       },
       "controller": Object {
         "ctor": Object {
