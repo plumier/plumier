@@ -670,6 +670,19 @@ describe("JwtAuth", () => {
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
                 .expect(200)
         })
+    
+        it("Should contains undefined user when accessed by public", async () => {
+            class AnimalController {
+                @authorize.custom(i => (i.user && i.user.role) === "admin", { access: "route" })
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(403)
+        })
     })
 
     describe("Separate Decorator And Implementation with Object Registry", () => {
@@ -679,7 +692,7 @@ describe("JwtAuth", () => {
         @resolver.register("isOwner")
         class OwnerAuthorizer implements Authorizer {
             authorize(info: AuthorizationContext) {
-                return info.ctx.parameters[0] === info.user.email
+                return info.ctx.parameters[0] === info.user!.email
             }
         }
 
@@ -3077,6 +3090,7 @@ describe("JwtAuth", () => {
         })
 
     })
+    
     describe("Entity Policy", () => {
         class Shop {
             @noop()
@@ -3104,7 +3118,7 @@ describe("JwtAuth", () => {
                 }
             }
             const AdminPolicy = entityPolicy(Shop)
-                .define("ShopAdmin", (i, e) => e.users.some(x => x.uid === i.user.userId && x.role === "Admin"))
+                .define("ShopAdmin", (i, e) => e.users.some(x => x.uid === i.user!.userId && x.role === "Admin"))
             const app = await fixture(ShopsController)
                 .set(new JwtAuthFacility({
                     secret: SECRET,
@@ -3133,7 +3147,7 @@ describe("JwtAuth", () => {
                 }
             }
             const AdminPolicy = entityPolicy(Shop)
-                .define("ShopAdmin", (i, e) => e.users.some(x => x.uid === i.user.userId && x.role === "Admin"))
+                .define("ShopAdmin", (i, e) => e.users.some(x => x.uid === i.user!.userId && x.role === "Admin"))
             const app = await fixture(ShopsController)
                 .set(new JwtAuthFacility({
                     secret: SECRET,
@@ -3226,7 +3240,7 @@ describe("JwtAuth", () => {
             const ProductPolicy = entityPolicy(Product)
                 .define("ShopAdmin", (i, e) => {
                     const shop = shops.find(x => e.shop === x.id)!
-                    return shop.users.some(x => x.uid === i.user.userId && x.role === "Admin")
+                    return shop.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
                 })
             class ProductsController {
                 @entityProvider(Product, "id")
@@ -3318,7 +3332,7 @@ describe("JwtAuth", () => {
             const ProductPolicy = entityPolicy(Product)
                 .define("ShopAdmin", (i, e) => {
                     const shop = shops.find(x => e.shop === x.id)!
-                    return shop.users.some(x => x.uid === i.user.userId && x.role === "Admin")
+                    return shop.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
                 })
             class ProductsController {
                 @route.get(":id")
@@ -3410,7 +3424,7 @@ describe("JwtAuth", () => {
             const ProductPolicy = entityPolicy(Product)
                 .define("ShopAdmin", (i, e) => {
                     const shop = shops.find(x => e.shop === x.id)!
-                    return shop.users.some(x => x.uid === i.user.userId && x.role === "Admin")
+                    return shop.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
                 })
             class ProductsController {
                 @route.get(":id")
@@ -3455,7 +3469,7 @@ describe("JwtAuth", () => {
             const ProductPolicy = entityPolicy(Product)
                 .define("ShopAdmin", (i, e) => {
                     const shop = shops.find(x => e.shop === x.id)!
-                    return shop.users.some(x => x.uid === i.user.userId && x.role === "Admin")
+                    return shop.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
                 })
             class ProductsController {
                 @route.get(":id")
