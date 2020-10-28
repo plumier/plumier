@@ -424,7 +424,7 @@ describe("Route Generator", () => {
         it("Should able to set custom authorizer from entity", async () => {
             @route.controller()
             @domain()
-            @authorize.custom(x => x.user.role === "Admin", { access: "route" })
+            @authorize.custom(x => (x.user && x.user.role) === "Admin", { access: "route" })
             class User {
                 constructor(
                     public name: string,

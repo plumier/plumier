@@ -15,6 +15,7 @@ import { promisify } from "util"
 
 import { EntityProviderQuery, RoleField } from "./authorization"
 import { Class } from "./common"
+import { domain } from './decorator/common'
 import { HttpStatus } from "./http-status"
 
 const copyFileAsync = promisify(copyFile)
@@ -417,7 +418,7 @@ export interface AuthorizationContext {
     value?: any
     parentValue?: any
     role: string[]
-    user: any
+    user: { [key: string]: any } | undefined
     ctx: ActionContext
     metadata: Metadata
     access: AccessModifier
