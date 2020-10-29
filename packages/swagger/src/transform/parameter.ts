@@ -41,18 +41,12 @@ function describeParameters(route: RouteInfo) {
 }
 
 function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObject[] {
+    // split decorator binding defined with class into flat properties
     if (node.typeName === "Class" && node.binding) {
         const meta = reflect(node.type as Class)
         const isPartial = !!node.meta.decorators.find(isPartialValidator)
         const result = []
         for (const prop of meta.properties) {
-            // skip nested models on query parameters
-            if (prop.typeClassification !== "Primitive") continue
-            // skip ID parameter on query parameter 
-            if (prop.decorators.find(isGenericId)) continue
-            // skip readOnly property
-            if (prop.decorators.find(isApiReadOnly)) continue
-            
             result.push(<ParameterObject>{
                 name: prop.name, in: node.kind, required: isPartial ? false : !!prop.decorators.find(isRequired),
                 schema: transformType(prop.type, ctx, { decorators: prop.decorators }),
