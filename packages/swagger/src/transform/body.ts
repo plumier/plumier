@@ -2,8 +2,8 @@ import { Class, entityHelper, FormFile, RelationDecorator, RouteInfo } from "@pl
 import { ContentObject, ReferenceObject, RequestBodyObject, SchemaObject } from "openapi3-ts"
 import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
 
-import { describeParameters, ParameterNode } from "./parameter"
-import { addRelationProperties, getRequiredProps, transformType } from "./schema"
+import { addRelationProperties, analyzeParameters, ParameterNode } from "./parameter"
+import { getRequiredProps, transformType } from "./schema"
 import { TransformContext } from "./shared"
 
 
@@ -73,7 +73,7 @@ function transformFileBody(nodes: ParameterNode[], ctx: TransformContext): Reque
 function transformBody(route: RouteInfo, ctx: TransformContext): RequestBodyObject | undefined {
     const isFormFile = (par: ParameterNode) => (Array.isArray(par.type) && par.type[0] === FormFile) || par.type === FormFile || par.binding?.name === "formFile"
     if (route.method !== "post" && route.method !== "put" && route.method !== "patch") return
-    const pars = describeParameters(route)
+    const pars = analyzeParameters(route)
         .filter(x => x.kind === "undecided")
         .filter(x => !["ctx", "request", "user", "custom"].some(y => y === x.binding?.name))
     if (pars.some(x => isFormFile(x)))

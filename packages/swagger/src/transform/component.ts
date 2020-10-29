@@ -3,7 +3,7 @@ import { ComponentsObject, SchemaObject, SecuritySchemeObject } from "openapi3-t
 import reflect from "tinspector"
 
 import { refFactory, transformType } from "./schema"
-import { TransformContext } from "./shared"
+import { BaseTransformContext, TransformContext } from "./shared"
 
 type SchemasObject = { [key: string]: SchemaObject }
 
@@ -33,7 +33,7 @@ const defaultSchemas: { [key: string]: SchemaObject } = {
     }
 }
 
-function createSchema(obj: Class, ctx: TransformContext): SchemaObject {
+function createSchema(obj: Class, ctx: BaseTransformContext): SchemaObject {
     const meta = reflect(obj)
     const properties: SchemasObject = {}
     for (const prop of meta.properties) {
@@ -42,7 +42,7 @@ function createSchema(obj: Class, ctx: TransformContext): SchemaObject {
     return { type: "object", properties }
 }
 
-function getUnregisterDependentTypes(type: Class, ctx: TransformContext): Class[] {
+function getUnregisterDependentTypes(type: Class, ctx: BaseTransformContext): Class[] {
     const meta = reflect(type)
     const registered = Array.from(ctx.map.keys())
     const types = []
@@ -59,7 +59,7 @@ function getUnregisterDependentTypes(type: Class, ctx: TransformContext): Class[
     return types;
 }
 
-function transformComponent(ctx: TransformContext): ComponentsObject {
+function transformComponent(ctx: BaseTransformContext): ComponentsObject {
     const getRef = refFactory(ctx.map)
     const types = Array.from(ctx.map.keys())
     const bearer: SecuritySchemeObject = { type: "http", scheme: "bearer", bearerFormat: "JWT" }

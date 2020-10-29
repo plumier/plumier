@@ -4,9 +4,9 @@ import { InfoObject, OpenApiBuilder } from "openapi3-ts"
 import { transformComponent } from "./component"
 import { transformPaths } from "./path"
 import { refFactory } from "./schema"
-import { TransformContext } from "./shared"
+import { BaseTransformContext, TransformContext } from "./shared"
 
-function transform(routes: RouteMetadata[], ctx: TransformContext, info?: InfoObject) {
+function transform(routes: RouteMetadata[], ctx: BaseTransformContext, info?: InfoObject) {
     const paths = transformPaths(routes, ctx)
     const components = transformComponent(ctx)
     return OpenApiBuilder.create({

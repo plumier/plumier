@@ -73,7 +73,7 @@ function parseOrder(order?: string) {
 }
 
 function normalizeSelect(type: Class, dSelect: string[]) {
-    const isArrayRelation = (prop:PropertyReflection) => Array.isArray(prop.type) && !!prop.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation");
+    const isArrayRelation = (prop: PropertyReflection) => Array.isArray(prop.type) && !!prop.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation");
     const defaultSelection = reflect(type).properties
         // default, exclude array (one to many) properties 
         .filter(x => x.name && !isArrayRelation(x))
@@ -102,7 +102,7 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
     readonly repo: Repository<T>
 
     constructor(fac: ((x: Class<T>) => Repository<T>)) {
-        const { types } = getGenericTypeParameters(this)
+        const { types } = getGenericTypeParameters(this.constructor as Class)
         this.entityType = types[0]
         this.repo = fac(this.entityType)
     }
@@ -168,11 +168,10 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     readonly repo: OneToManyRepository<P, T>
 
     constructor(fac: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
-        const { types, meta } = getGenericTypeParameters(this)
-        this.parentEntityType = types[0]
-        this.entityType = types[1]
-        const oneToMany = meta.decorators.find((x: RelationPropertyDecorator): x is RelationPropertyDecorator => x.kind === "plumier-meta:relation-prop-name")
-        this.relation = oneToMany!.name
+        const info = getGenericControllerRelation(this.constructor as Class)
+        this.parentEntityType = info.parentEntityType
+        this.entityType = info.entityType
+        this.relation = info.relation
         this.repo = fac(this.parentEntityType, this.entityType, this.relation)
     }
 
@@ -316,8 +315,7 @@ function updateGenericControllerRegistry(cls: Class) {
     genericControllerRegistry.set(cls, true)
 }
 
-function getGenericTypeParameters(cls: any) {
-    const controller: Class = cls.constructor
+function getGenericTypeParameters(controller: Class) {
     const meta = reflect(controller)
     const genericDecorator = meta.decorators
         .find((x: GenericTypeDecorator): x is GenericTypeDecorator => x.kind == "GenericType" && x.target === controller)
@@ -325,6 +323,15 @@ function getGenericTypeParameters(cls: any) {
         types: genericDecorator!.types.map(x => x as Class),
         meta
     }
+}
+
+function getGenericControllerRelation(ctl: Class) {
+    const { types, meta } = getGenericTypeParameters(ctl)
+    const parentEntityType = types[0]
+    const entityType = types[1]
+    const oneToMany = meta.decorators.find((x: RelationPropertyDecorator): x is RelationPropertyDecorator => x.kind === "plumier-meta:relation-prop-name")
+    const relation = oneToMany!.name
+    return { parentEntityType, entityType, relation }
 }
 
 function copyDecorators(decorators: any[], controller: Class) {
@@ -516,5 +523,5 @@ export {
     IdentifierResult, createGenericControllers, genericControllerRegistry, updateGenericControllerRegistry,
     RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, getGenericControllerOneToOneRelations,
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, DefaultRepository, DefaultOneToManyRepository,
-    parseSelect, applyTo
+    parseSelect, applyTo, getGenericControllerRelation
 }

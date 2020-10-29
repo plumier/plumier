@@ -4,7 +4,7 @@ import { OperationObject, PathItemObject, PathObject, PathsObject } from "openap
 import { transformBody } from "./body"
 import { transformParameters } from "./parameter"
 import { transformResponses } from "./response"
-import { TransformContext, isDescription, isTag } from './shared'
+import { TransformContext, isDescription, isTag, BaseTransformContext } from './shared'
 
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
@@ -27,7 +27,7 @@ function transformUrl(url: string) {
 // ----------------------------- TRANSFORM ----------------------------- //
 // --------------------------------------------------------------------- //
 
-function transformVirtualRoutes(routes: VirtualRoute[], ctx: TransformContext): [string, PathItemObject][] {
+function transformVirtualRoutes(routes: VirtualRoute[], ctx: BaseTransformContext): [string, PathItemObject][] {
     return routes.map(x => {
         return [x.url, <PathItemObject>{
             [`${x.method}`]: x.openApiOperation ?? <OperationObject>{
@@ -44,7 +44,7 @@ function transformVirtualRoutes(routes: VirtualRoute[], ctx: TransformContext): 
     })
 }
 
-function transformPaths(routes: RouteMetadata[], ctx: TransformContext) {
+function transformPaths(routes: RouteMetadata[], ctx: BaseTransformContext) {
     const virtualPaths = transformVirtualRoutes(routes.filter((x): x is VirtualRoute => x.kind === "VirtualRoute"), ctx)
     const group = groupRoutes(routes.filter((x): x is RouteInfo => x.kind === "ActionRoute"))
     return Object.keys(group)
@@ -56,7 +56,7 @@ function transformPaths(routes: RouteMetadata[], ctx: TransformContext) {
         }, {} as PathObject)
 }
 
-function transformPath(path: string, route: RouteInfo[], ctx: TransformContext): [string, PathItemObject] {
+function transformPath(path: string, route: RouteInfo[], ctx: BaseTransformContext): [string, PathItemObject] {
     const item = route.map(x => transformOperation(x, ctx))
         .reduce((result, [method, opr]) => {
             result[method] = opr
@@ -65,17 +65,17 @@ function transformPath(path: string, route: RouteInfo[], ctx: TransformContext):
     return [transformUrl(path), item]
 }
 
-function transformOperation(route: RouteInfo, ctx: TransformContext): [HttpMethod, OperationObject] {
+function transformOperation(route: RouteInfo, ctx: BaseTransformContext): [HttpMethod, OperationObject] {
     const isPublic = route.access === "Public"
     const desc = route.action.decorators.find(isDescription)
     const tags = route.controller.decorators.filter(isTag).map(x => x.tag)
     if (tags.length === 0) tags.push(route.controller.name.replace(/controller$/i, ""))
     const secured = ctx.config.enableAuthorization && !isPublic
     const bearer: any[] = []
-    const parameters = transformParameters(route, ctx)
-    const requestBody = transformBody(route, ctx)
+    const parameters = transformParameters(route, { ...ctx, route })
+    const requestBody = transformBody(route, { ...ctx, route })
     const operation: OperationObject = {
-        responses: transformResponses(route, ctx, isPublic),
+        responses: transformResponses(route, { ...ctx, route }, isPublic),
         tags, parameters, requestBody, description: desc?.desc
     }
     if (secured) operation.security = [{ bearer }]

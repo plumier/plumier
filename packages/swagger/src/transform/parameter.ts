@@ -1,44 +1,10 @@
-import { x } from '@hapi/joi'
-import { BindingDecorator, Class, FormFile, RouteInfo } from "@plumier/core"
+import { Class, FormFile, RouteInfo } from "@plumier/core"
 import { ParameterObject } from "openapi3-ts"
-import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
+import reflect from "tinspector"
 
-import { addRelationProperties, transformType } from "./schema"
-import { isBind, isDescription, isName, isPartialValidator, isRequired, TransformContext, isGenericId, isApiReadOnly } from "./shared"
-
-interface ParameterNode {
-    // undecided: assume that all non decorated parameters can be body request
-    kind: "path" | "query" | "header" | "cookie" | "undecided"
-    name: string,
-    required: boolean
-    binding?: BindingDecorator
-    typeName: "Class" | "Array" | "Primitive"
-    type: Class | Class[] | undefined,
-    meta: ParameterReflection | PropertyReflection
-}
-
-function describeParameter(par: ParameterReflection, route: RouteInfo) {
-    const obj = <ParameterNode>{ kind: "undecided", name: par.name, typeName: par.typeClassification!, required: false, type: par.type, meta: par }
-    const urlParams = route.url.split("/").filter(x => x.startsWith(":")).map(x => x.substr(1))
-    if (urlParams.some(x => x.toLowerCase() === route.paramMapper.alias(par.name).toLowerCase())) {
-        obj.kind = "path"
-        obj.name = route.paramMapper.alias(par.name).toLowerCase()
-    }
-    for (const dec of par.decorators) {
-        if (isRequired(dec)) obj.required = true
-        if (isName(dec)) obj.name = dec.alias
-        else if (isBind(dec)) {
-            obj.binding = dec
-            if (dec.name === "query" || dec.name === "header" || dec.name === "cookie")
-                obj.kind = dec.name
-        }
-    }
-    return obj
-}
-
-function describeParameters(route: RouteInfo) {
-    return route.action.parameters.map(x => describeParameter(x, route))
-}
+import { analyzeParameters, ParameterNode } from "./parameter-analizer"
+import { transformType } from "./schema"
+import { isApiReadOnly, isDescription, isGenericId, isPartialValidator, isRequired, TransformContext } from "./shared"
 
 function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObject[] {
     if (node.typeName === "Class" && node.binding) {
@@ -82,7 +48,7 @@ function transformNodes(nodes: ParameterNode[], ctx: TransformContext): Paramete
 }
 
 function transformParameters(route: RouteInfo, ctx: TransformContext) {
-    const nodes = describeParameters(route)
+    const nodes = analyzeParameters(route)
     const result: ParameterObject[] = []
     let candidates = []
     for (const node of nodes) {
@@ -109,4 +75,4 @@ function transformParameters(route: RouteInfo, ctx: TransformContext) {
     return result
 }
 
-export { describeParameters, transformParameters, ParameterNode }
+export { analyzeParameters, transformParameters, ParameterNode }
