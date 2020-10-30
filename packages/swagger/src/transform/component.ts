@@ -7,31 +7,7 @@ import { BaseTransformContext, TransformContext } from "./shared"
 
 type SchemasObject = { [key: string]: SchemaObject }
 
-const defaultSchemas: { [key: string]: SchemaObject } = {
-    "System-ValidationError": {
-        type: "object",
-        properties: {
-            status: { type: "number" },
-            message: {
-                type: "array",
-                items: {
-                    type: "object",
-                    properties: {
-                        path: { type: "array", items: { type: "string" } },
-                        messages: { type: "array", items: { type: "string" } }
-                    }
-                }
-            }
-        }
-    },
-    "System-DefaultErrorMessage": {
-        type: "object",
-        properties: {
-            status: { type: "number" },
-            message: { type: "string" }
-        }
-    }
-}
+const defaultSchemas: { [key: string]: SchemaObject } = {}
 
 function createSchema(obj: Class, ctx: BaseTransformContext): SchemaObject {
     const meta = reflect(obj)

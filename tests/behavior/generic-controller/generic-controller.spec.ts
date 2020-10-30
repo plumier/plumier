@@ -1088,7 +1088,7 @@ describe("Open Api", () => {
         it("Should generate GET /animal properly", async () => {
             @route.controller()
             class Animal {
-                @reflect.noop()
+                @authorize.filter()
                 name: string
             }
             const koa = await createApp({ controller: Animal }, { mode: "production" })
@@ -1247,7 +1247,7 @@ describe("Open Api", () => {
         it("Should generate GET /animals properly", async () => {
             @route.controller()
             class Animal {
-                @reflect.noop()
+                @authorize.filter()
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
@@ -1393,7 +1393,7 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
-                @reflect.noop()
+                @authorize.filter()
                 tag: string
             }
             const koa = await createApp({ controller: Animal }, { mode: "production" })

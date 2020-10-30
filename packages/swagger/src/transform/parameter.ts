@@ -1,35 +1,40 @@
-import { Class, FormFile, RouteInfo } from "@plumier/core"
+import { Class, EntityFilterDecorator, FormFile, RouteInfo } from "@plumier/core"
 import { ParameterObject } from "openapi3-ts"
 import reflect from "tinspector"
 
-import { analyzeParameters, ParameterNode } from "./parameter-analizer"
-import { transformType } from "./schema"
-import { isApiReadOnly, isDescription, isGenericId, isPartialValidator, isRequired, TransformContext } from "./shared"
+import { analyzeParameters, ParameterNode } from "./parameter-analyzer"
+import { transformType, transformTypeAdvance, TransformTypeOption } from "./schema"
+import { isDescription, TransformContext } from "./shared"
+
+function createParameterObject(node: ParameterNode, ctx: TransformContext, opt?: Partial<TransformTypeOption>) {
+    const desc = node.meta.decorators.find(isDescription)
+    const schema = transformTypeAdvance(node.type, ctx, { ...opt, decorators: node.meta.decorators })
+    return <ParameterObject>{
+        name: node.name, in: node.kind,
+        required: node.required ? true : undefined,
+        schema, description: desc?.desc
+    }
+}
 
 function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObject[] {
+    // if its an entity filter
+    if (node.meta.decorators.find((x: EntityFilterDecorator) => x.kind === "plumier-meta:entity-filter")) {
+        return [createParameterObject(node, ctx, { overrides: ["RelationAsId", "Filter"] })]
+    }
     // split decorator binding defined with class into flat properties
     if (node.typeName === "Class" && node.binding) {
         const meta = reflect(node.type as Class)
-        const isPartial = !!node.meta.decorators.find(isPartialValidator)
         const result = []
         for (const prop of meta.properties) {
             result.push(<ParameterObject>{
-                name: prop.name, in: node.kind, required: isPartial ? false : !!prop.decorators.find(isRequired),
+                name: prop.name, in: node.kind,
                 schema: transformType(prop.type, ctx, { decorators: prop.decorators }),
             })
         }
         return result
     }
     else {
-        const desc = node.meta.decorators.find(isDescription)
-        const schema = transformType(node.type, ctx, { decorators: node.meta.decorators })
-        const schemaWithRelation = addRelationProperties(schema, node.type ?? Object, ctx)
-        return [<ParameterObject>{
-            name: node.name, in: node.kind,
-            required: node.required,
-            schema: schemaWithRelation,
-            description: desc?.desc
-        }]
+        return [createParameterObject(node, ctx)]
     }
 }
 
@@ -54,7 +59,7 @@ function getParameterCandidates(nodes: ParameterNode[]) {
 }
 
 function transformParameters(route: RouteInfo, ctx: TransformContext) {
-    const reMapCandidate = (can: ParameterNode): ParameterNode => ({ ...can, kind: "query" })
+    const remapCandidate = (can: ParameterNode): ParameterNode => ({ ...can, kind: "query" })
     const nodes = getParameterCandidates(analyzeParameters(route))
     const result: ParameterObject[] = []
     let candidates = []
@@ -65,13 +70,13 @@ function transformParameters(route: RouteInfo, ctx: TransformContext) {
             result.push(...transformNode(node, ctx))
     }
     if (["put", "post", "patch"].some(x => x === route.method)) {
-        // check if all candidates is a primitive type then its should be spread name binding
+        // check if all candidates are primitive types then its should be spread name binding
         if (candidates.every(x => x.typeName === "Primitive"))
             return result
-        const canNodes = candidates.filter(x => x.typeName === "Primitive").map(reMapCandidate)
+        const canNodes = candidates.filter(x => x.typeName === "Primitive").map(remapCandidate)
         return result.concat(transformNodes(canNodes, ctx))
     }
-    return result.concat(transformNodes(candidates.map(reMapCandidate), ctx))
+    return result.concat(transformNodes(candidates.map(remapCandidate), ctx))
 }
 
 export { analyzeParameters, transformParameters, ParameterNode }

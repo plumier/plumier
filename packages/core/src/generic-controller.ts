@@ -18,7 +18,7 @@ import { Class, entityHelper } from "./common"
 import { api, ApiTagDecorator } from "./decorator/api"
 import { bind } from "./decorator/bind"
 import { domain } from "./decorator/common"
-import { DeleteColumnDecorator, RelationDecorator } from "./decorator/entity"
+import { DeleteColumnDecorator, entity, RelationDecorator } from "./decorator/entity"
 import { GenericControllerDecorator, route } from "./decorator/route"
 import { IgnoreDecorator, RouteDecorator } from "./route-generator"
 import {
@@ -115,18 +115,20 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
     }
 
     @decorateRoute("get", "")
+    @api.hideRelations()
     @reflect.type(["T"])
-    list(offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") @val.filter() filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
+    list(offset: number = 0, limit: number = 50, @entity.filter() @reflect.type("T") @val.partial("T") @val.filter() filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
         return this.repo.find(offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
     }
 
     @decorateRoute("post", "")
     @reflect.type(IdentifierResult, "TID")
-    async save(@reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
+    async save(@api.hideRelations() @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         return this.repo.insert(data)
     }
 
     @decorateRoute("get", ":id")
+    @api.hideRelations()
     @reflect.type("T")
     get(@val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
         return this.findByIdOrNotFound(id, parseSelect(this.entityType, select))
@@ -134,14 +136,14 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
 
     @decorateRoute("patch", ":id")
     @reflect.type(IdentifierResult, "TID")
-    async modify(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") @val.partial("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
+    async modify(@val.required() @reflect.type("TID") id: TID, @api.hideRelations() @reflect.type("T") @val.partial("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findByIdOrNotFound(id)
         return this.repo.update(id, data)
     }
 
     @decorateRoute("put", ":id")
     @reflect.type(IdentifierResult, "TID")
-    async replace(@val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
+    async replace(@val.required() @reflect.type("TID") id: TID, @api.hideRelations() @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findByIdOrNotFound(id)
         return this.repo.update(id, data)
     }
@@ -190,20 +192,22 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     }
 
     @decorateRoute("get", "")
+    @api.hideRelations()
     @reflect.type(["T"])
-    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @reflect.type("T") @val.partial("T") @val.filter() filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
+    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @entity.filter() @reflect.type("T") @val.partial("T") @val.filter() filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
         await this.findParentByIdOrNotFound(pid)
         return this.repo.find(pid, offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
     }
 
     @decorateRoute("post", "")
     @reflect.type(IdentifierResult, "TID")
-    async save(@val.required() @reflect.type("PID") pid: PID, @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
+    async save(@val.required() @reflect.type("PID") pid: PID, @api.hideRelations() @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
         return this.repo.insert(pid, data)
     }
 
     @decorateRoute("get", ":id")
+    @api.hideRelations()
     @reflect.type("T")
     async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
         await this.findParentByIdOrNotFound(pid)
@@ -212,7 +216,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
 
     @decorateRoute("patch", ":id")
     @reflect.type(IdentifierResult, "TID")
-    async modify(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @val.partial("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
+    async modify(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @api.hideRelations() @val.partial("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
         await this.findByIdOrNotFound(id)
         return this.repo.update(id, data)
@@ -220,7 +224,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
 
     @decorateRoute("put", ":id")
     @reflect.type(IdentifierResult, "TID")
-    async replace(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
+    async replace(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @api.hideRelations() @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
         await this.findByIdOrNotFound(id)
         return this.repo.update(id, data)
@@ -523,5 +527,5 @@ export {
     IdentifierResult, createGenericControllers, genericControllerRegistry, updateGenericControllerRegistry,
     RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, getGenericControllerOneToOneRelations,
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, DefaultRepository, DefaultOneToManyRepository,
-    parseSelect, applyTo, getGenericControllerRelation
+    parseSelect, applyTo, getGenericControllerRelation, RelationPropertyDecorator
 }

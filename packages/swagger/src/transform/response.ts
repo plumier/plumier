@@ -1,36 +1,26 @@
-import { RouteInfo, ApiResponseDecorator } from "@plumier/core"
-import { ResponseObject, ResponsesObject } from "openapi3-ts"
+import { RouteInfo, ApiResponseDecorator, ApiHideRelationDecorator } from "@plumier/core"
+import { ResponseObject, ResponsesObject, SchemaObject } from "openapi3-ts"
 
-import { transformType } from "./schema"
+import { SchemaOverrideType, transformType, transformTypeAdvance } from "./schema"
 import { TransformContext, isResponse } from "./shared"
 
-function validationResponse(): ResponsesObject {
-    return {
-        description: "Validation error",
-        content: {
-            "application/json": {
-                schema: { $ref: "#/components/schemas/System-ValidationError" }
-            },
+function successResponse(route: RouteInfo, ctx: TransformContext): SchemaObject {
+    const type = route.action.returnType
+    if (!!type) {
+        const overrides: SchemaOverrideType[] = []
+        // if contains @api.noRelation() then adds remove all relations
+        if (!!route.action.decorators.find((x: ApiHideRelationDecorator) => x.kind === "ApiNoRelation")) {
+            overrides.push("RemoveChildRelations")
+            overrides.push("RemoveReverseRelation")
+            overrides.push("RemoveArrayRelation")
         }
+        overrides.push("WriteonlyFields")
+        return { schema: transformTypeAdvance(type, ctx, { decorators: route.action.decorators, overrides }) }
     }
+    return { schema: { type: "object" } }
 }
 
-function securityResponse(description: string): ResponseObject {
-    return {
-        description,
-        content: {
-            "application/json": {
-                schema: { $ref: "#/components/schemas/System-DefaultErrorMessage" }
-            },
-        }
-    }
-}
-
-function successResponse(route: RouteInfo, ctx: TransformContext) {
-    return !!route.action.returnType ? { schema: transformType(route.action.returnType, ctx) } : { schema: { type: "object" } }
-}
-
-function responseFromDecorator(dec:ApiResponseDecorator, ctx:TransformContext){
+function responseFromDecorator(dec: ApiResponseDecorator, ctx: TransformContext) {
     return {
         [dec.status]: {
             description: "",
@@ -54,12 +44,6 @@ function transformResponses(route: RouteInfo, ctx: TransformContext, isPublic: b
                 "application/json": successResponse(route, ctx)
             }
         }
-    }
-    if (route.action.parameters.length > 0)
-        response["422"] = validationResponse()
-    if (secured) {
-        response["401"] = securityResponse("Unauthorized error")
-        response["403"] = securityResponse("Forbidden error")
     }
     return response
 }

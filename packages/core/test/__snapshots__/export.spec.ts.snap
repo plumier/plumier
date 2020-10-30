@@ -161,6 +161,7 @@ Object {
   "api": Object {
     "description": description,
     "enums": enums,
+    "hideRelations": hideRelations,
     "name": name,
     "readonly": readonly,
     "required": required,
@@ -195,6 +196,7 @@ Object {
   "ellipsis": ellipsis,
   "entity": Object {
     "deleteColumn": deleteColumn,
+    "filter": filter,
     "primaryId": primaryId,
     "relation": relation,
   },
@@ -239,6 +241,7 @@ Object {
   "genericControllerRegistry": Map {},
   "getChildValue": getChildValue,
   "getGenericControllerOneToOneRelations": getGenericControllerOneToOneRelations,
+  "getGenericControllerRelation": getGenericControllerRelation,
   "globAsync": globAsync,
   "hasKeyOf": hasKeyOf,
   "invoke": invoke,

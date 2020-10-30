@@ -10,6 +10,7 @@ interface ApiDescriptionDecorator { kind: "ApiDescription", desc: string }
 interface ApiTagDecorator { kind: "ApiTag", tag: string, description?: string, externalDoc?: string }
 interface ApiReadOnlyDecorator { kind: "ApiReadonly" }
 interface ApiWriteOnlyDecorator { kind: "ApiWriteOnly" }
+interface ApiHideRelationDecorator { kind: "ApiNoRelation" }
 namespace api {
 
     /**
@@ -70,9 +71,18 @@ namespace api {
     export function enums(...enums: string[]) {
         return decorateProperty(<ApiEnumDecorator>{ kind: "ApiEnum", enums })
     }
+
+    /**
+     * Specify enumeration value
+     * @param enums list of enumeration values
+     */
+    export function hideRelations() {
+        return decorate(<ApiHideRelationDecorator>{ kind: "ApiNoRelation" }, ["Method", "Parameter", "Property"])
+    }
 }
 
 export {
     ApiRequiredDecorator, ApiResponseDecorator, ApiFieldNameDecorator, ApiEnumDecorator,
-    ApiDescriptionDecorator, ApiTagDecorator, api, ApiReadOnlyDecorator, ApiWriteOnlyDecorator
+    ApiDescriptionDecorator, ApiTagDecorator, api, ApiReadOnlyDecorator, ApiWriteOnlyDecorator,
+    ApiHideRelationDecorator
 }

@@ -24,7 +24,6 @@ const isResponse = (dec: ApiResponseDecorator): dec is ApiResponseDecorator => d
 const isEnums = (dec: ApiEnumDecorator): dec is ApiEnumDecorator => dec.kind === "ApiEnum"
 const isTag = (dec: ApiTagDecorator): dec is ApiTagDecorator => dec.kind === "ApiTag"
 const isPartialValidator = (x: ValidatorDecorator) => x.type === "tc:validator" && x.validator === PartialValidator
-const isGenericId = (x: EntityIdDecorator) => x.kind === "plumier-meta:entity-id"
 const isApiReadOnly = (x: ApiReadOnlyDecorator) => x.kind === "ApiReadonly"
 const isApiWriteOnly = (x: ApiWriteOnlyDecorator) => x.kind === "ApiWriteOnly"
 const isRelation = (x: RelationDecorator): x is RelationDecorator => x.kind === "plumier-meta:relation"
@@ -41,5 +40,5 @@ interface TransformContext extends BaseTransformContext {
 
 export {
     isRequired, isBind, isName, isDescription, isResponse, isEnums, isTag, isRelation,
-    isPartialValidator, TransformContext, BaseTransformContext, isGenericId, isApiReadOnly, isApiWriteOnly
+    isPartialValidator, TransformContext, BaseTransformContext, isApiReadOnly, isApiWriteOnly
 }

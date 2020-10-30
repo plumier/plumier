@@ -149,6 +149,7 @@ Object {
   "api": Object {
     "description": description,
     "enums": enums,
+    "hideRelations": hideRelations,
     "name": name,
     "readonly": readonly,
     "required": required,
@@ -177,6 +178,7 @@ Object {
   "domain": domain,
   "entity": Object {
     "deleteColumn": deleteColumn,
+    "filter": filter,
     "primaryId": primaryId,
     "relation": relation,
   },

@@ -150,7 +150,6 @@ Array [
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -171,7 +170,6 @@ Array [
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -203,7 +201,6 @@ Array [
   Object {
     "in": "query",
     "name": "offset",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -211,7 +208,6 @@ Array [
   Object {
     "in": "query",
     "name": "limit",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -219,7 +215,6 @@ Array [
   Object {
     "in": "query",
     "name": "filter",
-    "required": false,
     "schema": Object {
       "$ref": "#/components/schemas/Animal",
     },
@@ -227,7 +222,6 @@ Array [
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -235,7 +229,6 @@ Array [
   Object {
     "in": "query",
     "name": "order",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -262,7 +255,6 @@ Array [
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -376,7 +368,6 @@ Array [
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -405,7 +396,6 @@ Array [
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -464,7 +454,6 @@ Array [
   Object {
     "in": "query",
     "name": "offset",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -472,7 +461,6 @@ Array [
   Object {
     "in": "query",
     "name": "limit",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -480,7 +468,6 @@ Array [
   Object {
     "in": "query",
     "name": "filter",
-    "required": false,
     "schema": Object {
       "allOf": Array [
         Object {
@@ -497,13 +484,20 @@ Array [
           },
           "type": "object",
         },
+        Object {
+          "properties": Object {
+            "tags": Object {
+              "readOnly": true,
+            },
+          },
+          "type": "object",
+        },
       ],
     },
   },
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -511,7 +505,6 @@ Array [
   Object {
     "in": "query",
     "name": "order",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -538,7 +531,6 @@ Array [
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -565,7 +557,6 @@ Array [
   Object {
     "in": "query",
     "name": "offset",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -573,7 +564,6 @@ Array [
   Object {
     "in": "query",
     "name": "limit",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -581,7 +571,6 @@ Array [
   Object {
     "in": "query",
     "name": "filter",
-    "required": false,
     "schema": Object {
       "$ref": "#/components/schemas/Tag",
     },
@@ -589,7 +578,6 @@ Array [
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -597,7 +585,6 @@ Array [
   Object {
     "in": "query",
     "name": "order",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -632,7 +619,6 @@ Array [
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -712,6 +698,15 @@ Object {
             },
             "type": "object",
           },
+          Object {
+            "properties": Object {
+              "tags": Object {
+                "readOnly": true,
+                "writeOnly": true,
+              },
+            },
+            "type": "object",
+          },
         ],
       },
     },
@@ -728,6 +723,15 @@ Object {
                   "type": "string",
                 },
                 "type": "array",
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "tags": Object {
+                "readOnly": true,
+                "writeOnly": true,
               },
             },
             "type": "object",
