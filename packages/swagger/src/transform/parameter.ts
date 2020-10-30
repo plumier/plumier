@@ -44,11 +44,10 @@ function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObj
     // split decorator binding defined with class into flat properties
     if (node.typeName === "Class" && node.binding) {
         const meta = reflect(node.type as Class)
-        const isPartial = !!node.meta.decorators.find(isPartialValidator)
         const result = []
         for (const prop of meta.properties) {
             result.push(<ParameterObject>{
-                name: prop.name, in: node.kind, required: isPartial ? false : !!prop.decorators.find(isRequired),
+                name: prop.name, in: node.kind,
                 schema: transformType(prop.type, ctx, { decorators: prop.decorators }),
             })
         }

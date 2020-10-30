@@ -1225,7 +1225,6 @@ Array [
   Object {
     "in": "header",
     "name": "str",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -1233,7 +1232,6 @@ Array [
   Object {
     "in": "header",
     "name": "num",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -1351,7 +1349,6 @@ Array [
   Object {
     "in": "query",
     "name": "str",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -1359,7 +1356,6 @@ Array [
   Object {
     "in": "query",
     "name": "num",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -1372,7 +1368,6 @@ Array [
   Object {
     "in": "query",
     "name": "str",
-    "required": true,
     "schema": Object {
       "type": "string",
     },
@@ -1380,7 +1375,6 @@ Array [
   Object {
     "in": "query",
     "name": "num",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -1474,7 +1468,6 @@ Array [
   Object {
     "in": "query",
     "name": "str",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -1482,7 +1475,6 @@ Array [
   Object {
     "in": "query",
     "name": "num",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
