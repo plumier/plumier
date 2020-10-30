@@ -75,32 +75,37 @@ function transformNodes(nodes: ParameterNode[], ctx: TransformContext): Paramete
     return result
 }
 
-function transformParameters(route: RouteInfo, ctx: TransformContext) {
-    const nodes = describeParameters(route)
-    const result: ParameterObject[] = []
-    let candidates = []
+function getParameterCandidates(nodes: ParameterNode[]) {
+    const result = []
     for (const node of nodes) {
         // skip ctx, request, body, user, custom, formFile
         if (["ctx", "request", "body", "user", "custom", "formFile"].some(x => x === node.binding?.name)) continue
         // skip form file name binding
         if ((Array.isArray(node.type) && node.type[0] === FormFile) || node.type === FormFile) continue
-        if (node.kind === "undecided") {
-            candidates.push(node)
-        }
-        else {
-            result.push(...transformNode(node, ctx))
-        }
+        result.push(node)
     }
-    if ((route.method === "post" || route.method === "put" || route.method === "patch")) {
-        // if post/put/patch if all candidates is primitive type then its a name binding for body, return immediately
+    return result
+}
+
+function transformParameters(route: RouteInfo, ctx: TransformContext) {
+    const reMapCandidate = (can: ParameterNode): ParameterNode => ({ ...can, kind: "query" })
+    const nodes = getParameterCandidates(describeParameters(route))
+    const result: ParameterObject[] = []
+    let candidates = []
+    for (const node of nodes) {
+        if (node.kind === "undecided")
+            candidates.push(node)
+        else
+            result.push(...transformNode(node, ctx))
+    }
+    if (["put", "post", "patch"].some(x => x === route.method)) {
+        // check if all candidates is a primitive type then its should be spread name binding
         if (candidates.every(x => x.typeName === "Primitive"))
             return result
-        // if post/put/patch only take the primitives (because custom class is a body)
-        candidates = candidates.filter(x => x.typeName === "Primitive")
+        const canNodes = candidates.filter(x => x.typeName === "Primitive").map(reMapCandidate)
+        return result.concat(transformNodes(canNodes, ctx))
     }
-    const queries = transformNodes(candidates.map(x => ({ ...x, kind: "query" })), ctx)
-    result.push(...queries)
-    return result
+    return result.concat(transformNodes(candidates.map(reMapCandidate), ctx))
 }
 
 export { describeParameters, transformParameters, ParameterNode }
