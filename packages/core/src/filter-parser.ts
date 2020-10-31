@@ -2,7 +2,7 @@ import { defaultConverters, Result, val, VisitorInvocation } from "typedconverte
 
 import { AuthorizeDecorator } from "./authorization"
 import { Class, entityHelper, isCustomClass } from "./common"
-import { RelationDecorator } from "./decorator/entity"
+import { EntityFilterDecorator, RelationDecorator } from "./decorator/entity"
 import { ActionContext, FilterQuery } from "./types"
 import reflect from "tinspector"
 
@@ -11,11 +11,16 @@ import reflect from "tinspector"
 // --------------------------------------------------------------------- //
 
 const findAuthorizeFilter = (x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize" && x.access === "filter"
-const notFilter = (i: VisitorInvocation, ctx: ActionContext) => !i.decorators.find(findAuthorizeFilter) || ctx.method !== "GET" || !i.parent || i.value === undefined || i.value === null
 const isNumber = (value: string) => !Number.isNaN(Number(value))
 const isDate = (value: string) => !Number.isNaN(new Date(value).getTime())
 const isComparableValue = (value: string) => isNumber(value) || isDate(value)
 const isComparableType = (type: Class) => type === Date || type === Number
+
+function notFilter(i: VisitorInvocation) {
+    if (i.value === undefined || i.value === null) return true
+    if (!i.parent) return true
+    return !i.parent.decorators.find((x: EntityFilterDecorator) => x.kind === "plumier-meta:entity-filter")
+}
 
 function convert(decorators: any[], type: Class, value: string): [any, string?] {
     if (isCustomClass(type)) {
@@ -38,7 +43,7 @@ function convert(decorators: any[], type: Class, value: string): [any, string?] 
 
 declare module "typedconverter" {
     namespace val {
-        export function filter(): (...args:any[]) => void
+        export function filter(): (...args: any[]) => void
     }
 }
 
@@ -62,7 +67,7 @@ val.filter = () => {
 // --------------------------------------------------------------------- //
 
 function partialFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
-    if (notFilter(i, ctx)) return i.proceed()
+    if (notFilter(i)) return i.proceed()
     const value = i.value.toString()
     if (!value.startsWith("*") && !value.endsWith("*")) return i.proceed()
     if (i.type !== String) return Result.error(i.value, i.path, "Partial filter only applicable on string field")
@@ -74,7 +79,7 @@ function partialFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
 }
 
 function rangeFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
-    if (notFilter(i, ctx)) return i.proceed()
+    if (notFilter(i)) return i.proceed()
     const value = i.value.toString()
     const tokens = value.split("...")
     if (tokens.length !== 2) return i.proceed()
@@ -92,7 +97,7 @@ function rangeFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
 }
 
 function conditionalFilter(i: VisitorInvocation, ctx: ActionContext, sign: string, type: "gte" | "gt" | "lte" | "lt") {
-    if (notFilter(i, ctx)) return i.proceed()
+    if (notFilter(i)) return i.proceed()
     const token = i.value.toString()
     if (!token.startsWith(sign)) return i.proceed()
     if (!isComparableType(i.type))
@@ -120,7 +125,7 @@ function lessThanConverter(i: VisitorInvocation, ctx: ActionContext) {
 }
 
 function notEqualConverter(i: VisitorInvocation, ctx: ActionContext) {
-    if (notFilter(i, ctx)) return i.proceed()
+    if (notFilter(i)) return i.proceed()
     const token = i.value.toString()
     if (!token.startsWith("!")) return i.proceed()
     const raw = token.substring(1)
@@ -130,7 +135,7 @@ function notEqualConverter(i: VisitorInvocation, ctx: ActionContext) {
 }
 
 function exactFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
-    if (notFilter(i, ctx)) return i.proceed()
+    if (notFilter(i)) return i.proceed()
     const [value, error] = convert(i.decorators, i.type, i.value.toString())
     if (error) return Result.error(i.value, i.path, error)
     return Result.create(<FilterQuery>{ type: "equal", value: value })
