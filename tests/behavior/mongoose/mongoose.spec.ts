@@ -10,6 +10,7 @@ import reflect, { noop, type } from "tinspector"
 import { fixture } from "../helper"
 import { ChildModel, } from "./cross-dependent/child"
 import { ParentModel, } from "./cross-dependent/parent"
+import {Parent as ParentError} from "./cross-error/parent"
 
 mongoose.set("useNewUrlParser", true)
 mongoose.set("useUnifiedTopology", true)
@@ -459,6 +460,11 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
+        })
+
+        it("Should throw error on cross reference error", async () => {
+            const { model } = new MongooseHelper(mongoose)
+            expect(() => model(ParentError)).toThrowErrorMatchingSnapshot()
         })
     })
 
@@ -1104,7 +1110,7 @@ describe("Response Projection Transformer", () => {
         @collection({ toJSON: { virtuals: true }, toObject: { virtuals: true } })
         class Dummy {
             constructor(
-                public name:string,
+                public name: string,
                 @collection.ref(Nest)
                 public child: Nest
             ) { }
@@ -1116,7 +1122,7 @@ describe("Response Projection Transformer", () => {
             booleanProp: true,
         })
         const added = await DummyModel.create(<Dummy>{
-            name:"Tada",
+            name: "Tada",
             child: child._id
         })
         class DummyController {
@@ -1126,7 +1132,7 @@ describe("Response Projection Transformer", () => {
                 return DummyModel.findById(added._id)
             }
         }
-        delete process.env.PLUM_MONGODB_URI 
+        delete process.env.PLUM_MONGODB_URI
         const app = await fixture(DummyController)
             .set(new JwtAuthFacility({ secret: "lorem", global: authorize.public() }))
             .set(new MongooseFacility())
@@ -1150,7 +1156,7 @@ describe("Response Projection Transformer", () => {
         @collection({ toJSON: { virtuals: true }, toObject: { virtuals: true } })
         class Dummy {
             constructor(
-                public name:string,
+                public name: string,
                 @collection.ref(Nest)
                 public child: Nest
             ) { }
@@ -1162,7 +1168,7 @@ describe("Response Projection Transformer", () => {
             booleanProp: true,
         })
         const added = await DummyModel.create(<Dummy>{
-            name:"Tada",
+            name: "Tada",
             child: child._id
         })
         class DummyController {
@@ -1172,7 +1178,7 @@ describe("Response Projection Transformer", () => {
                 return DummyModel.findById(added._id).populate("child")
             }
         }
-        delete process.env.PLUM_MONGODB_URI 
+        delete process.env.PLUM_MONGODB_URI
         const app = await fixture(DummyController)
             .set(new JwtAuthFacility({ secret: "lorem", global: authorize.public() }))
             .set(new MongooseFacility())
@@ -1197,7 +1203,7 @@ describe("Response Projection Transformer", () => {
         @collection({ toJSON: { virtuals: true }, toObject: { virtuals: true } })
         class Dummy {
             constructor(
-                public name:string,
+                public name: string,
                 @collection.ref([Nest])
                 public child: Nest[]
             ) { }
@@ -1209,7 +1215,7 @@ describe("Response Projection Transformer", () => {
             booleanProp: true,
         })
         const added = await DummyModel.create(<Dummy>{
-            name:"Tada",
+            name: "Tada",
             child: [child._id]
         })
         class DummyController {
@@ -1219,7 +1225,7 @@ describe("Response Projection Transformer", () => {
                 return DummyModel.findById(added._id)
             }
         }
-        delete process.env.PLUM_MONGODB_URI 
+        delete process.env.PLUM_MONGODB_URI
         const app = await fixture(DummyController)
             .set(new JwtAuthFacility({ secret: "lorem", global: authorize.public() }))
             .set(new MongooseFacility())
@@ -1243,7 +1249,7 @@ describe("Response Projection Transformer", () => {
         @collection({ toJSON: { virtuals: true }, toObject: { virtuals: true } })
         class Dummy {
             constructor(
-                public name:string,
+                public name: string,
                 @collection.ref([Nest])
                 public child: Nest[]
             ) { }
@@ -1255,7 +1261,7 @@ describe("Response Projection Transformer", () => {
             booleanProp: true,
         })
         const added = await DummyModel.create(<Dummy>{
-            name:"Tada",
+            name: "Tada",
             child: [child._id]
         })
         class DummyController {
@@ -1265,7 +1271,7 @@ describe("Response Projection Transformer", () => {
                 return DummyModel.findById(added._id).populate("child")
             }
         }
-        delete process.env.PLUM_MONGODB_URI 
+        delete process.env.PLUM_MONGODB_URI
         const app = await fixture(DummyController)
             .set(new JwtAuthFacility({ secret: "lorem", global: authorize.public() }))
             .set(new MongooseFacility())
