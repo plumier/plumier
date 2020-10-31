@@ -1,35 +1,69 @@
-import { domain, route, val, authorize, FormFile, api, relation } from "@plumier/core"
+import { entity, route } from "@plumier/core"
+import { JwtAuthFacility } from "@plumier/jwt"
 import { SwaggerFacility } from "@plumier/swagger"
 import Plumier, { WebApiFacility } from "plumier"
-import { JwtAuthFacility } from '@plumier/jwt'
-import reflect, { type } from "tinspector"
+import reflect, { noop, type } from "tinspector"
 
 
-@route.controller()
-@domain()
+export class Shop {
+    @entity.primaryId()
+    id: number
+
+    @noop()
+    name: string
+
+    @route.controller()
+    @entity.relation()
+    @type(x => [Item])
+    items: Item[]
+}
+
 export class User {
-    constructor(
-        @api.readonly()
-        id:number,
-        @val.required()
-        public name: string,
-        @val.required()
-        public email: string,
-        public dateOfBirth: Date,
-        @relation()
-        @type(x => [Animal])
-        public animal:Animal[]
-    ) { }
+    @entity.primaryId()
+    id: number
+
+    @noop()
+    name: string
+
+    @entity.relation()
+    @type(x => [Shop])
+    shops: Shop[]
 }
 
-@domain()
-export class Animal {
-    constructor(
-        public name:string,
-        @relation()
-        public owner:Animal
-    ){}
+export class Category {
+    @entity.primaryId()
+    id: number
+
+    @noop()
+    name: string
 }
+
+export class Item {
+    @entity.primaryId()
+    id: number
+
+    @noop()
+    name: string
+
+    @noop()
+    price: number
+
+    @entity.relation()
+    shop: Shop
+
+    @entity.relation()
+    @type(x => [Category])
+    categories: Category[]
+
+    @entity.relation()
+    createdBy: User
+}
+
+export class ItemController {
+    @route.post("")
+    save(data: Item) { }
+}
+
 
 
 new Plumier()

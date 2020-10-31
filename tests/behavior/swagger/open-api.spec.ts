@@ -6,21 +6,25 @@ import {
     Class,
     DefaultFacility,
     domain,
+    entity,
     Facility,
     FormFile,
+    generateRoutes,
     PlumierApplication,
+    RepoBaseOneToManyControllerGeneric,
     route,
+    RouteInfo,
     RouteMetadata,
     val,
-    entity
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import Plumier, { ControllerFacility, WebApiFacility } from "plumier"
-import { refFactory, SwaggerFacility } from "@plumier/swagger"
+import { refFactory, SwaggerFacility, transformTypeAdvance } from "@plumier/swagger"
+import { RelationPropertyDecorator } from 'core/src/types'
 import { IncomingMessage } from "http"
 import { Context } from "koa"
+import Plumier, { ControllerFacility, WebApiFacility } from "plumier"
 import supertest from "supertest"
-import reflect, { type } from "tinspector"
+import reflect, { decorateClass, generic, noop, type } from "tinspector"
 
 import { fixture } from "../helper"
 
@@ -53,6 +57,545 @@ describe("Open API 3.0 Generation", () => {
             .initialize()
     }
 
+    describe("Schema Override", () => {
+        describe("Filter", () => {
+            it("Should hide all fields on filter override", async () => {
+                class Item {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @noop()
+                    price: number
+
+                    @noop()
+                    basePrice: number
+                }
+                class ItemController {
+                    @route.get("")
+                    list(@entity.filter() filter: Item) { }
+                }
+                const app = await createApp(ItemController)
+                const { body } = await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/item"].get.parameters).toMatchSnapshot()
+            })
+            it("Should show field that is authorized for filter", async () => {
+                class Item {
+                    @entity.primaryId()
+                    id: number
+
+                    @authorize.filter()
+                    @noop()
+                    name: string
+
+                    @noop()
+                    price: number
+
+                    @noop()
+                    basePrice: number
+                }
+                class ItemController {
+                    @route.get("")
+                    list(@entity.filter() filter: Item) { }
+                }
+                const app = await createApp(ItemController)
+                const { body } = await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/item"].get.parameters).toMatchSnapshot()
+            })
+            it("Should show relation property as ID", async () => {
+                class Shop {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @entity.relation()
+                    @type(x => [Item])
+                    items: Item[]
+                }
+                class User {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @entity.relation()
+                    @type(x => [Shop])
+                    shops: Shop[]
+                }
+                class Category {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+                }
+                class Item {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @noop()
+                    price: number
+
+                    @authorize.filter()
+                    @entity.relation()
+                    shop: Shop
+
+                    @authorize.filter()
+                    @entity.relation()
+                    @type(x => [Category])
+                    categories: Category[]
+
+                    @authorize.filter()
+                    @entity.relation()
+                    createdBy: User
+                }
+                class ItemController {
+                    @route.get("")
+                    list(@entity.filter() filter: Item) { }
+                }
+                const app = await createApp(ItemController)
+                const { body } = await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/item"].get.parameters).toMatchSnapshot()
+            })
+        })
+        describe("Request Body", () => {
+            it("Should change relations with id type", async () => {
+                class Shop {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @entity.relation()
+                    @type(x => [Item])
+                    items: Item[]
+                }
+                class User {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @entity.relation()
+                    @type(x => [Shop])
+                    shops: Shop[]
+                }
+                class Category {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+                }
+                class Item {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @noop()
+                    price: number
+
+                    @entity.relation()
+                    shop: Shop
+
+                    @entity.relation()
+                    @type(x => [Category])
+                    categories: Category[]
+
+                    @entity.relation()
+                    createdBy: User
+                }
+                class ItemController {
+                    @route.post("")
+                    save(data: Item) { }
+                }
+                const app = await createApp(ItemController)
+                const { body } = await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/item"].post.requestBody).toMatchSnapshot()
+            })
+            it("Should hide reverse relation", async () => {
+                class Shop {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @entity.relation()
+                    @type(x => [Item])
+                    items: Item[]
+                }
+                class User {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @entity.relation()
+                    @type(x => [Shop])
+                    shops: Shop[]
+                }
+                class Category {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+                }
+                class Item {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @noop()
+                    price: number
+
+                    @entity.relation()
+                    shop: Shop
+
+                    @entity.relation()
+                    @type(x => [Category])
+                    categories: Category[]
+
+                    @entity.relation()
+                    createdBy: User
+                }
+                @generic.type(Shop, Item, Number, Number)
+                @decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: "items" })
+                class ItemController {
+                    @route.post("")
+                    save(@api.hideRelations() data: Item) { }
+                }
+                const app = await createApp(ItemController)
+                const { body } = await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/item"].post.requestBody).toMatchSnapshot()
+            })
+            it("Should respect readonly property", async () => {
+                class Shop {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @entity.relation()
+                    @type(x => [Item])
+                    items: Item[]
+                }
+                class User {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @entity.relation()
+                    @type(x => [Shop])
+                    shops: Shop[]
+                }
+                class Category {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+                }
+                class Item {
+                    @entity.primaryId()
+                    id: number
+
+                    @authorize.readonly()
+                    @noop()
+                    name: string
+
+                    @noop()
+                    price: number
+
+                    @entity.relation()
+                    shop: Shop
+
+                    @entity.relation()
+                    @type(x => [Category])
+                    categories: Category[]
+
+                    @entity.relation()
+                    createdBy: User
+                }
+                class ItemController {
+                    @route.post("")
+                    save(data: Item) { }
+                }
+                const app = await createApp(ItemController)
+                const { body } = await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/item"].post.requestBody).toMatchSnapshot()
+            })
+            it("Should add required property", async () => {
+                class Item {
+                    @entity.primaryId()
+                    id: number
+
+                    @val.required()
+                    name: string
+
+                    @val.required()
+                    price: number
+                }
+                class ItemController {
+                    @route.post("")
+                    save(data: Item) { }
+                }
+                const app = await createApp(ItemController)
+                const { body } = await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/item"].post.requestBody).toMatchSnapshot()
+            })
+            it("Should ignore required property when partial validation applied", async () => {
+                class Item {
+                    @entity.primaryId()
+                    id: number
+
+                    @val.required()
+                    name: string
+
+                    @val.required()
+                    price: number
+                }
+                class ItemController {
+                    @route.post("")
+                    save(@val.partial(Item) data: Item) { }
+                }
+                const app = await createApp(ItemController)
+                const { body } = await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/item"].post.requestBody).toMatchSnapshot()
+            })
+        })
+        describe("Response Body", () => {
+            it("Should hide array child relation", async () => {
+                class Category {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+                }
+                class Item {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @noop()
+                    price: number
+
+                    @entity.relation()
+                    @type(x => [Category])
+                    categories: Category[]
+                }
+                class ItemController {
+                    @route.get("")
+                    @api.hideRelations()
+                    @type(Item)
+                    get() { }
+                }
+                const app = await createApp(ItemController)
+                const { body } = await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/item"].get.responses).toMatchSnapshot()
+            })
+            it("Should hide array child relation on array response", async () => {
+                class Category {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+                }
+                class Item {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @noop()
+                    price: number
+
+                    @entity.relation()
+                    @type(x => [Category])
+                    categories: Category[]
+                }
+                class ItemController {
+                    @route.get("")
+                    @api.hideRelations()
+                    @type([Item])
+                    get() { }
+                }
+                const app = await createApp(ItemController)
+                const { body } = await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/item"].get.responses).toMatchSnapshot()
+            })
+            it("Should hide all child relations", async () => {
+                class Shop {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @entity.relation()
+                    @type(x => [Item])
+                    items: Item[]
+                }
+                class User {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @entity.relation()
+                    @type(x => [Shop])
+                    shops: Shop[]
+                }
+                class Category {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+                }
+                class Item {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @noop()
+                    price: number
+
+                    @entity.relation()
+                    shop: Shop
+
+                    @entity.relation()
+                    @type(x => [Category])
+                    categories: Category[]
+
+                    @entity.relation()
+                    createdBy: User
+                }
+                class ItemController {
+                    @route.get("")
+                    @api.hideRelations()
+                    @type(Item)
+                    get() { }
+                }
+                const app = await createApp(ItemController)
+                const { body } = await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/item"].get.responses).toMatchSnapshot()
+            })
+            it("Should remove reverse relations", async () => {
+                class Shop {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @entity.relation()
+                    @type(x => [Item])
+                    items: Item[]
+                }
+                class User {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @entity.relation()
+                    @type(x => [Shop])
+                    shops: Shop[]
+                }
+                class Category {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+                }
+                class Item {
+                    @entity.primaryId()
+                    id: number
+
+                    @noop()
+                    name: string
+
+                    @noop()
+                    price: number
+
+                    @entity.relation()
+                    shop: Shop
+
+                    @entity.relation()
+                    @type(x => [Category])
+                    categories: Category[]
+
+                    @entity.relation()
+                    createdBy: User
+                }
+                @generic.type(Shop, Item, Number, Number)
+                @decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: "items" })
+                class ItemController {
+                    @route.get("")
+                    @api.hideRelations()
+                    @type(Item)
+                    get() { }
+                }
+                const app = await createApp(ItemController)
+                const { body } = await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/item"].get.responses).toMatchSnapshot()
+            })
+        })
+    })
     describe("Info", () => {
         it("Should able to provide spec info", async () => {
             class UsersController {
@@ -158,36 +701,6 @@ describe("Open API 3.0 Generation", () => {
             expect(body.paths["/users"].get.parameters).toMatchSnapshot()
         })
 
-        it("Should hide query object relation", async () => {
-            @domain()
-            class SubQuery {
-                constructor(
-                    @entity.primaryId()
-                    public id: number
-                ) { }
-            }
-            @domain()
-            class Query {
-                constructor(
-                    public str: string,
-                    public num: number,
-                    public bool: boolean,
-                    public date: Date,
-                    @entity.relation()
-                    public sub: SubQuery
-                ) { }
-            }
-            class UsersController {
-                @route.get("")
-                get(query: Query) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .get("/swagger/swagger.json")
-                .expect(200)
-            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
-        })
-
         it("Should hide readonly field on query parameter object", async () => {
             @domain()
             class Query {
@@ -281,27 +794,6 @@ describe("Open API 3.0 Generation", () => {
             class Parameters {
                 constructor(
                     @val.required()
-                    public str: string,
-                    public num: number
-                ) { }
-            }
-            class UsersController {
-                @route.get("")
-                get(@bind.query() params: Parameters) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .get("/swagger/swagger.json")
-                .expect(200)
-            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
-        })
-
-        it("Should detect query parameter with @bind.query() of type object with readOnly property", async () => {
-            @domain()
-            class Parameters {
-                constructor(
-                    @api.readonly()
-                    public id: number,
                     public str: string,
                     public num: number
                 ) { }
@@ -476,74 +968,6 @@ describe("Open API 3.0 Generation", () => {
             class UsersController {
                 @route.get("")
                 get(@bind.query() @val.partial(Parameters) params: Parameters) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .get("/swagger/swagger.json")
-                .expect(200)
-            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
-        })
-
-        it("Should ignore nested model on query parameter", async () => {
-            @domain()
-            class Other {
-                constructor(
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class Parameters {
-                constructor(
-                    public str: string,
-                    public num: number,
-                    public other: Other
-                ) { }
-            }
-            class UsersController {
-                @route.get("")
-                get(@bind.query() params: Parameters) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .get("/swagger/swagger.json")
-                .expect(200)
-            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
-        })
-
-        it("Should ignore nested array on query parameter", async () => {
-            @domain()
-            class Parameters {
-                constructor(
-                    public str: string,
-                    public num: number,
-                    @reflect.type([String])
-                    public other: string[]
-                ) { }
-            }
-            class UsersController {
-                @route.get("")
-                get(@bind.query() params: Parameters) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .get("/swagger/swagger.json")
-                .expect(200)
-            expect(body.paths["/users"].get.parameters).toMatchSnapshot()
-        })
-
-        it("Should ignore Generic Identifier on query parameter", async () => {
-            @domain()
-            class Parameters {
-                constructor(
-                    @entity.primaryId()
-                    public id: number,
-                    public str: string,
-                    public num: number,
-                ) { }
-            }
-            class UsersController {
-                @route.get("")
-                get(@bind.query() params: Parameters) { }
             }
             const app = await createApp(UsersController)
             const { body } = await supertest(app.callback())
@@ -918,25 +1342,6 @@ describe("Open API 3.0 Generation", () => {
     })
 
     describe("Component Schema", () => {
-        it("Should detect system object component", async () => {
-            @domain()
-            class User {
-                constructor(
-                    public userName: string,
-                    public password: string
-                ) { }
-            }
-            class UsersController {
-                @route.post("")
-                save(user: User) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .post("/swagger/swagger.json")
-                .expect(200)
-            expect(body.components.schemas["System-DefaultErrorMessage"]).toMatchSnapshot()
-            expect(body.components.schemas["System-ValidationError"]).toMatchSnapshot()
-        })
         it("Should detect object component", async () => {
             @domain()
             class User {
@@ -1649,35 +2054,6 @@ describe("Open API 3.0 Generation", () => {
                 .expect(200)
             expect(body.components.schemas.User).toMatchSnapshot()
         })
-        it("Should able to set readonly property on nested inline model", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public id: number,
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public id: number,
-                    public userName: string,
-                    public password: string,
-                    @api.readonly()
-                    public animal: Animal
-                ) { }
-            }
-            class UsersController {
-                @route.post("")
-                save(user: User) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .post("/swagger/swagger.json")
-                .expect(200)
-            expect(body.components.schemas.User).toMatchSnapshot()
-            expect(body.components.schemas.Animal).toMatchSnapshot()
-        })
         it("Should able to set readonly property on nested model", async () => {
             @domain()
             class Animal {
@@ -1699,76 +2075,12 @@ describe("Open API 3.0 Generation", () => {
             class UsersController {
                 @route.post("")
                 save(user: User) { }
-                @route.post("animal")
-                animal(user: Animal) { }
             }
             const app = await createApp(UsersController)
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.components.schemas.User).toMatchSnapshot()
-        })
-        it("Should able to set readonly property on nested inline array model", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public id: number,
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public id: number,
-                    public userName: string,
-                    public password: string,
-                    @api.readonly()
-                    @reflect.type(x => [Animal])
-                    public animal: Animal[]
-                ) { }
-            }
-            class UsersController {
-                @route.post("")
-                @type(User)
-                save(user: User) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .post("/swagger/swagger.json")
-                .expect(200)
-            expect(body.components.schemas.User).toMatchSnapshot()
-            expect(body.components.schemas.Animal).toMatchSnapshot()
-        })
-        it("Should able to set readonly property on nested array model", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public id: number,
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public id: number,
-                    public userName: string,
-                    public password: string,
-                    @api.readonly()
-                    @reflect.type(x => [Animal])
-                    public animal: Animal[]
-                ) { }
-            }
-            class UsersController {
-                @route.post("")
-                save(user: User) { }
-                @route.post("animal")
-                animal(user: Animal) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .post("/swagger/swagger.json")
-                .expect(200)
-            expect(body.components.schemas.User).toMatchSnapshot()
+            expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
         })
         it("Should able to set write only property", async () => {
             @domain()
@@ -1781,42 +2093,15 @@ describe("Open API 3.0 Generation", () => {
                 ) { }
             }
             class UsersController {
-                @route.post("")
-                save(user: User) { }
+                @route.get("")
+                @type(User)
+                get() { }
             }
             const app = await createApp(UsersController)
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.components.schemas.User).toMatchSnapshot()
-        })
-        it("Should able to set write only property on nested inline model", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public id: number,
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public id: number,
-                    public userName: string,
-                    public password: string,
-                    @api.writeonly()
-                    public animal: Animal
-                ) { }
-            }
-            class UsersController {
-                @route.post("")
-                save(user: User) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .post("/swagger/swagger.json")
-                .expect(200)
-            expect(body.components.schemas.User).toMatchSnapshot()
+            expect(body.paths["/users"].get.responses).toMatchSnapshot()
         })
         it("Should able to set write only property on nested model", async () => {
             @domain()
@@ -1837,77 +2122,17 @@ describe("Open API 3.0 Generation", () => {
                 ) { }
             }
             class UsersController {
-                @route.post("")
-                save(user: User) { }
-                @route.post("animal")
-                animal(user: Animal) { }
+                @route.get("")
+                @type(User)
+                get() { }
             }
             const app = await createApp(UsersController)
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.components.schemas.User).toMatchSnapshot()
+            expect(body.paths["/users"].get.responses).toMatchSnapshot()
         })
-        it("Should able to set write only property on nested inline array model", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public id: number,
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public id: number,
-                    public userName: string,
-                    public password: string,
-                    @api.writeonly()
-                    @reflect.type(x => [Animal])
-                    public animal: Animal[]
-                ) { }
-            }
-            class UsersController {
-                @route.post("")
-                save(user: User) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .post("/swagger/swagger.json")
-                .expect(200)
-            expect(body.components.schemas.User).toMatchSnapshot()
-        })
-        it("Should able to set write only property on nested array model", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    public id: number,
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    public id: number,
-                    public userName: string,
-                    public password: string,
-                    @api.writeonly()
-                    @reflect.type(x => [Animal])
-                    public animal: Animal[]
-                ) { }
-            }
-            class UsersController {
-                @route.post("")
-                save(user: User) { }
-                @route.post("animal")
-                animal(user: Animal) { }
-            }
-            const app = await createApp(UsersController)
-            const { body } = await supertest(app.callback())
-                .post("/swagger/swagger.json")
-                .expect(200)
-            expect(body.components.schemas.User).toMatchSnapshot()
-        })
+
     })
 
     describe("Virtual Routes", () => {

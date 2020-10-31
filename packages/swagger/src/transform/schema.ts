@@ -1,12 +1,31 @@
-import { Class, entityHelper, FormFile, RelationDecorator } from "@plumier/core"
+import {
+    AuthorizeDecorator,
+    Class,
+    entityHelper,
+    FormFile,
+    getGenericControllerRelation,
+    RelationDecorator,
+    RelationPropertyDecorator,
+} from "@plumier/core"
 import { ReferenceObject, SchemaObject } from "openapi3-ts"
 import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
-import { isRequired, TransformContext, isEnums, isPartialValidator, isApiWriteOnly, isApiReadOnly } from './shared'
-import { options } from '@hapi/joi'
 
+import {
+    BaseTransformContext,
+    isApiReadOnly,
+    isApiWriteOnly,
+    isEnums,
+    isRelation,
+    isRequired,
+    TransformContext,
+} from "./shared"
 
+type SchemaOverrideType = "RelationAsId" | "Required" | "Filter" | "RemoveArrayRelation" |
+    "RemoveChildRelations" | "RemoveReverseRelation" | "ReadonlyFields" | "WriteonlyFields"
+type SchemaOverride = (modelType: (Class | Class[]), ctx: TransformContext) => SchemaObject | undefined
 interface TransformTypeOption {
-    decorators: any[],
+    decorators?: any[],
+    overrides?: SchemaOverrideType[]
 }
 
 function refFactory(map: Map<Class, string>) {
@@ -30,29 +49,162 @@ function refFactory(map: Map<Class, string>) {
 }
 
 // --------------------------------------------------------------------- //
-// --------------------------- TRANSFORM TYPE -------------------------- //
+// ------------------------------- HELPER ------------------------------ //
+// --------------------------------------------------------------------- //
+
+function addSchema(target: SchemaObject | ReferenceObject, schema: SchemaObject): SchemaObject {
+    if ("type" in target && target.type === "array")
+        return { ...target, items: addSchema(target.items!, schema) }
+    if ("allOf" in target && target.allOf)
+        return { allOf: [...target.allOf, schema] }
+    else
+        return { allOf: [target, schema] }
+}
+
+// --------------------------------------------------------------------- //
+// -------------------------- SCHEMA OVERRIDES ------------------------- //
 // --------------------------------------------------------------------- //
 
 
-function getRequiredProps(opt: (PropertyReflection | ParameterReflection)[] | Class) {
-    const props = Array.isArray(opt) ? opt : reflect(opt).properties
-    const required = []
-    for (const prop of props) {
-        const isReq = !!prop.decorators.find(isRequired)
-        if (isReq) required.push(prop.name)
-    }
-    return required.length > 0 ? required : undefined
+function getMetadata(modelType: (Class | Class[])) {
+    const type = Array.isArray(modelType) ? modelType[0] : modelType
+    return reflect(type)
 }
 
-function transformType(type: Class | Class[] | undefined, ctx: TransformContext, opt?: Partial<TransformTypeOption>): SchemaObject {
+function getReverseRelation(ctl: Class) {
+    const rel = getGenericControllerRelation(ctl)
+    const meta = reflect(rel.entityType)
+    for (const prop of meta.properties) {
+        if (prop.type === rel.parentEntityType)
+            return prop.name
+    }
+}
+
+
+// add schema override to inform user that the relation can be filled with ID
+function addRelationAsIdOverride(modelType: (Class | Class[]), ctx: TransformContext) {
+    const meta = getMetadata(modelType)
+    const result: SchemaObject = { type: "object", properties: {} }
+    for (const property of meta.properties) {
+        const relation = property.decorators.find((x: RelationDecorator): x is RelationDecorator => x.kind === "plumier-meta:relation")
+        if (relation) {
+            const isArray = property.typeClassification === "Array"
+            const propType = isArray ? property.type[0] : property.type
+            const idType = entityHelper.getIdType(propType)
+            result.properties![property.name] = transformType(isArray ? [idType] : idType, ctx)
+        }
+    }
+    return Object.keys(result.properties!).length === 0 ? undefined : result
+}
+
+function addRequiredOverride(modelType: (Class | Class[]), ctx: TransformContext) {
+    const meta = getMetadata(modelType)
+    const result: SchemaObject = { type: "object", required: [] }
+    for (const property of meta.properties) {
+        const isReq = !!property.decorators.find(isRequired)
+        if (isReq)
+            result.required!.push(property.name)
+    }
+    return result.required!.length === 0 ? undefined : result
+}
+
+function addFilterOverride(modelType: (Class | Class[]), ctx: TransformContext) {
+    const meta = getMetadata(modelType)
+    const result: SchemaObject = { type: "object", properties: {} }
+    for (const property of meta.properties) {
+        const isFilter = !!property.decorators.find((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize" && x.access === "filter")
+        if (!isFilter) {
+            result.properties![property.name] = { readOnly: true }
+        }
+    }
+    return Object.keys(result.properties!).length === 0 ? undefined : result
+}
+
+function removeArrayRelationsOverride(modelType: (Class | Class[]), ctx: TransformContext) {
+    const meta = getMetadata(modelType)
+    const result: SchemaObject = { type: "object", properties: {} }
+    for (const property of meta.properties) {
+        const relation = property.decorators.find(isRelation)
+        if (relation && Array.isArray(property.type)) {
+            result.properties![property.name] = { readOnly: true, writeOnly: true }
+        }
+    }
+    return Object.keys(result.properties!).length === 0 ? undefined : result
+}
+
+function removeReverseRelationsOverride(modelType: (Class | Class[]), ctx: TransformContext) {
+    const meta = getMetadata(modelType)
+    const result: SchemaObject = { type: "object", properties: {} }
+    const reverseDec = ctx.route.controller.decorators.find((x: RelationPropertyDecorator) => x.kind === "plumier-meta:relation-prop-name")
+    if (!reverseDec) return
+    const reverse = getReverseRelation(ctx.route.controller.type)!
+    for (const property of meta.properties) {
+        if (property.name === reverse) {
+            result.properties![property.name] = { readOnly: true, writeOnly: true }
+        }
+    }
+    return Object.keys(result.properties!).length === 0 ? undefined : result
+}
+
+function removeChildRelationsOverride(modelType: (Class | Class[]), ctx: TransformContext) {
+    const meta = getMetadata(modelType)
+    const result: SchemaObject = { type: "object", properties: {} }
+    for (const property of meta.properties) {
+        const relation = property.decorators.find(isRelation)
+        if (relation && property.typeClassification === "Class") {
+            const childMeta = getMetadata(property.type as Class)
+            const childSchema: SchemaObject = { type: "object", properties: {} }
+            for (const prop of childMeta.properties) {
+                const relation = prop.decorators.find(isRelation)
+                if (relation) {
+                    childSchema.properties![prop.name] = { readOnly: true, writeOnly: true }
+                }
+            }
+            result.properties![property.name] = addSchema(transformType(property.type, ctx), childSchema)
+        }
+    }
+    return Object.keys(result.properties!).length === 0 ? undefined : result
+}
+
+function addReadonlyFieldOverride(modelType: (Class | Class[]), ctx: TransformContext) {
+    const meta = getMetadata(modelType)
+    const result: SchemaObject = { type: "object", properties: {} }
+    for (const property of meta.properties) {
+        const readonly = property.decorators.find(isApiReadOnly)
+        if (readonly) {
+            result.properties![property.name] = { readOnly: true }
+        }
+    }
+    return Object.keys(result.properties!).length === 0 ? undefined : result
+}
+
+function addWriteonlyFieldOverride(modelType: (Class | Class[]), ctx: TransformContext) {
+    const meta = getMetadata(modelType)
+    const result: SchemaObject = { type: "object", properties: {} }
+    for (const property of meta.properties) {
+        const writeonly = property.decorators.find(isApiWriteOnly)
+        if (writeonly) {
+            result.properties![property.name] = { writeOnly: true }
+        }
+    }
+    return Object.keys(result.properties!).length === 0 ? undefined : result
+}
+
+// --------------------------------------------------------------------- //
+// --------------------------- MAIN FUNCTION --------------------------- //
+// --------------------------------------------------------------------- //
+
+function transformType(type: Class | Class[] | undefined, ctx: BaseTransformContext, opt?: Partial<TransformTypeOption>): SchemaObject {
     const option: TransformTypeOption = { decorators: [], ...opt }
     const getRef = refFactory(ctx.map)
-    const writeOnly = !!opt?.decorators?.find(isApiWriteOnly) ? true : undefined
-    const readOnly = !!opt?.decorators?.find(isApiReadOnly) ? true : undefined
-    const base = { readOnly, writeOnly }
+    const base: SchemaObject = {}
+    if (!!opt?.decorators?.find(isApiWriteOnly))
+        base.writeOnly = true
+    if (!!opt?.decorators?.find(isApiReadOnly))
+        base.readOnly = true
     if (type === undefined) return { ...base, type: "string", }
     if (type === String) {
-        const enums = option.decorators.find(isEnums)
+        const enums = option.decorators!.find(isEnums)
         if (enums) return { ...base, type: "string", enum: enums.enums }
         else return { ...base, type: "string" }
     }
@@ -66,41 +218,32 @@ function transformType(type: Class | Class[] | undefined, ctx: TransformContext,
         items: transformType(type[0], ctx, option)
     }
     else {
-        const schema = { $ref: `#/components/schemas/${getRef(type)}` }
-        const required = !opt?.decorators?.find(isPartialValidator) ? getRequiredProps(type) : undefined
-        if (writeOnly || readOnly || required)
-            return { allOf: [schema, { ...base, type: "object", required }] }
-        return schema
+        return { $ref: `#/components/schemas/${getRef(type)}` }
     }
 }
 
 
-
-function addSchema(target: SchemaObject | ReferenceObject, schema: SchemaObject): SchemaObject {
-    if ("type" in target && target.type === "array")
-        return { ...target, items: addSchema(target.items!, schema) }
-    if ("allOf" in target && target.allOf)
-        return { allOf: [...target.allOf, schema] }
-    else
-        return { allOf: [target, schema] }
+function transformTypeAdvance(type: Class | Class[] | undefined, ctx: TransformContext, opt: Partial<TransformTypeOption>): SchemaObject {
+    const extensions = new Map(<([SchemaOverrideType, SchemaOverride])[]>[
+        ["RelationAsId", addRelationAsIdOverride],
+        ["Required", addRequiredOverride],
+        ["Filter", addFilterOverride],
+        ["RemoveArrayRelation", removeArrayRelationsOverride],
+        ["RemoveChildRelations", removeChildRelationsOverride],
+        ["RemoveReverseRelation", removeReverseRelationsOverride],
+        ["ReadonlyFields", addReadonlyFieldOverride],
+        ["WriteonlyFields", addWriteonlyFieldOverride],
+    ])
+    const rootSchema = transformType(type, ctx, opt)
+    if (!type) return rootSchema
+    if (!opt.overrides) return rootSchema
+    return opt.overrides.reduce((x, ovr) => {
+        const ext = extensions.get(ovr)!
+        const extResult = ext(type, ctx)
+        return extResult ? addSchema(x, extResult) : x
+    }, rootSchema)
 }
 
-function addRelationProperties(rootSchema: SchemaObject, modelType: (Class | Class[]), ctx: TransformContext): SchemaObject {
-    const type = Array.isArray(modelType) ? modelType[0] : modelType
-    const meta = reflect(type)
-    const result: SchemaObject = { type: "object", properties: {} }
-    for (const property of meta.properties) {
-        const relation = property.decorators.find((x: RelationDecorator): x is RelationDecorator => x.kind === "plumier-meta:relation")
-        if (relation) {
-            const isArray = property.typeClassification === "Array"
-            const propType = isArray ? property.type[0] : property.type
-            const idType = entityHelper.getIdType(propType)
-            result.properties![property.name] = transformType(isArray ? [idType] : idType, ctx)
-        }
-    }
-    const count = Object.keys(result.properties!).length
-    return count == 0 ? rootSchema : addSchema(rootSchema, result)
-}
 
-export { refFactory, transformType, getRequiredProps, TransformTypeOption, addRelationProperties }
+export { refFactory, transformType, transformTypeAdvance, TransformTypeOption, SchemaOverrideType }
 
