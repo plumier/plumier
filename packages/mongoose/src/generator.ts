@@ -28,6 +28,8 @@ function getPropertyDefinition(parent: ClassReflection, prop: PropertyReflection
         else
             return { ...getDefinition(prop.type, store), ...option }
     }
+    if (!prop.type)
+        throw new Error(`Error generating Mongoose schema, data type of ${parent.name}.${prop.name} property is undefined`)
     return { type: prop.type, ...option }
 }
 
