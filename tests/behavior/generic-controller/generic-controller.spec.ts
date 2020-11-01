@@ -27,12 +27,14 @@ import {
     response,
     route,
     RouteMetadata,
+    ControllerBuilder,
+    Authenticated,
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { SwaggerFacility } from "@plumier/swagger"
 import { Context } from "koa"
 import { join } from "path"
-import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility, applyTo } from "plumier"
+import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "plumier"
 import supertest from "supertest"
 import reflect, { generic, noop, type } from "tinspector"
 
@@ -297,102 +299,6 @@ describe("Route Generator", () => {
             @route.controller()
             @domain()
             @authorize.route("admin", { applyTo: ["save", "replace", "delete", "modify"] })
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set authorization for specific method from entity using action mutation", async () => {
-            @route.controller()
-            @domain()
-            @authorize.route("admin", applyTo("mutations"))
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set authorization for specific method from entity using actions get", async () => {
-            @route.controller()
-            @domain()
-            @authorize.route("admin", applyTo("get"))
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set authorization for specific method from entity using actions put", async () => {
-            @route.controller()
-            @domain()
-            @authorize.route("admin", applyTo("put"))
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set authorization for specific method from entity using actions post", async () => {
-            @route.controller()
-            @domain()
-            @authorize.route("admin", applyTo("post"))
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set authorization for specific method from entity using actions patch", async () => {
-            @route.controller()
-            @domain()
-            @authorize.route("admin", applyTo("patch"))
-            class User {
-                constructor(
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = consoleLog.startMock()
-            await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set authorization for specific method from entity using actions delete", async () => {
-            @route.controller()
-            @domain()
-            @authorize.route("admin", applyTo("delete"))
             class User {
                 constructor(
                     public name: string,
@@ -1877,5 +1783,259 @@ describe("Request Hook", () => {
             .get("/user")
             .expect(200)
         expect(myFn.mock.calls).toMatchSnapshot()
+    })
+})
+
+describe("Controller Builder", () => {
+    describe("Enable Disable Routes", () => {
+        it("Should enable specific routes properly", async () => {
+            @route.controller(c => c.actions(["Post", "Put", "Patch", "Delete"]))
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should enable specific routes on one to many generic controller", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @reflect.type([Animal])
+                    @entity.relation()
+                    @route.controller(c => c.actions(["Post", "Put", "Patch", "Delete"]))
+                    public animals: Animal[]
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: [User] }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to enable all routes", async () => {
+            @route.controller(c => c.actions(["Post", "Put", "Patch", "Delete", "GetMany", "GetOne"]))
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to enable all routes using all key", async () => {
+            @route.controller(c => c.actions("All"))
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to enable mutator routes", async () => {
+            @route.controller(c => c.actions("Mutator"))
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to enable accessor routes", async () => {
+            @route.controller(c => c.actions("Accessor"))
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+    })
+    describe("Authorization", () => {
+        function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
+            return new Plumier()
+                .set({ ...config })
+                .set(new WebApiFacility())
+                .set(new ControllerFacility(opt))
+                .set(new JwtAuthFacility({ secret: "lorem" }))
+        }
+        it("Should able to authorize specific routes", async () => {
+            @route.controller(c => c.actions(["Post", "Put", "Patch", "Delete"], x => x.authorizeTo("Admin")))
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to authorize specific routes with multiple roles", async () => {
+            @route.controller(c => c.actions(["Post", "Put", "Patch", "Delete"], x => x.authorizeTo("Admin", "SuperAdmin")))
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to authorize specific routes on one to many generic controller", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @reflect.type([Animal])
+                    @entity.relation()
+                    @route.controller(c => c.actions(["Post", "Put", "Patch", "Delete"], x => x.authorizeTo("Admin")))
+                    public animals: Animal[]
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: [User] }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to authorize all routes", async () => {
+            @route.controller(c => c.actions(["Post", "Put", "Patch", "Delete", "GetMany", "GetOne"], x => x.authorizeTo("Admin")))
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to authorize all routes using all key", async () => {
+            @route.controller(c => c.actions("All", x => x.authorizeTo("Admin")))
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to authorize mutator routes", async () => {
+            @route.controller(c => c.actions("Mutator", x => x.authorizeTo("Admin")))
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to authorize accessor routes", async () => {
+            @route.controller(c => c.actions("Accessor", x => x.authorizeTo("Admin")))
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to combine between accessor and mutator", async () => {
+            @route.controller(c => {
+                c.actions("Mutator", x => x.authorizeTo("Admin"))
+                c.actions("Accessor", x => x.authorizeTo(Authenticated))
+            })
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+    })
+    describe("Set Path", () => {
+        it("Should able to set path", async () => {
+            @route.controller(c => c.setPath("users/:uid"))
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to set path on one to many generic controller", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    public email: string,
+                    @reflect.type([Animal])
+                    @entity.relation()
+                    @route.controller(c => c.setPath("users/:uid/animals/:aid"))
+                    public animals: Animal[]
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: [User] }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
     })
 })

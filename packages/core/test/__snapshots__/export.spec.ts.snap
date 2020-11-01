@@ -5,6 +5,7 @@ Object {
   "ActionResult": ActionResult,
   "AuthDecoratorImpl": AuthDecoratorImpl,
   "Authenticated": "Authenticated",
+  "ControllerBuilder": ControllerBuilder,
   "ControllerGeneric": ControllerGeneric,
   "CustomAuthPolicy": CustomAuthPolicy,
   "DefaultControllerGeneric": DefaultControllerGeneric,
@@ -170,7 +171,6 @@ Object {
     "writeonly": writeonly,
   },
   "appendRoute": appendRoute,
-  "applyTo": applyTo,
   "authPolicy": authPolicy,
   "authorize": AuthDecoratorImpl {},
   "bind": Object {
