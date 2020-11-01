@@ -2979,7 +2979,7 @@ describe("JwtAuth", () => {
                 @authorize.route("HasUser")
                 get() { return "Hello" }
             }
-            class HasUserAuth implements CustomAuthorizer {
+            class HasUserAuthPolicy implements CustomAuthorizer {
                 authorize(info: AuthorizationContext, location: 'Class' | 'Parameter' | 'Method'): boolean | Promise<boolean> {
                     return info.role.some(x => x === "user")
                 }
@@ -2987,7 +2987,7 @@ describe("JwtAuth", () => {
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({
                     secret: SECRET,
-                    authPolicies: [authPolicy().define("HasUser", new HasUserAuth())]
+                    authPolicies: [authPolicy().define("HasUser", new HasUserAuthPolicy())]
                 }))
                 .initialize()
             await Supertest(app.callback())
@@ -3024,6 +3024,46 @@ describe("JwtAuth", () => {
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .expect(200)
+        })
+        it("Should able to load external auth policy", async () => {
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: "./policies/*-policy.{ts,js}"
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
+        it("Should not load policy that not ends with policy", async () => {
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: "./policies/invalid*.{ts,js}"
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(401)
         })
         it("Should provide error info when applied on method", async () => {
             const fn = jest.fn()
