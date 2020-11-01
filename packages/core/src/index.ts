@@ -26,7 +26,7 @@ export { filterConverters } from "./filter-parser"
 export {
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
     IdentifierResult, getGenericControllerOneToOneRelations, genericControllerRegistry, DefaultOneToManyRepository, DefaultRepository,
-    parseSelect, applyTo, getGenericControllerRelation, RelationPropertyDecorator
+    parseSelect, getGenericControllerRelation, RelationPropertyDecorator, ControllerBuilder
 } from "./generic-controller"
 export { HttpStatus } from "./http-status";
 export { RequestHookMiddleware } from "./request-hook"

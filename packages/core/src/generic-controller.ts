@@ -34,6 +34,8 @@ import {
     RelationPropertyDecorator,
     Repository,
 } from "./types"
+import { name } from 'faker'
+import { authorize } from './decorator/authorize'
 
 
 // --------------------------------------------------------------------- //
@@ -51,6 +53,77 @@ class IdentifierResult<TID> {
     ) { }
 }
 
+type NameNotation = "Put" | "Post" | "Patch" | "Delete" | "GetMany" | "GetOne" | "All" | "Mutator" | "Accessor"
+type ActionName = "delete" | "list" | "get" | "modify" | "save" | "replace"
+
+interface ActionConfig {
+    authorize?: string[]
+}
+
+type ActionConfigMap = Map<ActionName, ActionConfig>
+
+interface GenericControllerConfig {
+    path?: string
+    map: ActionConfigMap
+    actions(): ActionName[]
+}
+
+function getActionName(method: NameNotation): ActionName[] {
+    if (method === "Delete") return ["delete"]
+    if (method === "GetMany") return ["list"]
+    if (method === "GetOne") return ["get"]
+    if (method === "Patch") return ["modify"]
+    if (method === "Post") return ["save"]
+    if (method === "Put") return ["replace"]
+    if (method === "Accessor") return ["list", "get"]
+    if (method === "Mutator") return ["delete", "modify", "save", "replace"]
+    return ["delete", "list", "get", "modify", "save", "replace"]
+}
+
+class ControllerBuilder {
+    private path?: string
+    private map: ActionConfigMap = new Map()
+    setPath(path: string): ControllerBuilder {
+        this.path = path
+        return this
+    }
+    actions(names: NameNotation | NameNotation[], cb?: (ab: ActionsBuilder) => ActionsBuilder): ControllerBuilder {
+        const config = new ActionsBuilder(this.map, Array.isArray(names) ? names : [names])
+        if (cb) cb(config)
+        return this
+    }
+    toObject(): GenericControllerConfig {
+        return {
+            map: this.map,
+            path: this.path,
+            actions() {
+                if (this.map.size === 0)
+                    return ["delete", "list", "get", "modify", "save", "replace"]
+                return Array.from(this.map.keys())
+            }
+        }
+    }
+}
+
+class ActionsBuilder {
+    constructor(private actions: ActionConfigMap, private names: NameNotation[]) {
+        this.setConfig(names, {})
+    }
+
+    private setConfig(names: NameNotation[], config: ActionConfig) {
+        for (const action of names) {
+            const actions = getActionName(action)
+            for (const act of actions) {
+                this.actions.set(act, config)
+            }
+        }
+    }
+
+    authorizeTo(...authorize: string[]): ActionsBuilder {
+        this.setConfig(this.names, { authorize })
+        return this
+    }
+}
 
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
@@ -359,7 +432,6 @@ function copyDecorators(decorators: any[], controller: Class) {
     return result.map(x => decorateClass(x, x[DecoratorOptionId]))
 }
 
-
 function createRouteDecorators(id: string) {
     return [
         decorateRoute("post", "", { applyTo: "save" }),
@@ -369,6 +441,25 @@ function createRouteDecorators(id: string) {
         decorateRoute("patch", `:${id}`, { applyTo: "modify" }),
         decorateRoute("delete", `:${id}`, { applyTo: "delete" }),
     ]
+}
+
+function ignoreActions(config: GenericControllerConfig): ((...args: any[]) => void) {
+    const includes = config.actions()
+    const actions = ["delete", "list", "get", "modify", "save", "replace"]
+    const applyTo = actions.filter(x => !includes.some(y => y === x))
+    if (applyTo.length === 0) return (...args: any[]) => { }
+    return route.ignore({ applyTo })
+}
+
+function authorizeActions(config: GenericControllerConfig) {
+    const actions = config.actions()
+    const result = []
+    for (const action of actions) {
+        const opt = config.map.get(action)
+        if (!opt || !opt.authorize) continue
+        result.push(authorize.custom({ policies: opt.authorize }, { access: "route", applyTo: action, tag: opt.authorize.join("|") }))
+    }
+    return result
 }
 
 const lastParam = /\/:\w*$/
@@ -385,7 +476,9 @@ function validatePath(path: string, entity: Class, oneToMany = false) {
     return keys
 }
 
-function createGenericController(entity: Class, decorator: GenericControllerDecorator, controller: Class<ControllerGeneric>, nameConversion: (x: string) => string) {
+
+function createGenericController(entity: Class, builder: ControllerBuilder, controller: Class<ControllerGeneric>, nameConversion: (x: string) => string) {
+    const config = builder.toObject()
     // get type of ID column on entity
     const idType = entityHelper.getIdType(entity)
     // create controller type dynamically 
@@ -394,22 +487,29 @@ function createGenericController(entity: Class, decorator: GenericControllerDeco
     let routePath = nameConversion(entity.name)
     let routeMap: any = {}
     const routes: ClassDecorator[] = []
-    if (decorator.path) {
-        const keys = validatePath(decorator.path, entity)
-        routePath = decorator.path.replace(lastParam, "")
+    if (config.path) {
+        const keys = validatePath(config.path, entity)
+        routePath = config.path.replace(lastParam, "")
         routeMap = { id: keys[0].name }
         routes.push(...createRouteDecorators(keys[0].name.toString()))
     }
     // copy @route.ignore() and @authorize on entity to the controller to control route generation
     const meta = reflect(entity)
     const decorators = copyDecorators([...meta.decorators, ...meta.removedDecorators ?? []], controller)
-    Reflect.decorate([...decorators, ...routes, route.root(routePath, { map: routeMap })], Controller)
+    Reflect.decorate([
+        ...decorators,
+        ...routes,
+        route.root(routePath, { map: routeMap }),
+        ignoreActions(config),
+        ...authorizeActions(config)
+    ], Controller)
     if (!meta.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag"))
         Reflect.decorate([api.tag(entity.name)], Controller)
     return Controller
 }
 
-function createOneToManyGenericController(entity: Class, decorator: GenericControllerDecorator, relation: Class, relationProperty: string, controller: Class<OneToManyControllerGeneric>, nameConversion: (x: string) => string) {
+function createOneToManyGenericController(entity: Class, builder: ControllerBuilder, relation: Class, relationProperty: string, controller: Class<OneToManyControllerGeneric>, nameConversion: (x: string) => string) {
+    const config = builder.toObject()
     // get type of ID column on parent entity
     const parentIdType = entityHelper.getIdType(entity)
     // get type of ID column on entity
@@ -420,9 +520,9 @@ function createOneToManyGenericController(entity: Class, decorator: GenericContr
     let routePath = `${nameConversion(entity.name)}/:pid/${relationProperty}`
     let routeMap: any = {}
     const routes = []
-    if (decorator.path) {
-        const keys = validatePath(decorator.path, entity, true)
-        routePath = decorator.path.replace(lastParam, "")
+    if (config.path) {
+        const keys = validatePath(config.path, entity, true)
+        routePath = config.path.replace(lastParam, "")
         routeMap = { pid: keys[0].name, id: keys[1].name }
         routes.push(...createRouteDecorators(keys[1].name.toString()))
     }
@@ -437,6 +537,8 @@ function createOneToManyGenericController(entity: Class, decorator: GenericContr
         route.root(routePath, { map: routeMap }),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
         decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: relationProperty }),
+        ignoreActions(config),
+        ...authorizeActions(config)
     ], Controller)
     if (!relProp.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag"))
         Reflect.decorate([api.tag(entity.name)], Controller)
@@ -444,13 +546,12 @@ function createOneToManyGenericController(entity: Class, decorator: GenericContr
 }
 
 function createGenericControllers(controller: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
-    const setting = genericControllerRegistry.get(controller)
     const meta = reflect(controller)
     const controllers = []
     // basic generic controller
     const basicDecorator = meta.decorators.find((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
     if (basicDecorator) {
-        const ctl = createGenericController(controller, basicDecorator, genericControllers[0], nameConversion)
+        const ctl = createGenericController(controller, basicDecorator.config, genericControllers[0], nameConversion)
         controllers.push(ctl)
     }
     // one to many controller on each relation property
@@ -463,7 +564,7 @@ function createGenericControllers(controller: Class, genericControllers: Generic
         relations.push({ name: prop.name, type: prop.type[0], decorator })
     }
     for (const relation of relations) {
-        const ctl = createOneToManyGenericController(controller, relation.decorator, relation.type, relation.name, genericControllers[1], nameConversion)
+        const ctl = createOneToManyGenericController(controller, relation.decorator.config, relation.type, relation.name, genericControllers[1], nameConversion)
         controllers.push(ctl)
     }
     return controllers
@@ -480,52 +581,9 @@ function getGenericControllerOneToOneRelations(type: Class) {
     return result
 }
 
-type ActionMember = keyof RepoBaseControllerGeneric | keyof RepoBaseOneToManyControllerGeneric
-
-/**
- * Get list of generic controller actions handles specific http methods
- * @param httpMethods http methods
- */
-function applyTo(...httpMethods: ("post" | "put" | "patch" | "delete" | "get")[]): { applyTo: ActionMember[] }
-/**
- * Get list of generic controller actions handles "post", "put", "patch" and "delete"
- * @param mutation 
- */
-function applyTo(mutation: "mutations"): { applyTo: ActionMember[] }
-function applyTo(...httpMethods: string[]): { applyTo: ActionMember[] } {
-    const result: ActionMember[] = []
-    for (const method of httpMethods) {
-        switch (method) {
-            case "post":
-                result.push("save")
-                break;
-            case "delete":
-                result.push("delete")
-                break;
-            case "get":
-                result.push("get")
-                result.push("list")
-                break;
-            case "put":
-                result.push("replace")
-                break;
-            case "patch":
-                result.push("modify")
-                break;
-            case "mutations":
-                result.push("save")
-                result.push("modify")
-                result.push("replace")
-                result.push("delete")
-                break;
-        }
-    }
-    return { applyTo: result };
-}
-
 export {
     IdentifierResult, createGenericControllers, genericControllerRegistry, updateGenericControllerRegistry,
     RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, getGenericControllerOneToOneRelations,
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, DefaultRepository, DefaultOneToManyRepository,
-    parseSelect, applyTo, getGenericControllerRelation, RelationPropertyDecorator
+    parseSelect, getGenericControllerRelation, RelationPropertyDecorator, ControllerBuilder
 }

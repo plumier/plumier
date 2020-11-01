@@ -4,6 +4,7 @@ exports[`Module Export Should export module properly 1`] = `
 Object {
   "ActionResult": ActionResult,
   "Authenticated": "Authenticated",
+  "ControllerBuilder": ControllerBuilder,
   "ControllerFacility": ControllerFacility,
   "DefaultDependencyResolver": DefaultDependencyResolver,
   "DefaultFacility": DefaultFacility,
@@ -157,7 +158,6 @@ Object {
     "tag": tag,
     "writeonly": writeonly,
   },
-  "applyTo": applyTo,
   "authPolicy": authPolicy,
   "authorize": AuthDecoratorImpl {},
   "bind": Object {

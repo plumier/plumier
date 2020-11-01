@@ -1,5 +1,5 @@
 import { isAbsolute, join } from "path"
-import { ClassReflection, MethodReflection, reflect, DecoratorOption, DecoratorOptionId } from "tinspector"
+import { ClassReflection, MethodReflection, reflect } from "tinspector"
 
 import { Class, findFilesRecursive } from "./common"
 import {
