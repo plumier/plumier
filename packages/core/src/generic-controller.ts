@@ -87,10 +87,32 @@ class ControllerBuilder {
         this.path = path
         return this
     }
-    actions(names: NameNotation | NameNotation[], cb?: (ab: ActionsBuilder) => ActionsBuilder): ControllerBuilder {
-        const config = new ActionsBuilder(this.map, Array.isArray(names) ? names : [names])
-        if (cb) cb(config)
-        return this
+    post(){
+        return new ActionsBuilder(this.map, ["Post"])
+    }
+    put(){
+        return new ActionsBuilder(this.map, ["Put"])
+    }
+    patch(){
+        return new ActionsBuilder(this.map, ["Patch"])
+    }
+    delete(){
+        return new ActionsBuilder(this.map, ["Delete"])
+    }
+    getOne(){
+        return new ActionsBuilder(this.map, ["GetOne"])
+    }
+    getMany(){
+        return new ActionsBuilder(this.map, ["GetMany"])
+    }
+    mutators(){
+        return new ActionsBuilder(this.map, ["Mutator"])
+    }
+    accessors(){
+        return new ActionsBuilder(this.map, ["Accessor"])
+    }
+    allActions(){
+        return new ActionsBuilder(this.map, ["All"])
     }
     toObject(): GenericControllerConfig {
         return {
