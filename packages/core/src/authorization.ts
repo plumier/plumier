@@ -195,8 +195,11 @@ class EntityAuthPolicy<T> implements AuthPolicy {
         }
     }
     equals(id: string, ctx: AuthorizationContext): boolean {
-        const provider = this.getEntity(ctx)
-        return this.id === id && this.entity === provider.entity
+        if(id === this.id){
+            const provider = this.getEntity(ctx)
+            return this.entity === provider.entity
+        }
+        return false
     }
     async authorize(ctx: AuthorizationContext): Promise<boolean> {
         if (!ctx.ctx.config.entityProviderQuery)

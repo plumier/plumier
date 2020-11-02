@@ -3203,6 +3203,28 @@ describe("JwtAuth", () => {
             const message = fn.mock.calls[0][0].message
             expect(message).toBe("Action ShopsController.get doesn't have Entity Policy Provider information")
         })
+        it("Should not breaking other authorization system", async () => {
+            class ShopsController {
+                @route.get(":id")
+                @type(Shop)
+                @authorize.route("Public")
+                get(id: number) {
+                    return shops.find(x => x.id === id)
+                }
+            }
+            const AdminPolicy = entityPolicy(Shop)
+                .define("ShopAdmin", (i, e) => e.users.some(x => x.uid === i.user!.userId && x.role === "Admin"))
+            const app = await fixture(ShopsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [AdminPolicy]
+                }))
+                .set({ entityProviderQuery: async (c, id) => shops.find(x => x.id === id) })
+                .initialize()
+            await Supertest(app.callback())
+                .get("/shops/1")
+                .expect(200)
+        })
         it("Should throw proper error when error occur inside entity policy and applied on route", async () => {
             const fn = jest.fn()
             class ShopsController {
@@ -3532,5 +3554,6 @@ describe("JwtAuth", () => {
             const message = fn.mock.calls[0][0].message
             expect(message).toContain("No entity provider query found in application configuration")
         })
+        
     })
 })
