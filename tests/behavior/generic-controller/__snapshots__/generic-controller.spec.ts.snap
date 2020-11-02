@@ -7,10 +7,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list -> Admin GET /user",
+    "1. DefaultControllerGeneric.list            -> Admin         GET    /user",
   ],
   Array [
-    "2. DefaultControllerGeneric.get  -> Admin GET /user/:id",
+    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Admin         GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /user/:id",
   ],
   Array [],
 ]
@@ -79,16 +91,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.save(data, ctx) -> Admin POST   /user",
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
   ],
   Array [
-    "2. DefaultControllerGeneric.modify          -> Admin PATCH  /user/:id",
+    "2. DefaultControllerGeneric.save(data, ctx) -> Admin         POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.replace         -> Admin PUT    /user/:id",
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.delete(id, ctx) -> Admin DELETE /user/:id",
+    "4. DefaultControllerGeneric.modify          -> Admin         PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Admin         PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Admin         DELETE /user/:id",
   ],
   Array [],
 ]
@@ -101,16 +119,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.save(data, ctx) -> Admin POST   /user",
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
   ],
   Array [
-    "2. DefaultControllerGeneric.modify          -> Admin PATCH  /user/:id",
+    "2. DefaultControllerGeneric.save(data, ctx) -> Admin         POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.replace         -> Admin PUT    /user/:id",
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.delete(id, ctx) -> Admin DELETE /user/:id",
+    "4. DefaultControllerGeneric.modify          -> Admin         PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Admin         PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Admin         DELETE /user/:id",
   ],
   Array [],
 ]
@@ -123,16 +147,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultOneToMany...eneric.save    -> Admin POST   /user/:pid/animals",
+    "1. DefaultOneToMany...eneric.list    -> Authenticated GET    /user/:pid/animals",
   ],
   Array [
-    "2. DefaultOneToMany...eneric.modify  -> Admin PATCH  /user/:pid/animals/:id",
+    "2. DefaultOneToMany...eneric.save    -> Admin         POST   /user/:pid/animals",
   ],
   Array [
-    "3. DefaultOneToMany...eneric.replace -> Admin PUT    /user/:pid/animals/:id",
+    "3. DefaultOneToMany...eneric.get     -> Authenticated GET    /user/:pid/animals/:id",
   ],
   Array [
-    "4. DefaultOneToMany...eneric.delete  -> Admin DELETE /user/:pid/animals/:id",
+    "4. DefaultOneToMany...eneric.modify  -> Admin         PATCH  /user/:pid/animals/:id",
+  ],
+  Array [
+    "5. DefaultOneToMany...eneric.replace -> Admin         PUT    /user/:pid/animals/:id",
+  ],
+  Array [
+    "6. DefaultOneToMany...eneric.delete  -> Admin         DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -145,16 +175,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.save(data, ctx) -> Admin|SuperAdmin POST   /user",
+    "1. DefaultControllerGeneric.list            -> Authenticated    GET    /user",
   ],
   Array [
-    "2. DefaultControllerGeneric.modify          -> Admin|SuperAdmin PATCH  /user/:id",
+    "2. DefaultControllerGeneric.save(data, ctx) -> Admin|SuperAdmin POST   /user",
   ],
   Array [
-    "3. DefaultControllerGeneric.replace         -> Admin|SuperAdmin PUT    /user/:id",
+    "3. DefaultControllerGeneric.get             -> Authenticated    GET    /user/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.delete(id, ctx) -> Admin|SuperAdmin DELETE /user/:id",
+    "4. DefaultControllerGeneric.modify          -> Admin|SuperAdmin PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Admin|SuperAdmin PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Admin|SuperAdmin DELETE /user/:id",
   ],
   Array [],
 ]
@@ -188,79 +224,7 @@ Array [
 ]
 `;
 
-exports[`Controller Builder Enable Disable Routes Should able to enable accessor routes 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultControllerGeneric.list -> GET /user",
-  ],
-  Array [
-    "2. DefaultControllerGeneric.get  -> GET /user/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`Controller Builder Enable Disable Routes Should able to enable all routes 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultControllerGeneric.list            -> GET    /user",
-  ],
-  Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
-  ],
-  Array [
-    "3. DefaultControllerGeneric.get             -> GET    /user/:id",
-  ],
-  Array [
-    "4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
-  ],
-  Array [
-    "5. DefaultControllerGeneric.replace         -> PUT    /user/:id",
-  ],
-  Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`Controller Builder Enable Disable Routes Should able to enable all routes using all key 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultControllerGeneric.list            -> GET    /user",
-  ],
-  Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
-  ],
-  Array [
-    "3. DefaultControllerGeneric.get             -> GET    /user/:id",
-  ],
-  Array [
-    "4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
-  ],
-  Array [
-    "5. DefaultControllerGeneric.replace         -> PUT    /user/:id",
-  ],
-  Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`Controller Builder Enable Disable Routes Should able to enable mutator routes 1`] = `
+exports[`Controller Builder Ignore Route Should able to ignore accessor routes 1`] = `
 Array [
   Array [],
   Array [
@@ -282,39 +246,82 @@ Array [
 ]
 `;
 
-exports[`Controller Builder Enable Disable Routes Should enable specific routes on one to many generic controller 1`] = `
+exports[`Controller Builder Ignore Route Should able to ignore all routes 1`] = `
 Array [
   Array [],
   Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultOneToMany...eneric.save    -> POST   /user/:pid/animals",
+    "No controller found",
+  ],
+]
+`;
+
+exports[`Controller Builder Ignore Route Should able to ignore all routes using all key 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
   ],
   Array [
-    "2. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animals/:id",
+    "No controller found",
+  ],
+]
+`;
+
+exports[`Controller Builder Ignore Route Should able to ignore mutator routes 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
   ],
   Array [
-    "3. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animals/:id",
+    "1. DefaultControllerGeneric.list -> GET /user",
   ],
   Array [
-    "4. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animals/:id",
+    "2. DefaultControllerGeneric.get  -> GET /user/:id",
   ],
   Array [],
 ]
 `;
 
-exports[`Controller Builder Enable Disable Routes Should enable specific routes properly 1`] = `
+exports[`Controller Builder Ignore Route Should able to ignore specific routes on one to many generic controller 1`] = `
 Array [
   Array [],
   Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
+    "1. DefaultOneToMany...eneric.list    -> GET    /user/:pid/animals",
   ],
   Array [
-    "2. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
+    "2. DefaultOneToMany...eneric.get     -> GET    /user/:pid/animals/:id",
+  ],
+  Array [
+    "3. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animals/:id",
+  ],
+  Array [
+    "4. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animals/:id",
+  ],
+  Array [
+    "5. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Ignore Route Should able to ignore specific routes properly 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.get             -> GET    /user/:id",
   ],
   Array [
     "3. DefaultControllerGeneric.replace         -> PUT    /user/:id",

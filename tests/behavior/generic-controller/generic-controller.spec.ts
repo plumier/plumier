@@ -1787,9 +1787,12 @@ describe("Request Hook", () => {
 })
 
 describe("Controller Builder", () => {
-    describe("Enable Disable Routes", () => {
-        it("Should enable specific routes properly", async () => {
-            @route.controller(c => c.actions(["Post", "Put", "Patch", "Delete"]))
+    describe("Ignore Route", () => {
+        it("Should able to ignore specific routes properly", async () => {
+            @route.controller(c => {
+                c.post().ignore()
+                c.patch().ignore()
+            })
             @domain()
             class User {
                 constructor(
@@ -1801,7 +1804,7 @@ describe("Controller Builder", () => {
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should enable specific routes on one to many generic controller", async () => {
+        it("Should able to ignore specific routes on one to many generic controller", async () => {
             @domain()
             class Animal {
                 constructor(
@@ -1815,7 +1818,9 @@ describe("Controller Builder", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller(c => c.actions(["Post", "Put", "Patch", "Delete"]))
+                    @route.controller(c => {
+                        c.post().ignore()
+                    })
                     public animals: Animal[]
                 ) { }
             }
@@ -1823,8 +1828,15 @@ describe("Controller Builder", () => {
             await createApp({ controller: [User] }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to enable all routes", async () => {
-            @route.controller(c => c.actions(["Post", "Put", "Patch", "Delete", "GetMany", "GetOne"]))
+        it("Should able to ignore all routes", async () => {
+            @route.controller(c => {
+                c.patch().ignore()
+                c.put().ignore()
+                c.post().ignore()
+                c.delete().ignore()
+                c.getMany().ignore()
+                c.getOne().ignore()
+            })
             @domain()
             class User {
                 constructor(
@@ -1836,8 +1848,8 @@ describe("Controller Builder", () => {
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to enable all routes using all key", async () => {
-            @route.controller(c => c.actions("All"))
+        it("Should able to ignore all routes using all key", async () => {
+            @route.controller(c => c.all().ignore())
             @domain()
             class User {
                 constructor(
@@ -1849,8 +1861,8 @@ describe("Controller Builder", () => {
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to enable mutator routes", async () => {
-            @route.controller(c => c.actions("Mutator"))
+        it("Should able to ignore mutator routes", async () => {
+            @route.controller(c => c.mutators().ignore())
             @domain()
             class User {
                 constructor(
@@ -1862,8 +1874,8 @@ describe("Controller Builder", () => {
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should able to enable accessor routes", async () => {
-            @route.controller(c => c.actions("Accessor"))
+        it("Should able to ignore accessor routes", async () => {
+            @route.controller(c => c.accessors().ignore())
             @domain()
             class User {
                 constructor(
@@ -1885,7 +1897,7 @@ describe("Controller Builder", () => {
                 .set(new JwtAuthFacility({ secret: "lorem" }))
         }
         it("Should able to authorize specific routes", async () => {
-            @route.controller(c => c.actions(["Post", "Put", "Patch", "Delete"], x => x.authorizeTo("Admin")))
+            @route.controller(c => c.mutators().authorize("Admin"))
             @domain()
             class User {
                 constructor(
@@ -1898,7 +1910,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to authorize specific routes with multiple roles", async () => {
-            @route.controller(c => c.actions(["Post", "Put", "Patch", "Delete"], x => x.authorizeTo("Admin", "SuperAdmin")))
+            @route.controller(c => c.mutators().authorize("Admin", "SuperAdmin"))
             @domain()
             class User {
                 constructor(
@@ -1924,7 +1936,7 @@ describe("Controller Builder", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller(c => c.actions(["Post", "Put", "Patch", "Delete"], x => x.authorizeTo("Admin")))
+                    @route.controller(c => c.mutators().authorize("Admin"))
                     public animals: Animal[]
                 ) { }
             }
@@ -1933,7 +1945,14 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to authorize all routes", async () => {
-            @route.controller(c => c.actions(["Post", "Put", "Patch", "Delete", "GetMany", "GetOne"], x => x.authorizeTo("Admin")))
+            @route.controller(c => {
+                c.patch().authorize("Admin")
+                c.put().authorize("Admin")
+                c.post().authorize("Admin")
+                c.delete().authorize("Admin")
+                c.getMany().authorize("Admin")
+                c.getOne().authorize("Admin")
+            })
             @domain()
             class User {
                 constructor(
@@ -1946,7 +1965,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to authorize all routes using all key", async () => {
-            @route.controller(c => c.actions("All", x => x.authorizeTo("Admin")))
+            @route.controller(c => c.all().authorize("Admin"))
             @domain()
             class User {
                 constructor(
@@ -1959,7 +1978,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to authorize mutator routes", async () => {
-            @route.controller(c => c.actions("Mutator", x => x.authorizeTo("Admin")))
+            @route.controller(c => c.mutators().authorize("Admin"))
             @domain()
             class User {
                 constructor(
@@ -1972,7 +1991,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to authorize accessor routes", async () => {
-            @route.controller(c => c.actions("Accessor", x => x.authorizeTo("Admin")))
+            @route.controller(c => c.accessors().authorize("Admin"))
             @domain()
             class User {
                 constructor(
@@ -1986,8 +2005,8 @@ describe("Controller Builder", () => {
         })
         it("Should able to combine between accessor and mutator", async () => {
             @route.controller(c => {
-                c.actions("Mutator", x => x.authorizeTo("Admin"))
-                c.actions("Accessor", x => x.authorizeTo(Authenticated))
+                c.mutators().authorize("Admin")
+                c.accessors().authorize(Authenticated)
             })
             @domain()
             class User {

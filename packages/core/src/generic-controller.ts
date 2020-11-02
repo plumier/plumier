@@ -1,4 +1,3 @@
-import "./filter-parser"
 import { Context } from "koa"
 import { Key, pathToRegexp } from "path-to-regexp"
 import reflect, {
@@ -8,18 +7,18 @@ import reflect, {
     DecoratorOptionId,
     generic,
     GenericTypeDecorator,
-    PropertyReflection,
-    type,
+    PropertyReflection
 } from "tinspector"
 import { val } from "typedconverter"
-
 import { AuthorizeDecorator } from "./authorization"
 import { Class, entityHelper } from "./common"
 import { api, ApiTagDecorator } from "./decorator/api"
+import { authorize } from "./decorator/authorize"
 import { bind } from "./decorator/bind"
 import { domain } from "./decorator/common"
 import { DeleteColumnDecorator, entity, RelationDecorator } from "./decorator/entity"
 import { GenericControllerDecorator, route } from "./decorator/route"
+import "./filter-parser"
 import { IgnoreDecorator, RouteDecorator } from "./route-generator"
 import {
     ControllerGeneric,
@@ -32,10 +31,8 @@ import {
     OneToManyRepository,
     OrderQuery,
     RelationPropertyDecorator,
-    Repository,
+    Repository
 } from "./types"
-import { name } from 'faker'
-import { authorize } from './decorator/authorize'
 
 
 // --------------------------------------------------------------------- //
@@ -53,11 +50,11 @@ class IdentifierResult<TID> {
     ) { }
 }
 
-type NameNotation = "Put" | "Post" | "Patch" | "Delete" | "GetMany" | "GetOne" | "All" | "Mutator" | "Accessor"
 type ActionName = "delete" | "list" | "get" | "modify" | "save" | "replace"
 
 interface ActionConfig {
     authorize?: string[]
+    ignore?: true
 }
 
 type ActionConfigMap = Map<ActionName, ActionConfig>
@@ -68,17 +65,6 @@ interface GenericControllerConfig {
     actions(): ActionName[]
 }
 
-function getActionName(method: NameNotation): ActionName[] {
-    if (method === "Delete") return ["delete"]
-    if (method === "GetMany") return ["list"]
-    if (method === "GetOne") return ["get"]
-    if (method === "Patch") return ["modify"]
-    if (method === "Post") return ["save"]
-    if (method === "Put") return ["replace"]
-    if (method === "Accessor") return ["list", "get"]
-    if (method === "Mutator") return ["delete", "modify", "save", "replace"]
-    return ["delete", "list", "get", "modify", "save", "replace"]
-}
 
 class ControllerBuilder {
     private path?: string
@@ -87,32 +73,32 @@ class ControllerBuilder {
         this.path = path
         return this
     }
-    post(){
-        return new ActionsBuilder(this.map, ["Post"])
+    post() {
+        return new ActionsBuilder(this.map, ["save"])
     }
-    put(){
-        return new ActionsBuilder(this.map, ["Put"])
+    put() {
+        return new ActionsBuilder(this.map, ["replace"])
     }
-    patch(){
-        return new ActionsBuilder(this.map, ["Patch"])
+    patch() {
+        return new ActionsBuilder(this.map, ["modify"])
     }
-    delete(){
-        return new ActionsBuilder(this.map, ["Delete"])
+    delete() {
+        return new ActionsBuilder(this.map, ["delete"])
     }
-    getOne(){
-        return new ActionsBuilder(this.map, ["GetOne"])
+    getOne() {
+        return new ActionsBuilder(this.map, ["get"])
     }
-    getMany(){
-        return new ActionsBuilder(this.map, ["GetMany"])
+    getMany() {
+        return new ActionsBuilder(this.map, ["list"])
     }
-    mutators(){
-        return new ActionsBuilder(this.map, ["Mutator"])
+    mutators() {
+        return new ActionsBuilder(this.map, ["delete", "modify", "save", "replace"])
     }
-    accessors(){
-        return new ActionsBuilder(this.map, ["Accessor"])
+    accessors() {
+        return new ActionsBuilder(this.map, ["list", "get"])
     }
-    allActions(){
-        return new ActionsBuilder(this.map, ["All"])
+    all() {
+        return new ActionsBuilder(this.map, ["delete", "list", "get", "modify", "save", "replace"])
     }
     toObject(): GenericControllerConfig {
         return {
@@ -128,22 +114,24 @@ class ControllerBuilder {
 }
 
 class ActionsBuilder {
-    constructor(private actions: ActionConfigMap, private names: NameNotation[]) {
+    constructor(private actions: ActionConfigMap, private names: ActionName[]) {
         this.setConfig(names, {})
     }
 
-    private setConfig(names: NameNotation[], config: ActionConfig) {
+    private setConfig(names: ActionName[], config: ActionConfig) {
         for (const action of names) {
-            const actions = getActionName(action)
-            for (const act of actions) {
-                this.actions.set(act, config)
-            }
+            const cnf = this.actions.get(action)!
+            this.actions.set(action, { ...cnf, ...config })
         }
+        return this
     }
 
-    authorizeTo(...authorize: string[]): ActionsBuilder {
-        this.setConfig(this.names, { authorize })
-        return this
+    ignore() {
+        return this.setConfig(this.names, { ignore: true })
+    }
+
+    authorize(...authorize: string[]) {
+        return this.setConfig(this.names, { authorize })
     }
 }
 
@@ -466,9 +454,8 @@ function createRouteDecorators(id: string) {
 }
 
 function ignoreActions(config: GenericControllerConfig): ((...args: any[]) => void) {
-    const includes = config.actions()
-    const actions = ["delete", "list", "get", "modify", "save", "replace"]
-    const applyTo = actions.filter(x => !includes.some(y => y === x))
+    const actions = config.actions()
+    const applyTo = actions.filter(x => !!config.map.get(x)?.ignore)
     if (applyTo.length === 0) return (...args: any[]) => { }
     return route.ignore({ applyTo })
 }
