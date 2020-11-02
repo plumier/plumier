@@ -50,11 +50,11 @@ class IdentifierResult<TID> {
     ) { }
 }
 
-type NameNotation = "Put" | "Post" | "Patch" | "Delete" | "GetMany" | "GetOne" | "All" | "Mutator" | "Accessor"
 type ActionName = "delete" | "list" | "get" | "modify" | "save" | "replace"
 
 interface ActionConfig {
     authorize?: string[]
+    ignore?: true
 }
 
 type ActionConfigMap = Map<ActionName, ActionConfig>
@@ -65,17 +65,6 @@ interface GenericControllerConfig {
     actions(): ActionName[]
 }
 
-function getActionName(method: NameNotation): ActionName[] {
-    if (method === "Delete") return ["delete"]
-    if (method === "GetMany") return ["list"]
-    if (method === "GetOne") return ["get"]
-    if (method === "Patch") return ["modify"]
-    if (method === "Post") return ["save"]
-    if (method === "Put") return ["replace"]
-    if (method === "Accessor") return ["list", "get"]
-    if (method === "Mutator") return ["delete", "modify", "save", "replace"]
-    return ["delete", "list", "get", "modify", "save", "replace"]
-}
 
 class ControllerBuilder {
     private path?: string
@@ -84,10 +73,32 @@ class ControllerBuilder {
         this.path = path
         return this
     }
-    actions(names: NameNotation | NameNotation[], cb?: (ab: ActionsBuilder) => ActionsBuilder): ControllerBuilder {
-        const config = new ActionsBuilder(this.map, Array.isArray(names) ? names : [names])
-        if (cb) cb(config)
-        return this
+    post() {
+        return new ActionsBuilder(this.map, ["save"])
+    }
+    put() {
+        return new ActionsBuilder(this.map, ["replace"])
+    }
+    patch() {
+        return new ActionsBuilder(this.map, ["modify"])
+    }
+    delete() {
+        return new ActionsBuilder(this.map, ["delete"])
+    }
+    getOne() {
+        return new ActionsBuilder(this.map, ["get"])
+    }
+    getMany() {
+        return new ActionsBuilder(this.map, ["list"])
+    }
+    mutators() {
+        return new ActionsBuilder(this.map, ["delete", "modify", "save", "replace"])
+    }
+    accessors() {
+        return new ActionsBuilder(this.map, ["list", "get"])
+    }
+    all() {
+        return new ActionsBuilder(this.map, ["delete", "list", "get", "modify", "save", "replace"])
     }
     toObject(): GenericControllerConfig {
         return {
@@ -103,22 +114,24 @@ class ControllerBuilder {
 }
 
 class ActionsBuilder {
-    constructor(private actions: ActionConfigMap, private names: NameNotation[]) {
+    constructor(private actions: ActionConfigMap, private names: ActionName[]) {
         this.setConfig(names, {})
     }
 
-    private setConfig(names: NameNotation[], config: ActionConfig) {
+    private setConfig(names: ActionName[], config: ActionConfig) {
         for (const action of names) {
-            const actions = getActionName(action)
-            for (const act of actions) {
-                this.actions.set(act, config)
-            }
+            const cnf = this.actions.get(action)!
+            this.actions.set(action, { ...cnf, ...config })
         }
+        return this
     }
 
-    authorize(...authorize: string[]): ActionsBuilder {
-        this.setConfig(this.names, { authorize })
-        return this
+    ignore() {
+        return this.setConfig(this.names, { ignore: true })
+    }
+
+    authorize(...authorize: string[]) {
+        return this.setConfig(this.names, { authorize })
     }
 }
 
@@ -441,9 +454,8 @@ function createRouteDecorators(id: string) {
 }
 
 function ignoreActions(config: GenericControllerConfig): ((...args: any[]) => void) {
-    const includes = config.actions()
-    const actions = ["delete", "list", "get", "modify", "save", "replace"]
-    const applyTo = actions.filter(x => !includes.some(y => y === x))
+    const actions = config.actions()
+    const applyTo = actions.filter(x => !!config.map.get(x)?.ignore)
     if (applyTo.length === 0) return (...args: any[]) => { }
     return route.ignore({ applyTo })
 }
