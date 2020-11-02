@@ -1,4 +1,3 @@
-import "./filter-parser"
 import { Context } from "koa"
 import { Key, pathToRegexp } from "path-to-regexp"
 import reflect, {
@@ -8,18 +7,18 @@ import reflect, {
     DecoratorOptionId,
     generic,
     GenericTypeDecorator,
-    PropertyReflection,
-    type,
+    PropertyReflection
 } from "tinspector"
 import { val } from "typedconverter"
-
 import { AuthorizeDecorator } from "./authorization"
 import { Class, entityHelper } from "./common"
 import { api, ApiTagDecorator } from "./decorator/api"
+import { authorize } from "./decorator/authorize"
 import { bind } from "./decorator/bind"
 import { domain } from "./decorator/common"
 import { DeleteColumnDecorator, entity, RelationDecorator } from "./decorator/entity"
 import { GenericControllerDecorator, route } from "./decorator/route"
+import "./filter-parser"
 import { IgnoreDecorator, RouteDecorator } from "./route-generator"
 import {
     ControllerGeneric,
@@ -32,10 +31,8 @@ import {
     OneToManyRepository,
     OrderQuery,
     RelationPropertyDecorator,
-    Repository,
+    Repository
 } from "./types"
-import { name } from 'faker'
-import { authorize } from './decorator/authorize'
 
 
 // --------------------------------------------------------------------- //
@@ -119,7 +116,7 @@ class ActionsBuilder {
         }
     }
 
-    authorizeTo(...authorize: string[]): ActionsBuilder {
+    authorize(...authorize: string[]): ActionsBuilder {
         this.setConfig(this.names, { authorize })
         return this
     }
