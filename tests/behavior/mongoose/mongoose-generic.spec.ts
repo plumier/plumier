@@ -1,4 +1,4 @@
-import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog, preSave, authorize, entity } from "@plumier/core"
+import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog, preSave, authorize, entity, entityPolicy } from "@plumier/core"
 import model, {
     collection,
     models,
@@ -15,6 +15,8 @@ import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import supertest from "supertest"
 import reflect, { generic, type } from "tinspector"
+import { JwtAuthFacility } from '@plumier/jwt'
+import { sign } from 'jsonwebtoken'
 
 jest.setTimeout(20000)
 
@@ -2371,6 +2373,51 @@ describe("Filter", () => {
             const app = await createApp()
             const { body } = await supertest(app.callback())
                 .get(`/parents/${parent.id}/children?filter[number]=<2`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+    })
+})
+
+describe.only("Entity Policy", () => {
+    describe("Generic Controller", () => {
+        @route.controller(c => {
+            c.getOne().authorize("Owner")
+            c.put().authorize("Owner")
+            c.patch().authorize("Owner")
+            c.delete().authorize("Owner")
+        })
+        @collection()
+        class User {
+            @collection.property()
+            id: string
+            @collection.property()
+            name: string
+            @authorize.read("Owner")
+            email: string
+        }
+        const UserModel = model(User)
+        const UserPolicy = entityPolicy(User).define("Owner", (ctx, e) => ctx.user?.userId === e.id)
+        function createApp() {
+            return new Plumier()
+                .set(new WebApiFacility({ controller: User }))
+                .set(new MongooseFacility())
+                .set(new JwtAuthFacility({ secret: "lorem", authPolicies: UserPolicy }))
+                .set({ mode: "production" })
+                .initialize()
+        }
+        const setupUser = () => Promise.all([
+            new UserModel({ name: "John", email: "john.doe@gmail.com" }).save(),
+            new UserModel({ name: "Jane", email: "john.doe@gmail.com" }).save(),
+            new UserModel({ name: "Joe", email: "john.doe@gmail.com" }).save(),
+        ])
+        it.only("Should protect data properly", async () => {
+            const [john, ...users] = await setupUser()
+            const token = sign({ userId: john.id }, "lorem")
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/users")
+                .set("Authorization", `Bearer ${token}`)
                 .expect(200)
             expect(body).toMatchSnapshot()
         })

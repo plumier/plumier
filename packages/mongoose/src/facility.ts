@@ -1,12 +1,22 @@
-import { ActionContext, api, DefaultFacility, filterConverters, GenericControllerDecorator, PlumierApplication, RelationDecorator, RequestHookMiddleware } from "@plumier/core"
+import {
+    api,
+    DefaultFacility,
+    filterConverters,
+    GenericControllerDecorator,
+    PlumierApplication,
+    RelationDecorator,
+    RequestHookMiddleware,
+} from "@plumier/core"
 import Mongoose from "mongoose"
+import pluralize from "pluralize"
 import reflect from "tinspector"
 import { Result, ResultMessages, VisitorInvocation } from "typedconverter"
 
-import { getModels, MongooseHelper, model as globalModel } from "./generator"
+import { getModels, model as globalModel, MongooseHelper, proxy as globalProxy } from "./generator"
+import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
+import { MongooseRepository } from "./repository"
 import { RefDecorator } from "./types"
-import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from './generic-controller'
-import pluralize from 'pluralize'
+
 
 interface MongooseFacilityOption { uri?: string, helper?: MongooseHelper }
 
@@ -52,11 +62,22 @@ export class MongooseFacility extends DefaultFacility {
 
     async initialize(app: Readonly<PlumierApplication>) {
         const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
-        const helper = this.option.helper ?? { connect: Mongoose.connect, getModels, model: globalModel, }
+        const helper = this.option.helper ?? {
+            connect: Mongoose.connect, 
+            getModels, model: globalModel,
+            proxy: globalProxy,
+            disconnect: Mongoose.disconnect,
+        } as MongooseHelper
         app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter, ...filterConverters] })
         app.set({
             responseProjectionTransformer: (p, v) => {
                 return (p.name === "id" && v && v.constructor === Buffer) ? undefined : v
+            }
+        })
+        app.set({
+            entityProviderQuery: (type, id) => {
+                const repo = new MongooseRepository(type, helper)
+                return repo.findById(id)
             }
         })
         if (uri) {

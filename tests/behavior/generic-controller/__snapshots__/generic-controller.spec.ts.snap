@@ -520,6 +520,8 @@ Array [
 ]
 `;
 
+exports[`Entity Policy Generic Controller Should filter properly 1`] = `Object {}`;
+
 exports[`Open Api Generic Controller Should able to add @api.tag() from entity 1`] = `
 Array [
   "Animals",
