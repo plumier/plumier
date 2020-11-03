@@ -533,7 +533,7 @@ Array [
     "name": "aid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -553,7 +553,7 @@ Array [
     "name": "aid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -573,7 +573,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -605,7 +605,19 @@ Array [
     "in": "query",
     "name": "filter",
     "schema": Object {
-      "$ref": "#/components/schemas/Animal",
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/Animal",
+        },
+        Object {
+          "properties": Object {
+            "id": Object {
+              "readOnly": true,
+            },
+          },
+          "type": "object",
+        },
+      ],
     },
   },
   Object {
@@ -638,7 +650,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -664,7 +676,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -707,7 +719,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -722,6 +734,9 @@ Array [
 exports[`Open Api Generic Controller Should provided proper component 1`] = `
 Object {
   "properties": Object {
+    "id": Object {
+      "type": "number",
+    },
     "name": Object {
       "type": "string",
     },
@@ -743,7 +758,7 @@ Array [
     "name": "aid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -751,7 +766,7 @@ Array [
     "name": "tid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -771,7 +786,7 @@ Array [
     "name": "aid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -779,7 +794,7 @@ Array [
     "name": "tid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -799,7 +814,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -818,7 +833,7 @@ Array [
     "name": "pid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -826,7 +841,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -866,7 +881,7 @@ Array [
           "properties": Object {
             "tags": Object {
               "items": Object {
-                "type": "string",
+                "type": "number",
               },
               "type": "array",
             },
@@ -875,6 +890,9 @@ Array [
         },
         Object {
           "properties": Object {
+            "id": Object {
+              "readOnly": true,
+            },
             "tags": Object {
               "readOnly": true,
             },
@@ -914,7 +932,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -940,7 +958,7 @@ Array [
     "name": "pid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -961,7 +979,19 @@ Array [
     "in": "query",
     "name": "filter",
     "schema": Object {
-      "$ref": "#/components/schemas/Tag",
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/Tag",
+        },
+        Object {
+          "properties": Object {
+            "id": Object {
+              "readOnly": true,
+            },
+          },
+          "type": "object",
+        },
+      ],
     },
   },
   Object {
@@ -994,7 +1024,7 @@ Array [
     "name": "pid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -1002,7 +1032,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -1028,7 +1058,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -1047,7 +1077,7 @@ Array [
     "name": "pid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -1055,7 +1085,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -1080,7 +1110,7 @@ Object {
             "properties": Object {
               "tags": Object {
                 "items": Object {
-                  "type": "string",
+                  "type": "number",
                 },
                 "type": "array",
               },
@@ -1109,7 +1139,7 @@ Object {
             "properties": Object {
               "tags": Object {
                 "items": Object {
-                  "type": "string",
+                  "type": "number",
                 },
                 "type": "array",
               },
@@ -1170,7 +1200,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -1189,7 +1219,7 @@ Array [
     "name": "pid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -1197,7 +1227,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -1212,6 +1242,9 @@ Array [
 exports[`Open Api Generic One To Many Controller Should provide proper component 1`] = `
 Object {
   "properties": Object {
+    "id": Object {
+      "type": "number",
+    },
     "name": Object {
       "type": "string",
     },
@@ -1229,6 +1262,9 @@ Object {
 exports[`Open Api Generic One To Many Controller Should provide proper component 2`] = `
 Object {
   "properties": Object {
+    "id": Object {
+      "type": "number",
+    },
     "tag": Object {
       "type": "string",
     },
@@ -1301,10 +1337,10 @@ Array [
 exports[`Request Hook Should able to hook request in multiple http methods 1`] = `
 Array [
   Array [
-    "123",
+    123,
   ],
   Array [
-    "123",
+    123,
     User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
@@ -1319,10 +1355,10 @@ Array [
     },
   ],
   Array [
-    "123",
+    123,
   ],
   Array [
-    "123",
+    123,
     User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
@@ -1347,10 +1383,10 @@ Array [
 exports[`Request Hook Should able to hook request in specific http method 1`] = `
 Array [
   Array [
-    "123",
+    123,
   ],
   Array [
-    "123",
+    123,
     User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
@@ -1881,114 +1917,11 @@ Array [
 
 exports[`Route Generator Generic Controller Should throw error properly 1`] = `Array []`;
 
-exports[`Route Generator Generic Controller Should use string as default id if no ID type specified 1`] = `
+exports[`Route Generator Generic Controller Should throw error when entity doesn't have ID specified 1`] = `
 Array [
-  Object {
-    "name": "list",
-    "pars": Array [
-      Object {
-        "name": "offset",
-        "type": Number,
-      },
-      Object {
-        "name": "limit",
-        "type": Number,
-      },
-      Object {
-        "name": "filter",
-        "type": User,
-      },
-      Object {
-        "name": "select",
-        "type": String,
-      },
-      Object {
-        "name": "order",
-        "type": String,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "save",
-    "pars": Array [
-      Object {
-        "name": "data",
-        "type": User,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "get",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "select",
-        "type": String,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "modify",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": User,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "replace",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": User,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "delete",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
+  Array [
+    [Error: PLUM1014: Entity User used by generic controller doesn't have an ID property],
+  ],
 ]
 `;
 
@@ -2495,146 +2428,27 @@ Array [
 
 exports[`Route Generator One To Many Controller Should throw error properly 1`] = `Array []`;
 
+exports[`Route Generator One To Many Controller Should throw error when no ID specified on entity 1`] = `
+Array [
+  Array [
+    [Error: PLUM1014: Entity Animal used by generic controller doesn't have an ID property],
+  ],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should throw error when no ID specified on parent entity 1`] = `
+Array [
+  Array [
+    [Error: PLUM1014: Entity User used by generic controller doesn't have an ID property],
+  ],
+]
+`;
+
 exports[`Route Generator One To Many Controller Should throw error when the relation doesn't have type information 1`] = `
 Array [
   Array [
     [Error: PLUM1010: User.animals marked with @route.controller() but doesn't have type information],
   ],
-]
-`;
-
-exports[`Route Generator One To Many Controller Should use string as default id if no ID type specified 1`] = `
-Array [
-  Object {
-    "name": "list",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "offset",
-        "type": Number,
-      },
-      Object {
-        "name": "limit",
-        "type": Number,
-      },
-      Object {
-        "name": "filter",
-        "type": Animal,
-      },
-      Object {
-        "name": "select",
-        "type": String,
-      },
-      Object {
-        "name": "order",
-        "type": String,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "save",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "get",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "select",
-        "type": String,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "modify",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "replace",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "delete",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
 ]
 `;
 

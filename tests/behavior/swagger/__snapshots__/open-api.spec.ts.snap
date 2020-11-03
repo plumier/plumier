@@ -2298,6 +2298,18 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Schema Override Filter Should able to use all fields as filter 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "filter",
+    "schema": Object {
+      "$ref": "#/components/schemas/Item",
+    },
+  },
+]
+`;
+
 exports[`Open API 3.0 Generation Schema Override Filter Should hide all fields on filter override 1`] = `
 Array [
   Object {

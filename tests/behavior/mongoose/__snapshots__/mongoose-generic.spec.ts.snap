@@ -4,6 +4,7 @@ exports[`CRUD CRUD Function Should able to filter with exact value GET /users?fi
 Array [
   Object {
     "email": "jean.doe@gmail.com",
+    "id": "MONGODB UNIQUE ID",
     "name": "Jean Doe",
   },
 ]
@@ -13,6 +14,7 @@ exports[`CRUD CRUD Function Should able to filter with partial value GET /users?
 Array [
   Object {
     "email": "jean.doe@gmail.com",
+    "id": "MONGODB UNIQUE ID",
     "name": "Jean Doe",
   },
 ]
@@ -22,22 +24,27 @@ exports[`CRUD CRUD Function Should able to order by property GET /users?offset&l
 Array [
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "Borne",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "Anne",
   },
   Object {
     "age": 22,
+    "id": "MONGODB UNIQUE ID",
     "name": "Juliet",
   },
   Object {
     "age": 22,
+    "id": "MONGODB UNIQUE ID",
     "name": "John",
   },
   Object {
     "age": 23,
+    "id": "MONGODB UNIQUE ID",
     "name": "August",
   },
 ]
@@ -47,6 +54,7 @@ exports[`CRUD CRUD Function Should able to query by property GET /users?offset&l
 Array [
   Object {
     "email": "jean.doe@gmail.com",
+    "id": "MONGODB UNIQUE ID",
     "name": "Jean Doe",
   },
 ]
@@ -56,42 +64,52 @@ exports[`CRUD CRUD Function Should able to select by property GET /users?offset&
 Array [
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "John Doe",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "John Doe",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "John Doe",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "John Doe",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "John Doe",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "John Doe",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "John Doe",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "John Doe",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "John Doe",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "John Doe",
   },
 ]
@@ -102,6 +120,7 @@ Object {
   "__v": 0,
   "_id": "MONGODB UNIQUE ID",
   "email": "john.doe@gmail.com",
+  "id": "MONGODB UNIQUE ID",
   "name": "John Doe",
   "password": "HASH",
 }
@@ -110,6 +129,7 @@ Object {
 exports[`CRUD CRUD Function Should ignore wrong property name on select GET /users/:id 1`] = `
 Object {
   "age": 21,
+  "id": "MONGODB UNIQUE ID",
   "name": "John Doe",
 }
 `;
@@ -117,6 +137,7 @@ Object {
 exports[`CRUD CRUD Function Should select by property GET /users/:id 1`] = `
 Object {
   "age": 21,
+  "id": "MONGODB UNIQUE ID",
   "name": "John Doe",
 }
 `;
@@ -128,6 +149,7 @@ Object {
     "Address2",
   ],
   "email": "john.doe@gmail.com",
+  "id": "MONGODB UNIQUE ID",
   "name": "John Doe",
 }
 `;
@@ -138,6 +160,7 @@ Object {
   "_id": "MONGODB UNIQUE ID",
   "deleted": true,
   "email": "john.doe@gmail.com",
+  "id": "MONGODB UNIQUE ID",
   "name": "John Doe",
 }
 `;
@@ -146,6 +169,7 @@ exports[`CRUD CRUD Function Should set partial validation on query GET /users?of
 Array [
   Object {
     "email": "jean.doe@gmail.com",
+    "id": "MONGODB UNIQUE ID",
     "name": "Juan Doe",
   },
 ]
@@ -210,16 +234,20 @@ Array [
 exports[`CRUD Nested CRUD One to Many Function Should able to filter one on one relation GET /users/:parentId/animals?filter  1`] = `
 Array [
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Jojo",
     "user": Object {
       "email": "john.doe@gmail.com",
+      "id": "MONGODB UNIQUE ID",
       "name": "John Doe",
     },
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Jeju",
     "user": Object {
       "email": "john.doe@gmail.com",
+      "id": "MONGODB UNIQUE ID",
       "name": "John Doe",
     },
   },
@@ -230,18 +258,22 @@ exports[`CRUD Nested CRUD One to Many Function Should able to order by propertie
 Array [
   Object {
     "age": 22,
+    "id": "MONGODB UNIQUE ID",
     "name": "Juliet",
   },
   Object {
     "age": 22,
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "Abas",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "Alba",
   },
 ]
@@ -251,42 +283,52 @@ exports[`CRUD Nested CRUD One to Many Function Should able to select by properti
 Array [
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
 ]
@@ -295,6 +337,7 @@ Array [
 exports[`CRUD Nested CRUD One to Many Function Should able to select by property GET /users/:parentId/animals/:id 1`] = `
 Object {
   "age": 21,
+  "id": "MONGODB UNIQUE ID",
   "tag": "The tag",
 }
 `;
@@ -304,11 +347,13 @@ Object {
   "animals": Array [
     Object {
       "age": 21,
+      "id": "MONGODB UNIQUE ID",
       "name": "Mimi",
       "tag": "The tag",
     },
   ],
   "email": "john.doe@gmail.com",
+  "id": "MONGODB UNIQUE ID",
   "name": "John Doe",
 }
 `;
@@ -318,6 +363,7 @@ Object {
   "__v": 0,
   "_id": "MONGODB UNIQUE ID",
   "deleted": true,
+  "id": "MONGODB UNIQUE ID",
   "name": "Mimi",
 }
 `;
@@ -325,6 +371,7 @@ Object {
 exports[`CRUD Nested CRUD One to Many Function Should filter with exact value GET /users/:parentId/animals?filter  1`] = `
 Array [
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Jojo",
   },
 ]
@@ -333,6 +380,7 @@ Array [
 exports[`CRUD Nested CRUD One to Many Function Should filter with partial value GET /users/:parentId/animals?filter  1`] = `
 Array [
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Jojo",
   },
 ]
@@ -341,6 +389,7 @@ Array [
 exports[`CRUD Nested CRUD One to Many Function Should find by name GET /users/:parentId/animals?offset&limit  1`] = `
 Array [
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Jojo",
   },
 ]
@@ -354,6 +403,7 @@ Object {
     Object {
       "__v": 0,
       "_id": "MONGODB UNIQUE ID",
+      "id": "MONGODB UNIQUE ID",
       "name": "Mimi",
       "user": Object {
         "animals": Array [],
@@ -361,6 +411,7 @@ Object {
     },
   ],
   "email": "john.doe@gmail.com",
+  "id": "MONGODB UNIQUE ID",
   "name": "John Doe",
 }
 `;
@@ -373,25 +424,30 @@ Object {
     Object {
       "__v": 0,
       "_id": "MONGODB UNIQUE ID",
+      "id": "MONGODB UNIQUE ID",
       "name": "Mimi",
       "user": Object {
         "__v": 1,
         "_id": "MONGODB UNIQUE ID",
         "email": "john.doe@gmail.com",
+        "id": "MONGODB UNIQUE ID",
         "name": "John Doe",
       },
     },
   ],
   "email": "john.doe@gmail.com",
+  "id": "MONGODB UNIQUE ID",
   "name": "John Doe",
 }
 `;
 
 exports[`CRUD Nested CRUD One to Many Function Should serve GET /users/:parentId/animals/:id 1`] = `
 Object {
+  "id": "MONGODB UNIQUE ID",
   "name": "Mimi",
   "user": Object {
     "email": "john.doe@gmail.com",
+    "id": "MONGODB UNIQUE ID",
     "name": "John Doe",
   },
 }
@@ -400,63 +456,83 @@ Object {
 exports[`CRUD Nested CRUD One to Many Function Should serve GET /users/:parentId/animals?offset&limit 1`] = `
 Array [
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
   Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
 ]
@@ -466,6 +542,7 @@ exports[`CRUD Nested CRUD One to Many Function Should serve PATCH /users/:parent
 Object {
   "__v": 0,
   "_id": "MONGODB UNIQUE ID",
+  "id": "MONGODB UNIQUE ID",
   "name": "Poe",
 }
 `;
@@ -478,15 +555,18 @@ Object {
     Object {
       "__v": 0,
       "_id": "MONGODB UNIQUE ID",
+      "id": "MONGODB UNIQUE ID",
       "name": "Mimi",
     },
     Object {
       "__v": 0,
       "_id": "MONGODB UNIQUE ID",
+      "id": "MONGODB UNIQUE ID",
       "name": "Mimi",
     },
   ],
   "email": "john.doe@gmail.com",
+  "id": "MONGODB UNIQUE ID",
   "name": "John Doe",
 }
 `;
@@ -495,12 +575,14 @@ exports[`CRUD Nested CRUD One to Many Function Should serve PUT /users/:parentId
 Object {
   "__v": 0,
   "_id": "MONGODB UNIQUE ID",
+  "id": "MONGODB UNIQUE ID",
   "name": "Poe",
 }
 `;
 
 exports[`CRUD Nested CRUD One to Many Function Should serve data with native array GET /users/:parentId/animals/:id 1`] = `
 Object {
+  "id": "MONGODB UNIQUE ID",
   "name": "Mimi",
   "tags": Array [
     "Lorem",
@@ -508,6 +590,7 @@ Object {
   ],
   "user": Object {
     "email": "john.doe@gmail.com",
+    "id": "MONGODB UNIQUE ID",
     "name": "John Doe",
   },
 }
@@ -518,6 +601,7 @@ Object {
   "__v": 0,
   "_id": "MONGODB UNIQUE ID",
   "age": 4,
+  "id": "MONGODB UNIQUE ID",
   "name": "Poe",
 }
 `;
@@ -526,6 +610,7 @@ exports[`CRUD Nested CRUD One to Many Function Should set partial validation on 
 Array [
   Object {
     "age": 5,
+    "id": "MONGODB UNIQUE ID",
     "name": "Jojo",
   },
 ]
@@ -538,8 +623,10 @@ Object {
   "animal": Object {
     "__v": 0,
     "_id": "MONGODB UNIQUE ID",
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
+  "id": "MONGODB UNIQUE ID",
   "name": "John",
 }
 `;
@@ -551,8 +638,10 @@ Object {
   "animal": Object {
     "__v": 0,
     "_id": "MONGODB UNIQUE ID",
+    "id": "MONGODB UNIQUE ID",
     "name": "Bingo",
   },
+  "id": "MONGODB UNIQUE ID",
   "name": "John",
 }
 `;
@@ -560,6 +649,7 @@ Object {
 exports[`CRUD One To One Function Should not populate if not selected on get by ID 1`] = `
 Object {
   "email": "john.doe@gmail.com",
+  "id": "MONGODB UNIQUE ID",
   "name": "John",
 }
 `;
@@ -568,6 +658,7 @@ exports[`CRUD One To One Function Should not populate if not selected on get man
 Array [
   Object {
     "email": "john.doe@gmail.com",
+    "id": "MONGODB UNIQUE ID",
     "name": "John",
   },
 ]
@@ -581,20 +672,24 @@ Object {
     Object {
       "__v": 0,
       "_id": "MONGODB UNIQUE ID",
+      "id": "MONGODB UNIQUE ID",
       "name": "Mimi",
     },
     Object {
       "__v": 0,
       "_id": "MONGODB UNIQUE ID",
+      "id": "MONGODB UNIQUE ID",
       "name": "Bingo",
     },
   ],
+  "id": "MONGODB UNIQUE ID",
   "name": "John",
 }
 `;
 
 exports[`CRUD One To One Function Should not populated one to many 2`] = `
 Object {
+  "id": "MONGODB UNIQUE ID",
   "name": "John",
 }
 `;
@@ -603,14 +698,18 @@ exports[`CRUD One To One Function Should populated multiple result 1`] = `
 Array [
   Object {
     "animal": Object {
+      "id": "MONGODB UNIQUE ID",
       "name": "Mimi",
     },
+    "id": "MONGODB UNIQUE ID",
     "name": "John",
   },
   Object {
     "animal": Object {
+      "id": "MONGODB UNIQUE ID",
       "name": "Mimi",
     },
+    "id": "MONGODB UNIQUE ID",
     "name": "Jane",
   },
 ]
@@ -619,8 +718,10 @@ Array [
 exports[`CRUD One To One Function Should populated on get by id 1`] = `
 Object {
   "animal": Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
+  "id": "MONGODB UNIQUE ID",
   "name": "John",
 }
 `;
@@ -628,10 +729,13 @@ Object {
 exports[`CRUD One To One Function Should populated on multiple property 1`] = `
 Object {
   "animal": Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
+  "id": "MONGODB UNIQUE ID",
   "name": "John",
   "secondAnimal": Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Bingo",
   },
 }
@@ -644,8 +748,10 @@ Object {
   "animal": Object {
     "__v": 0,
     "_id": "MONGODB UNIQUE ID",
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
+  "id": "MONGODB UNIQUE ID",
   "name": "John",
 }
 `;
@@ -657,8 +763,10 @@ Object {
   "animal": Object {
     "__v": 0,
     "_id": "MONGODB UNIQUE ID",
+    "id": "MONGODB UNIQUE ID",
     "name": "Bingo",
   },
+  "id": "MONGODB UNIQUE ID",
   "name": "John",
 }
 `;
@@ -671,20 +779,24 @@ Object {
     Object {
       "__v": 0,
       "_id": "MONGODB UNIQUE ID",
+      "id": "MONGODB UNIQUE ID",
       "name": "Mimi",
     },
     Object {
       "__v": 0,
       "_id": "MONGODB UNIQUE ID",
+      "id": "MONGODB UNIQUE ID",
       "name": "Bingo",
     },
   ],
+  "id": "MONGODB UNIQUE ID",
   "name": "John",
 }
 `;
 
 exports[`CRUD One To One on Nested Object Should not populated one to many 2`] = `
 Object {
+  "id": "MONGODB UNIQUE ID",
   "name": "John",
 }
 `;
@@ -693,14 +805,18 @@ exports[`CRUD One To One on Nested Object Should populated multiple result 1`] =
 Array [
   Object {
     "animal": Object {
+      "id": "MONGODB UNIQUE ID",
       "name": "Mimi",
     },
+    "id": "MONGODB UNIQUE ID",
     "name": "John",
   },
   Object {
     "animal": Object {
+      "id": "MONGODB UNIQUE ID",
       "name": "Bingo",
     },
+    "id": "MONGODB UNIQUE ID",
     "name": "Jane",
   },
 ]
@@ -709,8 +825,10 @@ Array [
 exports[`CRUD One To One on Nested Object Should populated on get by id 1`] = `
 Object {
   "animal": Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
+  "id": "MONGODB UNIQUE ID",
   "name": "John",
 }
 `;
@@ -718,10 +836,13 @@ Object {
 exports[`CRUD One To One on Nested Object Should populated on multiple property 1`] = `
 Object {
   "animal": Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Mimi",
   },
+  "id": "MONGODB UNIQUE ID",
   "name": "John",
   "secondAnimal": Object {
+    "id": "MONGODB UNIQUE ID",
     "name": "Bingo",
   },
 }
@@ -731,6 +852,7 @@ exports[`Filter Generic Controller Should able to filter with exact value 1`] = 
 Array [
   Object {
     "boolean": true,
+    "id": "MONGODB UNIQUE ID",
     "number": 1,
     "string": "lorem",
   },
@@ -741,6 +863,7 @@ exports[`Filter Generic Controller Should able to filter with gt value 1`] = `
 Array [
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 3,
     "string": "dolor",
   },
@@ -751,11 +874,13 @@ exports[`Filter Generic Controller Should able to filter with gte value 1`] = `
 Array [
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 2,
     "string": "ipsum",
   },
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 3,
     "string": "dolor",
   },
@@ -766,6 +891,7 @@ exports[`Filter Generic Controller Should able to filter with lt value 1`] = `
 Array [
   Object {
     "boolean": true,
+    "id": "MONGODB UNIQUE ID",
     "number": 1,
     "string": "lorem",
   },
@@ -776,11 +902,13 @@ exports[`Filter Generic Controller Should able to filter with lte value 1`] = `
 Array [
   Object {
     "boolean": true,
+    "id": "MONGODB UNIQUE ID",
     "number": 1,
     "string": "lorem",
   },
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 2,
     "string": "ipsum",
   },
@@ -791,11 +919,13 @@ exports[`Filter Generic Controller Should able to filter with not equal value 1`
 Array [
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 2,
     "string": "ipsum",
   },
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 3,
     "string": "dolor",
   },
@@ -806,11 +936,13 @@ exports[`Filter Generic Controller Should able to filter with range value 1`] = 
 Array [
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 2,
     "string": "ipsum",
   },
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 3,
     "string": "dolor",
   },
@@ -821,9 +953,11 @@ exports[`Filter One To Many Generic Controller Should able to filter with exact 
 Array [
   Object {
     "boolean": true,
+    "id": "MONGODB UNIQUE ID",
     "number": 1,
     "parent": Object {
       "boolean": true,
+      "id": "MONGODB UNIQUE ID",
       "number": 1,
       "string": "lorem",
     },
@@ -836,9 +970,11 @@ exports[`Filter One To Many Generic Controller Should able to filter with gt val
 Array [
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 3,
     "parent": Object {
       "boolean": true,
+      "id": "MONGODB UNIQUE ID",
       "number": 1,
       "string": "lorem",
     },
@@ -851,9 +987,11 @@ exports[`Filter One To Many Generic Controller Should able to filter with gte va
 Array [
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 2,
     "parent": Object {
       "boolean": true,
+      "id": "MONGODB UNIQUE ID",
       "number": 1,
       "string": "lorem",
     },
@@ -861,9 +999,11 @@ Array [
   },
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 3,
     "parent": Object {
       "boolean": true,
+      "id": "MONGODB UNIQUE ID",
       "number": 1,
       "string": "lorem",
     },
@@ -876,9 +1016,11 @@ exports[`Filter One To Many Generic Controller Should able to filter with lt val
 Array [
   Object {
     "boolean": true,
+    "id": "MONGODB UNIQUE ID",
     "number": 1,
     "parent": Object {
       "boolean": true,
+      "id": "MONGODB UNIQUE ID",
       "number": 1,
       "string": "lorem",
     },
@@ -891,9 +1033,11 @@ exports[`Filter One To Many Generic Controller Should able to filter with lte va
 Array [
   Object {
     "boolean": true,
+    "id": "MONGODB UNIQUE ID",
     "number": 1,
     "parent": Object {
       "boolean": true,
+      "id": "MONGODB UNIQUE ID",
       "number": 1,
       "string": "lorem",
     },
@@ -901,9 +1045,11 @@ Array [
   },
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 2,
     "parent": Object {
       "boolean": true,
+      "id": "MONGODB UNIQUE ID",
       "number": 1,
       "string": "lorem",
     },
@@ -916,9 +1062,11 @@ exports[`Filter One To Many Generic Controller Should able to filter with not eq
 Array [
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 2,
     "parent": Object {
       "boolean": true,
+      "id": "MONGODB UNIQUE ID",
       "number": 1,
       "string": "lorem",
     },
@@ -926,9 +1074,11 @@ Array [
   },
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 3,
     "parent": Object {
       "boolean": true,
+      "id": "MONGODB UNIQUE ID",
       "number": 1,
       "string": "lorem",
     },
@@ -941,9 +1091,11 @@ exports[`Filter One To Many Generic Controller Should able to filter with not eq
 Array [
   Object {
     "boolean": true,
+    "id": "MONGODB UNIQUE ID",
     "number": 1,
     "parent": Object {
       "boolean": true,
+      "id": "MONGODB UNIQUE ID",
       "number": 1,
       "string": "lorem",
     },
@@ -951,9 +1103,11 @@ Array [
   },
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 2,
     "parent": Object {
       "boolean": true,
+      "id": "MONGODB UNIQUE ID",
       "number": 1,
       "string": "lorem",
     },
@@ -961,9 +1115,11 @@ Array [
   },
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 3,
     "parent": Object {
       "boolean": true,
+      "id": "MONGODB UNIQUE ID",
       "number": 1,
       "string": "lorem",
     },
@@ -976,9 +1132,11 @@ exports[`Filter One To Many Generic Controller Should able to filter with range 
 Array [
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 2,
     "parent": Object {
       "boolean": true,
+      "id": "MONGODB UNIQUE ID",
       "number": 1,
       "string": "lorem",
     },
@@ -986,9 +1144,11 @@ Array [
   },
   Object {
     "boolean": false,
+    "id": "MONGODB UNIQUE ID",
     "number": 3,
     "parent": Object {
       "boolean": true,
+      "id": "MONGODB UNIQUE ID",
       "number": 1,
       "string": "lorem",
     },
@@ -1039,6 +1199,7 @@ Object {
     Object {
       "__v": 0,
       "_id": "MONGODB UNIQUE ID",
+      "id": "MONGODB UNIQUE ID",
       "name": "Mimi",
     },
   ],

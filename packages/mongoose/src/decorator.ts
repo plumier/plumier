@@ -27,6 +27,12 @@ collection.ref = (type: Class | Class[] | ((x: any) => Class | Class[])) => {
     )
 }
 
+collection.id = () => {
+    return mergeDecorator(
+        entity.primaryId()
+    )
+}
+
 collection.preSave = () => {
     return decorateMethod(<PreSaveDecorator>{ name: "MongoosePreSave" })
 }

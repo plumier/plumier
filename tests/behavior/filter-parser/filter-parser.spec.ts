@@ -3,6 +3,7 @@ import {
     bind,
     Configuration,
     DefaultFacility,
+    entity,
     filterConverters,
     FilterEntity,
     OneToManyRepository,
@@ -100,6 +101,8 @@ describe("Filter Parser", () => {
         @domain()
         class User {
             constructor(
+                @entity.primaryId()
+                public id:number,
                 public name: string,
                 public age: number
             ) { }
@@ -115,6 +118,8 @@ describe("Filter Parser", () => {
         @domain()
         class User {
             constructor(
+                @entity.primaryId()
+                public id:number,
                 public name: string,
                 public age: number
             ) { }
@@ -131,6 +136,8 @@ describe("Filter Parser", () => {
         @domain()
         class User {
             constructor(
+                @entity.primaryId()
+                public id:number,
                 @authorize.write("Admin")
                 @authorize.filter()
                 public name: string,
@@ -174,6 +181,7 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
                     public id: number,
                     public name: string,
                     @authorize.filter()
@@ -191,6 +199,7 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
                     public id: number,
                     @authorize.filter()
                     public name: string,
@@ -208,6 +217,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public age: number,
                 ) { }
@@ -223,6 +234,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public age: number,
                 ) { }
@@ -238,6 +251,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public birthDate: Date,
                 ) { }
@@ -254,6 +269,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public birthDate: Date,
                 ) { }
@@ -270,6 +287,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public birthDate: Date,
                 ) { }
@@ -285,6 +304,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public birthDate: Date,
                 ) { }
@@ -302,6 +323,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public name: string,
                 ) { }
@@ -317,6 +340,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public name: string,
                 ) { }
@@ -332,6 +357,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public name: string,
                 ) { }
@@ -347,6 +374,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public name: Date,
                 ) { }
@@ -364,6 +393,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public name: string,
                 ) { }
@@ -379,6 +410,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public name: number,
                 ) { }
@@ -394,6 +427,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public dob: Date,
                 ) { }
@@ -410,6 +445,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public active: boolean,
                 ) { }
@@ -425,6 +462,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public name: number,
                 ) { }
@@ -442,6 +481,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public age: number,
                 ) { }
@@ -457,6 +498,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public age: number,
                 ) { }
@@ -472,6 +515,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public age: number,
                 ) { }
@@ -487,6 +532,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public age: number,
                 ) { }
@@ -502,6 +549,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public age: number,
                 ) { }
@@ -517,6 +566,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public age: string,
                 ) { }
@@ -534,6 +585,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public age: string,
                 ) { }
@@ -549,6 +602,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public age: number,
                 ) { }
@@ -564,6 +619,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public age: Date,
                 ) { }
@@ -580,6 +637,8 @@ describe("Filter Parser", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     @authorize.filter()
                     public age: boolean,
                 ) { }
