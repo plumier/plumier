@@ -37,7 +37,7 @@ async function getPoliciesByFile(root: string, opt: Class<AuthPolicy> | Class<Au
 /* ------------------------------------------------------------------------------- */
 
 export class JwtAuthFacility extends DefaultFacility {
-    constructor(private option?: JwtAuthFacilityOption & KoaJwt.Options) { super() }
+    constructor(private option?: JwtAuthFacilityOption & Partial<KoaJwt.Options>) { super() }
 
     async preInitialize(app: Readonly<PlumierApplication>) {
         if (this.option?.authPolicies)
