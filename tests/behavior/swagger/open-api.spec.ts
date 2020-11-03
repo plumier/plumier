@@ -9,17 +9,14 @@ import {
     entity,
     Facility,
     FormFile,
-    generateRoutes,
     PlumierApplication,
-    RepoBaseOneToManyControllerGeneric,
     route,
-    RouteInfo,
     RouteMetadata,
     val,
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import { refFactory, SwaggerFacility, transformTypeAdvance } from "@plumier/swagger"
-import { RelationPropertyDecorator } from 'core/src/types'
+import { refFactory, SwaggerFacility } from "@plumier/swagger"
+import { RelationPropertyDecorator } from "core/src/types"
 import { IncomingMessage } from "http"
 import { Context } from "koa"
 import Plumier, { ControllerFacility, WebApiFacility } from "plumier"
@@ -59,7 +56,7 @@ describe("Open API 3.0 Generation", () => {
 
     describe("Schema Override", () => {
         describe("Filter", () => {
-            it("Should hide all fields on filter override", async () => {
+            it("Should hide filter filed when no filter authorization provided", async () => {
                 class Item {
                     @entity.primaryId()
                     id: number
@@ -616,6 +613,7 @@ describe("Open API 3.0 Generation", () => {
             })
         })
     })
+    
     describe("Info", () => {
         it("Should able to provide spec info", async () => {
             class UsersController {
