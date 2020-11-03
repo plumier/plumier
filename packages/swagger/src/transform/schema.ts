@@ -90,7 +90,7 @@ function addRelationAsIdOverride(modelType: (Class | Class[]), ctx: TransformCon
         if (relation) {
             const isArray = property.typeClassification === "Array"
             const propType = isArray ? property.type[0] : property.type
-            const idType = entityHelper.getIdType(propType)
+            const idType = entityHelper.getIdType(propType)!
             result.properties![property.name] = transformType(isArray ? [idType] : idType, ctx)
         }
     }

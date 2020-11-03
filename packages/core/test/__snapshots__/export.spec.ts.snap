@@ -214,6 +214,7 @@ Object {
     "CustomRouteMustHaveOneParameter": "PLUM1013: Custom route path '{0}' on {1} entity, must have one route parameter, example: animals/:animalId",
     "CustomRouteRequiredTwoParameters": "PLUM1012: Nested custom route path '{0}' on {1} entity, must have two route parameters, example: users/:userId/animals/:animalId",
     "DuplicateRouteFound": "PLUM1001: Duplicate route found in {0}",
+    "EntityRequireID": "PLUM1014: Entity {0} used by generic controller doesn't have an ID property",
     "FileSizeExceeded": "File {0} size exceeded the maximum size",
     "GenericControllerImplementationNotFound": "PLUM1009: Generic controller implementation not installed",
     "GenericControllerMissingTypeInfo": "PLUM1010: {0} marked with @route.controller() but doesn't have type information",

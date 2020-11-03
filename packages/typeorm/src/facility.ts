@@ -23,6 +23,7 @@ import { promisify } from "util"
 import validator from "validator"
 
 import { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
+import { TypeORMRepository } from './repository'
 
 const lstatAsync = promisify(lstat)
 
@@ -130,10 +131,12 @@ class TypeORMFacility extends DefaultFacility {
     }
 
     setup(app: Readonly<PlumierApplication>) {
-        Object.assign(app.config, {
-            genericController: [TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric],
-            genericControllerNameConversion: (x: string) => pluralize(x)
-        })
+        app.set({genericController: [TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric]})
+        app.set({genericControllerNameConversion: (x: string) => pluralize(x)})
+        app.set({entityProviderQuery: async (type, id) => {
+            const repo = getManager().getRepository(type)
+            return repo.findOne(id)
+        }})
         app.use(new RequestHookMiddleware(), "Action")
     }
 

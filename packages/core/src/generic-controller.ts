@@ -13,7 +13,7 @@ import { val } from "typedconverter"
 import { AuthorizeDecorator } from "./authorization"
 import { Class, entityHelper } from "./common"
 import { api, ApiTagDecorator } from "./decorator/api"
-import { authorize } from "./decorator/authorize"
+import { authorize, entityProvider } from "./decorator/authorize"
 import { bind } from "./decorator/bind"
 import { domain } from "./decorator/common"
 import { DeleteColumnDecorator, entity, RelationDecorator } from "./decorator/entity"
@@ -490,6 +490,8 @@ function createGenericController(entity: Class, builder: ControllerBuilder, cont
     const config = builder.toObject()
     // get type of ID column on entity
     const idType = entityHelper.getIdType(entity)
+    if (!idType)
+        throw new Error(errorMessage.EntityRequireID.format(entity.name))
     // create controller type dynamically 
     const Controller = generic.create({ parent: controller, name: controller.name }, entity, idType)
     // add root decorator
@@ -508,6 +510,7 @@ function createGenericController(entity: Class, builder: ControllerBuilder, cont
     Reflect.decorate([
         ...decorators,
         ...routes,
+        entityProvider(entity, "id", { applyTo: ["get", "modify", "replace", "delete"] }),
         route.root(routePath, { map: routeMap }),
         ignoreActions(config),
         ...authorizeActions(config)
@@ -517,26 +520,30 @@ function createGenericController(entity: Class, builder: ControllerBuilder, cont
     return Controller
 }
 
-function createOneToManyGenericController(entity: Class, builder: ControllerBuilder, relation: Class, relationProperty: string, controller: Class<OneToManyControllerGeneric>, nameConversion: (x: string) => string) {
+function createOneToManyGenericController(parentType: Class, builder: ControllerBuilder, entity: Class, relationProperty: string, controller: Class<OneToManyControllerGeneric>, nameConversion: (x: string) => string) {
     const config = builder.toObject()
     // get type of ID column on parent entity
-    const parentIdType = entityHelper.getIdType(entity)
+    const parentIdType = entityHelper.getIdType(parentType)
+    if (!parentIdType)
+        throw new Error(errorMessage.EntityRequireID.format(parentType.name))
     // get type of ID column on entity
-    const idType = entityHelper.getIdType(relation)
+    const idType = entityHelper.getIdType(entity)
+    if (!idType)
+        throw new Error(errorMessage.EntityRequireID.format(entity.name))
     // create controller 
-    const Controller = generic.create({ parent: controller, name: controller.name }, entity, relation, parentIdType, idType)
+    const Controller = generic.create({ parent: controller, name: controller.name }, parentType, entity, parentIdType, idType)
     // add root decorator
-    let routePath = `${nameConversion(entity.name)}/:pid/${relationProperty}`
+    let routePath = `${nameConversion(parentType.name)}/:pid/${relationProperty}`
     let routeMap: any = {}
     const routes = []
     if (config.path) {
-        const keys = validatePath(config.path, entity, true)
+        const keys = validatePath(config.path, parentType, true)
         routePath = config.path.replace(lastParam, "")
         routeMap = { pid: keys[0].name, id: keys[1].name }
         routes.push(...createRouteDecorators(keys[1].name.toString()))
     }
     // copy @route.ignore() on entity to the controller to control route generation
-    const meta = reflect(entity)
+    const meta = reflect(parentType)
     const relProp = meta.properties.find(x => x.name === relationProperty)!
     const entityDecorators = relProp.decorators
     const decorators = copyDecorators(entityDecorators, controller)
@@ -547,10 +554,12 @@ function createOneToManyGenericController(entity: Class, builder: ControllerBuil
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
         decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: relationProperty }),
         ignoreActions(config),
+        entityProvider(parentType, "pid", { applyTo: ["list", "save"] }),
+        entityProvider(entity, "id", { applyTo: ["get", "modify", "replace", "delete"] }),
         ...authorizeActions(config)
     ], Controller)
     if (!relProp.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag"))
-        Reflect.decorate([api.tag(entity.name)], Controller)
+        Reflect.decorate([api.tag(parentType.name)], Controller)
     return Controller
 }
 

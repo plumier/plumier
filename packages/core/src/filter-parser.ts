@@ -25,7 +25,7 @@ function notFilter(i: VisitorInvocation) {
 function convert(decorators: any[], type: Class, value: string): [any, string?] {
     if (isCustomClass(type)) {
         if (decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation")) {
-            const idType = entityHelper.getIdType(type)
+            const idType = entityHelper.getIdType(type)!
             const converter = defaultConverters.get(idType)!
             return [converter(value)]
         }

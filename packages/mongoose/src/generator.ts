@@ -1,4 +1,4 @@
-import { Class, isCustomClass } from "@plumier/core"
+import { Class, entity, EntityIdDecorator, isCustomClass } from "@plumier/core"
 import mong, { ConnectionOptions, Document, Mongoose } from "mongoose"
 import reflect, { ClassReflection, PropertyReflection } from "tinspector"
 
@@ -134,17 +134,26 @@ class MongooseHelper {
         else {
             const meta = reflect(type)
             const option = getOption(meta)
+            // add primary id decorator
+            // if there is id property then add the virtuals configuration
+            const idProp = meta.properties.find(x => x.decorators.some((d: EntityIdDecorator) => d.kind === "plumier-meta:entity-id"))
+            if(idProp){
+                option.toJSON = {...option.toJSON, virtuals: true}
+                option.toObject = {...option.toObject, virtuals: true}
+            }
+            reflect.flush(type)
+            const typeMeta = reflect(type)
             const name = option.name!
             const definition = getDefinition(type, this.models)
             const schema = new this.client.Schema(definition, option)
             if (option.hook)
                 option.hook(schema)
             //@collection.preSave() hook
-            this.preSave(meta, schema)
+            this.preSave(typeMeta, schema)
             const mongooseModel = this.client.model<T & Document>(name, schema)
             this.models.set(type, { name, collectionName: mongooseModel.collection.name, definition, option })
             // register through all the ref properties
-            for (const prop of meta.properties) {
+            for (const prop of typeMeta.properties) {
                 const isRef = !!prop.decorators.find((x: RefDecorator) => x.name === "MongooseRef")
                 if (!isRef) continue
                 const dataType: Class = Array.isArray(prop.type) ? prop.type[0] : prop.type

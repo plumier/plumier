@@ -5,6 +5,8 @@ import reflect from "tinspector"
 @domain()
 export class Animal {
     constructor(
+        @entity.primaryId()
+        public id:number,
         public name: string
     ) { }
 }
@@ -13,6 +15,8 @@ export class Animal {
 @domain()
 export class User {
     constructor(
+        @entity.primaryId()
+        public id:number,
         public name: string,
         public email: string,
         @reflect.type([Animal])

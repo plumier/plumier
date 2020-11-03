@@ -13,6 +13,7 @@ import {
     DefaultOneToManyRepository,
     DefaultRepository,
     entity,
+    entityPolicy,
     FilterEntity,
     IdentifierResult,
     Invocation,
@@ -31,6 +32,7 @@ import {
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { SwaggerFacility } from "@plumier/swagger"
+import { sign } from 'jsonwebtoken'
 import { Context } from "koa"
 import { join } from "path"
 import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "plumier"
@@ -151,6 +153,8 @@ describe("Route Generator", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -162,6 +166,8 @@ describe("Route Generator", () => {
         it("Should generate routes with property field entity", async () => {
             @route.controller()
             class User {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 public name: string
                 @reflect.noop()
@@ -205,7 +211,8 @@ describe("Route Generator", () => {
                 .initialize()
             expect(getParameters(routes)).toMatchSnapshot()
         })
-        it("Should use string as default id if no ID type specified", async () => {
+        it("Should throw error when entity doesn't have ID specified", async () => {
+            const fn = jest.fn()
             @route.controller()
             @domain()
             class User {
@@ -215,15 +222,17 @@ describe("Route Generator", () => {
                 ) { }
             }
             let routes: RouteMetadata[] = []
-            await createApp({ controller: User })
+            const mock = await expectError(createApp({ controller: User })
                 .set(new RouteHookFacility(x => routes = x))
-                .initialize()
-            expect(getParameters(routes)).toMatchSnapshot()
+                .initialize())
+            expect(mock.mock.calls).toMatchSnapshot()
         })
         it("Should not generate entity that is not marked as controller", async () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -237,6 +246,8 @@ describe("Route Generator", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -251,6 +262,8 @@ describe("Route Generator", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -270,6 +283,8 @@ describe("Route Generator", () => {
             @route.ignore({ applyTo: ["get", "save"] })
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -284,6 +299,8 @@ describe("Route Generator", () => {
             @authorize.route("admin")
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -300,6 +317,8 @@ describe("Route Generator", () => {
             @authorize.route("admin", { applyTo: ["save", "replace", "delete", "modify"] })
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -316,6 +335,8 @@ describe("Route Generator", () => {
             @authorize.public()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -332,6 +353,8 @@ describe("Route Generator", () => {
             @authorize.custom(x => (x.user && x.user.role) === "Admin", { access: "route" })
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -347,6 +370,8 @@ describe("Route Generator", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -387,6 +412,8 @@ describe("Route Generator", () => {
             @domain()
             class Animal {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
@@ -394,6 +421,8 @@ describe("Route Generator", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
@@ -410,12 +439,16 @@ describe("Route Generator", () => {
             @domain()
             class Animal {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @route.controller()
@@ -431,11 +464,15 @@ describe("Route Generator", () => {
         })
         it("Should generate routes with property field entity", async () => {
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
             }
             @route.controller()
             class User {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.noop()
@@ -477,10 +514,38 @@ describe("Route Generator", () => {
                 .initialize()
             expect(getParameters(routes)).toMatchSnapshot()
         })
-        it("Should use string as default id if no ID type specified", async () => {
+        it("Should throw error when no ID specified on entity", async () => {
             @domain()
             class Animal {
                 constructor(
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string,
+                    @reflect.type([Animal])
+                    @entity.relation()
+                    @route.controller()
+                    public animals: Animal[]
+                ) { }
+            }
+            let routes: RouteMetadata[] = []
+            const mock = await expectError(createApp({ controller: User })
+                .set(new RouteHookFacility(x => routes = x))
+                .initialize())
+            expect(mock.mock.calls).toMatchSnapshot()
+        })
+        it("Should throw error when no ID specified on parent entity", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
@@ -496,15 +561,17 @@ describe("Route Generator", () => {
                 ) { }
             }
             let routes: RouteMetadata[] = []
-            await createApp({ controller: User })
+            const mock = await expectError(createApp({ controller: User })
                 .set(new RouteHookFacility(x => routes = x))
-                .initialize()
-            expect(getParameters(routes)).toMatchSnapshot()
+                .initialize())
+            expect(mock.mock.calls).toMatchSnapshot()
         })
         it("Should able to change root path", async () => {
             @domain()
             class Animal {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
@@ -512,6 +579,8 @@ describe("Route Generator", () => {
             @route.controller()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
@@ -529,12 +598,16 @@ describe("Route Generator", () => {
             @domain()
             class Animal {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
@@ -556,12 +629,16 @@ describe("Route Generator", () => {
             @domain()
             class Animal {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
@@ -577,10 +654,14 @@ describe("Route Generator", () => {
         })
         it("Should able to authorize relation on relation", async () => {
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 public name: string
             }
             class User {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 public name: string
                 @reflect.noop()
@@ -599,10 +680,14 @@ describe("Route Generator", () => {
         })
         it("Should able to authorize some method on relation", async () => {
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 public name: string
             }
             class User {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 public name: string
                 @reflect.noop()
@@ -621,10 +706,14 @@ describe("Route Generator", () => {
         })
         it("Should throw error when no generic controller impl found", async () => {
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 public name: string
             }
             class User {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 public name: string
                 @reflect.noop()
@@ -669,12 +758,16 @@ describe("Route Generator", () => {
             @domain()
             class Animal {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @route.controller()
             @domain()
             class User {
+                @entity.primaryId()
+                id: number
                 @noop()
                 name: string
                 @noop()
@@ -697,6 +790,8 @@ describe("Route Generator", () => {
             @route.controller()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -714,12 +809,16 @@ describe("Route Generator", () => {
             @domain()
             class Animal {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @route.controller()
@@ -747,6 +846,8 @@ describe("Custom Route Path", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -759,7 +860,8 @@ describe("Custom Route Path", () => {
             @generic.template("T", "TID")
             @generic.type("T", "TID")
             class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
-                constructor() {
+                constructor(
+                ) {
                     super(x => ({} as Repository<T>))
                 }
                 get() {
@@ -770,6 +872,8 @@ describe("Custom Route Path", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -792,6 +896,8 @@ describe("Custom Route Path", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -804,6 +910,8 @@ describe("Custom Route Path", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -816,6 +924,8 @@ describe("Custom Route Path", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -829,12 +939,16 @@ describe("Custom Route Path", () => {
             @domain()
             class Animal {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
@@ -851,7 +965,10 @@ describe("Custom Route Path", () => {
             @generic.template("P", "T", "PID", "TID")
             @generic.type("P", "T", "PID", "TID")
             class MyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{
-                constructor() { super(fac => ({} as any)) }
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                ) { super(fac => ({} as any)) }
                 get() {
                     return {} as any
                 }
@@ -859,12 +976,16 @@ describe("Custom Route Path", () => {
             @domain()
             class Animal {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
@@ -891,12 +1012,16 @@ describe("Custom Route Path", () => {
             @domain()
             class Animal {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
@@ -911,6 +1036,8 @@ describe("Custom Route Path", () => {
         it("Should throw error when provided only one parameter", async () => {
             @domain()
             class Animal {
+                @entity.primaryId()
+                id: number
                 constructor(
                     public name: string
                 ) { }
@@ -918,6 +1045,8 @@ describe("Custom Route Path", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
@@ -932,6 +1061,8 @@ describe("Custom Route Path", () => {
         it("Should throw error when provided more than two parameters", async () => {
             @domain()
             class Animal {
+                @entity.primaryId()
+                id: number
                 constructor(
                     public name: string
                 ) { }
@@ -939,6 +1070,8 @@ describe("Custom Route Path", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
@@ -953,6 +1086,8 @@ describe("Custom Route Path", () => {
         it("Should throw error when no parameter at the end", async () => {
             @domain()
             class Animal {
+                @entity.primaryId()
+                id: number
                 constructor(
                     public name: string
                 ) { }
@@ -960,6 +1095,8 @@ describe("Custom Route Path", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
@@ -979,6 +1116,8 @@ describe("Open Api", () => {
         it("Should provided proper component", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
             }
@@ -993,6 +1132,8 @@ describe("Open Api", () => {
         it("Should generate GET /animal properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @authorize.filter()
                 name: string
             }
@@ -1008,6 +1149,8 @@ describe("Open Api", () => {
         it("Should generate POST /animal properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
             }
@@ -1023,6 +1166,8 @@ describe("Open Api", () => {
         it("Should generate GET /animal/:id properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
             }
@@ -1038,6 +1183,8 @@ describe("Open Api", () => {
         it("Should generate DELETE /animal/:id properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
             }
@@ -1053,6 +1200,8 @@ describe("Open Api", () => {
         it("Should generate PUT /animal/:id properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
             }
@@ -1068,6 +1217,8 @@ describe("Open Api", () => {
         it("Should generate PATCH /animal/:id properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
             }
@@ -1084,6 +1235,8 @@ describe("Open Api", () => {
             @route.controller()
             @api.tag("Animals")
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
             }
@@ -1098,6 +1251,8 @@ describe("Open Api", () => {
         it("Should able to provide correct parameter name when using custom path name", async () => {
             @route.controller("animals/:aid")
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
             }
@@ -1112,6 +1267,8 @@ describe("Open Api", () => {
         it("Should able to provide custom parameter with case", async () => {
             @route.controller("animals/:aId")
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
             }
@@ -1129,6 +1286,8 @@ describe("Open Api", () => {
         it("Should provide proper component", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1137,6 +1296,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1152,6 +1313,8 @@ describe("Open Api", () => {
         it("Should generate GET /animals properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @authorize.filter()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1160,6 +1323,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1175,6 +1340,8 @@ describe("Open Api", () => {
         it("Should generate POST /animals properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1183,6 +1350,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1198,6 +1367,8 @@ describe("Open Api", () => {
         it("Should generate GET /animals/:id properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1206,6 +1377,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1221,6 +1394,8 @@ describe("Open Api", () => {
         it("Should generate DELETE /animals/:id properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1229,6 +1404,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1244,6 +1421,8 @@ describe("Open Api", () => {
         it("Should generate PUT /animals/:id properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1252,6 +1431,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1267,6 +1448,8 @@ describe("Open Api", () => {
         it("Should generate PATCH /animals/:id properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1275,6 +1458,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1290,6 +1475,8 @@ describe("Open Api", () => {
         it("Should generate GET /animals/{pid}/tags properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1298,6 +1485,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @authorize.filter()
                 tag: string
             }
@@ -1313,6 +1502,8 @@ describe("Open Api", () => {
         it("Should generate POST /animals/{pid}/tags properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1321,6 +1512,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1336,6 +1529,8 @@ describe("Open Api", () => {
         it("Should generate GET /animals/{pid}/tags/:id properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1344,6 +1539,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1359,6 +1556,8 @@ describe("Open Api", () => {
         it("Should generate DELETE /animals/{pid}/tags/:id properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1367,6 +1566,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1382,6 +1583,8 @@ describe("Open Api", () => {
         it("Should generate PUT /animals/{pid}/tags/:id properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1390,6 +1593,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1405,6 +1610,8 @@ describe("Open Api", () => {
         it("Should generate PATCH /animals/{pid}/tags/:id properly", async () => {
             @route.controller()
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1413,6 +1620,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1427,6 +1636,8 @@ describe("Open Api", () => {
         })
         it("Should able to add @api.tags() from property", async () => {
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1436,6 +1647,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1449,6 +1662,8 @@ describe("Open Api", () => {
         })
         it("Should able to provide correct parameter name when using custom path name", async () => {
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1457,6 +1672,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1470,6 +1687,8 @@ describe("Open Api", () => {
         })
         it("Should able to provide custom parameter with case", async () => {
             class Animal {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 name: string
                 @reflect.type(x => [Tag])
@@ -1478,6 +1697,8 @@ describe("Open Api", () => {
                 tags: Tag[]
             }
             class Tag {
+                @entity.primaryId()
+                id: number
                 @reflect.noop()
                 tag: string
             }
@@ -1518,6 +1739,8 @@ describe("Request Hook", () => {
         @domain()
         class User {
             constructor(
+                @entity.primaryId()
+                public id: number,
                 public name: string,
                 public email: string,
                 public password: string
@@ -1540,6 +1763,8 @@ describe("Request Hook", () => {
         @domain()
         class User {
             constructor(
+                @entity.primaryId()
+                public id: number,
                 public name: string,
                 public email: string,
                 public password: string
@@ -1566,6 +1791,8 @@ describe("Request Hook", () => {
         @domain()
         class Parent {
             constructor(
+                @entity.primaryId()
+                public id: number,
                 @route.controller()
                 @type(x => [User])
                 public users: User[]
@@ -1574,6 +1801,8 @@ describe("Request Hook", () => {
         @domain()
         class User {
             constructor(
+                @entity.primaryId()
+                public id: number,
                 public name: string,
                 public email: string,
                 public password: string,
@@ -1596,6 +1825,8 @@ describe("Request Hook", () => {
         @domain()
         class User {
             constructor(
+                @entity.primaryId()
+                public id: number,
                 public name: string,
                 public email: string,
                 public password: string
@@ -1622,6 +1853,8 @@ describe("Request Hook", () => {
         @domain()
         class User {
             constructor(
+                @entity.primaryId()
+                public id: number,
                 public name: string,
                 public email: string,
                 public password: string
@@ -1652,6 +1885,8 @@ describe("Request Hook", () => {
         @domain()
         class User {
             constructor(
+                @entity.primaryId()
+                public id: number,
                 public name: string,
                 public email: string,
                 public password: string
@@ -1678,6 +1913,8 @@ describe("Request Hook", () => {
         @domain()
         class Parent {
             constructor(
+                @entity.primaryId()
+                public id: number,
                 @route.controller()
                 @type(x => [User])
                 public users: User[]
@@ -1686,6 +1923,8 @@ describe("Request Hook", () => {
         @domain()
         class User {
             constructor(
+                @entity.primaryId()
+                public id: number,
                 public name: string,
                 public email: string,
                 public password: string,
@@ -1707,6 +1946,8 @@ describe("Request Hook", () => {
         @domain()
         class Parent {
             constructor(
+                @entity.primaryId()
+                public id: number,
                 @route.controller()
                 @type(x => [User])
                 public users: User[]
@@ -1715,6 +1956,8 @@ describe("Request Hook", () => {
         @domain()
         class User {
             constructor(
+                @entity.primaryId()
+                public id: number,
                 public name: string,
                 public email: string,
                 public password: string,
@@ -1736,6 +1979,8 @@ describe("Request Hook", () => {
         @domain()
         class Parent {
             constructor(
+                @entity.primaryId()
+                public id: number,
                 @route.controller()
                 @type(x => [User])
                 public users: User[]
@@ -1744,6 +1989,8 @@ describe("Request Hook", () => {
         @domain()
         class User {
             constructor(
+                @entity.primaryId()
+                public id: number,
                 public name: string,
                 public email: string,
                 public password: string,
@@ -1767,6 +2014,8 @@ describe("Request Hook", () => {
         @domain()
         class User {
             constructor(
+                @entity.primaryId()
+                public id: number,
                 public name: string,
                 public email: string,
                 public password: string
@@ -1795,6 +2044,8 @@ describe("Controller Builder", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -1807,12 +2058,16 @@ describe("Controller Builder", () => {
             @domain()
             class Animal {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
@@ -1839,6 +2094,8 @@ describe("Controller Builder", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -1852,6 +2109,8 @@ describe("Controller Builder", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -1865,6 +2124,8 @@ describe("Controller Builder", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -1878,6 +2139,8 @@ describe("Controller Builder", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -1900,6 +2163,8 @@ describe("Controller Builder", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -1913,6 +2178,8 @@ describe("Controller Builder", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -1925,12 +2192,16 @@ describe("Controller Builder", () => {
             @domain()
             class Animal {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
@@ -1955,6 +2226,8 @@ describe("Controller Builder", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -1968,6 +2241,8 @@ describe("Controller Builder", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -1981,6 +2256,8 @@ describe("Controller Builder", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -1994,6 +2271,8 @@ describe("Controller Builder", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -2010,6 +2289,8 @@ describe("Controller Builder", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -2025,6 +2306,8 @@ describe("Controller Builder", () => {
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string
                 ) { }
@@ -2037,12 +2320,16 @@ describe("Controller Builder", () => {
             @domain()
             class Animal {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string
                 ) { }
             }
             @domain()
             class User {
                 constructor(
+                    @entity.primaryId()
+                    public id: number,
                     public name: string,
                     public email: string,
                     @reflect.type([Animal])
@@ -2054,6 +2341,225 @@ describe("Controller Builder", () => {
             const mock = consoleLog.startMock()
             await createApp({ controller: [User] }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+    })
+})
+
+describe("Entity Policy", () => {
+    const fn = jest.fn()
+    @route.controller(c => {
+        c.getOne().authorize("Owner")
+        c.put().authorize("Owner")
+        c.patch().authorize("Owner")
+        c.delete().authorize("Owner")
+    })
+    class User {
+        @entity.primaryId()
+        id: number
+        @noop()
+        name: string
+        @authorize.read("Owner")
+        email: string
+        @route.controller(c => c.all().authorize("Owner"))
+        @entity.relation()
+        @type(x => [Todo])
+        todos: Todo[]
+    }
+    class Todo {
+        @entity.primaryId()
+        id: number
+        @noop()
+        title: string
+        @entity.relation()
+        user: User
+    }
+    const users: User[] = [
+        { id: 1, name: "John", email: "john.doe@gmail.com", todos: [] },
+        { id: 2, name: "Jane", email: "jane.doe@gmail.com", todos: [] },
+        { id: 3, name: "Joe", email: "joe.doe@gmail.com", todos: [] }
+    ]
+    const todos: Todo[] = [
+        { id: 1, title: "John's todo", user: users[0] },
+        { id: 2, title: "John's todo 2", user: users[0] },
+        { id: 3, title: "Jane's todo", user: users[1] },
+        { id: 4, title: "Jane's todo 2", user: users[1] }
+    ]
+    class UserRepo extends MockRepo<User>{
+        constructor(fn: jest.Mock) { super(fn) }
+        async find(offset: number, limit: number, query: FilterEntity<User>): Promise<User[]> {
+            return users
+        }
+        async findById(id: any) {
+            return users.find(x => x.id === id)
+        }
+    }
+    class TodoRepo extends MockOneToManyRepo<User, Todo>{
+        constructor(fn: jest.Mock) { super(fn) }
+        async find(pid: number, offset: number, limit: number, query: FilterEntity<Todo>): Promise<Todo[]> {
+            return todos.filter(x => x.user.id === pid)
+        }
+        async findById(id: any) {
+            return todos.find(x => x.id === id)!
+        }
+    }
+    @generic.template("T", "TID")
+    @generic.type("T", "TID")
+    class MyControllerGeneric extends RepoBaseControllerGeneric<User, number>{
+        constructor() { super(x => new UserRepo(fn)) }
+    }
+    @generic.template("P", "T", "PID", "TID")
+    @generic.type("P", "T", "PID", "TID")
+    class MyOneToManyControllerGeneric extends RepoBaseOneToManyControllerGeneric<User, Todo, number, number>{
+        constructor() { super(x => new TodoRepo(fn)) }
+    }
+    const UserPolicy = entityPolicy(User).define("Owner", (ctx, e) => ctx.user?.userId === e.id)
+    const TodoPolicy = entityPolicy(Todo).define("Owner", (ctx, e) => ctx.user?.userId === e.user.id)
+    function createApp() {
+        return new Plumier()
+            .set(new WebApiFacility())
+            .set(new ControllerFacility({ controller: User }))
+            .set(new JwtAuthFacility({ secret: "lorem", authPolicies: [UserPolicy, TodoPolicy] }))
+            .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
+            .set({
+                entityProviderQuery: async (type, id) => {
+                    return type === User ? users.find(x => x.id === id) : todos.find(x => x.id === id)
+                }
+            })
+            .initialize()
+    }
+    const JOHN_TOKEN = sign({ userId: 1 }, "lorem")
+    const JANE_TOKEN = sign({ userId: 2 }, "lorem")
+    describe("Generic Controller", () => {
+        it("Should protect data properly", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/user")
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should protect get by ID", async () => {
+            const app = await createApp()
+            await supertest(app.callback())
+                .get("/user/1")
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(200)
+            await supertest(app.callback())
+                .get("/user/1")
+                .set("Authorization", `Bearer ${JANE_TOKEN}`)
+                .expect(401)
+        })
+        it("Should protect put by ID", async () => {
+            const app = await createApp()
+            await supertest(app.callback())
+                .put("/user/1")
+                .send({ name: "Lorem" })
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(200)
+            await supertest(app.callback())
+                .put("/user/1")
+                .send({ name: "Lorem" })
+                .set("Authorization", `Bearer ${JANE_TOKEN}`)
+                .expect(401)
+        })
+        it("Should protect patch by ID", async () => {
+            const app = await createApp()
+            await supertest(app.callback())
+                .patch("/user/1")
+                .send({ name: "Lorem" })
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(200)
+            await supertest(app.callback())
+                .patch("/user/1")
+                .send({ name: "Lorem" })
+                .set("Authorization", `Bearer ${JANE_TOKEN}`)
+                .expect(401)
+        })
+        it("Should protect delete by ID", async () => {
+            const app = await createApp()
+            await supertest(app.callback())
+                .delete("/user/1")
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(200)
+            await supertest(app.callback())
+                .delete("/user/1")
+                .set("Authorization", `Bearer ${JANE_TOKEN}`)
+                .expect(401)
+        })
+    })
+    describe("One To Many Controller", () => {
+        it("Should protect get all", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/user/1/todos")
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(200)
+            await supertest(app.callback())
+                .get("/user/2/todos")
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(401)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should protect post", async () => {
+            const app = await createApp()
+            await supertest(app.callback())
+                .post("/user/1/todos")
+                .send({ title: "Lorem" })
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(200)
+            await supertest(app.callback())
+                .post("/user/2/todos")
+                .send({ title: "Lorem" })
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(401)
+        })
+        it("Should protect get by id", async () => {
+            const app = await createApp()
+            await supertest(app.callback())
+                .patch("/user/1/todos/1")
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(200)
+            await supertest(app.callback())
+                .patch("/user/2/todos/3")
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(401)
+        })
+        it("Should protect put", async () => {
+            const app = await createApp()
+            await supertest(app.callback())
+                .put("/user/1/todos/1")
+                .send({ title: "Lorem" })
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(200)
+            await supertest(app.callback())
+                .put("/user/2/todos/3")
+                .send({ title: "Lorem" })
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(401)
+        })
+        it("Should protect patch", async () => {
+            const app = await createApp()
+            await supertest(app.callback())
+                .patch("/user/1/todos/1")
+                .send({ title: "Lorem" })
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(200)
+            await supertest(app.callback())
+                .patch("/user/2/todos/3")
+                .send({ title: "Lorem" })
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(401)
+        })
+        it("Should protect delete", async () => {
+            const app = await createApp()
+            await supertest(app.callback())
+                .patch("/user/1/todos/1")
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(200)
+            await supertest(app.callback())
+                .patch("/user/2/todos/3")
+                .set("Authorization", `Bearer ${JOHN_TOKEN}`)
+                .expect(401)
         })
     })
 })

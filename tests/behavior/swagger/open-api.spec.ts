@@ -171,6 +171,26 @@ describe("Open API 3.0 Generation", () => {
                     .expect(200)
                 expect(body.paths["/item"].get.parameters).toMatchSnapshot()
             })
+            it("Should able to use all fields as filter", async () => {
+                class Item {
+                    @authorize.filter()
+                    @entity.primaryId()
+                    id: number
+
+                    @authorize.filter()
+                    @noop()
+                    name: string
+                }
+                class ItemController {
+                    @route.get("")
+                    list(@entity.filter() filter: Item) { }
+                }
+                const app = await createApp(ItemController)
+                const { body } = await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/item"].get.parameters).toMatchSnapshot()
+            })
         })
         describe("Request Body", () => {
             it("Should change relations with id type", async () => {

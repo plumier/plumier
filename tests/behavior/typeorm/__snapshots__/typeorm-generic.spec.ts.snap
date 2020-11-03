@@ -837,6 +837,24 @@ Object {
 }
 `;
 
+exports[`CRUD Should able to use entity policy properly 1`] = `
+Array [
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 1,
+    "name": "John",
+  },
+  Object {
+    "id": 2,
+    "name": "Jane",
+  },
+  Object {
+    "id": 3,
+    "name": "Joe",
+  },
+]
+`;
+
 exports[`Filter Generic Controller Should able to filter with exact value 1`] = `
 Array [
   Object {
