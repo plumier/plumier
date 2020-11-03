@@ -71,15 +71,12 @@ describe("CRUD", () => {
                 .set({ mode: "production" })
                 .initialize()
         }
-        const setupUser = () => Promise.all([
-            new UserModel({ name: "John", email: "john.doe@gmail.com" }).save(),
-            new UserModel({ name: "Jane", email: "jane.doe@gmail.com" }).save(),
-            new UserModel({ name: "Joe", email: "joe.doe@gmail.com" }).save(),
-        ])
-        const [john] = await setupUser()
+        const john = await new UserModel({ name: "John", email: "john.doe@gmail.com" }).save()
+        await new UserModel({ name: "Jane", email: "jane.doe@gmail.com" }).save()
+        await new UserModel({ name: "Joe", email: "joe.doe@gmail.com" }).save()
         const johnToken = sign({ userId: john.id }, "lorem")
         const app = await createApp()
-        const {body} = await supertest(app.callback())
+        const { body } = await supertest(app.callback())
             .get(`/users`)
             .set("Authorization", `Bearer ${johnToken}`)
             .expect(200)
