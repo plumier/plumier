@@ -379,7 +379,7 @@ describe("Route Generator", () => {
             const koa = await createApp({ controller: [User] }, { mode: "production" })
                 .use(new ErrorHandlerMiddleware())
                 .initialize()
-            const error = { error: "PLUM1009: Generic controller implementation not installed" }
+            const error = { error: "Generic controller implementation not installed" }
             const request = supertest(koa.callback())
             await request.post("/user").expect(500, error)
             await request.get("/user").expect(500, error)
@@ -726,7 +726,7 @@ describe("Route Generator", () => {
             const koa = await createApp({ controller: User }, { mode: "production" })
                 .use(new ErrorHandlerMiddleware())
                 .initialize()
-            const error = { error: "PLUM1009: Generic controller implementation not installed" }
+            const error = { error: "Generic controller implementation not installed" }
             const request = supertest(koa.callback())
             await request.post("/user/123/animals").expect(500, error)
             await request.get("/user/123/animals").expect(500, error)
