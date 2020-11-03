@@ -53,6 +53,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -71,6 +73,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -89,6 +93,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 @authorize.filter()
                 email: string
@@ -109,6 +115,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 @authorize.filter()
                 email: string
@@ -129,6 +137,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 @authorize.filter()
                 email: string
@@ -149,6 +159,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @val.required()
                 @reflect.noop()
                 email: string
@@ -170,6 +182,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -193,6 +207,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -220,6 +236,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -240,6 +258,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -259,6 +279,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -279,6 +301,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -299,6 +323,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -314,6 +340,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -329,6 +357,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -350,6 +380,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -366,6 +398,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -382,6 +416,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -403,6 +439,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -419,6 +457,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @val.required()
                 @reflect.noop()
                 email: string
@@ -441,6 +481,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -457,6 +499,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -476,6 +520,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -498,6 +544,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -513,6 +561,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -528,6 +578,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -554,6 +606,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -579,6 +633,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -607,6 +663,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -618,6 +676,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -637,6 +697,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -648,6 +710,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -666,6 +730,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -677,6 +743,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -691,6 +759,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -702,6 +772,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 @authorize.filter()
                 name: string
@@ -722,6 +794,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -733,6 +807,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 @authorize.filter()
                 name: string
@@ -753,6 +829,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -764,6 +842,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @authorize.filter()
@@ -786,6 +866,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -797,6 +879,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 @authorize.filter()
                 name: string
@@ -817,6 +901,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -828,6 +914,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @val.required()
                 @reflect.noop()
                 name: string
@@ -850,6 +938,8 @@ describe("CRUD", () => {
         it("Should able to select by properties GET /users/:parentId/animals?offset&limit ", async () => {
             @collection()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -860,6 +950,8 @@ describe("CRUD", () => {
             }
             @collection()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @reflect.noop()
@@ -881,6 +973,8 @@ describe("CRUD", () => {
         it("Should able to order by properties GET /users/:parentId/animals?offset&limit ", async () => {
             @collection()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -891,6 +985,8 @@ describe("CRUD", () => {
             }
             @collection()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @reflect.noop()
@@ -916,6 +1012,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -927,6 +1025,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -950,6 +1050,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -961,6 +1063,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => User)
@@ -986,6 +1090,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -997,6 +1103,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @reflect.noop()
@@ -1016,6 +1124,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1027,6 +1137,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1042,6 +1154,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1053,6 +1167,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1069,6 +1185,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1080,6 +1198,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => User)
@@ -1100,6 +1220,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1111,6 +1233,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @reflect.noop()
@@ -1133,6 +1257,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1144,6 +1270,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @reflect.noop()
@@ -1167,6 +1295,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1178,6 +1308,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1192,6 +1324,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1203,6 +1337,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1218,6 +1354,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1229,6 +1367,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1249,6 +1389,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1260,6 +1402,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1275,6 +1419,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1286,6 +1432,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1302,6 +1450,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1313,6 +1463,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1333,6 +1485,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1344,6 +1498,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1359,6 +1515,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1370,6 +1528,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @val.required()
@@ -1393,6 +1553,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1404,6 +1566,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1420,6 +1584,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1431,6 +1597,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1450,6 +1618,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1461,6 +1631,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @collection.property({ default: false })
@@ -1483,6 +1655,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1494,6 +1668,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1508,6 +1684,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1519,6 +1697,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1533,6 +1713,8 @@ describe("CRUD", () => {
         it("Should able to use custom generic controller with custom repository", async () => {
             @collection()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1543,6 +1725,8 @@ describe("CRUD", () => {
             }
             @collection()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1569,6 +1753,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1580,6 +1766,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => User)
@@ -1604,12 +1792,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1632,12 +1824,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1662,12 +1858,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1689,12 +1889,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1716,12 +1920,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1743,12 +1951,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1773,12 +1985,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1804,12 +2020,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1835,12 +2055,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1851,6 +2075,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Parent {
+                @collection.id()
+                id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
@@ -1874,12 +2100,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1890,6 +2120,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Parent {
+                @collection.id()
+                id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
@@ -1915,12 +2147,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1931,6 +2167,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Parent {
+                @collection.id()
+                id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
@@ -1953,12 +2191,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1971,6 +2213,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Parent {
+                @collection.id()
+                id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
@@ -1994,12 +2238,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -2010,6 +2258,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Parent {
+                @collection.id()
+                id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
@@ -2035,12 +2285,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -2051,6 +2305,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Parent {
+                @collection.id()
+                id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
@@ -2085,6 +2341,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -2101,6 +2359,8 @@ describe("CRUD", () => {
             const mong = new MongooseHelper()
             @collection()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -2111,6 +2371,8 @@ describe("CRUD", () => {
             }
             @collection()
             class Tag {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -2166,6 +2428,8 @@ describe("Repository", () => {
         @collection()
         @route.controller()
         class Animal {
+            @collection.id()
+            id: string
             @reflect.noop()
             name: string
         }
@@ -2183,6 +2447,8 @@ describe("Filter", () => {
     @route.controller()
     @collection()
     class Parent {
+        @collection.id()
+        id: string
         @authorize.filter()
         string: string
         @authorize.filter()
@@ -2194,6 +2460,8 @@ describe("Filter", () => {
         children: Child[]
     }
     class Child {
+        @collection.id()
+        id: string
         @authorize.filter()
         string: string
         @authorize.filter()
@@ -2292,6 +2560,8 @@ describe("Filter", () => {
         it("Should give proper validation when asked to query equals on nested property", async () => {
             @route.controller()
             class Child {
+                @collection.id()
+                id:string
                 @authorize.filter()
                 string: string
                 @authorize.filter()
@@ -2331,6 +2601,8 @@ describe("Filter", () => {
         it("Should give proper validation when asked to query not equals on nested property", async () => {
             @route.controller()
             class Child {
+                @collection.id()
+                id:string
                 @authorize.filter()
                 string: string
                 @authorize.filter()

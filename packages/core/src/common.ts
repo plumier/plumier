@@ -243,9 +243,9 @@ namespace entityHelper {
             if (decorator) return prop
         }
     }
-    export function getIdType(entity: Class): Class {
+    export function getIdType(entity: Class): Class | undefined {
         const prop = getIdProp(entity)
-        return prop?.type ?? String
+        return prop?.type 
     }
 }
 

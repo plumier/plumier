@@ -490,6 +490,8 @@ function createGenericController(entity: Class, builder: ControllerBuilder, cont
     const config = builder.toObject()
     // get type of ID column on entity
     const idType = entityHelper.getIdType(entity)
+    if(!idType) 
+        throw new Error(errorMessage.EntityRequireID.format(entity.name))
     // create controller type dynamically 
     const Controller = generic.create({ parent: controller, name: controller.name }, entity, idType)
     // add root decorator
@@ -521,8 +523,12 @@ function createOneToManyGenericController(entity: Class, builder: ControllerBuil
     const config = builder.toObject()
     // get type of ID column on parent entity
     const parentIdType = entityHelper.getIdType(entity)
+    if(!parentIdType) 
+        throw new Error(errorMessage.EntityRequireID.format(entity.name))
     // get type of ID column on entity
     const idType = entityHelper.getIdType(relation)
+    if(!idType) 
+        throw new Error(errorMessage.EntityRequireID.format(relation.name))
     // create controller 
     const Controller = generic.create({ parent: controller, name: controller.name }, entity, relation, parentIdType, idType)
     // add root decorator

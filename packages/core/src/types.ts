@@ -667,7 +667,7 @@ export namespace errorMessage {
     export const CustomRouteEndWithParameter = "PLUM1011: Custom route path '{0}' on {1} entity, require path that ends with route parameter, example: animals/:animalId"
     export const CustomRouteRequiredTwoParameters = "PLUM1012: Nested custom route path '{0}' on {1} entity, must have two route parameters, example: users/:userId/animals/:animalId"
     export const CustomRouteMustHaveOneParameter = "PLUM1013: Custom route path '{0}' on {1} entity, must have one route parameter, example: animals/:animalId"
-
+    export const EntityRequireID = "PLUM1014: Entity {0} used by generic controller doesn't have an ID property"
 
     //PLUM2XXX internal app error
     export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate {0}. Domain model should not throw error inside constructor`
