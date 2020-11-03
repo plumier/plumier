@@ -258,6 +258,18 @@ Array [
 ]
 `;
 
+exports[`Controller Builder Ignore Route Should able to ignore all routes using action notations 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "No controller found",
+  ],
+]
+`;
+
 exports[`Controller Builder Ignore Route Should able to ignore all routes using all key 1`] = `
 Array [
   Array [],
@@ -312,6 +324,28 @@ Array [
 `;
 
 exports[`Controller Builder Ignore Route Should able to ignore specific routes properly 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.get             -> GET    /user/:id",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.replace         -> PUT    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Ignore Route Should able to ignore specific routes using action notations 1`] = `
 Array [
   Array [],
   Array [

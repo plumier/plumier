@@ -2054,6 +2054,21 @@ describe("Controller Builder", () => {
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
+        it("Should able to ignore specific routes using action notations", async () => {
+            @route.controller(c => c.actions("Post", "Patch").ignore())
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
         it("Should able to ignore specific routes on one to many generic controller", async () => {
             @domain()
             class Animal {
@@ -2091,6 +2106,21 @@ describe("Controller Builder", () => {
                 c.getMany().ignore()
                 c.getOne().ignore()
             })
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = consoleLog.startMock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to ignore all routes using action notations", async () => {
+            @route.controller(c => c.actions("Delete", "GetMany", "GetOne", "Patch", "Post", "Put").ignore())
             @domain()
             class User {
                 constructor(

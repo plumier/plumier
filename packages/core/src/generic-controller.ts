@@ -50,6 +50,7 @@ class IdentifierResult<TID> {
     ) { }
 }
 
+type ActionNotation = "Put" | "Patch" | "Post" | "GetMany" | "GetOne"| "Delete"
 type ActionName = "delete" | "list" | "get" | "modify" | "save" | "replace"
 
 interface ActionConfig {
@@ -65,6 +66,14 @@ interface GenericControllerConfig {
     actions(): ActionName[]
 }
 
+function getActionName(method: ActionNotation) {
+    if (method === "Delete") return "delete"
+    if (method === "GetMany") return "list"
+    if (method === "GetOne") return "get"
+    if (method === "Patch") return "modify"
+    if (method === "Post") return "save"
+    else return "replace"
+}
 
 class ControllerBuilder {
     private path?: string
@@ -72,6 +81,9 @@ class ControllerBuilder {
     setPath(path: string): ControllerBuilder {
         this.path = path
         return this
+    }
+    actions(...notations: ActionNotation[]) {
+        return new ActionsBuilder(this.map, notations.map(x => getActionName(x)))
     }
     post() {
         return new ActionsBuilder(this.map, ["save"])
