@@ -39,7 +39,6 @@ export class Item {
     @PrimaryGeneratedColumn()
     id: number
 
-    @authorize.filter()
     @Column()
     name: string
 

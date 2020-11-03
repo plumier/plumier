@@ -2310,38 +2310,7 @@ Array [
 ]
 `;
 
-exports[`Open API 3.0 Generation Schema Override Filter Should hide all fields on filter override 1`] = `
-Array [
-  Object {
-    "in": "query",
-    "name": "filter",
-    "schema": Object {
-      "allOf": Array [
-        Object {
-          "$ref": "#/components/schemas/Item",
-        },
-        Object {
-          "properties": Object {
-            "basePrice": Object {
-              "readOnly": true,
-            },
-            "id": Object {
-              "readOnly": true,
-            },
-            "name": Object {
-              "readOnly": true,
-            },
-            "price": Object {
-              "readOnly": true,
-            },
-          },
-          "type": "object",
-        },
-      ],
-    },
-  },
-]
-`;
+exports[`Open API 3.0 Generation Schema Override Filter Should hide filter filed when no filter authorization provided 1`] = `Array []`;
 
 exports[`Open API 3.0 Generation Schema Override Filter Should show field that is authorized for filter 1`] = `
 Array [
