@@ -1,8 +1,4 @@
-import { Class, findClassRecursive } from "@plumier/core"
-import {
-    RepoBaseControllerGeneric,
-    RepoBaseOneToManyControllerGeneric,
-} from "@plumier/core"
+import { RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric } from "@plumier/core"
 import { generic } from "tinspector"
 
 @generic.template("T", "TID")

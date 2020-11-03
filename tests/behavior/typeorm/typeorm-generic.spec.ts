@@ -1,4 +1,4 @@
-import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave, authorize, entity } from "@plumier/core"
+import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave, authorize, entity, entityPolicy } from "@plumier/core"
 import Plumier, { WebApiFacility } from "plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
@@ -14,6 +14,9 @@ import { Column, Entity, getManager, JoinColumn, ManyToOne, OneToMany, OneToOne,
 
 import { cleanup, getConn } from "./helper"
 import Koa from "koa"
+import { MongooseFacility } from '@plumier/mongoose'
+import { JwtAuthFacility } from '@plumier/jwt'
+import { sign } from 'jsonwebtoken'
 
 
 jest.setTimeout(20000)
@@ -185,6 +188,39 @@ describe("CRUD", () => {
     afterEach(async () => {
         await cleanup()
     });
+    it("Should able to use entity policy properly", async () => {
+        @route.controller()
+        @Entity()
+        class User {
+            @PrimaryGeneratedColumn()
+            id: string
+            @Column()
+            name: string
+            @authorize.read("Owner")
+            @Column()
+            email: string
+        }
+        const UserPolicy = entityPolicy(User).define("Owner", (ctx, e) => ctx.user?.userId === e.id)
+        function createApp() {
+            return new Plumier()
+                .set(new WebApiFacility({ controller: User }))
+                .set(new TypeORMFacility({ connection: getConn([User]) }))
+                .set(new JwtAuthFacility({ secret: "lorem", authPolicies: UserPolicy }))
+                .set({ mode: "production" })
+                .initialize()
+        }
+        const app = await createApp()
+        const repo = getManager().getRepository(User)
+        const john = await repo.save({ name: "John", email: "john.doe@gmail.com" })
+        await repo.save({ name: "Jane", email: "jane.doe@gmail.com" })
+        await repo.save({ name: "Joe", email: "joe.doe@gmail.com" })
+        const johnToken = sign({ userId: john.id }, "lorem")
+        const { body } = await supertest(app.callback())
+            .get(`/users`)
+            .set("Authorization", `Bearer ${johnToken}`)
+            .expect(200)
+        expect(body).toMatchSnapshot()
+    })
     describe("CRUD Function", () => {
         it("Should serve GET /users?offset&limit", async () => {
             @Entity()
@@ -560,16 +596,16 @@ describe("CRUD", () => {
 
             @Entity()
             @route.controller()
-            class User  {
+            class User {
                 @PrimaryGeneratedColumn()
-                id:number
+                id: number
                 @Column()
                 email: string
                 @Column()
                 name: string
                 @entity.deleteColumn()
-                @Column({default:false})
-                deleted:boolean;
+                @Column({ default: false })
+                deleted: boolean;
             }
             const app = await createApp([User], { mode: "production" })
             const repo = getManager().getRepository(User)
@@ -1295,8 +1331,8 @@ describe("CRUD", () => {
                 @ManyToOne(x => User, x => x.animals)
                 user: User
                 @entity.deleteColumn()
-                @Column({default:false})
-                deleted:boolean;
+                @Column({ default: false })
+                deleted: boolean;
             }
             const app = await createApp([User, Animal], { mode: "production" })
             const user = await createUser(User)

@@ -5,7 +5,7 @@ export { val }
 export { AuthorizerFunction, checkAuthorize, RoleField, Authorizer, CustomAuthorizer, CustomAuthorizerFunction, 
     AuthorizationContext, AuthorizerContext, AuthorizeDecorator, updateRouteAuthorizationAccess,
     authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, Public, Authenticated, 
-    AuthPolicy, CustomAuthPolicy, EntityAuthPolicy } from "./authorization";
+    AuthPolicy, CustomAuthPolicy, EntityAuthPolicy, EntityProviderQuery, EntityPolicyProviderDecorator } from "./authorization";
 export { HeaderPart, RequestPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction } from "./binder";
 export { invoke } from "./application-pipeline";
 export { response } from "./response";
@@ -26,7 +26,7 @@ export { filterConverters } from "./filter-parser"
 export {
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
     IdentifierResult, getGenericControllerOneToOneRelations, genericControllerRegistry, DefaultOneToManyRepository, DefaultRepository,
-    parseSelect, getGenericControllerRelation, RelationPropertyDecorator, ControllerBuilder
+    parseSelect, getGenericControllerRelation, RelationPropertyDecorator, ControllerBuilder, 
 } from "./generic-controller"
 export { HttpStatus } from "./http-status";
 export { RequestHookMiddleware } from "./request-hook"

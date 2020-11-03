@@ -170,8 +170,8 @@ class AuthDecoratorImpl {
     }
 }
 
-function entityProvider(entity: Class, idParam: string) {
-    return decorateMethod(<EntityPolicyProviderDecorator>{ kind: "plumier-meta:entity-policy-provider", entity, idParam })
+function entityProvider(entity: Class, idParam: string, opt?:ApplyToOption) {
+    return decorate(<EntityPolicyProviderDecorator>{ kind: "plumier-meta:entity-policy-provider", entity, idParam },["Class", "Method"], opt)
 }
 
 const authorize = new AuthDecoratorImpl()

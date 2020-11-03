@@ -520,6 +520,47 @@ Array [
 ]
 `;
 
+exports[`Entity Policy Generic Controller Should protect data properly 1`] = `
+Array [
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 1,
+    "name": "John",
+  },
+  Object {
+    "id": 2,
+    "name": "Jane",
+  },
+  Object {
+    "id": 3,
+    "name": "Joe",
+  },
+]
+`;
+
+exports[`Entity Policy One To Many Controller Should protect get all 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "title": "John's todo",
+    "user": Object {
+      "email": "john.doe@gmail.com",
+      "id": 1,
+      "name": "John",
+    },
+  },
+  Object {
+    "id": 2,
+    "title": "John's todo 2",
+    "user": Object {
+      "email": "john.doe@gmail.com",
+      "id": 1,
+      "name": "John",
+    },
+  },
+]
+`;
+
 exports[`Open Api Generic Controller Should able to add @api.tag() from entity 1`] = `
 Array [
   "Animals",

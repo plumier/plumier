@@ -3128,7 +3128,6 @@ describe("JwtAuth", () => {
             expect(message).toContain("Error occur inside authorization policy HasUser on class AnimalController")
             expect(message).toContain("ERROR")
         })
-
     })
     
     describe("Entity Policy", () => {
@@ -3554,6 +3553,5 @@ describe("JwtAuth", () => {
             const message = fn.mock.calls[0][0].message
             expect(message).toContain("No entity provider query found in application configuration")
         })
-        
     })
 })
