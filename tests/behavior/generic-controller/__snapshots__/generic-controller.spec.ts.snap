@@ -462,7 +462,7 @@ Array [
 exports[`Custom Route Path Generic Controller Should throw error when no parameter at the end 1`] = `
 Array [
   Array [
-    [Error: PLUM1011: Custom route path 'user/:userId/data' on User entity, require path that ends with route parameter, example: animals/:animalId],
+    [Error: Custom route path 'user/:userId/data' on User entity, require path that ends with route parameter, example: animals/:animalId],
   ],
 ]
 `;
@@ -470,7 +470,7 @@ Array [
 exports[`Custom Route Path Generic Controller Should throw error when provided more than one parameter 1`] = `
 Array [
   Array [
-    [Error: PLUM1013: Custom route path 'user/:userId/data/:dataId' on User entity, must have one route parameter, example: animals/:animalId],
+    [Error: Custom route path 'user/:userId/data/:dataId' on User entity, must have one route parameter, example: animals/:animalId],
   ],
 ]
 `;
@@ -478,7 +478,7 @@ Array [
 exports[`Custom Route Path Generic Controller Should throw error when provided no parameter 1`] = `
 Array [
   Array [
-    [Error: PLUM1011: Custom route path 'user' on User entity, require path that ends with route parameter, example: animals/:animalId],
+    [Error: Custom route path 'user' on User entity, require path that ends with route parameter, example: animals/:animalId],
   ],
 ]
 `;
@@ -525,7 +525,7 @@ Array [
 exports[`Custom Route Path Generic One To Many Controller Should throw error when no parameter at the end 1`] = `
 Array [
   Array [
-    [Error: PLUM1011: Custom route path 'user/:userId/animal/:animalId/category' on User entity, require path that ends with route parameter, example: animals/:animalId],
+    [Error: Custom route path 'user/:userId/animal/:animalId/category' on User entity, require path that ends with route parameter, example: animals/:animalId],
   ],
 ]
 `;
@@ -533,7 +533,7 @@ Array [
 exports[`Custom Route Path Generic One To Many Controller Should throw error when provided more than two parameters 1`] = `
 Array [
   Array [
-    [Error: PLUM1012: Nested custom route path 'user/:userId/animal/:animalId/category/:categoryId' on User entity, must have two route parameters, example: users/:userId/animals/:animalId],
+    [Error: Nested custom route path 'user/:userId/animal/:animalId/category/:categoryId' on User entity, must have two route parameters, example: users/:userId/animals/:animalId],
   ],
 ]
 `;
@@ -541,7 +541,7 @@ Array [
 exports[`Custom Route Path Generic One To Many Controller Should throw error when provided no parameter 1`] = `
 Array [
   Array [
-    [Error: PLUM1011: Custom route path 'user/animal' on User entity, require path that ends with route parameter, example: animals/:animalId],
+    [Error: Custom route path 'user/animal' on User entity, require path that ends with route parameter, example: animals/:animalId],
   ],
 ]
 `;
@@ -549,7 +549,7 @@ Array [
 exports[`Custom Route Path Generic One To Many Controller Should throw error when provided only one parameter 1`] = `
 Array [
   Array [
-    [Error: PLUM1012: Nested custom route path 'user/:userId' on User entity, must have two route parameters, example: users/:userId/animals/:animalId],
+    [Error: Nested custom route path 'user/:userId' on User entity, must have two route parameters, example: users/:userId/animals/:animalId],
   ],
 ]
 `;
@@ -1995,7 +1995,7 @@ exports[`Route Generator Generic Controller Should throw error properly 1`] = `A
 exports[`Route Generator Generic Controller Should throw error when entity doesn't have ID specified 1`] = `
 Array [
   Array [
-    [Error: PLUM1014: Entity User used by generic controller doesn't have an ID property],
+    [Error: Entity User used by generic controller doesn't have an ID property],
   ],
 ]
 `;
@@ -2506,7 +2506,7 @@ exports[`Route Generator One To Many Controller Should throw error properly 1`] 
 exports[`Route Generator One To Many Controller Should throw error when no ID specified on entity 1`] = `
 Array [
   Array [
-    [Error: PLUM1014: Entity Animal used by generic controller doesn't have an ID property],
+    [Error: Entity Animal used by generic controller doesn't have an ID property],
   ],
 ]
 `;
@@ -2514,7 +2514,7 @@ Array [
 exports[`Route Generator One To Many Controller Should throw error when no ID specified on parent entity 1`] = `
 Array [
   Array [
-    [Error: PLUM1014: Entity User used by generic controller doesn't have an ID property],
+    [Error: Entity User used by generic controller doesn't have an ID property],
   ],
 ]
 `;
@@ -2522,7 +2522,7 @@ Array [
 exports[`Route Generator One To Many Controller Should throw error when the relation doesn't have type information 1`] = `
 Array [
   Array [
-    [Error: PLUM1010: User.animals marked with @route.controller() but doesn't have type information],
+    [Error: User.animals marked with @route.controller() but doesn't have type information],
   ],
 ]
 `;

@@ -653,24 +653,24 @@ export class MetadataImpl implements Metadata {
 
 export namespace errorMessage {
     //PLUM1XXX User configuration error
-    export const RouteDoesNotHaveBackingParam = "PLUM1000: Route parameters ({0}) doesn't have appropriate backing parameter"
-    export const DuplicateRouteFound = "PLUM1001: Duplicate route found in {0}"
-    export const ControllerPathNotFound = "PLUM1002: Controller file or directory {0} not found"
-    export const ObjectNotFound = "PLUM1003: Object with id {0} not found in Object registry"
+    export const RouteDoesNotHaveBackingParam = "Route parameters ({0}) doesn't have appropriate backing parameter"
+    export const DuplicateRouteFound = "Duplicate route found in {0}"
+    export const ControllerPathNotFound = "Controller file or directory {0} not found"
+    export const ObjectNotFound = "Object with id {0} not found in Object registry"
 
-    export const ActionParameterDoesNotHaveTypeInfo = "PLUM1004: Parameter binding skipped because action parameters doesn't have type information in ({0})"
-    export const ModelWithoutTypeInformation = "PLUM1005: Parameter binding skipped because {0} doesn't have type information on its properties"
-    export const ArrayWithoutTypeInformation = "PLUM1006: Parameter binding skipped because array element doesn't have type information in ({0})"
-    export const PropertyWithoutTypeInformation = "PLUM1008: Parameter binding skipped because property doesn't have type information in ({0})"
-    export const GenericControllerImplementationNotFound = "PLUM1009: Generic controller implementation not installed"
-    export const GenericControllerMissingTypeInfo = "PLUM1010: {0} marked with @route.controller() but doesn't have type information"
-    export const CustomRouteEndWithParameter = "PLUM1011: Custom route path '{0}' on {1} entity, require path that ends with route parameter, example: animals/:animalId"
-    export const CustomRouteRequiredTwoParameters = "PLUM1012: Nested custom route path '{0}' on {1} entity, must have two route parameters, example: users/:userId/animals/:animalId"
-    export const CustomRouteMustHaveOneParameter = "PLUM1013: Custom route path '{0}' on {1} entity, must have one route parameter, example: animals/:animalId"
-    export const EntityRequireID = "PLUM1014: Entity {0} used by generic controller doesn't have an ID property"
+    export const ActionParameterDoesNotHaveTypeInfo = "Parameter binding skipped because action parameters doesn't have type information in ({0})"
+    export const ModelWithoutTypeInformation = "Parameter binding skipped because {0} doesn't have type information on its properties"
+    export const ArrayWithoutTypeInformation = "Parameter binding skipped because array element doesn't have type information in ({0})"
+    export const PropertyWithoutTypeInformation = "Parameter binding skipped because property doesn't have type information in ({0})"
+    export const GenericControllerImplementationNotFound = "Generic controller implementation not installed"
+    export const GenericControllerMissingTypeInfo = "{0} marked with @route.controller() but doesn't have type information"
+    export const CustomRouteEndWithParameter = "Custom route path '{0}' on {1} entity, require path that ends with route parameter, example: animals/:animalId"
+    export const CustomRouteRequiredTwoParameters = "Nested custom route path '{0}' on {1} entity, must have two route parameters, example: users/:userId/animals/:animalId"
+    export const CustomRouteMustHaveOneParameter = "Custom route path '{0}' on {1} entity, must have one route parameter, example: animals/:animalId"
+    export const EntityRequireID = "Entity {0} used by generic controller doesn't have an ID property"
 
     //PLUM2XXX internal app error
-    export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate {0}. Domain model should not throw error inside constructor`
+    export const UnableToInstantiateModel = `Unable to instantiate {0}. Domain model should not throw error inside constructor`
 
     //End user error (no error code)
     export const UnableToConvertValue = `Unable to convert "{0}" into {1}`
