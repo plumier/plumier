@@ -13,7 +13,7 @@ import {
     toBoolean,
 } from "@plumier/core"
 import chalk from "chalk"
-import { BaseRequest, Context, Request } from "koa"
+import { Context } from "koa"
 import BodyParser from "koa-body"
 import qs from "qs"
 

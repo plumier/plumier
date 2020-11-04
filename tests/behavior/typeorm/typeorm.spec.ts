@@ -17,7 +17,7 @@ import {
     PrimaryGeneratedColumn,
 } from "typeorm"
 
-import { fixture } from "../helper"
+import { expectError, fixture } from "../helper"
 import { cleanup, getConn } from "./helper"
 
 jest.setTimeout(20000)
@@ -179,27 +179,22 @@ describe("TypeOrm", () => {
             expect(extract(MyEntity)).toMatchSnapshot()
             expect(extract(Child)).toMatchSnapshot()
         })
-        it("Should not error when no entities specified", async () => {
+        it("Should throw error when no entities specified", async () => {
             class UsersController {
                 get() { }
             }
-            await fixture(UsersController)
-                .set(new TypeORMFacility({ connection: getConn() }))
-                .initialize()
+            const fn = await expectError(fixture(UsersController)
+                    .set(new TypeORMFacility({connection: getConn()}))
+                    .initialize())
+            expect(fn.mock.calls).toMatchSnapshot()
         })
-        it("Should throw error when no option specified", async () => {
-            const fn = jest.fn()
+        it("Should throw error when no entity found", async () => {
             class UsersController {
                 get() { }
             }
-            try {
-                await fixture(UsersController)
-                    .set(new TypeORMFacility())
-                    .initialize()
-            }
-            catch (e) {
-                fn(e)
-            }
+            const fn = await expectError(fixture(UsersController)
+                    .set(new TypeORMFacility({connection:getConn(["no-directory"]) }))
+                    .initialize())
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should able load entity using absolute dir location", async () => {

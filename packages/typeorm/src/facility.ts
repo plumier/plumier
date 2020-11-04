@@ -1,16 +1,15 @@
 import {
-    ActionContext,
     api,
     authorize,
     Class,
     DefaultFacility,
+    entity,
     entityHelper,
     filterConverters,
     findFilesRecursive,
     genericControllerRegistry,
     globAsync,
     PlumierApplication,
-    entity,
     RelationDecorator,
     RequestHookMiddleware,
 } from "@plumier/core"
@@ -18,12 +17,11 @@ import { lstat } from "fs"
 import pluralize from "pluralize"
 import reflect, { noop } from "tinspector"
 import { Result, ResultMessages, VisitorInvocation } from "typedconverter"
-import { ConnectionOptions, createConnection, getConnection, getConnectionOptions, getManager, getMetadataArgsStorage } from "typeorm"
+import { ConnectionOptions, createConnection, getConnectionOptions, getManager, getMetadataArgsStorage } from "typeorm"
 import { promisify } from "util"
 import validator from "validator"
 
 import { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
-import { TypeORMRepository } from './repository'
 
 const lstatAsync = promisify(lstat)
 
@@ -107,6 +105,9 @@ class TypeORMFacility extends DefaultFacility {
         await loadEntities(this.option.connection)
         // assign tinspector decorators, so Plumier can understand the entity metadata
         const storage = getMetadataArgsStorage();
+        if(storage.tables.length === 0){
+            throw new Error("No TypeORM entity found, check your connection configuration")
+        }
         for (const col of storage.columns) {
             Reflect.decorate([noop()], (col.target as Function).prototype, col.propertyName, void 0)
             if (col.options.primary)
