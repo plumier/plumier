@@ -1,7 +1,8 @@
-import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave, authorize, entity, entityPolicy } from "@plumier/core"
+import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave, authorize, entity, entityPolicy, consoleLog } from "@plumier/core"
 import Plumier, { WebApiFacility } from "plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
+    controller,
     TypeORMControllerGeneric,
     TypeORMFacility,
     TypeORMOneToManyControllerGeneric,
@@ -684,6 +685,40 @@ describe("CRUD", () => {
                 .expect(200)
             const result = await repo.findOne(body.id)
             expect(result).toMatchSnapshot()
+        })
+        it("Should able to create controller using builder", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            const UsersController = controller(User).configure()
+            const mock = consoleLog.startMock()
+            await createApp([UsersController])
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
+        })
+        it("Should able to disable some actions from controller builder", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            const UsersController = controller(User).configure(c => {
+                c.mutators().ignore()
+            })
+            const mock = consoleLog.startMock()
+            await createApp([UsersController])
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
         })
     })
     describe("Nested CRUD One to Many Function", () => {
@@ -1411,6 +1446,68 @@ describe("CRUD", () => {
                 .post(`/users/${user.id}/animals`)
                 .send({ name: "Mimi" })
                 .expect(200)
+        })
+        it("Should able to create nested controller using controller builder", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @route.controller()
+                animals: Animal[]
+            }
+            @Entity()
+            @route.controller()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const UsersController = controller([User, Animal, "animals"]).configure()
+            const mock = consoleLog.startMock()
+            await createApp([UsersController])
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
+        })
+        it("Should able to disable some actions using controller builder", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @route.controller()
+                animals: Animal[]
+            }
+            @Entity()
+            @route.controller()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const UsersController = controller([User, Animal, "animals"]).configure(c => {
+                c.mutators().ignore()
+            })
+            const mock = consoleLog.startMock()
+            await createApp([UsersController])
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
         })
     })
     describe("One To One Function", () => {

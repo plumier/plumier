@@ -27,6 +27,7 @@ export {
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
     IdentifierResult, getGenericControllerOneToOneRelations, genericControllerRegistry, DefaultOneToManyRepository, DefaultRepository,
     parseSelect, getGenericControllerRelation, RelationPropertyDecorator, ControllerBuilder, 
+    createGenericController, createOneToManyGenericController
 } from "./generic-controller"
 export { HttpStatus } from "./http-status";
 export { RequestHookMiddleware } from "./request-hook"
