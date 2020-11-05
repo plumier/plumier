@@ -1,6 +1,6 @@
 import { decorate, decorateClass, decorateMethod, DecoratorId } from "tinspector"
 
-import { ControllerBuilder, updateGenericControllerRegistry } from "../generic-controller"
+import { ControllerBuilder, updateGenericControllerRegistry } from "../controllers-helper"
 import { IgnoreDecorator, RootDecorator, RouteDecorator } from "../route-generator"
 import { ActionContext, HttpMethod } from "../types"
 
