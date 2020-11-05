@@ -109,7 +109,6 @@ class TypeORMFacility extends DefaultFacility {
             throw new Error("No TypeORM entity found, check your connection configuration")
         }
         for (const table of storage.tables) {
-            if (typeof table.target === "string") return
             normalizeEntity(table.target as Class)
         }
     }
