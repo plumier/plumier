@@ -201,7 +201,7 @@ describe("CRUD", () => {
             @Column()
             email: string
         }
-        const UserPolicy = entityPolicy(User).define("Owner", (ctx, e) => ctx.user?.userId === e.id)
+        const UserPolicy = entityPolicy(User).define("Owner", (ctx, id) => ctx.user?.userId === id)
         function createApp() {
             return new Plumier()
                 .set(new WebApiFacility({ controller: User }))

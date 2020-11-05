@@ -101,7 +101,7 @@ const Public = "Public"
 const Authenticated = "Authenticated"
 type EntityProviderQuery<T = any> = (entity: Class, id: any) => Promise<T>
 interface EntityPolicyProviderDecorator { kind: "plumier-meta:entity-policy-provider", entity: Class, idParam: string }
-type EntityPolicyAuthorizerFunction<T> = (ctx: AuthorizerContext, entity: T) => boolean | Promise<boolean>
+type EntityPolicyAuthorizerFunction = (ctx: AuthorizerContext, id: number|string) => boolean | Promise<boolean>
 
 interface AuthPolicyBuilder {
     policies: AuthPolicy[]
@@ -166,7 +166,7 @@ class CustomAuthPolicy implements AuthPolicy {
 }
 
 class EntityAuthPolicy<T> implements AuthPolicy {
-    constructor(private id: string, private entity: Class<T>, private authorizer: EntityPolicyAuthorizerFunction<T>) { }
+    constructor(private id: string, private entity: Class<T>, private authorizer: EntityPolicyAuthorizerFunction) { }
     private getEntity(ctx: AuthorizerContext): { entity: Class, id: any } {
         if (ctx.access === "route" || ctx.access === "write") {
             // when the entity provider is Route 
@@ -202,12 +202,9 @@ class EntityAuthPolicy<T> implements AuthPolicy {
         return false
     }
     async authorize(ctx: AuthorizationContext): Promise<boolean> {
-        if (!ctx.ctx.config.entityProviderQuery)
-            throw new Error("No entity provider query found in application configuration")
         const provider = this.getEntity(ctx)
-        const entity = await ctx.ctx.config.entityProviderQuery(provider.entity, provider.id)
         try {
-            return this.authorizer(ctx, entity)
+            return this.authorizer(ctx, provider.id)
         }
         catch (e) {
             const message = e instanceof Error ? e.stack : e
@@ -230,7 +227,7 @@ function authPolicy() {
 
 function entityPolicy<T>(entity: Class<T>) {
     return {
-        define: (id: string, authorizer: EntityPolicyAuthorizerFunction<T>): Class<AuthPolicy> => {
+        define: (id: string, authorizer: EntityPolicyAuthorizerFunction): Class<AuthPolicy> => {
             class Policy extends EntityAuthPolicy<T> {
                 constructor() { super(id, entity, authorizer) }
             }

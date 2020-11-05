@@ -74,12 +74,6 @@ export class MongooseFacility extends DefaultFacility {
                 return (p.name === "id" && v && v.constructor === Buffer) ? undefined : v
             }
         })
-        app.set({
-            entityProviderQuery: (type, id) => {
-                const repo = new MongooseRepository(type, helper)
-                return repo.findById(id)
-            }
-        })
         if (uri) {
             await helper.connect(uri)
         }
