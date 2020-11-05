@@ -2442,19 +2442,14 @@ describe("Entity Policy", () => {
     class MyOneToManyControllerGeneric extends RepoBaseOneToManyControllerGeneric<User, Todo, number, number>{
         constructor() { super(x => new TodoRepo(fn)) }
     }
-    const UserPolicy = entityPolicy(User).define("Owner", (ctx, e) => ctx.user?.userId === e.id)
-    const TodoPolicy = entityPolicy(Todo).define("Owner", (ctx, e) => ctx.user?.userId === e.user.id)
+    const UserPolicy = entityPolicy(User).define("Owner", (ctx, e) => ctx.user?.userId === e)
+    const TodoPolicy = entityPolicy(Todo).define("Owner", (ctx, e) => todos.some(x => x.id === e && ctx.user?.userId === x.user.id))
     function createApp() {
         return new Plumier()
             .set(new WebApiFacility())
             .set(new ControllerFacility({ controller: User }))
             .set(new JwtAuthFacility({ secret: "lorem", authPolicies: [UserPolicy, TodoPolicy] }))
             .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
-            .set({
-                entityProviderQuery: async (type, id) => {
-                    return type === User ? users.find(x => x.id === id) : todos.find(x => x.id === id)
-                }
-            })
             .initialize()
     }
     const JOHN_TOKEN = sign({ userId: 1 }, "lorem")

@@ -670,7 +670,7 @@ describe("JwtAuth", () => {
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
                 .expect(200)
         })
-    
+
         it("Should contains undefined user when accessed by public", async () => {
             class AnimalController {
                 @authorize.custom(i => (i.user && i.user.role) === "admin", { access: "route" })
@@ -3129,7 +3129,7 @@ describe("JwtAuth", () => {
             expect(message).toContain("ERROR")
         })
     })
-    
+
     describe("Entity Policy", () => {
         class Shop {
             @noop()
@@ -3157,13 +3157,15 @@ describe("JwtAuth", () => {
                 }
             }
             const AdminPolicy = entityPolicy(Shop)
-                .define("ShopAdmin", (i, e) => e.users.some(x => x.uid === i.user!.userId && x.role === "Admin"))
+                .define("ShopAdmin", (i, e) => {
+                    const shop = shops.find(x => x.id === e)
+                    return shop!.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })
             const app = await fixture(ShopsController)
                 .set(new JwtAuthFacility({
                     secret: SECRET,
                     authPolicies: [AdminPolicy]
                 }))
-                .set({ entityProviderQuery: async (c, id) => shops.find(x => x.id === id) })
                 .initialize()
             function request(app: Koa, url: string, user: string = USER_TOKEN) {
                 return Supertest(app.callback())
@@ -3186,13 +3188,15 @@ describe("JwtAuth", () => {
                 }
             }
             const AdminPolicy = entityPolicy(Shop)
-                .define("ShopAdmin", (i, e) => e.users.some(x => x.uid === i.user!.userId && x.role === "Admin"))
+                .define("ShopAdmin", (i, e) => {
+                    const shop = shops.find(x => x.id === e)
+                    return shop!.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })
             const app = await fixture(ShopsController)
                 .set(new JwtAuthFacility({
                     secret: SECRET,
                     authPolicies: [AdminPolicy]
                 }))
-                .set({ entityProviderQuery: async (c, id) => shops.find(x => x.id === id) })
                 .initialize()
             app.on("error", e => fn(e))
             await Supertest(app.callback())
@@ -3212,13 +3216,15 @@ describe("JwtAuth", () => {
                 }
             }
             const AdminPolicy = entityPolicy(Shop)
-                .define("ShopAdmin", (i, e) => e.users.some(x => x.uid === i.user!.userId && x.role === "Admin"))
+            .define("ShopAdmin", (i, e) => {
+                const shop = shops.find(x => x.id === e)
+                return shop!.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+            })
             const app = await fixture(ShopsController)
                 .set(new JwtAuthFacility({
                     secret: SECRET,
                     authPolicies: [AdminPolicy]
                 }))
-                .set({ entityProviderQuery: async (c, id) => shops.find(x => x.id === id) })
                 .initialize()
             await Supertest(app.callback())
                 .get("/shops/1")
@@ -3242,7 +3248,6 @@ describe("JwtAuth", () => {
                     secret: SECRET,
                     authPolicies: [AdminPolicy]
                 }))
-                .set({ entityProviderQuery: async (c, id) => shops.find(x => x.id === id) })
                 .initialize()
             app.on("error", e => fn(e))
             await Supertest(app.callback())
@@ -3271,7 +3276,6 @@ describe("JwtAuth", () => {
                     secret: SECRET,
                     authPolicies: [AdminPolicy]
                 }))
-                .set({ entityProviderQuery: async (c, id) => shops.find(x => x.id === id) })
                 .initialize()
             app.on("error", e => fn(e))
             await Supertest(app.callback())
@@ -3300,7 +3304,7 @@ describe("JwtAuth", () => {
             ]
             const ProductPolicy = entityPolicy(Product)
                 .define("ShopAdmin", (i, e) => {
-                    const shop = shops.find(x => e.shop === x.id)!
+                    const shop = shops.find(x => e === x.id)!
                     return shop.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
                 })
             class ProductsController {
@@ -3315,7 +3319,6 @@ describe("JwtAuth", () => {
                     secret: SECRET,
                     authPolicies: [ProductPolicy]
                 }))
-                .set({ entityProviderQuery: async (c, id) => products.find(x => x.id === id) })
                 .initialize()
             await Supertest(app.callback())
                 .put("/products/1")
@@ -3361,7 +3364,6 @@ describe("JwtAuth", () => {
                     secret: SECRET,
                     authPolicies: [ProductPolicy]
                 }))
-                .set({ entityProviderQuery: async (c, id) => products.find(x => x.id === id) })
                 .initialize()
             app.on("error", e => fn(e))
             await Supertest(app.callback())
@@ -3392,7 +3394,7 @@ describe("JwtAuth", () => {
             ]
             const ProductPolicy = entityPolicy(Product)
                 .define("ShopAdmin", (i, e) => {
-                    const shop = shops.find(x => e.shop === x.id)!
+                    const shop = shops.find(x => e === x.id)!
                     return shop.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
                 })
             class ProductsController {
@@ -3407,7 +3409,6 @@ describe("JwtAuth", () => {
                     secret: SECRET,
                     authPolicies: [ProductPolicy]
                 }))
-                .set({ entityProviderQuery: async (c, id) => products.find(x => x.id === id) })
                 .initialize()
             const { body: userOne } = await Supertest(app.callback())
                 .get("/products/1")
@@ -3454,7 +3455,6 @@ describe("JwtAuth", () => {
                     secret: SECRET,
                     authPolicies: [ProductPolicy]
                 }))
-                .set({ entityProviderQuery: async (c, id) => products.find(x => x.id === id) })
                 .initialize()
             app.on("error", e => fn(e))
             await Supertest(app.callback())
@@ -3484,7 +3484,7 @@ describe("JwtAuth", () => {
             ]
             const ProductPolicy = entityPolicy(Product)
                 .define("ShopAdmin", (i, e) => {
-                    const shop = shops.find(x => e.shop === x.id)!
+                    const shop = shops.find(x => e === x.id)!
                     return shop.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
                 })
             class ProductsController {
@@ -3499,7 +3499,6 @@ describe("JwtAuth", () => {
                     secret: SECRET,
                     authPolicies: [ProductPolicy]
                 }))
-                .set({ entityProviderQuery: async (c, id) => products.find(x => x.id === id) })
                 .initialize()
             app.on("error", e => fn(e))
             await Supertest(app.callback())
@@ -3508,50 +3507,6 @@ describe("JwtAuth", () => {
                 .expect(500)
             const message = fn.mock.calls[0][0].message
             expect(message).toContain("Entity Product doesn't have primary ID information required for entity policy")
-        })
-        it("Should throw error when no entityProviderQuery provided", async () => {
-            const fn = jest.fn()
-            class Product {
-                @entity.primaryId()
-                @noop()
-                id: number
-                @noop()
-                name: string
-                @noop()
-                shop: number
-                @noop()
-                price: number
-                @authorize.read("ShopAdmin")
-                basePrice: number
-            }
-            const products: Product[] = [
-                { id: 1, name: "Vanilla", price: 200, basePrice: 100, shop: 1 },
-            ]
-            const ProductPolicy = entityPolicy(Product)
-                .define("ShopAdmin", (i, e) => {
-                    const shop = shops.find(x => e.shop === x.id)!
-                    return shop.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
-                })
-            class ProductsController {
-                @route.get(":id")
-                @type(Product)
-                get(id: number) {
-                    return products.find(x => x.id === id)
-                }
-            }
-            const app = await fixture(ProductsController)
-                .set(new JwtAuthFacility({
-                    secret: SECRET,
-                    authPolicies: [ProductPolicy]
-                }))
-                .initialize()
-            app.on("error", e => fn(e))
-            await Supertest(app.callback())
-                .get("/products/1")
-                .set("Authorization", `Bearer ${USER_ONE}`)
-                .expect(500)
-            const message = fn.mock.calls[0][0].message
-            expect(message).toContain("No entity provider query found in application configuration")
         })
     })
 })

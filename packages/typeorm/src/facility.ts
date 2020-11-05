@@ -116,12 +116,6 @@ class TypeORMFacility extends DefaultFacility {
     setup(app: Readonly<PlumierApplication>) {
         app.set({ genericController: [TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric] })
         app.set({ genericControllerNameConversion: (x: string) => pluralize(x) })
-        app.set({
-            entityProviderQuery: async (type, id) => {
-                const repo = getManager().getRepository(type)
-                return repo.findOne(id)
-            }
-        })
         app.use(new RequestHookMiddleware(), "Action")
     }
 

@@ -515,11 +515,6 @@ export interface Configuration {
     genericControllerNameConversion?: (x: string) => string
 
     /**
-     * Provide function to query entity for entity policy authorization 
-     */
-    entityProviderQuery?: EntityProviderQuery
-
-    /**
      * Custom authorization policy
      */
     authPolicies?: Class<AuthPolicy>[]
