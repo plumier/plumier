@@ -11,6 +11,7 @@ Object {
   "MongooseRepository": MongooseRepository,
   "ReferenceTypeNotRegistered": "MONG1000: Type {0} required type {1} which is not registered as Mongoose model",
   "collection": collection,
+  "controller": controller,
   "default": bound model,
   "getDefinition": getDefinition,
   "getModels": bound getModels,

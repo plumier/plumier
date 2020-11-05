@@ -192,6 +192,8 @@ Object {
     "clearMock": clearMock,
     "startMock": startMock,
   },
+  "createGenericController": createGenericController,
+  "createOneToManyGenericController": createOneToManyGenericController,
   "domain": domain,
   "ellipsis": ellipsis,
   "entity": Object {

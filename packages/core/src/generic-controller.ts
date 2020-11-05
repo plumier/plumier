@@ -615,5 +615,6 @@ export {
     IdentifierResult, createGenericControllers, genericControllerRegistry, updateGenericControllerRegistry,
     RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, getGenericControllerOneToOneRelations,
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, DefaultRepository, DefaultOneToManyRepository,
-    parseSelect, getGenericControllerRelation, RelationPropertyDecorator, ControllerBuilder
+    parseSelect, getGenericControllerRelation, RelationPropertyDecorator, ControllerBuilder,
+    createGenericController, createOneToManyGenericController
 }
