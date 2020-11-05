@@ -24,13 +24,16 @@ export { EntityIdDecorator, RelationDecorator, entity, EntityFilterDecorator } f
 export { preSave, postSave, RequestHookDecorator } from "./decorator/request-hook";
 export { filterConverters } from "./filter-parser"
 export {
-    DefaultControllerGeneric, DefaultOneToManyControllerGeneric, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
-    IdentifierResult, getGenericControllerOneToOneRelations, genericControllerRegistry, DefaultOneToManyRepository, DefaultRepository,
-    parseSelect, getGenericControllerRelation, RelationPropertyDecorator, ControllerBuilder, 
+    getGenericControllerOneToOneRelations, genericControllerRegistry, ControllerBuilder, 
     createGenericController, createOneToManyGenericController
-} from "./generic-controller"
+} from "./controllers-helper"
+export {
+    DefaultControllerGeneric, DefaultOneToManyControllerGeneric, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
+     DefaultOneToManyRepository, DefaultRepository,
+    parseSelect, IdentifierResult, getGenericControllerRelation
+} from "./controllers"
 export { HttpStatus } from "./http-status";
-export { RequestHookMiddleware } from "./request-hook"
+export { RequestHookMiddleware } from "./controllers-request-hook"
 export { validate, ValidatorMiddleware, CustomValidator, ValidatorDecorator, CustomValidatorFunction, AsyncValidatorResult, ValidatorContext, } from "./validator"
 export {
     ActionResult, Application, Configuration, DefaultFacility,
@@ -41,5 +44,5 @@ export {
     CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie, FilterEntity,
     Metadata, GlobalMetadata, Omit, Optional, RouteMetadata, VirtualRoute,
     GenericController, ControllerGeneric, OneToManyControllerGeneric, Repository, OneToManyRepository, OrderQuery, 
-    FilterQuery, FilterQueryType,
+    FilterQuery, FilterQueryType, RelationPropertyDecorator
 } from "./types";
