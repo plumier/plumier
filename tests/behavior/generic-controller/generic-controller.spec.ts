@@ -2373,6 +2373,29 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
     })
+    describe("Response Transformer", () => {
+        it("Should able to ignore specific routes properly", async () => {
+            @route.controller(c => {
+                c.getOne().transformer(UserNameOnly, x => ({ name: x.name }))
+            })
+            @domain()
+            class UserNameOnly {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            await createApp({ controller: User }).initialize()
+        })
+    })
 })
 
 describe("Entity Policy", () => {
