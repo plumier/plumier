@@ -7,7 +7,7 @@ import { ActionContext, HttpMethod } from "../types"
 
 interface GenericControllerDecorator {
    name: "plumier-meta:controller"
-   config: ControllerBuilder
+   config: ((x: ControllerBuilder) => void) | undefined
 }
 
 interface ApplyToOption {
@@ -330,13 +330,7 @@ class RouteDecoratorImpl {
     * Mark an entity will be handled by a generic CRUD controller
     */
    controller(opt?: string | ((x: ControllerBuilder) => void)) {
-      const executeCallback = (opt: ((x: ControllerBuilder) => void)) => {
-         const c = new ControllerBuilder(); 
-         opt(c); 
-         return c
-      }
-      const config = typeof opt === "string" ? new ControllerBuilder().setPath(opt) :
-         !opt ? new ControllerBuilder() : executeCallback(opt)
+      const config = typeof opt === "string" ? (x:ControllerBuilder) => x.setPath(opt) : opt
       return decorate((...args: any[]) => {
          updateGenericControllerRegistry(args[0])
          return <GenericControllerDecorator>{ name: "plumier-meta:controller", config }
