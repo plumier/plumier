@@ -24,7 +24,7 @@ import {
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-type ActionNotation = "Put" | "Patch" | "Post" | "GetMany" | "GetOne"| "Delete"
+type ActionNotation = "Put" | "Patch" | "Post" | "GetMany" | "GetOne" | "Delete"
 type ActionName = "delete" | "list" | "get" | "modify" | "save" | "replace"
 
 interface ActionConfig {
@@ -230,6 +230,13 @@ function createGenericController(entity: Class, builder: ControllerBuilder, cont
     return Controller
 }
 
+function getControllerBuilderFromConfig(callback?: (builder: ControllerBuilder) => void) {
+    const c = new ControllerBuilder();
+    if (callback)
+        callback(c);
+    return c
+}
+
 function createOneToManyGenericController(parentType: Class, builder: ControllerBuilder, entity: Class, relationProperty: string, controller: Class<OneToManyControllerGeneric>, nameConversion: (x: string) => string) {
     const config = builder.toObject()
     // get type of ID column on parent entity
@@ -279,7 +286,7 @@ function createGenericControllers(controller: Class, genericControllers: Generic
     // basic generic controller
     const basicDecorator = meta.decorators.find((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
     if (basicDecorator) {
-        const ctl = createGenericController(controller, basicDecorator.config, genericControllers[0], nameConversion)
+        const ctl = createGenericController(controller, getControllerBuilderFromConfig(basicDecorator.config), genericControllers[0], nameConversion)
         controllers.push(ctl)
     }
     // one to many controller on each relation property
@@ -292,7 +299,7 @@ function createGenericControllers(controller: Class, genericControllers: Generic
         relations.push({ name: prop.name, type: prop.type[0], decorator })
     }
     for (const relation of relations) {
-        const ctl = createOneToManyGenericController(controller, relation.decorator.config, relation.type, relation.name, genericControllers[1], nameConversion)
+        const ctl = createOneToManyGenericController(controller, getControllerBuilderFromConfig(relation.decorator.config), relation.type, relation.name, genericControllers[1], nameConversion)
         controllers.push(ctl)
     }
     return controllers
@@ -311,6 +318,6 @@ function getGenericControllerOneToOneRelations(type: Class) {
 
 export {
     createGenericControllers, genericControllerRegistry, updateGenericControllerRegistry,
-     getGenericControllerOneToOneRelations, ControllerBuilder,
-    createGenericController, createOneToManyGenericController
+    getGenericControllerOneToOneRelations, ControllerBuilder,
+    createGenericController, createOneToManyGenericController, getControllerBuilderFromConfig
 }
