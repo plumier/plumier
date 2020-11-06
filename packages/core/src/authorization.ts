@@ -81,15 +81,15 @@ async function createAuthContext(ctx: ActionContext, access: AccessModifier): Pr
     }
 }
 
-function throwAuthError(ctx: AuthorizerContext) {
-    if (ctx.role.length === 0) throw new HttpStatusError(HttpStatus.Forbidden, "Forbidden")
-    else throw new HttpStatusError(HttpStatus.Unauthorized, "Unauthorized")
+function throwAuthError(ctx: AuthorizerContext, msg?: string) {
+    if (ctx.role.length === 0) throw new HttpStatusError(HttpStatus.Forbidden, msg ?? "Forbidden")
+    else throw new HttpStatusError(HttpStatus.Unauthorized, msg ?? "Unauthorized")
 }
 
 function getErrorLocation(metadata: Metadata) {
     const current = metadata.current!
     if (current.kind === "Class")
-        return `class ${current.name}` 
+        return `class ${current.name}`
     return `${current.kind.toLowerCase()} ${current.parent!.name}.${current.name}`
 }
 
@@ -195,7 +195,7 @@ class EntityAuthPolicy<T> implements AuthPolicy {
         }
     }
     equals(id: string, ctx: AuthorizationContext): boolean {
-        if(id === this.id){
+        if (id === this.id) {
             const provider = this.getEntity(ctx)
             return this.entity === provider.entity
         }
@@ -216,7 +216,7 @@ class EntityAuthPolicy<T> implements AuthPolicy {
 
 function authPolicy() {
     return {
-        define: (id: string, authorizer: CustomAuthorizerFunction | CustomAuthorizer):Class<AuthPolicy> => {
+        define: (id: string, authorizer: CustomAuthorizerFunction | CustomAuthorizer): Class<AuthPolicy> => {
             class Policy extends CustomAuthPolicy {
                 constructor() { super(id, authorizer) }
             }
@@ -349,7 +349,7 @@ async function checkParameters(meta: (PropertyReflection | ParameterReflection)[
 async function checkUserAccessToParameters(meta: ParameterReflection[], values: any[], info: AuthorizationContext) {
     const unauthorizedPaths = await checkParameters(meta, values, { info, path: [], parent: info.ctx.route.controller.type })
     if (unauthorizedPaths.length > 0)
-        throw new HttpStatusError(401, `Unauthorized to populate parameter paths (${unauthorizedPaths.join(", ")})`)
+        throwAuthError(info, `Unauthorized to populate parameter paths (${unauthorizedPaths.join(", ")})`)
 }
 
 // --------------------------------------------------------------------- //
