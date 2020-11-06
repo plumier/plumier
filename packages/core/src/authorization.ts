@@ -101,7 +101,7 @@ const Public = "Public"
 const Authenticated = "Authenticated"
 type EntityProviderQuery<T = any> = (entity: Class, id: any) => Promise<T>
 interface EntityPolicyProviderDecorator { kind: "plumier-meta:entity-policy-provider", entity: Class, idParam: string }
-type EntityPolicyAuthorizerFunction = (ctx: AuthorizerContext, id: number | string) => boolean | Promise<boolean>
+type EntityPolicyAuthorizerFunction = (ctx: AuthorizerContext, id: any) => boolean | Promise<boolean>
 
 interface AuthPolicyBuilder {
     policies: AuthPolicy[]
