@@ -1125,6 +1125,27 @@ describe("JwtAuth", () => {
                     .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (id, deceased)" })
             })
 
+            it("Should throw 403 when accessed by public without auth info", async () => {
+                class AnimalController {
+                    @route.post()
+                    @authorize.public()
+                    save(name: string,
+                        @authorize.write("admin")
+                        id: number | undefined,
+                        @authorize.write("admin")
+                        deceased: boolean | undefined) { return "Hello" }
+                }
+    
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .send({ id: "123", name: "Mimi", deceased: "Yes" })
+                    .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (id, deceased)" })
+            })
+
             it("Should be able to pass authorization by provided undefined", async () => {
                 const app = await fixture(AnimalController)
                     .set(new JwtAuthFacility({ secret: SECRET }))
