@@ -1,7 +1,7 @@
 import "./filter-parser"
 
 import { Context } from "koa"
-import reflect, { decorate, decorateClass, DecoratorId, generic, GenericTypeDecorator, mergeDecorator, PropertyReflection } from "tinspector"
+import reflect, { decorate, decorateClass, DecoratorId, generic, GenericTypeDecorator, mergeDecorator, PropertyReflection, TypeDecorator, TypeDecoratorId } from "tinspector"
 import { val } from "typedconverter"
 
 import { Class } from "./common"
@@ -23,7 +23,7 @@ import {
     RelationPropertyDecorator,
     Repository,
 } from "./types"
-import {type} from "tinspector"
+import { type } from "tinspector"
 
 // --------------------------------------------------------------------- //
 // ----------------------------- DECORATORS ---------------------------- //
@@ -51,10 +51,10 @@ function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: st
     }, ["Class", "Method"], { allowMultiple: false, ...option })
 }
 
-function responseTransformer(target:Class|Class[], transformer: ResponseTransformer, opt?: { applyTo: string | string[] }) {
+function responseTransformer(target: Class | Class[], transformer: ResponseTransformer, opt?: { applyTo: string | string[] }) {
     return mergeDecorator(
         decorate(<ResponseTransformerDecorator>{ kind: "plumier-meta:response-transformer", transformer }, ["Method", "Class"], opt),
-        type(target)
+        decorate((x: any) => <TypeDecorator>{ [DecoratorId]: TypeDecoratorId, kind: "Override", target: x, genericParams: [], type: target }, ["Method", "Class"], opt)
     )
 }
 

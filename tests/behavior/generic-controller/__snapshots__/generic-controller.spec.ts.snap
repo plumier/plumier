@@ -1510,6 +1510,172 @@ Array [
 
 exports[`Request Hook Should not executed on GET method with model parameter 1`] = `Array []`;
 
+exports[`Response Transformer Should able to transform get one action 1`] = `
+Object {
+  "name": "John",
+}
+`;
+
+exports[`Response Transformer Should provide proper Open API schema 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/User",
+            },
+            Object {
+              "properties": Object {
+                "todos": Object {
+                  "readOnly": true,
+                  "writeOnly": true,
+                },
+              },
+              "type": "object",
+            },
+          ],
+        },
+      },
+    },
+    "description": "Response body",
+  },
+}
+`;
+
+exports[`Response Transformer Should reflect 1`] = `
+Object {
+  "decorators": Array [
+    Object {
+      "kind": "ApiNoRelation",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+    Object {
+      "method": "get",
+      "name": "plumier-meta:route",
+      "url": ":id",
+      Symbol(tinspector:decoratorId): Symbol(generic-controller:route),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+    Object {
+      "kind": "plumier-meta:response-transformer",
+      "transformer": ,
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": "get",
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+    Object {
+      "genericParams": Array [],
+      "kind": "Override",
+      "target": TypeORMControllerGeneric,
+      "type": UserTrans,
+      Symbol(tinspector:decoratorId): Symbol(override),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": "get",
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+    Object {
+      "entity": User,
+      "idParam": "id",
+      "kind": "plumier-meta:entity-policy-provider",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": Array [
+          "get",
+          "modify",
+          "replace",
+          "delete",
+        ],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Method",
+  "name": "get",
+  "parameters": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "type": "tc:validator",
+          "validator": Symbol(tc:required),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+        Object {
+          "kind": "ApiRequired",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "fields": Object {},
+      "index": 0,
+      "kind": "Parameter",
+      "name": "id",
+      "type": Number,
+      "typeClassification": "Primitive",
+    },
+    Object {
+      "decorators": Array [],
+      "fields": Object {},
+      "index": 1,
+      "kind": "Parameter",
+      "name": "select",
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+    Object {
+      "decorators": Array [
+        Object {
+          "name": "ctx",
+          "process": ,
+          "type": "ParameterBinding",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "fields": Object {},
+      "index": 2,
+      "kind": "Parameter",
+      "name": "ctx",
+      "type": Object,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "returnType": User,
+  "typeClassification": "Class",
+}
+`;
+
 exports[`Route Generator Generic Controller Should able to change root path 1`] = `
 Array [
   Array [],
