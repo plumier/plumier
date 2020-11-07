@@ -1,10 +1,10 @@
-import { Class, entityHelper, FormFile, RelationDecorator, RouteInfo } from "@plumier/core"
+import { ApiHideRelationDecorator, FormFile, RouteInfo } from "@plumier/core"
 import { ContentObject, ReferenceObject, RequestBodyObject, SchemaObject } from "openapi3-ts"
-import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
+import reflect, { Class, ParameterReflection, PropertyReflection } from "tinspector"
 
-import { describeParameters, ParameterNode } from "./parameter"
-import { addRelationProperties, getRequiredProps, transformType } from "./schema"
-import { TransformContext } from "./shared"
+import { analyzeParameters, ParameterNode } from "./parameter"
+import { SchemaOverrideType, transformTypeAdvance } from "./schema"
+import { isPartialValidator, isRequired, TransformContext } from "./shared"
 
 
 function transformJsonContent(schema: SchemaObject): ContentObject {
@@ -20,21 +20,45 @@ function transformFileContent(schema: SchemaObject): ContentObject {
     }
 }
 
+function getRequiredProps(props: (PropertyReflection | ParameterReflection)[] ) {
+    const required = []
+    for (const prop of props) {
+        const isReq = !!prop.decorators.find(isRequired)
+        if (isReq) required.push(prop.name)
+    }
+    return required.length > 0 ? required : undefined
+}
+
+
 function transformProperties(props: (PropertyReflection | ParameterReflection)[], ctx: TransformContext): SchemaObject {
     const properties = {} as { [propertyName: string]: (SchemaObject | ReferenceObject); }
     for (const prop of props) {
-        properties[prop.name] = transformType(prop.type, ctx, { decorators: prop.decorators })
+        properties[prop.name] = transformTypeAdvance(prop.type, ctx, { decorators: prop.decorators })
     }
     const required = getRequiredProps(props)
     const result: SchemaObject = { type: "object", properties, required }
     return result
 }
 
+function transformModel(model: ParameterNode, ctx: TransformContext) {
+    const overrides: SchemaOverrideType[] = ["RelationAsId"]
+    // if not partial validator then add required override
+    if (!model.meta.decorators.find(isPartialValidator))
+        overrides.push("Required")
+    // if contains @api.noRelation() then adds remove all relations
+    if (!!model.meta.decorators.find((x: ApiHideRelationDecorator) => x.kind === "ApiNoRelation")) {
+        overrides.push("RemoveReverseRelation")
+        overrides.push("RemoveArrayRelation")
+    }
+    overrides.push("ReadonlyFields")
+    return transformTypeAdvance(model.type, ctx, { decorators: model.meta.decorators, overrides })
+}
+
 function transformJsonBody(nodes: ParameterNode[], ctx: TransformContext): RequestBodyObject | undefined {
     // decorator binding
     const body = nodes.find(x => x.binding?.name === "body")
     if (body) {
-        const schema = transformType(body.type, ctx, { decorators: body.meta.decorators })
+        const schema = transformModel(body, ctx)
         return { required: true, content: transformJsonContent(schema) }
     }
     // name binding
@@ -46,11 +70,8 @@ function transformJsonBody(nodes: ParameterNode[], ctx: TransformContext): Reque
     // model binding
     const model = nodes.find(x => x.typeName === "Array" || x.typeName === "Class")
     if (model) {
-        let schema = transformType(model.type, ctx, { decorators: model.meta.decorators })
-        // convert relational model into appropriate ID type
-        // to inform user that its able to provide the ID instead of the object
-        const relation = addRelationProperties(schema, model.type!, ctx)
-        return { required: true, content: transformJsonContent(relation) }
+        const schema = transformModel(model, ctx)
+        return { required: true, content: transformJsonContent(schema) }
     }
 }
 
@@ -73,7 +94,7 @@ function transformFileBody(nodes: ParameterNode[], ctx: TransformContext): Reque
 function transformBody(route: RouteInfo, ctx: TransformContext): RequestBodyObject | undefined {
     const isFormFile = (par: ParameterNode) => (Array.isArray(par.type) && par.type[0] === FormFile) || par.type === FormFile || par.binding?.name === "formFile"
     if (route.method !== "post" && route.method !== "put" && route.method !== "patch") return
-    const pars = describeParameters(route)
+    const pars = analyzeParameters(route)
         .filter(x => x.kind === "undecided")
         .filter(x => !["ctx", "request", "user", "custom"].some(y => y === x.binding?.name))
     if (pars.some(x => isFormFile(x)))

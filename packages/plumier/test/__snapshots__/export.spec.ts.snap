@@ -3,6 +3,8 @@
 exports[`Module Export Should export module properly 1`] = `
 Object {
   "ActionResult": ActionResult,
+  "Authenticated": "Authenticated",
+  "ControllerBuilder": ControllerBuilder,
   "ControllerFacility": ControllerFacility,
   "DefaultDependencyResolver": DefaultDependencyResolver,
   "DefaultFacility": DefaultFacility,
@@ -139,6 +141,8 @@ Object {
     "fromKoa": fromKoa,
   },
   "ParameterBinderMiddleware": ParameterBinderMiddleware,
+  "PolicyAuthorizer": PolicyAuthorizer,
+  "Public": "Public",
   "RestfulApiFacility": RestfulApiFacility,
   "RouteDecoratorImpl": RouteDecoratorImpl,
   "ValidatorMiddleware": ValidatorMiddleware,
@@ -146,6 +150,7 @@ Object {
   "api": Object {
     "description": description,
     "enums": enums,
+    "hideRelations": hideRelations,
     "name": name,
     "readonly": readonly,
     "required": required,
@@ -153,7 +158,7 @@ Object {
     "tag": tag,
     "writeonly": writeonly,
   },
-  "applyTo": applyTo,
+  "authPolicy": authPolicy,
   "authorize": AuthDecoratorImpl {},
   "bind": Object {
     "actionResult": actionResult,
@@ -171,6 +176,14 @@ Object {
   "binder": binder,
   "default": Plumier,
   "domain": domain,
+  "entity": Object {
+    "deleteColumn": deleteColumn,
+    "filter": filter,
+    "primaryId": primaryId,
+    "relation": relation,
+  },
+  "entityPolicy": entityPolicy,
+  "entityProvider": entityProvider,
   "middleware": Object {
     "use": use,
   },

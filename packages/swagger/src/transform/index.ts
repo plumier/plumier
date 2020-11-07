@@ -1,12 +1,12 @@
-import { RouteInfo, RouteMetadata } from "@plumier/core"
+import { RouteMetadata } from "@plumier/core"
 import { InfoObject, OpenApiBuilder } from "openapi3-ts"
 
 import { transformComponent } from "./component"
 import { transformPaths } from "./path"
-import { refFactory } from "./schema"
-import { TransformContext } from "./shared"
+import { refFactory, transformTypeAdvance } from "./schema"
+import { BaseTransformContext } from "./shared"
 
-function transform(routes: RouteMetadata[], ctx: TransformContext, info?: InfoObject) {
+function transform(routes: RouteMetadata[], ctx: BaseTransformContext, info?: InfoObject) {
     const paths = transformPaths(routes, ctx)
     const components = transformComponent(ctx)
     return OpenApiBuilder.create({
@@ -16,4 +16,4 @@ function transform(routes: RouteMetadata[], ctx: TransformContext, info?: InfoOb
     }).getSpec()
 }
 
-export { transform, refFactory }
+export { transform, refFactory, transformTypeAdvance }

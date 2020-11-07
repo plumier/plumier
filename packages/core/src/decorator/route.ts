@@ -1,13 +1,13 @@
 import { decorate, decorateClass, decorateMethod, DecoratorId } from "tinspector"
 
-import { updateGenericControllerRegistry } from "../generic-controller"
+import { ControllerBuilder, updateGenericControllerRegistry } from "../controllers-helper"
 import { IgnoreDecorator, RootDecorator, RouteDecorator } from "../route-generator"
-import { HttpMethod } from "../types"
+import { ActionContext, HttpMethod } from "../types"
 
 
 interface GenericControllerDecorator {
    name: "plumier-meta:controller"
-   path?:string
+   config: ((x: ControllerBuilder) => void) | undefined
 }
 
 interface ApplyToOption {
@@ -329,10 +329,11 @@ class RouteDecoratorImpl {
    /**
     * Mark an entity will be handled by a generic CRUD controller
     */
-   controller(path?:string) {
+   controller(opt?: string | ((x: ControllerBuilder) => void)) {
+      const config = typeof opt === "string" ? (x:ControllerBuilder) => x.setPath(opt) : opt
       return decorate((...args: any[]) => {
          updateGenericControllerRegistry(args[0])
-         return <GenericControllerDecorator>{ name: "plumier-meta:controller", path }
+         return <GenericControllerDecorator>{ name: "plumier-meta:controller", config }
       })
    }
 }

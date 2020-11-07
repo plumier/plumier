@@ -1,13 +1,12 @@
 import { isAbsolute, join } from "path"
-import { ClassReflection, MethodReflection, reflect, DecoratorOption, DecoratorOptionId } from "tinspector"
+import { ClassReflection, MethodReflection, reflect } from "tinspector"
 
 import { Class, findFilesRecursive } from "./common"
+import { DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from './controllers'
 import {
    createGenericControllers,
-   DefaultControllerGeneric,
-   DefaultOneToManyControllerGeneric,
    genericControllerRegistry,
-} from "./generic-controller"
+} from "./controllers-helper"
 import { GenericController, HttpMethod, RouteInfo, RouteMetadata } from "./types"
 
 // --------------------------------------------------------------------- //

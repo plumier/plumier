@@ -1,5 +1,428 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Controller Builder Authorization Should able to authorize accessor routes 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Admin         GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Admin         GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Authorization Should able to authorize all routes 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Admin GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Admin POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Admin GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Admin PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Admin PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Admin DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Authorization Should able to authorize all routes using all key 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Admin GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Admin POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Admin GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Admin PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Admin PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Admin DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Authorization Should able to authorize mutator routes 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Admin         POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Admin         PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Admin         PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Admin         DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Authorization Should able to authorize specific routes 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Admin         POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Admin         PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Admin         PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Admin         DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Authorization Should able to authorize specific routes on one to many generic controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultOneToMany...eneric.list    -> Authenticated GET    /user/:pid/animals",
+  ],
+  Array [
+    "2. DefaultOneToMany...eneric.save    -> Admin         POST   /user/:pid/animals",
+  ],
+  Array [
+    "3. DefaultOneToMany...eneric.get     -> Authenticated GET    /user/:pid/animals/:id",
+  ],
+  Array [
+    "4. DefaultOneToMany...eneric.modify  -> Admin         PATCH  /user/:pid/animals/:id",
+  ],
+  Array [
+    "5. DefaultOneToMany...eneric.replace -> Admin         PUT    /user/:pid/animals/:id",
+  ],
+  Array [
+    "6. DefaultOneToMany...eneric.delete  -> Admin         DELETE /user/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Authorization Should able to authorize specific routes with multiple roles 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Authenticated    GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Admin|SuperAdmin POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Authenticated    GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Admin|SuperAdmin PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Admin|SuperAdmin PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Admin|SuperAdmin DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Authorization Should able to combine between accessor and mutator 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Admin         POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Admin         PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Admin         PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Admin         DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Ignore Route Should able to ignore accessor routes 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.replace         -> PUT    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Ignore Route Should able to ignore all routes 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "No controller found",
+  ],
+]
+`;
+
+exports[`Controller Builder Ignore Route Should able to ignore all routes using action notations 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "No controller found",
+  ],
+]
+`;
+
+exports[`Controller Builder Ignore Route Should able to ignore all routes using all key 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "No controller found",
+  ],
+]
+`;
+
+exports[`Controller Builder Ignore Route Should able to ignore mutator routes 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list -> GET /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.get  -> GET /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Ignore Route Should able to ignore specific routes on one to many generic controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultOneToMany...eneric.list    -> GET    /user/:pid/animals",
+  ],
+  Array [
+    "2. DefaultOneToMany...eneric.get     -> GET    /user/:pid/animals/:id",
+  ],
+  Array [
+    "3. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animals/:id",
+  ],
+  Array [
+    "4. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animals/:id",
+  ],
+  Array [
+    "5. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Ignore Route Should able to ignore specific routes properly 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.get             -> GET    /user/:id",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.replace         -> PUT    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Ignore Route Should able to ignore specific routes using action notations 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.get             -> GET    /user/:id",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.replace         -> PUT    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Set Path Should able to set path 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> GET    /users",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> POST   /users",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> GET    /users/:uid",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> PATCH  /users/:uid",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> PUT    /users/:uid",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> DELETE /users/:uid",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Set Path Should able to set path on one to many generic controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultOneToMany...eneric.list    -> GET    /users/:uid/animals",
+  ],
+  Array [
+    "2. DefaultOneToMany...eneric.save    -> POST   /users/:uid/animals",
+  ],
+  Array [
+    "3. DefaultOneToMany...eneric.get     -> GET    /users/:uid/animals/:aid",
+  ],
+  Array [
+    "4. DefaultOneToMany...eneric.modify  -> PATCH  /users/:uid/animals/:aid",
+  ],
+  Array [
+    "5. DefaultOneToMany...eneric.replace -> PUT    /users/:uid/animals/:aid",
+  ],
+  Array [
+    "6. DefaultOneToMany...eneric.delete  -> DELETE /users/:uid/animals/:aid",
+  ],
+  Array [],
+]
+`;
+
 exports[`Custom Route Path Generic Controller Should contains correct query parameter 1`] = `
 Array [
   Array [
@@ -39,7 +462,7 @@ Array [
 exports[`Custom Route Path Generic Controller Should throw error when no parameter at the end 1`] = `
 Array [
   Array [
-    [Error: PLUM1011: Custom route path 'user/:userId/data' on User entity, require path that ends with route parameter, example: animals/:animalId],
+    [Error: Custom route path 'user/:userId/data' on User entity, require path that ends with route parameter, example: animals/:animalId],
   ],
 ]
 `;
@@ -47,7 +470,7 @@ Array [
 exports[`Custom Route Path Generic Controller Should throw error when provided more than one parameter 1`] = `
 Array [
   Array [
-    [Error: PLUM1013: Custom route path 'user/:userId/data/:dataId' on User entity, must have one route parameter, example: animals/:animalId],
+    [Error: Custom route path 'user/:userId/data/:dataId' on User entity, must have one route parameter, example: animals/:animalId],
   ],
 ]
 `;
@@ -55,7 +478,7 @@ Array [
 exports[`Custom Route Path Generic Controller Should throw error when provided no parameter 1`] = `
 Array [
   Array [
-    [Error: PLUM1011: Custom route path 'user' on User entity, require path that ends with route parameter, example: animals/:animalId],
+    [Error: Custom route path 'user' on User entity, require path that ends with route parameter, example: animals/:animalId],
   ],
 ]
 `;
@@ -102,7 +525,7 @@ Array [
 exports[`Custom Route Path Generic One To Many Controller Should throw error when no parameter at the end 1`] = `
 Array [
   Array [
-    [Error: PLUM1011: Custom route path 'user/:userId/animal/:animalId/category' on User entity, require path that ends with route parameter, example: animals/:animalId],
+    [Error: Custom route path 'user/:userId/animal/:animalId/category' on User entity, require path that ends with route parameter, example: animals/:animalId],
   ],
 ]
 `;
@@ -110,7 +533,7 @@ Array [
 exports[`Custom Route Path Generic One To Many Controller Should throw error when provided more than two parameters 1`] = `
 Array [
   Array [
-    [Error: PLUM1012: Nested custom route path 'user/:userId/animal/:animalId/category/:categoryId' on User entity, must have two route parameters, example: users/:userId/animals/:animalId],
+    [Error: Nested custom route path 'user/:userId/animal/:animalId/category/:categoryId' on User entity, must have two route parameters, example: users/:userId/animals/:animalId],
   ],
 ]
 `;
@@ -118,7 +541,7 @@ Array [
 exports[`Custom Route Path Generic One To Many Controller Should throw error when provided no parameter 1`] = `
 Array [
   Array [
-    [Error: PLUM1011: Custom route path 'user/animal' on User entity, require path that ends with route parameter, example: animals/:animalId],
+    [Error: Custom route path 'user/animal' on User entity, require path that ends with route parameter, example: animals/:animalId],
   ],
 ]
 `;
@@ -126,8 +549,49 @@ Array [
 exports[`Custom Route Path Generic One To Many Controller Should throw error when provided only one parameter 1`] = `
 Array [
   Array [
-    [Error: PLUM1012: Nested custom route path 'user/:userId' on User entity, must have two route parameters, example: users/:userId/animals/:animalId],
+    [Error: Nested custom route path 'user/:userId' on User entity, must have two route parameters, example: users/:userId/animals/:animalId],
   ],
+]
+`;
+
+exports[`Entity Policy Generic Controller Should protect data properly 1`] = `
+Array [
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 1,
+    "name": "John",
+  },
+  Object {
+    "id": 2,
+    "name": "Jane",
+  },
+  Object {
+    "id": 3,
+    "name": "Joe",
+  },
+]
+`;
+
+exports[`Entity Policy One To Many Controller Should protect get all 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "title": "John's todo",
+    "user": Object {
+      "email": "john.doe@gmail.com",
+      "id": 1,
+      "name": "John",
+    },
+  },
+  Object {
+    "id": 2,
+    "title": "John's todo 2",
+    "user": Object {
+      "email": "john.doe@gmail.com",
+      "id": 1,
+      "name": "John",
+    },
+  },
 ]
 `;
 
@@ -144,13 +608,12 @@ Array [
     "name": "aid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -165,13 +628,12 @@ Array [
     "name": "aid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -186,7 +648,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -203,7 +665,6 @@ Array [
   Object {
     "in": "query",
     "name": "offset",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -211,7 +672,6 @@ Array [
   Object {
     "in": "query",
     "name": "limit",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -219,15 +679,25 @@ Array [
   Object {
     "in": "query",
     "name": "filter",
-    "required": false,
     "schema": Object {
-      "$ref": "#/components/schemas/Animal",
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/Animal",
+        },
+        Object {
+          "properties": Object {
+            "id": Object {
+              "readOnly": true,
+            },
+          },
+          "type": "object",
+        },
+      ],
     },
   },
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -235,7 +705,6 @@ Array [
   Object {
     "in": "query",
     "name": "order",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -256,13 +725,12 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -283,7 +751,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -326,7 +794,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -341,6 +809,9 @@ Array [
 exports[`Open Api Generic Controller Should provided proper component 1`] = `
 Object {
   "properties": Object {
+    "id": Object {
+      "type": "number",
+    },
     "name": Object {
       "type": "string",
     },
@@ -362,7 +833,7 @@ Array [
     "name": "aid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -370,13 +841,12 @@ Array [
     "name": "tid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -391,7 +861,7 @@ Array [
     "name": "aid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -399,13 +869,12 @@ Array [
     "name": "tid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -420,7 +889,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -439,7 +908,7 @@ Array [
     "name": "pid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -447,7 +916,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -464,7 +933,6 @@ Array [
   Object {
     "in": "query",
     "name": "offset",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -472,7 +940,6 @@ Array [
   Object {
     "in": "query",
     "name": "limit",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -480,7 +947,6 @@ Array [
   Object {
     "in": "query",
     "name": "filter",
-    "required": false,
     "schema": Object {
       "allOf": Array [
         Object {
@@ -490,9 +956,20 @@ Array [
           "properties": Object {
             "tags": Object {
               "items": Object {
-                "type": "string",
+                "type": "number",
               },
               "type": "array",
+            },
+          },
+          "type": "object",
+        },
+        Object {
+          "properties": Object {
+            "id": Object {
+              "readOnly": true,
+            },
+            "tags": Object {
+              "readOnly": true,
             },
           },
           "type": "object",
@@ -503,7 +980,6 @@ Array [
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -511,7 +987,6 @@ Array [
   Object {
     "in": "query",
     "name": "order",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -532,13 +1007,12 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -559,13 +1033,12 @@ Array [
     "name": "pid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
     "in": "query",
     "name": "offset",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -573,7 +1046,6 @@ Array [
   Object {
     "in": "query",
     "name": "limit",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -581,15 +1053,25 @@ Array [
   Object {
     "in": "query",
     "name": "filter",
-    "required": false,
     "schema": Object {
-      "$ref": "#/components/schemas/Tag",
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/Tag",
+        },
+        Object {
+          "properties": Object {
+            "id": Object {
+              "readOnly": true,
+            },
+          },
+          "type": "object",
+        },
+      ],
     },
   },
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -597,7 +1079,6 @@ Array [
   Object {
     "in": "query",
     "name": "order",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -618,7 +1099,7 @@ Array [
     "name": "pid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -626,13 +1107,12 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
     "in": "query",
     "name": "select",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -653,7 +1133,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -672,7 +1152,7 @@ Array [
     "name": "pid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -680,7 +1160,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -705,9 +1185,18 @@ Object {
             "properties": Object {
               "tags": Object {
                 "items": Object {
-                  "type": "string",
+                  "type": "number",
                 },
                 "type": "array",
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "tags": Object {
+                "readOnly": true,
+                "writeOnly": true,
               },
             },
             "type": "object",
@@ -725,9 +1214,18 @@ Object {
             "properties": Object {
               "tags": Object {
                 "items": Object {
-                  "type": "string",
+                  "type": "number",
                 },
                 "type": "array",
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "tags": Object {
+                "readOnly": true,
+                "writeOnly": true,
               },
             },
             "type": "object",
@@ -777,7 +1275,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -796,7 +1294,7 @@ Array [
     "name": "pid",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
   Object {
@@ -804,7 +1302,7 @@ Array [
     "name": "id",
     "required": true,
     "schema": Object {
-      "type": "string",
+      "type": "number",
     },
   },
 ]
@@ -819,6 +1317,9 @@ Array [
 exports[`Open Api Generic One To Many Controller Should provide proper component 1`] = `
 Object {
   "properties": Object {
+    "id": Object {
+      "type": "number",
+    },
     "name": Object {
       "type": "string",
     },
@@ -836,6 +1337,9 @@ Object {
 exports[`Open Api Generic One To Many Controller Should provide proper component 2`] = `
 Object {
   "properties": Object {
+    "id": Object {
+      "type": "number",
+    },
     "tag": Object {
       "type": "string",
     },
@@ -908,10 +1412,10 @@ Array [
 exports[`Request Hook Should able to hook request in multiple http methods 1`] = `
 Array [
   Array [
-    "123",
+    123,
   ],
   Array [
-    "123",
+    123,
     User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
@@ -926,10 +1430,10 @@ Array [
     },
   ],
   Array [
-    "123",
+    123,
   ],
   Array [
-    "123",
+    123,
     User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
@@ -954,10 +1458,10 @@ Array [
 exports[`Request Hook Should able to hook request in specific http method 1`] = `
 Array [
   Array [
-    "123",
+    123,
   ],
   Array [
-    "123",
+    123,
     User {
       "email": "john.doe@gmail.com",
       "name": "John Doe",
@@ -1079,174 +1583,6 @@ Array [
   ],
   Array [
     "6. DefaultControllerGeneric.delete(id, ctx) -> admin         DELETE /user/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity using action mutation 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
-  ],
-  Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> admin         POST   /user",
-  ],
-  Array [
-    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
-  ],
-  Array [
-    "4. DefaultControllerGeneric.modify          -> admin         PATCH  /user/:id",
-  ],
-  Array [
-    "5. DefaultControllerGeneric.replace         -> admin         PUT    /user/:id",
-  ],
-  Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> admin         DELETE /user/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity using actions delete 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
-  ],
-  Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user",
-  ],
-  Array [
-    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
-  ],
-  Array [
-    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
-  ],
-  Array [
-    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
-  ],
-  Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> admin         DELETE /user/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity using actions get 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultControllerGeneric.list            -> admin         GET    /user",
-  ],
-  Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user",
-  ],
-  Array [
-    "3. DefaultControllerGeneric.get             -> admin         GET    /user/:id",
-  ],
-  Array [
-    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
-  ],
-  Array [
-    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
-  ],
-  Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /user/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity using actions patch 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
-  ],
-  Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user",
-  ],
-  Array [
-    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
-  ],
-  Array [
-    "4. DefaultControllerGeneric.modify          -> admin         PATCH  /user/:id",
-  ],
-  Array [
-    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
-  ],
-  Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /user/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity using actions post 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
-  ],
-  Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> admin         POST   /user",
-  ],
-  Array [
-    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
-  ],
-  Array [
-    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
-  ],
-  Array [
-    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
-  ],
-  Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /user/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`Route Generator Generic Controller Should able to set authorization for specific method from entity using actions put 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
-  ],
-  Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user",
-  ],
-  Array [
-    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
-  ],
-  Array [
-    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
-  ],
-  Array [
-    "5. DefaultControllerGeneric.replace         -> admin         PUT    /user/:id",
-  ],
-  Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /user/:id",
   ],
   Array [],
 ]
@@ -1656,114 +1992,11 @@ Array [
 
 exports[`Route Generator Generic Controller Should throw error properly 1`] = `Array []`;
 
-exports[`Route Generator Generic Controller Should use string as default id if no ID type specified 1`] = `
+exports[`Route Generator Generic Controller Should throw error when entity doesn't have ID specified 1`] = `
 Array [
-  Object {
-    "name": "list",
-    "pars": Array [
-      Object {
-        "name": "offset",
-        "type": Number,
-      },
-      Object {
-        "name": "limit",
-        "type": Number,
-      },
-      Object {
-        "name": "filter",
-        "type": User,
-      },
-      Object {
-        "name": "select",
-        "type": String,
-      },
-      Object {
-        "name": "order",
-        "type": String,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "save",
-    "pars": Array [
-      Object {
-        "name": "data",
-        "type": User,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "get",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "select",
-        "type": String,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "modify",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": User,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "replace",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": User,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "delete",
-    "pars": Array [
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
+  Array [
+    [Error: Entity User used by generic controller doesn't have an ID property],
+  ],
 ]
 `;
 
@@ -2270,146 +2503,27 @@ Array [
 
 exports[`Route Generator One To Many Controller Should throw error properly 1`] = `Array []`;
 
-exports[`Route Generator One To Many Controller Should throw error when the relation doesn't have type information 1`] = `
+exports[`Route Generator One To Many Controller Should throw error when no ID specified on entity 1`] = `
 Array [
   Array [
-    [Error: PLUM1010: User.animals marked with @route.controller() but doesn't have type information],
+    [Error: Entity Animal used by generic controller doesn't have an ID property],
   ],
 ]
 `;
 
-exports[`Route Generator One To Many Controller Should use string as default id if no ID type specified 1`] = `
+exports[`Route Generator One To Many Controller Should throw error when no ID specified on parent entity 1`] = `
 Array [
-  Object {
-    "name": "list",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "offset",
-        "type": Number,
-      },
-      Object {
-        "name": "limit",
-        "type": Number,
-      },
-      Object {
-        "name": "filter",
-        "type": Animal,
-      },
-      Object {
-        "name": "select",
-        "type": String,
-      },
-      Object {
-        "name": "order",
-        "type": String,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "save",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "get",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "select",
-        "type": String,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "modify",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "replace",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "data",
-        "type": Animal,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
-  Object {
-    "name": "delete",
-    "pars": Array [
-      Object {
-        "name": "pid",
-        "type": String,
-      },
-      Object {
-        "name": "id",
-        "type": String,
-      },
-      Object {
-        "name": "ctx",
-        "type": Object,
-      },
-    ],
-  },
+  Array [
+    [Error: Entity User used by generic controller doesn't have an ID property],
+  ],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should throw error when the relation doesn't have type information 1`] = `
+Array [
+  Array [
+    [Error: User.animals marked with @route.controller() but doesn't have type information],
+  ],
 ]
 `;
 

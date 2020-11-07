@@ -51,7 +51,7 @@ function bindBody(ctx: Context, par: ParameterReflection): any {
 function bindDecorator(ctx: Context, par: ParameterReflection): any {
     const decorator: BindingDecorator = par.decorators.find((x: BindingDecorator) => x.type === "ParameterBinding")
     if (!decorator) return NEXT
-    return decorator.process(ctx, new MetadataImpl(undefined, ctx.route!, { ...par, parent: ctx.route!.controller.type }))
+    return decorator.process(ctx, new MetadataImpl([], ctx.route!, { ...par, parent: ctx.route!.controller.type }))
 }
 
 function bindByName(ctx: ActionContext, par: ParameterReflection): any {

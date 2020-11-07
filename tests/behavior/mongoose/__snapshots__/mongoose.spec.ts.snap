@@ -293,6 +293,8 @@ Array [
 ]
 `;
 
+exports[`Mongoose Schema Generation Should throw error on cross reference error 1`] = `"Error generating Mongoose schema, data type of Child.children property is undefined"`;
+
 exports[`Mongoose Schema Generation Should work with cyclic reference model 1`] = `
 Object {
   "__v": 0,
@@ -437,5 +439,39 @@ Object {
   "dateProp": 2020-2-2,
   "numberProp": 123,
   "stringProp": "string",
+}
+`;
+
+exports[`Response Projection Transformer Should not transform Ref if not populated 1`] = `
+Object {
+  "name": "Tada",
+}
+`;
+
+exports[`Response Projection Transformer Should not transform Ref if not populated on nested array 1`] = `
+Object {
+  "name": "Tada",
+}
+`;
+
+exports[`Response Projection Transformer Should transform Ref if populated 1`] = `
+Object {
+  "child": Object {
+    "booleanProp": true,
+    "stringProp": "string",
+  },
+  "name": "Tada",
+}
+`;
+
+exports[`Response Projection Transformer Should transform Ref if populated on nested array 1`] = `
+Object {
+  "child": Array [
+    Object {
+      "booleanProp": true,
+      "stringProp": "string",
+    },
+  ],
+  "name": "Tada",
 }
 `;

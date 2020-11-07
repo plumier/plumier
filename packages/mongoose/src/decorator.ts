@@ -1,4 +1,4 @@
-import { Class, relation } from "@plumier/core"
+import { Class, entity } from "@plumier/core"
 import { SchemaTypeOpts } from "mongoose"
 import reflect, { decorateClass, decorateProperty, mergeDecorator, decorateMethod } from "tinspector"
 
@@ -23,7 +23,13 @@ collection.ref = (type: Class | Class[] | ((x: any) => Class | Class[])) => {
     return mergeDecorator(
         decorateProperty(<RefDecorator>{ name: "MongooseRef" }),
         reflect.type(type),
-        relation()
+        entity.relation()
+    )
+}
+
+collection.id = () => {
+    return mergeDecorator(
+        entity.primaryId()
     )
 }
 

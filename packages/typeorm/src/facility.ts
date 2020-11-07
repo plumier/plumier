@@ -1,17 +1,15 @@
 import {
-    ActionContext,
     api,
     authorize,
     Class,
     DefaultFacility,
+    entity,
     entityHelper,
     filterConverters,
     findFilesRecursive,
     genericControllerRegistry,
     globAsync,
     PlumierApplication,
-    primaryId,
-    relation,
     RelationDecorator,
     RequestHookMiddleware,
 } from "@plumier/core"
@@ -19,11 +17,11 @@ import { lstat } from "fs"
 import pluralize from "pluralize"
 import reflect, { noop } from "tinspector"
 import { Result, ResultMessages, VisitorInvocation } from "typedconverter"
-import { ConnectionOptions, createConnection, getConnectionOptions, getMetadataArgsStorage } from "typeorm"
+import { ConnectionOptions, createConnection, getConnectionOptions, getManager, getMetadataArgsStorage } from "typeorm"
 import { promisify } from "util"
 import validator from "validator"
 
-import { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
+import { normalizeEntity, TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
 
 const lstatAsync = promisify(lstat)
 
@@ -107,34 +105,17 @@ class TypeORMFacility extends DefaultFacility {
         await loadEntities(this.option.connection)
         // assign tinspector decorators, so Plumier can understand the entity metadata
         const storage = getMetadataArgsStorage();
-        for (const col of storage.columns) {
-            Reflect.decorate([noop()], (col.target as Function).prototype, col.propertyName, void 0)
-            if (col.options.primary)
-                Reflect.decorate([primaryId(), authorize.readonly()], (col.target as Function).prototype, col.propertyName, void 0)
+        if (storage.tables.length === 0) {
+            throw new Error("No TypeORM entity found, check your connection configuration")
         }
-        for (const col of storage.relations) {
-            const rawType: Class = (col as any).type()
-            const type = col.relationType === "one-to-many" || col.relationType === "many-to-many" ? [rawType] : rawType
-            Reflect.decorate([reflect.type(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
-            if (col.relationType === "many-to-one") {
-                // TODO
-                Reflect.decorate([relation({ inverse: true })], (col.target as Function).prototype, col.propertyName, void 0)
-            }
-            else {
-                const cache = genericControllerRegistry.get(rawType)
-                // if entity handled with generic controller then hide all one to many relation
-                if (cache)
-                    Reflect.decorate([api.readonly(), api.writeonly()], (col.target as Function).prototype, col.propertyName, void 0)
-                Reflect.decorate([relation()], (col.target as Function).prototype, col.propertyName, void 0)
-            }
+        for (const table of storage.tables) {
+            normalizeEntity(table.target as Class)
         }
     }
 
     setup(app: Readonly<PlumierApplication>) {
-        Object.assign(app.config, {
-            genericController: [TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric],
-            genericControllerNameConversion: (x: string) => pluralize(x)
-        })
+        app.set({ genericController: [TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric] })
+        app.set({ genericControllerNameConversion: (x: string) => pluralize(x) })
         app.use(new RequestHookMiddleware(), "Action")
     }
 

@@ -142,45 +142,6 @@ Object {
     },
     "type": "object",
   },
-  "System-DefaultErrorMessage": Object {
-    "properties": Object {
-      "message": Object {
-        "type": "string",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "System-ValidationError": Object {
-    "properties": Object {
-      "message": Object {
-        "items": Object {
-          "properties": Object {
-            "messages": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-            "path": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-          },
-          "type": "object",
-        },
-        "type": "array",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
 }
 `;
 
@@ -287,51 +248,6 @@ Object {
 }
 `;
 
-exports[`Open API 3.0 Generation Component Schema Should detect system object component 1`] = `
-Object {
-  "properties": Object {
-    "message": Object {
-      "type": "string",
-    },
-    "status": Object {
-      "type": "number",
-    },
-  },
-  "type": "object",
-}
-`;
-
-exports[`Open API 3.0 Generation Component Schema Should detect system object component 2`] = `
-Object {
-  "properties": Object {
-    "message": Object {
-      "items": Object {
-        "properties": Object {
-          "messages": Object {
-            "items": Object {
-              "type": "string",
-            },
-            "type": "array",
-          },
-          "path": Object {
-            "items": Object {
-              "type": "string",
-            },
-            "type": "array",
-          },
-        },
-        "type": "object",
-      },
-      "type": "array",
-    },
-    "status": Object {
-      "type": "number",
-    },
-  },
-  "type": "object",
-}
-`;
-
 exports[`Open API 3.0 Generation Component Schema Should use reference on nested array object if array element already registered 1`] = `
 Object {
   "properties": Object {
@@ -396,7 +312,6 @@ Array [
   Object {
     "in": "query",
     "name": "id",
-    "required": false,
     "schema": Object {
       "enum": Array [
         "a",
@@ -470,7 +385,6 @@ Array [
   Object {
     "in": "query",
     "name": "id",
-    "required": false,
     "schema": Object {
       "enum": Array [
         "a",
@@ -490,7 +404,6 @@ Array [
     "description": "Lorem ipsum dolor sit amet",
     "in": "query",
     "name": "name",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -536,16 +449,6 @@ Object {
         },
       },
       "description": "Response body",
-    },
-    "422": Object {
-      "content": Object {
-        "application/json": Object {
-          "schema": Object {
-            "$ref": "#/components/schemas/System-ValidationError",
-          },
-        },
-      },
-      "description": "Validation error",
     },
   },
   "tags": Array [
@@ -594,16 +497,6 @@ Object {
       },
       "description": "Response body",
     },
-    "422": Object {
-      "content": Object {
-        "application/json": Object {
-          "schema": Object {
-            "$ref": "#/components/schemas/System-ValidationError",
-          },
-        },
-      },
-      "description": "Validation error",
-    },
   },
   "tags": Array [
     "Lorem",
@@ -644,7 +537,6 @@ Array [
   Object {
     "in": "query",
     "name": "data",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -670,289 +562,99 @@ Object {
 }
 `;
 
-exports[`Open API 3.0 Generation Decorators Should able to set readonly property on nested array model 1`] = `
-Object {
-  "properties": Object {
-    "animal": Object {
-      "items": Object {
-        "allOf": Array [
-          Object {
-            "$ref": "#/components/schemas/Animal",
-          },
-          Object {
-            "readOnly": true,
-            "type": "object",
-          },
-        ],
-      },
-      "readOnly": true,
-      "type": "array",
-    },
-    "id": Object {
-      "type": "number",
-    },
-    "password": Object {
-      "type": "string",
-    },
-    "userName": Object {
-      "type": "string",
-    },
-  },
-  "type": "object",
-}
-`;
-
-exports[`Open API 3.0 Generation Decorators Should able to set readonly property on nested inline array model 1`] = `
-Object {
-  "properties": Object {
-    "animal": Object {
-      "items": Object {
-        "allOf": Array [
-          Object {
-            "$ref": "#/components/schemas/Animal",
-          },
-          Object {
-            "readOnly": true,
-            "type": "object",
-          },
-        ],
-      },
-      "readOnly": true,
-      "type": "array",
-    },
-    "id": Object {
-      "type": "number",
-    },
-    "password": Object {
-      "type": "string",
-    },
-    "userName": Object {
-      "type": "string",
-    },
-  },
-  "type": "object",
-}
-`;
-
-exports[`Open API 3.0 Generation Decorators Should able to set readonly property on nested inline array model 2`] = `
-Object {
-  "properties": Object {
-    "id": Object {
-      "type": "number",
-    },
-    "name": Object {
-      "type": "string",
-    },
-  },
-  "type": "object",
-}
-`;
-
-exports[`Open API 3.0 Generation Decorators Should able to set readonly property on nested inline model 1`] = `
-Object {
-  "properties": Object {
-    "animal": Object {
-      "allOf": Array [
-        Object {
-          "$ref": "#/components/schemas/Animal",
-        },
-        Object {
-          "readOnly": true,
-          "type": "object",
-        },
-      ],
-    },
-    "id": Object {
-      "type": "number",
-    },
-    "password": Object {
-      "type": "string",
-    },
-    "userName": Object {
-      "type": "string",
-    },
-  },
-  "type": "object",
-}
-`;
-
-exports[`Open API 3.0 Generation Decorators Should able to set readonly property on nested inline model 2`] = `
-Object {
-  "properties": Object {
-    "id": Object {
-      "type": "number",
-    },
-    "name": Object {
-      "type": "string",
-    },
-  },
-  "type": "object",
-}
-`;
-
 exports[`Open API 3.0 Generation Decorators Should able to set readonly property on nested model 1`] = `
 Object {
-  "properties": Object {
-    "animal": Object {
-      "allOf": Array [
-        Object {
-          "$ref": "#/components/schemas/Animal",
-        },
-        Object {
-          "readOnly": true,
-          "type": "object",
-        },
-      ],
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "animal": Object {
+                "readOnly": true,
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
     },
-    "id": Object {
-      "type": "number",
-    },
-    "password": Object {
-      "type": "string",
-    },
-    "userName": Object {
-      "type": "string",
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "animal": Object {
+                "readOnly": true,
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
     },
   },
-  "type": "object",
+  "required": true,
 }
 `;
 
 exports[`Open API 3.0 Generation Decorators Should able to set write only property 1`] = `
 Object {
-  "properties": Object {
-    "id": Object {
-      "type": "number",
-    },
-    "password": Object {
-      "type": "string",
-    },
-    "userName": Object {
-      "type": "string",
-      "writeOnly": true,
-    },
-  },
-  "type": "object",
-}
-`;
-
-exports[`Open API 3.0 Generation Decorators Should able to set write only property on nested array model 1`] = `
-Object {
-  "properties": Object {
-    "animal": Object {
-      "items": Object {
-        "allOf": Array [
-          Object {
-            "$ref": "#/components/schemas/Animal",
-          },
-          Object {
-            "type": "object",
-            "writeOnly": true,
-          },
-        ],
-      },
-      "type": "array",
-      "writeOnly": true,
-    },
-    "id": Object {
-      "type": "number",
-    },
-    "password": Object {
-      "type": "string",
-    },
-    "userName": Object {
-      "type": "string",
-    },
-  },
-  "type": "object",
-}
-`;
-
-exports[`Open API 3.0 Generation Decorators Should able to set write only property on nested inline array model 1`] = `
-Object {
-  "properties": Object {
-    "animal": Object {
-      "items": Object {
-        "allOf": Array [
-          Object {
-            "$ref": "#/components/schemas/Animal",
-          },
-          Object {
-            "type": "object",
-            "writeOnly": true,
-          },
-        ],
-      },
-      "type": "array",
-      "writeOnly": true,
-    },
-    "id": Object {
-      "type": "number",
-    },
-    "password": Object {
-      "type": "string",
-    },
-    "userName": Object {
-      "type": "string",
-    },
-  },
-  "type": "object",
-}
-`;
-
-exports[`Open API 3.0 Generation Decorators Should able to set write only property on nested inline model 1`] = `
-Object {
-  "properties": Object {
-    "animal": Object {
-      "allOf": Array [
-        Object {
-          "$ref": "#/components/schemas/Animal",
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/User",
+            },
+            Object {
+              "properties": Object {
+                "userName": Object {
+                  "writeOnly": true,
+                },
+              },
+              "type": "object",
+            },
+          ],
         },
-        Object {
-          "type": "object",
-          "writeOnly": true,
-        },
-      ],
+      },
     },
-    "id": Object {
-      "type": "number",
-    },
-    "password": Object {
-      "type": "string",
-    },
-    "userName": Object {
-      "type": "string",
-    },
+    "description": "Response body",
   },
-  "type": "object",
 }
 `;
 
 exports[`Open API 3.0 Generation Decorators Should able to set write only property on nested model 1`] = `
 Object {
-  "properties": Object {
-    "animal": Object {
-      "allOf": Array [
-        Object {
-          "$ref": "#/components/schemas/Animal",
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/User",
+            },
+            Object {
+              "properties": Object {
+                "animal": Object {
+                  "writeOnly": true,
+                },
+              },
+              "type": "object",
+            },
+          ],
         },
-        Object {
-          "type": "object",
-          "writeOnly": true,
-        },
-      ],
+      },
     },
-    "id": Object {
-      "type": "number",
-    },
-    "password": Object {
-      "type": "string",
-    },
-    "userName": Object {
-      "type": "string",
-    },
+    "description": "Response body",
   },
-  "type": "object",
 }
 `;
 
@@ -983,16 +685,6 @@ Object {
     },
     "description": "Response body",
   },
-  "422": Object {
-    "content": Object {
-      "application/json": Object {
-        "schema": Object {
-          "$ref": "#/components/schemas/System-ValidationError",
-        },
-      },
-    },
-    "description": "Validation error",
-  },
 }
 `;
 
@@ -1001,7 +693,6 @@ Array [
   Object {
     "in": "query",
     "name": "id",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -1199,7 +890,6 @@ Array [
   Object {
     "in": "cookie",
     "name": "id",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -1212,7 +902,6 @@ Array [
   Object {
     "in": "header",
     "name": "id",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -1225,7 +914,6 @@ Array [
   Object {
     "in": "header",
     "name": "str",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -1233,7 +921,6 @@ Array [
   Object {
     "in": "header",
     "name": "num",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -1246,7 +933,6 @@ Array [
   Object {
     "in": "query",
     "name": "type",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -1261,7 +947,6 @@ Array [
   Object {
     "in": "path",
     "name": "id",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -1287,7 +972,6 @@ Array [
   Object {
     "in": "query",
     "name": "str",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -1295,7 +979,6 @@ Array [
   Object {
     "in": "query",
     "name": "num",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -1303,7 +986,6 @@ Array [
   Object {
     "in": "query",
     "name": "bool",
-    "required": false,
     "schema": Object {
       "type": "boolean",
     },
@@ -1311,7 +993,6 @@ Array [
   Object {
     "in": "query",
     "name": "date",
-    "required": false,
     "schema": Object {
       "format": "date-time",
       "type": "string",
@@ -1325,7 +1006,6 @@ Array [
   Object {
     "in": "query",
     "name": "query",
-    "required": false,
     "schema": Object {
       "$ref": "#/components/schemas/Query",
     },
@@ -1338,7 +1018,6 @@ Array [
   Object {
     "in": "query",
     "name": "id",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -1351,7 +1030,6 @@ Array [
   Object {
     "in": "query",
     "name": "str",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -1359,28 +1037,6 @@ Array [
   Object {
     "in": "query",
     "name": "num",
-    "required": false,
-    "schema": Object {
-      "type": "number",
-    },
-  },
-]
-`;
-
-exports[`Open API 3.0 Generation Parameter Should detect query parameter with @bind.query() of type object with readOnly property 1`] = `
-Array [
-  Object {
-    "in": "query",
-    "name": "str",
-    "required": false,
-    "schema": Object {
-      "type": "string",
-    },
-  },
-  Object {
-    "in": "query",
-    "name": "num",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -1393,7 +1049,6 @@ Array [
   Object {
     "in": "query",
     "name": "str",
-    "required": true,
     "schema": Object {
       "type": "string",
     },
@@ -1401,7 +1056,6 @@ Array [
   Object {
     "in": "query",
     "name": "num",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -1422,37 +1076,11 @@ Array [
 ]
 `;
 
-exports[`Open API 3.0 Generation Parameter Should hide query object relation 1`] = `
-Array [
-  Object {
-    "in": "query",
-    "name": "query",
-    "required": false,
-    "schema": Object {
-      "allOf": Array [
-        Object {
-          "$ref": "#/components/schemas/Query",
-        },
-        Object {
-          "properties": Object {
-            "sub": Object {
-              "type": "number",
-            },
-          },
-          "type": "object",
-        },
-      ],
-    },
-  },
-]
-`;
-
 exports[`Open API 3.0 Generation Parameter Should hide readonly field on query parameter object 1`] = `
 Array [
   Object {
     "in": "query",
     "name": "query",
-    "required": false,
     "schema": Object {
       "$ref": "#/components/schemas/Query",
     },
@@ -1490,33 +1118,11 @@ exports[`Open API 3.0 Generation Parameter Should ignore @bind.request() paramet
 
 exports[`Open API 3.0 Generation Parameter Should ignore @bind.user() parameter 1`] = `Array []`;
 
-exports[`Open API 3.0 Generation Parameter Should ignore Generic Identifier on query parameter 1`] = `
-Array [
-  Object {
-    "in": "query",
-    "name": "str",
-    "required": false,
-    "schema": Object {
-      "type": "string",
-    },
-  },
-  Object {
-    "in": "query",
-    "name": "num",
-    "required": false,
-    "schema": Object {
-      "type": "number",
-    },
-  },
-]
-`;
-
 exports[`Open API 3.0 Generation Parameter Should ignore all required properties when provided @val.partial() on @bind.query() 1`] = `
 Array [
   Object {
     "in": "query",
     "name": "str",
-    "required": false,
     "schema": Object {
       "type": "string",
     },
@@ -1524,49 +1130,6 @@ Array [
   Object {
     "in": "query",
     "name": "num",
-    "required": false,
-    "schema": Object {
-      "type": "number",
-    },
-  },
-]
-`;
-
-exports[`Open API 3.0 Generation Parameter Should ignore nested array on query parameter 1`] = `
-Array [
-  Object {
-    "in": "query",
-    "name": "str",
-    "required": false,
-    "schema": Object {
-      "type": "string",
-    },
-  },
-  Object {
-    "in": "query",
-    "name": "num",
-    "required": false,
-    "schema": Object {
-      "type": "number",
-    },
-  },
-]
-`;
-
-exports[`Open API 3.0 Generation Parameter Should ignore nested model on query parameter 1`] = `
-Array [
-  Object {
-    "in": "query",
-    "name": "str",
-    "required": false,
-    "schema": Object {
-      "type": "string",
-    },
-  },
-  Object {
-    "in": "query",
-    "name": "num",
-    "required": false,
     "schema": Object {
       "type": "number",
     },
@@ -1577,47 +1140,7 @@ Array [
 exports[`Open API 3.0 Generation Path Should combine path based on resource 1`] = `
 Object {
   "components": Object {
-    "schemas": Object {
-      "System-DefaultErrorMessage": Object {
-        "properties": Object {
-          "message": Object {
-            "type": "string",
-          },
-          "status": Object {
-            "type": "number",
-          },
-        },
-        "type": "object",
-      },
-      "System-ValidationError": Object {
-        "properties": Object {
-          "message": Object {
-            "items": Object {
-              "properties": Object {
-                "messages": Object {
-                  "items": Object {
-                    "type": "string",
-                  },
-                  "type": "array",
-                },
-                "path": Object {
-                  "items": Object {
-                    "type": "string",
-                  },
-                  "type": "array",
-                },
-              },
-              "type": "object",
-            },
-            "type": "array",
-          },
-          "status": Object {
-            "type": "number",
-          },
-        },
-        "type": "object",
-      },
-    },
+    "schemas": Object {},
   },
   "info": Object {
     "title": "Api Explorer",
@@ -1670,47 +1193,7 @@ Object {
 exports[`Open API 3.0 Generation Path Should combine path using different controllers 1`] = `
 Object {
   "components": Object {
-    "schemas": Object {
-      "System-DefaultErrorMessage": Object {
-        "properties": Object {
-          "message": Object {
-            "type": "string",
-          },
-          "status": Object {
-            "type": "number",
-          },
-        },
-        "type": "object",
-      },
-      "System-ValidationError": Object {
-        "properties": Object {
-          "message": Object {
-            "items": Object {
-              "properties": Object {
-                "messages": Object {
-                  "items": Object {
-                    "type": "string",
-                  },
-                  "type": "array",
-                },
-                "path": Object {
-                  "items": Object {
-                    "type": "string",
-                  },
-                  "type": "array",
-                },
-              },
-              "type": "object",
-            },
-            "type": "array",
-          },
-          "status": Object {
-            "type": "number",
-          },
-        },
-        "type": "object",
-      },
-    },
+    "schemas": Object {},
   },
   "info": Object {
     "title": "Api Explorer",
@@ -1768,7 +1251,6 @@ Object {
         Object {
           "in": "path",
           "name": "id",
-          "required": false,
           "schema": Object {
             "type": "string",
           },
@@ -1776,7 +1258,6 @@ Object {
         Object {
           "in": "path",
           "name": "type",
-          "required": false,
           "schema": Object {
             "type": "string",
           },
@@ -1784,7 +1265,6 @@ Object {
         Object {
           "in": "path",
           "name": "index",
-          "required": false,
           "schema": Object {
             "type": "number",
           },
@@ -1800,16 +1280,6 @@ Object {
             },
           },
           "description": "Response body",
-        },
-        "422": Object {
-          "content": Object {
-            "application/json": Object {
-              "schema": Object {
-                "$ref": "#/components/schemas/System-ValidationError",
-              },
-            },
-          },
-          "description": "Validation error",
         },
       },
       "tags": Array [
@@ -2242,18 +1712,18 @@ Object {
             "$ref": "#/components/schemas/User",
           },
           Object {
-            "required": Array [
-              "userName",
-              "password",
-            ],
-            "type": "object",
-          },
-          Object {
             "properties": Object {
               "pet": Object {
                 "type": "number",
               },
             },
+            "type": "object",
+          },
+          Object {
+            "required": Array [
+              "userName",
+              "password",
+            ],
             "type": "object",
           },
         ],
@@ -2266,18 +1736,18 @@ Object {
             "$ref": "#/components/schemas/User",
           },
           Object {
-            "required": Array [
-              "userName",
-              "password",
-            ],
-            "type": "object",
-          },
-          Object {
             "properties": Object {
               "pet": Object {
                 "type": "number",
               },
             },
+            "type": "object",
+          },
+          Object {
+            "required": Array [
+              "userName",
+              "password",
+            ],
             "type": "object",
           },
         ],
@@ -2666,45 +2136,6 @@ Object {
 
 exports[`Open API 3.0 Generation Response Should detect array object response 2`] = `
 Object {
-  "System-DefaultErrorMessage": Object {
-    "properties": Object {
-      "message": Object {
-        "type": "string",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "System-ValidationError": Object {
-    "properties": Object {
-      "message": Object {
-        "items": Object {
-          "properties": Object {
-            "messages": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-            "path": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-          },
-          "type": "object",
-        },
-        "type": "array",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
   "User": Object {
     "properties": Object {
       "password": Object {
@@ -2778,45 +2209,6 @@ Object {
 
 exports[`Open API 3.0 Generation Response Should detect nested object response 2`] = `
 Object {
-  "System-DefaultErrorMessage": Object {
-    "properties": Object {
-      "message": Object {
-        "type": "string",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "System-ValidationError": Object {
-    "properties": Object {
-      "message": Object {
-        "items": Object {
-          "properties": Object {
-            "messages": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-            "path": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-          },
-          "type": "object",
-        },
-        "type": "array",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
   "Tag": Object {
     "properties": Object {
       "tag": Object {
@@ -2857,45 +2249,6 @@ Object {
 
 exports[`Open API 3.0 Generation Response Should detect object response 2`] = `
 Object {
-  "System-DefaultErrorMessage": Object {
-    "properties": Object {
-      "message": Object {
-        "type": "string",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
-  "System-ValidationError": Object {
-    "properties": Object {
-      "message": Object {
-        "items": Object {
-          "properties": Object {
-            "messages": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-            "path": Object {
-              "items": Object {
-                "type": "string",
-              },
-              "type": "array",
-            },
-          },
-          "type": "object",
-        },
-        "type": "array",
-      },
-      "status": Object {
-        "type": "number",
-      },
-    },
-    "type": "object",
-  },
   "User": Object {
     "properties": Object {
       "password": Object {
@@ -2913,47 +2266,7 @@ Object {
 exports[`Open API 3.0 Generation Route Grouping Should generate Open API schema properly 1`] = `
 Object {
   "components": Object {
-    "schemas": Object {
-      "System-DefaultErrorMessage": Object {
-        "properties": Object {
-          "message": Object {
-            "type": "string",
-          },
-          "status": Object {
-            "type": "number",
-          },
-        },
-        "type": "object",
-      },
-      "System-ValidationError": Object {
-        "properties": Object {
-          "message": Object {
-            "items": Object {
-              "properties": Object {
-                "messages": Object {
-                  "items": Object {
-                    "type": "string",
-                  },
-                  "type": "array",
-                },
-                "path": Object {
-                  "items": Object {
-                    "type": "string",
-                  },
-                  "type": "array",
-                },
-              },
-              "type": "object",
-            },
-            "type": "array",
-          },
-          "status": Object {
-            "type": "number",
-          },
-        },
-        "type": "object",
-      },
-    },
+    "schemas": Object {},
   },
   "info": Object {
     "title": "Api Explorer",
@@ -2981,6 +2294,585 @@ Object {
         ],
       },
     },
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Schema Override Filter Should able to use all fields as filter 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "filter",
+    "schema": Object {
+      "$ref": "#/components/schemas/Item",
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Schema Override Filter Should hide filter filed when no filter authorization provided 1`] = `Array []`;
+
+exports[`Open API 3.0 Generation Schema Override Filter Should show field that is authorized for filter 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "filter",
+    "schema": Object {
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/Item",
+        },
+        Object {
+          "properties": Object {
+            "basePrice": Object {
+              "readOnly": true,
+            },
+            "id": Object {
+              "readOnly": true,
+            },
+            "price": Object {
+              "readOnly": true,
+            },
+          },
+          "type": "object",
+        },
+      ],
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Schema Override Filter Should show relation property as ID 1`] = `
+Array [
+  Object {
+    "in": "query",
+    "name": "filter",
+    "schema": Object {
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/Item",
+        },
+        Object {
+          "properties": Object {
+            "categories": Object {
+              "items": Object {
+                "type": "number",
+              },
+              "type": "array",
+            },
+            "createdBy": Object {
+              "type": "number",
+            },
+            "shop": Object {
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        Object {
+          "properties": Object {
+            "id": Object {
+              "readOnly": true,
+            },
+            "name": Object {
+              "readOnly": true,
+            },
+            "price": Object {
+              "readOnly": true,
+            },
+          },
+          "type": "object",
+        },
+      ],
+    },
+  },
+]
+`;
+
+exports[`Open API 3.0 Generation Schema Override Request Body Should add required property 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Item",
+          },
+          Object {
+            "required": Array [
+              "name",
+              "price",
+            ],
+            "type": "object",
+          },
+        ],
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Item",
+          },
+          Object {
+            "required": Array [
+              "name",
+              "price",
+            ],
+            "type": "object",
+          },
+        ],
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Schema Override Request Body Should change relations with id type 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Item",
+          },
+          Object {
+            "properties": Object {
+              "categories": Object {
+                "items": Object {
+                  "type": "number",
+                },
+                "type": "array",
+              },
+              "createdBy": Object {
+                "type": "number",
+              },
+              "shop": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Item",
+          },
+          Object {
+            "properties": Object {
+              "categories": Object {
+                "items": Object {
+                  "type": "number",
+                },
+                "type": "array",
+              },
+              "createdBy": Object {
+                "type": "number",
+              },
+              "shop": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Schema Override Request Body Should hide reverse relation 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Item",
+          },
+          Object {
+            "properties": Object {
+              "categories": Object {
+                "items": Object {
+                  "type": "number",
+                },
+                "type": "array",
+              },
+              "createdBy": Object {
+                "type": "number",
+              },
+              "shop": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "shop": Object {
+                "readOnly": true,
+                "writeOnly": true,
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "categories": Object {
+                "readOnly": true,
+                "writeOnly": true,
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Item",
+          },
+          Object {
+            "properties": Object {
+              "categories": Object {
+                "items": Object {
+                  "type": "number",
+                },
+                "type": "array",
+              },
+              "createdBy": Object {
+                "type": "number",
+              },
+              "shop": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "shop": Object {
+                "readOnly": true,
+                "writeOnly": true,
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "categories": Object {
+                "readOnly": true,
+                "writeOnly": true,
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Schema Override Request Body Should ignore required property when partial validation applied 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/Item",
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/Item",
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Schema Override Request Body Should respect readonly property 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Item",
+          },
+          Object {
+            "properties": Object {
+              "categories": Object {
+                "items": Object {
+                  "type": "number",
+                },
+                "type": "array",
+              },
+              "createdBy": Object {
+                "type": "number",
+              },
+              "shop": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "name": Object {
+                "readOnly": true,
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Item",
+          },
+          Object {
+            "properties": Object {
+              "categories": Object {
+                "items": Object {
+                  "type": "number",
+                },
+                "type": "array",
+              },
+              "createdBy": Object {
+                "type": "number",
+              },
+              "shop": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "name": Object {
+                "readOnly": true,
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
+exports[`Open API 3.0 Generation Schema Override Response Body Should hide all child relations 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/Item",
+            },
+            Object {
+              "properties": Object {
+                "createdBy": Object {
+                  "allOf": Array [
+                    Object {
+                      "$ref": "#/components/schemas/User",
+                    },
+                    Object {
+                      "properties": Object {
+                        "shops": Object {
+                          "readOnly": true,
+                          "writeOnly": true,
+                        },
+                      },
+                      "type": "object",
+                    },
+                  ],
+                },
+                "shop": Object {
+                  "allOf": Array [
+                    Object {
+                      "$ref": "#/components/schemas/Shop",
+                    },
+                    Object {
+                      "properties": Object {
+                        "items": Object {
+                          "readOnly": true,
+                          "writeOnly": true,
+                        },
+                      },
+                      "type": "object",
+                    },
+                  ],
+                },
+              },
+              "type": "object",
+            },
+            Object {
+              "properties": Object {
+                "categories": Object {
+                  "readOnly": true,
+                  "writeOnly": true,
+                },
+              },
+              "type": "object",
+            },
+          ],
+        },
+      },
+    },
+    "description": "Response body",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Schema Override Response Body Should hide array child relation 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/Item",
+            },
+            Object {
+              "properties": Object {
+                "categories": Object {
+                  "readOnly": true,
+                  "writeOnly": true,
+                },
+              },
+              "type": "object",
+            },
+          ],
+        },
+      },
+    },
+    "description": "Response body",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Schema Override Response Body Should hide array child relation on array response 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "items": Object {
+            "allOf": Array [
+              Object {
+                "$ref": "#/components/schemas/Item",
+              },
+              Object {
+                "properties": Object {
+                  "categories": Object {
+                    "readOnly": true,
+                    "writeOnly": true,
+                  },
+                },
+                "type": "object",
+              },
+            ],
+          },
+          "type": "array",
+        },
+      },
+    },
+    "description": "Response body",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Schema Override Response Body Should remove reverse relations 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/Item",
+            },
+            Object {
+              "properties": Object {
+                "createdBy": Object {
+                  "allOf": Array [
+                    Object {
+                      "$ref": "#/components/schemas/User",
+                    },
+                    Object {
+                      "properties": Object {
+                        "shops": Object {
+                          "readOnly": true,
+                          "writeOnly": true,
+                        },
+                      },
+                      "type": "object",
+                    },
+                  ],
+                },
+                "shop": Object {
+                  "allOf": Array [
+                    Object {
+                      "$ref": "#/components/schemas/Shop",
+                    },
+                    Object {
+                      "properties": Object {
+                        "items": Object {
+                          "readOnly": true,
+                          "writeOnly": true,
+                        },
+                      },
+                      "type": "object",
+                    },
+                  ],
+                },
+              },
+              "type": "object",
+            },
+            Object {
+              "properties": Object {
+                "shop": Object {
+                  "readOnly": true,
+                  "writeOnly": true,
+                },
+              },
+              "type": "object",
+            },
+            Object {
+              "properties": Object {
+                "categories": Object {
+                  "readOnly": true,
+                  "writeOnly": true,
+                },
+              },
+              "type": "object",
+            },
+          ],
+        },
+      },
+    },
+    "description": "Response body",
   },
 }
 `;
@@ -3013,36 +2905,6 @@ Object {
     },
     "description": "Response body",
   },
-  "401": Object {
-    "content": Object {
-      "application/json": Object {
-        "schema": Object {
-          "$ref": "#/components/schemas/System-DefaultErrorMessage",
-        },
-      },
-    },
-    "description": "Unauthorized error",
-  },
-  "403": Object {
-    "content": Object {
-      "application/json": Object {
-        "schema": Object {
-          "$ref": "#/components/schemas/System-DefaultErrorMessage",
-        },
-      },
-    },
-    "description": "Forbidden error",
-  },
-  "422": Object {
-    "content": Object {
-      "application/json": Object {
-        "schema": Object {
-          "$ref": "#/components/schemas/System-ValidationError",
-        },
-      },
-    },
-    "description": "Validation error",
-  },
 }
 `;
 
@@ -3071,16 +2933,6 @@ Object {
       },
     },
     "description": "Response body",
-  },
-  "422": Object {
-    "content": Object {
-      "application/json": Object {
-        "schema": Object {
-          "$ref": "#/components/schemas/System-ValidationError",
-        },
-      },
-    },
-    "description": "Validation error",
   },
 }
 `;

@@ -228,10 +228,18 @@ Array [
 ]
 `;
 
-exports[`TypeOrm Facility Should throw error when no option specified 1`] = `
+exports[`TypeOrm Facility Should throw error when no entities specified 1`] = `
 Array [
   Array [
-    [Error: No connection options were found in any orm configuration files.],
+    [Error: No TypeORM entity found, check your connection configuration],
+  ],
+]
+`;
+
+exports[`TypeOrm Facility Should throw error when no entity found 1`] = `
+Array [
+  Array [
+    [Error: No TypeORM entity found, check your connection configuration],
   ],
 ]
 `;
@@ -239,13 +247,17 @@ Array [
 exports[`TypeOrm Filter Transformer Should able to combine all 1`] = `
 Object {
   "address": FindOperator {
+    "_getSql": undefined,
     "_multipleParameters": false,
+    "_objectLiteralParameters": undefined,
     "_type": "like",
     "_useParameter": true,
     "_value": "lorem%",
   },
   "age": FindOperator {
+    "_getSql": undefined,
     "_multipleParameters": true,
+    "_objectLiteralParameters": undefined,
     "_type": "between",
     "_useParameter": true,
     "_value": Array [
@@ -266,7 +278,9 @@ Object {
 exports[`TypeOrm Filter Transformer Should transform partial filter 1`] = `
 Object {
   "name": FindOperator {
+    "_getSql": undefined,
     "_multipleParameters": false,
+    "_objectLiteralParameters": undefined,
     "_type": "like",
     "_useParameter": true,
     "_value": "%lorem",
@@ -277,7 +291,9 @@ Object {
 exports[`TypeOrm Filter Transformer Should transform partial filter 2`] = `
 Object {
   "name": FindOperator {
+    "_getSql": undefined,
     "_multipleParameters": false,
+    "_objectLiteralParameters": undefined,
     "_type": "like",
     "_useParameter": true,
     "_value": "lorem%",
@@ -288,7 +304,9 @@ Object {
 exports[`TypeOrm Filter Transformer Should transform partial filter 3`] = `
 Object {
   "name": FindOperator {
+    "_getSql": undefined,
     "_multipleParameters": false,
+    "_objectLiteralParameters": undefined,
     "_type": "like",
     "_useParameter": true,
     "_value": "%lorem%",
@@ -299,7 +317,9 @@ Object {
 exports[`TypeOrm Filter Transformer Should transform range filter 1`] = `
 Object {
   "name": FindOperator {
+    "_getSql": undefined,
     "_multipleParameters": true,
+    "_objectLiteralParameters": undefined,
     "_type": "between",
     "_useParameter": true,
     "_value": Array [

@@ -1,9 +1,28 @@
-import { consoleLog, Authorizer, AuthorizationContext, DefaultDependencyResolver, DefaultFacility, PlumierApplication, RouteMetadata, cleanupConsole, CustomAuthorizerFunction } from "@plumier/core"
+import {
+    Authenticated,
+    AuthorizationContext,
+    Authorizer,
+    AuthPolicy,
+    authPolicy,
+    cleanupConsole,
+    consoleLog,
+    CustomAuthorizer,
+    CustomAuthorizerFunction,
+    DefaultDependencyResolver,
+    DefaultFacility,
+    entity,
+    entityPolicy,
+    entityProvider,
+    PlumierApplication,
+    Public,
+    RouteMetadata,
+} from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { sign } from "jsonwebtoken"
+import Koa from "koa"
 import { authorize, domain, route, val } from "plumier"
 import Supertest from "supertest"
-import { reflect, type } from "tinspector"
+import { noop, reflect, type } from "tinspector"
 
 import { fixture } from "../helper"
 
@@ -651,6 +670,19 @@ describe("JwtAuth", () => {
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
                 .expect(200)
         })
+
+        it("Should contains undefined user when accessed by public", async () => {
+            class AnimalController {
+                @authorize.custom(i => (i.user && i.user.role) === "admin", { access: "route" })
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(403)
+        })
     })
 
     describe("Separate Decorator And Implementation with Object Registry", () => {
@@ -660,7 +692,7 @@ describe("JwtAuth", () => {
         @resolver.register("isOwner")
         class OwnerAuthorizer implements Authorizer {
             authorize(info: AuthorizationContext) {
-                return info.ctx.parameters[0] === info.user.email
+                return info.ctx.parameters[0] === info.user!.email
             }
         }
 
@@ -1091,6 +1123,27 @@ describe("JwtAuth", () => {
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .send({ id: "123", name: "Mimi", deceased: "Yes" })
                     .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (id, deceased)" })
+            })
+
+            it("Should throw 403 when accessed by public without auth info", async () => {
+                class AnimalController {
+                    @route.post()
+                    @authorize.public()
+                    save(name: string,
+                        @authorize.write("admin")
+                        id: number | undefined,
+                        @authorize.write("admin")
+                        deceased: boolean | undefined) { return "Hello" }
+                }
+    
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .send({ id: "123", name: "Mimi", deceased: "Yes" })
+                    .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (id, deceased)" })
             })
 
             it("Should be able to pass authorization by provided undefined", async () => {
@@ -2636,11 +2689,11 @@ describe("JwtAuth", () => {
                 await Supertest(app.callback())
                     .get("/users/get")
                     .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                    .expect(200, { user: { name: "admin", password: "secret", parent: {} } })
+                    .expect(200, { user: { name: "admin", password: "secret" } })
                 await Supertest(app.callback())
                     .get("/users/get")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
-                    .expect(200, { user: { name: "admin", parent: {} } })
+                    .expect(200, { user: { name: "admin" } })
             })
         })
 
@@ -2890,6 +2943,591 @@ describe("JwtAuth", () => {
                 .get("/users/get?filter[password]=lorem&filter[email]=abcd&filter[name]=abcd")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .expect(401, { status: 401, message: 'Unauthorized to populate parameter paths (filter.password, filter.email)' })
+        })
+    })
+
+    describe("Authorization Policy", () => {
+        it("Should able to use Public", async () => {
+            class AnimalController {
+                @authorize.route(Public)
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(200)
+        })
+        it("Should able to use Authenticated", async () => {
+            class AnimalController {
+                @authorize.route(Authenticated)
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(403)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
+        it("Should able to create custom auth policy using lambda", async () => {
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [authPolicy().define("HasUser", i => i.role.some(x => x === "user"))]
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
+        it("Should able to create custom auth policy using class", async () => {
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            class HasUserAuthPolicy implements CustomAuthorizer {
+                authorize(info: AuthorizationContext, location: 'Class' | 'Parameter' | 'Method'): boolean | Promise<boolean> {
+                    return info.role.some(x => x === "user")
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [authPolicy().define("HasUser", new HasUserAuthPolicy())]
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
+        it("Custom auth should work with default authorization Public", async () => {
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+                @authorize.route(Public)
+                pub() { }
+            }
+            class CustomPolicy implements AuthPolicy {
+                equals(id: string, ctx: AuthorizationContext): boolean {
+                    return id === "HasUser"
+                }
+                async authorize(ctx: AuthorizationContext): Promise<boolean> {
+                    return ctx.role.some(x => x === "user")
+                }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies: [CustomPolicy] }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/pub")
+                .expect(200)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
+        it("Should able to load external auth policy", async () => {
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: "./policies/*-policy.{ts,js}"
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
+        it("Should not load policy that not ends with policy", async () => {
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: "./policies/invalid*.{ts,js}"
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(401)
+        })
+        it("Should provide error info when applied on method", async () => {
+            const fn = jest.fn()
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [authPolicy().define("HasUser", i => { throw new Error("Error occur inside policy") })]
+                }))
+                .initialize()
+            app.on("error", e => fn(e))
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(500)
+            const message = fn.mock.calls[0][0].message
+            expect(message).toContain("Error occur inside authorization policy HasUser on method AnimalController.get")
+            expect(message).toContain("Error occur inside policy")
+        })
+        it("Should provide error info when applied on class", async () => {
+            const fn = jest.fn()
+            @authorize.route("HasUser")
+            class AnimalController {
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [authPolicy().define("HasUser", i => { throw new Error("Error occur inside policy") })]
+                }))
+                .initialize()
+            app.on("error", e => fn(e))
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(500)
+            const message = fn.mock.calls[0][0].message
+            expect(message).toContain("Error occur inside authorization policy HasUser on class AnimalController")
+            expect(message).toContain("Error occur inside policy")
+        })
+        it("Should provide error if thrown non error", async () => {
+            const fn = jest.fn()
+            @authorize.route("HasUser")
+            class AnimalController {
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [authPolicy().define("HasUser", i => { throw "ERROR" })]
+                }))
+                .initialize()
+            app.on("error", e => fn(e))
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(500)
+            const message = fn.mock.calls[0][0].message
+            expect(message).toContain("Error occur inside authorization policy HasUser on class AnimalController")
+            expect(message).toContain("ERROR")
+        })
+    })
+
+    describe("Entity Policy", () => {
+        class Shop {
+            @noop()
+            id: number
+            @noop()
+            name: string
+            @noop()
+            users: { uid: number, role: "Admin" | "Staff" }[]
+        }
+        const shops: Shop[] = [
+            { id: 1, name: "One Store", users: [{ uid: 1, role: "Admin" }, { uid: 2, role: "Staff" }] },
+            { id: 2, name: "Second Store", users: [{ uid: 1, role: "Staff" }, { uid: 2, role: "Admin" }] },
+        ]
+        const USER_ONE = sign({ userId: 1, role: "user" }, SECRET)
+        const USER_TWO = sign({ userId: 2, role: "user" }, SECRET)
+
+        it("Should able to secure route using entity policy", async () => {
+            class ShopsController {
+                @route.get(":id")
+                @type(Shop)
+                @entityProvider(Shop, "id")
+                @authorize.route("ShopAdmin")
+                get(id: number) {
+                    return shops.find(x => x.id === id)
+                }
+            }
+            const AdminPolicy = entityPolicy(Shop)
+                .define("ShopAdmin", (i, e) => {
+                    const shop = shops.find(x => x.id === e)
+                    return shop!.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })
+            const app = await fixture(ShopsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [AdminPolicy]
+                }))
+                .initialize()
+            function request(app: Koa, url: string, user: string = USER_TOKEN) {
+                return Supertest(app.callback())
+                    .get(url)
+                    .set("Authorization", `Bearer ${user}`)
+            }
+            await request(app, "/shops/1", USER_ONE).expect(200)
+            await request(app, "/shops/1", USER_TWO).expect(401)
+            await request(app, "/shops/2", USER_ONE).expect(401)
+            await request(app, "/shops/2", USER_TWO).expect(200)
+        })
+        it("Should throw proper error when method not an entity provider", async () => {
+            const fn = jest.fn()
+            class ShopsController {
+                @route.get(":id")
+                @type(Shop)
+                @authorize.route("ShopAdmin")
+                get(id: number) {
+                    return shops.find(x => x.id === id)
+                }
+            }
+            const AdminPolicy = entityPolicy(Shop)
+                .define("ShopAdmin", (i, e) => {
+                    const shop = shops.find(x => x.id === e)
+                    return shop!.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })
+            const app = await fixture(ShopsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [AdminPolicy]
+                }))
+                .initialize()
+            app.on("error", e => fn(e))
+            await Supertest(app.callback())
+                .get("/shops/1")
+                .set("Authorization", `Bearer ${USER_ONE}`)
+                .expect(500)
+            const message = fn.mock.calls[0][0].message
+            expect(message).toBe("Action ShopsController.get doesn't have Entity Policy Provider information")
+        })
+        it("Should not breaking other authorization system", async () => {
+            class ShopsController {
+                @route.get(":id")
+                @type(Shop)
+                @authorize.route("Public")
+                get(id: number) {
+                    return shops.find(x => x.id === id)
+                }
+            }
+            const AdminPolicy = entityPolicy(Shop)
+            .define("ShopAdmin", (i, e) => {
+                const shop = shops.find(x => x.id === e)
+                return shop!.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+            })
+            const app = await fixture(ShopsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [AdminPolicy]
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/shops/1")
+                .expect(200)
+        })
+        it("Should throw proper error when error occur inside entity policy and applied on route", async () => {
+            const fn = jest.fn()
+            class ShopsController {
+                @route.get(":id")
+                @type(Shop)
+                @entityProvider(Shop, "id")
+                @authorize.route("ShopAdmin")
+                get(id: number) {
+                    return shops.find(x => x.id === id)
+                }
+            }
+            const AdminPolicy = entityPolicy(Shop)
+                .define("ShopAdmin", (i, e) => { throw new Error("ERROR") })
+            const app = await fixture(ShopsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [AdminPolicy]
+                }))
+                .initialize()
+            app.on("error", e => fn(e))
+            await Supertest(app.callback())
+                .get("/shops/1")
+                .set("Authorization", `Bearer ${USER_ONE}`)
+                .expect(500)
+            const message = fn.mock.calls[0][0].message
+            expect(message).toContain("Error occur inside authorization policy ShopAdmin for entity Shop on method ShopsController.get")
+            expect(message).toContain("ERROR")
+        })
+        it("Should throw proper error when value thrown inside entity policy", async () => {
+            const fn = jest.fn()
+            class ShopsController {
+                @route.get(":id")
+                @type(Shop)
+                @entityProvider(Shop, "id")
+                @authorize.route("ShopAdmin")
+                get(id: number) {
+                    return shops.find(x => x.id === id)
+                }
+            }
+            const AdminPolicy = entityPolicy(Shop)
+                .define("ShopAdmin", (i, e) => { throw "ERROR" })
+            const app = await fixture(ShopsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [AdminPolicy]
+                }))
+                .initialize()
+            app.on("error", e => fn(e))
+            await Supertest(app.callback())
+                .get("/shops/1")
+                .set("Authorization", `Bearer ${USER_ONE}`)
+                .expect(500)
+            const message = fn.mock.calls[0][0].message
+            expect(message).toContain("Error occur inside authorization policy ShopAdmin for entity Shop on method ShopsController.get")
+            expect(message).toContain("ERROR")
+        })
+        it("Should be able to secure write access to property using entity policy", async () => {
+            class Product {
+                @noop()
+                id: number
+                @noop()
+                name: string
+                @noop()
+                shop: number
+                @noop()
+                price: number
+                @authorize.write("ShopAdmin")
+                basePrice: number
+            }
+            const products: Product[] = [
+                { id: 1, name: "Vanilla", price: 200, basePrice: 100, shop: 1 },
+            ]
+            const ProductPolicy = entityPolicy(Product)
+                .define("ShopAdmin", (i, e) => {
+                    const shop = shops.find(x => e === x.id)!
+                    return shop.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })
+            class ProductsController {
+                @entityProvider(Product, "id")
+                @route.put(":id")
+                modify(id: number, data: Product) {
+
+                }
+            }
+            const app = await fixture(ProductsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [ProductPolicy]
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .put("/products/1")
+                .send({ basePrice: 123 })
+                .set("Authorization", `Bearer ${USER_ONE}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .put("/products/1")
+                .send({ basePrice: 123 })
+                .set("Authorization", `Bearer ${USER_TWO}`)
+                .expect(401)
+        })
+        it("Should throw proper error on when applied as write access", async () => {
+            const fn = jest.fn()
+            class Product {
+                @noop()
+                id: number
+                @noop()
+                name: string
+                @noop()
+                shop: number
+                @noop()
+                price: number
+                @authorize.write("ShopAdmin")
+                basePrice: number
+            }
+            const products: Product[] = [
+                { id: 1, name: "Vanilla", price: 200, basePrice: 100, shop: 1 },
+            ]
+            const ProductPolicy = entityPolicy(Product)
+                .define("ShopAdmin", (i, e) => {
+                    throw new Error("ERROR")
+                })
+            class ProductsController {
+                @entityProvider(Product, "id")
+                @route.put(":id")
+                modify(id: number, data: Product) {
+
+                }
+            }
+            const app = await fixture(ProductsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [ProductPolicy]
+                }))
+                .initialize()
+            app.on("error", e => fn(e))
+            await Supertest(app.callback())
+                .put("/products/1")
+                .send({ basePrice: 123 })
+                .set("Authorization", `Bearer ${USER_ONE}`)
+                .expect(500)
+            const message = fn.mock.calls[0][0].message
+            expect(message).toContain("Error occur inside authorization policy ShopAdmin for entity Product on property Product.basePrice")
+            expect(message).toContain("ERROR")
+        })
+        it("Should be able to secure read access to property using entity policy", async () => {
+            class Product {
+                @entity.primaryId()
+                @noop()
+                id: number
+                @noop()
+                name: string
+                @noop()
+                shop: number
+                @noop()
+                price: number
+                @authorize.read("ShopAdmin")
+                basePrice: number
+            }
+            const products: Product[] = [
+                { id: 1, name: "Vanilla", price: 200, basePrice: 100, shop: 1 },
+            ]
+            const ProductPolicy = entityPolicy(Product)
+                .define("ShopAdmin", (i, e) => {
+                    const shop = shops.find(x => e === x.id)!
+                    return shop.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })
+            class ProductsController {
+                @route.get(":id")
+                @type(Product)
+                get(id: number) {
+                    return products.find(x => x.id === id)
+                }
+            }
+            const app = await fixture(ProductsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [ProductPolicy]
+                }))
+                .initialize()
+            const { body: userOne } = await Supertest(app.callback())
+                .get("/products/1")
+                .set("Authorization", `Bearer ${USER_ONE}`)
+                .expect(200)
+            const { body: userTwo } = await Supertest(app.callback())
+                .get("/products/1")
+                .set("Authorization", `Bearer ${USER_TWO}`)
+                .expect(200)
+            expect(userOne).toMatchSnapshot()
+            expect(userTwo).toMatchSnapshot()
+        })
+        it("Should throw error when occur inside entity policy on read access", async () => {
+            const fn = jest.fn()
+            class Product {
+                @entity.primaryId()
+                @noop()
+                id: number
+                @noop()
+                name: string
+                @noop()
+                shop: number
+                @noop()
+                price: number
+                @authorize.read("ShopAdmin")
+                basePrice: number
+            }
+            const products: Product[] = [
+                { id: 1, name: "Vanilla", price: 200, basePrice: 100, shop: 1 },
+            ]
+            const ProductPolicy = entityPolicy(Product)
+                .define("ShopAdmin", (i, e) => {
+                    throw new Error("ERROR")
+                })
+            class ProductsController {
+                @route.get(":id")
+                @type(Product)
+                get(id: number) {
+                    return products.find(x => x.id === id)
+                }
+            }
+            const app = await fixture(ProductsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [ProductPolicy]
+                }))
+                .initialize()
+            app.on("error", e => fn(e))
+            await Supertest(app.callback())
+                .get("/products/1")
+                .set("Authorization", `Bearer ${USER_ONE}`)
+                .expect(500)
+            const message = fn.mock.calls[0][0].message
+            expect(message).toContain("Error occur inside authorization policy ShopAdmin for entity Product on property Product.basePrice")
+            expect(message).toContain("ERROR")
+        })
+        it("Should throw error when entity doesn't have primary id information", async () => {
+            const fn = jest.fn()
+            class Product {
+                @noop()
+                id: number
+                @noop()
+                name: string
+                @noop()
+                shop: number
+                @noop()
+                price: number
+                @authorize.read("ShopAdmin")
+                basePrice: number
+            }
+            const products: Product[] = [
+                { id: 1, name: "Vanilla", price: 200, basePrice: 100, shop: 1 },
+            ]
+            const ProductPolicy = entityPolicy(Product)
+                .define("ShopAdmin", (i, e) => {
+                    const shop = shops.find(x => e === x.id)!
+                    return shop.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })
+            class ProductsController {
+                @route.get(":id")
+                @type(Product)
+                get(id: number) {
+                    return products.find(x => x.id === id)
+                }
+            }
+            const app = await fixture(ProductsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [ProductPolicy]
+                }))
+                .initialize()
+            app.on("error", e => fn(e))
+            await Supertest(app.callback())
+                .get("/products/1")
+                .set("Authorization", `Bearer ${USER_ONE}`)
+                .expect(500)
+            const message = fn.mock.calls[0][0].message
+            expect(message).toContain("Entity Product doesn't have primary ID information required for entity policy")
         })
     })
 })

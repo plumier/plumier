@@ -1,34 +1,67 @@
-import { domain, route, val, authorize, FormFile, api, relation } from "@plumier/core"
+import { authorize, OneToManyControllerGeneric, route } from "@plumier/core"
+import { JwtAuthFacility } from "@plumier/jwt"
 import { SwaggerFacility } from "@plumier/swagger"
-import Plumier, { WebApiFacility, LoggerFacility } from "plumier"
-import { JwtAuthFacility } from '@plumier/jwt'
-import reflect from "tinspector"
+import { TypeORMFacility } from "@plumier/typeorm"
+import Plumier, { LoggerFacility, WebApiFacility } from "plumier"
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 
-
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from "typeorm"
-import { TypeORMFacility } from '@plumier/typeorm'
-
-
-@route.controller()
-@Entity()
 export class User {
     @PrimaryGeneratedColumn()
     id: number
+
     @Column()
     name: string
-    @route.controller()
-    @OneToMany(x => Animal, x => x.user)
-    animal: Animal[]
+
+    @OneToMany(x => Shop, x => x.createdBy)
+    shops: Shop[]
 }
 
-@Entity()
-export class Animal {
+export class Shop {
     @PrimaryGeneratedColumn()
     id: number
+
     @Column()
     name: string
-    @ManyToOne(x => User, x => x.animal)
-    user: User
+
+    @route.controller()
+    @OneToMany(x => Item, x => x.shop)
+    items: Item[]
+
+    @ManyToOne(x => User, x => x.shops)
+    createdBy:User
+}
+
+@route.controller()
+export class Item {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @Column()
+    name: string
+
+    @authorize.filter()
+    @Column()
+    price: number
+
+    @ManyToOne(x => Shop, x => x.items)
+    shop: Shop
+
+    @OneToMany(x => Variants, x => x.item)
+    variants: Variants[]
+
+    @ManyToOne(x => User)
+    createdBy: User
+}
+
+export class Variants {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @Column()
+    name: string
+
+    @ManyToOne(x => Item, x => x.variants)
+    item: Item
 }
 
 new Plumier()
@@ -41,7 +74,7 @@ new Plumier()
             database: ":memory:",
             entities: [__filename],
             synchronize: true,
-            logging: false
+            logging: true
         }
     }))
     .set(new SwaggerFacility())

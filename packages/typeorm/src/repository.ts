@@ -1,5 +1,7 @@
 import {
+    authorize,
     Class,
+    entity,
     FilterEntity,
     FilterQuery,
     getGenericControllerOneToOneRelations,
@@ -9,7 +11,7 @@ import {
     Repository,
 } from "@plumier/core"
 import reflect from "tinspector"
-import { Between, getManager, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not, Repository as NativeRepository } from "typeorm"
+import { Between, Column, CreateDateColumn, Entity, getManager, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not, PrimaryGeneratedColumn, Repository as NativeRepository } from "typeorm"
 
 function normalizeSelect<T>(type: Class<T>, selections: string[]): { select: (keyof T)[], relations: string[] } {
     const meta = reflect(type)
@@ -153,5 +155,6 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
         return { id }
     }
 }
+
 
 export { TypeORMRepository, TypeORMOneToManyRepository, transformFilter }

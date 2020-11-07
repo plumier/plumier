@@ -1,7 +1,8 @@
-import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave, authorize } from "@plumier/core"
+import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave, authorize, entity, entityPolicy, consoleLog } from "@plumier/core"
 import Plumier, { WebApiFacility } from "plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
+    controller,
     TypeORMControllerGeneric,
     TypeORMFacility,
     TypeORMOneToManyControllerGeneric,
@@ -10,10 +11,13 @@ import {
 } from "@plumier/typeorm"
 import supertest from "supertest"
 import { generic } from "tinspector"
-import { Column, Entity, getManager, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, getManager, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, CreateDateColumn } from "typeorm"
 
 import { cleanup, getConn } from "./helper"
 import Koa from "koa"
+import { MongooseFacility } from '@plumier/mongoose'
+import { JwtAuthFacility } from '@plumier/jwt'
+import { sign } from 'jsonwebtoken'
 
 
 jest.setTimeout(20000)
@@ -185,6 +189,39 @@ describe("CRUD", () => {
     afterEach(async () => {
         await cleanup()
     });
+    it("Should able to use entity policy properly", async () => {
+        @route.controller()
+        @Entity()
+        class User {
+            @PrimaryGeneratedColumn()
+            id: string
+            @Column()
+            name: string
+            @authorize.read("Owner")
+            @Column()
+            email: string
+        }
+        const UserPolicy = entityPolicy(User).define("Owner", (ctx, id) => ctx.user?.userId === id)
+        function createApp() {
+            return new Plumier()
+                .set(new WebApiFacility({ controller: User }))
+                .set(new TypeORMFacility({ connection: getConn([User]) }))
+                .set(new JwtAuthFacility({ secret: "lorem", authPolicies: UserPolicy }))
+                .set({ mode: "production" })
+                .initialize()
+        }
+        const app = await createApp()
+        const repo = getManager().getRepository(User)
+        const john = await repo.save({ name: "John", email: "john.doe@gmail.com" })
+        await repo.save({ name: "Jane", email: "jane.doe@gmail.com" })
+        await repo.save({ name: "Joe", email: "joe.doe@gmail.com" })
+        const johnToken = sign({ userId: john.id }, "lorem")
+        const { body } = await supertest(app.callback())
+            .get(`/users`)
+            .set("Authorization", `Bearer ${johnToken}`)
+            .expect(200)
+        expect(body).toMatchSnapshot()
+    })
     describe("CRUD Function", () => {
         it("Should serve GET /users?offset&limit", async () => {
             @Entity()
@@ -556,6 +593,30 @@ describe("CRUD", () => {
             const modified = await repo.findOne(body.id)
             expect(modified).toBeUndefined()
         })
+        it("Should serve delete with deleteColumn DELETE /users/:id", async () => {
+
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @entity.deleteColumn()
+                @Column({ default: false })
+                deleted: boolean;
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+            const { body } = await supertest(app.callback())
+                .delete(`/users/${data.raw}`)
+                .expect(200)
+            const modified = await repo.findOne(body.id)
+            expect(modified).toMatchSnapshot()
+        })
         it("Should throw 404 if not found DELETE /users/:id", async () => {
             @Entity()
             @route.controller()
@@ -624,6 +685,40 @@ describe("CRUD", () => {
                 .expect(200)
             const result = await repo.findOne(body.id)
             expect(result).toMatchSnapshot()
+        })
+        it("Should able to create controller using builder", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            const UsersController = controller(User).configure()
+            const mock = consoleLog.startMock()
+            await createApp([UsersController])
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
+        })
+        it("Should able to disable some actions from controller builder", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            const UsersController = controller(User).configure(c => {
+                c.mutators().ignore()
+            })
+            const mock = consoleLog.startMock()
+            await createApp([UsersController])
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
         })
     })
     describe("Nested CRUD One to Many Function", () => {
@@ -1247,6 +1342,43 @@ describe("CRUD", () => {
             const modified = await animalRepo.findOne(body.id)
             expect(modified).toBeUndefined()
         })
+        it("Should serve delete with deleteColumn DELETE /users/:parentId/animals/:id", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @route.controller()
+                animals: Animal[]
+            }
+            @Entity()
+            @route.controller()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+                @entity.deleteColumn()
+                @Column({ default: false })
+                deleted: boolean;
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            const inserted = await animalRepo.insert({ name: `Mimi`, user })
+            const { body } = await supertest(app.callback())
+                .delete(`/users/${user.id}/animals/${inserted.raw}`)
+                .expect(200)
+            const modified = await animalRepo.findOne(body.id)
+            expect(modified).toMatchSnapshot()
+        })
         it("Should throw 404 if not found DELETE /users/:parentId/animals/:id", async () => {
             @Entity()
             @route.controller()
@@ -1314,6 +1446,68 @@ describe("CRUD", () => {
                 .post(`/users/${user.id}/animals`)
                 .send({ name: "Mimi" })
                 .expect(200)
+        })
+        it("Should able to create nested controller using controller builder", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @route.controller()
+                animals: Animal[]
+            }
+            @Entity()
+            @route.controller()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const UsersController = controller([User, Animal, "animals"]).configure()
+            const mock = consoleLog.startMock()
+            await createApp([UsersController])
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
+        })
+        it("Should able to disable some actions using controller builder", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @route.controller()
+                animals: Animal[]
+            }
+            @Entity()
+            @route.controller()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const UsersController = controller([User, Animal, "animals"]).configure(c => {
+                c.mutators().ignore()
+            })
+            const mock = consoleLog.startMock()
+            await createApp([UsersController])
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
         })
     })
     describe("One To One Function", () => {

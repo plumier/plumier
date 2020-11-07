@@ -31,7 +31,7 @@ class AnimalRepositoryImpl implements AnimalRepository {
     }
 
     authorize(user: any) {
-        return user.role === "Admin"
+        return user && user.role === "Admin"
     }
 
     validate(val: any) {

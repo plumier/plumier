@@ -211,6 +211,72 @@ Array [
 ]
 `;
 
+exports[`Custom Authorizer Should able to access current metadata on projection authorizer 1`] = `
+Array [
+  Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "access": "read",
+          "authorize": customAuthorizer,
+          "evaluation": "Dynamic",
+          "location": "Parameter",
+          "tag": "Custom",
+          "type": "plumier-meta:authorize",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "name",
+      "parent": Animal,
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+]
+`;
+
+exports[`Custom Authorizer Should able to access current metadata on projection authorizer with property 1`] = `
+Array [
+  Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "access": "read",
+          "authorize": customAuthorizer,
+          "evaluation": "Dynamic",
+          "location": "Method",
+          "tag": "Custom",
+          "type": "plumier-meta:authorize",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "name",
+      "parent": Animal,
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+]
+`;
+
 exports[`Custom Authorizer Should able to access metadata from custom authorizer 1`] = `
 Array [
   Array [

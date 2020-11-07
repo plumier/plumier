@@ -10,11 +10,12 @@ import reflect, {
     ParameterReflection,
     PropertyReflection,
 } from "tinspector"
-import { Result, VisitorExtension, VisitorInvocation } from "typedconverter"
+import { Result, VisitorInvocation } from "typedconverter"
 import { promisify } from "util"
 
-import { RoleField } from "./authorization"
+import { EntityProviderQuery, RoleField } from "./authorization"
 import { Class } from "./common"
+import { domain } from './decorator/common'
 import { HttpStatus } from "./http-status"
 
 const copyFileAsync = promisify(copyFile)
@@ -408,10 +409,35 @@ export abstract class OneToManyControllerGeneric<P = any, T = any, PID = any, TI
 }
 
 // --------------------------------------------------------------------- //
+// --------------------------- AUTHORIZATION --------------------------- //
+// --------------------------------------------------------------------- // 
+
+export type AccessModifier = "read" | "write" | "route" | "filter"
+
+export interface AuthorizationContext {
+    value?: any
+    parentValue?: any
+    role: string[]
+    user: { [key: string]: any } | undefined
+    ctx: ActionContext
+    metadata: Metadata
+    access: AccessModifier
+}
+
+export interface Authorizer {
+    authorize(info: AuthorizationContext, location: "Class" | "Parameter" | "Method"): boolean | Promise<boolean>
+}
+
+export interface AuthPolicy {
+    equals(id: string, ctx: AuthorizationContext): boolean
+    authorize(ctx: AuthorizationContext, location: 'Class' | 'Parameter' | 'Method'): Promise<boolean>
+}
+
+// --------------------------------------------------------------------- //
 // --------------------------- CONFIGURATION --------------------------- //
 // --------------------------------------------------------------------- //
 
-export type CustomConverter = (next:VisitorInvocation, ctx: ActionContext) => Result
+export type CustomConverter = (next: VisitorInvocation, ctx: ActionContext) => Result
 
 export interface Configuration {
     mode: "debug" | "production"
@@ -487,6 +513,16 @@ export interface Configuration {
      */
 
     genericControllerNameConversion?: (x: string) => string
+
+    /**
+     * Custom authorization policy
+     */
+    authPolicies?: Class<AuthPolicy>[]
+
+    /**
+     * Response projection transformer
+     */
+    responseProjectionTransformer?: (prop: PropertyReflection, value: any) => any
 }
 
 export interface PlumierConfiguration extends Configuration {
@@ -567,7 +603,7 @@ export class ParameterMetadata {
     }
 }
 
-export class MetadataImpl {
+export class MetadataImpl implements Metadata {
     /**
      * Controller metadata object graph
      */
@@ -587,19 +623,19 @@ export class MetadataImpl {
      * Action's parameters metadata, contains access to parameter values, parameter names etc. 
      * This property not available on Custom Parameter Binder and Global Middleware
      */
-    actionParams?: ParameterMetadata
+    actionParams: ParameterMetadata
 
     /**
      * Metadata information where target (Validator/Authorizer/Middleware) applied, can be a Property, Parameter, Method, Class. 
      */
     current?: CurrentMetadataType
 
-    constructor(params: any[] | undefined, routeInfo: RouteInfo, current?: CurrentMetadataType) {
+    constructor(params: any[], routeInfo: RouteInfo, current?: CurrentMetadataType) {
         this.controller = routeInfo.controller
         this.action = routeInfo.action
         this.access = routeInfo.access
-        if (params)
-            this.actionParams = new ParameterMetadata(params, routeInfo.action.parameters)
+        //if (params)
+        this.actionParams = new ParameterMetadata(params, routeInfo.action.parameters)
         this.current = current
     }
 }
@@ -612,24 +648,24 @@ export class MetadataImpl {
 
 export namespace errorMessage {
     //PLUM1XXX User configuration error
-    export const RouteDoesNotHaveBackingParam = "PLUM1000: Route parameters ({0}) doesn't have appropriate backing parameter"
-    export const DuplicateRouteFound = "PLUM1001: Duplicate route found in {0}"
-    export const ControllerPathNotFound = "PLUM1002: Controller file or directory {0} not found"
-    export const ObjectNotFound = "PLUM1003: Object with id {0} not found in Object registry"
+    export const RouteDoesNotHaveBackingParam = "Route parameters ({0}) doesn't have appropriate backing parameter"
+    export const DuplicateRouteFound = "Duplicate route found in {0}"
+    export const ControllerPathNotFound = "Controller file or directory {0} not found"
+    export const ObjectNotFound = "Object with id {0} not found in Object registry"
 
-    export const ActionParameterDoesNotHaveTypeInfo = "PLUM1004: Parameter binding skipped because action parameters doesn't have type information in ({0})"
-    export const ModelWithoutTypeInformation = "PLUM1005: Parameter binding skipped because {0} doesn't have type information on its properties"
-    export const ArrayWithoutTypeInformation = "PLUM1006: Parameter binding skipped because array element doesn't have type information in ({0})"
-    export const PropertyWithoutTypeInformation = "PLUM1008: Parameter binding skipped because property doesn't have type information in ({0})"
-    export const GenericControllerImplementationNotFound = "PLUM1009: Generic controller implementation not installed"
-    export const GenericControllerMissingTypeInfo = "PLUM1010: {0} marked with @route.controller() but doesn't have type information"
-    export const CustomRouteEndWithParameter = "PLUM1011: Custom route path '{0}' on {1} entity, require path that ends with route parameter, example: animals/:animalId"
-    export const CustomRouteRequiredTwoParameters = "PLUM1012: Nested custom route path '{0}' on {1} entity, must have two route parameters, example: users/:userId/animals/:animalId"
-    export const CustomRouteMustHaveOneParameter = "PLUM1013: Custom route path '{0}' on {1} entity, must have one route parameter, example: animals/:animalId"
-
+    export const ActionParameterDoesNotHaveTypeInfo = "Parameter binding skipped because action parameters doesn't have type information in ({0})"
+    export const ModelWithoutTypeInformation = "Parameter binding skipped because {0} doesn't have type information on its properties"
+    export const ArrayWithoutTypeInformation = "Parameter binding skipped because array element doesn't have type information in ({0})"
+    export const PropertyWithoutTypeInformation = "Parameter binding skipped because property doesn't have type information in ({0})"
+    export const GenericControllerImplementationNotFound = "Generic controller implementation not installed"
+    export const GenericControllerMissingTypeInfo = "{0} marked with @route.controller() but doesn't have type information"
+    export const CustomRouteEndWithParameter = "Custom route path '{0}' on {1} entity, require path that ends with route parameter, example: animals/:animalId"
+    export const CustomRouteRequiredTwoParameters = "Nested custom route path '{0}' on {1} entity, must have two route parameters, example: users/:userId/animals/:animalId"
+    export const CustomRouteMustHaveOneParameter = "Custom route path '{0}' on {1} entity, must have one route parameter, example: animals/:animalId"
+    export const EntityRequireID = "Entity {0} used by generic controller doesn't have an ID property"
 
     //PLUM2XXX internal app error
-    export const UnableToInstantiateModel = `PLUM2000: Unable to instantiate {0}. Domain model should not throw error inside constructor`
+    export const UnableToInstantiateModel = `Unable to instantiate {0}. Domain model should not throw error inside constructor`
 
     //End user error (no error code)
     export const UnableToConvertValue = `Unable to convert "{0}" into {1}`

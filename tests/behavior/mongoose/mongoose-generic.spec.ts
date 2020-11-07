@@ -1,6 +1,7 @@
-import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog, preSave, authorize } from "@plumier/core"
+import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog, preSave, authorize, entity, entityPolicy } from "@plumier/core"
 import model, {
     collection,
+    controller,
     models,
     MongooseControllerGeneric,
     MongooseFacility,
@@ -14,7 +15,9 @@ import { SwaggerFacility } from "@plumier/swagger"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import supertest from "supertest"
-import reflect, { generic } from "tinspector"
+import reflect, { generic, noop, type } from "tinspector"
+import { JwtAuthFacility } from '@plumier/jwt'
+import { sign } from 'jsonwebtoken'
 
 jest.setTimeout(20000)
 
@@ -48,11 +51,45 @@ describe("CRUD", () => {
             .set(option || {})
             .initialize()
     }
+    it("Should able to use entity policy properly", async () => {
+        @route.controller()
+        @collection()
+        class User {
+            @collection.id()
+            id: string
+            @collection.property()
+            name: string
+            @authorize.read("Owner")
+            email: string
+        }
+        const UserModel = model(User)
+        const UserPolicy = entityPolicy(User).define("Owner", (ctx, id) => ctx.user?.userId === id)
+        function createApp() {
+            return new Plumier()
+                .set(new WebApiFacility({ controller: User }))
+                .set(new MongooseFacility())
+                .set(new JwtAuthFacility({ secret: "lorem", authPolicies: UserPolicy }))
+                .set({ mode: "production" })
+                .initialize()
+        }
+        const john = await new UserModel({ name: "John", email: "john.doe@gmail.com" }).save()
+        await new UserModel({ name: "Jane", email: "jane.doe@gmail.com" }).save()
+        await new UserModel({ name: "Joe", email: "joe.doe@gmail.com" }).save()
+        const johnToken = sign({ userId: john.id }, "lorem")
+        const app = await createApp()
+        const { body } = await supertest(app.callback())
+            .get(`/users`)
+            .set("Authorization", `Bearer ${johnToken}`)
+            .expect(200)
+        expect(body).toMatchSnapshot()
+    })
     describe("CRUD Function", () => {
         it("Should serve GET /users?offset&limit", async () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -71,6 +108,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -89,6 +128,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 @authorize.filter()
                 email: string
@@ -109,6 +150,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 @authorize.filter()
                 email: string
@@ -129,6 +172,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 @authorize.filter()
                 email: string
@@ -149,6 +194,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @val.required()
                 @reflect.noop()
                 email: string
@@ -170,6 +217,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -193,6 +242,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -220,6 +271,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -240,6 +293,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -259,6 +314,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -279,6 +336,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -299,6 +358,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -314,6 +375,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -329,6 +392,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -350,6 +415,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -366,6 +433,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -382,6 +451,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -403,6 +474,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -419,6 +492,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @val.required()
                 @reflect.noop()
                 email: string
@@ -441,6 +516,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -457,6 +534,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -472,10 +551,36 @@ describe("CRUD", () => {
             const modified = await repo.findById(body.id)
             expect(modified).toBeNull()
         })
+        it("Should serve delete using deleteColumn DELETE /users/:id", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.property({ default: false })
+                @entity.deleteColumn()
+                deleted: boolean
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+            const { body } = await supertest(app.callback())
+                .delete(`/users/${data.id}`)
+                .expect(200)
+            const modified = await repo.findById(body.id)
+            expect(modified).toMatchSnapshot()
+        })
         it("Should check prover mongodb id on DELETE /users/:id", async () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -491,6 +596,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -506,6 +613,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -532,6 +641,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -553,6 +664,62 @@ describe("CRUD", () => {
             const result = await repo.findById(body.id)
             expect(result).toMatchSnapshot()
         })
+        it("Should serve data with native array", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @reflect.type([String])
+                address: string[]
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe", address: ["Address1", "Address2"] })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${data.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to create controller using builder", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: number
+                @noop()
+                email: string
+                @noop()
+                name: string
+            }
+            const UsersController = controller(User).configure()
+            const mock = consoleLog.startMock()
+            await createApp({ controller: [UsersController] })
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
+        })
+        it("Should able to disable some actions from controller builder", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: number
+                @noop()
+                email: string
+                @noop()
+                name: string
+            }
+            const UsersController = controller(User).configure(c => {
+                c.mutators().ignore()
+            })
+            const mock = consoleLog.startMock()
+            await createApp({ controller: [UsersController] })
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
+        })
     })
     describe("Nested CRUD One to Many Function", () => {
         async function createUser<T>(type: Class<T>) {
@@ -565,6 +732,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -576,6 +745,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -595,6 +766,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -606,6 +779,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -624,6 +799,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -635,6 +812,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -649,6 +828,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -660,6 +841,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 @authorize.filter()
                 name: string
@@ -680,6 +863,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -691,6 +876,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 @authorize.filter()
                 name: string
@@ -711,6 +898,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -722,6 +911,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @authorize.filter()
@@ -744,6 +935,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -755,6 +948,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 @authorize.filter()
                 name: string
@@ -775,6 +970,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -786,6 +983,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @val.required()
                 @reflect.noop()
                 name: string
@@ -808,6 +1007,8 @@ describe("CRUD", () => {
         it("Should able to select by properties GET /users/:parentId/animals?offset&limit ", async () => {
             @collection()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -818,6 +1019,8 @@ describe("CRUD", () => {
             }
             @collection()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @reflect.noop()
@@ -839,6 +1042,8 @@ describe("CRUD", () => {
         it("Should able to order by properties GET /users/:parentId/animals?offset&limit ", async () => {
             @collection()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -849,6 +1054,8 @@ describe("CRUD", () => {
             }
             @collection()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @reflect.noop()
@@ -874,6 +1081,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -885,6 +1094,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -908,6 +1119,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -919,6 +1132,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => User)
@@ -944,6 +1159,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -955,6 +1172,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @reflect.noop()
@@ -974,6 +1193,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -985,6 +1206,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1000,6 +1223,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1011,6 +1236,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1027,6 +1254,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1038,6 +1267,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @collection.ref(x => User)
@@ -1058,6 +1289,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1069,6 +1302,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @reflect.noop()
@@ -1091,6 +1326,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1102,6 +1339,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @reflect.noop()
@@ -1125,6 +1364,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1136,6 +1377,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1150,6 +1393,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1161,6 +1406,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1176,6 +1423,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1187,6 +1436,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1207,6 +1458,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1218,6 +1471,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1233,6 +1488,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1244,6 +1501,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1260,6 +1519,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1271,6 +1532,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1291,6 +1554,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1302,6 +1567,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1317,6 +1584,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1328,6 +1597,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
                 @val.required()
@@ -1351,6 +1622,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1362,6 +1635,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1378,6 +1653,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1389,6 +1666,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1404,10 +1683,12 @@ describe("CRUD", () => {
             const modified = await animalRepo.findById(body.id)
             expect(modified).toBeNull()
         })
-        it("Should check prover mongodb id DELETE /users/:parentId/animals/:id", async () => {
+        it("Should able to serve delete with deleteColumn DELETE /users/:parentId/animals/:id", async () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1419,6 +1700,45 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+                @collection.property({ default: false })
+                @entity.deleteColumn()
+                deleted: boolean
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
+            const { body } = await supertest(app.callback())
+                .delete(`/users/${user._id}/animals/${inserted.id}`)
+                .expect(200)
+            const modified = await animalRepo.findById(body.id)
+            expect(modified).toMatchSnapshot()
+        })
+        it("Should check prover mongodb id DELETE /users/:parentId/animals/:id", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller()
+                animals: Animal[]
+            }
+            @collection()
+            @route.controller()
+            class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1433,6 +1753,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1444,6 +1766,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1458,6 +1782,8 @@ describe("CRUD", () => {
         it("Should able to use custom generic controller with custom repository", async () => {
             @collection()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1468,6 +1794,8 @@ describe("CRUD", () => {
             }
             @collection()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -1490,18 +1818,117 @@ describe("CRUD", () => {
                 .send({ name: "Mimi" })
                 .expect(200)
         })
+        it("Should serve data with native array GET /users/:parentId/animals/:id", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller()
+                animals: Animal[]
+            }
+            @collection()
+            @route.controller()
+            class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => User)
+                user: User
+                @type([String])
+                tags: string[]
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi`, tags: ["Lorem", "Ipsum"] })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals/${inserted.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to create nested controller using controller builder", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: number
+                @noop()
+                email: string
+                @noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            @route.controller()
+            class Animal {
+                @collection.id()
+                id: number
+                @noop()
+                name: string
+                @collection.ref(x => User)
+                user: User
+            }
+            const UsersController = controller([User, Animal, "animals"]).configure()
+            const mock = consoleLog.startMock()
+            await createApp({ controller: [UsersController] })
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
+        })
+        it("Should able to disable some actions using controller builder", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: number
+                @noop()
+                email: string
+                @noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            @route.controller()
+            class Animal {
+                @collection.id()
+                id: number
+                @noop()
+                name: string
+                @collection.ref(x => User)
+                user: User
+            }
+            const UsersController = controller([User, Animal, "animals"]).configure(c => {
+                c.mutators().ignore()
+            })
+            const mock = consoleLog.startMock()
+            await createApp({ controller: [UsersController] })
+            expect(mock.mock.calls).toMatchSnapshot()
+            consoleLog.clearMock()
+        })
     })
     describe("One To One Function", () => {
         it("Should able to add with ID", async () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1524,12 +1951,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1554,12 +1985,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1581,12 +2016,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1608,12 +2047,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1635,12 +2078,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1665,12 +2112,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1696,12 +2147,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1727,12 +2182,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1743,6 +2202,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Parent {
+                @collection.id()
+                id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
@@ -1766,12 +2227,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1782,6 +2247,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Parent {
+                @collection.id()
+                id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
@@ -1807,12 +2274,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1823,6 +2294,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Parent {
+                @collection.id()
+                id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
@@ -1845,12 +2318,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1863,6 +2340,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Parent {
+                @collection.id()
+                id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
@@ -1886,12 +2365,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1902,6 +2385,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Parent {
+                @collection.id()
+                id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
@@ -1927,12 +2412,16 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Animal {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1943,6 +2432,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class Parent {
+                @collection.id()
+                id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
@@ -1977,6 +2468,8 @@ describe("CRUD", () => {
             @collection()
             @route.controller()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -1993,6 +2486,8 @@ describe("CRUD", () => {
             const mong = new MongooseHelper()
             @collection()
             class User {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 email: string
                 @reflect.noop()
@@ -2003,6 +2498,8 @@ describe("CRUD", () => {
             }
             @collection()
             class Tag {
+                @collection.id()
+                id: string
                 @reflect.noop()
                 name: string
             }
@@ -2012,145 +2509,6 @@ describe("CRUD", () => {
             expect(mock.mock.calls).toMatchSnapshot()
             consoleLog.clearMock()
         })
-    })
-})
-
-describe("Open API", () => {
-    function createApp(option?: Partial<Configuration>) {
-        return new Plumier()
-            .set(new WebApiFacility())
-            .set(new MongooseFacility())
-            .set(new SwaggerFacility())
-            .set({ ...option })
-            .initialize()
-    }
-    it("Should mark ref populate property as readonly and write only", async () => {
-        @collection()
-        @route.controller()
-        class User {
-            id: string
-            @reflect.noop()
-            email: string
-            @reflect.noop()
-            name: string
-            @collection.ref(x => [Animal])
-            @route.controller()
-            animals: Animal[]
-        }
-        @collection()
-        @route.controller()
-        class Animal {
-            @reflect.noop()
-            name: string
-        }
-        model(Animal)
-        model(User)
-        const app = await createApp({ controller: [User, Animal], mode: "production" })
-        const { body } = await supertest(app.callback())
-            .get("/swagger/swagger.json")
-            .expect(200)
-        expect(body.components.schemas.User).toMatchSnapshot()
-    })
-    it("Should mark createdAt property as readonly ", async () => {
-        @collection()
-        @route.controller()
-        class Animal {
-            @reflect.noop()
-            name: string
-            @reflect.noop()
-            createdAt: Date
-        }
-        model(Animal)
-        const app = await createApp({ controller: [Animal], mode: "production" })
-        const { body } = await supertest(app.callback())
-            .get("/swagger/swagger.json")
-            .expect(200)
-        expect(body.components.schemas.Animal).toMatchSnapshot()
-    })
-    it("Should mark updatedAt property as readonly ", async () => {
-        @collection()
-        @route.controller()
-        class Animal {
-            @reflect.noop()
-            name: string
-            @reflect.noop()
-            updatedAt: Date
-        }
-        model(Animal)
-        const app = await createApp({ controller: [Animal], mode: "production" })
-        const { body } = await supertest(app.callback())
-            .get("/swagger/swagger.json")
-            .expect(200)
-        expect(body.components.schemas.Animal).toMatchSnapshot()
-    })
-    it("Should mark id property as readonly ", async () => {
-        @collection()
-        @route.controller()
-        class Animal {
-            @reflect.noop()
-            name: string
-            @reflect.noop()
-            id: string
-        }
-        model(Animal)
-        const app = await createApp({ controller: [Animal], mode: "production" })
-        const { body } = await supertest(app.callback())
-            .get("/swagger/swagger.json")
-            .expect(200)
-        expect(body.components.schemas.Animal).toMatchSnapshot()
-    })
-    it("Should transform relation into their appropriate ID type", async () => {
-        @collection()
-        @route.controller()
-        class User {
-            id: string
-            @reflect.noop()
-            email: string
-            @reflect.noop()
-            name: string
-            @collection.ref(x => [Animal])
-            @route.controller()
-            animals: Animal[]
-        }
-        @collection()
-        @route.controller()
-        class Animal {
-            @reflect.noop()
-            name: string
-        }
-        model(Animal)
-        model(User)
-        const app = await createApp({ controller: [User, Animal], mode: "production" })
-        const { body } = await supertest(app.callback())
-            .get("/swagger/swagger.json")
-            .expect(200)
-        expect(body.paths["/users"].post).toMatchSnapshot()
-    })
-    it("Should transform relation into their appropriate ID type on one to one relation", async () => {
-        @collection()
-        @route.controller()
-        class Animal {
-            @reflect.noop()
-            name: string
-        }
-        @collection()
-        @route.controller()
-        class User {
-            id: string
-            @reflect.noop()
-            email: string
-            @reflect.noop()
-            name: string
-            @collection.ref(Animal)
-            animals: Animal
-        }
-        model(Animal)
-        model(User)
-        const app = await createApp({ controller: [User, Animal], mode: "production" })
-        const { body } = await supertest(app.callback())
-            .get("/swagger/swagger.json")
-            .expect(200)
-        expect(body.paths["/users"].post).toMatchSnapshot()
     })
 })
 
@@ -2197,6 +2555,8 @@ describe("Repository", () => {
         @collection()
         @route.controller()
         class Animal {
+            @collection.id()
+            id: string
             @reflect.noop()
             name: string
         }
@@ -2214,6 +2574,8 @@ describe("Filter", () => {
     @route.controller()
     @collection()
     class Parent {
+        @collection.id()
+        id: string
         @authorize.filter()
         string: string
         @authorize.filter()
@@ -2225,6 +2587,8 @@ describe("Filter", () => {
         children: Child[]
     }
     class Child {
+        @collection.id()
+        id: string
         @authorize.filter()
         string: string
         @authorize.filter()
@@ -2323,6 +2687,8 @@ describe("Filter", () => {
         it("Should give proper validation when asked to query equals on nested property", async () => {
             @route.controller()
             class Child {
+                @collection.id()
+                id: string
                 @authorize.filter()
                 string: string
                 @authorize.filter()
@@ -2362,6 +2728,8 @@ describe("Filter", () => {
         it("Should give proper validation when asked to query not equals on nested property", async () => {
             @route.controller()
             class Child {
+                @collection.id()
+                id: string
                 @authorize.filter()
                 string: string
                 @authorize.filter()
