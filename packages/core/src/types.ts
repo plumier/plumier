@@ -23,6 +23,16 @@ const copyFileAsync = promisify(copyFile)
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
+
+export interface ApplyToOption {
+    /**
+     * Apply decorator into specific action, only work on controller scoped decorator.
+     * 
+     * Should specify a correct action name(s)
+     */
+    applyTo?: string | string[]
+}
+
 // --------------------------------------------------------------------- //
 // --------------------------- ACTION RESULT --------------------------- //
 // --------------------------------------------------------------------- //

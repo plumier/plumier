@@ -1,7 +1,8 @@
 import { Context } from 'koa'
-import { ClassReflection, ParameterReflection, PropertyReflection, reflect } from "tinspector"
+import { ClassReflection, metadata, ParameterReflection, PropertyReflection, reflect } from "tinspector"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
+import { ResponseTypeDecorator } from './decorator/common'
 import { EntityIdDecorator } from "./decorator/entity"
 import { HttpStatus } from "./http-status"
 import {
@@ -490,7 +491,11 @@ async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): P
 }
 
 async function responseAuthorize(raw: ActionResult, ctx: ActionContext): Promise<ActionResult> {
-    const type = ctx.route.action.returnType
+    const getType = (resp: ResponseTypeDecorator | undefined) => {
+        return !!resp ? (metadata.isCallback(resp.type) ? resp.type({}) : resp.type) as (Class | Class[]) : undefined
+    }
+    const responseType = ctx.route.action.decorators.find((x: ResponseTypeDecorator): x is ResponseTypeDecorator => x.kind === "plumier-meta:response-type")
+    const type = getType(responseType) ?? ctx.route.action.returnType
     if (type !== Promise && type && raw.status === 200 && raw.body) {
         const info = await createAuthContext(ctx, "read")
         const node = await compileType(type, info, [])

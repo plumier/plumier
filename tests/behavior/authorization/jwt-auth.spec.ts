@@ -15,6 +15,7 @@ import {
     entityProvider,
     PlumierApplication,
     Public,
+    responseType,
     RouteMetadata,
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
@@ -2892,6 +2893,157 @@ describe("JwtAuth", () => {
                     .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
                     .expect(200)
                 expect(fn.mock.calls).toMatchSnapshot()
+            })
+        })
+
+        describe("Custom Response Type", () => {
+            it("Should able to transform into simple object", async () => {
+                @domain()
+                class DetailUser {
+                    constructor(
+                        public fullName: string,
+                        @authorize.read("admin")
+                        public pwd: string
+                    ) { }
+                }
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.read("admin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @responseType(DetailUser)
+                    @reflect.type(User)
+                    get() {
+                        return new DetailUser("admin", "secret")
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { fullName: "admin", pwd: "secret" })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { fullName: "admin" })
+            })
+            it("Should able to use callback style transform type", async () => {
+                @domain()
+                class DetailUser {
+                    constructor(
+                        public fullName: string,
+                        @authorize.read("admin")
+                        public pwd: string
+                    ) { }
+                }
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.read("admin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @responseType(x => DetailUser)
+                    @reflect.type(x => User)
+                    get() {
+                        return new DetailUser("admin", "secret")
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { fullName: "admin", pwd: "secret" })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { fullName: "admin" })
+            })
+            it("Should able to transform into array of object", async () => {
+                @domain()
+                class DetailUser {
+                    constructor(
+                        public fullName: string,
+                        @authorize.read("admin")
+                        public pwd: string
+                    ) { }
+                }
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.read("admin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @responseType([DetailUser])
+                    @reflect.type([User])
+                    get() {
+                        return [new DetailUser("admin", "secret")]
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, [{ fullName: "admin", pwd: "secret" }])
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, [{ fullName: "admin" }])
+            })
+            it("Should able to transform into nested object", async () => {
+                @domain()
+                class DetailUser {
+                    constructor(
+                        public fullName: string,
+                        @authorize.read("admin")
+                        public pwd: string
+                    ) { }
+                }
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.read("admin")
+                        public password: string
+                    ) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(public user: DetailUser) { }
+                }
+                class UsersController {
+                    @responseType(Parent)
+                    @reflect.type(User)
+                    get() {
+                        return new Parent(new DetailUser("admin", "secret"))
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { user: { fullName: "admin", pwd: "secret" } })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { user: { fullName: "admin" } })
             })
         })
     })

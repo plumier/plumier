@@ -1,6 +1,14 @@
 import reflect, { decorate } from "tinspector"
 
-import { ActionContext, Middleware, MiddlewareDecorator, MiddlewareFunction } from "../types"
+import { EntityPolicyProviderDecorator } from "../authorization"
+import { Class } from "../common"
+import { ActionContext, ApplyToOption, Middleware, MiddlewareDecorator, MiddlewareFunction } from "../types"
+
+
+interface ResponseTypeDecorator {
+    kind: "plumier-meta:response-type"
+    type: Class | Class[]
+}
 
 // --------------------------------------------------------------------- //
 // ------------------------------- DOMAIN ------------------------------ //
@@ -29,4 +37,13 @@ namespace middleware {
     }
 }
 
-export { middleware, domain }
+function entityProvider(entity: Class, idParam: string, opt?: ApplyToOption) {
+    return decorate(<EntityPolicyProviderDecorator>{ kind: "plumier-meta:entity-policy-provider", entity, idParam }, ["Class", "Method"], opt)
+}
+
+function responseType(type: Class | Class[] | ((x: any) => Class | Class[]), opt?: ApplyToOption) {
+    return decorate(<ResponseTypeDecorator>{ kind: "plumier-meta:response-type", type }, ["Class", "Method"], opt)
+}
+
+
+export { middleware, domain, entityProvider, responseType, ResponseTypeDecorator }
