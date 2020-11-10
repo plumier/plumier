@@ -10,6 +10,7 @@ import {
     Facility,
     FormFile,
     PlumierApplication,
+    responseType,
     route,
     RouteMetadata,
     val,
@@ -1736,6 +1737,66 @@ describe("Open API 3.0 Generation", () => {
             expect(body.paths["/users"].post.responses["200"]).toMatchSnapshot()
             expect(body.components.schemas.User).toMatchSnapshot()
             expect(body.components.schemas.Tag).toMatchSnapshot()
+        })
+        it("Should detect object using responseType", async () => {
+            @domain()
+            class DetailUser {
+                constructor(
+                    public fullName: string,
+                    public pwd: string,
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public userName: string,
+                    public password: string,
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                @responseType(DetailUser)
+                @reflect.type(User)
+                save(user: User): User {
+                    return {} as any
+                }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.responses["200"]).toMatchSnapshot()
+            expect(body.components.schemas).toMatchSnapshot()
+        })
+        it("Should detect object using callback style responseType", async () => {
+            @domain()
+            class DetailUser {
+                constructor(
+                    public fullName: string,
+                    public pwd: string,
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    public userName: string,
+                    public password: string,
+                ) { }
+            }
+            class UsersController {
+                @route.post("")
+                @responseType(x => DetailUser)
+                @reflect.type(x => User)
+                save(user: User): User {
+                    return {} as any
+                }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.responses["200"]).toMatchSnapshot()
+            expect(body.components.schemas).toMatchSnapshot()
         })
     })
 

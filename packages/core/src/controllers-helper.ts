@@ -5,9 +5,10 @@ import reflect, { decorateClass, DecoratorOptionId, generic } from "tinspector"
 
 import { AuthorizeDecorator } from "./authorization"
 import { Class, entityHelper } from "./common"
-import { decorateRoute } from "./controllers"
+import { decorateRoute, responseTransformer, ResponseTransformer } from "./controllers"
 import { api, ApiTagDecorator } from "./decorator/api"
-import { authorize, entityProvider } from "./decorator/authorize"
+import { authorize } from "./decorator/authorize"
+import { entityProvider } from "./decorator/common"
 import { entity, RelationDecorator } from "./decorator/entity"
 import { GenericControllerDecorator, route } from "./decorator/route"
 import { IgnoreDecorator } from "./route-generator"
@@ -30,6 +31,7 @@ type ActionName = "delete" | "list" | "get" | "modify" | "save" | "replace"
 interface ActionConfig {
     authorize?: string[]
     ignore?: true
+    transformer?: { target: Class, fn: ResponseTransformer }
 }
 
 type ActionConfigMap = Map<ActionName, ActionConfig>
@@ -72,16 +74,16 @@ class ControllerBuilder {
         return new ActionsBuilder(this.map, ["delete"])
     }
     getOne() {
-        return new ActionsBuilder(this.map, ["get"])
+        return new TransformableActionBuilder(this.map, ["get"])
     }
     getMany() {
-        return new ActionsBuilder(this.map, ["list"])
+        return new TransformableActionBuilder(this.map, ["list"])
     }
     mutators() {
         return new ActionsBuilder(this.map, ["delete", "modify", "save", "replace"])
     }
     accessors() {
-        return new ActionsBuilder(this.map, ["list", "get"])
+        return new TransformableActionBuilder(this.map, ["list", "get"])
     }
     all() {
         return new ActionsBuilder(this.map, ["delete", "list", "get", "modify", "save", "replace"])
@@ -100,11 +102,11 @@ class ControllerBuilder {
 }
 
 class ActionsBuilder {
-    constructor(private actions: ActionConfigMap, private names: ActionName[]) {
+    constructor(private actions: ActionConfigMap, protected names: ActionName[]) {
         this.setConfig(names, {})
     }
 
-    private setConfig(names: ActionName[], config: ActionConfig) {
+    protected setConfig(names: ActionName[], config: ActionConfig) {
         for (const action of names) {
             const cnf = this.actions.get(action)!
             this.actions.set(action, { ...cnf, ...config })
@@ -118,6 +120,12 @@ class ActionsBuilder {
 
     authorize(...authorize: string[]) {
         return this.setConfig(this.names, { authorize })
+    }
+}
+
+class TransformableActionBuilder extends ActionsBuilder {
+    transformer<T>(target: Class<T>, fn: ResponseTransformer<any, T>) {
+        this.setConfig(this.names, { transformer: { target, fn } })
     }
 }
 
@@ -196,6 +204,18 @@ function validatePath(path: string, entity: Class, oneToMany = false) {
     return keys
 }
 
+function decorateTransformers(config: GenericControllerConfig) {
+    const result = []
+    for (const key of config.map.keys()) {
+        const cnf = config.map.get(key)
+        if (cnf && cnf.transformer) {
+            const target = key === "get" ? cnf.transformer.target : [cnf.transformer.target]
+            result.push(responseTransformer(target, cnf.transformer.fn, { applyTo: key }))
+        }
+    }
+    return result
+}
+
 function createGenericController(entity: Class, builder: ControllerBuilder, controller: Class<ControllerGeneric>, nameConversion: (x: string) => string) {
     const config = builder.toObject()
     // get type of ID column on entity
@@ -223,10 +243,12 @@ function createGenericController(entity: Class, builder: ControllerBuilder, cont
         entityProvider(entity, "id", { applyTo: ["get", "modify", "replace", "delete"] }),
         route.root(routePath, { map: routeMap }),
         ignoreActions(config),
-        ...authorizeActions(config)
+        ...authorizeActions(config),
+        ...decorateTransformers(config)
     ], Controller)
     if (!meta.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag"))
         Reflect.decorate([api.tag(entity.name)], Controller)
+
     return Controller
 }
 
@@ -273,7 +295,8 @@ function createOneToManyGenericController(parentType: Class, builder: Controller
         ignoreActions(config),
         entityProvider(parentType, "pid", { applyTo: ["list", "save"] }),
         entityProvider(entity, "id", { applyTo: ["get", "modify", "replace", "delete"] }),
-        ...authorizeActions(config)
+        ...authorizeActions(config),
+        ...decorateTransformers(config)
     ], Controller)
     if (!relProp.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag"))
         Reflect.decorate([api.tag(parentType.name)], Controller)

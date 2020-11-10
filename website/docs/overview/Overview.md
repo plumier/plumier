@@ -266,13 +266,6 @@ There are more authorization decorator available
 | `@authorize.readonly()`              | Protect property only can be read and no other role can write it |
 | `@authorize.writeonly()`             | Protect property only can be write and no other role can read it |
 
-
-### Securing Data With Policy 
-Securing data with role based is simple, but in many case its required to use more advanced security system that uses more complex logic. 
-
-Plumier provided authorization policy to perform custom authorization system. Specially for 
-
-
 :::info documentation 
 Refer to [this documentation](../refs/Authorization.md) to get detail information about authorization
 :::

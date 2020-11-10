@@ -2263,6 +2263,86 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Response Should detect object using callback style responseType 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/DetailUser",
+      },
+    },
+  },
+  "description": "Response body",
+}
+`;
+
+exports[`Open API 3.0 Generation Response Should detect object using callback style responseType 2`] = `
+Object {
+  "DetailUser": Object {
+    "properties": Object {
+      "fullName": Object {
+        "type": "string",
+      },
+      "pwd": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Response Should detect object using responseType 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/DetailUser",
+      },
+    },
+  },
+  "description": "Response body",
+}
+`;
+
+exports[`Open API 3.0 Generation Response Should detect object using responseType 2`] = `
+Object {
+  "DetailUser": Object {
+    "properties": Object {
+      "fullName": Object {
+        "type": "string",
+      },
+      "pwd": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+  "User": Object {
+    "properties": Object {
+      "password": Object {
+        "type": "string",
+      },
+      "userName": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
 exports[`Open API 3.0 Generation Route Grouping Should generate Open API schema properly 1`] = `
 Object {
   "components": Object {

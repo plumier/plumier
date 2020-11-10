@@ -32,6 +32,7 @@ import {
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { SwaggerFacility } from "@plumier/swagger"
+import { controller } from '@plumier/typeorm'
 import { sign } from 'jsonwebtoken'
 import { Context } from "koa"
 import { join } from "path"
@@ -2585,6 +2586,150 @@ describe("Entity Policy", () => {
                 .patch("/user/2/todos/3")
                 .set("Authorization", `Bearer ${JOHN_TOKEN}`)
                 .expect(401)
+        })
+    })
+})
+
+describe("Response Transformer", () => {
+    const fn = jest.fn()
+    class UserTrans {
+        @noop()
+        fullName: string
+        @entity.relation()
+        @type(x => [Todo])
+        todos: Todo[]
+    }
+    @route.controller(c => c.accessors().transformer(UserTrans, x => ({ fullName: x.name })))
+    class User {
+        @entity.primaryId()
+        id: number
+        @noop()
+        name: string
+        @authorize.read("Owner")
+        email: string
+        @route.controller(c => c.accessors().transformer(TodoTrans, x => ({ theTitle: x.title })))
+        @entity.relation()
+        @type(x => [Todo])
+        todos: Todo[]
+    }
+    class TodoTrans {
+        @noop()
+        theTitle: string
+    }
+    class Todo {
+        @entity.primaryId()
+        id: number
+        @noop()
+        title: string
+        @entity.relation()
+        user: User
+    }
+    const users: User[] = [
+        { id: 1, name: "John", email: "john.doe@gmail.com", todos: [] },
+        { id: 2, name: "Jane", email: "jane.doe@gmail.com", todos: [] },
+        { id: 3, name: "Joe", email: "joe.doe@gmail.com", todos: [] }
+    ]
+    const todos: Todo[] = [
+        { id: 1, title: "John's todo", user: users[0] },
+        { id: 2, title: "John's todo 2", user: users[0] },
+        { id: 3, title: "Jane's todo", user: users[1] },
+        { id: 4, title: "Jane's todo 2", user: users[1] }
+    ]
+    class UserRepo extends MockRepo<User>{
+        constructor(fn: jest.Mock) { super(fn) }
+        async find(offset: number, limit: number, query: FilterEntity<User>): Promise<User[]> {
+            return users
+        }
+        async findById(id: any) {
+            return users.find(x => x.id === id)
+        }
+    }
+    class TodoRepo extends MockOneToManyRepo<User, Todo>{
+        constructor(fn: jest.Mock) { super(fn) }
+        async find(pid: number, offset: number, limit: number, query: FilterEntity<Todo>): Promise<Todo[]> {
+            return todos.filter(x => x.user.id === pid)
+        }
+        async findById(id: any) {
+            return todos.find(x => x.id === id)!
+        }
+    }
+    @generic.template("T", "TID")
+    @generic.type("T", "TID")
+    class MyControllerGeneric extends RepoBaseControllerGeneric<User, number>{
+        constructor() { super(x => new UserRepo(fn)) }
+    }
+    @generic.template("P", "T", "PID", "TID")
+    @generic.type("P", "T", "PID", "TID")
+    class MyOneToManyControllerGeneric extends RepoBaseOneToManyControllerGeneric<User, Todo, number, number>{
+        constructor() { super(x => new TodoRepo(fn)) }
+    }
+    function createApp() {
+        return new Plumier()
+            .set({ mode: "production" })
+            .set(new WebApiFacility())
+            .set(new ControllerFacility({ controller: [User, Todo] }))
+            .set(new SwaggerFacility())
+            .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
+            .initialize()
+    }
+    describe("Generic Controller", () => {
+        it("Should able to transform get one action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/user/1")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should provide proper Open API schema on get one action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/user/{id}"].get.responses).toMatchSnapshot()
+        })
+        it("Should able to transform get many action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/user")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should provide proper Open API schema on get many action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/user"].get.responses).toMatchSnapshot()
+        })
+    })
+    describe("Generic On To Many Controller", () => {
+        it("Should able to transform get one action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/user/1/todos/1")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should provide proper Open API schema on get one action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/user/{pid}/todos/{id}"].get.responses).toMatchSnapshot()
+        })
+        it("Should able to transform get many action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/user/1/todos")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should provide proper Open API schema on get many action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/user/{pid}/todos"].get.responses).toMatchSnapshot()
         })
     })
 })

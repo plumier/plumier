@@ -261,6 +261,7 @@ Object {
     "json": json,
     "redirect": redirect,
   },
+  "responseType": responseType,
   "route": RouteDecoratorImpl {},
   "router": router,
   "toBoolean": toBoolean,

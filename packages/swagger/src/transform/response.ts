@@ -1,11 +1,16 @@
-import { RouteInfo, ApiResponseDecorator, ApiHideRelationDecorator } from "@plumier/core"
+import { ApiHideRelationDecorator, ApiResponseDecorator, Class, ResponseTypeDecorator, RouteInfo } from "@plumier/core"
 import { ResponseObject, ResponsesObject, SchemaObject } from "openapi3-ts"
+import { metadata } from "tinspector"
 
 import { SchemaOverrideType, transformType, transformTypeAdvance } from "./schema"
-import { TransformContext, isResponse } from "./shared"
+import { isResponse, TransformContext } from "./shared"
 
 function successResponse(route: RouteInfo, ctx: TransformContext): SchemaObject {
-    const type = route.action.returnType
+    const getType = (resp: ResponseTypeDecorator | undefined) => {
+        return !!resp ? (metadata.isCallback(resp.type) ? resp.type({}) : resp.type) as (Class | Class[]) : undefined
+    }
+    const responseType = route.action.decorators.find((x:ResponseTypeDecorator):x is ResponseTypeDecorator => x.kind === "plumier-meta:response-type")
+    const type = getType(responseType) ?? route.action.returnType
     if (!!type) {
         const overrides: SchemaOverrideType[] = []
         // if contains @api.noRelation() then adds remove all relations
