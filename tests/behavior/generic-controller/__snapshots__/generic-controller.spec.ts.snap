@@ -1510,6 +1510,135 @@ Array [
 
 exports[`Request Hook Should not executed on GET method with model parameter 1`] = `Array []`;
 
+exports[`Response Transformer Generic Controller Should able to transform get many action 1`] = `
+Array [
+  Object {
+    "fullName": "John",
+  },
+  Object {
+    "fullName": "Jane",
+  },
+  Object {
+    "fullName": "Joe",
+  },
+]
+`;
+
+exports[`Response Transformer Generic Controller Should able to transform get one action 1`] = `
+Object {
+  "fullName": "John",
+}
+`;
+
+exports[`Response Transformer Generic Controller Should provide proper Open API schema on get many action 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "items": Object {
+            "allOf": Array [
+              Object {
+                "$ref": "#/components/schemas/UserTrans",
+              },
+              Object {
+                "properties": Object {
+                  "todos": Object {
+                    "readOnly": true,
+                    "writeOnly": true,
+                  },
+                },
+                "type": "object",
+              },
+            ],
+          },
+          "type": "array",
+        },
+      },
+    },
+    "description": "Response body",
+  },
+}
+`;
+
+exports[`Response Transformer Generic Controller Should provide proper Open API schema on get one action 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/UserTrans",
+            },
+            Object {
+              "properties": Object {
+                "todos": Object {
+                  "readOnly": true,
+                  "writeOnly": true,
+                },
+              },
+              "type": "object",
+            },
+          ],
+        },
+      },
+    },
+    "description": "Response body",
+  },
+}
+`;
+
+exports[`Response Transformer Generic On To Many Controller Should able to transform get many action 1`] = `
+Array [
+  Object {
+    "theTitle": "John's todo",
+  },
+  Object {
+    "theTitle": "John's todo 2",
+  },
+]
+`;
+
+exports[`Response Transformer Generic On To Many Controller Should able to transform get one action 1`] = `
+Object {
+  "theTitle": "John's todo",
+}
+`;
+
+exports[`Response Transformer Generic On To Many Controller Should provide proper Open API schema on get many action 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "items": Object {
+            "$ref": "#/components/schemas/TodoTrans",
+          },
+          "type": "array",
+        },
+      },
+    },
+    "description": "Response body",
+  },
+}
+`;
+
+exports[`Response Transformer Generic On To Many Controller Should provide proper Open API schema on get one action 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "$ref": "#/components/schemas/TodoTrans",
+        },
+      },
+    },
+    "description": "Response body",
+  },
+}
+`;
+
 exports[`Route Generator Generic Controller Should able to change root path 1`] = `
 Array [
   Array [],

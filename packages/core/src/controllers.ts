@@ -1,13 +1,13 @@
 import "./filter-parser"
 
 import { Context } from "koa"
-import reflect, { decorate, DecoratorId, generic, GenericTypeDecorator, PropertyReflection } from "tinspector"
+import reflect, { decorate, decorateClass, DecoratorId, generic, GenericTypeDecorator, mergeDecorator, PropertyReflection } from "tinspector"
 import { val } from "typedconverter"
 
 import { Class } from "./common"
 import { api } from "./decorator/api"
 import { bind } from "./decorator/bind"
-import { domain } from "./decorator/common"
+import { domain, responseType } from "./decorator/common"
 import { DeleteColumnDecorator, entity, RelationDecorator } from "./decorator/entity"
 import { route } from "./decorator/route"
 import { RouteDecorator } from "./route-generator"
@@ -23,9 +23,46 @@ import {
     RelationPropertyDecorator,
     Repository,
 } from "./types"
+import { type } from "tinspector"
 
+// --------------------------------------------------------------------- //
+// ----------------------------- DECORATORS ---------------------------- //
+// --------------------------------------------------------------------- //
 
 const RouteDecoratorID = Symbol("generic-controller:route")
+
+type ResponseTransformer<S = any, D = any> = (s: S) => D
+
+interface ResponseTransformerDecorator {
+    kind: "plumier-meta:response-transformer",
+    transformer: ResponseTransformer
+}
+
+/**
+ * Custom route decorator to make it possible to override @route decorator from class scope decorator. 
+ * This is required for custom route path defined with @route.controller("custom/:customId")
+ */
+function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: string | string[] }) {
+    return decorate(<RouteDecorator & { [DecoratorId]: any }>{
+        [DecoratorId]: RouteDecoratorID,
+        name: "plumier-meta:route",
+        method,
+        url: path
+    }, ["Class", "Method"], { allowMultiple: false, ...option })
+}
+
+function responseTransformer(target: Class | Class[] | ((x:any) => Class | Class[]), transformer: ResponseTransformer, opt?: { applyTo: string | string[] }) {
+    return mergeDecorator(
+        decorate(<ResponseTransformerDecorator>{ kind: "plumier-meta:response-transformer", transformer }, ["Method", "Class"], opt),
+        responseType(target, opt)
+    )
+}
+
+function getTransformer(type: Class, methodName: string) {
+    const meta = reflect(type)
+    const method = meta.methods.find(x => methodName === x.name)!
+    return method.decorators.find((x: ResponseTransformerDecorator): x is ResponseTransformerDecorator => x.kind === "plumier-meta:response-transformer")?.transformer
+}
 
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
@@ -65,20 +102,6 @@ function parseOrder(order?: string) {
     }
     return result
 }
-
-/**
- * Custom route decorator to make it possible to override @route decorator from class scope decorator. 
- * This is required for custom route path defined with @route.controller("custom/:customId")
- */
-function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: string | string[] }) {
-    return decorate(<RouteDecorator & { [DecoratorId]: any }>{
-        [DecoratorId]: RouteDecoratorID,
-        name: "plumier-meta:route",
-        method,
-        url: path
-    }, ["Class", "Method"], { allowMultiple: false, ...option })
-}
-
 
 function normalizeSelect(type: Class, dSelect: string[]) {
     const isArrayRelation = (prop: PropertyReflection) => Array.isArray(prop.type) && !!prop.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation");
@@ -133,8 +156,12 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
     @decorateRoute("get", "")
     @api.hideRelations()
     @reflect.type(["T"])
-    list(offset: number = 0, limit: number = 50, @entity.filter() @reflect.type("T") @val.partial("T") @val.filter() filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
-        return this.repo.find(offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
+    async list(offset: number = 0, limit: number = 50, @entity.filter() @reflect.type("T") @val.partial("T") @val.filter() filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
+        const transformer = getTransformer(this.constructor as Class, "list")
+        const result = await this.repo.find(offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
+        if (transformer)
+            return result.map(x => transformer(x))
+        return result
     }
 
     @decorateRoute("post", "")
@@ -146,8 +173,12 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
     @decorateRoute("get", ":id")
     @api.hideRelations()
     @reflect.type("T")
-    get(@val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
-        return this.findByIdOrNotFound(id, parseSelect(this.entityType, select))
+    async get(@val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
+        const transformer = getTransformer(this.constructor as Class, "get")
+        const result = await this.findByIdOrNotFound(id, parseSelect(this.entityType, select))
+        if (transformer)
+            return transformer(result)
+        return result
     }
 
     @decorateRoute("patch", ":id")
@@ -211,8 +242,12 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     @api.hideRelations()
     @reflect.type(["T"])
     async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @entity.filter() @reflect.type("T") @val.partial("T") @val.filter() filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
+        const transformer = getTransformer(this.constructor as Class, "list")
         await this.findParentByIdOrNotFound(pid)
-        return this.repo.find(pid, offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
+        const result = await this.repo.find(pid, offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
+        if(transformer)
+            return result.map(x => transformer(x))
+        return result
     }
 
     @decorateRoute("post", "")
@@ -226,8 +261,12 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     @api.hideRelations()
     @reflect.type("T")
     async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
+        const transformer = getTransformer(this.constructor as Class, "get")
         await this.findParentByIdOrNotFound(pid)
-        return this.findByIdOrNotFound(id, parseSelect(this.entityType, select))
+        const result = await this.findByIdOrNotFound(id, parseSelect(this.entityType, select))
+        if(transformer)
+            return transformer(result)
+        return result
     }
 
     @decorateRoute("patch", ":id")
@@ -260,6 +299,11 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
         }
     }
 }
+
+
+// --------------------------------------------------------------------- //
+// ------------- DEFAULT GENERIC CONTROLLER IMPLEMENTATION ------------- //
+// --------------------------------------------------------------------- //
 
 class DefaultRepository<T> implements Repository<T> {
     find(offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
@@ -314,7 +358,7 @@ class DefaultOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMan
 
 
 export {
-    RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, 
+    RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, DefaultRepository, DefaultOneToManyRepository,
-    parseSelect, decorateRoute, IdentifierResult, getGenericControllerRelation
+    parseSelect, decorateRoute, IdentifierResult, getGenericControllerRelation, ResponseTransformer, responseTransformer
 }
