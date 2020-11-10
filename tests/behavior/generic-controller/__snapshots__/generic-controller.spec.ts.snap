@@ -1510,13 +1510,58 @@ Array [
 
 exports[`Request Hook Should not executed on GET method with model parameter 1`] = `Array []`;
 
-exports[`Response Transformer Should able to transform get one action 1`] = `
+exports[`Response Transformer Generic Controller Should able to transform get many action 1`] = `
+Array [
+  Object {
+    "fullName": "John",
+  },
+  Object {
+    "fullName": "Jane",
+  },
+  Object {
+    "fullName": "Joe",
+  },
+]
+`;
+
+exports[`Response Transformer Generic Controller Should able to transform get one action 1`] = `
 Object {
-  "name": "John",
+  "fullName": "John",
 }
 `;
 
-exports[`Response Transformer Should provide proper Open API schema 1`] = `
+exports[`Response Transformer Generic Controller Should provide proper Open API schema on get many action 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "items": Object {
+            "allOf": Array [
+              Object {
+                "$ref": "#/components/schemas/UserTrans",
+              },
+              Object {
+                "properties": Object {
+                  "todos": Object {
+                    "readOnly": true,
+                    "writeOnly": true,
+                  },
+                },
+                "type": "object",
+              },
+            ],
+          },
+          "type": "array",
+        },
+      },
+    },
+    "description": "Response body",
+  },
+}
+`;
+
+exports[`Response Transformer Generic Controller Should provide proper Open API schema on get one action 1`] = `
 Object {
   "200": Object {
     "content": Object {
@@ -1524,7 +1569,7 @@ Object {
         "schema": Object {
           "allOf": Array [
             Object {
-              "$ref": "#/components/schemas/User",
+              "$ref": "#/components/schemas/UserTrans",
             },
             Object {
               "properties": Object {
@@ -1544,135 +1589,53 @@ Object {
 }
 `;
 
-exports[`Response Transformer Should reflect 1`] = `
+exports[`Response Transformer Generic On To Many Controller Should able to transform get many action 1`] = `
+Array [
+  Object {
+    "theTitle": "John's todo",
+  },
+  Object {
+    "theTitle": "John's todo 2",
+  },
+]
+`;
+
+exports[`Response Transformer Generic On To Many Controller Should able to transform get one action 1`] = `
 Object {
-  "decorators": Array [
-    Object {
-      "kind": "ApiNoRelation",
-      Symbol(tinspector:decoratorOption): Object {
-        "allowMultiple": true,
-        "applyTo": Array [],
-        "inherit": true,
-        "removeApplied": true,
-      },
-    },
-    Object {
-      "method": "get",
-      "name": "plumier-meta:route",
-      "url": ":id",
-      Symbol(tinspector:decoratorId): Symbol(generic-controller:route),
-      Symbol(tinspector:decoratorOption): Object {
-        "allowMultiple": false,
-        "applyTo": Array [],
-        "inherit": true,
-        "removeApplied": true,
-      },
-    },
-    Object {
-      "kind": "plumier-meta:response-transformer",
-      "transformer": ,
-      Symbol(tinspector:decoratorOption): Object {
-        "allowMultiple": true,
-        "applyTo": "get",
-        "inherit": true,
-        "removeApplied": true,
-      },
-    },
-    Object {
-      "genericParams": Array [],
-      "kind": "Override",
-      "target": TypeORMControllerGeneric,
-      "type": UserTrans,
-      Symbol(tinspector:decoratorId): Symbol(override),
-      Symbol(tinspector:decoratorOption): Object {
-        "allowMultiple": true,
-        "applyTo": "get",
-        "inherit": true,
-        "removeApplied": true,
-      },
-    },
-    Object {
-      "entity": User,
-      "idParam": "id",
-      "kind": "plumier-meta:entity-policy-provider",
-      Symbol(tinspector:decoratorOption): Object {
-        "allowMultiple": true,
-        "applyTo": Array [
-          "get",
-          "modify",
-          "replace",
-          "delete",
-        ],
-        "inherit": true,
-        "removeApplied": true,
-      },
-    },
-  ],
-  "kind": "Method",
-  "name": "get",
-  "parameters": Array [
-    Object {
-      "decorators": Array [
-        Object {
-          "type": "tc:validator",
-          "validator": Symbol(tc:required),
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "applyTo": Array [],
-            "inherit": true,
-            "removeApplied": true,
+  "theTitle": "John's todo",
+}
+`;
+
+exports[`Response Transformer Generic On To Many Controller Should provide proper Open API schema on get many action 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "items": Object {
+            "$ref": "#/components/schemas/TodoTrans",
           },
+          "type": "array",
         },
-        Object {
-          "kind": "ApiRequired",
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "applyTo": Array [],
-            "inherit": true,
-            "removeApplied": true,
-          },
+      },
+    },
+    "description": "Response body",
+  },
+}
+`;
+
+exports[`Response Transformer Generic On To Many Controller Should provide proper Open API schema on get one action 1`] = `
+Object {
+  "200": Object {
+    "content": Object {
+      "application/json": Object {
+        "schema": Object {
+          "$ref": "#/components/schemas/TodoTrans",
         },
-      ],
-      "fields": Object {},
-      "index": 0,
-      "kind": "Parameter",
-      "name": "id",
-      "type": Number,
-      "typeClassification": "Primitive",
+      },
     },
-    Object {
-      "decorators": Array [],
-      "fields": Object {},
-      "index": 1,
-      "kind": "Parameter",
-      "name": "select",
-      "type": String,
-      "typeClassification": "Primitive",
-    },
-    Object {
-      "decorators": Array [
-        Object {
-          "name": "ctx",
-          "process": ,
-          "type": "ParameterBinding",
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "applyTo": Array [],
-            "inherit": true,
-            "removeApplied": true,
-          },
-        },
-      ],
-      "fields": Object {},
-      "index": 2,
-      "kind": "Parameter",
-      "name": "ctx",
-      "type": Object,
-      "typeClassification": "Primitive",
-    },
-  ],
-  "returnType": User,
-  "typeClassification": "Class",
+    "description": "Response body",
+  },
 }
 `;
 

@@ -7,7 +7,8 @@ import { AuthorizeDecorator } from "./authorization"
 import { Class, entityHelper } from "./common"
 import { decorateRoute, responseTransformer, ResponseTransformer } from "./controllers"
 import { api, ApiTagDecorator } from "./decorator/api"
-import { authorize, entityProvider } from "./decorator/authorize"
+import { authorize } from "./decorator/authorize"
+import { entityProvider } from "./decorator/common"
 import { entity, RelationDecorator } from "./decorator/entity"
 import { GenericControllerDecorator, route } from "./decorator/route"
 import { IgnoreDecorator } from "./route-generator"
@@ -208,7 +209,8 @@ function decorateTransformers(config: GenericControllerConfig) {
     for (const key of config.map.keys()) {
         const cnf = config.map.get(key)
         if (cnf && cnf.transformer) {
-            result.push(responseTransformer(cnf.transformer.target, cnf.transformer.fn, { applyTo: key }))
+            const target = key === "get" ? cnf.transformer.target : [cnf.transformer.target]
+            result.push(responseTransformer(target, cnf.transformer.fn, { applyTo: key }))
         }
     }
     return result

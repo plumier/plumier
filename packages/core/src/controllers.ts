@@ -1,13 +1,13 @@
 import "./filter-parser"
 
 import { Context } from "koa"
-import reflect, { decorate, decorateClass, DecoratorId, generic, GenericTypeDecorator, mergeDecorator, PropertyReflection, TypeDecorator, TypeDecoratorId } from "tinspector"
+import reflect, { decorate, decorateClass, DecoratorId, generic, GenericTypeDecorator, mergeDecorator, PropertyReflection } from "tinspector"
 import { val } from "typedconverter"
 
 import { Class } from "./common"
 import { api } from "./decorator/api"
 import { bind } from "./decorator/bind"
-import { domain } from "./decorator/common"
+import { domain, responseType } from "./decorator/common"
 import { DeleteColumnDecorator, entity, RelationDecorator } from "./decorator/entity"
 import { route } from "./decorator/route"
 import { RouteDecorator } from "./route-generator"
@@ -51,17 +51,16 @@ function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: st
     }, ["Class", "Method"], { allowMultiple: false, ...option })
 }
 
-function responseTransformer(target: Class | Class[], transformer: ResponseTransformer, opt?: { applyTo: string | string[] }) {
+function responseTransformer(target: Class | Class[] | ((x:any) => Class | Class[]), transformer: ResponseTransformer, opt?: { applyTo: string | string[] }) {
     return mergeDecorator(
         decorate(<ResponseTransformerDecorator>{ kind: "plumier-meta:response-transformer", transformer }, ["Method", "Class"], opt),
-        decorate((x: any) => <TypeDecorator>{ [DecoratorId]: TypeDecoratorId, kind: "Override", target: x, genericParams: [], type: target }, ["Method", "Class"], opt)
+        responseType(target, opt)
     )
 }
 
 function getTransformer(type: Class, methodName: string) {
     const meta = reflect(type)
-    const method = meta.methods.find(x => methodName === x.name)
-    if (!method) throw new Error(`${type.name} doesn't have method named ${methodName}`)
+    const method = meta.methods.find(x => methodName === x.name)!
     return method.decorators.find((x: ResponseTransformerDecorator): x is ResponseTransformerDecorator => x.kind === "plumier-meta:response-transformer")?.transformer
 }
 
@@ -175,7 +174,7 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
     @api.hideRelations()
     @reflect.type("T")
     async get(@val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
-        const transformer = getTransformer(this.constructor as Class, "list")
+        const transformer = getTransformer(this.constructor as Class, "get")
         const result = await this.findByIdOrNotFound(id, parseSelect(this.entityType, select))
         if (transformer)
             return transformer(result)
@@ -243,8 +242,12 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     @api.hideRelations()
     @reflect.type(["T"])
     async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @entity.filter() @reflect.type("T") @val.partial("T") @val.filter() filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
+        const transformer = getTransformer(this.constructor as Class, "list")
         await this.findParentByIdOrNotFound(pid)
-        return this.repo.find(pid, offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
+        const result = await this.repo.find(pid, offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
+        if(transformer)
+            return result.map(x => transformer(x))
+        return result
     }
 
     @decorateRoute("post", "")
@@ -258,8 +261,12 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     @api.hideRelations()
     @reflect.type("T")
     async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
+        const transformer = getTransformer(this.constructor as Class, "get")
         await this.findParentByIdOrNotFound(pid)
-        return this.findByIdOrNotFound(id, parseSelect(this.entityType, select))
+        const result = await this.findByIdOrNotFound(id, parseSelect(this.entityType, select))
+        if(transformer)
+            return transformer(result)
+        return result
     }
 
     @decorateRoute("patch", ":id")

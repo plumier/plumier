@@ -2590,13 +2590,16 @@ describe("Entity Policy", () => {
     })
 })
 
-describe.only("Response Transformer", () => {
+describe("Response Transformer", () => {
     const fn = jest.fn()
     class UserTrans {
         @noop()
-        name: string
+        fullName: string
+        @entity.relation()
+        @type(x => [Todo])
+        todos: Todo[]
     }
-    @route.controller(c => c.accessors().transformer(UserTrans, x => ({ name: x.name })))
+    @route.controller(c => c.accessors().transformer(UserTrans, x => ({ fullName: x.name })))
     class User {
         @entity.primaryId()
         id: number
@@ -2604,14 +2607,14 @@ describe.only("Response Transformer", () => {
         name: string
         @authorize.read("Owner")
         email: string
-        @route.controller(c => c.accessors().transformer(TodoTrans, x => ({ title: x.title })))
+        @route.controller(c => c.accessors().transformer(TodoTrans, x => ({ theTitle: x.title })))
         @entity.relation()
         @type(x => [Todo])
         todos: Todo[]
     }
     class TodoTrans {
         @noop()
-        title: string
+        theTitle: string
     }
     class Todo {
         @entity.primaryId()
@@ -2662,31 +2665,71 @@ describe.only("Response Transformer", () => {
     }
     function createApp() {
         return new Plumier()
+            .set({ mode: "production" })
             .set(new WebApiFacility())
             .set(new ControllerFacility({ controller: [User, Todo] }))
             .set(new SwaggerFacility())
             .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
             .initialize()
     }
-    it("Should able to transform get one action", async () => {
-        const app = await createApp()
-        const { body } = await supertest(app.callback())
-            .get("/user/1")
-            .expect(200)
-        expect(body).toMatchSnapshot()
-    })
-    it("Should provide proper Open API schema", async () => {
-        const app = await createApp()
-        const { body } = await supertest(app.callback())
-            .get("/swagger/swagger.json")
-            .expect(200)
-        expect(body.paths["/user/{id}"].get.responses).toMatchSnapshot()
-    })
-    it("Should reflect", async () => {
-        const Controller = controller(User).configure(c => {
-            c.accessors().transformer(UserTrans, x => ({ name: x.name }))
+    describe("Generic Controller", () => {
+        it("Should able to transform get one action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/user/1")
+                .expect(200)
+            expect(body).toMatchSnapshot()
         })
-        const data = reflect(Controller)
-        expect(data.methods.find(x => x.name === "get")).toMatchSnapshot()
+        it("Should provide proper Open API schema on get one action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/user/{id}"].get.responses).toMatchSnapshot()
+        })
+        it("Should able to transform get many action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/user")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should provide proper Open API schema on get many action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/user"].get.responses).toMatchSnapshot()
+        })
+    })
+    describe("Generic On To Many Controller", () => {
+        it("Should able to transform get one action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/user/1/todos/1")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should provide proper Open API schema on get one action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/user/{pid}/todos/{id}"].get.responses).toMatchSnapshot()
+        })
+        it("Should able to transform get many action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/user/1/todos")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should provide proper Open API schema on get many action", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/user/{pid}/todos"].get.responses).toMatchSnapshot()
+        })
     })
 })
