@@ -2,20 +2,12 @@ import { CustomPropertyDecorator, decorate, mergeDecorator, DecoratorOption, dec
 
 import { AccessModifier, AuthorizeDecorator, Authorizer, AuthorizerFunction, EntityPolicyProviderDecorator, EntityProviderQuery, Public } from "../authorization"
 import { Class } from '../common'
-import { errorMessage, FilterQueryType } from "../types"
+import { ApplyToOption, errorMessage, FilterQueryType } from "../types"
 import { api } from "./api"
 
 
 type FunctionEvaluation = "Static" | "Dynamic"
 
-interface ApplyToOption {
-    /**
-     * Apply authorizer into specific action, only work on controller scoped authorizer.
-     * 
-     * Should specify a correct action name(s)
-     */
-    applyTo?: string | string[]
-}
 
 interface AuthorizeSelectorOption extends ApplyToOption {
     /**
@@ -170,11 +162,6 @@ class AuthDecoratorImpl {
     }
 }
 
-function entityProvider(entity: Class, idParam: string, opt?:ApplyToOption) {
-    return decorate(<EntityPolicyProviderDecorator>{ kind: "plumier-meta:entity-policy-provider", entity, idParam },["Class", "Method"], opt)
-}
-
 const authorize = new AuthDecoratorImpl()
 
-
-export { authorize, AuthDecoratorImpl, AuthorizeSelectorOption, FilterAuthorizeOption, entityProvider }
+export { authorize, AuthDecoratorImpl, AuthorizeSelectorOption, FilterAuthorizeOption }
