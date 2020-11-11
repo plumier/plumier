@@ -16,6 +16,33 @@ Array [
 ]
 `;
 
+exports[`JwtAuth Authorization Policy Should able to apply mix policies on projection authorization 1`] = `
+Object {
+  "name": "mimi",
+  "secret": "secret",
+}
+`;
+
+exports[`JwtAuth Authorization Policy Should able to apply mix policies on projection authorization 2`] = `
+Object {
+  "name": "mimi",
+  "secret": "secret",
+}
+`;
+
+exports[`JwtAuth Authorization Policy Should able to apply policies on projection authorization 1`] = `
+Object {
+  "name": "mimi",
+}
+`;
+
+exports[`JwtAuth Authorization Policy Should able to apply policies on projection authorization 2`] = `
+Object {
+  "name": "mimi",
+  "secret": "secret",
+}
+`;
+
 exports[`JwtAuth Basic Authorization Should able to mix controller scope authorizer with other decorators 1`] = `
 Array [
   Array [],
