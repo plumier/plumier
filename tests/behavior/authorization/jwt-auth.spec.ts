@@ -1136,7 +1136,7 @@ describe("JwtAuth", () => {
                         @authorize.write("admin")
                         deceased: boolean | undefined) { return "Hello" }
                 }
-    
+
                 const app = await fixture(AnimalController)
                     .set(new JwtAuthFacility({ secret: SECRET }))
                     .initialize()
@@ -3147,6 +3147,130 @@ describe("JwtAuth", () => {
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .expect(200)
         })
+        it("Should able to apply multiple policies", async () => {
+            class AnimalController {
+                @authorize.route("HasUser", "HasAdmin")
+                get() { return "Hello" }
+            }
+            const HasUserPolicy = authPolicy().define("HasUser", i => i.role.some(x => x === "user"))
+            const HasAdminPolicy = authPolicy().define("HasAdmin", i => i.role.some(x => x === "admin"))
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [HasUserPolicy, HasAdminPolicy]
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
+        it("Should able to apply policies mixed with role", async () => {
+            class AnimalController {
+                @authorize.route("HasUser", "admin")
+                get() { return "Hello" }
+            }
+            const HasUserPolicy = authPolicy().define("HasUser", i => i.role.some(x => x === "user"))
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [HasUserPolicy]
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
+        it("Should able to apply policies on parameter", async () => {
+            class AnimalController {
+                @route.post()
+                save(@authorize.write("HasUser") name: string) { return "Hello" }
+            }
+            const HasUserPolicy = authPolicy().define("HasUser", i => i.role.some(x => x === "user"))
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [HasUserPolicy]
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .send({ name: "lorem" })
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(401, { status: 401, message: 'Unauthorized to populate parameter paths (name)' })
+            await Supertest(app.callback())
+                .post("/animal/save")
+                .send({ name: "lorem" })
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
+        it("Should able to apply policies on projection authorization", async () => {
+            class Animal {
+                @authorize.read("HasUser")
+                secret: string
+                @noop()
+                name: string
+            }
+            class AnimalController {
+                @type(Animal)
+                get() { return <Animal>{ secret: "secret", name: "mimi" } }
+            }
+            const HasUserPolicy = authPolicy().define("HasUser", i => i.role.some(x => x === "user"))
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [HasUserPolicy]
+                }))
+                .initialize()
+            const { body: byAdmin } = await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+            const { body: byUser } = await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+            expect(byAdmin).toMatchSnapshot()
+            expect(byUser).toMatchSnapshot()
+        })
+        it("Should able to apply mix policies on projection authorization", async () => {
+            class Animal {
+                @authorize.read("HasUser", "admin")
+                secret: string
+                @noop()
+                name: string
+            }
+            class AnimalController {
+                @type(Animal)
+                get() { return <Animal>{ secret: "secret", name: "mimi" } }
+            }
+            const HasUserPolicy = authPolicy().define("HasUser", i => i.role.some(x => x === "user"))
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [HasUserPolicy]
+                }))
+                .initialize()
+            const { body: byAdmin } = await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+            const { body: byUser } = await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+            expect(byAdmin).toMatchSnapshot()
+            expect(byUser).toMatchSnapshot()
+        })
         it("Should able to create custom auth policy using class", async () => {
             class AnimalController {
                 @authorize.route("HasUser")
@@ -3389,10 +3513,10 @@ describe("JwtAuth", () => {
                 }
             }
             const AdminPolicy = entityPolicy(Shop)
-            .define("ShopAdmin", (i, e) => {
-                const shop = shops.find(x => x.id === e)
-                return shop!.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
-            })
+                .define("ShopAdmin", (i, e) => {
+                    const shop = shops.find(x => x.id === e)
+                    return shop!.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })
             const app = await fixture(ShopsController)
                 .set(new JwtAuthFacility({
                     secret: SECRET,
