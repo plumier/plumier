@@ -121,7 +121,8 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
                 { [this.inversePropertyName]: pid, ...transformFilter(query) },
             skip: offset,
             take: limit,
-            relations, select,
+            relations, 
+            select,
             order: parseOrder(order)
         })
     }
