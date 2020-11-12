@@ -51,7 +51,7 @@ function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: st
     }, ["Class", "Method"], { allowMultiple: false, ...option })
 }
 
-function responseTransformer(target: Class | Class[] | ((x:any) => Class | Class[]), transformer: ResponseTransformer, opt?: { applyTo: string | string[] }) {
+function responseTransformer(target: Class | Class[] | ((x: any) => Class | Class[]), transformer: ResponseTransformer, opt?: { applyTo: string | string[] }) {
     return mergeDecorator(
         decorate(<ResponseTransformerDecorator>{ kind: "plumier-meta:response-transformer", transformer }, ["Method", "Class"], opt),
         responseType(target, opt)
@@ -78,13 +78,22 @@ function getGenericTypeParameters(controller: Class) {
     }
 }
 
-function getGenericControllerRelation(ctl: Class) {
-    const { types, meta } = getGenericTypeParameters(ctl)
+function getGenericControllerRelation(controller: Class) {
+    const { types, meta } = getGenericTypeParameters(controller)
     const parentEntityType = types[0]
     const entityType = types[1]
     const oneToMany = meta.decorators.find((x: RelationPropertyDecorator): x is RelationPropertyDecorator => x.kind === "plumier-meta:relation-prop-name")
     const relation = oneToMany!.name
     return { parentEntityType, entityType, relation }
+}
+
+function getGenericControllerReverseRelation(controller: Class) {
+    const rel = getGenericControllerRelation(controller)
+    const meta = reflect(rel.entityType)
+    for (const prop of meta.properties) {
+        if (prop.type === rel.parentEntityType)
+            return prop.name
+    }
 }
 
 function parseOrder(order?: string) {
@@ -103,18 +112,22 @@ function parseOrder(order?: string) {
     return result
 }
 
-function normalizeSelect(type: Class, dSelect: string[]) {
+function normalizeSelect(type: Class, dSelect: string[], reverseProperty?: string) {
     const isArrayRelation = (prop: PropertyReflection) => Array.isArray(prop.type) && !!prop.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation");
-    const defaultSelection = reflect(type).properties
-        // default, exclude array (one to many) properties 
-        .filter(x => x.name && !isArrayRelation(x))
-        .map(x => x.name)
+    const defaultSelection = []
+    const meta = reflect(type)
+    for (const prop of meta.properties) {
+        // do not include reverseProperty on default select
+        if (reverseProperty && prop.name === reverseProperty) continue
+        if (prop.name && !isArrayRelation(prop))
+            defaultSelection.push(prop.name)
+    }
     return dSelect.length === 0 ? defaultSelection : dSelect
 }
 
-function parseSelect(type: Class, select?: string) {
+function parseSelect(type: Class, select?: string, reverseProperty?: string) {
     const dSelect = select?.split(",").map(x => x.trim()) ?? []
-    return normalizeSelect(type, dSelect)
+    return normalizeSelect(type, dSelect, reverseProperty)
 }
 
 function getDeletedProperty(type: Class) {
@@ -243,9 +256,10 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     @reflect.type(["T"])
     async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @entity.filter() @reflect.type("T") @val.partial("T") @val.filter() filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<T[]> {
         const transformer = getTransformer(this.constructor as Class, "list")
+        const reverseProperty = getGenericControllerReverseRelation(this.constructor as Class)
         await this.findParentByIdOrNotFound(pid)
-        const result = await this.repo.find(pid, offset, limit, filter, parseSelect(this.entityType, select), parseOrder(order))
-        if(transformer)
+        const result = await this.repo.find(pid, offset, limit, filter, parseSelect(this.entityType, select, reverseProperty), parseOrder(order))
+        if (transformer)
             return result.map(x => transformer(x))
         return result
     }
@@ -262,9 +276,10 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     @reflect.type("T")
     async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
         const transformer = getTransformer(this.constructor as Class, "get")
+        const reverseProperty = getGenericControllerReverseRelation(this.constructor as Class)
         await this.findParentByIdOrNotFound(pid)
-        const result = await this.findByIdOrNotFound(id, parseSelect(this.entityType, select))
-        if(transformer)
+        const result = await this.findByIdOrNotFound(id, parseSelect(this.entityType, select, reverseProperty))
+        if (transformer)
             return transformer(result)
         return result
     }
@@ -360,5 +375,6 @@ class DefaultOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMan
 export {
     RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, DefaultRepository, DefaultOneToManyRepository,
-    parseSelect, decorateRoute, IdentifierResult, getGenericControllerRelation, ResponseTransformer, responseTransformer
+    parseSelect, decorateRoute, IdentifierResult, getGenericControllerRelation, ResponseTransformer, responseTransformer,
+    getGenericControllerReverseRelation
 }

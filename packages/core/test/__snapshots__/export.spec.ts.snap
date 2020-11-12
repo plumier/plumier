@@ -245,6 +245,7 @@ Object {
   "getChildValue": getChildValue,
   "getGenericControllerOneToOneRelations": getGenericControllerOneToOneRelations,
   "getGenericControllerRelation": getGenericControllerRelation,
+  "getGenericControllerReverseRelation": getGenericControllerReverseRelation,
   "globAsync": globAsync,
   "hasKeyOf": hasKeyOf,
   "invoke": invoke,

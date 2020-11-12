@@ -4,6 +4,7 @@ import {
     entityHelper,
     FormFile,
     getGenericControllerRelation,
+    getGenericControllerReverseRelation,
     RelationDecorator,
     RelationPropertyDecorator,
 } from "@plumier/core"
@@ -71,16 +72,6 @@ function getMetadata(modelType: (Class | Class[])) {
     return reflect(type)
 }
 
-function getReverseRelation(ctl: Class) {
-    const rel = getGenericControllerRelation(ctl)
-    const meta = reflect(rel.entityType)
-    for (const prop of meta.properties) {
-        if (prop.type === rel.parentEntityType)
-            return prop.name
-    }
-}
-
-
 // add schema override to inform user that the relation can be filled with ID
 function addRelationAsIdOverride(modelType: (Class | Class[]), ctx: TransformContext) {
     const meta = getMetadata(modelType)
@@ -137,7 +128,7 @@ function removeReverseRelationsOverride(modelType: (Class | Class[]), ctx: Trans
     const result: SchemaObject = { type: "object", properties: {} }
     const reverseDec = ctx.route.controller.decorators.find((x: RelationPropertyDecorator) => x.kind === "plumier-meta:relation-prop-name")
     if (!reverseDec) return
-    const reverse = getReverseRelation(ctx.route.controller.type)!
+    const reverse = getGenericControllerReverseRelation(ctx.route.controller.type)!
     for (const property of meta.properties) {
         if (property.name === reverse) {
             result.properties![property.name] = { readOnly: true, writeOnly: true }
