@@ -411,6 +411,28 @@ describe("CRUD", () => {
             expect(modified!.email).toBe("john.doe@gmail.com")
             expect(modified!.name).toBe("Jane Doe")
         })
+        it("Should able to clear property using null on PUT /users/:id", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+            const { body } = await supertest(app.callback())
+                .put(`/users/${data.id}`)
+                .send({ name: null })
+                .expect(200)
+            const modified = await repo.findById(body.id)
+            expect(modified).toMatchSnapshot()
+        })
         it("Should check prover mongodb id on PUT /users/:id", async () => {
             @collection()
             @route.controller()

@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CRUD CRUD Function Should able to clear property if provided undefined on PUT /users/:id 1`] = `
+User {
+  "email": "john@gmail.com",
+  "id": 1,
+  "name": null,
+}
+`;
+
 exports[`CRUD CRUD Function Should able to create controller using builder 1`] = `
 Array [
   Array [],
