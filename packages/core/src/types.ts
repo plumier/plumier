@@ -530,7 +530,7 @@ export interface Configuration {
     authPolicies?: Class<AuthPolicy>[]
 
     /**
-     * Response projection transformer
+     * Transform value before its being parsed by response projection authorization 
      */
     responseProjectionTransformer?: (prop: PropertyReflection, value: any) => any
 }

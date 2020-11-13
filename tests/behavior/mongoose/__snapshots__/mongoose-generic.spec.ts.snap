@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CRUD CRUD Function Should able to clear property using null on PUT /users/:id 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "email": "john.doe@gmail.com",
+  "id": "MONGODB UNIQUE ID",
+  "name": null,
+}
+`;
+
 exports[`CRUD CRUD Function Should able to create controller using builder 1`] = `
 Array [
   Array [],

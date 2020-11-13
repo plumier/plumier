@@ -493,6 +493,27 @@ describe("CRUD", () => {
             expect(modified!.email).toBe("john.doe@gmail.com")
             expect(modified!.name).toBe("Jane Doe")
         })
+        it("Should able to clear property if provided undefined on PUT /users/:id", async () => {
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column({ nullable: true })
+                name: string
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+            const { body } = await supertest(app.callback())
+                .put(`/users/${data.raw}`)
+                .send({ email: "john@gmail.com", name: null })
+                .expect(200)
+            const modified = await repo.findOne(body.id)
+            expect(modified).toMatchSnapshot()
+        })
         it("Should throw 404 if not found PUT /users/:id", async () => {
             @Entity()
             @route.controller()
