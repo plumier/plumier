@@ -2496,6 +2496,30 @@ describe("JwtAuth", () => {
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .expect(200, [{ name: "admin" }, { name: "user" }])
             })
+            it("Should return empty array if provided empty array", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.read("admin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type([User])
+                    get() {
+                        return []
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+                const {body} = await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200)
+                expect(Array.isArray(body) && body.length === 0).toBe(true)
+            })
         })
 
         describe("Nested Object", () => {

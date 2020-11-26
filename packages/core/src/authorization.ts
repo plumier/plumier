@@ -507,7 +507,7 @@ async function responseAuthorize(raw: ActionResult, ctx: ActionContext): Promise
     if (type !== Promise && type && raw.status === 200 && raw.body) {
         const info = await createAuthContext(ctx, "read")
         const node = await compileType(type, info, [])
-        raw.body = await filterType(raw.body, node, info)
+        raw.body = Array.isArray(raw.body) && raw.body.length === 0 ? [] : await filterType(raw.body, node, info)
         return raw
     }
     else {

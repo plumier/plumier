@@ -213,6 +213,29 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
+        it("Should return empty array when no filter match GET /users?offset&limit&name", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @collection.id()
+                id: string
+                @val.required()
+                @reflect.noop()
+                email: string
+                @authorize.filter()
+                @reflect.noop()
+                name: string
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            await repo.insert({ email: "jean.doe@gmail.com", name: "Juan Doe" })
+            await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?filter[name]=Jun")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
         it("Should able to select by property GET /users?offset&limit&name", async () => {
             @collection()
             @route.controller()

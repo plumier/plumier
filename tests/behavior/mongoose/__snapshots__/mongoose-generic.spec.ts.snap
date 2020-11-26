@@ -188,6 +188,8 @@ Object {
 }
 `;
 
+exports[`CRUD CRUD Function Should return empty array when no filter match GET /users?offset&limit&name 1`] = `Array []`;
+
 exports[`CRUD CRUD Function Should select by property GET /users/:id 1`] = `
 Object {
   "age": 21,
