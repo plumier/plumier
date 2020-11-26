@@ -322,7 +322,7 @@ function createContext(ctx: ParamCheckContext, value: any, meta: ClassReflection
 }
 
 async function checkParameter(meta: PropertyReflection | ParameterReflection, value: any, ctx: ParamCheckContext): Promise<string[]> {
-    if (value === undefined) return []
+    if (value === undefined || value === null) return []
     else if (Array.isArray(meta.type)) {
         const newMeta = { ...meta, type: meta.type[0] };
         const result: string[] = []
