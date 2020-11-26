@@ -5,6 +5,7 @@ import { TypeORMFacility } from "@plumier/typeorm"
 import Plumier, { LoggerFacility, WebApiFacility } from "plumier"
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 
+@Entity()
 export class User {
     @PrimaryGeneratedColumn()
     id: number
@@ -16,6 +17,7 @@ export class User {
     shops: Shop[]
 }
 
+@Entity()
 export class Shop {
     @PrimaryGeneratedColumn()
     id: number
@@ -32,6 +34,7 @@ export class Shop {
 }
 
 @route.controller()
+@Entity()
 export class Item {
     @PrimaryGeneratedColumn()
     id: number
@@ -53,6 +56,7 @@ export class Item {
     createdBy: User
 }
 
+@Entity()
 export class Variants {
     @PrimaryGeneratedColumn()
     id: number

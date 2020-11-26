@@ -59,15 +59,10 @@ export class Item {
     createdBy: User
 }
 
-export class ItemController {
-    @route.post("")
-    save(data: Item) { }
-}
-
 
 
 new Plumier()
     .set(new WebApiFacility({ controller: __dirname }))
-    .set(new JwtAuthFacility({ secret: "lorem" }))
+    //.set(new JwtAuthFacility({ secret: "lorem" }))
     .set(new SwaggerFacility())
     .listen(8000)
