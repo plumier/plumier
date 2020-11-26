@@ -1175,11 +1175,12 @@ describe("JwtAuth", () => {
         describe("Object Parameter Authorization", () => {
             @domain()
             class Animal {
-                constructor(name: string,
+                constructor(
+                    public name: string,
                     @authorize.write("admin")
-                    id: number | undefined,
+                    public id: number | undefined,
                     @authorize.write("admin")
-                    deceased: boolean | undefined) { }
+                    public deceased: boolean | undefined) { }
             }
 
             class AnimalController {
@@ -1211,6 +1212,42 @@ describe("JwtAuth", () => {
                     .post("/animal/save")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .send({ name: "Mimi" })
+                    .expect(200)
+            })
+
+            it("Should skip check if provided null", async () => {
+                @domain()
+                class Tag {
+                    constructor(
+                        public name: string) { }
+                }
+                @domain()
+                class Animal {
+                    constructor(
+                        public name: string,
+                        @authorize.write("admin")
+                        public id: number | undefined,
+                        @authorize.write("admin")
+                        public deceased: boolean | undefined,
+                        public tag: Tag) { }
+                }
+
+                class AnimalController {
+                    @route.post()
+                    save(data: Animal) { return "Hello" }
+
+                    @route.get()
+                    get(data: Animal) { return data }
+                }
+
+                const app = await fixture(AnimalController)
+                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .initialize()
+
+                await Supertest(app.callback())
+                    .post("/animal/save")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .send({ name: "Mimi", tag: null })
                     .expect(200)
             })
 
@@ -2514,7 +2551,7 @@ describe("JwtAuth", () => {
                 const app = await fixture(UsersController)
                     .set(new JwtAuthFacility({ secret: SECRET }))
                     .initialize()
-                const {body} = await Supertest(app.callback())
+                const { body } = await Supertest(app.callback())
                     .get("/users/get")
                     .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
                     .expect(200)
