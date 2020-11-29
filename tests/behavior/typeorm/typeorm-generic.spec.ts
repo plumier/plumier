@@ -11,13 +11,14 @@ import {
 } from "@plumier/typeorm"
 import supertest from "supertest"
 import { generic } from "tinspector"
-import { Column, Entity, getManager, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, CreateDateColumn } from "typeorm"
+import { Column, Entity, getManager, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, getMetadataArgsStorage, createConnection } from "typeorm"
 
 import { cleanup, getConn } from "./helper"
 import Koa from "koa"
 import { MongooseFacility } from '@plumier/mongoose'
 import { JwtAuthFacility } from '@plumier/jwt'
 import { sign } from 'jsonwebtoken'
+import { random } from '../helper'
 
 
 jest.setTimeout(20000)
@@ -2061,5 +2062,72 @@ describe("Open API", () => {
             .post("/swagger/swagger.json")
             .expect(200)
         expect(body.components.schemas.User).toMatchSnapshot()
+    })
+})
+
+describe("Repository", () => {
+    afterEach(async () => {
+        await cleanup()
+    });
+    
+    describe("Repository", () => {
+        it("Should able to count result", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            await createConnection(getConn([User]))
+            const repo = new TypeORMRepository(User)
+            const email = `${random()}@gmail.com`
+            await Promise.all([
+                repo.insert({ email, name: "John Doe" }),
+                repo.insert({ email, name: "John Doe" }),
+                repo.insert({ email, name: "John Doe" })
+            ])
+            const count = await repo.count({ email: { type: "equal", value: email } })
+            expect(count).toBe(3)
+        })
+    })
+
+    describe("One To Many Repository", () => {
+        it("Should able to count result", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, a => a.user)
+                @route.controller()
+                animals: Animal[]
+            }
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: string
+                @Column()
+                name: string
+                @ManyToOne(x => User, u => u.animals)
+                user: User
+            }
+            await createConnection(getConn([User, Animal]))
+            const userRepo = new TypeORMRepository(User)
+            const animalRepo = new TypeORMOneToManyRepository(User, Animal, "animals")
+            const email = `${random()}@gmail.com`
+            const user = await userRepo.insert({ name: "John Doe" })
+            await Promise.all([
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mommy" }),
+            ])
+            const count = await animalRepo.count(user.id, { name: { type: "equal", value: "Mimi" } })
+            expect(count).toBe(3)
+        })
     })
 })

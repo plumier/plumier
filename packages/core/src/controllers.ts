@@ -321,6 +321,9 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
 // --------------------------------------------------------------------- //
 
 class DefaultRepository<T> implements Repository<T> {
+    async count(query?: FilterEntity<T>): Promise<number> {
+        throw new Error(errorMessage.GenericControllerImplementationNotFound)
+    }
     find(offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
@@ -339,6 +342,9 @@ class DefaultRepository<T> implements Repository<T> {
 }
 
 class DefaultOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
+    async count(query?: FilterEntity<T>): Promise<number> {
+        throw new Error(errorMessage.GenericControllerImplementationNotFound)
+    }
     find(pid: any, offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }

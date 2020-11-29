@@ -12,6 +12,7 @@ import {
 } from "@plumier/core"
 import reflect from "tinspector"
 import { Between, Column, CreateDateColumn, Entity, getManager, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not, PrimaryGeneratedColumn, Repository as NativeRepository } from "typeorm"
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
 
 function normalizeSelect<T>(type: Class<T>, selections: string[]): { select: (keyof T)[], relations: string[] } {
     const meta = reflect(type)
@@ -54,7 +55,7 @@ function transformFilter<T>(filters: FilterEntity<T>) {
     }
     const result: any = {}
     for (const key in filters) {
-        const filter = filters[key]
+        const filter = filters[key]!
         const transform = transformMap[filter.type]
         result[key] = transform(filter)
     }
@@ -69,6 +70,12 @@ class TypeORMRepository<T> implements Repository<T> {
         this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
+    count(query?: FilterEntity<T>): Promise<number> {
+        return this.nativeRepository.count({
+            where: transformFilter({ ...query }),
+        })
+    }
+
     find(offset: number, limit: number, query: FilterEntity<T>, selection: string[], order: OrderQuery[]): Promise<T[]> {
         const { select, relations } = normalizeSelect(this.type, selection)
         return this.nativeRepository.find({
@@ -80,8 +87,8 @@ class TypeORMRepository<T> implements Repository<T> {
         })
     }
 
-    async insert(doc: T): Promise<{ id: any }> {
-        const result = await this.nativeRepository.insert(doc)
+    async insert(doc: Partial<T>): Promise<{ id: any }> {
+        const result = await this.nativeRepository.insert(doc as any)
         return { id: result.raw }
     }
 
@@ -113,6 +120,11 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
         this.inversePropertyName = join!.inverseSidePropertyPath;
         this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
+    count(pid: any, query?: FilterEntity<T>): Promise<number> {
+        return this.nativeRepository.count({
+            where: { [this.inversePropertyName]: pid, ...transformFilter({ ...query }) },
+        })
+    }
 
     async find(pid: any, offset: number, limit: number, query: FilterEntity<T>, selection: string[], order: OrderQuery[]): Promise<T[]> {
         const { select, relations } = normalizeSelect(this.type, selection)
@@ -121,15 +133,15 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
                 { [this.inversePropertyName]: pid, ...transformFilter(query) },
             skip: offset,
             take: limit,
-            relations, 
+            relations,
             select,
             order: parseOrder(order)
         })
     }
 
-    async insert(pid: any, data: T): Promise<{ id: any }> {
+    async insert(pid: any, data: Partial<T>): Promise<{ id: any }> {
         const parent = await this.nativeParentRepository.findOne(pid)
-        const inserted = await this.nativeRepository.insert(data);
+        const inserted = await this.nativeRepository.insert(data as any);
         await this.nativeParentRepository.createQueryBuilder()
             .relation(this.relation)
             .of(parent)
