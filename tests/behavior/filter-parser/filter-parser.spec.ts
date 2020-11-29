@@ -21,6 +21,10 @@ import { generic, noop } from "tinspector"
 
 class MockRepo<T> implements Repository<T>{
     constructor(private fn: jest.Mock) { }
+    async count(query?: FilterEntity<T>): Promise<number> {
+        this.fn(query)
+        return 0
+    }
     async find(offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         this.fn(offset, limit, query)
         return []
@@ -45,6 +49,10 @@ class MockRepo<T> implements Repository<T>{
 
 class MockOneToManyRepo<P, T> implements OneToManyRepository<P, T>{
     constructor(private fn: jest.Mock) { }
+    async count(pid: any, query?: FilterEntity<T>): Promise<number> {
+        this.fn(query)
+        return 0
+    }
     async find(pid: any, offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         this.fn(pid, offset, limit, query)
         return []
