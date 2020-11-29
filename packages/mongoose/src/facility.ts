@@ -63,7 +63,7 @@ export class MongooseFacility extends DefaultFacility {
     async initialize(app: Readonly<PlumierApplication>) {
         const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
         const helper = this.option.helper ?? {
-            connect: Mongoose.connect, 
+            connect:(uri, option) =>  Mongoose.connect(uri, option), 
             getModels, model: globalModel,
             proxy: globalProxy,
             disconnect: Mongoose.disconnect,
