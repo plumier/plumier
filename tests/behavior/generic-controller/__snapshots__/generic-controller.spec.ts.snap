@@ -2129,6 +2129,14 @@ Array [
 ]
 `;
 
+exports[`Route Generator Generic Controller Should throw error when using default generic controller 1`] = `
+Array [
+  Array [
+    [Error: Generic controller implementation not installed],
+  ],
+]
+`;
+
 exports[`Route Generator Grouping Should able to group one to many routes 1`] = `
 Array [
   Array [],
@@ -2644,6 +2652,14 @@ exports[`Route Generator One To Many Controller Should throw error when no ID sp
 Array [
   Array [
     [Error: Entity User used by generic controller doesn't have an ID property],
+  ],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should throw error when no generic controller impl found 1`] = `
+Array [
+  Array [
+    [Error: Generic controller implementation not installed],
   ],
 ]
 `;

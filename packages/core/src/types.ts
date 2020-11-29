@@ -389,7 +389,7 @@ export interface OrderQuery { column: string, order: 1 | -1 }
 
 export interface FilterQuery { type: FilterQueryType, partial?: "start" | "end" | "both", value: any }
 
-export type FilterEntity<T = any> = { [k in keyof T]: FilterQuery }
+export type FilterEntity<T = any> = { [k in keyof T]?: FilterQuery }
 
 export interface Repository<T> {
     find(offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<T[]>
@@ -397,6 +397,7 @@ export interface Repository<T> {
     findById(id: any, select: string[]): Promise<T | undefined>
     update(id: any, data: Partial<T>): Promise<{ id: any }>
     delete(id: any): Promise<{ id: any }>
+    count(query?:FilterEntity<T>): Promise<number>
 }
 
 export interface OneToManyRepository<P, T> {
@@ -406,6 +407,7 @@ export interface OneToManyRepository<P, T> {
     findById(id: any, select: string[]): Promise<T | undefined>
     update(id: any, data: Partial<T>): Promise<{ id: any }>
     delete(id: any): Promise<{ id: any }>
+    count(pid: any, query?:FilterEntity<T>): Promise<number>
 }
 
 export abstract class ControllerGeneric<T = any, TID = any> {

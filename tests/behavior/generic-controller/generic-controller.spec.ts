@@ -72,6 +72,9 @@ class ErrorHandlerMiddleware implements Middleware {
 
 class MockRepo<T> implements Repository<T>{
     constructor(private fn: jest.Mock) { }
+    count(query?: FilterEntity<T>): Promise<number> {
+        throw new Error('Method not implemented.')
+    }
     async find(offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         this.fn(offset, limit, query)
         return []
@@ -96,6 +99,9 @@ class MockRepo<T> implements Repository<T>{
 
 class MockOneToManyRepo<P, T> implements OneToManyRepository<P, T>{
     constructor(private fn: jest.Mock) { }
+    count(pid: any, query?: FilterEntity<T>): Promise<number> {
+        throw new Error('Method not implemented.')
+    }
     async find(pid: any, offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         this.fn(pid, offset, limit, query)
         return []
@@ -388,6 +394,9 @@ describe("Route Generator", () => {
             await request.patch("/user/123").expect(500, error)
             await request.delete("/user/123").expect(500, error)
             await request.get("/user/123").expect(500, error)
+            const repo = new DefaultRepository()
+            const mock = await expectError(repo.count())
+            expect(mock.mock.calls).toMatchSnapshot()
         })
         it("Should throw error properly", () => {
             const fn = jest.fn()
@@ -735,6 +744,9 @@ describe("Route Generator", () => {
             await request.patch("/user/123/animals/123").expect(500, error)
             await request.delete("/user/123/animals/123").expect(500, error)
             await request.get("/user/123/animals/123").expect(500, error)
+            const repo = new DefaultOneToManyRepository()
+            const mock = await expectError(repo.count())
+            expect(mock.mock.calls).toMatchSnapshot()
         })
         it("Should throw error properly", () => {
             const fn = jest.fn()

@@ -18,6 +18,7 @@ import supertest from "supertest"
 import reflect, { generic, noop, type } from "tinspector"
 import { JwtAuthFacility } from '@plumier/jwt'
 import { sign } from 'jsonwebtoken'
+import { random } from '../helper'
 
 jest.setTimeout(20000)
 
@@ -2612,6 +2613,63 @@ describe("Repository", () => {
         const inserted = await repo.insert(parent.id, { name: "Mimi" })
         const saved = await UserModel.findById(parent.id).populate("animals")
         expect(saved).toMatchSnapshot()
+    })
+
+    describe("Repository", () => {
+        @collection()
+        class User {
+            @collection.id()
+            id: string
+            @reflect.noop()
+            email: string
+            @reflect.noop()
+            name: string
+        }
+        it("Should able to count result", async () => {
+            const repo = new MongooseRepository(User)
+            const email = `${random()}@gmail.com`
+            await Promise.all([
+                repo.insert({ email, name: "John Doe" }),
+                repo.insert({ email, name: "John Doe" }),
+                repo.insert({ email, name: "John Doe" })
+            ])
+            const count = await repo.count({ email: { type: "equal", value: email } })
+            expect(count).toBe(3)
+        })
+    })
+
+    describe("One To Many Repository", () => {
+        @collection()
+        class User {
+            @collection.id()
+            id: string
+            @reflect.noop()
+            name: string
+            @collection.ref(x => [Animal])
+            @route.controller()
+            animals: Animal[]
+        }
+        @collection()
+        class Animal {
+            @collection.id()
+            id: string
+            @reflect.noop()
+            name: string
+        }
+        it("Should able to count result", async () => {
+            const userRepo = new MongooseRepository(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const email = `${random()}@gmail.com`
+            const user = await userRepo.insert({ name: "John Doe" })
+            await Promise.all([
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mommy" }),
+            ])
+            const count = await animalRepo.count(user.id, { name: { type: "equal", value: "Mimi" } })
+            expect(count).toBe(3)
+        })
     })
 })
 
