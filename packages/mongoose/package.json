@@ -16,9 +16,9 @@
   "dependencies": {
     "@types/pluralize": "^0.0.29",
     "@plumier/core": "1.0.0-rc.2",
-    "@types/mongoose": "^5.7.37",
+    "@types/mongoose": "^5.10.1",
     "chalk": "^4.1.0",
-    "mongoose": "^5.10.11",
+    "mongoose": "^5.10.18",
     "pluralize": "^8.0.0"
   },
   "bugs": {
