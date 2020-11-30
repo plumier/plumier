@@ -58,7 +58,7 @@ function transformFilter<T>(filters: FilterEntity<T>) {
     }
     const result: any = {}
     for (const key in filters) {
-        const filter = filters[key]
+        const filter = filters[key]!
         const transform = transformMap[filter.type]
         result[key] = transform(filter)
     }
@@ -72,6 +72,10 @@ class MongooseRepository<T> implements Repository<T>{
         const hlp = helper ?? globalHelper
         this.Model = hlp.model(type)
         this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
+    }
+
+    async count(query?: FilterEntity<T>): Promise<number> {
+        return this.Model.find(transformFilter({ ...query })).count()
     }
 
     find(offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
@@ -119,6 +123,15 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         const hlp = helper ?? globalHelper
         this.Model = hlp.model(type)
         this.ParentModel = hlp.model(parent)
+    }
+
+    async count(pid: string, query?: FilterEntity<T>): Promise<number> {
+        const data = await this.ParentModel.findById(pid)
+            .populate({
+                path: this.relation,
+                match: transformFilter({ ...query }),
+            })
+        return (data as any)[this.relation].length
     }
 
     async find(pid: string, offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {

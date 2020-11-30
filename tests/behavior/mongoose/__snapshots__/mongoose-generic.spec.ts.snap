@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CRUD CRUD Function Should able to clear property using null on PUT /users/:id 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "email": "john.doe@gmail.com",
+  "id": "MONGODB UNIQUE ID",
+  "name": null,
+}
+`;
+
 exports[`CRUD CRUD Function Should able to create controller using builder 1`] = `
 Array [
   Array [],
@@ -178,6 +188,8 @@ Object {
 }
 `;
 
+exports[`CRUD CRUD Function Should return empty array when no filter match GET /users?offset&limit&name 1`] = `Array []`;
+
 exports[`CRUD CRUD Function Should select by property GET /users/:id 1`] = `
 Object {
   "age": 21,
@@ -324,20 +336,10 @@ Array [
   Object {
     "id": "MONGODB UNIQUE ID",
     "name": "Jojo",
-    "user": Object {
-      "email": "john.doe@gmail.com",
-      "id": "MONGODB UNIQUE ID",
-      "name": "John Doe",
-    },
   },
   Object {
     "id": "MONGODB UNIQUE ID",
     "name": "Jeju",
-    "user": Object {
-      "email": "john.doe@gmail.com",
-      "id": "MONGODB UNIQUE ID",
-      "name": "John Doe",
-    },
   },
 ]
 `;
@@ -533,11 +535,6 @@ exports[`CRUD Nested CRUD One to Many Function Should serve GET /users/:parentId
 Object {
   "id": "MONGODB UNIQUE ID",
   "name": "Mimi",
-  "user": Object {
-    "email": "john.doe@gmail.com",
-    "id": "MONGODB UNIQUE ID",
-    "name": "John Doe",
-  },
 }
 `;
 
@@ -676,11 +673,6 @@ Object {
     "Lorem",
     "Ipsum",
   ],
-  "user": Object {
-    "email": "john.doe@gmail.com",
-    "id": "MONGODB UNIQUE ID",
-    "name": "John Doe",
-  },
 }
 `;
 
@@ -1061,12 +1053,6 @@ Array [
     "boolean": true,
     "id": "MONGODB UNIQUE ID",
     "number": 1,
-    "parent": Object {
-      "boolean": true,
-      "id": "MONGODB UNIQUE ID",
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "lorem",
   },
 ]
@@ -1078,12 +1064,6 @@ Array [
     "boolean": false,
     "id": "MONGODB UNIQUE ID",
     "number": 3,
-    "parent": Object {
-      "boolean": true,
-      "id": "MONGODB UNIQUE ID",
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "dolor",
   },
 ]
@@ -1095,24 +1075,12 @@ Array [
     "boolean": false,
     "id": "MONGODB UNIQUE ID",
     "number": 2,
-    "parent": Object {
-      "boolean": true,
-      "id": "MONGODB UNIQUE ID",
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "ipsum",
   },
   Object {
     "boolean": false,
     "id": "MONGODB UNIQUE ID",
     "number": 3,
-    "parent": Object {
-      "boolean": true,
-      "id": "MONGODB UNIQUE ID",
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "dolor",
   },
 ]
@@ -1124,12 +1092,6 @@ Array [
     "boolean": true,
     "id": "MONGODB UNIQUE ID",
     "number": 1,
-    "parent": Object {
-      "boolean": true,
-      "id": "MONGODB UNIQUE ID",
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "lorem",
   },
 ]
@@ -1141,24 +1103,12 @@ Array [
     "boolean": true,
     "id": "MONGODB UNIQUE ID",
     "number": 1,
-    "parent": Object {
-      "boolean": true,
-      "id": "MONGODB UNIQUE ID",
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "lorem",
   },
   Object {
     "boolean": false,
     "id": "MONGODB UNIQUE ID",
     "number": 2,
-    "parent": Object {
-      "boolean": true,
-      "id": "MONGODB UNIQUE ID",
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "ipsum",
   },
 ]
@@ -1170,24 +1120,12 @@ Array [
     "boolean": false,
     "id": "MONGODB UNIQUE ID",
     "number": 2,
-    "parent": Object {
-      "boolean": true,
-      "id": "MONGODB UNIQUE ID",
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "ipsum",
   },
   Object {
     "boolean": false,
     "id": "MONGODB UNIQUE ID",
     "number": 3,
-    "parent": Object {
-      "boolean": true,
-      "id": "MONGODB UNIQUE ID",
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "dolor",
   },
 ]
@@ -1199,36 +1137,18 @@ Array [
     "boolean": true,
     "id": "MONGODB UNIQUE ID",
     "number": 1,
-    "parent": Object {
-      "boolean": true,
-      "id": "MONGODB UNIQUE ID",
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "lorem",
   },
   Object {
     "boolean": false,
     "id": "MONGODB UNIQUE ID",
     "number": 2,
-    "parent": Object {
-      "boolean": true,
-      "id": "MONGODB UNIQUE ID",
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "ipsum",
   },
   Object {
     "boolean": false,
     "id": "MONGODB UNIQUE ID",
     "number": 3,
-    "parent": Object {
-      "boolean": true,
-      "id": "MONGODB UNIQUE ID",
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "dolor",
   },
 ]
@@ -1240,24 +1160,12 @@ Array [
     "boolean": false,
     "id": "MONGODB UNIQUE ID",
     "number": 2,
-    "parent": Object {
-      "boolean": true,
-      "id": "MONGODB UNIQUE ID",
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "ipsum",
   },
   Object {
     "boolean": false,
     "id": "MONGODB UNIQUE ID",
     "number": 3,
-    "parent": Object {
-      "boolean": true,
-      "id": "MONGODB UNIQUE ID",
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "dolor",
   },
 ]

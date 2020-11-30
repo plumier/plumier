@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CRUD CRUD Function Should able to clear property if provided undefined on PUT /users/:id 1`] = `
+User {
+  "email": "john@gmail.com",
+  "id": 1,
+  "name": null,
+}
+`;
+
 exports[`CRUD CRUD Function Should able to create controller using builder 1`] = `
 Array [
   Array [],
@@ -623,11 +631,6 @@ Array [
   Object {
     "id": 1,
     "name": "Jojo",
-    "user": Object {
-      "email": "john.doe@gmail.com",
-      "id": 1,
-      "name": "John Doe",
-    },
   },
 ]
 `;
@@ -637,11 +640,6 @@ Array [
   Object {
     "id": 1,
     "name": "Jojo Subejo",
-    "user": Object {
-      "email": "john.doe@gmail.com",
-      "id": 1,
-      "name": "John Doe",
-    },
   },
 ]
 `;
@@ -650,11 +648,6 @@ exports[`CRUD Nested CRUD One to Many Function Should serve GET /users/:parentId
 Object {
   "id": 1,
   "name": "Mimi",
-  "user": Object {
-    "email": "john.doe@gmail.com",
-    "id": 1,
-    "name": "John Doe",
-  },
 }
 `;
 
@@ -703,11 +696,6 @@ Array [
   Object {
     "id": 1,
     "name": "Jeje",
-    "user": Object {
-      "email": "john.doe@gmail.com",
-      "id": 1,
-      "name": "John Doe",
-    },
   },
 ]
 `;
@@ -855,10 +843,6 @@ exports[`CRUD One To One on Nested Object Should not populated one to many 2`] =
 Object {
   "id": 1,
   "name": "John",
-  "parent": Object {
-    "id": 1,
-    "name": "John",
-  },
 }
 `;
 
@@ -871,10 +855,6 @@ Array [
     },
     "id": 1,
     "name": "John",
-    "parent": Object {
-      "id": 1,
-      "name": "John",
-    },
   },
   Object {
     "animal": Object {
@@ -883,10 +863,6 @@ Array [
     },
     "id": 2,
     "name": "Jane",
-    "parent": Object {
-      "id": 1,
-      "name": "John",
-    },
   },
 ]
 `;
@@ -899,10 +875,6 @@ Object {
   },
   "id": 1,
   "name": "John",
-  "parent": Object {
-    "id": 1,
-    "name": "John",
-  },
 }
 `;
 
@@ -914,10 +886,6 @@ Object {
   },
   "id": 1,
   "name": "John",
-  "parent": Object {
-    "id": 1,
-    "name": "John",
-  },
   "secondAnimal": Object {
     "id": 2,
     "name": "Bingo",
@@ -1050,12 +1018,6 @@ Array [
     "boolean": true,
     "id": 1,
     "number": 1,
-    "parent": Object {
-      "boolean": true,
-      "id": 1,
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "lorem",
   },
 ]
@@ -1067,12 +1029,6 @@ Array [
     "boolean": false,
     "id": 3,
     "number": 3,
-    "parent": Object {
-      "boolean": true,
-      "id": 1,
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "dolor",
   },
 ]
@@ -1084,24 +1040,12 @@ Array [
     "boolean": false,
     "id": 2,
     "number": 2,
-    "parent": Object {
-      "boolean": true,
-      "id": 1,
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "ipsum",
   },
   Object {
     "boolean": false,
     "id": 3,
     "number": 3,
-    "parent": Object {
-      "boolean": true,
-      "id": 1,
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "dolor",
   },
 ]
@@ -1113,12 +1057,6 @@ Array [
     "boolean": true,
     "id": 1,
     "number": 1,
-    "parent": Object {
-      "boolean": true,
-      "id": 1,
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "lorem",
   },
 ]
@@ -1130,24 +1068,12 @@ Array [
     "boolean": true,
     "id": 1,
     "number": 1,
-    "parent": Object {
-      "boolean": true,
-      "id": 1,
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "lorem",
   },
   Object {
     "boolean": false,
     "id": 2,
     "number": 2,
-    "parent": Object {
-      "boolean": true,
-      "id": 1,
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "ipsum",
   },
 ]
@@ -1159,24 +1085,12 @@ Array [
     "boolean": false,
     "id": 2,
     "number": 2,
-    "parent": Object {
-      "boolean": true,
-      "id": 1,
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "ipsum",
   },
   Object {
     "boolean": false,
     "id": 3,
     "number": 3,
-    "parent": Object {
-      "boolean": true,
-      "id": 1,
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "dolor",
   },
 ]
@@ -1188,24 +1102,12 @@ Array [
     "boolean": false,
     "id": 2,
     "number": 2,
-    "parent": Object {
-      "boolean": true,
-      "id": 1,
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "ipsum",
   },
   Object {
     "boolean": false,
     "id": 3,
     "number": 3,
-    "parent": Object {
-      "boolean": true,
-      "id": 1,
-      "number": 1,
-      "string": "lorem",
-    },
     "string": "dolor",
   },
 ]

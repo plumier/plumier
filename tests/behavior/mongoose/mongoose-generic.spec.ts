@@ -18,6 +18,7 @@ import supertest from "supertest"
 import reflect, { generic, noop, type } from "tinspector"
 import { JwtAuthFacility } from '@plumier/jwt'
 import { sign } from 'jsonwebtoken'
+import { random } from '../helper'
 
 jest.setTimeout(20000)
 
@@ -210,6 +211,29 @@ describe("CRUD", () => {
             await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
             const { body } = await supertest(app.callback())
                 .get("/users?filter[name]=Juan+Doe")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should return empty array when no filter match GET /users?offset&limit&name", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @collection.id()
+                id: string
+                @val.required()
+                @reflect.noop()
+                email: string
+                @authorize.filter()
+                @reflect.noop()
+                name: string
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            await repo.insert({ email: "jean.doe@gmail.com", name: "Juan Doe" })
+            await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?filter[name]=Jun")
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
@@ -410,6 +434,28 @@ describe("CRUD", () => {
             const modified = await repo.findById(body.id)
             expect(modified!.email).toBe("john.doe@gmail.com")
             expect(modified!.name).toBe("Jane Doe")
+        })
+        it("Should able to clear property using null on PUT /users/:id", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            model(User)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+            const { body } = await supertest(app.callback())
+                .put(`/users/${data.id}`)
+                .send({ name: null })
+                .expect(200)
+            const modified = await repo.findById(body.id)
+            expect(modified).toMatchSnapshot()
         })
         it("Should check prover mongodb id on PUT /users/:id", async () => {
             @collection()
@@ -2567,6 +2613,63 @@ describe("Repository", () => {
         const inserted = await repo.insert(parent.id, { name: "Mimi" })
         const saved = await UserModel.findById(parent.id).populate("animals")
         expect(saved).toMatchSnapshot()
+    })
+
+    describe("Repository", () => {
+        @collection()
+        class User {
+            @collection.id()
+            id: string
+            @reflect.noop()
+            email: string
+            @reflect.noop()
+            name: string
+        }
+        it("Should able to count result", async () => {
+            const repo = new MongooseRepository(User)
+            const email = `${random()}@gmail.com`
+            await Promise.all([
+                repo.insert({ email, name: "John Doe" }),
+                repo.insert({ email, name: "John Doe" }),
+                repo.insert({ email, name: "John Doe" })
+            ])
+            const count = await repo.count({ email: { type: "equal", value: email } })
+            expect(count).toBe(3)
+        })
+    })
+
+    describe("One To Many Repository", () => {
+        @collection()
+        class User {
+            @collection.id()
+            id: string
+            @reflect.noop()
+            name: string
+            @collection.ref(x => [Animal])
+            @route.controller()
+            animals: Animal[]
+        }
+        @collection()
+        class Animal {
+            @collection.id()
+            id: string
+            @reflect.noop()
+            name: string
+        }
+        it("Should able to count result", async () => {
+            const userRepo = new MongooseRepository(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const email = `${random()}@gmail.com`
+            const user = await userRepo.insert({ name: "John Doe" })
+            await Promise.all([
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mommy" }),
+            ])
+            const count = await animalRepo.count(user.id, { name: { type: "equal", value: "Mimi" } })
+            expect(count).toBe(3)
+        })
     })
 })
 

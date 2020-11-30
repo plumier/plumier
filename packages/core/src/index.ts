@@ -35,7 +35,7 @@ export {
 } from "./controllers-helper"
 export {
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
-    DefaultOneToManyRepository, DefaultRepository,
+    DefaultOneToManyRepository, DefaultRepository, getGenericControllerReverseRelation,
     parseSelect, IdentifierResult, getGenericControllerRelation
 } from "./controllers"
 export { HttpStatus } from "./http-status";

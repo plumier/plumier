@@ -16,6 +16,33 @@ Array [
 ]
 `;
 
+exports[`JwtAuth Authorization Policy Should able to apply mix policies on projection authorization 1`] = `
+Object {
+  "name": "mimi",
+  "secret": "secret",
+}
+`;
+
+exports[`JwtAuth Authorization Policy Should able to apply mix policies on projection authorization 2`] = `
+Object {
+  "name": "mimi",
+  "secret": "secret",
+}
+`;
+
+exports[`JwtAuth Authorization Policy Should able to apply policies on projection authorization 1`] = `
+Object {
+  "name": "mimi",
+}
+`;
+
+exports[`JwtAuth Authorization Policy Should able to apply policies on projection authorization 2`] = `
+Object {
+  "name": "mimi",
+  "secret": "secret",
+}
+`;
+
 exports[`JwtAuth Basic Authorization Should able to mix controller scope authorizer with other decorators 1`] = `
 Array [
   Array [],
@@ -72,10 +99,13 @@ Array [
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
+            "access": "write",
             "allowMultiple": true,
             "applyTo": Array [],
+            "evaluation": "Dynamic",
             "inherit": true,
             "removeApplied": true,
+            "tag": "Custom",
           },
         },
       ],
@@ -101,10 +131,13 @@ Array [
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
+            "access": "write",
             "allowMultiple": true,
             "applyTo": Array [],
+            "evaluation": "Dynamic",
             "inherit": true,
             "removeApplied": true,
+            "tag": "Custom",
           },
         },
       ],
@@ -149,10 +182,13 @@ Array [
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
+            "access": "read",
             "allowMultiple": true,
             "applyTo": Array [],
+            "evaluation": "Dynamic",
             "inherit": true,
             "removeApplied": true,
+            "tag": "Custom",
           },
         },
       ],
@@ -178,10 +214,13 @@ Array [
           "tag": "Custom",
           "type": "plumier-meta:authorize",
           Symbol(tinspector:decoratorOption): Object {
+            "access": "read",
             "allowMultiple": true,
             "applyTo": Array [],
+            "evaluation": "Dynamic",
             "inherit": true,
             "removeApplied": true,
+            "tag": "Custom",
           },
         },
       ],

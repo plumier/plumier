@@ -28,6 +28,10 @@ mock.mockClear = (type:MockType) => {
     }
 }
 
+export function random() {
+    return new Date().getTime().toString(32)
+}
+
 export async function expectError(operation:Promise<any>) {
     const fn = jest.fn()
     try{

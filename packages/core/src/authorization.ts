@@ -116,15 +116,23 @@ class PolicyAuthorizer implements Authorizer {
         this.policies.push(...policies)
     }
     async authorize(ctx: AuthorizationContext, location: 'Class' | 'Parameter' | 'Method'): Promise<boolean> {
-        // test for auth policy first
+        // check role first because its faster 
+        for (const role of ctx.role) {
+            for (const key of this.keys) {
+                if(key === role) return true
+            }
+        }
+        // test for auth policy
         for (const Auth of this.policies.reverse()) {
             const authPolicy = new Auth()
             for (const policy of this.keys) {
-                if (authPolicy.equals(policy, ctx)) return authPolicy.authorize(ctx, location)
+                if (authPolicy.equals(policy, ctx)) {
+                    const authorize = await authPolicy.authorize(ctx, location)
+                    if(authorize) return true
+                }
             }
         }
-        // if none match, check for user role
-        return ctx.role.some(x => this.keys.some(y => y === x))
+        return false
     }
 }
 
@@ -314,7 +322,7 @@ function createContext(ctx: ParamCheckContext, value: any, meta: ClassReflection
 }
 
 async function checkParameter(meta: PropertyReflection | ParameterReflection, value: any, ctx: ParamCheckContext): Promise<string[]> {
-    if (value === undefined) return []
+    if (value === undefined || value === null) return []
     else if (Array.isArray(meta.type)) {
         const newMeta = { ...meta, type: meta.type[0] };
         const result: string[] = []
@@ -499,7 +507,7 @@ async function responseAuthorize(raw: ActionResult, ctx: ActionContext): Promise
     if (type !== Promise && type && raw.status === 200 && raw.body) {
         const info = await createAuthContext(ctx, "read")
         const node = await compileType(type, info, [])
-        raw.body = await filterType(raw.body, node, info)
+        raw.body = Array.isArray(raw.body) && raw.body.length === 0 ? [] : await filterType(raw.body, node, info)
         return raw
     }
     else {
