@@ -1,6 +1,6 @@
 ---
 id: overview
-title: Plumier in 5 Minutes
+title: Overview
 slug: /
 ---
 
@@ -173,7 +173,7 @@ Above request will add comment to the post with ID `12345`. Note that the `user`
 Nested generic controller also supported filter parameter to refine the response result explained earlier. 
 
 :::info Documentation
-Read more detail information about Generic Controller in this [documentation](../refs/Generic-Controller.md)
+Read more detail information about Generic Controller in this [documentation](Generic-Controller.md)
 ::::
 
 ### Securing Data Based on User Role 
@@ -267,11 +267,11 @@ There are more authorization decorator available
 | `@authorize.writeonly()`             | Protect property only can be write and no other role can read it |
 
 :::info documentation 
-Refer to [this documentation](../refs/Authorization.md) to get detail information about authorization
+Refer to [this documentation](Authorization.md) to get detail information about authorization
 :::
 
 :::info documentation 
-Refer to [this documentation](../refs/Generic-Controller.md#control-access-to-the-generated-routes) to get detail information on securing generic controller routes. 
+Refer to [this documentation](Generic-Controller.md#control-access-to-the-generated-routes) to get detail information on securing generic controller routes. 
 :::
 
 
@@ -307,7 +307,7 @@ export class User {
 There are more than 40 validators to use to secure your API consumer request. 
 
 :::info
-Refer to [validator documentation](../refs/Validation.md) for more information 
+Refer to [validator documentation](Validation.md) for more information 
 :::
 
 ### Generate Open API 3.0 Schema from Controllers
@@ -324,7 +324,7 @@ new Plumier()
 
 The generated Open API 3.0 schema can be customized minimally, but mostly everything will just work out of the box. `SwaggerFacility` hosts the SwaggerUI under `/swagger` endpoint.
 
-![swagger](../assets/swagger.png)
+![swagger](assets/swagger.png)
 
 ### Handle Complex Request with Common Controller
 
@@ -356,7 +356,7 @@ Controller can return any value including `Promise`, this value then rendered in
 | `FileActionResult`     | `response.file()`     | Serve static file response | `@plumier/serve-static` |
 
 :::info documentation
-Refer to the complete documentation about [routing](../refs/Route-Generation-Cheat-Sheet.md)
+Refer to the complete documentation about [routing](Route-Generation-Cheat-Sheet.md)
 :::
 
 ### Bind Request Part Into Action's Parameter
@@ -436,7 +436,7 @@ Here are list of supported parameter binding decorators
 | `@bind.custom()`  | Bind custom parameter binding implementation into parameter                                                             |
 
 :::info documentation
-Refer to the complete documentation about [parameter binding](../refs/Parameter-Binding.md) and [type converter](../refs/Converters.md)
+Refer to the complete documentation about [parameter binding](Parameter-Binding.md) and [type converter](Converters.md)
 :::
 
 ### Plug Facilities Into Application Bootstrap

@@ -3,9 +3,10 @@ id: action-result
 title: ActionResult
 ---
 
+
 `ActionResult` is a special class that used to create an Http Response. `ActionResult` has ability to modify Http Response which make it possible to make a custom response such as return an html, file, file download etc. 
 
-## Signature
+### Signature
 `ActionResult` signature has some similarities with the http response like below:
 
 ```typescript
@@ -31,7 +32,7 @@ return new ActionResult({ message: "The body" })
     .setHeader("key", "value")
 ```
 
-## Action Result Implementation
+### Action Result Implementation
 Currently now Plumier has three types of `ActionResult` implementation: 
 
 * `ActionResult` by default will returned JSON response
@@ -52,7 +53,7 @@ class AnimalController {
 
 ```
 
-## Custom Action Result
+### Custom Action Result
 
 It is possible to extends the ability of `ActionResult` to modify the Http response to return custom http response. The main logic is on the `execute` method.
 

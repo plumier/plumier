@@ -14,12 +14,12 @@ module.exports = {
         src: 'img/plumier.png',
       },
       items: [
-        {
-          to: 'refs/entry-point',
-          activeBasePath: 'refs',
-          label: 'Reference',
-          position: 'left',
-        },
+        // {
+        //   to: 'refs/entry-point',
+        //   activeBasePath: 'refs',
+        //   label: 'Reference',
+        //   position: 'left',
+        // },
         // {to: 'blog', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/plumier/plumier',
