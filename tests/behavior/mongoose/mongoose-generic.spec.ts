@@ -84,6 +84,44 @@ describe("CRUD", () => {
             .expect(200)
         expect(body).toMatchSnapshot()
     })
+    it("Should able to update array", async () => {
+        @collection()
+        @route.controller()
+        class Tag {
+            @collection.id()
+            id: string
+            @noop()
+            name: string
+        }
+        @collection()
+        @route.controller()
+        class User {
+            @collection.id()
+            id: string
+            @reflect.noop()
+            email: string
+            @reflect.noop()
+            name: string
+            @collection.ref(x => [Tag])
+            tags: Tag[]
+        }
+        const UserModel = model(User)
+        const app = await createApp({ controller: [User, Tag], mode: "production" })
+        const { body: tag } = await supertest(app.callback())
+            .post("/tags")
+            .send({ name: "lorem" })
+            .expect(200)
+        const { body: secondTag } = await supertest(app.callback())
+            .post("/tags")
+            .send({ name: "lorem" })
+            .expect(200)
+        const { body } = await supertest(app.callback())
+            .post("/users")
+            .send({ email: "john.doe@gmail.com", name: "John Doe", tags: [tag.id, secondTag.id] })
+            .expect(200)
+        const inserted = await UserModel.findById(body.id).populate("tags")
+        expect(inserted).toMatchSnapshot()
+    })
     describe("CRUD Function", () => {
         it("Should serve GET /users?offset&limit", async () => {
             @collection()

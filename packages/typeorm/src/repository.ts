@@ -88,8 +88,8 @@ class TypeORMRepository<T> implements Repository<T> {
     }
 
     async insert(doc: Partial<T>): Promise<{ id: any }> {
-        const result = await this.nativeRepository.insert(doc as any)
-        return { id: result.raw }
+        const result = await this.nativeRepository.save(doc as any)
+        return { id: result.id }
     }
 
     findById(id: any, selection: string[]): Promise<T | undefined> {

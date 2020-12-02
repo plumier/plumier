@@ -223,6 +223,46 @@ describe("CRUD", () => {
             .expect(200)
         expect(body).toMatchSnapshot()
     })
+    it("Should able to update array", async () => {
+        @Entity()
+        @route.controller()
+        class User {
+            @PrimaryGeneratedColumn()
+            id: number
+            @Column()
+            email: string
+            @Column()
+            name: string
+            @OneToMany(x => Tag, x => x.user)
+            tags: Tag[]
+        }
+        @Entity()
+        @route.controller()
+        class Tag {
+            @PrimaryGeneratedColumn()
+            id: number
+            @Column()
+            name: string
+            @ManyToOne(x => User, x => x.tags)
+            user:User
+        }
+        const app = await createApp([User, Tag], { mode: "production" })
+        const repo = getManager().getRepository(User)
+        const { body: tag } = await supertest(app.callback())
+            .post("/tags")
+            .send({ name: "lorem" })
+            .expect(200)
+        const { body: secondTag } = await supertest(app.callback())
+            .post("/tags")
+            .send({ name: "lorem" })
+            .expect(200)
+        const { body } = await supertest(app.callback())
+            .post("/users")
+            .send({ email: "john.doe@gmail.com", name: "John Doe", tags: [tag.id, secondTag.id] })
+            .expect(200)
+        const inserted = await repo.findOne(body.id, { relations: ["tags"] })
+        expect(inserted).toMatchSnapshot()
+    })
     describe("CRUD Function", () => {
         it("Should serve GET /users?offset&limit", async () => {
             @Entity()
