@@ -37,4 +37,3 @@ new Plumier()
 | PLUM_TWITTER_CLIENT_ID            | TwitterOAuthFacility  | Store Twitter OAuth 1.0a client id                                  |
 | PLUM_TWITTER_CLIENT_CLIENT_SECRET | TwitterOAuthFacility  | Store Twitter OAuth 1.0a client secret                              |
 
-s

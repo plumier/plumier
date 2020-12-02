@@ -536,18 +536,17 @@ You may want the response of `GET /users` only contains properties `id`, `messag
 First you need to create the model of the transformed entity.
 
 ```typescript
-@Entity()
 export class CommentWithUser {
-    @PrimaryGeneratedColumn()
+    @noop()
     id: number
 
-    @Column()
+    @noop()
     message: string
 
-    @Column()
+    @noop()
     userName: string
 
-    @Column()
+    @noop()
     userPicture: string
 }
 ```

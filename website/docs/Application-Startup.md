@@ -1,5 +1,5 @@
 ---
-id: entry-point
+id: application-startup
 title: Application Startup
 ---
 

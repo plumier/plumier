@@ -1,6 +1,6 @@
 ---
 id: extend
-title: Extending Plumier
+title: Overview
 ---
 
 This documentation covers most of advanced Plumier functionalities. By reading this documentation you will be able to extends the framework functionalities to give plumier a new ability.
@@ -19,7 +19,7 @@ The term of middleware in Plumier is the same as in other framework such as Expr
 
 Unlike Express, Plumier middleware used a modern pipeline. Instead of using a chain of callback Plumier middleware used chain of promise (async/await) executed from one to another waiting the execution result of the next middleware. 
 
-![Pipeline](../assets/middleware-pipeline.png)
+![Pipeline](assets/middleware-pipeline.png)
 
 This pipeline has better execution control than Express, because the previous middleware free to await the next middleware execution or return a new `ActionResult` immediately and stop the execution pipeline without touching the controller. 
 
@@ -67,7 +67,7 @@ For a complete reference about Context and its properties can be found in [Koa d
 ## Application Lifecycle
 When an Http Request issued into Plumier application, the process goes through a series of processing steps categorized into three main process like picture below.
 
-![Lifecycle](../assets/application-lifecycle.png)
+![Lifecycle](assets/application-lifecycle.png)
 
 The execution process start from the left to right to pass the request that will be processed by controller and then returned back from right to left for the controller execution result that will be rendered into http response.
 

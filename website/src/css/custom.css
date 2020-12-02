@@ -15,9 +15,8 @@
   /* table */
   --ifm-table-cell-padding: 3px 12px;
   /* inline code & color */
-  --ifm-code-font-size: 95%;
+  --ifm-code-font-size: 85%;
   --ifm-code-background:none;
-  --ifm-code-color: rgb(153, 117, 0);
   --ifm-code-padding-vertical: 0;
   --ifm-code-padding-horizontal: 0;
   /* navigation left border */
@@ -30,9 +29,4 @@
   display: block;
   margin: 0 calc(-1 * var(--ifm-pre-padding));
   padding: 0 var(--ifm-pre-padding);
-}
-
-/* prevent scroll on left menu */
-.menu {
-  overflow-x: initial;
 }
