@@ -893,6 +893,24 @@ Object {
 }
 `;
 
+exports[`CRUD Should able to update array 1`] = `
+User {
+  "email": "john.doe@gmail.com",
+  "id": 1,
+  "name": "John Doe",
+  "tags": Array [
+    Tag {
+      "id": 1,
+      "name": "lorem",
+    },
+    Tag {
+      "id": 2,
+      "name": "lorem",
+    },
+  ],
+}
+`;
+
 exports[`CRUD Should able to use entity policy properly 1`] = `
 Array [
   Object {

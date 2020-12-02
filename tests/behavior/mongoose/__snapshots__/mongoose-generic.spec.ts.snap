@@ -928,6 +928,30 @@ Object {
 }
 `;
 
+exports[`CRUD Should able to update array 1`] = `
+Object {
+  "__v": 0,
+  "_id": "MONGODB UNIQUE ID",
+  "email": "john.doe@gmail.com",
+  "id": "MONGODB UNIQUE ID",
+  "name": "John Doe",
+  "tags": Array [
+    Object {
+      "__v": 0,
+      "_id": "MONGODB UNIQUE ID",
+      "id": "MONGODB UNIQUE ID",
+      "name": "lorem",
+    },
+    Object {
+      "__v": 0,
+      "_id": "MONGODB UNIQUE ID",
+      "id": "MONGODB UNIQUE ID",
+      "name": "lorem",
+    },
+  ],
+}
+`;
+
 exports[`CRUD Should able to use entity policy properly 1`] = `
 Array [
   Object {
