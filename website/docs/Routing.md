@@ -1,6 +1,6 @@
 ---
-id: route
-title: Route Cheat Sheet
+id: routing
+title: Routing
 ---
 
 Plumier generate routes directly from controllers. By default it will looks into the `./controller` directory. Except other directory or controller classes specified on the configuration.

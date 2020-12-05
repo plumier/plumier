@@ -3,14 +3,12 @@ id: controller
 title: Controller
 ---
 
-Controller is a group of similar functionalities, for example `UserController` contains functionalities to manage User. Plumier controller is a plain ES6 class contains several methods that will handle http request. Further it provided convention to automatically generate route based on its name, methods name and parameters name.
+Controller is a group of similar functionalities placed in a single class, for example `UserController` contains functionalities to manage User. Plumier controller is a plain ES6 class contains several methods that will handle http request. Further it provided convention to automatically generate route based on its name, methods name and parameters name.
 
 ## Controller Naming
-Plumier doesn't strictly limit the controller name, but controller must has name that end with `Controller`. This is useful when you have a non controller class inside `controller/` directory. Controller naming best practice is using plural word, such as `AnimalsController`, `UsersController` 
+Plumier doesn't strictly limit the controller name, except it must end with `Controller` word. This is useful when you have non controller class inside `controller/` directory. Controller naming best practice is using plural word, such as `AnimalsController`, `UsersController` 
 
 ## Parameter Binding
-Controller parameter can be bound into some Http Request part automatically by using Parameter Binding. 
-
 Parameter binding is a Plumier feature to automatically bound request part (context/query/body) into action parameters. Plumier provided 3 kind of parameter binding: Decorator Binding, Name Binding, Model Binding. 
 
 * Decorator binding: Bind specific koa context into action parameter by using `@bind` decorator.
@@ -40,7 +38,7 @@ export class AnimalController {
 }
 ```
 
-Above code will be the same as access `ctx.request.body`. 
+Above code is the same as accessing `ctx.request.body`. 
 
 Allowed path example: 
 * Using dot to access child property `request.ip` etc
@@ -61,7 +59,7 @@ There are several built in binding decorator provided
 
 
 ### Name Binding
-Action parameter automatically assigned with query parameter or part of body request based on its name. For example: 
+Name binding is when action parameter automatically assigned with query parameter or part of body request based on its name. For example: 
 
 ```
 GET /animal/get?type=canine&page=1
@@ -404,52 +402,47 @@ Result:
 }]
 ```
 
-## Routing Basic 
+## Controller Return Value 
 
-Plumier create routes automatically from controllers. By default it will looks into the `./controller` directory. 
-
-### Name Convention
-Plumier generates routes by convention using controller name, method name and parameter names. By default it will serve GET http method.
+Controller can return any JavaScript value including promised value and rendered into JSON response. Promised value automatically awaited during JSON serialization. 
 
 ```typescript
-export class AnimalController {
-    list(offset:number, limit:number)
+class AnimalController {
+    @route.get(":id")
+    get(id:string){
+        // return promise directly from repository
+        return animalRepo.findById(id)
+    }
 }
 ```
 
-```
-GET /animal/list?offset=<number>&limit=<number>
-```
+### Return Value Data Type 
+To get the proper result (for swagger and response/projection authorization) its required to specify data type of the action return value by using `@type` decorator. 
 
-### Route Decorator
-Furthermore route generation process can be overridden using `@route` decorator. 
+```typescript {5,11}
+import { type } from "tinspector"
 
-```typescript
-export class AnimalController {
-    @route.put()
-    modify(id:number, model:AnimalDto)
+class AnimalController {
+    @route.get(":id")
+    @type(x => Animal) // specify data type 
+    get(id:string){
+        return animalRepo.findById(id)
+    }
+
+    @route.get("")
+    @type(x => [Animal]) // specify data type (array of Animal)
+    list() {
+        return animalRepo.find()
+    }
 }
 ```
-
-```
-POST /animal/modify?id=<value>
-```
-
-#### Custom Route Path 
-
-#### Route Parameters 
-
-#### Root Path 
-
-#### Absolute/Relative Path
-
 
 ## Action Result
-Controller can return JavaScript object that will be formatted into JSON result. For more advance result that require setting http status or response header can be done using `ActionResult`.
+For more advance result that require setting http status or response header can be done using `ActionResult`.
 
 `ActionResult` is a special class that used to create an Http Response. `ActionResult` has ability to modify Http Response which make it possible to make a custom response such as return an html, file, file download etc. 
 
-### Signature
+### Action Result Signature
 `ActionResult` signature has some similarities with the http response like below:
 
 ```typescript
@@ -537,7 +530,7 @@ Registration above will search for controllers classes inside `controller/` dire
 
 Registration can be specified from `WebApiFacility` or `RestfulApiFacility` by providing one of below:
 
-#### Absolute directory
+### Absolute directory
 
 ```typescript
 new Plumier()
@@ -546,7 +539,7 @@ new Plumier()
     .then(koa => koa.listen(8000))
 ```
 
-#### Relative directory
+### Relative directory
 
 ```typescript
 new Plumier()
@@ -555,7 +548,7 @@ new Plumier()
     .then(koa => koa.listen(8000))
 ```
 
-#### Controller class
+### Controller class
 
 ```typescript
 new Plumier()
@@ -564,7 +557,7 @@ new Plumier()
     .then(koa => koa.listen(8000))
 ```
 
-#### Array of controller class 
+### Array of controller class 
 
 ```typescript
 new Plumier()
@@ -572,6 +565,17 @@ new Plumier()
         AnimalsController,
         UsersController
     }))
+    .initialize()
+    .then(koa => koa.listen(8000))
+```
+
+Its also possible to register controller in separate place using `ControllerFacility` using relative/absolute or glob path. 
+
+```typescript
+new Plumier()
+    .set(new WebApiFacility())
+    .set(new ControllerFacility({ controller: "api/*/*-controller.*(ts|js)", rootPath: "api/v1" }))
+    .set(new ControllerFacility({ controller: "controller/*-controller.*(ts|js)" }))
     .initialize()
     .then(koa => koa.listen(8000))
 ```
