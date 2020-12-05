@@ -1,6 +1,6 @@
 ---
-id: overview
-title: Overview
+id: fundamentals
+title: Fundamentals
 slug: /
 ---
 
@@ -42,141 +42,16 @@ Above code is a common TypeORM entities marked with Plumier decorators. The `Cat
 
 Code above will generated into routes that follow Restful best practice like below.
 
-| Method | Path                               | Description                                         |
-| ------ | ---------------------------------- | --------------------------------------------------- |
-| POST   | `/posts`                           | Create new post                                     |
-| GET    | `/posts?offset&limit&select&order` | Get list of posts with paging, order and projection |
-| GET    | `/posts/:id?select`                | Get single post by id with projection               |
-| PUT    | `/posts/:id`                       | Replace post  by id                                 |
-| PATCH  | `/posts/:id`                       | Modify post property by id                          |
-| DELETE | `/posts/:id`                       | Delete post by id                                   |
+| Method | Path         | Description                                                 |
+| ------ | ------------ | ----------------------------------------------------------- |
+| POST   | `/posts`     | Create new post                                             |
+| GET    | `/posts`     | Get list of posts with paging, filter, order and projection |
+| GET    | `/posts/:id` | Get single post by id with projection                       |
+| PUT    | `/posts/:id` | Replace post by id                                          |
+| PATCH  | `/posts/:id` | Modify post by id (required validation ignored)             |
+| DELETE | `/posts/:id` | Delete post by id                                           |
 
-
-### Define Filterable Fields
-Generic controller provided functionalities to refine the API response, such as filter, paging, order and projection. By default filter will not enabled, you need to decorate the filterable fields. 
-
-```typescript {10,14,21}
-import { route, authorize } from "plumier"
-import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn } from "typeorm"
-
-@route.controller()
-@Entity()
-export class Post {
-    @PrimaryGeneratedColumn()
-    id: number
-
-    @authorize.filter()
-    @Column()
-    slug:string
-
-    @authorize.filter()
-    @Column()
-    title:string
-
-    @Column()
-    content:string
-
-    @authorize.filter()
-    @CreateDateColumn()
-    createdAt:Date
-}
-```
-
-Above code enabled filters for `slug`, `title` and `createdAt` fields. Using above generated API you may request like below.
-
-```bash
-# Filter response based on slug property using equals comparison
-GET /posts?filter[slug]=my_cool_post
-
-# Perform range filter between dates using triple dots
-GET /posts?filter[createdAt]=2020-9-1...2020-10-1
-
-# Perform conditional filter (greater or equal than 9/1/2020)
-GET /posts?filter[createdAt]=>=2020-9-1
-
-# Perform search on title that starts with word programming using asterisk
-GET /posts?filter[title]=programming*
-
-# Perform search on title that ends with word programming using asterisk
-GET /posts?filter[title]=*programming
-
-# Paginate response to narrow filter result 
-GET /posts?offset=20&limit=50
-
-# Order response by createdAt desc and slug asc
-GET /posts?order=-createdAt,slug
-
-# Select only title and content visible on response 
-GET /posts?select=title,content
-```
-
-### Map One To Many Into Nested CRUD API
-
-ORM entities may contains relations to represent join to another table, Plumier provided nested generic controller to perform parent children  operation easily.
-
-```typescript {11}
-import { route } from "plumier"
-import { Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"
-
-@Entity()
-export class Post {
-    @PrimaryGeneratedColumn()
-    id: number
-
-    /** other properties **/
-
-    @route.controller()
-    @OneToMany(x => Comment, x => x.post)
-    comments: Comment[]
-}
-
-@Entity()
-export class Comment {
-    @PrimaryGeneratedColumn()
-    id: number
-
-    @ManyToOne(x => User)
-    user: User 
-
-    @Column()
-    comment:string
-
-    @ManyToOne(x => Post, x => x.comments)
-    post:Post
-}
-```
-
-Above code showing that the relation property `comments` marked with `@route.controller()` decorators. It tells Plumier to create a nested generic controller to perform parent children operation. Above code will generated into routes below.
-
-| Method | Path                       | Description                                                           |
-| ------ | -------------------------- | --------------------------------------------------------------------- |
-| POST   | `/posts/:pid/comments`     | Create new post's comment                                             |
-| GET    | `/posts/:pid/comments`     | Get list of post's comments with paging, filter, order and projection |
-| GET    | `/posts/:pid/comments/:id` | Get single post's comment by id with projection                       |
-| PUT    | `/posts/:pid/comments/:id` | Replace post's comment  by id                                         |
-| PATCH  | `/posts/:pid/comments/:id` | Modify post's comment property by id                                  |
-| DELETE | `/posts/:pid/comments/:id` | Delete post's comment by id                                           |
-
-To do the parent children operation on Post and Comment its required to use the Post ID on the route parameter. Then your POST request to create a new comment to specific post is like below
-
-```bash
-# create new comments for Post with ID 12345
-POST /posts/12345/comments HTTP/1.1
-Host: localhost:8000
-Content-Type: application/json
-{ "user": 5678, "comment": "Great article" }
-```
-
-Above request will add comment to the post with ID `12345`. Note that the `user` property can be filled with User ID `5678`.
-
-
-Nested generic controller also supported filter parameter to refine the response result explained earlier. 
-
-:::info Documentation
-Read more detail information about Generic Controller in this [documentation](Generic-Controller.md)
-::::
-
-### Securing Data Based on User Role 
+### Secure Entities with Authorization
 
 Plumier has a powerful authorization system to protect your API endpoints and data based on your user roles. The authorization can be enabled by installing `JwtAuthFacility`.
 
@@ -192,7 +67,7 @@ new Plumier()
 
 Before proceeding on security functionality, its important to notice that Plumier role system is depends on the JWT claim named `role`. You define the login user role by specify user role during JWT signing process like below.
 
-```typescript {13}
+```typescript {10}
 import { route } from "plumier"
 import { sign } from "jsonwebtoken"
 
@@ -202,11 +77,8 @@ export class AuthController {
     async login(email:string, password:string) {
         // other login process
         const user = await repo.findByEmail(email)
-        const token = sign({ 
-          userId: user.id,
-          // role claim is mandatory 
-          role: user.role, 
-        }, process.env.YOUR_JWT_SECRET)
+        const token = sign({ userId: user.id, role: user.role }, 
+          process.env.YOUR_JWT_SECRET)
         return { token }
     }
 }
@@ -274,6 +146,131 @@ Refer to [this documentation](Authorization.md) to get detail information about 
 Refer to [this documentation](Generic-Controller.md#control-access-to-the-generated-routes) to get detail information on securing generic controller routes. 
 :::
 
+### Define Filterable Fields
+Generic controller provided functionalities to refine the API response, such as filter, paging, order and projection. For security reason,  filtering is not enabled by default, you need to specify which field is filterable by using `@authorize.filter(<role>)` decorator. 
+
+```typescript {10,14,21}
+import { route, authorize } from "plumier"
+import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn } from "typeorm"
+
+@route.controller()
+@Entity()
+export class Post {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @authorize.filter()
+    @Column()
+    slug:string
+
+    @authorize.filter()
+    @Column()
+    title:string
+
+    @Column()
+    content:string
+
+    @authorize.filter()
+    @CreateDateColumn()
+    createdAt:Date
+}
+```
+
+Above code enabled filters for `slug`, `title` and `createdAt` fields. Using above generated API you may request like below.
+
+```bash
+# Filter response based on slug property using equals comparison
+GET /posts?filter[slug]=my_cool_post
+
+# Perform range filter between dates using triple dots
+GET /posts?filter[createdAt]=2020-9-1...2020-10-1
+
+# Perform conditional filter (greater or equal than 9/1/2020)
+GET /posts?filter[createdAt]=>=2020-9-1
+
+# Perform search on title that starts with word programming using asterisk
+GET /posts?filter[title]=programming*
+
+# Perform search on title that ends with word programming using asterisk
+GET /posts?filter[title]=*programming
+
+# Paginate response to narrow filter result 
+GET /posts?offset=20&limit=50
+
+# Order response by createdAt desc and slug asc
+GET /posts?order=-createdAt,slug
+
+# Select only title and content visible on response 
+GET /posts?select=title,content
+```
+
+Filter can be authorized to specific role or policy by providing list of allowed roles or policies on the decorator such as `@authorize.filter("Administrator", "Staff")`
+
+### Map One To Many Into Nested CRUD API
+
+ORM entities may contains relations to represent join to another table, Plumier provided nested generic controller to perform parent children  operation easily.
+
+```typescript {11}
+import { route } from "plumier"
+import { Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"
+
+@Entity()
+export class Post {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    /** other properties **/
+
+    @route.controller()
+    @OneToMany(x => Comment, x => x.post)
+    comments: Comment[]
+}
+
+@Entity()
+export class Comment {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @ManyToOne(x => User)
+    user: User 
+
+    @Column()
+    comment:string
+
+    @ManyToOne(x => Post, x => x.comments)
+    post:Post
+}
+```
+
+Above code showing that the relation property `comments` marked with `@route.controller()` decorators. It tells Plumier to create a nested generic controller to perform parent children operation. Above code will generated into routes below.
+
+| Method | Path                       | Description                                                           |
+| ------ | -------------------------- | --------------------------------------------------------------------- |
+| POST   | `/posts/:pid/comments`     | Create new post's comment                                             |
+| GET    | `/posts/:pid/comments`     | Get list of post's comments with paging, filter, order and projection |
+| GET    | `/posts/:pid/comments/:id` | Get single post's comment by id with projection                       |
+| PUT    | `/posts/:pid/comments/:id` | Replace post's comment  by id                                         |
+| PATCH  | `/posts/:pid/comments/:id` | Modify post's comment property by id                                  |
+| DELETE | `/posts/:pid/comments/:id` | Delete post's comment by id                                           |
+
+To do the parent children operation on Post and Comment its required to use the Post ID on the route parameter. Then your POST request to create a new comment to specific post is like below
+
+```bash
+# create new comments for Post with ID 12345
+POST /posts/12345/comments HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+{ "user": 5678, "comment": "Great article" }
+```
+
+Above request will add comment to the post with ID `12345`. Note that the `user` property can be filled with User ID `5678`.
+
+
+Nested generic controller also supported filter parameter to refine the response result explained earlier. 
+
+:::info Documentation
+Read more detail information about Generic Controller in this [documentation](Generic-Controller.md)
+::::
 
 ### Validate User Data Declaratively 
 
