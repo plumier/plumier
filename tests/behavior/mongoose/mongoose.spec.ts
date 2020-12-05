@@ -29,7 +29,7 @@ describe("Mongoose", () => {
         await server?.stop()
     })
     beforeEach(() => {
-        mongoose.models = {}
+        mongoose.connection.models = {}
         mongoose.connection.models = {}
     })
 
@@ -205,7 +205,7 @@ describe("Mongoose", () => {
             })
             const saved = await DummyModel.findById(added._id)
             const object = saved?.toObject()
-            expect(mongoose.isValidObjectId(object.id)).toBe(true)
+            expect(mongoose.isValidObjectId((object! as any).id)).toBe(true)
         })
 
         it("Should work with nested model with ref (populate)", async () => {
@@ -358,8 +358,8 @@ describe("Mongoose", () => {
             const added = await DummyModel.create(<Dummy>{ stringProp: "string" })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-            expect(mongoose.models.Dummy).toBeUndefined()
-            expect(typeof mongoose.models.lorem).toBe("function")
+            expect(mongoose.connection.models.Dummy).toBeUndefined()
+            expect(typeof mongoose.connection.models.lorem).toBe("function")
             expect(DummyModel.collection.name).toBe("lorems")
         })
 
@@ -399,8 +399,8 @@ describe("Mongoose", () => {
             const otherAdded = await OtherDummyModel.create(<Dummy>{ stringProp: "strong" })
             const otherSaved = await OtherDummyModel.findById(otherAdded._id)
             expect(otherSaved).toMatchSnapshot()
-            expect(mongoose.models.Dummy).toBeUndefined()
-            expect(typeof mongoose.models.lorem).toBe("function")
+            expect(mongoose.connection.models.Dummy).toBeUndefined()
+            expect(typeof mongoose.connection.models.lorem).toBe("function")
             expect(DummyModel.collection.name).toBe("lorems")
             expect(OtherDummyModel.collection.name).toBe("lorems")
         })
@@ -457,7 +457,7 @@ describe("Mongoose", () => {
                 numberProp: 123,
                 booleanProp: true,
                 dateProp: new Date(Date.UTC(2020, 2, 2))
-            })
+            } as any) 
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
         })
@@ -749,7 +749,7 @@ describe("Facility", () => {
             return app.initialize()
         }
 
-        beforeEach(() => mongoose.models = {})
+        beforeEach(() => mongoose.connection.models = {})
         afterEach(async () => await mongoose.disconnect())
 
         it("Should work on nested object", async () => {
@@ -1030,7 +1030,7 @@ describe("Facility", () => {
     })
 
     describe("Default MongoDB Uri", () => {
-        beforeEach(() => mongoose.models = {})
+        beforeEach(() => mongoose.connection.models = {})
         afterEach(async () => await mongoose.disconnect())
 
         class AnimalController {
@@ -1093,7 +1093,7 @@ describe("Response Projection Transformer", () => {
         await server?.stop()
     })
     beforeEach(() => {
-        mongoose.models = {}
+        mongoose.connection.models = {}
         mongoose.connection.models = {}
     })
 
