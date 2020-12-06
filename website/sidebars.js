@@ -1,27 +1,31 @@
 module.exports = {
   overview: [
-    "overview",
+    "fundamentals",
     "get-started",
     {
-      Fundamentals: [
+      type: 'category',
+      label: 'Data Access',
+      collapsed: false,
+      items: [
+        "typeorm-helper",
+        "mongoose-helper"
+      ],
+    },
+    "swagger",
+    "social-login",
+    "serve-static",
+    "file-upload",
+    {
+      "Reference": [
         "application-startup",
         "controller",
+        "routing",
         "generic-controller",
         "validation",
         "authorization",
         "middleware",
         "facility",
         "default-environment-variable"
-      ]
-    },
-    {
-      "Facilities": [
-        "typeorm-helper",
-        "mongoose-helper",
-        "swagger",
-        "social-login",
-        "serve-static",
-        "file-upload",
       ]
     },
     {
