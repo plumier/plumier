@@ -29,7 +29,7 @@ describe("Mongoose", () => {
         await server?.stop()
     })
     beforeEach(() => {
-        mongoose.connection.models = {}
+        (mongoose as any).models = {}
         mongoose.connection.models = {}
     })
 
@@ -358,8 +358,8 @@ describe("Mongoose", () => {
             const added = await DummyModel.create(<Dummy>{ stringProp: "string" })
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
-            expect(mongoose.connection.models.Dummy).toBeUndefined()
-            expect(typeof mongoose.connection.models.lorem).toBe("function")
+            expect((mongoose as any).models.Dummy).toBeUndefined()
+            expect(typeof (mongoose as any).models.lorem).toBe("function")
             expect(DummyModel.collection.name).toBe("lorems")
         })
 
@@ -399,8 +399,8 @@ describe("Mongoose", () => {
             const otherAdded = await OtherDummyModel.create(<Dummy>{ stringProp: "strong" })
             const otherSaved = await OtherDummyModel.findById(otherAdded._id)
             expect(otherSaved).toMatchSnapshot()
-            expect(mongoose.connection.models.Dummy).toBeUndefined()
-            expect(typeof mongoose.connection.models.lorem).toBe("function")
+            expect((mongoose as any).models.Dummy).toBeUndefined()
+            expect(typeof (mongoose as any).models.lorem).toBe("function")
             expect(DummyModel.collection.name).toBe("lorems")
             expect(OtherDummyModel.collection.name).toBe("lorems")
         })
@@ -749,7 +749,7 @@ describe("Facility", () => {
             return app.initialize()
         }
 
-        beforeEach(() => mongoose.connection.models = {})
+        beforeEach(() => (mongoose as any).models = {})
         afterEach(async () => await mongoose.disconnect())
 
         it("Should work on nested object", async () => {
@@ -1093,7 +1093,7 @@ describe("Response Projection Transformer", () => {
         await server?.stop()
     })
     beforeEach(() => {
-        mongoose.connection.models = {}
+        (mongoose as any).models = {}
         mongoose.connection.models = {}
     })
 
