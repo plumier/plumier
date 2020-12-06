@@ -16,9 +16,7 @@
   --ifm-table-cell-padding: 3px 12px;
   /* inline code & color */
   --ifm-code-font-size: 85%;
-  --ifm-code-background:none;
-  --ifm-code-padding-vertical: 0;
-  --ifm-code-padding-horizontal: 0;
+  --ifm-code-border-radius: 0;
   /* navigation left border */
   --ifm-toc-border-color: none;
 }
