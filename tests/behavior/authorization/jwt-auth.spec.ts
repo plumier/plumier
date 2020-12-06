@@ -2159,7 +2159,7 @@ describe("JwtAuth", () => {
 
     })
 
-    describe("Projection Authorization", () => {
+    describe("Response Authorization", () => {
         describe("Simple Object", () => {
             it("Should able to filter by role", async () => {
                 @domain()

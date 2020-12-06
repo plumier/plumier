@@ -33,11 +33,11 @@ module.exports = {
         "extend",
         "reflection-basic",
         "metaprogramming",
-        "extends/custom-parameter-binding",
-        "extends/custom-validator",
-        "extends/custom-authorization",
-        "extends/custom-dependency-resolver",
-        "extends/custom-route-generator"
+        "custom-parameter-binding",
+        "custom-validator",
+        "custom-authorization",
+        "custom-dependency-resolver",
+        "custom-route-generator"
       ]
     },
   ]

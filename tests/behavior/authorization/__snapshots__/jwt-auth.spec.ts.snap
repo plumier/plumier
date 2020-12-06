@@ -169,7 +169,7 @@ Array [
 ]
 `;
 
-exports[`JwtAuth Projection Authorization Custom Authorizer Should able to access current property metadata 1`] = `
+exports[`JwtAuth Response Authorization Custom Authorizer Should able to access current property metadata 1`] = `
 Array [
   Array [
     Object {
@@ -238,7 +238,7 @@ Array [
 ]
 `;
 
-exports[`JwtAuth Projection Authorization Custom Authorizer Should able to access value and parent value 1`] = `
+exports[`JwtAuth Response Authorization Custom Authorizer Should able to access value and parent value 1`] = `
 Array [
   Array [
     Object {

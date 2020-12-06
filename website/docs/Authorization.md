@@ -45,34 +45,6 @@ class AuthController{
 
 Value of the role can be a string or an array of string that will be used by `@authorize.route(<user role>)`. 
 
-## Custom Field Name
-By default `JwtAuthFacility` will look for `role` field in your signed token. If you don't like the `role` field on the signed token you can specify the `roleField` with the name of the field in your token.
-
-Example, your role field in the signed token is `access`
-
-```typescript
-jwt.sign({ 
-    email: "<user email>", 
-    //defined the role
-    access: "<user role>" 
-}, "<your secret key>"),
-
-```
-
-Specify the field name on the `JwtAuthFacility`
-
-```typescript
-const app = new Plumier()
-app.set(new JwtAuthFacility({ secret: "<your secret key>", roleField: "access" }))
-```
-
-If you require a real time access to the role vs reading from token claim (because the user role changes needs to wait for the token to expired first), you can provide a function to get the user role for real time role access. But keep in mind that this trick will make every request touch the database that will impact performance:
-
-```typescript
-const app = new Plumier()
-app.set(new JwtAuthFacility({ secret: "<your secret key>", roleField: async user => getUserRole(user._id) }))
-```
-
 ## All Routes are Secured
 By enabling `JwtAuthFacility` all routes are secured, means if end user access your API without token they will receive 403.
 
@@ -225,8 +197,8 @@ export class UsersController {
 
 Using above code, only admin can disabled the user, if user doesn't have admin role Plumier will return 401 with informative error result.
 
-## Projection Authorization 
-Applying authorize decorator on a domain property automatically project data returned based on client role like example below
+## Response Authorization 
+Applying authorize decorator on a domain property automatically authorize response returned based on client role like example below
 
 ```typescript
 import reflect from "tinspector"
@@ -292,8 +264,6 @@ import { domain, authorize, route } from "plumier"
 export class Item {
     constructor(
         public name: string,
-        @authorize.write("admin")
-        @authorize.read("admin", "staff")
         @authorize.filter("admin")
         public basePrice: number,
         public price:number

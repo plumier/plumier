@@ -417,7 +417,7 @@ class AnimalController {
 ```
 
 ### Return Value Data Type 
-To get the proper result (for swagger and response/projection authorization) its required to specify data type of the action return value by using `@type` decorator. 
+To get the proper result (for swagger and response authorization) its required to specify data type of the action return value by using `@type` decorator. 
 
 ```typescript {5,11}
 import { type } from "tinspector"
