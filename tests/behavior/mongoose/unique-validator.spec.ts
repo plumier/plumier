@@ -14,7 +14,7 @@ Mongoose.set("useFindAndModify", false)
 jest.setTimeout(20000)
 
 describe("unique validator", () => {
-    beforeEach(() => Mongoose.models = {})
+    beforeEach(() => (Mongoose as any).models = {})
     afterAll(async () => await Mongoose.disconnect())
     beforeAll(async () => {
         const mongod = new MongoMemoryServer()

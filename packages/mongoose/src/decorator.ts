@@ -1,5 +1,5 @@
 import { Class, entity } from "@plumier/core"
-import { SchemaTypeOpts } from "mongoose"
+import { SchemaTypeOptions } from "mongoose"
 import reflect, { decorateClass, decorateProperty, mergeDecorator, decorateMethod } from "tinspector"
 
 import { ClassOptionDecorator, NamedSchemaOption, PropertyOptionDecorator, RefDecorator, PreSaveDecorator } from "./types"
@@ -15,7 +15,7 @@ function collection(option?: NamedSchemaOption): ClassDecorator {
     )
 }
 
-collection.property = (option?: SchemaTypeOpts<any>) => {
+collection.property = (option?: SchemaTypeOptions<any>) => {
     return decorateProperty(<PropertyOptionDecorator>{ name: "PropertyOption", option })
 }
 
