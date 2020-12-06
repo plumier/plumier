@@ -39,8 +39,8 @@ afterAll(async () => {
 beforeEach(async () => {
     await mongoose.connection.collections["users"]?.deleteMany({})
     await mongoose.connection.collections["animals"]?.deleteMany({})
-    models.clear()
-    mongoose.models = {}
+    models.clear();
+    (mongoose as any).models = {}
     mongoose.connection.models = {}
 })
 

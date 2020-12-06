@@ -1,5 +1,4 @@
-import { Class } from "@plumier/core"
-import mongoose, { SchemaOptions, SchemaTypeOpts, Mongoose } from "mongoose"
+import mongoose, { SchemaOptions, SchemaTypeOptions } from "mongoose"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -8,9 +7,9 @@ import mongoose, { SchemaOptions, SchemaTypeOpts, Mongoose } from "mongoose"
 type Ref<T> = T & mongoose.Document
 type GeneratorHook = (schema: mongoose.Schema) => void
 type NamedSchemaOption = SchemaOptions & { hook?: GeneratorHook, name?: string }
-type ModelFactory = <T>(type: new (...args: any) => T) => mongoose.Model<T & mongoose.Document, {}>
+type ModelFactory = <T>(type: new (...args: any) => T) => mongoose.Model<T & mongoose.Document>
 interface ClassOptionDecorator { name: "ClassOption", option: NamedSchemaOption }
-interface PropertyOptionDecorator { name: "PropertyOption", option?: SchemaTypeOpts<any> }
+interface PropertyOptionDecorator { name: "PropertyOption", option?: SchemaTypeOptions<any> }
 interface RefDecorator { name: "MongooseRef" }
 interface PreSaveDecorator { name: "MongoosePreSave" }
 interface ModelStore { name: string, collectionName: string, definition: any, option: NamedSchemaOption }
