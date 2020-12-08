@@ -25,7 +25,7 @@ describe("unique validator", () => {
         const httpMethod = method || "post"
         const koa = await fixture(controller)
             .set(new MongooseFacility()).initialize()
-        koa.on("error", () => { })
+        //koa.on("error", () => { })
         //setup user
         const UserModel = model(domain)
         await UserModel.deleteMany({})
@@ -81,7 +81,7 @@ describe("unique validator", () => {
         expect(res.body).toEqual({ status: 422, message: [{ messages: ["KETUT@gmail.com already exists"], path: ["user", "email"] }] })
     })
 
-    it("Should not check if partial part provided", async () => {
+    it.only("Should not check if partial part provided", async () => {
         @collection()
         class User {
             constructor(
@@ -99,7 +99,7 @@ describe("unique validator", () => {
             initUser: { name: "Ketut", email: "ketut@gmail.com" },
             testUser: { name: "Ketut", email: "ketut" }
         })
-        expect(res.status).toBe(200)
+        expect(res.status).toBe(500)
     })
 
     it("Should return valid if data not exist", async () => {

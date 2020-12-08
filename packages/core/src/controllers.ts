@@ -8,7 +8,7 @@ import { Class } from "./common"
 import { api } from "./decorator/api"
 import { bind } from "./decorator/bind"
 import { domain, responseType } from "./decorator/common"
-import { DeleteColumnDecorator, entity, RelationDecorator } from "./decorator/entity"
+import { DeleteColumnDecorator, entity, EntityIdDecorator, RelationDecorator } from "./decorator/entity"
 import { route } from "./decorator/route"
 import { RouteDecorator } from "./route-generator"
 import {
@@ -24,6 +24,7 @@ import {
     Repository,
 } from "./types"
 import { type } from "tinspector"
+import { postSaveValue } from './controllers-request-hook'
 
 // --------------------------------------------------------------------- //
 // ----------------------------- DECORATORS ---------------------------- //
@@ -135,6 +136,15 @@ function getDeletedProperty(type: Class) {
     return meta.properties.find(x => x.decorators.some((d: DeleteColumnDecorator) => d.kind === "plumier-meta:delete-column"))
 }
 
+
+async function getIdentifierResult(type: Class, obj: any) {
+    const data = await obj
+    const meta = reflect(type)
+    const id = meta.properties.find(prop => prop.decorators.some((x: EntityIdDecorator) => x.kind === "plumier-meta:entity-id"))
+    return { [postSaveValue]: data, id: data[id!.name] } as { id: any }
+}
+
+
 // --------------------------------------------------------------------- //
 // ---------------------------- CONTROLLERS ---------------------------- //
 // --------------------------------------------------------------------- //
@@ -179,8 +189,8 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
 
     @decorateRoute("post", "")
     @reflect.type(IdentifierResult, "TID")
-    async save(@api.hideRelations() @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
-        return this.repo.insert(data)
+    save(@api.hideRelations() @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
+        return getIdentifierResult(this.entityType, this.repo.insert(data))
     }
 
     @decorateRoute("get", ":id")
@@ -198,14 +208,14 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
     @reflect.type(IdentifierResult, "TID")
     async modify(@val.required() @reflect.type("TID") id: TID, @api.hideRelations() @reflect.type("T") @val.partial("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findByIdOrNotFound(id)
-        return this.repo.update(id, data)
+        return getIdentifierResult(this.entityType, this.repo.update(id, data))
     }
 
     @decorateRoute("put", ":id")
     @reflect.type(IdentifierResult, "TID")
     async replace(@val.required() @reflect.type("TID") id: TID, @api.hideRelations() @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findByIdOrNotFound(id)
-        return this.repo.update(id, data)
+        return getIdentifierResult(this.entityType, this.repo.update(id, data))
     }
 
     @decorateRoute("delete", ":id")
@@ -213,12 +223,8 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
     async delete(@val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         const prop = getDeletedProperty(this.entityType)
         await this.findByIdOrNotFound(id)
-        if (!prop) {
-            return this.repo.delete(id)
-        }
-        else {
-            return this.repo.update(id, { [prop.name]: true } as any)
-        }
+        const result = !prop ? this.repo.delete(id) : this.repo.update(id, { [prop.name]: true } as any)
+        return getIdentifierResult(this.entityType, result)
     }
 }
 
@@ -268,7 +274,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     @reflect.type(IdentifierResult, "TID")
     async save(@val.required() @reflect.type("PID") pid: PID, @api.hideRelations() @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
-        return this.repo.insert(pid, data)
+        return getIdentifierResult(this.entityType, this.repo.insert(pid, data))
     }
 
     @decorateRoute("get", ":id")
@@ -289,7 +295,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     async modify(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @api.hideRelations() @val.partial("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
         await this.findByIdOrNotFound(id)
-        return this.repo.update(id, data)
+        return getIdentifierResult(this.entityType, this.repo.update(id, data))
     }
 
     @decorateRoute("put", ":id")
@@ -297,7 +303,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     async replace(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @api.hideRelations() @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
         await this.findByIdOrNotFound(id)
-        return this.repo.update(id, data)
+        return getIdentifierResult(this.entityType, this.repo.update(id, data))
     }
 
     @decorateRoute("delete", ":id")
@@ -306,12 +312,8 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
         await this.findParentByIdOrNotFound(pid)
         await this.findByIdOrNotFound(id)
         const prop = getDeletedProperty(this.entityType)
-        if (!prop) {
-            return this.repo.delete(id)
-        }
-        else {
-            return this.repo.update(id, { [prop.name]: true } as any)
-        }
+        const result = !prop ? this.repo.delete(id) : this.repo.update(id, { [prop.name]: true } as any)
+        return getIdentifierResult(this.entityType, result)
     }
 }
 
@@ -327,16 +329,16 @@ class DefaultRepository<T> implements Repository<T> {
     find(offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
-    insert(data: Partial<T>): Promise<{ id: any }> {
+    insert(data: Partial<T>): Promise<T> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
     findById(id: any): Promise<T | undefined> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
-    update(id: any, data: Partial<T>): Promise<{ id: any }> {
+    update(id: any, data: Partial<T>): Promise<T | undefined> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
-    delete(id: any): Promise<{ id: any }> {
+    delete(id: any): Promise<T | undefined> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
 }
@@ -348,7 +350,7 @@ class DefaultOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
     find(pid: any, offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
-    insert(pid: any, data: Partial<T>): Promise<{ id: any }> {
+    insert(pid: any, data: Partial<T>): Promise<T> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
     findParentById(id: any): Promise<P | undefined> {
@@ -357,10 +359,10 @@ class DefaultOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
     findById(id: any): Promise<T | undefined> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
-    update(id: any, data: Partial<T>): Promise<{ id: any }> {
+    update(id: any, data: Partial<T>): Promise<T | undefined> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
-    delete(id: any): Promise<{ id: any }> {
+    delete(id: any): Promise<T | undefined> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
 }

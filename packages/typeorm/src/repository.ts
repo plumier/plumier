@@ -1,7 +1,5 @@
 import {
-    authorize,
     Class,
-    entity,
     FilterEntity,
     FilterQuery,
     getGenericControllerOneToOneRelations,
@@ -11,8 +9,17 @@ import {
     Repository,
 } from "@plumier/core"
 import reflect from "tinspector"
-import { Between, Column, CreateDateColumn, Entity, getManager, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not, PrimaryGeneratedColumn, Repository as NativeRepository } from "typeorm"
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
+import {
+    Between,
+    getManager,
+    LessThan,
+    LessThanOrEqual,
+    Like,
+    MoreThan,
+    MoreThanOrEqual,
+    Not,
+    Repository as NativeRepository,
+} from "typeorm"
 
 function normalizeSelect<T>(type: Class<T>, selections: string[]): { select: (keyof T)[], relations: string[] } {
     const meta = reflect(type)
@@ -87,9 +94,8 @@ class TypeORMRepository<T> implements Repository<T> {
         })
     }
 
-    async insert(doc: Partial<T>): Promise<{ id: any }> {
-        const result = await this.nativeRepository.save(doc as any)
-        return { id: result.id }
+    async insert(doc: Partial<T>) {
+        return this.nativeRepository.save(doc as any)
     }
 
     findById(id: any, selection: string[]): Promise<T | undefined> {
@@ -97,14 +103,14 @@ class TypeORMRepository<T> implements Repository<T> {
         return this.nativeRepository.findOne(id, { relations, select })
     }
 
-    async update(id: any, data: T): Promise<{ id: any }> {
+    async update(id: any, data: T) {
         await this.nativeRepository.update(id, data)
-        return { id }
+        return this.nativeRepository.findOne(id)
     }
 
-    async delete(id: any): Promise<{ id: any }> {
+    async delete(id: any) {
         await this.nativeRepository.delete(id)
-        return { id }
+        return this.nativeRepository.findOne(id)
     }
 }
 
@@ -139,14 +145,14 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
         })
     }
 
-    async insert(pid: any, data: Partial<T>): Promise<{ id: any }> {
+    async insert(pid: any, data: Partial<T>) {
         const parent = await this.nativeParentRepository.findOne(pid)
         const inserted = await this.nativeRepository.insert(data as any);
         await this.nativeParentRepository.createQueryBuilder()
             .relation(this.relation)
             .of(parent)
             .add(inserted.raw)
-        return { id: inserted.raw }
+        return (await this.nativeRepository.findOne(inserted.raw))!
     }
 
     findParentById(id: any): Promise<P | undefined> {
@@ -158,14 +164,14 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
         return this.nativeRepository.findOne(id, { relations, select })
     }
 
-    async update(id: any, data: T): Promise<{ id: any }> {
+    async update(id: any, data: T) {
         await this.nativeRepository.update(id, data as any)
-        return { id }
+        return this.nativeRepository.findOne(id)
     }
 
-    async delete(id: any): Promise<{ id: any }> {
+    async delete(id: any) {
         await this.nativeRepository.delete(id)
-        return { id }
+        return this.nativeRepository.findOne(id)
     }
 }
 
