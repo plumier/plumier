@@ -111,7 +111,7 @@ class MockOneToManyRepo<P, T> implements OneToManyRepository<P, T>{
     }
     async insert(pid: any, data: Partial<T>) {
         this.fn(data)
-        return data as T
+        return { id: 123, ...data} as any
     }
     async findById(id: any): Promise<T | undefined> {
         this.fn(id)
@@ -119,7 +119,7 @@ class MockOneToManyRepo<P, T> implements OneToManyRepository<P, T>{
     }
     async update(id: any, data: Partial<T>) {
         this.fn(id, data)
-        return data as T
+        return { id: 123, ...data} as any
     }
     async delete(id: any) {
         this.fn(id)
@@ -1988,7 +1988,7 @@ describe("Request Hook", () => {
             .expect(200)
         expect(fn.mock.calls).toMatchSnapshot()
     })
-    it("Should able to bind ActionResult on postSave", async () => {
+    it("Should able to get the ID of the entity on postSave", async () => {
         @domain()
         class Parent {
             constructor(
@@ -2010,16 +2010,17 @@ describe("Request Hook", () => {
             ) { }
 
             @postSave()
-            hook(@bind.actionResult() result: ActionResult) {
-                fn(result)
+            hook() {
+                fn(this.id)
             }
         }
         const app = await createApp({ controller: [Parent] }).initialize()
-        await supertest(app.callback())
+        const {body} = await supertest(app.callback())
             .post("/parent/123/users")
             .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
             .expect(200)
-        expect(fn.mock.calls).toMatchSnapshot()
+            console.log(fn.mock.calls)
+        expect(body.id === fn.mock.calls[1][0]).toBe(true)
     })
     it("Should not executed on GET method with model parameter", async () => {
         const myFn = jest.fn()

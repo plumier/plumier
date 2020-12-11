@@ -109,8 +109,9 @@ class TypeORMRepository<T> implements Repository<T> {
     }
 
     async delete(id: any) {
+        const data = this.nativeRepository.findOne(id)
         await this.nativeRepository.delete(id)
-        return this.nativeRepository.findOne(id)
+        return data
     }
 }
 
@@ -170,8 +171,9 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
     }
 
     async delete(id: any) {
+        const data = this.nativeRepository.findOne(id)
         await this.nativeRepository.delete(id)
-        return this.nativeRepository.findOne(id)
+        return data
     }
 }
 

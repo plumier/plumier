@@ -3,7 +3,7 @@ import { reflect } from "tinspector"
 import { binder } from "./binder"
 import { Class } from "./common"
 import { RequestHookDecorator } from "./decorator/request-hook"
-import { ActionContext, ActionResult, Invocation, MetadataImpl, Middleware } from "./types"
+import { ActionContext, ActionResult, ControllerGeneric, Invocation, MetadataImpl, Middleware, OneToManyControllerGeneric } from "./types"
 
 export const postSaveValue = Symbol.for("plumier:postSaveEntity")
 
@@ -23,10 +23,12 @@ async function executeHooks(ctx: ActionContext, kind: "preSave" | "postSave", ty
 export class RequestHookMiddleware implements Middleware<ActionContext> {
     async execute({ ctx, proceed }: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
         if (!["POST", "PUT", "PATCH"].some(x => x === ctx.method)) return proceed()
+        const isGeneric = ctx.route.controller.type.prototype instanceof ControllerGeneric
+        const isNestedGeneric = ctx.route.controller.type.prototype instanceof OneToManyControllerGeneric
+        if (!isGeneric && !isNestedGeneric) return proceed()
         const metadata = new MetadataImpl(ctx.parameters, ctx.route, ctx.route.action)
         // find request body data type
-        const par = metadata.action.parameters.find(par => par.typeClassification === "Class" && par.type)
-        if (!par || !par.type) return proceed()
+        const par = metadata.action.parameters.find(par => par.typeClassification === "Class" && par.type)!
         // use the request body as the entity object
         const preValue = metadata.actionParams.get(par.name)
         await executeHooks(ctx, "preSave", par.type, preValue)

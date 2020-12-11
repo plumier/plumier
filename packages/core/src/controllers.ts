@@ -1,10 +1,19 @@
 import "./filter-parser"
 
 import { Context } from "koa"
-import reflect, { decorate, decorateClass, DecoratorId, generic, GenericTypeDecorator, mergeDecorator, PropertyReflection } from "tinspector"
+import reflect, {
+    decorate,
+    DecoratorId,
+    generic,
+    GenericTypeDecorator,
+    mergeDecorator,
+    PropertyReflection,
+    type,
+} from "tinspector"
 import { val } from "typedconverter"
 
 import { Class } from "./common"
+import { postSaveValue } from "./controllers-request-hook"
 import { api } from "./decorator/api"
 import { bind } from "./decorator/bind"
 import { domain, responseType } from "./decorator/common"
@@ -23,8 +32,6 @@ import {
     RelationPropertyDecorator,
     Repository,
 } from "./types"
-import { type } from "tinspector"
-import { postSaveValue } from './controllers-request-hook'
 
 // --------------------------------------------------------------------- //
 // ----------------------------- DECORATORS ---------------------------- //
@@ -159,11 +166,12 @@ class IdentifierResult<TID> {
 }
 
 @generic.template("T", "TID")
-class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerGeneric<T, TID>{
+class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGeneric<T, TID>{
     readonly entityType: Class<T>
     readonly repo: Repository<T>
 
     constructor(fac: ((x: Class<T>) => Repository<T>)) {
+        super()
         const { types } = getGenericTypeParameters(this.constructor as Class)
         this.entityType = types[0]
         this.repo = fac(this.entityType)
@@ -229,13 +237,14 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
 }
 
 @generic.template("P", "T", "PID", "TID")
-class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, TID = String> implements OneToManyControllerGeneric<P, T, PID, TID>{
+class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, TID = String> extends OneToManyControllerGeneric<P, T, PID, TID>{
     readonly entityType: Class<T>
     readonly parentEntityType: Class<P>
     readonly relation: string
     readonly repo: OneToManyRepository<P, T>
 
     constructor(fac: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
+        super()
         const info = getGenericControllerRelation(this.constructor as Class)
         this.parentEntityType = info.parentEntityType
         this.entityType = info.entityType

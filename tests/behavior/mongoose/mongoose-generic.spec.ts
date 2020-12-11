@@ -1,4 +1,4 @@
-import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog, preSave, authorize, entity, entityPolicy } from "@plumier/core"
+import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog, preSave, authorize, entity, entityPolicy, postSave } from "@plumier/core"
 import model, {
     collection,
     controller,
@@ -722,6 +722,7 @@ describe("CRUD", () => {
                 .expect(200)
         })
         it("Should able to use request hook", async () => {
+            const fn = jest.fn()
             @collection()
             @route.controller()
             class User {
@@ -738,6 +739,11 @@ describe("CRUD", () => {
                 hook() {
                     this.password = "HASH"
                 }
+
+                @postSave()
+                afterSave(){
+                    fn(this.id)
+                }
             }
             const app = await createApp({ controller: User, mode: "production" })
             const repo = new MongooseRepository(User)
@@ -747,6 +753,7 @@ describe("CRUD", () => {
                 .expect(200)
             const result = await repo.findById(body.id)
             expect(result).toMatchSnapshot()
+            expect(mongoose.isValidObjectId(fn.mock.calls[0][0])).toBe(true)
         })
         it("Should serve data with native array", async () => {
             @collection()
@@ -2648,7 +2655,7 @@ describe("Repository", () => {
         const UserModel = helper.model(User)
         const repo = new MongooseOneToManyRepository(User, Animal, "animals", helper)
         const parent = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe" }).save()
-        const inserted = await repo.insert(parent.id, { name: "Mimi" })
+        const inserted = await repo.insert(parent.id!, { name: "Mimi" })
         const saved = await UserModel.findById(parent.id).populate("animals")
         expect(saved).toMatchSnapshot()
     })

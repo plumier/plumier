@@ -631,6 +631,14 @@ class User {
 
 Above code will hash password before the entity saved into the database. Request hook has parameter binding feature, you can `@bind` any request part into the hook parameter, it works exactly like common [Parameter Binding](Parameter-Binding.md) which also support name binding, model binding and decorator binding.
 
+:::info
+The ID of the current entity only accessible on `@postSave` using `this.id`, since on `@postSave()` the entity is not saved yet to database.
+:::
+
+:::warning
+Keep in mind that entity used for `@preSave()` and `@postSave()` is different, means if you using state variable to share between `@preSave()` and `@postSave()` its may not working like expected.
+:::
+
 ```typescript
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
 import { route, preSave } from "plumier"
@@ -647,9 +655,9 @@ class User {
         // ctx will contains context
     }
 
-    @postSave("put", "patch")
-    async postHook(@bind.actionResult() result:ActionResult){
-        // result contains execution result of the controller
+    @postSave()
+    async postHook(@bind.ctx() ctx:Context){
+         // ctx will contains context
     }
 }
 ``` 

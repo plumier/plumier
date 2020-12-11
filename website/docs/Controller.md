@@ -55,7 +55,6 @@ There are several built in binding decorator provided
 | `@bind.header()`  | Bind request header into parameter                                   |
 | `@bind.user()`    | Bind JWT claim (current user) into parameter                         |
 | `@bind.file()`    | Bind file into parameter. [See here](File-Upload.md#Bind-File-Parser) on detail how to use file binding |
-| `@bind.actionResult()` | Bind action result into parameter. Only work with entity [request hook](Generic-Controller.md#request-hook) |
 
 
 ### Name Binding
