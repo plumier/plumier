@@ -17,7 +17,7 @@
     "@types/pluralize": "^0.0.29",
     "@plumier/core": "1.0.0-rc.2",
     "chalk": "^4.1.0",
-    "mongoose": "^5.11.4",
+    "mongoose": "^5.11.7",
     "pluralize": "^8.0.0"
   },
   "bugs": {
