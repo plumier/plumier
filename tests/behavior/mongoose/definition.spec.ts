@@ -1,5 +1,5 @@
 import { collection, getDefinition } from "@plumier/mongoose"
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 
 describe("Definition", () => {
     describe("Primitive Data Type", () => {

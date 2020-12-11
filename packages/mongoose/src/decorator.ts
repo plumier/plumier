@@ -1,6 +1,6 @@
 import { Class, entity } from "@plumier/core"
 import { SchemaTypeOptions } from "mongoose"
-import reflect, { decorateClass, decorateProperty, mergeDecorator, decorateMethod } from "tinspector"
+import reflect, { decorateClass, decorateProperty, mergeDecorator, decorateMethod } from "@plumier/reflect"
 
 import { ClassOptionDecorator, NamedSchemaOption, PropertyOptionDecorator, RefDecorator, PreSaveDecorator } from "./types"
 

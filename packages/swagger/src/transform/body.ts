@@ -1,6 +1,6 @@
 import { ApiHideRelationDecorator, FormFile, RouteInfo } from "@plumier/core"
 import { ContentObject, ReferenceObject, RequestBodyObject, SchemaObject } from "openapi3-ts"
-import reflect, { Class, ParameterReflection, PropertyReflection } from "tinspector"
+import reflect, { Class, ParameterReflection, PropertyReflection } from "@plumier/reflect"
 
 import { analyzeParameters, ParameterNode } from "./parameter"
 import { SchemaOverrideType, transformTypeAdvance } from "./schema"

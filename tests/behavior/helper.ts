@@ -1,5 +1,5 @@
 import Plumier, { Class, Configuration, WebApiFacility } from "plumier"
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 
 export function fixture(controller: Class | Class[] | string | string[], config?: Partial<Configuration>) {
     const mergedConfig = <Configuration>{ mode: "production", ...config }

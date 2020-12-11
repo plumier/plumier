@@ -15,7 +15,7 @@ import { SwaggerFacility } from "@plumier/swagger"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import supertest from "supertest"
-import reflect, { generic, noop, type } from "tinspector"
+import reflect, { generic, noop, type } from "@plumier/reflect"
 import { JwtAuthFacility } from '@plumier/jwt'
 import { sign } from 'jsonwebtoken'
 import { random } from '../helper'

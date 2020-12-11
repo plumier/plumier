@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Array Converter Should convert array of Object as is 1`] = `
+Array [
+  Object {
+    "birthday": "2018-2-2",
+    "deceased": "ON",
+    "id": "200",
+    "name": "Mimi",
+  },
+  Object {
+    "birthday": "2018-2-2",
+    "deceased": "ON",
+    "id": "200",
+    "name": "Mimi",
+  },
+  Object {
+    "birthday": "2018-2-2",
+    "deceased": "ON",
+    "id": "200",
+    "name": "Mimi",
+  },
+]
+`;
+
+exports[`Guess Array Element Should work for array on nested Object without type override 1`] = `
+AnimalClass {
+  "tags": Array [
+    Object {
+      "id": "123",
+      "name": "lorem",
+    },
+  ],
+}
+`;

@@ -98,7 +98,7 @@ Take a look at the complete [cheat sheet](Route-Generation-Cheat-Sheet.md) on ho
 
 
 ## Type Converter
-Plumier has its own [dedicated reflection library](https://github.com/plumier/tinspector), that make it aware about TypeScript type annotation and reflection. By using that reflection library Plumier able to convert user request into proper data type implicitly without further configuration.
+Plumier has its own dedicated reflection library, that make it aware about TypeScript type annotation and reflection. By using that reflection library Plumier able to convert user request into proper data type implicitly without further configuration.
 
 ```typescript
 export class AnimalsController {

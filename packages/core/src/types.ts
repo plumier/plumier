@@ -9,8 +9,8 @@ import reflect, {
     MethodReflection,
     ParameterReflection,
     PropertyReflection,
-} from "tinspector"
-import { Result, VisitorInvocation } from "typedconverter"
+} from "@plumier/reflect"
+import { Result, VisitorInvocation } from "@plumier/validator"
 import { promisify } from "util"
 
 import { EntityProviderQuery, RoleField } from "./authorization"

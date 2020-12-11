@@ -1,6 +1,6 @@
 import { authorize, CustomAuthorizerFunction, route, domain } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import { noop, type } from '@plumier/tinspector'
+import { noop, type } from '@plumier/reflect'
 import { sign } from "jsonwebtoken"
 import supertest from "supertest"
 

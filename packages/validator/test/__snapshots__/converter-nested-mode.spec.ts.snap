@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Nested Model Should not error when provided nested model with cross dependency 1`] = `
+AnimalClass {
+  "client": ClientClass {
+    "name": "Hola",
+  },
+  "name": "Mimi",
+}
+`;

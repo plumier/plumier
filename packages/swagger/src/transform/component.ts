@@ -1,6 +1,6 @@
 import { Class, isCustomClass } from "@plumier/core"
 import { ComponentsObject, SchemaObject, SecuritySchemeObject } from "openapi3-ts"
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 
 import { refFactory, transformType } from "./schema"
 import { BaseTransformContext, TransformContext } from "./shared"

@@ -1,6 +1,6 @@
 import { Class, EntityIdDecorator, isCustomClass } from "@plumier/core"
 import mong, { ConnectOptions, Document, Mongoose } from "mongoose"
-import reflect, { ClassReflection, PropertyReflection } from "tinspector"
+import reflect, { ClassReflection, PropertyReflection } from "@plumier/reflect"
 
 import {
     ClassOptionDecorator,

@@ -10,7 +10,7 @@ import {
     TypeORMRepository,
 } from "@plumier/typeorm"
 import supertest from "supertest"
-import { generic } from "tinspector"
+import { generic } from "@plumier/reflect"
 import { Column, Entity, getManager, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, getMetadataArgsStorage, createConnection } from "typeorm"
 
 import { cleanup, getConn } from "./helper"

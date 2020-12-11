@@ -12,7 +12,7 @@ import {
     Repository,
 } from "@plumier/core"
 import mongoose, { Document, Model } from "mongoose"
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 import { collection } from './decorator'
 
 import { globalHelper, MongooseHelper } from "./generator"

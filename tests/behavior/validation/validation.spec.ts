@@ -10,7 +10,7 @@ import Plumier, {
     WebApiFacility,
 } from "plumier"
 import Supertest from "supertest"
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 import { join } from "path"
 
 import { fixture } from "../helper"

@@ -3,7 +3,7 @@ import { collection, model, MongooseFacility, MongooseHelper } from "@plumier/mo
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import Mongoose from "mongoose"
 import supertest = require("supertest")
-import { decorate } from "tinspector"
+import { decorate } from "@plumier/reflect"
 
 import { fixture } from "../helper"
 

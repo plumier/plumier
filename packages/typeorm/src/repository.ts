@@ -8,7 +8,7 @@ import {
     RelationDecorator,
     Repository,
 } from "@plumier/core"
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 import {
     Between,
     getManager,

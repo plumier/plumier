@@ -71,7 +71,7 @@ For file input with `multiple` property enabled, you need to specify the type of
 Above code showing file input has the `multiple` property enabled, controller can be changed into below
 
 ```typescript
-import tsp from "tinspector" 
+import tsp from "@plumier/reflect" 
 
 export class AnimalController {
     @route.post()

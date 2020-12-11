@@ -38,7 +38,7 @@ import { Context } from "koa"
 import { join } from "path"
 import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "plumier"
 import supertest from "supertest"
-import reflect, { generic, noop, type } from "tinspector"
+import reflect, { generic, noop, type } from "@plumier/reflect"
 
 import { expectError } from "../helper"
 

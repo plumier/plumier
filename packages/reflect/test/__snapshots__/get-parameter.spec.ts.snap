@@ -1,0 +1,159 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Constructor parameter Should get constructor parameter name 1`] = `
+Array [
+  "par1",
+  "par2",
+  "par3",
+  "par4",
+]
+`;
+
+exports[`Constructor parameter Should get constructor parameter name with comment 1`] = `
+Array [
+  "par1",
+  "par2",
+  "par3",
+  "par4",
+]
+`;
+
+exports[`Constructor parameter Should get constructor with default parameter 1`] = `
+Array [
+  "par1",
+  "par2",
+  "par3",
+  "par4",
+]
+`;
+
+exports[`Constructor parameter Should reflect rest parameter 1`] = `
+Array [
+  "pars",
+]
+`;
+
+exports[`Constructor parameter Should return empty array when no constructor provided 1`] = `Array []`;
+
+exports[`Durability Should not error when provided constructor without parameter 1`] = `Array []`;
+
+exports[`Durability Should not error when provided default constructor 1`] = `Array []`;
+
+exports[`Durability Should not error when provided function without parameter 1`] = `Array []`;
+
+exports[`Durability Should not error when provided method first than constructor 1`] = `Array []`;
+
+exports[`Durability Should not error when provided method without parameter 1`] = `Array []`;
+
+exports[`Durability getConstructorParameters should not error when provided proxy 1`] = `Array []`;
+
+exports[`Durability getMethodParameters should not error when provided proxy 1`] = `Array []`;
+
+exports[`Durability getParameterNames should not error when provided proxy 1`] = `Array []`;
+
+exports[`Function Parameters Should get function parameter name 1`] = `
+Array [
+  "par1",
+  "par2",
+  "par3",
+  "par4",
+]
+`;
+
+exports[`Function Parameters Should get function parameter name with comment 1`] = `
+Array [
+  "par1",
+  "par2",
+  "par3",
+  "par4",
+]
+`;
+
+exports[`Function Parameters Should get function parameter with default parameter 1`] = `
+Array [
+  "par1",
+  "par2",
+  "par3",
+  "par4",
+]
+`;
+
+exports[`Method Parameters Should get method parameter name 1`] = `
+Array [
+  "par1",
+  "par2",
+  "par3",
+  "par4",
+]
+`;
+
+exports[`Method Parameters Should get method parameter name with comment 1`] = `
+Array [
+  "par1",
+  "par2",
+  "par3",
+  "par4",
+]
+`;
+
+exports[`Method Parameters Should get method parameter with default parameter 1`] = `
+Array [
+  "par1",
+  "par2",
+  "par3",
+  "par4",
+]
+`;
+
+exports[`Parameter Destructuring Should parse parameter destructuring 1`] = `
+Array [
+  "par",
+  Array [
+    "date",
+    "num",
+  ],
+]
+`;
+
+exports[`Parameter Destructuring Should parse parameter destructuring on constructor 1`] = `
+Array [
+  Array [
+    "tanggal",
+    "num",
+  ],
+]
+`;
+
+exports[`Parameter Destructuring Should parse parameter destructuring on method 1`] = `
+Array [
+  Array [
+    "tanggal",
+    "num",
+  ],
+]
+`;
+
+exports[`Parameter Destructuring Should parse parameter destructuring with custom name 1`] = `
+Array [
+  Array [
+    "tanggal",
+    "num",
+  ],
+]
+`;
+
+exports[`Parameter Destructuring Should parse parameter destructuring with nested property 1`] = `
+Array [
+  "par",
+  Array [
+    "tanggal",
+    "num",
+    Object {
+      "inner": Array [
+        "str",
+        "dateOfBirth",
+      ],
+    },
+  ],
+]
+`;

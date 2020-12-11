@@ -1,6 +1,6 @@
 import { Class } from "@plumier/core"
-import { CustomPropertyDecorator } from "tinspector"
-import { val } from "typedconverter"
+import { CustomPropertyDecorator } from "@plumier/reflect"
+import { val } from "@plumier/validator"
 import { getManager } from "typeorm"
 
 async function isUnique(value: string, target: Class, field: string, method: string) {
@@ -13,7 +13,7 @@ async function isUnique(value: string, target: Class, field: string, method: str
     if ((method == "put" || method === "patch") && result && result.length > 1) return `${value} already exists`
 }
 
-declare module "typedconverter" {
+declare module "@plumier/validator" {
     namespace val {
         function unique(): CustomPropertyDecorator
     }

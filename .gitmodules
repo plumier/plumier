@@ -1,6 +1,0 @@
-[submodule "packages/tinspector"]
-	path = packages/tinspector
-	url = git@github.com:plumier/tinspector.git
-[submodule "packages/typedconverter"]
-	path = packages/typedconverter
-	url = git@github.com:plumier/typedconverter.git

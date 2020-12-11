@@ -1,4 +1,4 @@
-import { decorate, decorateClass, decorateMethod, DecoratorId } from "tinspector"
+import { decorate, decorateClass, decorateMethod, DecoratorId } from "@plumier/reflect"
 
 import { ControllerBuilder, updateGenericControllerRegistry } from "../controllers-helper"
 import { IgnoreDecorator, RootDecorator, RouteDecorator } from "../route-generator"

@@ -14,7 +14,7 @@ import {
     RouteInfo,
     RelationDecorator,
 } from "@plumier/core"
-import { ValidatorDecorator, PartialValidator } from "typedconverter"
+import { ValidatorDecorator, PartialValidator } from "@plumier/validator"
 
 const isRequired = (dec: ApiRequiredDecorator): dec is ApiRequiredDecorator => dec.kind === "ApiRequired"
 const isBind = (dec: BindingDecorator): dec is BindingDecorator => dec.type === "ParameterBinding"

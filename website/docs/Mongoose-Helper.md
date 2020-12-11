@@ -23,7 +23,7 @@ There are several ways to use the mongodb connection:
 3. If none above provided, connection should be done manually using `mongoose.connect()` function. 
 
 ## Domain Model Declaration 
-Plumier Mongoose Helper uses tinspector to extract type metadata on runtime. Currently there are two domain models declaration supported
+Plumier Mongoose Helper uses reflection to extract type metadata on runtime. Currently there are two domain models declaration supported
 
 ### Using Property Field 
 ```typescript

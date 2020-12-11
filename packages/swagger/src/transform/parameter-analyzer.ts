@@ -1,6 +1,6 @@
 import { BindingDecorator, Class, entityHelper, RelationDecorator, RouteInfo } from "@plumier/core"
 import { ReferenceObject, SchemaObject } from "openapi3-ts"
-import reflect, { ParameterReflection, PropertyReflection } from "tinspector"
+import reflect, { ParameterReflection, PropertyReflection } from "@plumier/reflect"
 
 import { transformType } from "./schema"
 import { isBind, isName, isRequired, TransformContext } from "./shared"

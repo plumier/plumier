@@ -1,6 +1,6 @@
 import { consoleLog, RouteAnalyzerFunction, RouteInfo, cleanupConsole, RouteMetadata, DefaultFacility, VirtualRoute } from "@plumier/core"
 import Plumier, { domain, RestfulApiFacility, route } from "plumier"
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 import { JwtAuthFacility } from '@plumier/jwt'
 
 describe("Route Analyzer", () => {

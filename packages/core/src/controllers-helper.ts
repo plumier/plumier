@@ -1,7 +1,7 @@
 import "./filter-parser"
 
 import { Key, pathToRegexp } from "path-to-regexp"
-import reflect, { decorateClass, DecoratorOptionId, generic } from "tinspector"
+import reflect, { decorateClass, DecoratorOptionId, generic } from "@plumier/reflect"
 
 import { AuthorizeDecorator } from "./authorization"
 import { Class, entityHelper } from "./common"

@@ -204,7 +204,7 @@ Above code will handle multipart form below
 For multiple file upload, method's parameter can be specified using array like below
 
 ```typescript 
-import { type } from "tinspector"
+import { type } from "@plumier/reflect"
 
 class PictureController {
     @route.post()
@@ -368,10 +368,10 @@ Animal {
 ```
 
 ### Array Converter
-Array converter a little bit different due to TypeScript [design type emit limitation](https://github.com/Microsoft/TypeScript/issues/12463), use Tinspector `@type()` decorator to specify array element data type.
+Array converter a little bit different due to TypeScript [design type emit limitation](https://github.com/Microsoft/TypeScript/issues/12463), use `@plumier/reflect` `@type()` decorator to specify array element data type.
 
 ```typescript
-import { type } from "tinspector"
+import { type } from "@plumier/reflect"
 
 @domain() 
 class AnimalDto {
@@ -419,7 +419,7 @@ class AnimalController {
 To get the proper result (for swagger and response/projection authorization) its required to specify data type of the action return value by using `@type` decorator. 
 
 ```typescript {5,11}
-import { type } from "tinspector"
+import { type } from "@plumier/reflect"
 
 class AnimalController {
     @route.get(":id")

@@ -30,7 +30,7 @@ app.set({ converters: [{ type: Boolean, converter: yourConverter }] })
 Example below will show how to create custom boolean converter. It will convert value from `YES` or `NO` to `true/false` value.
 
 ```typescript 
-import { ObjectInfo, ConversionResult, ConversionMessage } from "typedconverter"
+import { ObjectInfo, ConversionResult, ConversionMessage } from "@plumier/validator"
 
 async function booleanConverter(value: {}, info: ObjectInfo<Function | Function[]>): Promise<ConversionResult> {
     switch(value.toString().toLowerCase()){
@@ -56,7 +56,7 @@ Above function will replace the default `Boolean` converter.
 You can call the default bolean converter from inside your convert using `DefaultConverters` namespace, or using `converters` property from `ObjectInfo` parameter.
 
 ```typescript
-import { DefaultConverters, ObjectInfo, ConversionResult } from "typedconverter"
+import { DefaultConverters, ObjectInfo, ConversionResult } from "@plumier/validator"
 
 function booleanConverter(rawValue: {}, info: ObjectInfo<Function | Function[]>): Promise<ConversionResult> {
     //can be using this

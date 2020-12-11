@@ -1,11 +1,11 @@
-import { decorate, mergeDecorator, CustomPropertyDecorator } from "tinspector"
-import * as tc from "typedconverter"
+import { decorate, mergeDecorator, CustomPropertyDecorator } from "@plumier/reflect"
+import * as tc from "@plumier/validator"
 
 import { AsyncValidatorResult, CustomValidator, CustomValidatorFunction, ValidatorDecorator } from "../validator"
 import { api } from './api'
 
 
-declare module "typedconverter" {
+declare module "@plumier/validator" {
     namespace val {
         export function custom(validator: CustomValidatorFunction): (...args:any[]) => void
         export function custom(validator: CustomValidator): (...args:any[]) => void

@@ -1,0 +1,273 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Create Class Generic Should add reflection properly 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      "kind": "GenericType",
+      "target": DynamicType,
+      "types": Array [
+        Number,
+        String,
+      ],
+      Symbol(tinspector:decoratorId): Symbol(genericType),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": false,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [
+        Object {
+          "decorators": Array [],
+          "fields": Object {},
+          "index": 0,
+          "kind": "Parameter",
+          "name": "par",
+          "type": String,
+          "typeClassification": "Primitive",
+        },
+      ],
+      "returnType": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "name": "DynamicType",
+  "properties": Array [],
+  "super": SuperClass,
+  "type": DynamicType,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Create Class Should able to create class by definition 1`] = `
+Array [
+  Object {
+    "name": "string",
+    "type": String,
+  },
+  Object {
+    "name": "bool",
+    "type": Boolean,
+  },
+  Object {
+    "name": "date",
+    "type": Date,
+  },
+  Object {
+    "name": "number",
+    "type": Number,
+  },
+]
+`;
+
+exports[`Create Class Should able to extends from other class 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      "kind": "GenericType",
+      "target": DynamicType,
+      "types": Array [],
+      Symbol(tinspector:decoratorId): Symbol(genericType),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": false,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DynamicType",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DynamicType,
+          "type": Array [
+            String,
+          ],
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "string",
+      "set": undefined,
+      "type": Array [
+        String,
+      ],
+      "typeClassification": "Array",
+    },
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DynamicType,
+          "type": Array [
+            Boolean,
+          ],
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "bool",
+      "set": undefined,
+      "type": Array [
+        Boolean,
+      ],
+      "typeClassification": "Array",
+    },
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DynamicType,
+          "type": Array [
+            Date,
+          ],
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "date",
+      "set": undefined,
+      "type": Array [
+        Date,
+      ],
+      "typeClassification": "Array",
+    },
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DynamicType,
+          "type": Array [
+            Number,
+          ],
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "number",
+      "set": undefined,
+      "type": Array [
+        Number,
+      ],
+      "typeClassification": "Array",
+    },
+  ],
+  "super": User,
+  "type": DynamicType,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Create Class Should able to use array property 1`] = `
+Array [
+  Object {
+    "name": "string",
+    "type": Array [
+      String,
+    ],
+  },
+  Object {
+    "name": "bool",
+    "type": Array [
+      Boolean,
+    ],
+  },
+  Object {
+    "name": "date",
+    "type": Array [
+      Date,
+    ],
+  },
+  Object {
+    "name": "number",
+    "type": Array [
+      Number,
+    ],
+  },
+]
+`;
+
+exports[`Create Class Should able to use array property 2`] = `
+Array [
+  Object {
+    "name": "string",
+    "type": Array [
+      String,
+    ],
+  },
+  Object {
+    "name": "bool",
+    "type": Array [
+      Boolean,
+    ],
+  },
+  Object {
+    "name": "date",
+    "type": Array [
+      Date,
+    ],
+  },
+  Object {
+    "name": "number",
+    "type": Array [
+      Number,
+    ],
+  },
+]
+`;
