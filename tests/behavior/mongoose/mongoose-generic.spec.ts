@@ -2648,7 +2648,7 @@ describe("Repository", () => {
         const UserModel = helper.model(User)
         const repo = new MongooseOneToManyRepository(User, Animal, "animals", helper)
         const parent = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe" }).save()
-        const inserted = await repo.insert(parent.id, { name: "Mimi" })
+        const inserted = await repo.insert(parent.id!, { name: "Mimi" })
         const saved = await UserModel.findById(parent.id).populate("animals")
         expect(saved).toMatchSnapshot()
     })
