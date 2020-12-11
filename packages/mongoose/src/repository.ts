@@ -92,9 +92,8 @@ class MongooseRepository<T> implements Repository<T>{
         return q.skip(offset).limit(limit) as any
     }
 
-    async insert(doc: Partial<T>): Promise<{ id: any }> {
-        const result = await new this.Model(doc).save()
-        return { id: result._id.toHexString() }
+    async insert(doc: Partial<T>) {
+        return new this.Model(doc).save()
     }
 
     findById(id: any, select: string[] = []): Promise<(T & mongoose.Document) | undefined> {
@@ -106,13 +105,11 @@ class MongooseRepository<T> implements Repository<T>{
     }
 
     async update(id: any, data: Partial<T>) {
-        await this.Model.findByIdAndUpdate(id, data as any)
-        return { id }
+        return this.Model.findByIdAndUpdate(id, data as any) as any
     }
 
     async delete(id: any) {
-        await this.Model.findByIdAndRemove(id)
-        return { id }
+        return this.Model.findByIdAndRemove(id) as any
     }
 }
 
@@ -159,7 +156,7 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         }
     }
 
-    async insert(pid: string, doc: Partial<T>): Promise<{ id: any }> {
+    async insert(pid: string, doc: Partial<T>) {
         const parent = await this.ParentModel.findById(pid);
         const reverseProp = this.getReverseProperty()
         if (reverseProp) {
@@ -170,7 +167,7 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         // add children navigation
         (parent as any)[this.relation].push(result._id)
         await parent!.save()
-        return { id: result._id.toHexString() }
+        return result
     }
 
     findParentById(id: any): Promise<(P & mongoose.Document) | undefined> {
@@ -184,14 +181,12 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         return q as any
     }
 
-    async update(id: any, data: Partial<T>): Promise<{ id: any }> {
-        await this.Model.findByIdAndUpdate(id, data as any)
-        return { id }
+    async update(id: any, data: Partial<T>) {
+        return this.Model.findByIdAndUpdate(id, data as any) as any
     }
 
-    async delete(id: any): Promise<{ id: any }> {
-        await this.Model.findByIdAndRemove(id)
-        return { id }
+    async delete(id: any) {
+        return this.Model.findByIdAndRemove(id) as any
     }
 }
 

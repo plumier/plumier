@@ -298,6 +298,14 @@ User {
 }
 `;
 
+exports[`CRUD CRUD Function Should able to use request hook 2`] = `
+Array [
+  Array [
+    1,
+  ],
+]
+`;
+
 exports[`CRUD CRUD Function Should filter by exact value GET /users?filter 1`] = `
 Array [
   Object {

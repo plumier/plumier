@@ -1,42 +1,40 @@
 import { reflect } from "tinspector"
 
-import { BindActionResult, binder } from "./binder"
+import { binder } from "./binder"
 import { Class } from "./common"
 import { RequestHookDecorator } from "./decorator/request-hook"
-import { ActionContext, ActionResult, Invocation, Middleware } from "./types"
+import { ActionContext, ActionResult, ControllerGeneric, Invocation, MetadataImpl, Middleware, OneToManyControllerGeneric } from "./types"
 
-async function executeHooks(invocation: Invocation<ActionContext>, type: "preSave" | "postSave", result?: ActionResult) {
-    const metadata = invocation.metadata!
-    const ctx = invocation.ctx;
-    // only execute hooks under POST PUT PATCH
-    if (!["POST", "PUT", "PATCH"].some(x => x === ctx.method)) return
-    for (const par of metadata.action.parameters) {
-        if (par.typeClassification === "Class" && par.type) {
-            const meta = reflect(par.type as Class)
-            const hooks = meta.methods.filter(x => x.decorators.some((x: RequestHookDecorator) => x.kind === "plumier-meta:request-hook"
-                && x.type === type
-                && (x.method.length === 0 || x.method.some(m => m === ctx.method.toLocaleLowerCase()))))
-            for (const hook of hooks) {
-                // bind request hook parameters
-                const boundPars = await binder(hook, ctx)
-                // bind action result 
-                const pars = boundPars.map((x, i) => {
-                    const par = hook.parameters[i].decorators.find((x: BindActionResult) => x.kind === "plumier-meta:bind-action-result")
-                    return !!par ? result : x
-                })
-                const value = metadata.actionParams.get(par.name);
-                // execute hook
-                await (par.type.prototype[hook.name] as Function).apply(value, pars)
-            }
-        }
+export const postSaveValue = Symbol.for("plumier:postSaveEntity")
+
+async function executeHooks(ctx: ActionContext, kind: "preSave" | "postSave", type: Class, value: any) {
+    const meta = reflect(type)
+    const hooks = meta.methods.filter(x => x.decorators.some((x: RequestHookDecorator) => x.kind === "plumier-meta:request-hook"
+        && x.type === kind
+        && (x.method.length === 0 || x.method.some(m => m === ctx.method.toLowerCase()))))
+    for (const hook of hooks) {
+        // bind request hook parameters
+        const pars = await binder(hook, ctx)
+        // execute hook
+        await (type.prototype[hook.name] as Function).apply(value, pars)
     }
 }
 
 export class RequestHookMiddleware implements Middleware<ActionContext> {
-    async execute(invocation: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
-        await executeHooks(invocation, "preSave")
-        const result = await invocation.proceed()
-        await executeHooks(invocation, "postSave", result)
+    async execute({ ctx, proceed }: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
+        if (!["POST", "PUT", "PATCH"].some(x => x === ctx.method)) return proceed()
+        const isGeneric = ctx.route.controller.type.prototype instanceof ControllerGeneric
+        const isNestedGeneric = ctx.route.controller.type.prototype instanceof OneToManyControllerGeneric
+        if (!isGeneric && !isNestedGeneric) return proceed()
+        const metadata = new MetadataImpl(ctx.parameters, ctx.route, ctx.route.action)
+        // find request body data type
+        const par = metadata.action.parameters.find(par => par.typeClassification === "Class" && par.type)!
+        // use the request body as the entity object
+        const preValue = metadata.actionParams.get(par.name)
+        await executeHooks(ctx, "preSave", par.type, preValue)
+        const result = await proceed()
+        const postValue = result.body[postSaveValue]
+        await executeHooks(ctx, "postSave", par.type, postValue)
         return result
     }
 }

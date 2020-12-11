@@ -29,21 +29,21 @@ class MockRepo<T> implements Repository<T>{
         this.fn(offset, limit, query)
         return []
     }
-    async insert(data: Partial<T>): Promise<{ id: any }> {
+    async insert(data: Partial<T>) {
         this.fn(data)
-        return { id: 123 }
+        return { id: 123 } as any
     }
     async findById(id: any): Promise<T | undefined> {
         this.fn(id)
         return {} as any
     }
-    async update(id: any, data: Partial<T>): Promise<{ id: any }> {
+    async update(id: any, data: Partial<T>) {
         this.fn(id, data)
-        return { id }
+        return { id } as any
     }
-    async delete(id: any): Promise<{ id: any }> {
+    async delete(id: any) {
         this.fn(id)
-        return { id }
+        return { id } as any
     }
 }
 
@@ -60,21 +60,21 @@ class MockOneToManyRepo<P, T> implements OneToManyRepository<P, T>{
     async findParentById(id: any): Promise<P | undefined> {
         return {} as any
     }
-    async insert(pid: any, data: Partial<T>): Promise<{ id: any }> {
+    async insert(pid: any, data: Partial<T>) {
         this.fn(data)
-        return { id: 123 }
+        return { id: 123 } as any
     }
     async findById(id: any): Promise<T | undefined> {
         this.fn(id)
         return {} as any
     }
-    async update(id: any, data: Partial<T>): Promise<{ id: any }> {
+    async update(id: any, data: Partial<T>) {
         this.fn(id, data)
-        return { id }
+        return { id } as any
     }
-    async delete(id: any): Promise<{ id: any }> {
+    async delete(id: any) {
         this.fn(id)
-        return { id }
+        return { id } as any
     }
 }
 

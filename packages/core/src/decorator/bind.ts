@@ -142,13 +142,4 @@ export namespace bind {
     export function custom(process: CustomBinderFunction, name: string = "custom") {
         return decorateParameter(<BindingDecorator>{ type: "ParameterBinding", process, name })
     }
-
-    /**
-     * Bind ActionResult of the action execution.
-     * 
-     * This binder only works on request hook postSave 
-     */
-    export function actionResult() {
-        return decorateParameter(<BindActionResult>{ kind: "plumier-meta:bind-action-result" })
-    }
 }

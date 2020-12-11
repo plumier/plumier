@@ -1,14 +1,23 @@
 import "./filter-parser"
 
 import { Context } from "koa"
-import reflect, { decorate, decorateClass, DecoratorId, generic, GenericTypeDecorator, mergeDecorator, PropertyReflection } from "tinspector"
+import reflect, {
+    decorate,
+    DecoratorId,
+    generic,
+    GenericTypeDecorator,
+    mergeDecorator,
+    PropertyReflection,
+    type,
+} from "tinspector"
 import { val } from "typedconverter"
 
 import { Class } from "./common"
+import { postSaveValue } from "./controllers-request-hook"
 import { api } from "./decorator/api"
 import { bind } from "./decorator/bind"
 import { domain, responseType } from "./decorator/common"
-import { DeleteColumnDecorator, entity, RelationDecorator } from "./decorator/entity"
+import { DeleteColumnDecorator, entity, EntityIdDecorator, RelationDecorator } from "./decorator/entity"
 import { route } from "./decorator/route"
 import { RouteDecorator } from "./route-generator"
 import {
@@ -23,7 +32,6 @@ import {
     RelationPropertyDecorator,
     Repository,
 } from "./types"
-import { type } from "tinspector"
 
 // --------------------------------------------------------------------- //
 // ----------------------------- DECORATORS ---------------------------- //
@@ -135,6 +143,15 @@ function getDeletedProperty(type: Class) {
     return meta.properties.find(x => x.decorators.some((d: DeleteColumnDecorator) => d.kind === "plumier-meta:delete-column"))
 }
 
+
+async function getIdentifierResult(type: Class, obj: any) {
+    const data = await obj
+    const meta = reflect(type)
+    const id = meta.properties.find(prop => prop.decorators.some((x: EntityIdDecorator) => x.kind === "plumier-meta:entity-id"))
+    return { [postSaveValue]: data, id: data[id!.name] } as { id: any }
+}
+
+
 // --------------------------------------------------------------------- //
 // ---------------------------- CONTROLLERS ---------------------------- //
 // --------------------------------------------------------------------- //
@@ -149,11 +166,12 @@ class IdentifierResult<TID> {
 }
 
 @generic.template("T", "TID")
-class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerGeneric<T, TID>{
+class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGeneric<T, TID>{
     readonly entityType: Class<T>
     readonly repo: Repository<T>
 
     constructor(fac: ((x: Class<T>) => Repository<T>)) {
+        super()
         const { types } = getGenericTypeParameters(this.constructor as Class)
         this.entityType = types[0]
         this.repo = fac(this.entityType)
@@ -179,8 +197,8 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
 
     @decorateRoute("post", "")
     @reflect.type(IdentifierResult, "TID")
-    async save(@api.hideRelations() @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
-        return this.repo.insert(data)
+    save(@api.hideRelations() @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
+        return getIdentifierResult(this.entityType, this.repo.insert(data))
     }
 
     @decorateRoute("get", ":id")
@@ -198,14 +216,14 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
     @reflect.type(IdentifierResult, "TID")
     async modify(@val.required() @reflect.type("TID") id: TID, @api.hideRelations() @reflect.type("T") @val.partial("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findByIdOrNotFound(id)
-        return this.repo.update(id, data)
+        return getIdentifierResult(this.entityType, this.repo.update(id, data))
     }
 
     @decorateRoute("put", ":id")
     @reflect.type(IdentifierResult, "TID")
     async replace(@val.required() @reflect.type("TID") id: TID, @api.hideRelations() @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findByIdOrNotFound(id)
-        return this.repo.update(id, data)
+        return getIdentifierResult(this.entityType, this.repo.update(id, data))
     }
 
     @decorateRoute("delete", ":id")
@@ -213,23 +231,20 @@ class RepoBaseControllerGeneric<T = Object, TID = string> implements ControllerG
     async delete(@val.required() @reflect.type("TID") id: TID, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         const prop = getDeletedProperty(this.entityType)
         await this.findByIdOrNotFound(id)
-        if (!prop) {
-            return this.repo.delete(id)
-        }
-        else {
-            return this.repo.update(id, { [prop.name]: true } as any)
-        }
+        const result = !prop ? this.repo.delete(id) : this.repo.update(id, { [prop.name]: true } as any)
+        return getIdentifierResult(this.entityType, result)
     }
 }
 
 @generic.template("P", "T", "PID", "TID")
-class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, TID = String> implements OneToManyControllerGeneric<P, T, PID, TID>{
+class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, TID = String> extends OneToManyControllerGeneric<P, T, PID, TID>{
     readonly entityType: Class<T>
     readonly parentEntityType: Class<P>
     readonly relation: string
     readonly repo: OneToManyRepository<P, T>
 
     constructor(fac: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
+        super()
         const info = getGenericControllerRelation(this.constructor as Class)
         this.parentEntityType = info.parentEntityType
         this.entityType = info.entityType
@@ -268,7 +283,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     @reflect.type(IdentifierResult, "TID")
     async save(@val.required() @reflect.type("PID") pid: PID, @api.hideRelations() @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
-        return this.repo.insert(pid, data)
+        return getIdentifierResult(this.entityType, this.repo.insert(pid, data))
     }
 
     @decorateRoute("get", ":id")
@@ -289,7 +304,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     async modify(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @api.hideRelations() @val.partial("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
         await this.findByIdOrNotFound(id)
-        return this.repo.update(id, data)
+        return getIdentifierResult(this.entityType, this.repo.update(id, data))
     }
 
     @decorateRoute("put", ":id")
@@ -297,7 +312,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     async replace(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @api.hideRelations() @reflect.type("T") data: T, @bind.ctx() ctx: Context): Promise<IdentifierResult<TID>> {
         await this.findParentByIdOrNotFound(pid)
         await this.findByIdOrNotFound(id)
-        return this.repo.update(id, data)
+        return getIdentifierResult(this.entityType, this.repo.update(id, data))
     }
 
     @decorateRoute("delete", ":id")
@@ -306,12 +321,8 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
         await this.findParentByIdOrNotFound(pid)
         await this.findByIdOrNotFound(id)
         const prop = getDeletedProperty(this.entityType)
-        if (!prop) {
-            return this.repo.delete(id)
-        }
-        else {
-            return this.repo.update(id, { [prop.name]: true } as any)
-        }
+        const result = !prop ? this.repo.delete(id) : this.repo.update(id, { [prop.name]: true } as any)
+        return getIdentifierResult(this.entityType, result)
     }
 }
 
@@ -327,16 +338,16 @@ class DefaultRepository<T> implements Repository<T> {
     find(offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
-    insert(data: Partial<T>): Promise<{ id: any }> {
+    insert(data: Partial<T>): Promise<T> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
     findById(id: any): Promise<T | undefined> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
-    update(id: any, data: Partial<T>): Promise<{ id: any }> {
+    update(id: any, data: Partial<T>): Promise<T | undefined> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
-    delete(id: any): Promise<{ id: any }> {
+    delete(id: any): Promise<T | undefined> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
 }
@@ -348,7 +359,7 @@ class DefaultOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
     find(pid: any, offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
-    insert(pid: any, data: Partial<T>): Promise<{ id: any }> {
+    insert(pid: any, data: Partial<T>): Promise<T> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
     findParentById(id: any): Promise<P | undefined> {
@@ -357,10 +368,10 @@ class DefaultOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
     findById(id: any): Promise<T | undefined> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
-    update(id: any, data: Partial<T>): Promise<{ id: any }> {
+    update(id: any, data: Partial<T>): Promise<T | undefined> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
-    delete(id: any): Promise<{ id: any }> {
+    delete(id: any): Promise<T | undefined> {
         throw new Error(errorMessage.GenericControllerImplementationNotFound)
     }
 }
