@@ -5,7 +5,7 @@ import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import Plumier, { WebApiFacility } from "plumier"
 import supertest from "supertest"
-import reflect, { noop, type } from "tinspector"
+import reflect, { noop, type } from "@plumier/reflect"
 
 import { fixture } from "../helper"
 import { ChildModel, } from "./cross-dependent/child"

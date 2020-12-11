@@ -1,4 +1,4 @@
-import { CustomPropertyDecorator, decorate, mergeDecorator, DecoratorOption, decorateProperty, decorateClass, decorateMethod } from "tinspector"
+import { CustomPropertyDecorator, decorate, mergeDecorator, DecoratorOption, decorateProperty, decorateClass, decorateMethod } from "@plumier/reflect"
 
 import { AccessModifier, AuthorizeDecorator, Authorizer, AuthorizerFunction, EntityPolicyProviderDecorator, EntityProviderQuery, Public } from "../authorization"
 import { Class } from '../common'

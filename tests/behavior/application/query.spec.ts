@@ -2,7 +2,7 @@ import { bind, DefaultFacility, generateRoutes, PlumierApplication, route } from
 import Plumier from "plumier"
 import { Context } from "koa"
 import supertest = require("supertest")
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 
 import { fixture } from "../helper"
 

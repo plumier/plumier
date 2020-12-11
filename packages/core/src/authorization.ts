@@ -1,5 +1,5 @@
 import { Context } from 'koa'
-import { ClassReflection, metadata, ParameterReflection, PropertyReflection, reflect } from "tinspector"
+import { ClassReflection, metadata, ParameterReflection, PropertyReflection, reflect } from "@plumier/reflect"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import { ResponseTypeDecorator } from './decorator/common'

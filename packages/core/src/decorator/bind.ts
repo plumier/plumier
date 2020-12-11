@@ -1,5 +1,5 @@
 import { GetOption } from "cookies"
-import { decorateParameter, mergeDecorator } from "tinspector"
+import { decorateParameter, mergeDecorator } from "@plumier/reflect"
 
 import { BindActionResult, BindingDecorator, CustomBinderFunction, HeaderPart, RequestPart } from "../binder"
 import { getChildValue } from "../common"

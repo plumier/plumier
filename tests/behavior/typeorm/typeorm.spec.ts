@@ -2,7 +2,7 @@ import { Class, route, consoleLog } from "@plumier/core"
 import { transformFilter, TypeORMFacility } from "@plumier/typeorm"
 import { join } from "path"
 import supertest from "supertest"
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 import {
     Column,
     Entity,

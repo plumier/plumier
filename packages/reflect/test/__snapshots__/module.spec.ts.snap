@@ -1,0 +1,158 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Module Introspection Should inspect class 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "MyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Module Introspection Should inspect class inside namespace 1`] = `
+Object {
+  "kind": "Object",
+  "members": Array [
+    Object {
+      "ctor": Object {
+        "kind": "Constructor",
+        "name": "constructor",
+        "parameters": Array [],
+      },
+      "decorators": Array [],
+      "kind": "Class",
+      "methods": Array [
+        Object {
+          "decorators": Array [],
+          "kind": "Method",
+          "name": "method",
+          "parameters": Array [],
+          "returnType": undefined,
+          "typeClassification": undefined,
+        },
+      ],
+      "name": "MyClass",
+      "properties": Array [],
+      "super": Object,
+      "type": MyClass,
+      "typeClassification": "Class",
+    },
+  ],
+  "name": "myNameSpace",
+}
+`;
+
+exports[`Module Introspection Should inspect function 1`] = `
+Object {
+  "kind": "Function",
+  "name": "myFunction",
+  "parameters": Array [
+    Object {
+      "decorators": Array [],
+      "fields": Object {},
+      "index": 0,
+      "kind": "Parameter",
+      "name": "id",
+      "type": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "fields": Object {},
+      "index": 1,
+      "kind": "Parameter",
+      "name": "name",
+      "type": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "returnType": undefined,
+}
+`;
+
+exports[`Module Introspection Should inspect function inside namespace 1`] = `
+Object {
+  "kind": "Object",
+  "members": Array [
+    Object {
+      "kind": "Function",
+      "name": "myFunction",
+      "parameters": Array [
+        Object {
+          "decorators": Array [],
+          "fields": Object {},
+          "index": 0,
+          "kind": "Parameter",
+          "name": "id",
+          "type": undefined,
+          "typeClassification": undefined,
+        },
+        Object {
+          "decorators": Array [],
+          "fields": Object {},
+          "index": 1,
+          "kind": "Parameter",
+          "name": "name",
+          "type": undefined,
+          "typeClassification": undefined,
+        },
+      ],
+      "returnType": undefined,
+    },
+  ],
+  "name": "myNamespace",
+}
+`;
+
+exports[`Module Introspection Should inspect module with constant 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "MyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Module Introspection Should inspect module with enum 1`] = `
+Object {
+  "kind": "Object",
+  "members": Array [],
+  "name": "MyEnum",
+}
+`;

@@ -1,0 +1,646 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Required Validator and Partial Array of Object Validator Should valid if not required 1`] = `
+Object {
+  "issues": undefined,
+  "value": Array [
+    undefined,
+    AnimalClass {
+      "id": 123,
+    },
+  ],
+}
+`;
+
+exports[`Required Validator and Partial Array of Object Validator Should validate empty string property if required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "1.id",
+    },
+  ],
+  "value": Array [
+    undefined,
+    AnimalClass {
+      "birthday": 2018-1-2,
+      "deceased": true,
+      "id": "",
+      "name": "Mimi",
+    },
+  ],
+}
+`;
+
+exports[`Required Validator and Partial Array of Object Validator Should validate null property if required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "1.id",
+    },
+  ],
+  "value": Array [
+    undefined,
+    AnimalClass {
+      "birthday": 2018-1-2,
+      "deceased": true,
+      "id": null,
+      "name": "Mimi",
+    },
+  ],
+}
+`;
+
+exports[`Required Validator and Partial Array of Object Validator Should validate undefined property if required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "1.id",
+    },
+  ],
+  "value": Array [
+    undefined,
+    AnimalClass {
+      "birthday": 2018-1-2,
+      "deceased": true,
+      "id": undefined,
+      "name": "Mimi",
+    },
+  ],
+}
+`;
+
+exports[`Required Validator and Partial Array of Primitive Type Validation Should valid if not required 1`] = `
+Object {
+  "issues": undefined,
+  "value": Array [
+    1,
+    null,
+    3,
+  ],
+}
+`;
+
+exports[`Required Validator and Partial Array of Primitive Type Validation Should validate empty string if required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "data.1",
+    },
+  ],
+  "value": Array [
+    1,
+    "",
+    3,
+  ],
+}
+`;
+
+exports[`Required Validator and Partial Array of Primitive Type Validation Should validate null if required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "data.1",
+    },
+  ],
+  "value": Array [
+    1,
+    null,
+    3,
+  ],
+}
+`;
+
+exports[`Required Validator and Partial Array of Primitive Type Validation Should validate undefined if required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "data.1",
+    },
+  ],
+  "value": Array [
+    1,
+    undefined,
+    3,
+  ],
+}
+`;
+
+exports[`Required Validator and Partial Decorators Should able to decorate partial validator 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "save",
+      "parameters": Array [
+        Object {
+          "decorators": Array [
+            Object {
+              "genericParams": Array [],
+              "kind": "Override",
+              "target": AnimalController,
+              "type": AnimalClass,
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+            Object {
+              "type": "tc:validator",
+              "validator": Symbol(tc:partial),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": true,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
+          "fields": Object {},
+          "index": 0,
+          "kind": "Parameter",
+          "name": "data",
+          "type": AnimalClass,
+          "typeClassification": "Class",
+        },
+      ],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "AnimalController",
+  "properties": Array [],
+  "super": Object,
+  "type": AnimalController,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Required Validator and Partial Decorators Should able to decorate required validator 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [],
+        "fields": Object {},
+        "index": 0,
+        "kind": "Parameter",
+        "name": "id",
+        "type": Number,
+        "typeClassification": "Primitive",
+      },
+      Object {
+        "decorators": Array [],
+        "fields": Object {},
+        "index": 1,
+        "kind": "Parameter",
+        "name": "name",
+        "type": String,
+        "typeClassification": "Primitive",
+      },
+      Object {
+        "decorators": Array [],
+        "fields": Object {},
+        "index": 2,
+        "kind": "Parameter",
+        "name": "deceased",
+        "type": Boolean,
+        "typeClassification": "Primitive",
+      },
+      Object {
+        "decorators": Array [
+          Object {
+            "type": "tc:validator",
+            "validator": Symbol(tc:required),
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "applyTo": Array [],
+              "inherit": true,
+              "removeApplied": true,
+            },
+          },
+        ],
+        "fields": Object {},
+        "index": 3,
+        "kind": "Parameter",
+        "name": "birthday",
+        "type": Date,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [
+    Object {
+      "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "AnimalClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "id",
+      "set": undefined,
+      "type": Number,
+      "typeClassification": "Primitive",
+    },
+    Object {
+      "decorators": Array [],
+      "get": undefined,
+      "index": 1,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "name",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+    Object {
+      "decorators": Array [],
+      "get": undefined,
+      "index": 2,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "deceased",
+      "set": undefined,
+      "type": Boolean,
+      "typeClassification": "Primitive",
+    },
+    Object {
+      "decorators": Array [
+        Object {
+          "type": "tc:validator",
+          "validator": Symbol(tc:required),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 3,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "birthday",
+      "set": undefined,
+      "type": Date,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": AnimalClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Required Validator and Partial Nested Object Validator Should valid if provided null not required 1`] = `
+Object {
+  "issues": undefined,
+  "value": AnimalClass {
+    "birthday": 2018-1-2,
+    "deceased": true,
+    "id": 123,
+    "name": "Mimi",
+    "tag": TagClass {
+      "id": 123,
+      "name": null,
+    },
+  },
+}
+`;
+
+exports[`Required Validator and Partial Nested Object Validator Should valid if provided undefined not required 1`] = `
+Object {
+  "issues": undefined,
+  "value": AnimalClass {
+    "id": 123,
+    "tag": TagClass {
+      "id": 123,
+      "name": undefined,
+    },
+  },
+}
+`;
+
+exports[`Required Validator and Partial Nested Object Validator Should validate empty string property if required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "tag.id",
+    },
+  ],
+  "value": AnimalClass {
+    "birthday": 2018-1-2,
+    "deceased": true,
+    "id": 123,
+    "name": "Mimi",
+    "tag": TagClass {
+      "id": "",
+      "name": "The Tag",
+    },
+  },
+}
+`;
+
+exports[`Required Validator and Partial Nested Object Validator Should validate null property if required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "tag.id",
+    },
+  ],
+  "value": AnimalClass {
+    "birthday": 2018-1-2,
+    "deceased": true,
+    "id": 123,
+    "name": "Mimi",
+    "tag": TagClass {
+      "id": null,
+      "name": "The Tag",
+    },
+  },
+}
+`;
+
+exports[`Required Validator and Partial Nested Object Validator Should validate undefined property if required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "tag.id",
+    },
+  ],
+  "value": AnimalClass {
+    "birthday": 2018-1-2,
+    "deceased": true,
+    "id": 123,
+    "name": "Mimi",
+    "tag": TagClass {
+      "id": undefined,
+      "name": "The Tag",
+    },
+  },
+}
+`;
+
+exports[`Required Validator and Partial Object Validator Should valid if provided null if not required 1`] = `
+Object {
+  "issues": undefined,
+  "value": AnimalClass {
+    "birthday": null,
+    "deceased": null,
+    "id": 123,
+    "name": null,
+  },
+}
+`;
+
+exports[`Required Validator and Partial Object Validator Should valid if provided undefined if not required 1`] = `
+Object {
+  "issues": undefined,
+  "value": AnimalClass {
+    "id": 123,
+  },
+}
+`;
+
+exports[`Required Validator and Partial Object Validator Should validate empty string property 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "id",
+    },
+  ],
+  "value": AnimalClass {
+    "birthday": 2018-1-2,
+    "deceased": true,
+    "id": "",
+    "name": "",
+  },
+}
+`;
+
+exports[`Required Validator and Partial Object Validator Should validate null property if required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "id",
+    },
+  ],
+  "value": AnimalClass {
+    "birthday": 2018-1-2,
+    "deceased": true,
+    "id": null,
+    "name": "Mimi",
+  },
+}
+`;
+
+exports[`Required Validator and Partial Object Validator Should validate required validation if property not provided 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "id",
+    },
+  ],
+  "value": AnimalClass {
+    "birthday": 2018-1-2,
+    "deceased": true,
+    "name": "Mimi",
+  },
+}
+`;
+
+exports[`Required Validator and Partial Object Validator Should validate undefined property if required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "id",
+    },
+  ],
+  "value": AnimalClass {
+    "birthday": 2018-1-2,
+    "deceased": true,
+    "id": undefined,
+    "name": "Mimi",
+  },
+}
+`;
+
+exports[`Required Validator and Partial Partial Validation Should able to combined with required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "data",
+    },
+  ],
+  "value": undefined,
+}
+`;
+
+exports[`Required Validator and Partial Partial Validation Should skip required validator on partial parent 1`] = `
+Object {
+  "issues": undefined,
+  "value": AnimalClass {
+    "id": 123,
+  },
+}
+`;
+
+exports[`Required Validator and Partial Primitive Type Validation Should give proper info if provided wrong type of value 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Unable to convert \\"hula\\" into Number",
+      ],
+      "path": "data",
+    },
+  ],
+  "value": "hula",
+}
+`;
+
+exports[`Required Validator and Partial Primitive Type Validation Should valid if not required and provided empty string 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Unable to convert \\"\\" into Number",
+      ],
+      "path": "data",
+    },
+  ],
+  "value": "",
+}
+`;
+
+exports[`Required Validator and Partial Primitive Type Validation Should valid if not required and provided null 1`] = `
+Object {
+  "value": null,
+}
+`;
+
+exports[`Required Validator and Partial Primitive Type Validation Should valid if not required and provided undefined 1`] = `
+Object {
+  "value": undefined,
+}
+`;
+
+exports[`Required Validator and Partial Primitive Type Validation Should validate empty string if required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "data",
+    },
+  ],
+  "value": "",
+}
+`;
+
+exports[`Required Validator and Partial Primitive Type Validation Should validate null if required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "data",
+    },
+  ],
+  "value": null,
+}
+`;
+
+exports[`Required Validator and Partial Primitive Type Validation Should validate undefined if required 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "data",
+    },
+  ],
+  "value": undefined,
+}
+`;

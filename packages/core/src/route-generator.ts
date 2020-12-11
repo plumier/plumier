@@ -1,5 +1,5 @@
 import { isAbsolute, join } from "path"
-import { ClassReflection, MethodReflection, reflect } from "tinspector"
+import { ClassReflection, MethodReflection, reflect } from "@plumier/reflect"
 
 import { Class, findFilesRecursive } from "./common"
 import { DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from './controllers'

@@ -1,5 +1,5 @@
 
-import { val } from "typedconverter"
+import { val } from "@plumier/validator"
 import { model, MongooseHelper } from './generator'
 import { Class } from '@plumier/core'
 import { CanNotValidateNonProperty } from './types'
@@ -15,7 +15,7 @@ async function isUnique(value: string, target: Class | undefined, field: string,
     if ((method == "put" || method === "patch") && result && result.length > 1) return `${value} already exists`
 }
 
-declare module "typedconverter" {
+declare module "@plumier/validator" {
     namespace val {
         function unique(helper?:MongooseHelper): (target: any, name: string, index?: any) => void
     }

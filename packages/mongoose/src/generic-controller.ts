@@ -13,7 +13,7 @@ import {
 } from "@plumier/core"
 import { Context } from "koa"
 import pluralize from 'pluralize'
-import { generic } from "tinspector"
+import { generic } from "@plumier/reflect"
 
 import { MongooseOneToManyRepository, MongooseRepository } from "./repository"
 

@@ -22,7 +22,7 @@ import { IncomingMessage } from "http"
 import { Context } from "koa"
 import Plumier, { ControllerFacility, WebApiFacility } from "plumier"
 import supertest from "supertest"
-import reflect, { decorateClass, generic, noop, type } from "tinspector"
+import reflect, { decorateClass, generic, noop, type } from "@plumier/reflect"
 
 import { fixture } from "../helper"
 

@@ -3,7 +3,7 @@ id: metaprogramming
 title: Metaprogramming
 ---
 
-Key feature that make Plumier different than other TypeScript backend framework is its ability to perform metaprogramming. Plumier has its own reflection (introspection) library named [tinspector](https://github.com/plumier/tinspector), that makes metaprogramming possible.
+Key feature that make Plumier different than other TypeScript backend framework is its ability to perform metaprogramming. Plumier has its own reflection (introspection) library named `@plumier/reflect`, that makes metaprogramming possible.
 
 Metaprogramming in Plumier increases reusability of custom extension, because it can access information about current controller and action handles the request and the location of custom extension applied. 
 

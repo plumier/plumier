@@ -1,4 +1,4 @@
-import { reflect } from "tinspector"
+import { reflect } from "@plumier/reflect"
 
 import { binder } from "./binder"
 import { Class } from "./common"

@@ -67,7 +67,7 @@ const UserActivityModel = model(UserActivity)
 ```
 
 ## Domain Model Declaration 
-Plumier Mongoose Helper uses tinspector to extract type metadata on runtime. Currently there are two domain models declaration supported
+Plumier Mongoose Helper uses reflection to extract type information on runtime. Currently there are two domain models declaration supported
 
 ### Using Property Field 
 ```typescript

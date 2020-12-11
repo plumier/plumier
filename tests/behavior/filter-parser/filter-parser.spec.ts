@@ -17,7 +17,7 @@ import { JwtAuthFacility } from '@plumier/jwt'
 import { sign } from 'jsonwebtoken'
 import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "plumier"
 import supertest from "supertest"
-import { generic, noop } from "tinspector"
+import { generic, noop } from "@plumier/reflect"
 
 class MockRepo<T> implements Repository<T>{
     constructor(private fn: jest.Mock) { }

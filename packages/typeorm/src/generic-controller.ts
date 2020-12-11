@@ -13,7 +13,7 @@ import {
     Repository,
 } from "@plumier/core"
 import pluralize from "pluralize"
-import reflect, { generic, noop, useCache } from "tinspector"
+import reflect, { generic, noop, useCache } from "@plumier/reflect"
 import { getMetadataArgsStorage } from "typeorm"
 import { RelationType } from 'typeorm/metadata/types/RelationTypes'
 

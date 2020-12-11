@@ -1,10 +1,10 @@
-import { defaultConverters, Result, val, VisitorInvocation } from "typedconverter"
+import { defaultConverters, Result, val, VisitorInvocation } from "@plumier/validator"
 
 import { AuthorizeDecorator } from "./authorization"
 import { Class, entityHelper, isCustomClass } from "./common"
 import { EntityFilterDecorator, RelationDecorator } from "./decorator/entity"
 import { ActionContext, FilterQuery } from "./types"
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //
@@ -41,7 +41,7 @@ function convert(decorators: any[], type: Class, value: string): [any, string?] 
 // ----------------------------- VALIDATOR ----------------------------- //
 // --------------------------------------------------------------------- //
 
-declare module "typedconverter" {
+declare module "@plumier/validator" {
     namespace val {
         export function filter(): (...args: any[]) => void
     }

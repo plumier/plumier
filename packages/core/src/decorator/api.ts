@@ -1,4 +1,4 @@
-import { decorate, decorateClass, decorateMethod, decorateProperty } from "tinspector"
+import { decorate, decorateClass, decorateMethod, decorateProperty } from "@plumier/reflect"
 
 import { Class } from "../common"
 

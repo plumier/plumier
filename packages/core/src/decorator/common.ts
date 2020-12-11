@@ -1,4 +1,4 @@
-import reflect, { decorate } from "tinspector"
+import reflect, { decorate } from "@plumier/reflect"
 
 import { EntityPolicyProviderDecorator } from "../authorization"
 import { Class } from "../common"

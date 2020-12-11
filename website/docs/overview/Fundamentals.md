@@ -325,7 +325,7 @@ The value `2001-2-3` automatically converted into date and `true` into boolean. 
 For generic datatype and array, TypeScript can't provide proper type information for the reflection library, to solve that you need to specify the data type manually using decorator. 
 
 ```typescript 
-import tinspector from "tinspector"
+import reflect from "@plumier/reflect"
 
 @domain()
 class Animal {

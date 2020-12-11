@@ -229,7 +229,7 @@ Using above code, only admin can disabled the user, if user doesn't have admin r
 Applying authorize decorator on a domain property automatically project data returned based on client role like example below
 
 ```typescript
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 import { domain, authorize, route } from "plumier"
 
 @domain()
@@ -263,7 +263,7 @@ Note that the `@reflect.type()` is required to describe the return type of the a
 Its possible to control the access of the authorization to only get (read) or write (set) by specifying the proper decorator like below
 
 ```typescript
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 import { domain, authorize, route } from "plumier"
 
 @domain()
@@ -285,7 +285,7 @@ Using above code `basePrice` will only can be set by `admin` and retrieved by bo
 You can specify parameter or model property that filterable using specific role by using `@authorize.filter()`. 
 
 ```typescript
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 import { domain, authorize, route } from "plumier"
 
 @domain()

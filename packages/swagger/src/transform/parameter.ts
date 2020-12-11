@@ -1,6 +1,6 @@
 import { AuthorizeDecorator, Class, EntityFilterDecorator, FormFile, RouteInfo } from "@plumier/core"
 import { ParameterObject } from "openapi3-ts"
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 
 import { analyzeParameters, ParameterNode } from "./parameter-analyzer"
 import { transformType, transformTypeAdvance, TransformTypeOption } from "./schema"

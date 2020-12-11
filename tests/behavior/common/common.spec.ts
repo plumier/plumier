@@ -1,5 +1,5 @@
 import { consoleLog, printTable, ellipsis, analyzeModel, domain, globAsync } from "@plumier/core"
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 
 describe("PrintTable", () => {
     it("Should able to print table", () => {

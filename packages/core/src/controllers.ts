@@ -9,8 +9,8 @@ import reflect, {
     mergeDecorator,
     PropertyReflection,
     type,
-} from "tinspector"
-import { val } from "typedconverter"
+} from "@plumier/reflect"
+import { val } from "@plumier/validator"
 
 import { Class } from "./common"
 import { postSaveValue } from "./controllers-request-hook"
