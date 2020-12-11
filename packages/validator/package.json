@@ -40,7 +40,10 @@
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
-    "url": "https://github.com/plumier/typedconverter"
+    "url": "https://github.com/plumier/plumier"
   }
 }
