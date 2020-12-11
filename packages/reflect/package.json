@@ -29,5 +29,14 @@
     "ts-jest": "^26.4.4",
     "tslib": "^2.0.3",
     "typescript": "^4.1.2"
+  },
+  "bugs": {
+    "url": "https://github.com/plumier/plumier/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "url": "https://github.com/plumier/plumier"
   }
 }
