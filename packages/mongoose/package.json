@@ -1,6 +1,6 @@
 {
   "name": "@plumier/mongoose",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "description": "Mongoose with decorator based configuration",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,8 +14,8 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
+    "@plumier/core": "1.0.0-rc.3",
     "@types/pluralize": "^0.0.29",
-    "@plumier/core": "1.0.0-rc.2",
     "chalk": "^4.1.0",
     "mongoose": "^5.11.7",
     "pluralize": "^8.0.0"

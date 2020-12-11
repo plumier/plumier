@@ -1,6 +1,6 @@
 {
   "name": "@plumier/reflect",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "description": "Plumier reflection module",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@plumier/validator",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "description": "Plumier validator and type converter module",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -18,8 +18,8 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
+    "@plumier/reflect": "1.0.0-rc.3",
     "@types/validator": "^13.1.1",
-    "@plumier/reflect": "^1.0.0-rc.2",
     "tslib": "^2.0.3",
     "validator": "^13.5.2"
   },
