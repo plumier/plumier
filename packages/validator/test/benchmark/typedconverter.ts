@@ -1,5 +1,5 @@
 import reflect from "@plumier/reflect";
-import { val, createValidator } from '../src';
+import { val, createValidator } from '../../src';
 
 
 @reflect.parameterProperties()
