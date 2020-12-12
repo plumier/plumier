@@ -393,7 +393,7 @@ Above code showing that we apply `@authorize` decorator on `password` and `role`
 | `@authorize.read("SuperAdmin")`  | Protect property only can be read by specific role (`SuperAdmin`)                       |
 | `@authorize.readonly()`          | Protect property only can be read and no other role can write it                        |
 | `@authorize.writeonly()`         | Protect property only can be write and no other role can read it                        |
-| `@authorize.custom()`            | Protect property using [custom authorizer function](../extends/Custom-Authorization.md) |
+| `@authorize.custom()`            | Protect property using [custom authorizer function](Custom-Authorization.md) |
 
 
 ## Control Access To The Generated Routes 
@@ -629,7 +629,7 @@ class User {
 }
 ``` 
 
-Above code will hash password before the entity saved into the database. Request hook has parameter binding feature, you can `@bind` any request part into the hook parameter, it works exactly like common [Parameter Binding](Parameter-Binding.md) which also support name binding, model binding and decorator binding.
+Above code will hash password before the entity saved into the database. Request hook has parameter binding feature, you can `@bind` any request part into the hook parameter, it works exactly like common [Parameter Binding](Controller.md#parameter-binding) which also support name binding, model binding and decorator binding.
 
 :::info
 The ID of the current entity only accessible on `@postSave` using `this.id`, since on `@postSave()` the entity is not saved yet to database.

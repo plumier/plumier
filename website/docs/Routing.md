@@ -264,7 +264,7 @@ DELETE category/:type/animal/:id
 Multiple routes can be applied to an action, this functionalities needed for example when hosting an SPA with url rewrite
 
 :::info
-A more convenient way to serve SPA url rewrite is using `@route.historyApiFallback()` see [here](/docs/refs/serve-static#history-api-fallback) for more info
+A more convenient way to serve SPA url rewrite is using `@route.historyApiFallback()` see [here](Serve-Static.md#history-api-fallback) for more info
 :::
 
 ```typescript

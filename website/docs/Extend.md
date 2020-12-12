@@ -232,7 +232,7 @@ class PictureController {
 
 Above code will restrict access to the `GET /picture/adult` endpoint by validating the `age` property of the current login user provided by the JWT token claim.
 
-Refer to the [custom validator documentation](extends/custom-validator) for more info.
+Refer to the [custom validator documentation](Custom-Validator.md) for more info.
 
 ## Custom Authorization 
 Custom authorization extends Plumier authorization functionalities. This custom extension useful when you want to secure an endpoint based on specific data. 
