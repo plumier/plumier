@@ -1,4 +1,19 @@
-import { Class, Configuration, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, route, val, consoleLog, preSave, authorize, entity, entityPolicy, postSave } from "@plumier/core"
+import "@plumier/testing"
+
+import {
+    authorize,
+    Class,
+    Configuration,
+    DefaultControllerGeneric,
+    DefaultOneToManyControllerGeneric,
+    entity,
+    entityPolicy,
+    postSave,
+    preSave,
+    route,
+    val,
+} from "@plumier/core"
+import { JwtAuthFacility } from "@plumier/jwt"
 import model, {
     collection,
     controller,
@@ -10,15 +25,14 @@ import model, {
     MongooseOneToManyRepository,
     MongooseRepository,
 } from "@plumier/mongoose"
-import Plumier, { WebApiFacility } from "plumier"
-import { SwaggerFacility } from "@plumier/swagger"
+import reflect, { generic, noop, type } from "@plumier/reflect"
+import { sign } from "jsonwebtoken"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
+import Plumier, { WebApiFacility } from "plumier"
 import supertest from "supertest"
-import reflect, { generic, noop, type } from "@plumier/reflect"
-import { JwtAuthFacility } from '@plumier/jwt'
-import { sign } from 'jsonwebtoken'
-import { random } from '../helper'
+import { random } from "../helper"
+
 
 jest.setTimeout(20000)
 
@@ -788,10 +802,10 @@ describe("CRUD", () => {
                 name: string
             }
             const UsersController = controller(User).configure()
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: [UsersController] })
             expect(mock.mock.calls).toMatchSnapshot()
-            consoleLog.clearMock()
+            console.mockClear()
         })
         it("Should able to disable some actions from controller builder", async () => {
             @collection()
@@ -806,10 +820,10 @@ describe("CRUD", () => {
             const UsersController = controller(User).configure(c => {
                 c.mutators().ignore()
             })
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: [UsersController] })
             expect(mock.mock.calls).toMatchSnapshot()
-            consoleLog.clearMock()
+            console.mockClear()
         })
     })
     describe("Nested CRUD One to Many Function", () => {
@@ -1969,10 +1983,10 @@ describe("CRUD", () => {
                 user: User
             }
             const UsersController = controller([User, Animal, "animals"]).configure()
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: [UsersController] })
             expect(mock.mock.calls).toMatchSnapshot()
-            consoleLog.clearMock()
+            console.mockClear()
         })
         it("Should able to disable some actions using controller builder", async () => {
             @collection()
@@ -1999,10 +2013,10 @@ describe("CRUD", () => {
             const UsersController = controller([User, Animal, "animals"]).configure(c => {
                 c.mutators().ignore()
             })
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: [UsersController] })
             expect(mock.mock.calls).toMatchSnapshot()
-            consoleLog.clearMock()
+            console.mockClear()
         })
     })
     describe("One To One Function", () => {
@@ -2567,10 +2581,10 @@ describe("CRUD", () => {
                 name: string
             }
             mong.model(User)
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }, mong)
             expect(mock.mock.calls).toMatchSnapshot()
-            consoleLog.clearMock()
+            console.mockClear()
         })
 
         it("Should able to load relation entity with versioning", async () => {
@@ -2595,10 +2609,10 @@ describe("CRUD", () => {
                 name: string
             }
             mong.model(User)
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }, mong)
             expect(mock.mock.calls).toMatchSnapshot()
-            consoleLog.clearMock()
+            console.mockClear()
         })
     })
 })

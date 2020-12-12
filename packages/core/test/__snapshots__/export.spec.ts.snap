@@ -186,11 +186,6 @@ Object {
   },
   "binder": binder,
   "checkAuthorize": checkAuthorize,
-  "cleanupConsole": cleanupConsole,
-  "consoleLog": Object {
-    "clearMock": clearMock,
-    "startMock": startMock,
-  },
   "createGenericController": createGenericController,
   "createOneToManyGenericController": createOneToManyGenericController,
   "domain": domain,

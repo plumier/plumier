@@ -1,18 +1,15 @@
-import {
-    Class,
-    cleanupConsole,
-    consoleLog,
-    DefaultFacility,
-    generateRoutes,
-    PlumierApplication,
-    RouteMetadata,
-} from "@plumier/core"
+import "@plumier/testing"
+
+import { Class, DefaultFacility, generateRoutes, PlumierApplication, RouteMetadata } from "@plumier/core"
+import { noop } from "@plumier/reflect"
 import { join } from "path"
 import Plumier, { ControllerFacility, RestfulApiFacility, route, WebApiFacility } from "plumier"
 import supertest from "supertest"
-import { noop } from "@plumier/reflect"
 
 import { fixture } from "../helper"
+import { cleanupConsole } from "@plumier/testing"
+
+
 
 
 
@@ -124,61 +121,61 @@ describe("Route Generator", () => {
     })
 
     it("Should able to provided multiple path", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await fixture(["nested/api/v1", "nested/api/v2"], { mode: "debug" })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should able to provided multiple path with absolute", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await fixture([join(__dirname, "nested/api/v1"), join(__dirname, "nested/api/v2")], { mode: "debug" })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should able to transform using relative glob", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await fixture("nested/**/*.ts", { mode: "debug" })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should able to transform using absolute glob", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await fixture(join(__dirname, "nested/**/*.ts"), { mode: "debug" })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should able to search all on nested directory", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await fixture(join(__dirname, "nested/**"), { mode: "debug" })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should not use directoryAsPath with glob", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await new Plumier()
             .set(new WebApiFacility())
             .set(new ControllerFacility({ controller: "nested-w*/**/*.ts", directoryAsPath: true }))
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should able to provided multiple globs", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await fixture(["nested/api/v1/*.ts", "nested/api/v2/*.ts"], { mode: "debug" })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should able to rename class name using relative route in nested controller", async () => {
@@ -219,11 +216,11 @@ describe("Route Generator", () => {
     })
 
     it("Should not throw error when specify invalid directory", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await fixture(join(__dirname, "not-exits"), { mode: "debug" })
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     describe("GET route", () => {
@@ -1529,43 +1526,43 @@ describe("Route Generator", () => {
 describe("Router with external controller", () => {
 
     it("Should load controllers", async () => {
-        consoleLog.startMock()
+        console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .initialize()
         expect((console.log as any).mock.calls[2][0]).toContain("GET /animal/get")
         expect((console.log as any).mock.calls[3][0]).toContain("GET /beast/get")
         expect((console.log as any).mock.calls[4][0]).toContain("GET /creature/get")
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should able to specify file instead of folder", async () => {
-        consoleLog.startMock()
+        console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: "controller/animal-controller.ts" })
             .initialize()
         expect((console.log as any).mock.calls[2][0]).toContain("/animal/get")
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should should not load non controller", async () => {
-        consoleLog.startMock()
+        console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility({ controller: "./no-controller" }))
             .initialize()
         expect((console.log as any).mock.calls[2][0]).toContain("No controller found")
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should not error when provided files with mix types", async () => {
-        consoleLog.startMock()
+        console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: "mix-types" })
             .initialize()
         expect((console.log as any).mock.calls[2][0]).toContain("/users/save")
-        consoleLog.clearMock()
+        console.mockClear()
     })
 })
 
@@ -1585,12 +1582,12 @@ describe("Extend Route Generator", () => {
                 return generateRoutes(this.ctl, { ...app.config })
             }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await fixture(AnimalController, { mode: "debug" })
             .set(new MyFacility(OtherController))
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
     it("Should able to provide VirtualRoutes from Facility", async () => {
         class AnimalController {
@@ -1608,12 +1605,12 @@ describe("Extend Route Generator", () => {
                 }]
             }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await fixture(AnimalController, { mode: "debug" })
             .set(new MyFacility())
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 })
 
@@ -1688,65 +1685,65 @@ describe("Route Grouping", () => {
         class AnimalController {
             method() { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await createApp()
             .set(new ControllerFacility({ controller: AnimalController, group: "v1", rootPath: "api/v1" }))
             .set(new ControllerFacility({ controller: AnimalController, group: "v2", rootPath: "api/v2" }))
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
     it("Should use directory tree as route", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await createApp()
             .set(new ControllerFacility({ controller: "./nested/", group: "v1" }))
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
     it("Should able to group routes by providing relative path", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await createApp()
             .set(new ControllerFacility({ controller: "./nested/api/v1", group: "v1", rootPath: "api/v1" }))
             .set(new ControllerFacility({ controller: "./nested/api/v2", group: "v2", rootPath: "api/v2" }))
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
     it("Should able to group routes by providing absolute path", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await createApp()
             .set(new ControllerFacility({ controller: join(__dirname, "./nested/api/v1"), group: "v1", rootPath: "api/v1" }))
             .set(new ControllerFacility({ controller: join(__dirname, "./nested/api/v2"), group: "v2", rootPath: "api/v2" }))
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
     it("Should able to combine with default controller path", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await createApp()
             .set({ controller: "./controller" })
             .set(new ControllerFacility({ controller: "./nested/api/v1", group: "v1", rootPath: "api/v1" }))
             .set(new ControllerFacility({ controller: "./nested/api/v2", group: "v2", rootPath: "api/v2" }))
             .initialize()
         expect(mock.mock.calls).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
     it("Should able to ignore nested directory as path", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await createApp()
             .set(new ControllerFacility({ controller: "./nested", group: "v1", directoryAsPath: false }))
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
     it("Should able to ignore nested directory as path with rootPath", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await createApp()
             .set(new ControllerFacility({ controller: "./nested", group: "v1", directoryAsPath: false, rootPath: "api/v1" }))
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 })
 
@@ -1831,10 +1828,10 @@ describe("Route Mapping", () => {
                     return { name }
                 }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await fixture(AnimalsController, { mode: "debug" }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-            consoleLog.clearMock()
+            console.mockClear()
         })
         it("Should show route analysis issue when misconfigured", async () => {
             class AnimalsController {
@@ -1843,10 +1840,10 @@ describe("Route Mapping", () => {
                     return { name }
                 }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await fixture(AnimalsController, { mode: "debug" }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-            consoleLog.clearMock()
+            console.mockClear()
         })
     })
 })
@@ -1860,10 +1857,10 @@ describe("Apply Route from Class", () => {
                 return { name }
             }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await fixture(AnimalsController, { mode: "debug" }).initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
     it("Should able to apply route from controller combine with map", async () => {
         @route.get(":id", { applyTo: "get", map: { name: "id" } })
@@ -1873,10 +1870,10 @@ describe("Apply Route from Class", () => {
                 return { name }
             }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await fixture(AnimalsController, { mode: "debug" }).initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
     it("Should able to apply simple route from controller", async () => {
         @route.get({ applyTo: "get" })
@@ -1886,9 +1883,9 @@ describe("Apply Route from Class", () => {
                 return { name }
             }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await fixture(AnimalsController, { mode: "debug" }).initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 })

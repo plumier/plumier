@@ -85,30 +85,6 @@ function memoize<R, P extends any[]>(fn: (...args: P) => R, getKey: (...args: P)
     return useCache(cache, fn, getKey)
 }
 
-
-// --------------------------------------------------------------------- //
-// ------------------------------ TESTING ------------------------------ //
-// --------------------------------------------------------------------- //
-
-const log = console.log;
-
-namespace consoleLog {
-    export function startMock() {
-        const fn = jest.fn(message => { })
-        console.log = fn
-        return fn
-    }
-    export function clearMock() {
-        console.log = log
-    }
-}
-
-function cleanupConsole(mocks: string[][]) {
-    const cleanup = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
-    const millisecond = /\d*ms/g
-    return mocks.map(x => x.map(y => y.replace(cleanup, "").replace(millisecond, "123ms")))
-}
-
 // --------------------------------------------------------------------- //
 // ---------------------------- FILE SYSTEM ---------------------------- //
 // --------------------------------------------------------------------- //
@@ -249,9 +225,8 @@ namespace entityHelper {
     }
 }
 
-
 export {
-    ellipsis, toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, consoleLog, entityHelper,
-    findFilesRecursive, memoize, printTable, cleanupConsole, analyzeModel, AnalysisMessage, globAsync
+    ellipsis, toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, entityHelper,
+    findFilesRecursive, memoize, printTable, analyzeModel, AnalysisMessage, globAsync
 }
 

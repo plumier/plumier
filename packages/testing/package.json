@@ -1,0 +1,36 @@
+{
+  "name": "@plumier/testing",
+  "version": "1.0.0-rc.3",
+  "description": "Plumier testing modules",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "MVC",
+    "Koa",
+    "IoC",
+    "Dependency Injection",
+    "Web API",
+    "JSON Service",
+    "TDD"
+  ],
+  "scripts": {
+    "compile": "tsc -p tsconfig.build.json"
+  },
+  "author": "Ketut Sandiarsa",
+  "license": "MIT",
+  "dependencies": {
+    "@types/jest": "^26.0.19",
+    "jest": "^26.4.2"
+  },
+  "bugs": {
+    "url": "https://github.com/plumier/plumier/issues"
+  },
+  "repository": {
+    "url": "https://github.com/plumier/plumier"
+  },
+  "homepage": "https://plumierjs.com",
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "9d69b5621b7e2e777818e5e36c13ecba0c8d8204"
+}

@@ -1,4 +1,6 @@
-import { ActionResult, Class, consoleLog, HttpStatusError, middleware, route } from "@plumier/core"
+import "@plumier/testing"
+
+import { ActionResult, Class, HttpStatusError, middleware, route } from "@plumier/core"
 import { join } from "path"
 import Plumier, { WebApiFacility } from "plumier"
 import Supertest from "supertest"
@@ -134,18 +136,18 @@ describe("Error Handling", () => {
 
     it("Should show correct error if provided controller folder not found", async () => {
         const koa = fixture(join(__dirname, "controller"))
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await koa.set({mode: "debug"}).initialize()
         expect(mock.mock.calls).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should show correct error if provided controller file not found", async () => {
         const koa = fixture(join(__dirname, "controller/animal-controller.ts"))
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await koa.set({mode: "debug"}).initialize()
         expect(mock.mock.calls).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 })
 

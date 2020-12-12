@@ -15,8 +15,8 @@ export { generateRoutes, findClassRecursive, appendRoute, IgnoreDecorator, Route
 export { analyzeRoutes, printAnalysis } from "./route-analyzer";
 export { router } from "./router";
 export {
-    Class, consoleLog, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass, printTable, toBoolean,
-    cleanupConsole, ellipsis, analyzeModel, AnalysisMessage, entityHelper, globAsync
+    Class, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass, printTable, toBoolean,
+    ellipsis, analyzeModel, AnalysisMessage, entityHelper, globAsync
 } from "./common";
 export { AuthDecoratorImpl, authorize } from "./decorator/authorize";
 export {

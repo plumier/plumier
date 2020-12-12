@@ -1,3 +1,6 @@
+import "@plumier/testing"
+
+import { DefaultFacility, PlumierApplication, RouteMetadata } from "@plumier/core"
 import { CookieName, OAuthProviderOption, OAuthUser, redirectUri } from "@plumier/social-login"
 import Axios from "axios"
 import Csrf from "csrf"
@@ -7,10 +10,8 @@ import qs from "querystring"
 
 import { fixture } from "../helper"
 import { error, getLoginUrl, params, portRegex, runServer } from "./helper"
+import { FakeOAuth10aFacility, oAuth10aServer } from "./oauth10a-server"
 import { FakeOAuth2Facility, oAuth20Server } from "./oauth20-server"
-import { oAuth10aServer, FakeOAuth10aFacility } from './oauth10a-server'
-import { consoleLog, DefaultFacility, PlumierApplication, RouteMetadata } from '@plumier/core'
-
 
 /**
  * Run 2 fake oauth servers and a single oauth consumer server.
@@ -247,7 +248,7 @@ describe("OAuth 1.0a", () => {
 
 describe("Virtual Routes", () => {
     it("Should print virtual routes properly", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const servers = await appStub(AuthController, opt, opt, opt, true)
         expect(mock.mock.calls).toMatchSnapshot()
         servers.close()

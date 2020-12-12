@@ -1,38 +1,40 @@
-import { consoleLog, printTable, ellipsis, analyzeModel, domain, globAsync } from "@plumier/core"
+import "@plumier/testing"
+
+import { analyzeModel, domain, ellipsis, printTable } from "@plumier/core"
 import reflect from "@plumier/reflect"
 
 describe("PrintTable", () => {
     it("Should able to print table", () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         printTable(["name", "age"], [
             { name: "John Subaru", age: 60 },
             { name: "John Subaru", age: 60 },
             { name: "John Subaru", age: 60 },
         ])
         expect(mock.mock.calls).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should able to print table with algin right", () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         printTable(["name", { property: "age", align: "right" }], [
             { name: "John Subaru", age: 60 },
             { name: "John Subaru", age: 160 },
             { name: "John Subaru", age: 60 },
         ])
         expect(mock.mock.calls).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should not error when provided undefined value", () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         printTable(["name", { property: "age", align: "right" }], [
             { name: "John Subaru", age: 60 },
             { name: "John Subaru" },
             { name: "John Subaru", age: 60 },
         ])
         expect(mock.mock.calls).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 })
 
