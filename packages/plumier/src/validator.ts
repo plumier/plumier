@@ -2,7 +2,7 @@ import { val, AsyncValidatorResult } from "@plumier/core"
 import { FormFile } from "@plumier/core"
 import bytes from "bytes"
 
-declare module "typedconverter" {
+declare module "@plumier/validator" {
     namespace val {
         export function file(maxSize: string | number): (...arg: any[]) => void
         export function file(opt: { maxSize?: string | number, mime?: string | RegExp, invalidMimeMessage?: string, invalidSizeMessage?: string }): (...arg: any[]) => void

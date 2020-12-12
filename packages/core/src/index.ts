@@ -1,5 +1,5 @@
 // TypeScript bug https://github.com/microsoft/TypeScript/issues/18877
-import { val } from "typedconverter"
+import { val } from "@plumier/validator"
 import "./decorator/val"
 export { val }
 export {

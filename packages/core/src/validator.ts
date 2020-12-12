@@ -1,5 +1,5 @@
-import reflect from "tinspector"
-import * as tc from "typedconverter"
+import reflect from "@plumier/reflect"
+import * as tc from "@plumier/validator"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import {

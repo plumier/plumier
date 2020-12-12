@@ -1,5 +1,5 @@
 import model, { proxy, collection } from "@plumier/mongoose"
-import { noop } from "tinspector"
+import { noop } from "@plumier/reflect"
 import { Child } from './child'
 
 @collection()

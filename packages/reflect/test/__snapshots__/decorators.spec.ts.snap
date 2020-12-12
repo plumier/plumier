@@ -1,0 +1,2949 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Decorator ApplyTo Should able to apply decorator into inherited members from class 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "lorem": "ipsum",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": "myFunction",
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "myOtherFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyChild",
+  "properties": Array [],
+  "removedDecorators": Array [
+    Object {
+      "lorem": "ipsum",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": "myFunction",
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "super": DummyClass,
+  "type": DummyChild,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator ApplyTo Should able to apply decorator into method from class 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "lorem": "ipsum",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": "myFunction",
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "myOtherFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "removedDecorators": Array [
+    Object {
+      "lorem": "ipsum",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": "myFunction",
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator ApplyTo Should able to apply decorator into method from class but keep decorator on class 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      "lorem": "ipsum",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": "myFunction",
+        "inherit": true,
+        "removeApplied": false,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "lorem": "ipsum",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": "myFunction",
+            "inherit": true,
+            "removeApplied": false,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "myOtherFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator ApplyTo Should able to apply decorator into multiple members from class 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [],
+        "fields": Object {},
+        "index": 0,
+        "kind": "Parameter",
+        "name": "myProp",
+        "type": Number,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [
+    Object {
+      "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "lorem": "ipsum",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [
+              "myProp",
+              "myFunction",
+            ],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "lorem": "ipsum",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [
+              "myProp",
+              "myFunction",
+            ],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "myProp",
+      "set": undefined,
+      "type": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "removedDecorators": Array [
+    Object {
+      "lorem": "ipsum",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": Array [
+          "myProp",
+          "myFunction",
+        ],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator ApplyTo Should able to apply decorator into parameterProperties from class 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [],
+        "fields": Object {},
+        "index": 0,
+        "kind": "Parameter",
+        "name": "myProp",
+        "type": Number,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [
+    Object {
+      "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "lorem": "ipsum",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": "myProp",
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "myProp",
+      "set": undefined,
+      "type": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "removedDecorators": Array [
+    Object {
+      "lorem": "ipsum",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": "myProp",
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator ApplyTo Should able to apply decorator into property from class 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "lorem": "ipsum",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": "myProp",
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+        Object {
+          "kind": "Noop",
+          "target": DummyClass,
+          Symbol(tinspector:decoratorId): Symbol(noop),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": false,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "myProp",
+      "set": undefined,
+      "type": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "removedDecorators": Array [
+    Object {
+      "lorem": "ipsum",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": "myProp",
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator ApplyTo Should able to apply type override for method 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DummyClass,
+          "type": String,
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": "myFunction",
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myFunction",
+      "parameters": Array [],
+      "returnType": String,
+      "typeClassification": "Primitive",
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "myOtherFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "removedDecorators": Array [
+    Object {
+      "genericParams": Array [],
+      "kind": "Override",
+      "target": DummyClass,
+      "type": String,
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": "myFunction",
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator ApplyTo Should able to decorate parameter property 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [],
+        "fields": Object {},
+        "index": 0,
+        "kind": "Parameter",
+        "name": "name",
+        "type": String,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [
+    Object {
+      "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DummyClass,
+          "type": String,
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": "myFunction",
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "name",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator ApplyTo Should work when allowMultiple is false 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "lorem": "from child",
+          Symbol(tinspector:decoratorId): "decorator-id",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": "myFunction",
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "ChildClass",
+  "properties": Array [],
+  "removedDecorators": Array [
+    Object {
+      "lorem": "from child",
+      Symbol(tinspector:decoratorId): "decorator-id",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": "myFunction",
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "super": DummyClass,
+  "type": ChildClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator ApplyTo Should work with decorator merge 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "lorem": "from child",
+          Symbol(tinspector:decoratorId): "decorator-id",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": "myFunction",
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "ChildClass",
+  "properties": Array [],
+  "removedDecorators": Array [
+    Object {
+      "lorem": "from child",
+      Symbol(tinspector:decoratorId): "decorator-id",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": "myFunction",
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "super": DummyClass,
+  "type": ChildClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator ApplyTo Should work with decorator merge with more decorators 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "lorem": "from child",
+          Symbol(tinspector:decoratorId): "decorator-id",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": "myFunction",
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+        Object {
+          "other": "decorator",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "ChildClass",
+  "properties": Array [],
+  "removedDecorators": Array [
+    Object {
+      "lorem": "from child",
+      Symbol(tinspector:decoratorId): "decorator-id",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": "myFunction",
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "super": DummyClass,
+  "type": ChildClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should able to decorate class multiple 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      "info": "Some Info",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+    Object {
+      "otherInfo": "Some Other Info",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should able to decorate class using callback 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      "name": "DummyClass",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should able to decorate constructor parameter 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [
+          Object {
+            "info": "Some Info",
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "applyTo": Array [],
+              "inherit": true,
+              "removeApplied": true,
+            },
+          },
+        ],
+        "fields": Object {},
+        "index": 0,
+        "kind": "Parameter",
+        "name": "id",
+        "type": Number,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should able to decorate constructor parameter 2`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [
+          Object {
+            "index": 0,
+            "name": "constructor",
+            "target": "DummyClass",
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "applyTo": Array [],
+              "inherit": true,
+              "removeApplied": true,
+            },
+          },
+        ],
+        "fields": Object {},
+        "index": 0,
+        "kind": "Parameter",
+        "name": "id",
+        "type": Number,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should able to decorate constructor parameter multiple 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [
+          Object {
+            "info": "Some Info",
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "applyTo": Array [],
+              "inherit": true,
+              "removeApplied": true,
+            },
+          },
+          Object {
+            "otherInfo": "Some Other Info",
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "applyTo": Array [],
+              "inherit": true,
+              "removeApplied": true,
+            },
+          },
+        ],
+        "fields": Object {},
+        "index": 0,
+        "kind": "Parameter",
+        "name": "id",
+        "type": Number,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should able to decorate method multiple 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "info": "Some Info",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+        Object {
+          "otherInfo": "Some Other Info",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should able to decorate method multiple 2`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "info": "Some Info",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+        Object {
+          "otherInfo": "Some Other Info",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should able to decorate method parameter 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [
+        Object {
+          "decorators": Array [
+            Object {
+              "info": "Some Info",
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": true,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
+          "fields": Object {},
+          "index": 0,
+          "kind": "Parameter",
+          "name": "id",
+          "type": Number,
+          "typeClassification": "Primitive",
+        },
+      ],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should able to decorate method parameter multiple 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [
+        Object {
+          "decorators": Array [
+            Object {
+              "info": "Some Info",
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": true,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+            Object {
+              "otherInfo": "Some Other Info",
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": true,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
+          "fields": Object {},
+          "index": 0,
+          "kind": "Parameter",
+          "name": "id",
+          "type": Number,
+          "typeClassification": "Primitive",
+        },
+      ],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should able to decorate method parameter with callback 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [
+        Object {
+          "decorators": Array [
+            Object {
+              "index": 0,
+              "name": "method",
+              "target": "DummyClass",
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": true,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
+          "fields": Object {},
+          "index": 0,
+          "kind": "Parameter",
+          "name": "id",
+          "type": Number,
+          "typeClassification": "Primitive",
+        },
+      ],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should able to merge decorator 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [],
+        "fields": Object {},
+        "index": 0,
+        "kind": "Parameter",
+        "name": "data",
+        "type": String,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [
+    Object {
+      "type": "Cache",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+    Object {
+      "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "data",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should decorate class 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      "info": "Some Info",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should decorate class, properties and parameter 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myFunction",
+      "parameters": Array [
+        Object {
+          "decorators": Array [
+            Object {
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": true,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
+          "fields": Object {},
+          "index": 0,
+          "kind": "Parameter",
+          "name": "par",
+          "type": String,
+          "typeClassification": "Primitive",
+        },
+      ],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "myProp",
+      "set": undefined,
+      "type": Object,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should decorate method 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "info": "Some Info",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should decorate method 2`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "info": "Some Info",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should decorate method with callback 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "method": "method",
+          "target": "DummyClass",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should decorate method with callback 2`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "method": "method",
+          "target": "DummyClass",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should inspect class with get set 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [],
+      "get": get data,
+      "kind": "Property",
+      "name": "data",
+      "set": set data,
+      "type": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should inspect class with get set with decorator 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": get data,
+      "kind": "Property",
+      "name": "data",
+      "set": set data,
+      "type": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should inspect class with get set with decorator callback 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "name": "data",
+          "target": DummyClass,
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": get data,
+      "kind": "Property",
+      "name": "data",
+      "set": set data,
+      "type": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should inspect class with get set with decorator multiple 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "value": 2,
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+        Object {
+          "value": 1,
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": get data,
+      "kind": "Property",
+      "name": "data",
+      "set": set data,
+      "type": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should inspect class with properties 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "dummyProp",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should inspect class with properties multiple 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "value": 2,
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+        Object {
+          "value": 1,
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "dummyProp",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should inspect class with properties with callback 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "index": undefined,
+          "name": "dummyProp",
+          "target": DummyClass,
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "dummyProp",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should inspect class with properties with callback in constructor 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [
+          Object {
+            "index": 0,
+            "name": "constructor",
+            "target": DummyClass,
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "applyTo": Array [],
+              "inherit": true,
+              "removeApplied": true,
+            },
+          },
+        ],
+        "fields": Object {},
+        "index": 0,
+        "kind": "Parameter",
+        "name": "dummyProp",
+        "type": String,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [
+    Object {
+      "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "index": 0,
+          "name": "constructor",
+          "target": DummyClass,
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "dummyProp",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should inspect constructor property 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [],
+        "fields": Object {},
+        "index": 0,
+        "kind": "Parameter",
+        "name": "data",
+        "type": String,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [
+    Object {
+      "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "data",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should inspect constructor property with decorator 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [
+          Object {
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "applyTo": Array [],
+              "inherit": true,
+              "removeApplied": true,
+            },
+          },
+        ],
+        "fields": Object {},
+        "index": 0,
+        "kind": "Parameter",
+        "name": "data",
+        "type": String,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [
+    Object {
+      "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "data",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should inspect constructor property with decorator callback 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [
+          Object {
+            "name": "constructor",
+            "target": DummyClass,
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "applyTo": Array [],
+              "inherit": true,
+              "removeApplied": true,
+            },
+          },
+        ],
+        "fields": Object {},
+        "index": 0,
+        "kind": "Parameter",
+        "name": "data",
+        "type": String,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [
+    Object {
+      "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "name": "constructor",
+          "target": DummyClass,
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "data",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should inspect constructor property with decorator multiple 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [
+          Object {
+            "value": 2,
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "applyTo": Array [],
+              "inherit": true,
+              "removeApplied": true,
+            },
+          },
+          Object {
+            "value": 1,
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "applyTo": Array [],
+              "inherit": true,
+              "removeApplied": true,
+            },
+          },
+        ],
+        "fields": Object {},
+        "index": 0,
+        "kind": "Parameter",
+        "name": "data",
+        "type": String,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [
+    Object {
+      "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "value": 2,
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+        Object {
+          "value": 1,
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "data",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Should not inspect private constructor property 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [],
+        "fields": Object {},
+        "index": 0,
+        "kind": "Parameter",
+        "name": "data",
+        "type": String,
+        "typeClassification": "Primitive",
+      },
+      Object {
+        "decorators": Array [
+          Object {
+            "kind": "Ignore",
+            Symbol(tinspector:decoratorId): Symbol(ignore),
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": false,
+              "applyTo": Array [],
+              "inherit": true,
+              "removeApplied": true,
+            },
+          },
+        ],
+        "fields": Object {},
+        "index": 1,
+        "kind": "Parameter",
+        "name": "myPrivateField",
+        "type": String,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [
+    Object {
+      "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "data",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should able to define inline array type definition on @type() 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": User,
+          "type": Array [
+            Object {
+              "id": String,
+              "name": String,
+            },
+          ],
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "data",
+      "parameters": Array [],
+      "returnType": Array [
+        DynamicType,
+      ],
+      "typeClassification": "Array",
+    },
+  ],
+  "name": "User",
+  "properties": Array [],
+  "super": Object,
+  "type": User,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should able to define inline array type definition on @type() 2`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      "kind": "GenericType",
+      "target": DynamicType,
+      "types": Array [],
+      Symbol(tinspector:decoratorId): Symbol(genericType),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": false,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "hasOwnProperty",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "isPrototypeOf",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "propertyIsEnumerable",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "toString",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "valueOf",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "toLocaleString",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DynamicType",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DynamicType,
+          "type": String,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "id",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DynamicType,
+          "type": String,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "name",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DynamicType,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should able to define inline type definition on @type() 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": User,
+          "type": Object {
+            "id": String,
+            "name": String,
+          },
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "data",
+      "parameters": Array [],
+      "returnType": DynamicType,
+      "typeClassification": "Class",
+    },
+  ],
+  "name": "User",
+  "properties": Array [],
+  "super": Object,
+  "type": User,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should able to define inline type definition on @type() 2`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      "kind": "GenericType",
+      "target": DynamicType,
+      "types": Array [],
+      Symbol(tinspector:decoratorId): Symbol(genericType),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": false,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "hasOwnProperty",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "isPrototypeOf",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "propertyIsEnumerable",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "toString",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "valueOf",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "toLocaleString",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DynamicType",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DynamicType,
+          "type": String,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "id",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DynamicType,
+          "type": String,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "name",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DynamicType,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should able to override array type with @type() 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "MyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": MyClass,
+          "type": ,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "arr",
+      "set": undefined,
+      "type": Array [
+        Number,
+      ],
+      "typeClassification": "Array",
+    },
+  ],
+  "super": Object,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should able to override method return type with @type() of type Array 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": MyClass,
+          "type": Array,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myMethod",
+      "parameters": Array [],
+      "returnType": Array,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "name": "MyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should able to override method return type with @type() of type Boolean 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": MyClass,
+          "type": Boolean,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myMethod",
+      "parameters": Array [],
+      "returnType": Boolean,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "name": "MyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should able to override method return type with @type() of type Date 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": MyClass,
+          "type": Date,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myMethod",
+      "parameters": Array [],
+      "returnType": Date,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "name": "MyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should able to override method return type with @type() of type Number 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": MyClass,
+          "type": Number,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myMethod",
+      "parameters": Array [],
+      "returnType": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "name": "MyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should able to override method return type with @type() of type Object 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": MyClass,
+          "type": Object,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myMethod",
+      "parameters": Array [],
+      "returnType": Object,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "name": "MyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should able to override method return type with @type() of type Promise 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": MyClass,
+          "type": Promise,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myMethod",
+      "parameters": Array [],
+      "returnType": Promise,
+      "typeClassification": "Class",
+    },
+  ],
+  "name": "MyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should able to override method return type with @type() of type String 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": MyClass,
+          "type": String,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myMethod",
+      "parameters": Array [],
+      "returnType": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "name": "MyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should able to override method return type with @type() with callback 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": MyClass,
+          "type": ,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myMethod",
+      "parameters": Array [],
+      "returnType": Object,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "name": "MyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should not cause cross reference error on circular dependency 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "MyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": MyClass,
+          "type": ,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "other",
+      "set": undefined,
+      "type": Array [
+        OtherClass,
+      ],
+      "typeClassification": "Array",
+    },
+  ],
+  "super": Object,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator Type Override type Should not cause cross reference error on circular dependency 2`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "OtherClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": OtherClass,
+          "type": ,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "my",
+      "set": undefined,
+      "type": Array [
+        MyClass,
+      ],
+      "typeClassification": "Array",
+    },
+  ],
+  "super": Object,
+  "type": OtherClass,
+  "typeClassification": "Class",
+}
+`;

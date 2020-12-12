@@ -1,0 +1,49 @@
+{
+  "name": "@plumier/validator",
+  "version": "1.0.0-rc.3",
+  "description": "Plumier validator and type converter module",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "converter",
+    "type"
+  ],
+  "scripts": {
+    "test": "jest",
+    "compile": "tsc -p tsconfig.build.json",
+    "gen": "ts-node src/generator.ts",
+    "clean": "rm -rf src/*.js && rm -rf test/*.js && rm -rf lib",
+    "benchmark": "ts-node benchmark/index.ts"
+  },
+  "author": "Ketut Sandiarsa",
+  "license": "MIT",
+  "dependencies": {
+    "@plumier/reflect": "1.0.0-rc.3",
+    "@types/validator": "^13.1.1",
+    "tslib": "^2.0.3",
+    "validator": "^13.5.2"
+  },
+  "devDependencies": {
+    "@hapi/joi": "^17.1.1",
+    "@types/ejs": "^3.0.5",
+    "@types/hapi__joi": "^17.1.6",
+    "@types/jest": "^26.0.19",
+    "@types/lodash": "^4.14.165",
+    "coveralls": "^3.1.0",
+    "ejs": "^3.1.5",
+    "jest": "^26.6.3",
+    "lodash": "^4.17.20",
+    "ts-jest": "^26.4.4",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.2"
+  },
+  "bugs": {
+    "url": "https://github.com/plumier/plumier/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "url": "https://github.com/plumier/plumier"
+  }
+}

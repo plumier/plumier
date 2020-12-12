@@ -1,5 +1,5 @@
 import { domain, entity, route } from "@plumier/core";
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 
 @route.controller()
 @domain()

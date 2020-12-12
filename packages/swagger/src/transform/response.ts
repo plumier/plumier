@@ -1,6 +1,6 @@
 import { ApiHideRelationDecorator, ApiResponseDecorator, Class, ResponseTypeDecorator, RouteInfo } from "@plumier/core"
 import { ResponseObject, ResponsesObject, SchemaObject } from "openapi3-ts"
-import { metadata } from "tinspector"
+import { metadata } from "@plumier/reflect"
 
 import { SchemaOverrideType, transformType, transformTypeAdvance } from "./schema"
 import { isResponse, TransformContext } from "./shared"

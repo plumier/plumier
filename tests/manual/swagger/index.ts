@@ -2,7 +2,7 @@ import { entity, route } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { SwaggerFacility } from "@plumier/swagger"
 import Plumier, { WebApiFacility } from "plumier"
-import reflect, { noop, type } from "tinspector"
+import reflect, { noop, type } from "@plumier/reflect"
 
 
 export class Shop {

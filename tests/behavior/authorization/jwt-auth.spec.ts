@@ -23,7 +23,7 @@ import { sign } from "jsonwebtoken"
 import Koa from "koa"
 import { authorize, domain, route, val } from "plumier"
 import Supertest from "supertest"
-import { noop, reflect, type } from "tinspector"
+import { noop, reflect, type } from "@plumier/reflect"
 
 import { fixture } from "../helper"
 

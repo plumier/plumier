@@ -1,7 +1,7 @@
 import { route, val } from "plumier"
 import { fixture } from "../helper"
 import supertest = require("supertest")
-import reflect from "tinspector"
+import reflect from "@plumier/reflect"
 import tslib = require("tslib")
 
 

@@ -3,7 +3,7 @@ import { collection, model, MongooseFacility, MongooseHelper } from "@plumier/mo
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import Mongoose from "mongoose"
 import supertest = require("supertest")
-import { decorate } from "tinspector"
+import { decorate } from "@plumier/reflect"
 
 import { fixture } from "../helper"
 
@@ -14,7 +14,7 @@ Mongoose.set("useFindAndModify", false)
 jest.setTimeout(20000)
 
 describe("unique validator", () => {
-    beforeEach(() => Mongoose.models = {})
+    beforeEach(() => (Mongoose as any).models = {})
     afterAll(async () => await Mongoose.disconnect())
     beforeAll(async () => {
         const mongod = new MongoMemoryServer()

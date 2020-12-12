@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Model Converter Should allow undefined value when provided 1`] = `
+AnimalClass {
+  "id": undefined,
+}
+`;

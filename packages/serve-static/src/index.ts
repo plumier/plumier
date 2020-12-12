@@ -19,7 +19,7 @@ import { Context } from "koa"
 import send from "koa-send"
 import mime from "mime-types"
 import { extname } from "path"
-import { decorateMethod, mergeDecorator } from "tinspector"
+import { decorateMethod, mergeDecorator } from "@plumier/reflect"
 import { promisify } from "util"
 import { isAbsolute, join } from "path"
 

@@ -6,7 +6,7 @@ title: Reflection Fundamentals
 If you're coming from a static types language such as C# or Java you may found that TypeScript reflection is quite odd, since its only supported reflection using decorators, thus TypeScript unable to use reflection as automatic as C# or Java. 
 
 :::info
-Plumier uses dedicated reflection library [Tinspector](https://github.com/plumier/tinspector), that make it possible to extract type information statically.
+Plumier uses dedicated reflection library `@plumier/reflect`, that make it possible to extract type information statically.
 :::
 
 This documentation Explain about above limitation and how we commonly resolved those issue using decorators in TypeScript. By understanding its limitation, you will able to use Plumier components properly.
@@ -16,7 +16,7 @@ This documentation Explain about above limitation and how we commonly resolved t
 JavaScript uses property fields dynamically, its make it impossible for framework to get the property information statically. Thus its required to use at least one decorator on property field declaration like below
 
 ```typescript 
-import { noop } from "tinspector"
+import { noop } from "@plumier/reflect"
 
 class AnimalModel {
     @noop()
@@ -32,7 +32,7 @@ Above code showing that we decorate each class properties with decorators. `@noo
 If you are using `strict:true` TypeScript configuration its impossible to define property without initialization. Its possible to use constructor property for property declaration like below
 
 ```typescript 
-import { parameterProperties } from "tinspector"
+import { parameterProperties } from "@plumier/reflect"
 
 @parameterProperties()
 class AnimalModel {
@@ -43,14 +43,14 @@ class AnimalModel {
 }
 ```
 
-`@parameterProperties()` will tell tinspector that all constructor parameter is parameter property. Plumier has `@domain()` decorator which is just an alias of `@parameterProperties()`, so they can be used appropriately. 
+`@parameterProperties()` will tell reflection that all constructor parameter is parameter property. Plumier has `@domain()` decorator which is just an alias of `@parameterProperties()`, so they can be used appropriately. 
 
 ## Problem With Data Type Information
 
 TypeScript provided `emitDecoratorMetadata` to emit type information on decorated declaration. Its make it possible to get data type information of properties, parameters and method return type. 
 
 ```typescript 
-import { noop } from "tinspector" 
+import { noop } from "@plumier/reflect" 
 
 class AnimalRepository {
 
@@ -65,10 +65,10 @@ class AnimalRepository {
 
 ## Problem With Generic Data Type 
 
-Decorator possible to provide data type like explained above, but it unable to provide further information of generic data type such as `Array<number>` or `Partial<Animal>`. Tinspector provided decorator to define data type using `@type()`
+Decorator possible to provide data type like explained above, but it unable to provide further information of generic data type such as `Array<number>` or `Partial<Animal>`. Reflection provided decorator to define data type using `@type()`
 
 ```typescript 
-import { noop } from "tinspector" 
+import { noop } from "@plumier/reflect" 
 
 class AnimalRepository {
 
@@ -79,12 +79,12 @@ class AnimalRepository {
 }
 ```
 
-Above code showing that we decorate the `get` method with `@type([Animal])`, which informed Tinspector that the return type of the method is Array of Animal. Notice that tuple used for array type `[Animal]`.
+Above code showing that we decorate the `get` method with `@type([Animal])`, which informed reflection that the return type of the method is Array of Animal. Notice that tuple used for array type `[Animal]`.
 
 This behavior also required on property with data type array 
 
 ```typescript 
-import { noop, type } from "tinspector"
+import { noop, type } from "@plumier/reflect"
 
 class AnimalModel {
     @noop()
@@ -100,7 +100,7 @@ Above showing that we use `@type([String])` above the `tags` property which is o
 Its also required when using parameter properties like below 
 
 ```typescript 
-import { parameterProperties } from "tinspector"
+import { parameterProperties } from "@plumier/reflect"
 
 @parameterProperties()
 class AnimalModel {

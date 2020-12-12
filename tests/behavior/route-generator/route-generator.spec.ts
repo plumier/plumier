@@ -10,7 +10,7 @@ import {
 import { join } from "path"
 import Plumier, { ControllerFacility, RestfulApiFacility, route, WebApiFacility } from "plumier"
 import supertest from "supertest"
-import { noop } from "tinspector"
+import { noop } from "@plumier/reflect"
 
 import { fixture } from "../helper"
 

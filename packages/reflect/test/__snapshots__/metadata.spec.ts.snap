@@ -1,0 +1,519 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Metadata Class Should able to add metadata 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Class Should able to add multiple metadata 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+  Object {
+    "cache": 456,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Class Should able to replace parent metadata with allowMultiple:false 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorId): "lorem",
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": false,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Class Should able to replace parent metadata with allowMultiple:false 2`] = `
+Array [
+  Object {
+    "cache": 456,
+    Symbol(tinspector:decoratorId): "lorem",
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": false,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Class Should able to skip inheritability 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": false,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Class Should able to skip inheritability 2`] = `
+Array [
+  Object {
+    "cache": 456,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Class Should inherit metadata by default 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Class Should inherit metadata by default 2`] = `
+Array [
+  Object {
+    "cache": 456,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Class Should inherit metadata by default 3`] = `
+Array [
+  Object {
+    "cache": 789,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Parameter Should able to add metadata 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Parameter Should able to add multiple metadata 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Parameter Should able to add multiple metadata 2`] = `
+Array [
+  Object {
+    "cache": 456,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Parameter Should able to replace parent metadata with allowMultiple:false 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorId): "lorem",
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": false,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Parameter Should able to replace parent metadata with allowMultiple:false 2`] = `
+Array [
+  Object {
+    "cache": 456,
+    Symbol(tinspector:decoratorId): "lorem",
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": false,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Parameter Should able to replace parent metadata with allowMultiple:false 3`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorId): "lorem",
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": false,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Parameter Should able to skip inheritability 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": false,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Parameter Should able to skip inheritability 2`] = `
+Array [
+  Object {
+    "cache": 456,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Parameter Should inherit metadata by default 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Parameter Should inherit metadata by default 2`] = `
+Array [
+  Object {
+    "cache": 456,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Parameter Should inherit metadata by default 3`] = `
+Array [
+  Object {
+    "cache": 789,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Property/Method Should able to add metadata 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Property/Method Should able to add multiple metadata 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+  Object {
+    "cache": 456,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Property/Method Should able to replace parent metadata with allowMultiple:false 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorId): "lorem",
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": false,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Property/Method Should able to replace parent metadata with allowMultiple:false 2`] = `
+Array [
+  Object {
+    "cache": 456,
+    Symbol(tinspector:decoratorId): "lorem",
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": false,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Property/Method Should able to replace parent metadata with allowMultiple:false 3`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorId): "lorem",
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": false,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Property/Method Should able to skip inheritability 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": false,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Property/Method Should able to skip inheritability 2`] = `
+Array [
+  Object {
+    "cache": 456,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Property/Method Should inherit metadata by default 1`] = `
+Array [
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Property/Method Should inherit metadata by default 2`] = `
+Array [
+  Object {
+    "cache": 456,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;
+
+exports[`Metadata Property/Method Should inherit metadata by default 3`] = `
+Array [
+  Object {
+    "cache": 789,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+  Object {
+    "cache": 123,
+    Symbol(tinspector:decoratorOption): Object {
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "inherit": true,
+      "removeApplied": true,
+    },
+  },
+]
+`;

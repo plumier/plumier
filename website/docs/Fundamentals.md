@@ -353,7 +353,7 @@ Controller can return any value including `Promise`, this value then rendered in
 | `FileActionResult`     | `response.file()`     | Serve static file response | `@plumier/serve-static` |
 
 :::info documentation
-Refer to the complete documentation about [routing](Route-Generation-Cheat-Sheet.md)
+Refer to the complete documentation about [routing](Routing.md)
 :::
 
 ### Bind Request Part Into Action's Parameter
@@ -433,7 +433,7 @@ Here are list of supported parameter binding decorators
 | `@bind.custom()`  | Bind custom parameter binding implementation into parameter                                                             |
 
 :::info documentation
-Refer to the complete documentation about [parameter binding](Parameter-Binding.md) and [type converter](Converters.md)
+Refer to the complete documentation about [controller](Controller.md) 
 :::
 
 ### Plug Facilities Into Application Bootstrap

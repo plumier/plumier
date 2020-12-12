@@ -1,5 +1,5 @@
 import { RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric } from "@plumier/core"
-import { generic } from "tinspector"
+import { generic } from "@plumier/reflect"
 
 @generic.template("T", "TID")
 @generic.type("T", "TID")

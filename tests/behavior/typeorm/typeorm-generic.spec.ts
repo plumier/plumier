@@ -1,4 +1,4 @@
-import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave, authorize, entity, entityPolicy, consoleLog } from "@plumier/core"
+import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave, authorize, entity, entityPolicy, consoleLog, postSave } from "@plumier/core"
 import Plumier, { WebApiFacility } from "plumier"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
@@ -10,7 +10,7 @@ import {
     TypeORMRepository,
 } from "@plumier/typeorm"
 import supertest from "supertest"
-import { generic } from "tinspector"
+import { generic } from "@plumier/reflect"
 import { Column, Entity, getManager, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, getMetadataArgsStorage, createConnection } from "typeorm"
 
 import { cleanup, getConn } from "./helper"
@@ -722,6 +722,7 @@ describe("CRUD", () => {
                 .expect(200)
         })
         it("Should able to use request hook", async () => {
+            const fn = jest.fn()
             @Entity()
             @route.controller()
             class User {
@@ -738,6 +739,11 @@ describe("CRUD", () => {
                 hook() {
                     this.password = "HASH"
                 }
+
+                @postSave()
+                afterSave(){
+                    fn(this.id)
+                }
             }
             const app = await createApp([User], { mode: "production" })
             const repo = getManager().getRepository(User)
@@ -747,6 +753,7 @@ describe("CRUD", () => {
                 .expect(200)
             const result = await repo.findOne(body.id)
             expect(result).toMatchSnapshot()
+            expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should able to create controller using builder", async () => {
             @Entity()

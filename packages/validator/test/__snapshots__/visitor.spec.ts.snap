@@ -1,0 +1,543 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Decorator distribution Should received by array item 1`] = `
+Object {
+  "value": Object {
+    "deco": Array [
+      Object {
+        "type": "deco",
+      },
+    ],
+    "val": Array [
+      Object {
+        "deco": Array [
+          Object {
+            "type": "deco",
+          },
+        ],
+        "val": Tag {
+          "age": Object {
+            "deco": Array [
+              Object {
+                "type": "deco",
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "applyTo": Array [],
+                  "inherit": true,
+                  "removeApplied": true,
+                },
+              },
+            ],
+            "val": 12,
+          },
+        },
+      },
+      Object {
+        "deco": Array [
+          Object {
+            "type": "deco",
+          },
+        ],
+        "val": Tag {
+          "age": Object {
+            "deco": Array [
+              Object {
+                "type": "deco",
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "applyTo": Array [],
+                  "inherit": true,
+                  "removeApplied": true,
+                },
+              },
+            ],
+            "val": 40,
+          },
+        },
+      },
+      Object {
+        "deco": Array [
+          Object {
+            "type": "deco",
+          },
+        ],
+        "val": Tag {
+          "age": Object {
+            "deco": Array [
+              Object {
+                "type": "deco",
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "applyTo": Array [],
+                  "inherit": true,
+                  "removeApplied": true,
+                },
+              },
+            ],
+            "val": 12,
+          },
+        },
+      },
+    ],
+  },
+}
+`;
+
+exports[`Decorator distribution Should received by class properties 1`] = `
+Object {
+  "value": Object {
+    "deco": Array [
+      Object {
+        "type": "deco",
+      },
+    ],
+    "val": AnimalClass {
+      "age": Object {
+        "deco": Array [
+          Object {
+            "type": "age",
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "applyTo": Array [],
+              "inherit": true,
+              "removeApplied": true,
+            },
+          },
+        ],
+        "val": 12,
+      },
+      "id": Object {
+        "deco": Array [],
+        "val": 12,
+      },
+      "name": Object {
+        "deco": Array [
+          Object {
+            "type": "name",
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "applyTo": Array [],
+              "inherit": true,
+              "removeApplied": true,
+            },
+          },
+        ],
+        "val": "Mimi",
+      },
+    },
+  },
+}
+`;
+
+exports[`Decorator distribution Should received by class with nested properties 1`] = `
+Object {
+  "value": Object {
+    "deco": Array [
+      Object {
+        "type": "deco",
+      },
+    ],
+    "val": AnimalClass {
+      "id": Object {
+        "deco": Array [],
+        "val": 12,
+      },
+      "name": Object {
+        "deco": Array [],
+        "val": "Mimi",
+      },
+      "tag": Object {
+        "deco": Array [],
+        "val": Tag {
+          "age": Object {
+            "deco": Array [
+              Object {
+                "type": "deco",
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "applyTo": Array [],
+                  "inherit": true,
+                  "removeApplied": true,
+                },
+              },
+            ],
+            "val": 12,
+          },
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`Parent Distribution Should add parent information 1`] = `
+Object {
+  "value": Object {
+    "parent": undefined,
+    "result": Tag {
+      "age": Object {
+        "parent": Object {
+          "decorators": Array [],
+          "type": Tag,
+          "value": Object {
+            "age": "12",
+          },
+        },
+        "result": 12,
+      },
+    },
+  },
+}
+`;
+
+exports[`Parent Distribution Should add parent information on nested types 1`] = `
+Object {
+  "value": Object {
+    "parent": undefined,
+    "result": Animal {
+      "tag": Object {
+        "parent": Object {
+          "decorators": Array [],
+          "type": Animal,
+          "value": Object {
+            "tag": Object {
+              "age": "12",
+            },
+          },
+        },
+        "result": Tag {
+          "age": Object {
+            "parent": Object {
+              "decorators": Array [
+                Object {
+                  "type": "deco",
+                  Symbol(tinspector:decoratorOption): Object {
+                    "allowMultiple": true,
+                    "applyTo": Array [],
+                    "inherit": true,
+                    "removeApplied": true,
+                  },
+                },
+              ],
+              "type": Tag,
+              "value": Object {
+                "age": "12",
+              },
+            },
+            "result": 12,
+          },
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`Parent Distribution Should add parent information on nested types with array 1`] = `
+Object {
+  "value": Object {
+    "parent": undefined,
+    "result": Animal {
+      "tag": Object {
+        "parent": Object {
+          "decorators": Array [],
+          "type": Animal,
+          "value": Object {
+            "tag": Array [
+              Object {
+                "age": "12",
+              },
+              Object {
+                "age": "12",
+              },
+            ],
+          },
+        },
+        "result": Array [
+          Object {
+            "parent": Object {
+              "decorators": Array [],
+              "type": Animal,
+              "value": Object {
+                "tag": Array [
+                  Object {
+                    "age": "12",
+                  },
+                  Object {
+                    "age": "12",
+                  },
+                ],
+              },
+            },
+            "result": Tag {
+              "age": Object {
+                "parent": Object {
+                  "decorators": Array [
+                    Object {
+                      "genericParams": Array [],
+                      "kind": "Override",
+                      "target": Animal,
+                      "type": Array [
+                        Tag,
+                      ],
+                      Symbol(tinspector:decoratorId): Symbol(override),
+                      Symbol(tinspector:decoratorOption): Object {
+                        "allowMultiple": false,
+                        "applyTo": Array [],
+                        "inherit": true,
+                        "removeApplied": true,
+                      },
+                    },
+                    Object {
+                      "type": "deco",
+                      Symbol(tinspector:decoratorOption): Object {
+                        "allowMultiple": true,
+                        "applyTo": Array [],
+                        "inherit": true,
+                        "removeApplied": true,
+                      },
+                    },
+                  ],
+                  "type": Tag,
+                  "value": Object {
+                    "age": "12",
+                  },
+                },
+                "result": 12,
+              },
+            },
+          },
+          Object {
+            "parent": Object {
+              "decorators": Array [],
+              "type": Animal,
+              "value": Object {
+                "tag": Array [
+                  Object {
+                    "age": "12",
+                  },
+                  Object {
+                    "age": "12",
+                  },
+                ],
+              },
+            },
+            "result": Tag {
+              "age": Object {
+                "parent": Object {
+                  "decorators": Array [
+                    Object {
+                      "genericParams": Array [],
+                      "kind": "Override",
+                      "target": Animal,
+                      "type": Array [
+                        Tag,
+                      ],
+                      Symbol(tinspector:decoratorId): Symbol(override),
+                      Symbol(tinspector:decoratorOption): Object {
+                        "allowMultiple": false,
+                        "applyTo": Array [],
+                        "inherit": true,
+                        "removeApplied": true,
+                      },
+                    },
+                    Object {
+                      "type": "deco",
+                      Symbol(tinspector:decoratorOption): Object {
+                        "allowMultiple": true,
+                        "applyTo": Array [],
+                        "inherit": true,
+                        "removeApplied": true,
+                      },
+                    },
+                  ],
+                  "type": Tag,
+                  "value": Object {
+                    "age": "12",
+                  },
+                },
+                "result": 12,
+              },
+            },
+          },
+        ],
+      },
+    },
+  },
+}
+`;
+
+exports[`Parent Distribution Should add parent information with external decorators 1`] = `
+Object {
+  "value": Object {
+    "parent": undefined,
+    "result": Tag {
+      "age": Object {
+        "parent": Object {
+          "decorators": Array [
+            Object {
+              "type": "deco",
+            },
+          ],
+          "type": Tag,
+          "value": Object {
+            "age": "12",
+          },
+        },
+        "result": 12,
+      },
+    },
+  },
+}
+`;
+
+exports[`Visitor Should be able to create result of multiple messages 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Hello",
+        "world",
+      ],
+      "path": "path",
+    },
+  ],
+  "value": undefined,
+}
+`;
+
+exports[`Visitor Should provide current traverse name on array 1`] = `
+Object {
+  "name": "",
+  "result": Array [
+    Object {
+      "name": "0",
+      "result": AnimalClass {
+        "id": Object {
+          "name": "0.id",
+          "result": 12,
+        },
+      },
+    },
+    Object {
+      "name": "1",
+      "result": AnimalClass {
+        "id": Object {
+          "name": "1.id",
+          "result": 12,
+        },
+      },
+    },
+  ],
+}
+`;
+
+exports[`Visitor Should provide current traverse path 1`] = `
+Object {
+  "name": "",
+  "result": AnimalClass {
+    "id": Object {
+      "name": "id",
+      "result": 12,
+    },
+    "name": Object {
+      "name": "name",
+      "result": "Mimi",
+    },
+  },
+}
+`;
+
+exports[`Visitor Should throw error properly 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Must be older than 18",
+      ],
+      "path": "",
+    },
+  ],
+  "value": "12",
+}
+`;
+
+exports[`Visitor Should traverse through all object properties 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Must be older than 18",
+      ],
+      "path": "id",
+    },
+    Object {
+      "messages": Array [
+        "Must be older than 18",
+      ],
+      "path": "age",
+    },
+  ],
+  "value": AnimalClass {
+    "age": "12",
+    "id": "12",
+    "name": "Mimi",
+  },
+}
+`;
+
+exports[`Visitor Should traverse through array 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Must be older than 18",
+      ],
+      "path": "0.age",
+    },
+    Object {
+      "messages": Array [
+        "Must be older than 18",
+      ],
+      "path": "2.age",
+    },
+  ],
+  "value": Array [
+    Tag {
+      "age": "12",
+    },
+    Tag {
+      "age": 40,
+    },
+    Tag {
+      "age": "12",
+    },
+  ],
+}
+`;
+
+exports[`Visitor Should traverse through nested object properties 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Must be older than 18",
+      ],
+      "path": "id",
+    },
+    Object {
+      "messages": Array [
+        "Must be older than 18",
+      ],
+      "path": "tag.age",
+    },
+  ],
+  "value": AnimalClass {
+    "id": "12",
+    "name": "Mimi",
+    "tag": Tag {
+      "age": "12",
+    },
+  },
+}
+`;

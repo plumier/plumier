@@ -1,6 +1,6 @@
 import { IncomingHttpHeaders } from "http"
 import { Context, Request } from "koa"
-import { MethodReflection, ParameterReflection } from "tinspector"
+import { MethodReflection, ParameterReflection } from "@plumier/reflect"
 
 import { isCustomClass } from "./common"
 import { RouteDecorator } from './route-generator'

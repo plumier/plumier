@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Durability Should not throw stack overflow when traverse cross reference object 1`] = `
+Object {
+  "kind": "Object",
+  "members": Array [
+    Object {
+      "kind": "Object",
+      "members": Array [
+        Object {
+          "kind": "Object",
+          "members": Array [],
+          "name": "child",
+        },
+      ],
+      "name": "data",
+    },
+  ],
+  "name": "module",
+}
+`;

@@ -1,9 +1,15 @@
-import { Class, entity, EntityIdDecorator, isCustomClass } from "@plumier/core"
-import mong, { ConnectionOptions, Document, Mongoose } from "mongoose"
-import reflect, { ClassReflection, PropertyReflection } from "tinspector"
+import { Class, EntityIdDecorator, isCustomClass } from "@plumier/core"
+import mong, { ConnectOptions, Document, Mongoose } from "mongoose"
+import reflect, { ClassReflection, PropertyReflection } from "@plumier/reflect"
 
-import { ClassOptionDecorator, ModelStore, NamedSchemaOption, PropertyOptionDecorator, RefDecorator, PreSaveDecorator } from "./types"
-
+import {
+    ClassOptionDecorator,
+    ModelStore,
+    NamedSchemaOption,
+    PreSaveDecorator,
+    PropertyOptionDecorator,
+    RefDecorator,
+} from "./types"
 
 
 // --------------------------------------------------------------------- //
@@ -126,7 +132,7 @@ class MongooseHelper {
         })
     }
 
-    model<T>(type: new (...args: any) => T): mong.Model<T & mong.Document, {}> {
+    model<T>(type: new (...args: any) => T): mong.Model<T & mong.Document> {
         const storedModel = this.models.get(type)
         if (storedModel) {
             return this.client.model(storedModel.name)
@@ -164,13 +170,13 @@ class MongooseHelper {
             return mongooseModel
         }
     }
-    proxy<T>(type: new (...args: any) => T): mong.Model<T & mong.Document, {}> {
+    proxy<T>(type: new (...args: any) => T): mong.Model<T & mong.Document> {
         return new Proxy(mong.Model as mong.Model<T & mong.Document>, new ModelProxyHandler<T>(type, this))
     }
     getModels() {
         return Array.from(this.models.keys())
     }
-    connect(uri: string, opt?: ConnectionOptions) {
+    connect(uri: string, opt?: ConnectOptions) {
         return this.client.connect(uri, opt)
     }
     disconnect() {

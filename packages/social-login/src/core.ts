@@ -21,7 +21,7 @@ import debug from "debug"
 import { Context } from "koa"
 import OAuth from "oauth-1.0a"
 import qs from "querystring"
-import { decorateMethod } from "tinspector"
+import { decorateMethod } from "@plumier/reflect"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
