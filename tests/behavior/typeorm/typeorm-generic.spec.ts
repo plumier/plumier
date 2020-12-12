@@ -1,5 +1,20 @@
-import { Class, Configuration, route, val, DefaultControllerGeneric, DefaultOneToManyControllerGeneric, preSave, authorize, entity, entityPolicy, consoleLog, postSave } from "@plumier/core"
-import Plumier, { WebApiFacility } from "plumier"
+import "@plumier/testing"
+
+import {
+    authorize,
+    Class,
+    Configuration,
+    DefaultControllerGeneric,
+    DefaultOneToManyControllerGeneric,
+    entity,
+    entityPolicy,
+    postSave,
+    preSave,
+    route,
+    val,
+} from "@plumier/core"
+import { JwtAuthFacility } from "@plumier/jwt"
+import { generic } from "@plumier/reflect"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
     controller,
@@ -9,16 +24,24 @@ import {
     TypeORMOneToManyRepository,
     TypeORMRepository,
 } from "@plumier/typeorm"
-import supertest from "supertest"
-import { generic } from "@plumier/reflect"
-import { Column, Entity, getManager, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, getMetadataArgsStorage, createConnection } from "typeorm"
-
-import { cleanup, getConn } from "./helper"
+import { sign } from "jsonwebtoken"
 import Koa from "koa"
-import { MongooseFacility } from '@plumier/mongoose'
-import { JwtAuthFacility } from '@plumier/jwt'
-import { sign } from 'jsonwebtoken'
-import { random } from '../helper'
+import Plumier, { WebApiFacility } from "plumier"
+import supertest from "supertest"
+import {
+    Column,
+    createConnection,
+    Entity,
+    getManager,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from "typeorm"
+
+import { random } from "../helper"
+import { cleanup, getConn } from "./helper"
 
 
 jest.setTimeout(20000)
@@ -766,10 +789,10 @@ describe("CRUD", () => {
                 name: string
             }
             const UsersController = controller(User).configure()
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp([UsersController])
             expect(mock.mock.calls).toMatchSnapshot()
-            consoleLog.clearMock()
+            console.mockClear()
         })
         it("Should able to disable some actions from controller builder", async () => {
             @Entity()
@@ -784,10 +807,10 @@ describe("CRUD", () => {
             const UsersController = controller(User).configure(c => {
                 c.mutators().ignore()
             })
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp([UsersController])
             expect(mock.mock.calls).toMatchSnapshot()
-            consoleLog.clearMock()
+            console.mockClear()
         })
     })
     describe("Nested CRUD One to Many Function", () => {
@@ -1541,10 +1564,10 @@ describe("CRUD", () => {
                 user: User
             }
             const UsersController = controller([User, Animal, "animals"]).configure()
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp([UsersController])
             expect(mock.mock.calls).toMatchSnapshot()
-            consoleLog.clearMock()
+            console.mockClear()
         })
         it("Should able to disable some actions using controller builder", async () => {
             @Entity()
@@ -1573,10 +1596,10 @@ describe("CRUD", () => {
             const UsersController = controller([User, Animal, "animals"]).configure(c => {
                 c.mutators().ignore()
             })
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp([UsersController])
             expect(mock.mock.calls).toMatchSnapshot()
-            consoleLog.clearMock()
+            console.mockClear()
         })
     })
     describe("One To One Function", () => {

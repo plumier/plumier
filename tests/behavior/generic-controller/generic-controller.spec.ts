@@ -1,12 +1,12 @@
+import "@plumier/testing"
+
 import {
     ActionResult,
     api,
     Authenticated,
     authorize,
     bind,
-    cleanupConsole,
     Configuration,
-    consoleLog,
     DefaultControllerGeneric,
     DefaultFacility,
     DefaultOneToManyControllerGeneric,
@@ -31,14 +31,14 @@ import {
     RouteMetadata,
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
+import { cleanupConsole } from "@plumier/testing"
+import reflect, { generic, noop, type } from "@plumier/reflect"
 import { SwaggerFacility } from "@plumier/swagger"
-import { controller } from '@plumier/typeorm'
-import { sign } from 'jsonwebtoken'
+import { sign } from "jsonwebtoken"
 import { Context } from "koa"
 import { join } from "path"
 import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "plumier"
 import supertest from "supertest"
-import reflect, { generic, noop, type } from "@plumier/reflect"
 
 import { expectError } from "../helper"
 
@@ -137,17 +137,17 @@ function getParameters(routes: RouteMetadata[]) {
 
 describe("Route Generator", () => {
     it("Should able to specify entity directory", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await createApp({ controller: join(__dirname, "entities") }).initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
     })
     it("Should able to specify entity directory with relative path", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await createApp({ controller: "./entities" }).initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
     })
     it("Should able to specify nested directories", async () => {
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await createApp({ controller: "./nested" }).initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
     })
@@ -166,7 +166,7 @@ describe("Route Generator", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -180,7 +180,7 @@ describe("Route Generator", () => {
                 @reflect.noop()
                 public email: string
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -244,7 +244,7 @@ describe("Route Generator", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -259,7 +259,7 @@ describe("Route Generator", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User, rootPath: "/api/v1/" })
                 .initialize()
             expect(mock.mock.calls).toMatchSnapshot()
@@ -278,7 +278,7 @@ describe("Route Generator", () => {
             @generic.template("T", "TID")
             @generic.type("T", "TID")
             class MyCustomControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{ }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User, rootPath: "/api/v1/" })
                 .set({ genericController: [MyCustomControllerGeneric, DefaultOneToManyControllerGeneric] })
                 .initialize()
@@ -296,7 +296,7 @@ describe("Route Generator", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -312,7 +312,7 @@ describe("Route Generator", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: [User] })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
@@ -330,7 +330,7 @@ describe("Route Generator", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
@@ -348,7 +348,7 @@ describe("Route Generator", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: [User] })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
@@ -366,7 +366,7 @@ describe("Route Generator", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: [User] })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
@@ -441,7 +441,7 @@ describe("Route Generator", () => {
                     public animals: Animal[]
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -468,7 +468,7 @@ describe("Route Generator", () => {
                     public animals: Animal[]
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -492,7 +492,7 @@ describe("Route Generator", () => {
                 @route.controller()
                 animals: Animal[]
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -599,7 +599,7 @@ describe("Route Generator", () => {
                     public animals: Animal[]
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User, rootPath: "/api/v1/" })
                 .initialize()
             expect(mock.mock.calls).toMatchSnapshot()
@@ -629,7 +629,7 @@ describe("Route Generator", () => {
             @generic.template("P", "PID", "T", "TID")
             @generic.type("P", "PID", "T", "TID")
             class MyCustomOneToManyControllerGeneric<P, PID, T, TID> extends RepoBaseOneToManyControllerGeneric<P, PID, T, TID>{ }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User, rootPath: "/api/v1/" })
                 .set({ genericController: [DefaultControllerGeneric, MyCustomOneToManyControllerGeneric] })
                 .initialize()
@@ -658,7 +658,7 @@ describe("Route Generator", () => {
                     public animals: Animal[]
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -682,7 +682,7 @@ describe("Route Generator", () => {
                 @route.controller()
                 public animals: Animal[]
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
@@ -708,7 +708,7 @@ describe("Route Generator", () => {
                 @route.controller()
                 public animals: Animal[]
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User })
                 .set(new JwtAuthFacility({ secret: "secret" }))
                 .initialize()
@@ -809,7 +809,7 @@ describe("Route Generator", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await new Plumier()
                 .set(new WebApiFacility())
                 .set(new ControllerFacility({ controller: User, group: "v2", rootPath: "api/v2" }))
@@ -841,7 +841,7 @@ describe("Route Generator", () => {
                     public animals: Animal[]
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await new Plumier()
                 .set(new WebApiFacility())
                 .set(new ControllerFacility({ controller: User, group: "v2", rootPath: "api/v2" }))
@@ -865,7 +865,7 @@ describe("Custom Route Path", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -970,7 +970,7 @@ describe("Custom Route Path", () => {
                     public animals: Animal[]
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2064,7 +2064,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2079,7 +2079,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2107,7 +2107,7 @@ describe("Controller Builder", () => {
                     public animals: Animal[]
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: [User] }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2129,7 +2129,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2144,7 +2144,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2159,7 +2159,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2174,7 +2174,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2189,7 +2189,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2213,7 +2213,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2228,7 +2228,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2254,7 +2254,7 @@ describe("Controller Builder", () => {
                     public animals: Animal[]
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: [User] }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2276,7 +2276,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2291,7 +2291,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2306,7 +2306,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2321,7 +2321,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2339,7 +2339,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2356,7 +2356,7 @@ describe("Controller Builder", () => {
                     public email: string
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2382,7 +2382,7 @@ describe("Controller Builder", () => {
                     public animals: Animal[]
                 ) { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await createApp({ controller: [User] }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })

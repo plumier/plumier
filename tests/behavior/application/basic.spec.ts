@@ -1,4 +1,6 @@
-import { consoleLog, DefaultFacility, domain, PlumierApplication, route } from "@plumier/core"
+import "@plumier/testing"
+
+import { DefaultFacility, domain, PlumierApplication, route } from "@plumier/core"
 import getPort from "get-port"
 import Plumier, { WebApiFacility } from "plumier"
 import Supertest from "supertest"
@@ -103,11 +105,11 @@ describe("Basic Controller", () => {
 
 describe("DEV_ENV", () => {
     beforeEach(() => {
-        consoleLog.startMock()
+        console.mock()
     })
 
     afterEach(() => {
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should not print to console if DEV_ENV set to production", async () => {
@@ -162,13 +164,13 @@ describe("Listen", () => {
     })
 
     it("Should show server info when in debug mode", async () => {
-        consoleLog.startMock()
+        console.mock()
         const port = (await getPort()).toString()
         const app = await fixture().set({ mode: "debug" }).listen(port)
         app.close()
         const mock = (console.log as jest.Mock)
         expect(mock.mock.calls[7][0].replace(/:[0-9]{4,5}/, "")).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 })
 

@@ -1,4 +1,4 @@
-import { Class, route, consoleLog } from "@plumier/core"
+import { Class, route } from "@plumier/core"
 import { transformFilter, TypeORMFacility } from "@plumier/typeorm"
 import { join } from "path"
 import supertest from "supertest"

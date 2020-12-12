@@ -1,7 +1,10 @@
-import { consoleLog, RouteAnalyzerFunction, RouteInfo, cleanupConsole, RouteMetadata, DefaultFacility, VirtualRoute } from "@plumier/core"
-import Plumier, { domain, RestfulApiFacility, route } from "plumier"
+import "@plumier/testing"
+
+import { RouteAnalyzerFunction, RouteMetadata } from "@plumier/core"
+import { JwtAuthFacility } from "@plumier/jwt"
+import { cleanupConsole } from "@plumier/testing"
 import reflect from "@plumier/reflect"
-import { JwtAuthFacility } from '@plumier/jwt'
+import Plumier, { domain, RestfulApiFacility, route } from "plumier"
 
 describe("Route Analyzer", () => {
     it("Should identify missing backing parameter", async () => {
@@ -13,13 +16,13 @@ describe("Route Analyzer", () => {
             @route.get(":c")
             method(@reflect.type([Domain]) a: Domain[], b: number) { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should identify missing backing parameter on root decorator", async () => {
@@ -28,39 +31,39 @@ describe("Route Analyzer", () => {
             @route.get(":a")
             method(a: number, b: number) { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should identify missing type information for data binding", async () => {
         class AnimalController {
             method(a: number) { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//("PLUM1001")
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should not identify missing type information for data binding if method has no parameter", async () => {
         class AnimalController {
             method() { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls).length).toBe(4)
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should identify duplicate route", async () => {
@@ -73,13 +76,13 @@ describe("Route Analyzer", () => {
             @route.get()
             method(a: number) { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController, BeastController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1003")
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should identify if model doesn't have type information for parameter binding", async () => {
@@ -93,13 +96,13 @@ describe("Route Analyzer", () => {
             @route.post()
             method(a: AnimalModel) { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1005")
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should identify if model property doesn't have type information for parameter binding", async () => {
@@ -114,13 +117,13 @@ describe("Route Analyzer", () => {
             @route.post()
             method(a: AnimalModel) { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1005")
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should identify if model doesn't have type information for parameter binding recursive", async () => {
@@ -142,13 +145,13 @@ describe("Route Analyzer", () => {
             @route.post()
             method(a: AnimalModel) { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1005")
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should identify if array doesn't have type information for parameter binding", async () => {
@@ -163,13 +166,13 @@ describe("Route Analyzer", () => {
             @route.post()
             method(a: AnimalModel[]) { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1006")
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should identify if array property doesn't have type information for parameter binding", async () => {
@@ -184,13 +187,13 @@ describe("Route Analyzer", () => {
             @route.post()
             method(a: AnimalModel) { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1005")
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should not error when analyzing cross reference model", async () => {
@@ -210,13 +213,13 @@ describe("Route Analyzer", () => {
             @route.post()
             method(a: Animal) { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [AnimalController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should be able to extends the route analyzer", async () => {
@@ -224,7 +227,7 @@ describe("Route Analyzer", () => {
             @route.get()
             method() { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const analyzer: RouteAnalyzerFunction = (route: RouteMetadata, allRoutes: RouteMetadata[]) => ([{ type: "error", message: "PLUM1005: Just an error" }])
         const app = await new Plumier()
             .set(new RestfulApiFacility())
@@ -232,7 +235,7 @@ describe("Route Analyzer", () => {
             .set({ controller: [AnimalController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()//.toContain("PLUM1005: Just an error")
-        consoleLog.clearMock()
+        console.mockClear()
     })
 })
 
@@ -244,14 +247,14 @@ describe("Analyzer Report", () => {
             @route.get()
             anotherVerryVerryVerryVerryVerryLongNamedMethod(very: string, long: string, list: string, of: string, method: string, parameters: string) { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set(new JwtAuthFacility({ secret: "lorem" }))
             .set({ controller: [AveryVeryVeryVeryVeryLongNamedController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
     it("Should only trim parameters if still long", async () => {
         class UsersController {
@@ -260,13 +263,13 @@ describe("Analyzer Report", () => {
             @route.post("")
             save(very: string, long: string, list: string, of: string, method: string, parameters: string) { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [UsersController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
     it("Should not trim if short enough to fit", async () => {
         class UsersController {
@@ -275,12 +278,12 @@ describe("Analyzer Report", () => {
             @route.post("")
             save(very: string, long: string) { }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .set({ controller: [UsersController] })
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 })

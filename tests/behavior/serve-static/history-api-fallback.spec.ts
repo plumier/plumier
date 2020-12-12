@@ -1,12 +1,12 @@
-import { consoleLog, response, route, cleanupConsole, DefaultFacility, PlumierApplication, RouteMetadata } from "@plumier/core"
+import "@plumier/testing"
+
+import { DefaultFacility, PlumierApplication, response, route, RouteMetadata } from "@plumier/core"
 import { ServeStaticFacility } from "@plumier/serve-static"
+import { cleanupConsole } from "@plumier/testing"
 import { join } from "path"
 import supertest = require("supertest")
 
 import { fixture } from "../helper"
-import { JwtAuthFacility } from '@plumier/jwt'
-
-
 
 describe("History Api Fallback", () => {
     it("Should fallback if requested by provide accept header html", async () => {
@@ -101,11 +101,11 @@ describe("History Api Fallback", () => {
             }
         }
         const app = fixture(AnimalController, { mode: "debug" })
-        consoleLog.startMock()
+        console.mock()
         await app.set(new ServeStaticFacility({ root: join(__dirname, "./assets") }))
             .initialize()
         expect((console.log as any).mock.calls[3][0]).toContain("error PLUM1020: Multiple @route.historyApiFallback() is not allowed, in AnimalController.get(), AnimalController.data()")
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should analyze if @route.historyApiFallback() combined with non GET method", async () => {
@@ -117,11 +117,11 @@ describe("History Api Fallback", () => {
             }
         }
         const app = fixture(AnimalController, { mode: "debug" })
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await app.set(new ServeStaticFacility({ root: join(__dirname, "./assets") }))
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Should not analyze non history api fallback method", async () => {
@@ -133,11 +133,11 @@ describe("History Api Fallback", () => {
         }
         
         const app = fixture(AnimalController, { mode: "debug" })
-        consoleLog.startMock()
+        console.mock()
         await app.set(new ServeStaticFacility({ root: join(__dirname, "./assets") }))
             .initialize()
         expect((console.log as any).mock.calls).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 
     it("Analyzer should not error when provided VirtualRoute", async () => {
@@ -157,12 +157,12 @@ describe("History Api Fallback", () => {
                 }]
             }
         }
-        const mock = consoleLog.startMock()
+        const mock = console.mock()
         await fixture(AnimalController, { mode: "debug" })
             .set(new ServeStaticFacility({ root: join(__dirname, "./assets") }))
             .set(new MyFacility())
             .initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        consoleLog.clearMock()
+        console.mockClear()
     })
 })
