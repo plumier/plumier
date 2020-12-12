@@ -14,13 +14,6 @@ module.exports = {
         src: 'img/plumier.png',
       },
       items: [
-        // {
-        //   to: 'refs/entry-point',
-        //   activeBasePath: 'refs',
-        //   label: 'Reference',
-        //   position: 'left',
-        // },
-        // {to: 'blog', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/plumier/plumier',
           label: 'GitHub',
@@ -35,16 +28,16 @@ module.exports = {
           title: 'Docs',
           items: [
             {
-              label: 'Plumier In Five Minutes',
-              to: 'overview',
+              label: 'Fundamentals',
+              to: '/',
             },
             {
-              label: 'Fundamentals',
-              to: 'fundamentals',
+              label: 'Get Started',
+              to: 'get-started',
             },
             {
               label: 'Extending Plumier',
-              to: 'extends',
+              to: 'extend',
             }
           ],
         },
