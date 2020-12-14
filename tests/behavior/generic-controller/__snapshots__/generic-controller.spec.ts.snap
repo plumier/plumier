@@ -1486,6 +1486,18 @@ Array [
 ]
 `;
 
+exports[`Request Hook Should not error when not provide postSaveValue 1`] = `
+Array [
+  Array [
+    User {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "lorem ipsum",
+    },
+  ],
+]
+`;
+
 exports[`Request Hook Should not executed on GET method with model parameter 1`] = `Array []`;
 
 exports[`Response Transformer Generic Controller Should able to transform get many action 1`] = `

@@ -111,7 +111,7 @@ class MockOneToManyRepo<P, T> implements OneToManyRepository<P, T>{
     }
     async insert(pid: any, data: Partial<T>) {
         this.fn(data)
-        return { id: 123, ...data} as any
+        return { id: 123, ...data } as any
     }
     async findById(id: any): Promise<T | undefined> {
         this.fn(id)
@@ -119,7 +119,7 @@ class MockOneToManyRepo<P, T> implements OneToManyRepository<P, T>{
     }
     async update(id: any, data: Partial<T>) {
         this.fn(id, data)
-        return { id: 123, ...data} as any
+        return { id: 123, ...data } as any
     }
     async delete(id: any) {
         this.fn(id)
@@ -2015,11 +2015,11 @@ describe("Request Hook", () => {
             }
         }
         const app = await createApp({ controller: [Parent] }).initialize()
-        const {body} = await supertest(app.callback())
+        const { body } = await supertest(app.callback())
             .post("/parent/123/users")
             .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
             .expect(200)
-            console.log(fn.mock.calls)
+        console.log(fn.mock.calls)
         expect(body.id === fn.mock.calls[1][0]).toBe(true)
     })
     it("Should not executed on GET method with model parameter", async () => {
@@ -2045,6 +2045,47 @@ describe("Request Hook", () => {
             .get("/user")
             .expect(200)
         expect(myFn.mock.calls).toMatchSnapshot()
+    })
+    it("Should not error when not provide postSaveValue", async () => {
+        const fn = jest.fn()
+        @generic.template("T", "TID")
+        @generic.type("T", "TID")
+        class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
+            constructor() { super(fac => new MockRepo<T>(fn)) }
+            async save(data: T, ctx: Context): Promise<IdentifierResult<TID>> {
+                return { id: 123  as any}
+            }
+        }
+        function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
+            return new Plumier()
+                .set({ mode: "production", ...config })
+                .set(new WebApiFacility())
+                .set(new ControllerFacility(opt))
+                .use(new RequestHookMiddleware(), "Action")
+                .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
+        }
+        @route.controller()
+        @domain()
+        class User {
+            constructor(
+                @entity.primaryId()
+                public id: number,
+                public name: string,
+                public email: string,
+                public password: string
+            ) { }
+
+            @postSave()
+            hook() {
+                fn(this)
+            }
+        }
+        const app = await createApp({ controller: User }).initialize()
+        await supertest(app.callback())
+            .post("/user")
+            .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
+            .expect(200)
+        expect(fn.mock.calls).toMatchSnapshot()
     })
 })
 
