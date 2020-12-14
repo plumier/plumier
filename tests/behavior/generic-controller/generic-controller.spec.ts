@@ -2087,6 +2087,46 @@ describe("Request Hook", () => {
             .expect(200)
         expect(fn.mock.calls).toMatchSnapshot()
     })
+    it("Should not error when using custom controller with no body", async () => {
+        const fn = jest.fn()
+        @generic.template("T", "TID")
+        @generic.type("T", "TID")
+        class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
+            constructor() { super(fac => new MockRepo<T>(fn)) }
+            @route.post()
+            async simpan(): Promise<IdentifierResult<TID>> {
+                return { id: 123  as any}
+            }
+        }
+        function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
+            return new Plumier()
+                .set({ mode: "production", ...config })
+                .set(new WebApiFacility())
+                .set(new ControllerFacility(opt))
+                .use(new RequestHookMiddleware(), "Action")
+                .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
+        }
+        @route.controller()
+        @domain()
+        class User {
+            constructor(
+                @entity.primaryId()
+                public id: number,
+                public name: string,
+                public email: string,
+                public password: string
+            ) { }
+
+            @postSave()
+            hook() {
+                fn(this)
+            }
+        }
+        const app = await createApp({ controller: User }).initialize()
+        await supertest(app.callback())
+            .post("/user/simpan")
+            .expect(200)
+    })
 })
 
 describe("Controller Builder", () => {
