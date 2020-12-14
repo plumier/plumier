@@ -34,7 +34,7 @@ export class RequestHookMiddleware implements Middleware<ActionContext> {
         await executeHooks(ctx, "preSave", par.type, preValue)
         const result = await proceed()
         const postValue = result.body[postSaveValue]
-        await executeHooks(ctx, "postSave", par.type, postValue)
+        await executeHooks(ctx, "postSave", par.type, postValue ?? preValue)
         return result
     }
 }
