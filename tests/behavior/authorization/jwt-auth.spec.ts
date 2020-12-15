@@ -1,11 +1,11 @@
+import "@plumier/testing"
+
 import {
     Authenticated,
     AuthorizationContext,
     Authorizer,
     AuthPolicy,
     authPolicy,
-    cleanupConsole,
-    consoleLog,
     CustomAuthorizer,
     CustomAuthorizerFunction,
     DefaultDependencyResolver,
@@ -19,11 +19,12 @@ import {
     RouteMetadata,
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
+import { cleanupConsole } from "@plumier/testing"
+import { noop, reflect, type } from "@plumier/reflect"
 import { sign } from "jsonwebtoken"
 import Koa from "koa"
 import { authorize, domain, route, val } from "plumier"
 import Supertest from "supertest"
-import { noop, reflect, type } from "@plumier/reflect"
 
 import { fixture } from "../helper"
 
@@ -491,7 +492,7 @@ describe("JwtAuth", () => {
                 list() { return ["Hello", "hello"] }
                 save() { }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             const app = await fixture(AnimalController, { mode: "debug" })
                 .set(new JwtAuthFacility({ secret: SECRET }))
                 .initialize()
@@ -514,7 +515,7 @@ describe("JwtAuth", () => {
                 .get("/animal/list")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
                 .expect(200)
-            consoleLog.clearMock()
+            console.mockClear()
         })
     })
 
@@ -804,14 +805,14 @@ describe("JwtAuth", () => {
             class AnimalController {
                 get() { }
             }
-            consoleLog.startMock()
+            console.mock()
             await fixture(AnimalController, { mode: "debug" })
                 .set(new JwtAuthFacility({ secret: SECRET }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             console.log(mock.mock.calls)
             expect(mock.mock.calls[2][0]).toContain("Authenticated")
-            consoleLog.clearMock()
+            console.mockClear()
         })
 
         it("Should print Admin if specified in method", async () => {
@@ -819,13 +820,13 @@ describe("JwtAuth", () => {
                 @authorize.route("Admin")
                 get() { }
             }
-            consoleLog.startMock()
+            console.mock()
             await fixture(AnimalController, { mode: "debug" })
                 .set(new JwtAuthFacility({ secret: SECRET }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("Admin")
-            consoleLog.clearMock()
+            console.mockClear()
         })
 
         it("Should print Admin if specified in class", async () => {
@@ -833,13 +834,13 @@ describe("JwtAuth", () => {
             class AnimalController {
                 get() { }
             }
-            consoleLog.startMock()
+            console.mock()
             await fixture(AnimalController, { mode: "debug" })
                 .set(new JwtAuthFacility({ secret: SECRET }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("Admin")
-            consoleLog.clearMock()
+            console.mockClear()
         })
 
         it("Should print Custom if provided @authorize.custom", async () => {
@@ -847,26 +848,26 @@ describe("JwtAuth", () => {
                 @authorize.custom(async i => true, { access: "route" })
                 get() { }
             }
-            consoleLog.startMock()
+            console.mock()
             await fixture(AnimalController, { mode: "debug" })
                 .set(new JwtAuthFacility({ secret: SECRET }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("Custom")
-            consoleLog.clearMock()
+            console.mockClear()
         })
 
         it("Should print Public if provided in global", async () => {
             class AnimalController {
                 get() { }
             }
-            consoleLog.startMock()
+            console.mock()
             await fixture(AnimalController, { mode: "debug" })
                 .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("Public")
-            consoleLog.clearMock()
+            console.mockClear()
         })
 
         it("Should print Admin even if provided in global", async () => {
@@ -874,13 +875,13 @@ describe("JwtAuth", () => {
                 @authorize.route("Admin")
                 get() { }
             }
-            consoleLog.startMock()
+            console.mock()
             await fixture(AnimalController, { mode: "debug" })
                 .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("Admin")
-            consoleLog.clearMock()
+            console.mockClear()
         })
 
         it("Should print All if provided multiple", async () => {
@@ -889,13 +890,13 @@ describe("JwtAuth", () => {
                 @authorize.route("User")
                 get() { }
             }
-            consoleLog.startMock()
+            console.mock()
             await fixture(AnimalController, { mode: "debug" })
                 .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("User|Admin")
-            consoleLog.clearMock()
+            console.mockClear()
         })
 
         it("Should print All if provided by comma", async () => {
@@ -903,13 +904,13 @@ describe("JwtAuth", () => {
                 @authorize.route("Admin", "User")
                 get() { }
             }
-            consoleLog.startMock()
+            console.mock()
             await fixture(AnimalController, { mode: "debug" })
                 .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("Admin|User")
-            consoleLog.clearMock()
+            console.mockClear()
         })
 
         it("Should print nicely", async () => {
@@ -924,7 +925,7 @@ describe("JwtAuth", () => {
                 @authorize.route("Admin", "User")
                 mix() { }
             }
-            consoleLog.startMock()
+            console.mock()
             await fixture(AnimalController, { mode: "debug" })
                 .set(new JwtAuthFacility({ secret: SECRET }))
                 .initialize()
@@ -937,7 +938,7 @@ describe("JwtAuth", () => {
                 '4. AnimalController.user()          -> User          GET /animal/user',
                 '5. AnimalController.mix()           -> Admin|User    GET /animal/mix',
             ])
-            consoleLog.clearMock()
+            console.mockClear()
         })
 
         it("Should not print if JwtAuthFacility not installed", async () => {
@@ -952,7 +953,7 @@ describe("JwtAuth", () => {
                 @authorize.route("Admin", "User")
                 mix() { }
             }
-            consoleLog.startMock()
+            console.mock()
             await fixture(AnimalController, { mode: "debug" })
                 .initialize()
             const mock = (console.log as jest.Mock)
@@ -964,7 +965,7 @@ describe("JwtAuth", () => {
                 '4. AnimalController.user()          -> GET /animal/user',
                 '5. AnimalController.mix()           -> GET /animal/mix'
             ])
-            consoleLog.clearMock()
+            console.mockClear()
         })
 
         it("Should print access on virtual route", async () => {
@@ -984,13 +985,13 @@ describe("JwtAuth", () => {
                     }]
                 }
             }
-            const mock = consoleLog.startMock()
+            const mock = console.mock()
             await fixture(AnimalController, { mode: "debug" })
                 .set(new JwtAuthFacility({ secret: "lorem" }))
                 .set(new MyFacility())
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-            consoleLog.clearMock()
+            console.mockClear()
         })
     })
 
