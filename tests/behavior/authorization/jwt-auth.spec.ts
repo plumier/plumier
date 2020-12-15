@@ -3487,7 +3487,7 @@ describe("JwtAuth", () => {
             expect(message).toContain("Error occur inside authorization policy HasUser on class AnimalController")
             expect(message).toContain("ERROR")
         })
-        it.only("Should able to register to global auth policies", async () => {
+        it("Should able to register to global auth policies", async () => {
             class AnimalController {
                 @authorize.route("HasUser")
                 get() { return "Hello" }
