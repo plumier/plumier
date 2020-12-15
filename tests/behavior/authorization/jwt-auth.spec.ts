@@ -3487,6 +3487,26 @@ describe("JwtAuth", () => {
             expect(message).toContain("Error occur inside authorization policy HasUser on class AnimalController")
             expect(message).toContain("ERROR")
         })
+        it("Should able to register to global auth policies", async () => {
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            authPolicy().register("HasUser", i => i.role.some(x => x === "user"))
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
     })
 
     describe("Entity Policy", () => {
@@ -3866,6 +3886,36 @@ describe("JwtAuth", () => {
                 .expect(500)
             const message = fn.mock.calls[0][0].message
             expect(message).toContain("Entity Product doesn't have primary ID information required for entity policy")
+        })
+        it("Should able to register entity policy into global auth policies", async () => {
+            class ShopsController {
+                @route.get(":id")
+                @type(Shop)
+                @entityProvider(Shop, "id")
+                @authorize.route("ShopAdmin")
+                get(id: number) {
+                    return shops.find(x => x.id === id)
+                }
+            }
+            entityPolicy(Shop)
+                .register("ShopAdmin", (i, id) => {
+                    const shop = shops.find(x => x.id === id)
+                    return shop!.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })
+            const app = await fixture(ShopsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET
+                }))
+                .initialize()
+            function request(app: Koa, url: string, user: string = USER_TOKEN) {
+                return Supertest(app.callback())
+                    .get(url)
+                    .set("Authorization", `Bearer ${user}`)
+            }
+            await request(app, "/shops/1", USER_ONE).expect(200)
+            await request(app, "/shops/1", USER_TWO).expect(401)
+            await request(app, "/shops/2", USER_ONE).expect(401)
+            await request(app, "/shops/2", USER_TWO).expect(200)
         })
     })
 })

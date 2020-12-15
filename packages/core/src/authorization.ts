@@ -104,10 +104,6 @@ type EntityProviderQuery<T = any> = (entity: Class, id: any) => Promise<T>
 interface EntityPolicyProviderDecorator { kind: "plumier-meta:entity-policy-provider", entity: Class, idParam: string }
 type EntityPolicyAuthorizerFunction = (ctx: AuthorizerContext, id: any) => boolean | Promise<boolean>
 
-interface AuthPolicyBuilder {
-    policies: AuthPolicy[]
-}
-
 class PolicyAuthorizer implements Authorizer {
     private readonly policies: Class<AuthPolicy>[] = [
         PublicAuthPolicy, AuthorizedAuthPolicy
@@ -119,7 +115,7 @@ class PolicyAuthorizer implements Authorizer {
         // check role first because its faster 
         for (const role of ctx.role) {
             for (const key of this.keys) {
-                if(key === role) return true
+                if (key === role) return true
             }
         }
         // test for auth policy
@@ -128,7 +124,7 @@ class PolicyAuthorizer implements Authorizer {
             for (const policy of this.keys) {
                 if (authPolicy.equals(policy, ctx)) {
                     const authorize = await authPolicy.authorize(ctx, location)
-                    if(authorize) return true
+                    if (authorize) return true
                 }
             }
         }
@@ -223,26 +219,69 @@ class EntityAuthPolicy<T> implements AuthPolicy {
     }
 }
 
-function authPolicy() {
-    return {
-        define: (id: string, authorizer: CustomAuthorizerFunction | CustomAuthorizer): Class<AuthPolicy> => {
-            class Policy extends CustomAuthPolicy {
-                constructor() { super(id, authorizer) }
-            }
-            return Policy
+class AuthPolicyBuilder {
+    constructor(private globalCache: Class<AuthPolicy>[]) { }
+
+    /**
+     * Define AuthPolicy class on the fly
+     * @param id Id of the authorization policy that will be used in @authorize decorator
+     * @param authorizer Authorization logic, a lambda function return true to authorize otherwise false
+     */
+    define(id: string, authorizer: CustomAuthorizerFunction | CustomAuthorizer): Class<AuthPolicy> {
+        class Policy extends CustomAuthPolicy {
+            constructor() { super(id, authorizer) }
         }
+        return Policy
+    }
+
+    /**
+     * Register authorization policy into authorization cache
+     * @param id Id of the authorization policy that will be used in @authorize decorator
+     * @param authorizer Authorization logic, a lambda function return true to authorize otherwise false
+     */
+    register(id: string, authorizer: CustomAuthorizerFunction | CustomAuthorizer): AuthPolicyBuilder {
+        const Policy = this.define(id, authorizer)
+        this.globalCache.push(Policy)
+        return this
     }
 }
 
-function entityPolicy<T>(entity: Class<T>) {
-    return {
-        define: (id: string, authorizer: EntityPolicyAuthorizerFunction): Class<AuthPolicy> => {
-            class Policy extends EntityAuthPolicy<T> {
-                constructor() { super(id, entity, authorizer) }
-            }
-            return Policy
+class EntityPolicyBuilder<T> {
+    constructor(private entity: Class<T>, private globalCache: Class<AuthPolicy>[]) { }
+
+    /**
+     * Define AuthPolicy class on the fly
+     * @param id Id of the authorization policy that will be used in @authorize decorator
+     * @param authorizer Authorization logic, a lambda function return true to authorize otherwise false
+     */
+    define(id: string, authorizer: EntityPolicyAuthorizerFunction): Class<AuthPolicy> {
+        const entity = this.entity
+        class Policy extends EntityAuthPolicy<T> {
+            constructor() { super(id, entity, authorizer) }
         }
+        return Policy
     }
+
+    /**
+     * Register authorization policy into authorization cache
+     * @param id Id of the authorization policy that will be used in @authorize decorator
+     * @param authorizer Authorization logic, a lambda function return true to authorize otherwise false
+     */
+    register(id: string, authorizer: EntityPolicyAuthorizerFunction): EntityPolicyBuilder<T> {
+        const Policy = this.define(id, authorizer)
+        this.globalCache.push(Policy)
+        return this
+    }
+}
+
+const globalPolicies:Class<AuthPolicy>[] = []
+
+function authPolicy() {
+    return new AuthPolicyBuilder(globalPolicies)
+}
+
+function entityPolicy<T>(entity: Class<T>) {
+    return new EntityPolicyBuilder<T>(entity, globalPolicies)
 }
 
 // --------------------------------------------------------------------- //
@@ -535,5 +574,5 @@ export {
     CustomAuthorizer, CustomAuthorizerFunction, AuthorizationContext, AuthorizerContext,
     AccessModifier, EntityPolicyProviderDecorator, EntityProviderQuery,
     authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, Public, Authenticated,
-    AuthPolicy, CustomAuthPolicy, EntityAuthPolicy
+    AuthPolicy, CustomAuthPolicy, EntityAuthPolicy, globalPolicies
 }
