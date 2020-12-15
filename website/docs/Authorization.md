@@ -286,7 +286,7 @@ You can specify parameter or model property that filterable using specific role 
 
 ```typescript
 import reflect from "@plumier/reflect"
-import { domain, authorize, route } from "plumier"
+import { domain, authorize, route, entity } from "plumier"
 
 @domain()
 export class Item {
@@ -302,7 +302,7 @@ export class Item {
 
 export class ItemsController {
     @route.get()
-    list(filter:Item){}
+    list(@entity.filter() filter:Item){}
 }
 ```
 
@@ -316,3 +316,7 @@ As mentioned above, by default all routes is secured when `JwtAuthFacility` appl
 const app = new Plumier()
 app.set(new JwtAuthFacility({ secret: "<your secret key>", global: authorize.public() }))
 ```
+
+## Policy Based Authorization 
+Policy based authorization possibly to create custom authorization logic with specific name, to increase coupling between authorization logic and the target. 
+
