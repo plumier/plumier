@@ -1,4 +1,4 @@
-import { AuthPolicy, Class, DefaultFacility, findClassRecursive, PlumierApplication } from "@plumier/core"
+import { AuthPolicy, Class, DefaultFacility, findClassRecursive, globalPolicies, PlumierApplication } from "@plumier/core"
 import KoaJwt from "koa-jwt"
 import { join } from "path"
 
@@ -40,8 +40,10 @@ export class JwtAuthFacility extends DefaultFacility {
     constructor(private option?: JwtAuthFacilityOption & Partial<KoaJwt.Options>) { super() }
 
     async preInitialize(app: Readonly<PlumierApplication>) {
-        if (this.option?.authPolicies)
-            app.set({ authPolicies: await getPoliciesByFile(app.config.rootDir, this.option.authPolicies) })
+        const authPolicies = !!this.option?.authPolicies ?
+            globalPolicies.concat(await getPoliciesByFile(app.config.rootDir, this.option.authPolicies)) :
+            globalPolicies
+        app.set({ authPolicies })
     }
 
     setup(app: Readonly<PlumierApplication>) {

@@ -188,6 +188,67 @@ Above code showing that we apply `@route.controller()` on the `User.emails` rela
 | DELETE | `/users/:pid/emails/:id`        | Delete user's email by ID                                           |
 | GET    | `/users/:pid/emails`            | Get list of user's emails with paging, filter, order and projection |
 
+:::info
+If you separate your code per entity, you may found that configuring on relation is not so clean, because your controller configuration is not in your entity. You can keep specify decorator on the child entity but use `useNested` configuration like below.
+
+```typescript
+@route.controller(c => c.useNested(User, "emails"))
+@Entity()
+class Email {
+    
+}
+```
+
+The result will be the same as above
+:::
+
+## Apply Multiple Decorators 
+Its possible to apply multiple `@route.controller()` decorator on entity or entity relation, but the generated route must be unique or the route generator static check will shows errors. 
+
+For example on previous users -> email entity you may need to show `/users/:uid/emails` but you may also wants to enable API to list all emails `/emails` 
+
+```typescript
+@Entity()
+class User {
+    
+    /** other columns **/
+
+    @Column()
+    name:string
+
+    @OneToMany(x => Email, x => x.user)
+    emails:Email[]
+}
+
+@route.controller(c => c.useNested(User, "emails"))
+@route.controller(c => c.actions("Delete", "GetOne", "Patch", "Post", "Put").ignore())
+@Entity()
+class Email {
+    
+    /** other columns **/
+
+    @Column()
+    email:string
+
+    @Column()
+    description:string
+
+    @ManyToOne(x => User, x => x.emails)
+    user:User
+}
+```
+
+Above will generates 7 routes like below 
+
+| Method | Route                           | Description                                                         |
+| ------ | ------------------------------- | ------------------------------------------------------------------- |
+| POST   | `/users/:pid/emails`            | Add new user's email                                                |
+| GET    | `/users/:pid/emails/:id?select` | Get user's email by ID                                              |
+| PUT    | `/users/:pid/emails/:id`        | Replace user's email by ID                                          |
+| PATCH  | `/users/:pid/emails/:id`        | Modify user's email by ID                                           |
+| DELETE | `/users/:pid/emails/:id`        | Delete user's email by ID                                           |
+| GET    | `/users/:pid/emails`            | Get list of user's emails with paging, filter, order and projection |
+| GET    | `/emails`                       | Get list of all emails                                              |
 
 ## Filters 
 Generic controller provided filter query string to narrow API response. To be able to filter specific field, the appropriate property needs to be authorized. 
@@ -386,13 +447,13 @@ class User {
 
 Above code showing that we apply `@authorize` decorator on `password` and `role` property which contains sensitive data. Using above configuration `password` will not be visible on any response, and `role` only can be set by `SuperAdmin` and `Admin`. Below list of authorization you can use to protect property of the entity
 
-| Decorator                        | Description                                                                             |
-| -------------------------------- | --------------------------------------------------------------------------------------- |
-| `@authorize.route("SuperAdmin")`  | Protect route can be accessed by specific role (`SuperAdmin`)                  |
-| `@authorize.write("SuperAdmin")` | Protect property only can be write by specific role (`SuperAdmin`)                      |
-| `@authorize.read("SuperAdmin")`  | Protect property only can be read by specific role (`SuperAdmin`)                       |
-| `@authorize.readonly()`          | Protect property only can be read and no other role can write it                        |
-| `@authorize.writeonly()`         | Protect property only can be write and no other role can read it                        |
+| Decorator                        | Description                                                                  |
+| -------------------------------- | ---------------------------------------------------------------------------- |
+| `@authorize.route("SuperAdmin")` | Protect route can be accessed by specific role (`SuperAdmin`)                |
+| `@authorize.write("SuperAdmin")` | Protect property only can be write by specific role (`SuperAdmin`)           |
+| `@authorize.read("SuperAdmin")`  | Protect property only can be read by specific role (`SuperAdmin`)            |
+| `@authorize.readonly()`          | Protect property only can be read and no other role can write it             |
+| `@authorize.writeonly()`         | Protect property only can be write and no other role can read it             |
 | `@authorize.custom()`            | Protect property using [custom authorizer function](Custom-Authorization.md) |
 
 

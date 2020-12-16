@@ -52,10 +52,17 @@ function getActionName(method: ActionNotation) {
 }
 
 class ControllerBuilder {
+    public parent?: Class
+    public relation?: string
     private path?: string
     private map: ActionConfigMap = new Map()
     setPath(path: string): ControllerBuilder {
         this.path = path
+        return this
+    }
+    useNested<T>(parent: Class<T>, relation: keyof T) {
+        this.parent = parent
+        this.relation = relation as string
         return this
     }
     actions(...notations: ActionNotation[]) {
@@ -303,29 +310,46 @@ function createOneToManyGenericController(parentType: Class, builder: Controller
     return Controller
 }
 
-function createGenericControllers(controller: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
-    const meta = reflect(controller)
+function createEntityController(type: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
+    const meta = reflect(type)
     const controllers = []
     // basic generic controller
-    const basicDecorator = meta.decorators.find((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
-    if (basicDecorator) {
-        const ctl = createGenericController(controller, getControllerBuilderFromConfig(basicDecorator.config), genericControllers[0], nameConversion)
-        controllers.push(ctl)
-    }
-    // one to many controller on each relation property
-    const relations = []
-    for (const prop of meta.properties) {
-        const decorator = prop.decorators.find((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
-        if (!decorator) continue
-        if (!prop.type[0])
-            throw new Error(errorMessage.GenericControllerMissingTypeInfo.format(`${meta.name}.${prop.name}`))
-        relations.push({ name: prop.name, type: prop.type[0], decorator })
-    }
-    for (const relation of relations) {
-        const ctl = createOneToManyGenericController(controller, getControllerBuilderFromConfig(relation.decorator.config), relation.type, relation.name, genericControllers[1], nameConversion)
-        controllers.push(ctl)
+    const decorators = meta.decorators.filter((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
+    for (const decorator of decorators) {
+        const config = getControllerBuilderFromConfig(decorator.config)
+        if (!!config.parent) {
+            const ctl = createOneToManyGenericController(config.parent, config, type, config.relation!, genericControllers[1], nameConversion)
+            controllers.push(ctl)
+        }
+        else {
+            const ctl = createGenericController(type, config, genericControllers[0], nameConversion)
+            controllers.push(ctl)
+        }
     }
     return controllers
+}
+
+function createRelationController(entity: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
+    const meta = reflect(entity)
+    const controllers = []
+    // one to many controller on each relation property
+    for (const prop of meta.properties) {
+        const decorators = prop.decorators.filter((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
+        for (const decorator of decorators) {
+            if (!prop.type[0])
+                throw new Error(errorMessage.GenericControllerMissingTypeInfo.format(`${meta.name}.${prop.name}`))
+            const ctl = createOneToManyGenericController(entity, getControllerBuilderFromConfig(decorator.config), prop.type[0], prop.name, genericControllers[1], nameConversion)
+            controllers.push(ctl)
+        }
+    }
+    return controllers
+}
+
+function createGenericControllers(controller: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
+    return [
+        ...createEntityController(controller, genericControllers, nameConversion),
+        ...createRelationController(controller, genericControllers, nameConversion)
+    ]
 }
 
 function getGenericControllerOneToOneRelations(type: Class) {

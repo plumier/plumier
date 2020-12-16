@@ -241,6 +241,7 @@ Object {
   "getGenericControllerRelation": getGenericControllerRelation,
   "getGenericControllerReverseRelation": getGenericControllerReverseRelation,
   "globAsync": globAsync,
+  "globalPolicies": Array [],
   "hasKeyOf": hasKeyOf,
   "invoke": invoke,
   "isCustomClass": isCustomClass,
