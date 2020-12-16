@@ -416,6 +416,22 @@ describe("Route Generator", () => {
             error(async () => ctl.insert({}))
             expect(fn.mock.calls).toMatchSnapshot()
         })
+        it("Should able to apply multiple controller on single entities", async () => {
+            @route.controller()
+            @route.controller(c => c.setPath("user-data/:id"))
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = console.mock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
     })
     describe("One To Many Controller", () => {
         it("Should generate routes with parameter property entity", async () => {
@@ -461,7 +477,6 @@ describe("Route Generator", () => {
                     public id: number,
                     public name: string,
                     public email: string,
-                    @route.controller()
                     @reflect.type([Animal])
                     @entity.relation()
                     @route.controller()
@@ -822,6 +837,33 @@ describe("Route Generator", () => {
             await createApp({ controller: Animal }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
+        it("Should able to apply multiple controller into relation property", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string,
+                    @reflect.type([Animal])
+                    @entity.relation()
+                    @route.controller()
+                    @route.controller(c => c.setPath("user-data/:uid/animal-data/:id"))
+                    public animals: Animal[]
+                ) { }
+            }
+            const mock = console.mock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
     })
     describe("Grouping", () => {
         it("Should able to group routes", async () => {
@@ -860,7 +902,6 @@ describe("Route Generator", () => {
                     public id: number,
                     public name: string,
                     public email: string,
-                    @route.controller()
                     @reflect.type([Animal])
                     @entity.relation()
                     @route.controller()
