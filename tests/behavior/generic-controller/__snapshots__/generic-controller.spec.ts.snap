@@ -2323,6 +2323,34 @@ Array [
 ]
 `;
 
+exports[`Route Generator One To Many Controller Should able to define nested controller from child entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultOneToMany...eneric.list    -> GET    /user/:pid/animals",
+  ],
+  Array [
+    "2. DefaultOneToMany...eneric.save    -> POST   /user/:pid/animals",
+  ],
+  Array [
+    "3. DefaultOneToMany...eneric.get     -> GET    /user/:pid/animals/:id",
+  ],
+  Array [
+    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animals/:id",
+  ],
+  Array [
+    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animals/:id",
+  ],
+  Array [
+    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`Route Generator One To Many Controller Should able to ignore some method of controller from entity 1`] = `
 Array [
   Array [],

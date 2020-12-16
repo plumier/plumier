@@ -188,7 +188,19 @@ Above code showing that we apply `@route.controller()` on the `User.emails` rela
 | DELETE | `/users/:pid/emails/:id`        | Delete user's email by ID                                           |
 | GET    | `/users/:pid/emails`            | Get list of user's emails with paging, filter, order and projection |
 
+:::info
+If you separate your code per entity, you may found that configuring on relation is not so clean, because your controller configuration is not in your entity. You can keep specify decorator on the child entity but use `useNested` configuration like below.
 
+```typescript
+@route.controller(c => c.useNested(User, "emails"))
+@Entity()
+class Email {
+    
+}
+```
+
+The result will be the same as above
+:::
 ## Filters 
 Generic controller provided filter query string to narrow API response. To be able to filter specific field, the appropriate property needs to be authorized. 
 
