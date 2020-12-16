@@ -52,10 +52,17 @@ function getActionName(method: ActionNotation) {
 }
 
 class ControllerBuilder {
+    public parent?:Class
+    public relation?:string
     private path?: string
     private map: ActionConfigMap = new Map()
     setPath(path: string): ControllerBuilder {
         this.path = path
+        return this
+    }
+    useNested<T>(parent:Class<T>, relation: keyof T){
+        this.parent = parent
+        this.relation = relation as string
         return this
     }
     actions(...notations: ActionNotation[]) {
@@ -309,8 +316,15 @@ function createGenericControllers(controller: Class, genericControllers: Generic
     // basic generic controller
     const basicDecorator = meta.decorators.find((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
     if (basicDecorator) {
-        const ctl = createGenericController(controller, getControllerBuilderFromConfig(basicDecorator.config), genericControllers[0], nameConversion)
-        controllers.push(ctl)
+        const config = getControllerBuilderFromConfig(basicDecorator.config)
+        if(!!config.parent){
+            const ctl = createOneToManyGenericController(config.parent, config, controller, config.relation!, genericControllers[1], nameConversion)
+            controllers.push(ctl)
+        }
+        else {
+            const ctl = createGenericController(controller, config, genericControllers[0], nameConversion)
+            controllers.push(ctl)
+        }
     }
     // one to many controller on each relation property
     const relations = []

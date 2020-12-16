@@ -796,6 +796,32 @@ describe("Route Generator", () => {
             }
             expect(fn.mock.calls).toMatchSnapshot()
         })
+        it("Should able to define nested controller from child entity", async () => {
+            @route.controller(c => c.useNested(User, "animals"))
+            @domain()
+            class Animal {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string
+                ) { }
+            }
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string,
+                    @reflect.type([Animal])
+                    @entity.relation()
+                    public animals: Animal[]
+                ) { }
+            }
+            const mock = console.mock()
+            await createApp({ controller: Animal }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
     })
     describe("Grouping", () => {
         it("Should able to group routes", async () => {
@@ -2053,7 +2079,7 @@ describe("Request Hook", () => {
         class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
             constructor() { super(fac => new MockRepo<T>(fn)) }
             async save(data: T, ctx: Context): Promise<IdentifierResult<TID>> {
-                return { id: 123  as any}
+                return { id: 123 as any }
             }
         }
         function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
@@ -2095,7 +2121,7 @@ describe("Request Hook", () => {
             constructor() { super(fac => new MockRepo<T>(fn)) }
             @route.post()
             async simpan(): Promise<IdentifierResult<TID>> {
-                return { id: 123  as any}
+                return { id: 123 as any }
             }
         }
         function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
