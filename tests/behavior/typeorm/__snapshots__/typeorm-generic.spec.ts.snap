@@ -289,6 +289,32 @@ Array [
 ]
 `;
 
+exports[`CRUD CRUD Function Should able to use custom get many query 1`] = `
+Array [
+  Object {
+    "email": "john.doe@gmail.com",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+  },
+]
+`;
+
+exports[`CRUD CRUD Function Should able to use custom get one query 1`] = `
+Object {
+  "email": "john.doe@gmail.com",
+}
+`;
+
 exports[`CRUD CRUD Function Should able to use request hook 1`] = `
 User {
   "email": "john.doe@gmail.com",
@@ -632,6 +658,98 @@ Array [
     "name": "Mimi",
   },
 ]
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should able to use custom get many query 1`] = `
+Array [
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+  Object {
+    "name": "Mimi",
+    "user": "John Doe",
+  },
+]
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should able to use custom get one query 1`] = `
+Object {
+  "name": "Mimi",
+  "user": "John Doe",
+}
 `;
 
 exports[`CRUD Nested CRUD One to Many Function Should filter with exact value GET /users/:parentId/animals?filter 1`] = `
