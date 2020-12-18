@@ -813,7 +813,6 @@ describe("CRUD", () => {
             console.mockClear()
         })
         it("Should able to use custom get one query", async () => {
-            @Entity()
             @route.controller(c => {
                 c.getOne().custom(UserDto, async ({ id }) => {
                     const repo = getManager().getRepository(User)
@@ -821,6 +820,7 @@ describe("CRUD", () => {
                     return { email: user!.email }
                 })
             })
+            @Entity()
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
