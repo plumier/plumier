@@ -844,9 +844,9 @@ describe("CRUD", () => {
         it("Should able to use custom get many query", async () => {
             @Entity()
             @route.controller(c => {
-                c.getMany().custom([UserDto], async ({ limit, offset, filter }) => {
+                c.getMany().custom([UserDto], async ({ limit, offset }) => {
                     const repo = getManager().getRepository(User)
-                    return repo.find({ skip: offset, take: limit, where: filter })
+                    return repo.find({ skip: offset, take: limit })
                 })
             })
             class User {
