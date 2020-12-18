@@ -755,7 +755,7 @@ describe("CRUD", () => {
                 }
 
                 @postSave()
-                afterSave(){
+                afterSave() {
                     fn(this.id)
                 }
             }
@@ -824,6 +824,63 @@ describe("CRUD", () => {
             await createApp({ controller: [UsersController] })
             expect(mock.mock.calls).toMatchSnapshot()
             console.mockClear()
+        })
+        it("Should able to specify custom get one query", async () => {
+            @collection()
+            @route.controller(c => {
+                c.getOne().custom(UserDto, async ({ id }) => {
+                    const UserModel = model(User)
+                    const user = await UserModel.findById(id)
+                    return { email: user!.email }
+                })
+            })
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            class UserDto {
+                @reflect.noop()
+                email: string
+            }
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${data.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to specify custom get many query", async () => {
+            @collection()
+            @route.controller(c => {
+                c.getMany().custom([UserDto], async ({ limit, offset }) => {
+                    const UserModel = model(User)
+                    return UserModel.find({}, { email: 1 }).limit(limit).skip(offset)
+                })
+            })
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            class UserDto {
+                @reflect.noop()
+                email: string
+            }
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            await Promise.all(Array(5).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?offset=0&limit=5")
+                .expect(200)
+            expect(body).toMatchSnapshot()
         })
     })
     describe("Nested CRUD One to Many Function", () => {
@@ -2017,6 +2074,94 @@ describe("CRUD", () => {
             await createApp({ controller: [UsersController] })
             expect(mock.mock.calls).toMatchSnapshot()
             console.mockClear()
+        })
+        it("Should able to use custom get one query", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller(c => {
+                    c.getOne().custom(AnimalDto, async ({ id }) => {
+                        const AnimalModel = model(Animal)
+                        const animal = await AnimalModel.findById(id).populate("user")
+                        return { name: animal?.name, user: animal?.user.name }
+                    })
+                })
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => User)
+                user: User
+            }
+            class AnimalDto {
+                @reflect.noop()
+                name: string
+
+                @reflect.noop()
+                user: string
+            }
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals/${inserted.id}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to use custom get many query", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @route.controller(c => {
+                    c.getMany().custom([AnimalDto], async ({ limit, offset }) => {
+                        const AnimalModel = model(Animal)
+                        const animals = await AnimalModel.find({}).limit(limit).skip(offset).populate("user")
+                        return animals.map(a => ({ name: a.name, user: a.user.name }))
+                    })
+                })
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => User)
+                user: User
+            }
+            class AnimalDto {
+                @reflect.noop()
+                name: string
+
+                @reflect.noop()
+                user: string
+            }
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            await Promise.all(Array(5).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals?offset=0&limit=5`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
         })
     })
     describe("One To One Function", () => {

@@ -5,10 +5,10 @@ import reflect, { decorateClass, DecoratorOptionId, generic } from "@plumier/ref
 
 import { AuthorizeDecorator } from "./authorization"
 import { Class, entityHelper } from "./common"
-import { decorateRoute, responseTransformer, ResponseTransformer } from "./controllers"
+import { decorateRoute, GetManyCustomQueryDecorator, GetManyCustomQueryFunction, GetOneCustomQueryDecorator, GetOneCustomQueryFunction, responseTransformer, ResponseTransformer } from "./controllers"
 import { api, ApiTagDecorator } from "./decorator/api"
 import { authorize } from "./decorator/authorize"
-import { entityProvider } from "./decorator/common"
+import { entityProvider, responseType } from "./decorator/common"
 import { entity, EntityIdDecorator, RelationDecorator } from "./decorator/entity"
 import { GenericControllerDecorator, route } from "./decorator/route"
 import { IgnoreDecorator } from "./route-generator"
@@ -19,6 +19,7 @@ import {
     OneToManyControllerGeneric,
     RelationPropertyDecorator,
 } from "./types"
+import { Context } from "koa"
 
 
 // --------------------------------------------------------------------- //
@@ -32,6 +33,8 @@ interface ActionConfig {
     authorize?: string[]
     ignore?: true
     transformer?: { target: Class, fn: ResponseTransformer }
+    getOneCustomQuery?: { type: Class | [Class], query: GetOneCustomQueryFunction }
+    getManyCustomQuery?: { type: Class | [Class], query: GetManyCustomQueryFunction }
 }
 
 type ActionConfigMap = Map<ActionName, ActionConfig>
@@ -81,10 +84,10 @@ class ControllerBuilder {
         return new ActionsBuilder(this.map, ["delete"])
     }
     getOne() {
-        return new TransformableActionBuilder(this.map, ["get"])
+        return new GetOneActionBuilder(this.map, ["get"])
     }
     getMany() {
-        return new TransformableActionBuilder(this.map, ["list"])
+        return new GetManyActionBuilder(this.map, ["list"])
     }
     mutators() {
         return new ActionsBuilder(this.map, ["delete", "modify", "save", "replace"])
@@ -132,7 +135,20 @@ class ActionsBuilder {
 
 class TransformableActionBuilder extends ActionsBuilder {
     transformer<T>(target: Class<T>, fn: ResponseTransformer<any, T>) {
-        this.setConfig(this.names, { transformer: { target, fn } })
+        return this.setConfig(this.names, { transformer: { target, fn } })
+    }
+}
+
+
+class GetOneActionBuilder extends TransformableActionBuilder {
+    custom<T>(responseType: Class | [Class], query: GetOneCustomQueryFunction<T>) {
+        return this.setConfig(this.names, { getOneCustomQuery: { type: responseType, query } })
+    }
+}
+
+class GetManyActionBuilder extends TransformableActionBuilder {
+    custom<T>(responseType: Class | [Class], query: GetManyCustomQueryFunction<T>) {
+        return this.setConfig(this.names, { getManyCustomQuery: { type: responseType, query } })
     }
 }
 
@@ -223,6 +239,21 @@ function decorateTransformers(config: GenericControllerConfig) {
     return result
 }
 
+function decorateCustomQuery(config: GenericControllerConfig) {
+    const result = []
+    const get = config.map.get("get")
+    if (get && get.getOneCustomQuery) {
+        result.push(decorateClass(<GetOneCustomQueryDecorator>{ kind: "plumier-meta:get-one-query", query: get.getOneCustomQuery.query }))
+        result.push(responseType(get.getOneCustomQuery.type, { applyTo: "get" }))
+    }
+    const list = config.map.get("list")
+    if (list && list.getManyCustomQuery) {
+        result.push(decorateClass(<GetManyCustomQueryDecorator>{ kind: "plumier-meta:get-many-query", query: list.getManyCustomQuery.query }))
+        result.push(responseType(list.getManyCustomQuery.type, { applyTo: "list" }))
+    }
+    return result
+}
+
 function createGenericController(entity: Class, builder: ControllerBuilder, controller: Class<ControllerGeneric>, nameConversion: (x: string) => string) {
     const config = builder.toObject()
     // get type of ID column on entity
@@ -251,7 +282,8 @@ function createGenericController(entity: Class, builder: ControllerBuilder, cont
         route.root(routePath, { map: routeMap }),
         ignoreActions(config),
         ...authorizeActions(config),
-        ...decorateTransformers(config)
+        ...decorateTransformers(config),
+        ...decorateCustomQuery(config)
     ], Controller)
     if (!meta.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag"))
         Reflect.decorate([api.tag(entity.name)], Controller)
@@ -303,7 +335,8 @@ function createOneToManyGenericController(parentType: Class, builder: Controller
         entityProvider(parentType, "pid", { applyTo: ["list", "save"] }),
         entityProvider(entity, "id", { applyTo: ["get", "modify", "replace", "delete"] }),
         ...authorizeActions(config),
-        ...decorateTransformers(config)
+        ...decorateTransformers(config),
+        ...decorateCustomQuery(config)
     ], Controller)
     if (!relProp.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag"))
         Reflect.decorate([api.tag(parentType.name)], Controller)
