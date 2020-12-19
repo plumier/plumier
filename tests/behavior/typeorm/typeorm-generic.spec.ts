@@ -14,7 +14,7 @@ import {
     val,
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import { generic } from "@plumier/reflect"
+import { generic, noop } from "@plumier/reflect"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
     controller,
@@ -267,7 +267,7 @@ describe("CRUD", () => {
             @Column()
             name: string
             @ManyToOne(x => User, x => x.tags)
-            user:User
+            user: User
         }
         const app = await createApp([User, Tag], { mode: "production" })
         const repo = getManager().getRepository(User)
@@ -764,7 +764,7 @@ describe("CRUD", () => {
                 }
 
                 @postSave()
-                afterSave(){
+                afterSave() {
                     fn(this.id)
                 }
             }
@@ -811,6 +811,63 @@ describe("CRUD", () => {
             await createApp([UsersController])
             expect(mock.mock.calls).toMatchSnapshot()
             console.mockClear()
+        })
+        it("Should able to use custom get one query", async () => {
+            @route.controller(c => {
+                c.getOne().custom(UserDto, async ({ id }) => {
+                    const repo = getManager().getRepository(User)
+                    const user = await repo.findOne(id)
+                    return { email: user!.email }
+                })
+            })
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            class UserDto {
+                @noop()
+                email: string
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${data.raw}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to use custom get many query", async () => {
+            @Entity()
+            @route.controller(c => {
+                c.getMany().custom([UserDto], async ({ limit, offset }) => {
+                    const repo = getManager().getRepository(User)
+                    return repo.find({ skip: offset, take: limit })
+                })
+            })
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            class UserDto {
+                @noop()
+                email: string
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            await Promise.all(Array(5).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?offset=0&limit=5")
+                .expect(200)
+            expect(body).toMatchSnapshot()
         })
     })
     describe("Nested CRUD One to Many Function", () => {
@@ -1601,6 +1658,94 @@ describe("CRUD", () => {
             expect(mock.mock.calls).toMatchSnapshot()
             console.mockClear()
         })
+        it("Should able to use custom get one query", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @route.controller(c => {
+                    c.getOne().custom(AnimalDto, async ({ id }) => {
+                        const repo = getManager().getRepository(Animal)
+                        const a = await repo.findOne(id, { relations: ["user"] })
+                        return { name: a!.name, user: a!.user.name }
+                    })
+                })
+                animals: Animal[]
+            }
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            class AnimalDto {
+                @noop()
+                name: string
+
+                @noop()
+                user: string
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            const inserted = await animalRepo.insert({ name: `Mimi`, user })
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}/animals/${inserted.raw}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should able to use custom get many query", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @route.controller(c => {
+                    c.getMany().custom([AnimalDto], async ({ limit, offset }) => {
+                        const repo = getManager().getRepository(Animal)
+                        const animals = await repo.find({ relations: ["user"], skip: offset, take: limit })
+                        return animals.map(a => ({ name: a.name, user: a.user.name }))
+                    })
+                })
+                animals: Animal[]
+            }
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            class AnimalDto {
+                @noop()
+                name: string
+
+                @noop()
+                user: string
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi`, user })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}/animals?offset=0&limit=20`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
     })
     describe("One To One Function", () => {
         it("Should able to add with ID", async () => {
@@ -2139,7 +2284,7 @@ describe("Repository", () => {
     afterEach(async () => {
         await cleanup()
     });
-    
+
     describe("Repository", () => {
         it("Should able to count result", async () => {
             @Entity()

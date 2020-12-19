@@ -1360,6 +1360,50 @@ describe("Open Api", () => {
                 .expect(200)
             expect(body.paths["/animals/{aid}"].get.parameters).toMatchSnapshot()
         })
+        it("Should able to use custom get many query", async () => {
+            @route.controller(c => {
+                c.getMany().custom([AnimalDTO], async x => ([]))
+            })
+            class Animal {
+                @entity.primaryId()
+                id: number
+                @authorize.filter()
+                name: string
+            }
+            class AnimalDTO {
+                @authorize.filter()
+                name: string
+            }
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animal"].get.responses[200]).toMatchSnapshot()
+        })
+        it("Should able to use custom get one query", async () => {
+            @route.controller(c => {
+                c.getOne().custom(AnimalDTO, async x => ({}))
+            })
+            class Animal {
+                @entity.primaryId()
+                id: number
+                @reflect.noop()
+                name: string
+            }
+            class AnimalDTO {
+                @authorize.filter()
+                name: string
+            }
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animal/{id}"].get.responses[200]).toMatchSnapshot()
+        })
     })
 
     describe("Generic One To Many Controller", () => {
@@ -1789,6 +1833,70 @@ describe("Open Api", () => {
                 .get("/swagger/swagger.json")
                 .expect(200)
             expect(body.paths["/animals/{aid}/tags/{tid}"].get.parameters).toMatchSnapshot()
+        })
+        it("Should able to use custom get one query", async () => {
+            @route.controller()
+            class Animal {
+                @entity.primaryId()
+                id: number
+                @reflect.noop()
+                name: string
+                @reflect.type(x => [Tag])
+                @entity.relation()
+                @route.controller(c => {
+                    c.getOne().custom(TagDTO, async x => ({}))
+                })
+                tags: Tag[]
+            }
+            class Tag {
+                @entity.primaryId()
+                id: number
+                @reflect.noop()
+                tag: string
+            }
+            class TagDTO {
+                @reflect.noop()
+                tag: string
+            }
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animal/{pid}/tags/{id}"].get.responses[200]).toMatchSnapshot()
+        })
+        it("Should able to use custom get many query", async () => {
+            @route.controller()
+            class Animal {
+                @entity.primaryId()
+                id: number
+                @reflect.noop()
+                name: string
+                @reflect.type(x => [Tag])
+                @entity.relation()
+                @route.controller(c => {
+                    c.getMany().custom([TagDTO], async x => ([]))
+                })
+                tags: Tag[]
+            }
+            class Tag {
+                @entity.primaryId()
+                id: number
+                @authorize.filter()
+                tag: string
+            }
+            class TagDTO {
+                @reflect.noop()
+                tag: string
+            }
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animal/{pid}/tags"].get.responses[200]).toMatchSnapshot()
         })
     })
 })

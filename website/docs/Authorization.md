@@ -288,9 +288,49 @@ app.set(new JwtAuthFacility({ secret: "<your secret key>", global: authorize.pub
 ```
 
 ## Policy Based Authorization 
-Policy based authorization possibly to create custom authorization logic with specific name, it increases coupling between authorization logic and the target. Furthermore the policy name can be used on `@authorize.route(<policy name>)`, `@authorize.read(<policy name>)` and `@authorize.write(<policy name>)`.
+Role based authorization automatically authorize user based on their role, but in most case authorization may require more check on some data. Policy base authorization bring more freedom when authorizing route or properties, usually used to perform auth check by dynamic value such as checking from database. 
 
-To create 
+```typescript
+authPolicy()
+    .register("UserHasDog", async auth => {
+        const repo = new Repository(User)
+        const user = await repo.findOne(auth.user.userId)
+        return user.dogs.length > 0
+    })
+```
 
+Above code defined an authorization policy `UserHasDog`, it check to the database if the current login user has dogs on the `user.dogs` collection. This policy than can be used anywhere on the `@authorize` decorator like the usual role authorization
 
+```typescript
+class DogClubController {
+    @authorize.route("UserHasDog")
+    @route.post()
+    register(){ }
+}
+```
 
+:::warning
+Keep in mind that the name used for policy must not the same as the user role name.
+:::
+
+The first parameter of the auth policy callback is the `AuthorizationContext` object, it contains some information required for authorization including the current request information. The signature of the object is like below
+
+```typescript
+interface AuthorizationContext {
+    value?: any
+    parentValue?: any
+    role: string[]
+    user: { [key: string]: any } | undefined
+    ctx: ActionContext
+    metadata: Metadata
+    access: AccessModifier
+}
+```
+
+* `value` is Current property value, only available on authorize read/write
+* `parentValue` is Current property's parent value, only available on authorize read/write
+* `role` is List of user roles
+* `user` is Current login user JWT claim
+* `ctx` is Current request context
+* `metadata` is Metadata information of the current request
+* `access` is Type of authorization applied read/write/route/filter

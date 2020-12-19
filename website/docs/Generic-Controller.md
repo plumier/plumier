@@ -410,7 +410,6 @@ Above code will generate routes below
 | DELETE | `/user-data/:uid/email-data/:eid` | Delete user's email by ID                                          |
 | GET    | `/user-data/:uid/email-data`      | Get list of user's email with paging, filter, order and projection |
 
-
 ## Control Access To The Entity Properties 
 
 Plumier provide functionality to protect your data easily, you can use `@authorize` decorator to authorize user to write or read your entity property. 
@@ -647,6 +646,144 @@ Above code showing that we specify the `transformer` configuration, the first pa
 When using response transform, the `select` query may still applied but the response will be based on what you returned in transform function.
 :::
 
+## Custom Query
+Unlike transform response, with custom query you provide a custom database query for `getOne` and/or `getMany` method to get different response result than the default generic controller query provided. 
+
+```typescript {3,9}
+import { route } from "plumier"
+import { Entity, Column, PrimaryGeneratedColumn } from "typeorm"
+import { noop } from "@plumier/reflect"
+// for mongoose use import { transformFilter } from "@plumier/mongoose"
+import { transformFilter } from "@plumier/typeorm"
+
+@route.controller(c => {
+    // custom query for GET /users/:id
+    c.getOne().custom(UserDto, async ({ id }) => {
+        const repo = getManager().getRepository(User)
+        return repo.findOne(id, { select: ["email"] })
+    })
+    // custom query for GET /users
+    c.getMany().custom([UserDto], async ({ limit, offset, filter }) => {
+        const repo = getManager().getRepository(User)
+        const where = transformFilter(filter)
+        return repo.find({ take: limit, skip: offset, where, select: ["email"] })
+    })
+})
+@Entity()
+class User {
+    @PrimaryGeneratedColumn()
+    id: number
+    @Column()
+    email: string
+    @Column()
+    name: string
+}
+// the response will be like this 
+class UserDto {
+    @noop()
+    email: string
+}
+```
+
+Using above code you provide a custom query that will be used by the `GET /users/:id`. To override query of `GET /users` you can use the `getMany()` method instead of `getOne()`. 
+
+Signature of the `custom` query method is like below 
+
+`custom(responseType, queryCallback)` 
+
+* `responseType` is the model used to generate schema of the response. This model used by Open API generator to generate response schema, and also used by response authorization. Important to note that the `@authorize.read()` on the entity will not take effect if you use different model than the entity, you need to decorate the appropriate property accordingly. 
+* `queryCallback` is a function returned the database query, signature of the query callback is mostly the same for `getOne()` and `getMany()`, except the first parameter object, see below.
+
+Query callback signature for `getOne()` and `getMany()` is like below 
+
+`(param, ctx) => any` 
+
+* `param` contains the action parameter such as `id`, `limit`, `offset` etc. The parameter is differ between `getOne()` and `getMany()`.
+* `ctx` is the request context
+
+## Entity Policy
+Entity Policy (Entity authorization policy) is a custom [auth policy](Authorization.md#policy-based-authorization) designed to secure entity based on authorization policy which the logic defined by you. 
+
+With entity policy you can define current login user access to the entity programmatically instead of just using user role. Important to note that you can register the same name for different entity.
+
+For example we can define `Owner` policy to define the owner of the data. 
+
+```typescript
+@Entity()
+export class User {
+    @PrimaryGeneratedColumn()
+    id:number
+
+    @Column()
+    email: string
+
+    @Column()
+    name: string
+}
+
+@Entity()
+export class Todo {
+    @PrimaryGeneratedColumn()
+    id:number
+
+    @Column()
+    message: string
+
+    @Column({ default: false })
+    completed: boolean
+
+    @authorize.readonly()
+    @ManyToOne(x => User)
+    user: User
+}
+```
+
+Giving above code, we know that the Owner of each records on `User` table and `Todo` table can be defined as below
+* `Owner` of `User` data is when current login `userId` the same as the `id` of the user. 
+* `Owner` of the `Todo` data is when the current login `userId` the same as `user.id` of the `Todo`
+
+Using above definition we can register `Owner` policy for each entity like below
+
+```typescript
+// define "Owner" policy for User entity
+entityPolicy(User)
+    // Owner of User is when current login user id is the same as current accessed User id 
+    .register("Owner", (ctx, id) => ctx.user?.userId === id)
+
+// define "Owner" policy for Todo entity
+entityPolicy(Todo)
+    .register("Owner", async (ctx, id) => {
+        const repo = getManager().getRepository(Todo)
+        const todo = await repo.findOne(id, { relations: ["user"], cache: true })
+        // Owner of Todo is when current login user is the same as todo.user.id
+        return ctx.user?.userId === todo?.user?.id
+    })
+```
+
+Above code is quite straight forward, we register each policy using `entityPolicy` function and define the logic to get the data by provided `id` from the callback and return the appropriate condition `true` if authorized otherwise `false`.
+
+Next step we can apply the policy by using `@authorize` decorator or from the `@route.controller()` configuration like below.
+
+```typescript {3,10}
+@route.controller(c => {
+    c.actions("Put", "Patch", "Delete").authorize("Owner")
+})
+@Entity()
+export class User {
+    @PrimaryGeneratedColumn()
+    id:number
+
+    @authorize.read("Owner")
+    @Column()
+    email: string
+
+    @Column()
+    name: string
+}
+```
+
+Above code showing that we secure the `PUT`, `PATCH`, `DELETE` method of the `/users` endpoint only accessible by the `Owner`. We also secure the `email` property only visible by the `Owner`. Note that `email` will keep its visibility even if it used in deep nested properties. 
+
 ## Request Hook
 
 Request hook enables entity to have a method contains piece of code that will be executed during request. Request hook has some simple rule
@@ -750,7 +887,7 @@ class User {
 
 ## Use Custom Generic Controller 
 
-When the default generic controller doesn't match your need, you can provide your own custom generic controllers. For example the default generic controller for `DELETE` method is delete the records permanently. You can override this function by provide a new generic controller inherited from your ORM/ODM helper: 
+When the default generic controller doesn't match your need, you can provide your own custom generic controllers. For example the default generic controller for `GET` method doesn't contains count of the match records usually used for table pagination on UI side. You can override this function by provide a new generic controller inherited from your ORM/ODM helper: 
 
 | Generic Controller                                   | Package           | Description                                            |
 | ---------------------------------------------------- | ----------------- | ------------------------------------------------------ |
@@ -758,6 +895,20 @@ When the default generic controller doesn't match your need, you can provide you
 | `TypeORMOneToManyControllerGeneric<P, T, PID, TID>`  | @plumier/typeorm  | TypeORM One To Many generic controller implementation  |
 | `MongooseControllerGeneric<T, TID>`                  | @plumier/mongoose | Mongoose generic controller implementation             |
 | `MongooseOneToManyControllerGeneric<P, T, PID, TID>` | @plumier/mongoose | Mongoose One To Many generic controller implementation |
+
+First define the model represent the response schema returned by each controller using generic type like below 
+
+```typescript
+import {generic, type, noop} from "@plumier/reflect"
+
+@generic.template("T")
+export class Response<T> {
+    @type(["T"])
+    data: T[]
+    @noop()
+    count: number
+}
+```
 
 Then create a new generic controller for both based on any of above generic controller like below 
 
@@ -767,23 +918,29 @@ import {TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric} from "@plum
 @generic.template("T", "TID")
 @generic.type("T", "TID")
 export class CustomControllerGeneric<T, TID> extends TypeORMControllerGeneric<T, TID> {
-    delete(id: TID, ctx: Context) {
-        return this.modify(id, { deleted: true } as any, ctx)
+    @type(Response, "T")
+    async list(offset: number, limit: number, filter: FilterEntity<T>, select: string, order: string, ctx: Context) {
+        const data = await super.list(offset, limit, filter, select, order, ctx)
+        const count = await this.repo.count(filter)
+        return { data, count } 
     }
 }
 
 @generic.template("P", "T", "PID", "TID")
 @generic.type("P", "T", "PID", "TID")
 export class CustomOneToManyControllerGeneric<P, T, PID, TID> extends TypeORMOneToManyControllerGeneric<P, T, PID, TID>{
-    delete(pid: PID, id: TID, ctx: Context) {
-        return this.modify(pid, id, { deleted: true } as any, ctx)
+    @type(Response, "T")
+    async list(pid: PID, offset: number, limit: number, filter: FilterEntity<T>, select: string, order: string, ctx: Context) {
+        const data = await super.list(pid, offset, limit, filter, select, order, ctx)
+        const count = await this.repo.count(pid, filter)
+        return { data, count } 
     }
 }
 ```
 
-Above is example of custom generic controllers for TypeORM, we simply used the `modify` method of the generic controller to flag `deleted` property of the entity as `true`.
+Using above code, we simply call the `super.list` method and use the repository `count` method to create the response match the `Response` data structure.
 
-Note that the `@generic.template()` and `@generic.type()` is required by the reflection library. 
+Note that we define the return type of the method as `@type(Response, "T")`, this means we specify that the `Response.data` property is of type of `T` of the generic controller.
 
 Next, we need to register above custom generic controller on the Plumier application like below 
 
@@ -796,4 +953,6 @@ new Plumier()
     })
 ```
 
+:::warning
 Make sure you register the controller under the `TypeORMFacility` or `MongooseFacility` to take effect. 
+:::

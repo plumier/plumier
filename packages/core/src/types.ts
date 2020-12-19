@@ -427,12 +427,39 @@ export abstract class OneToManyControllerGeneric<P = any, T = any, PID = any, TI
 export type AccessModifier = "read" | "write" | "route" | "filter"
 
 export interface AuthorizationContext {
+    /**
+     * Current property value, only available on authorize read/write
+     */
     value?: any
+
+    /**
+     * Current property's parent value, only available on authorize read/write
+     */
     parentValue?: any
+
+    /**
+     * List of user roles
+     */
     role: string[]
+
+    /**
+     * Current login user JWT claim
+     */
     user: { [key: string]: any } | undefined
+
+    /**
+     * Current request context
+     */
     ctx: ActionContext
+
+    /**
+     * Metadata information of the current request
+     */
     metadata: Metadata
+
+    /**
+     * Type of authorization applied read/write/route/filter
+     */
     access: AccessModifier
 }
 
@@ -566,11 +593,27 @@ export class ValidationError extends HttpStatusError {
 
 
 export type CurrentMetadataType = (PropertyReflection | ParameterReflection | MethodReflection | ClassReflection) & { parent?: Class }
+
 export interface Metadata {
+    /**
+     * Controller object graph 
+     */
     controller: ClassReflection
+
+    /**
+     * Current action object graph
+     */
     action: MethodReflection
     access?: string
+
+    /**
+     * Action parameter helper, used to query current action parameter name or value
+     */
     actionParams: ParameterMetadata
+
+    /**
+     * Reflection information about the current location (class/method/property) on which the decorator applied
+     */
     current?: CurrentMetadataType
 }
 

@@ -31,6 +31,10 @@ namespace api {
         return decorate(<ApiDescriptionDecorator>{ kind: "ApiDescription", desc })
     }
 
+    /**
+     * Specify custom tag
+     * @param tag Tag name
+     */
     export function tag(tag: string) {
         return decorate(<ApiTagDecorator>{ kind: "ApiTag", tag }, ["Class", "Property"])
     }

@@ -39,16 +39,22 @@ export class AnimalController {
 ```typescript
 interface AuthorizationContext {
     value?: any
+    parentValue?: any
     role: string[]
-    user: any
+    user: { [key: string]: any } | undefined
     ctx: ActionContext
+    metadata: Metadata
+    access: AccessModifier
 }
 ```
 
-* `role` is roles of current login user, single or multiple role
-* `user` Current login user
-* `ctx` Koa context of current request
-* `value` optional, value of current parameter (if authorization applied into parameter)
+* `value` is Current property value, only available on authorize read/write
+* `parentValue` is Current property's parent value, only available on authorize read/write
+* `role` is List of user roles
+* `user` is Current login user JWT claim
+* `ctx` is Current request context
+* `metadata` is Metadata information of the current request
+* `access` is Type of authorization applied read/write/route/filter
 
 ## Example
 Example we will create custom authorization to authorize if the current user is an `Admin` or the owner of the data. As an example we have controller to modify user data like below

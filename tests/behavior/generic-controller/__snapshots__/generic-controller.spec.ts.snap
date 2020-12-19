@@ -641,6 +641,35 @@ Array [
 ]
 `;
 
+exports[`Open Api Generic Controller Should able to use custom get many query 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/AnimalDTO",
+        },
+        "type": "array",
+      },
+    },
+  },
+  "description": "Response body",
+}
+`;
+
+exports[`Open Api Generic Controller Should able to use custom get one query 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/AnimalDTO",
+      },
+    },
+  },
+  "description": "Response body",
+}
+`;
+
 exports[`Open Api Generic Controller Should generate DELETE /animal/:id properly 1`] = `
 Array [
   Object {
@@ -880,6 +909,35 @@ Array [
     },
   },
 ]
+`;
+
+exports[`Open Api Generic One To Many Controller Should able to use custom get many query 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "items": Object {
+          "$ref": "#/components/schemas/TagDTO",
+        },
+        "type": "array",
+      },
+    },
+  },
+  "description": "Response body",
+}
+`;
+
+exports[`Open Api Generic One To Many Controller Should able to use custom get one query 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "$ref": "#/components/schemas/TagDTO",
+      },
+    },
+  },
+  "description": "Response body",
+}
 `;
 
 exports[`Open Api Generic One To Many Controller Should generate DELETE /animals/:id properly 1`] = `
