@@ -124,7 +124,7 @@ class AuthDecoratorImpl {
     }
 
     /**
-     * Authorize entity or parameter or domain property only can be retrieved by specific role
+     * Authorize domain or entity property only can be retrieved by specific role
      * @param roles List of allowed roles
      */
     read(...roles: string[]): CustomPropertyDecorator {
@@ -132,7 +132,7 @@ class AuthDecoratorImpl {
     }
 
     /**
-     * Authorize entity  parameter or domain property only can be set by specific role
+     * Authorize domain or entity property only can be set by specific role
      * @param roles List of allowed roles
      */
     write(...roles: string[]): CustomPropertyDecorator {

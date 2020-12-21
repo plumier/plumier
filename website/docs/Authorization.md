@@ -45,34 +45,6 @@ class AuthController{
 
 Value of the role can be a string or an array of string that will be used by `@authorize.route(<user role>)`. 
 
-## Custom Field Name
-By default `JwtAuthFacility` will look for `role` field in your signed token. If you don't like the `role` field on the signed token you can specify the `roleField` with the name of the field in your token.
-
-Example, your role field in the signed token is `access`
-
-```typescript
-jwt.sign({ 
-    email: "<user email>", 
-    //defined the role
-    access: "<user role>" 
-}, "<your secret key>"),
-
-```
-
-Specify the field name on the `JwtAuthFacility`
-
-```typescript
-const app = new Plumier()
-app.set(new JwtAuthFacility({ secret: "<your secret key>", roleField: "access" }))
-```
-
-If you require a real time access to the role vs reading from token claim (because the user role changes needs to wait for the token to expired first), you can provide a function to get the user role for real time role access. But keep in mind that this trick will make every request touch the database that will impact performance:
-
-```typescript
-const app = new Plumier()
-app.set(new JwtAuthFacility({ secret: "<your secret key>", roleField: async user => getUserRole(user._id) }))
-```
-
 ## All Routes are Secured
 By enabling `JwtAuthFacility` all routes are secured, means if end user access your API without token they will receive 403.
 
@@ -225,8 +197,8 @@ export class UsersController {
 
 Using above code, only admin can disabled the user, if user doesn't have admin role Plumier will return 401 with informative error result.
 
-## Projection Authorization 
-Applying authorize decorator on a domain property automatically project data returned based on client role like example below
+## Response Authorization 
+Applying authorize decorator on a domain property automatically authorize response returned based on client role like example below
 
 ```typescript
 import reflect from "@plumier/reflect"
@@ -292,8 +264,6 @@ import { domain, authorize, route, entity } from "plumier"
 export class Item {
     constructor(
         public name: string,
-        @authorize.write("admin")
-        @authorize.read("admin", "staff")
         @authorize.filter("admin")
         public basePrice: number,
         public price:number
@@ -318,5 +288,49 @@ app.set(new JwtAuthFacility({ secret: "<your secret key>", global: authorize.pub
 ```
 
 ## Policy Based Authorization 
-Policy based authorization possibly to create custom authorization logic with specific name, to increase coupling between authorization logic and the target. 
+Role based authorization automatically authorize user based on their role, but in most case authorization may require more check on some data. Policy base authorization bring more freedom when authorizing route or properties, usually used to perform auth check by dynamic value such as checking from database. 
 
+```typescript
+authPolicy()
+    .register("UserHasDog", async auth => {
+        const repo = new Repository(User)
+        const user = await repo.findOne(auth.user.userId)
+        return user.dogs.length > 0
+    })
+```
+
+Above code defined an authorization policy `UserHasDog`, it check to the database if the current login user has dogs on the `user.dogs` collection. This policy than can be used anywhere on the `@authorize` decorator like the usual role authorization
+
+```typescript
+class DogClubController {
+    @authorize.route("UserHasDog")
+    @route.post()
+    register(){ }
+}
+```
+
+:::warning
+Keep in mind that the name used for policy must not the same as the user role name.
+:::
+
+The first parameter of the auth policy callback is the `AuthorizationContext` object, it contains some information required for authorization including the current request information. The signature of the object is like below
+
+```typescript
+interface AuthorizationContext {
+    value?: any
+    parentValue?: any
+    role: string[]
+    user: { [key: string]: any } | undefined
+    ctx: ActionContext
+    metadata: Metadata
+    access: AccessModifier
+}
+```
+
+* `value` is Current property value, only available on authorize read/write
+* `parentValue` is Current property's parent value, only available on authorize read/write
+* `role` is List of user roles
+* `user` is Current login user JWT claim
+* `ctx` is Current request context
+* `metadata` is Metadata information of the current request
+* `access` is Type of authorization applied read/write/route/filter
