@@ -18,6 +18,7 @@ import {
     MoreThan,
     MoreThanOrEqual,
     Not,
+    Brackets,
     Repository as NativeRepository,
 } from "typeorm"
 

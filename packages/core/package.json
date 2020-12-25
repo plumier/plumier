@@ -15,8 +15,7 @@
   ],
   "scripts": {
     "compile": "tsc -p tsconfig.build.json",
-    "compile-parser": "nearleyc src/generic-controller/filter-grammar.ne -o src/generic-controller/filter-grammar.js",
-    "postcompile": "npm run compile-parser && cpy src/generic-controller/filter-grammar.js lib"
+    "precompile": "nearleyc src/generic-controller/filter-grammar.ne -o src/generic-controller/filter-grammar.ts"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",

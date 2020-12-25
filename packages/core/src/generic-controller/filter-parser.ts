@@ -3,12 +3,11 @@ import { Grammar, Parser } from "nearley"
 
 import grammar from "./filter-grammar"
 
-const parser = new Parser(Grammar.fromCompiled(grammar))
 
 type FilterNode = LogicalNode | ComparisonNode
 
 interface LogicalNode {
-    kind: "Logical"
+    kind: "Logic"
     name: string
     left: FilterNode
     right: FilterNode
@@ -22,6 +21,7 @@ interface ComparisonNode {
 }
 
 function parseFilter(query: string) {
+    const parser = new Parser(Grammar.fromCompiled(grammar))
     parser.feed(query)
     const result = parser.finish()
     return result[0] as FilterNode
