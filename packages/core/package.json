@@ -14,7 +14,9 @@
     "TDD"
   ],
   "scripts": {
-    "compile": "tsc -p tsconfig.build.json"
+    "compile": "tsc -p tsconfig.build.json",
+    "compile-parser": "nearleyc src/generic-controller/filter-grammar.ne -o src/generic-controller/filter-grammar.js",
+    "postcompile": "npm run compile-parser && cpy src/generic-controller/filter-grammar.js lib"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
@@ -22,13 +24,18 @@
     "@plumier/reflect": "1.0.0-rc.3",
     "@plumier/validator": "1.0.0-rc.3",
     "@types/glob": "^7.1.3",
+    "@types/nearley": "^2.11.1",
     "chalk": "^4.1.0",
     "glob": "^7.1.6",
     "path-to-regexp": "^6.2.0",
-    "tslib": "^2.0.3"
+    "tslib": "^2.0.3",
+    "nearley": "^2.20.1"
   },
   "peerDependencies": {
     "@types/koa": "*"
+  },
+  "devDependencies": {
+    "cpy-cli": "^3.1.1"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"

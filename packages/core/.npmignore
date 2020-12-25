@@ -1,6 +1,7 @@
 test
 src
 .npmignore
+.gitignore
 tsconfig.json
 package-lock.json
 tsconfig.build.json

@@ -29,18 +29,19 @@ export { domain, middleware, entityProvider, responseType, ResponseTypeDecorator
 export { route, RouteDecoratorImpl, GenericControllerDecorator } from "./decorator/route";
 export { EntityIdDecorator, RelationDecorator, entity, EntityFilterDecorator } from "./decorator/entity";
 export { preSave, postSave, RequestHookDecorator } from "./decorator/request-hook";
-export { filterConverters } from "./filter-parser"
+export { filterConverters } from "./generic-controller/filter-converter"
 export {
     getGenericControllerOneToOneRelations, genericControllerRegistry, ControllerBuilder,
     createGenericController, createOneToManyGenericController
-} from "./controllers-helper"
+} from "./generic-controller/controllers-helper"
 export {
     DefaultControllerGeneric, DefaultOneToManyControllerGeneric, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
     DefaultOneToManyRepository, DefaultRepository, getGenericControllerReverseRelation,
     parseSelect, IdentifierResult, getGenericControllerRelation
-} from "./controllers"
+} from "./generic-controller/controllers"
 export { HttpStatus } from "./http-status";
-export { RequestHookMiddleware } from "./controllers-request-hook"
+export { RequestHookMiddleware } from "./generic-controller/controllers-request-hook"
+export { ComparisonNode, FilterNode, LogicalNode, parseFilter } from "./generic-controller/filter-parser"
 export { validate, ValidatorMiddleware, CustomValidator, ValidatorDecorator, CustomValidatorFunction, AsyncValidatorResult, ValidatorContext, } from "./validator"
 export {
     ActionResult, Application, Configuration, DefaultFacility,

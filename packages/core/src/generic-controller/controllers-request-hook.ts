@@ -1,9 +1,9 @@
 import { reflect } from "@plumier/reflect"
 
-import { binder } from "./binder"
-import { Class } from "./common"
-import { RequestHookDecorator } from "./decorator/request-hook"
-import { ActionContext, ActionResult, ControllerGeneric, Invocation, MetadataImpl, Middleware, OneToManyControllerGeneric } from "./types"
+import { binder } from "../binder"
+import { Class } from "../common"
+import { RequestHookDecorator } from "../decorator/request-hook"
+import { ActionContext, ActionResult, ControllerGeneric, Invocation, MetadataImpl, Middleware, OneToManyControllerGeneric } from "../types"
 
 export const postSaveValue = Symbol.for("plumier:postSaveEntity")
 

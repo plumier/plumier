@@ -2,11 +2,11 @@ import { isAbsolute, join } from "path"
 import { ClassReflection, MethodReflection, reflect } from "@plumier/reflect"
 
 import { Class, findFilesRecursive } from "./common"
-import { DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from './controllers'
+import { DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from './generic-controller/controllers'
 import {
    createGenericControllers,
    genericControllerRegistry,
-} from "./controllers-helper"
+} from "./generic-controller/controllers-helper"
 import { GenericController, HttpMethod, RouteInfo, RouteMetadata } from "./types"
 
 // --------------------------------------------------------------------- //

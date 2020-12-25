@@ -1,6 +1,6 @@
 import { decorate, decorateClass, decorateMethod, DecoratorId } from "@plumier/reflect"
 
-import { ControllerBuilder, updateGenericControllerRegistry } from "../controllers-helper"
+import { ControllerBuilder, updateGenericControllerRegistry } from "../generic-controller/controllers-helper"
 import { IgnoreDecorator, RootDecorator, RouteDecorator } from "../route-generator"
 import { ActionContext, HttpMethod } from "../types"
 

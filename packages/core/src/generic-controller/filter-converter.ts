@@ -1,9 +1,9 @@
 import { defaultConverters, Result, val, VisitorInvocation } from "@plumier/validator"
 
-import { AuthorizeDecorator } from "./authorization"
-import { Class, entityHelper, isCustomClass } from "./common"
-import { EntityFilterDecorator, RelationDecorator } from "./decorator/entity"
-import { ActionContext, FilterQuery } from "./types"
+import { AuthorizeDecorator } from "../authorization"
+import { Class, entityHelper, isCustomClass } from "../common"
+import { EntityFilterDecorator, RelationDecorator } from "../decorator/entity"
+import { ActionContext, FilterQuery } from "../types"
 import reflect from "@plumier/reflect"
 
 // --------------------------------------------------------------------- //
