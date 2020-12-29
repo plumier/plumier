@@ -1,5 +1,5 @@
 import { ignore, noop, parameterProperties, type } from "./decorators"
-import { createClass, metadata, useCache } from "./helpers"
+import { createClass, reflection, useCache } from "./helpers"
 import { parseFunction } from "./parser"
 import { Class, ClassReflection, ObjectReflection, Reflection } from "./types"
 import { memberVisitors as v, walkTypeMembersRecursive, walkReflectionMembers } from "./walker"
@@ -54,7 +54,7 @@ function traverseObject(fn: any, name: string, ctx: TraverseContext): Reflection
         if (ctx.path.some(x => x === fn)) return
         return reflectObject(fn, name, { path: ctx.path.concat(fn) })
     }
-    if (typeof fn === "function" && metadata.isConstructor(fn))
+    if (typeof fn === "function" && reflection.isConstructor(fn))
         return reflectClass(fn)
     if (typeof fn === "function")
         return parseFunction(fn)

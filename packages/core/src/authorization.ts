@@ -1,5 +1,5 @@
 import { Context } from 'koa'
-import { ClassReflection, metadata, ParameterReflection, PropertyReflection, reflect } from "@plumier/reflect"
+import { ClassReflection, reflection, ParameterReflection, PropertyReflection, reflect } from "@plumier/reflect"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import { ResponseTypeDecorator } from './decorator/common'
@@ -539,7 +539,7 @@ async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): P
 
 async function responseAuthorize(raw: ActionResult, ctx: ActionContext): Promise<ActionResult> {
     const getType = (resp: ResponseTypeDecorator | undefined) => {
-        return !!resp ? (metadata.isCallback(resp.type) ? resp.type({}) : resp.type) as (Class | Class[]) : undefined
+        return !!resp ? (reflection.isCallback(resp.type) ? resp.type({}) : resp.type) as (Class | Class[]) : undefined
     }
     const responseType = ctx.route.action.decorators.find((x: ResponseTypeDecorator): x is ResponseTypeDecorator => x.kind === "plumier-meta:response-type")
     const type = getType(responseType) ?? ctx.route.action.returnType

@@ -1,5 +1,5 @@
 import { extendsMetadata } from "./extends"
-import { createClass, CustomTypeDefinition, metadata } from "./helpers"
+import { createClass, CustomTypeDefinition, reflection } from "./helpers"
 import { getMetadata, getMetadataForApplyTo, getOwnMetadata, mergeMetadata } from "./metadata"
 import { parseClass } from "./parser"
 import {
@@ -53,7 +53,7 @@ function getTypeOverrideFromDecorator(decorators: any[]) {
     const override = decorators.find((x: TypeDecorator): x is TypeDecorator => x.kind === "Override")
     if (!override) return
     // extract type from the callback
-    const rawType = metadata.isCallback(override.type) ? override.type({}) : override.type
+    const rawType = reflection.isCallback(override.type) ? override.type({}) : override.type
     return { type: Array.isArray(rawType) ? [getType(rawType[0])] : getType(rawType), genericParams: override.genericParams }
 }
 
@@ -108,7 +108,7 @@ namespace memberVisitors {
             const returnType: any = Reflect.getOwnMetadata(DESIGN_RETURN_TYPE, ctx.target.prototype, meta.name)
             return { ...meta, returnType }
         }
-        else if (metadata.isParameterProperties(meta)) {
+        else if (reflection.isParameterProperties(meta)) {
             const parTypes: any[] = Reflect.getOwnMetadata(DESIGN_PARAMETER_TYPE, ctx.target) || []
             return { ...meta, type: getType(parTypes, meta.index) }
         }
@@ -136,7 +136,7 @@ namespace memberVisitors {
                 : getMetadata(ctx.target, ctx.parent.name, meta.index)
             return { ...meta, decorators: meta.decorators.concat(decorators) }
         }
-        if (metadata.isParameterProperties(meta)) {
+        if (reflection.isParameterProperties(meta)) {
             // get copy own metadata of constructor 
             const decorators = getOwnMetadata(ctx.target, "constructor", meta.index)
                 // and also a copy of metadata of the property (using applyTo)
@@ -155,7 +155,7 @@ namespace memberVisitors {
     }
 
     export function addsApplyToDecorator(meta: TypedReflection, ctx: WalkMemberContext) {
-        if (metadata.isParameterProperties(meta)) {
+        if (reflection.isParameterProperties(meta)) {
             // get copy own metadata of constructor 
             const decorators = getMetadataForApplyTo(ctx.target, "constructor", meta.index)
                 // and also a copy of metadata of the property (using applyTo)
@@ -237,7 +237,7 @@ namespace memberVisitors {
         const get = (type: any): "Class" | "Array" | "Primitive" | undefined => {
             if (type === undefined) return undefined
             else if (Array.isArray(type)) return "Array"
-            else if (metadata.isCustomClass(type)) return "Class"
+            else if (reflection.isCustomClass(type)) return "Class"
             else return "Primitive"
         }
         if (meta.kind === "Method")
@@ -250,7 +250,7 @@ namespace memberVisitors {
     }
 
     export function addsParameterProperties(meta: TypedReflection, ctx: WalkMemberContext): TypedReflection | undefined {
-        if (metadata.isParameterProperties(meta) && ctx.parent.kind === "Class") {
+        if (reflection.isParameterProperties(meta) && ctx.parent.kind === "Class") {
             const isParamProp = ctx.parent.decorators.some((x: ParameterPropertiesDecorator) => x.type === "ParameterProperties")
             return !!isParamProp ? meta : undefined
         }
