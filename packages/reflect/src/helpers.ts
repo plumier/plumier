@@ -21,7 +21,7 @@ function useCache<K, P extends any[], R>(cache: Map<K, R>, fn: (...args: P) => R
 }
 
 
-namespace metadata {
+namespace reflection {
     export function isParameterProperties(meta: any): meta is ParameterPropertyReflection {
         return meta && meta.kind === "Property" && (meta as ParameterPropertyReflection).isParameter
     }
@@ -91,4 +91,4 @@ function createClass(opt?: Partial<CreateClassOption>): Class {
 
 
 
-export { useCache, metadata, createClass, CustomTypeDefinition, CreateClassOption }
+export { useCache, reflection, createClass, CustomTypeDefinition, CreateClassOption }

@@ -1,6 +1,6 @@
 import "reflect-metadata"
 
-import { createClass, metadata } from "./helpers"
+import { createClass, reflection } from "./helpers"
 import { setMetadata } from "./metadata"
 import {
     Class,
@@ -24,7 +24,7 @@ export function decorateParameter(callback: ((target: Class, name: string, index
 export function decorateParameter(data: any, option?: DecoratorOption): ParameterDecorator
 export function decorateParameter(data: any, option?: DecoratorOption): ParameterDecorator {
     return (target: any, name: string | symbol, index: number) => {
-        const isCtorParam = metadata.isConstructor(target)
+        const isCtorParam = reflection.isConstructor(target)
         const targetClass = isCtorParam ? target : target.constructor
         const methodName = isCtorParam ? "constructor" : name
         const meta = typeof data === "function" ? data(targetClass, methodName, index) : data
