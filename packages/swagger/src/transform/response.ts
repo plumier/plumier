@@ -1,13 +1,13 @@
 import { ApiHideRelationDecorator, ApiResponseDecorator, Class, ResponseTypeDecorator, RouteInfo } from "@plumier/core"
 import { ResponseObject, ResponsesObject, SchemaObject } from "openapi3-ts"
-import { metadata } from "@plumier/reflect"
+import { reflection } from "@plumier/reflect"
 
 import { SchemaOverrideType, transformType, transformTypeAdvance } from "./schema"
 import { isResponse, TransformContext } from "./shared"
 
 function successResponse(route: RouteInfo, ctx: TransformContext): SchemaObject {
     const getType = (resp: ResponseTypeDecorator | undefined) => {
-        return !!resp ? (metadata.isCallback(resp.type) ? resp.type({}) : resp.type) as (Class | Class[]) : undefined
+        return !!resp ? (reflection.isCallback(resp.type) ? resp.type({}) : resp.type) as (Class | Class[]) : undefined
     }
     const responseType = route.action.decorators.find((x:ResponseTypeDecorator):x is ResponseTypeDecorator => x.kind === "plumier-meta:response-type")
     const type = getType(responseType) ?? route.action.returnType
