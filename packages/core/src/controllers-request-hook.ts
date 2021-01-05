@@ -7,7 +7,16 @@ import { ActionContext, ActionResult, ControllerGeneric, Invocation, MetadataImp
 
 export const postSaveValue = Symbol.for("plumier:postSaveEntity")
 
-async function executeHooks(ctx: ActionContext, kind: "preSave" | "postSave", type: Class, value: any) {
+async function executeHooks(ctx: ActionContext, kind: "preSave" | "postSave", type: Class | Class[], value: any | any[]) {
+    if(Array.isArray(type)){
+        return executeArrayHooks(ctx, kind, type, value)
+    }
+    else {
+        return executeSingleHooks(ctx, kind, type, value)
+    }
+}
+
+async function executeSingleHooks(ctx: ActionContext, kind: "preSave" | "postSave", type: Class, value: any) {
     const meta = reflect(type)
     const hooks = meta.methods.filter(x => x.decorators.some((x: RequestHookDecorator) => x.kind === "plumier-meta:request-hook"
         && x.type === kind
@@ -20,6 +29,15 @@ async function executeHooks(ctx: ActionContext, kind: "preSave" | "postSave", ty
     }
 }
 
+
+async function executeArrayHooks(ctx: ActionContext, kind: "preSave" | "postSave", type: Class[], values: any[]) {
+    const ctype = type[0]
+    for (const value of values) {
+        await executeSingleHooks(ctx, kind, ctype, value)
+    }
+}
+
+
 export class RequestHookMiddleware implements Middleware<ActionContext> {
     async execute({ ctx, proceed }: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
         if (!["POST", "PUT", "PATCH"].some(x => x === ctx.method)) return proceed()
@@ -28,13 +46,13 @@ export class RequestHookMiddleware implements Middleware<ActionContext> {
         if (!isGeneric && !isNestedGeneric) return proceed()
         const metadata = new MetadataImpl(ctx.parameters, ctx.route, ctx.route.action)
         // find request body data type
-        const par = metadata.action.parameters.find(par => par.typeClassification === "Class" && par.type)
+        const par = metadata.action.parameters.find(par => (par.typeClassification === "Class" || par.typeClassification === "Array")  && par.type)
         if (!par) return proceed()
         // use the request body as the entity object
         const preValue = metadata.actionParams.get(par.name)
         await executeHooks(ctx, "preSave", par.type, preValue)
         const result = await proceed()
-        const postValue = result.body[postSaveValue]
+        const postValue = result.body && result.body[postSaveValue]
         await executeHooks(ctx, "postSave", par.type, postValue ?? preValue)
         return result
     }
