@@ -1906,6 +1906,13 @@ describe("Request Hook", () => {
     @generic.template("T", "TID")
     @generic.type("T", "TID")
     class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
+        @route.post()
+        async bulk(@type(["T"]) data: T[]) {
+            for (const iterator of data) {
+                await this.repo.insert(iterator)
+            }
+        }
+
         constructor() { super(fac => new MockRepo<T>(fn)) }
     }
     @generic.template("P", "T", "PID", "TID")
@@ -2301,6 +2308,40 @@ describe("Request Hook", () => {
         await supertest(app.callback())
             .post("/user/simpan")
             .expect(200)
+    })
+    it("Should able to hook on array type parameter", async () => {
+        const fn = jest.fn()
+        @route.controller()
+        @domain()
+        class User {
+            constructor(
+                @entity.primaryId()
+                public id: number,
+                public name: string,
+                public email: string,
+                public password: string
+            ) { }
+
+            @preSave()
+            pre() {
+                fn(this)
+            }
+
+            @postSave()
+            post() {
+                fn(this)
+            }
+        }
+        const app = await createApp({ controller: User }).initialize()
+        await supertest(app.callback())
+            .post("/user/bulk")
+            .send([
+                { name: "John Doe 1", email: "john.doe@gmail.com", password: "lorem ipsum" },
+                { name: "John Doe 2", email: "john.doe@gmail.com", password: "lorem ipsum" },
+                { name: "John Doe 3", email: "john.doe@gmail.com", password: "lorem ipsum" },
+            ])
+            .expect(200)
+        expect(fn.mock.calls).toMatchSnapshot()
     })
 })
 
