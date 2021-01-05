@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/jest": "^26.0.19",
-    "jest": "^26.4.2"
+    "jest": "^26.6.3"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"
