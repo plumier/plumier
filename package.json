@@ -28,7 +28,7 @@
 		"@types/express-jwt": "^6.0.0",
 		"@types/faker": "^5.1.5",
 		"@types/fs-extra": "^9.0.6",
-		"@types/jest": "^26.0.19",
+		"@types/jest": "^26.0.20",
 		"@types/hapi__joi": "^17.1.6",
 		"@types/jsonwebtoken": "^8.5.0",
 		"@types/koa-router": "^7.4.1",

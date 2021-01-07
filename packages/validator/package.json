@@ -20,14 +20,14 @@
   "dependencies": {
     "@plumier/reflect": "1.0.0-rc.3",
     "@types/validator": "^13.1.2",
-    "tslib": "^2.0.3",
+    "tslib": "^2.1.0",
     "validator": "^13.5.2"
   },
   "devDependencies": {
     "@hapi/joi": "^17.1.1",
     "@types/ejs": "^3.0.5",
     "@types/hapi__joi": "^17.1.6",
-    "@types/jest": "^26.0.19",
+    "@types/jest": "^26.0.20",
     "@types/lodash": "^4.14.167",
     "coveralls": "^3.1.0",
     "ejs": "^3.1.5",
