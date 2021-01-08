@@ -2,7 +2,6 @@
 	"private": true,
 	"description": "Delightful Node.js Rest Framework",
 	"scripts": {
-		"postinstall": "cd website && yarn install",
 		"test": "jest --maxWorkers=4",
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish",
 		"clean": "node script/cleanup",
@@ -13,8 +12,8 @@
 		"publish:canary": "lerna run compile && lerna publish patch --exact --canary --preid=\"canary.$(node script/canary-id)\" --force-publish --yes",
 		"publish:prod": "yarn compile && lerna publish && yarn clean",
 		"benchmark": "ts-node -r tsconfig-paths/register tests/manual/benchmark/run",
-		"doc:start": "cd website && yarn start",
-		"doc:build": "cd website && yarn build",
+		"doc:start": "yarn workspace plumier-docs start",
+		"doc:build": "yarn workspace plumier-docs build",
 		"social:start": "ts-node -r tsconfig-paths/register tests/manual/social-login-test/index.ts",
 		"typeorm:start": "ts-node-script -r tsconfig-paths/register tests/manual/typeorm/index.ts",
 		"swagger:start": "ts-node -r tsconfig-paths/register tests/manual/swagger/index.ts"
@@ -65,7 +64,14 @@
 		"tslint": "^6.1.3",
 		"typescript": "^4.1.3"
 	},
-	"workspaces": [
-		"packages/*"
-	]
+	"workspaces": {
+		"packages": [
+			"packages/*",
+			"docs/*"
+		],
+		"nohoist": [
+			"**/docs/docusaurus",
+			"**/docs/docusaurus/**"
+		]
+	}
 }

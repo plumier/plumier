@@ -1,0 +1,3 @@
+[submodule "docs/website"]
+	path = docs/website
+	url = git@github.com:plumier/plumier.github.io.git
