@@ -1,15 +1,21 @@
 module.exports = {
   overview: [
     "fundamentals",
-    "get-started",
     {
-      type: 'category',
-      label: 'Data Access',
-      collapsed: false,
-      items: [
+      "Tutorial - Todo API": [
+        "tutorial-01",
+        "tutorial-02",
+        "tutorial-03",
+      ],
+    },
+    "controller",
+    "routing",
+    "generic-controller",
+    {
+      "Data Access": [
         "typeorm-helper",
         "mongoose-helper"
-      ],
+      ]
     },
     "swagger",
     "social-login",
@@ -18,9 +24,6 @@ module.exports = {
     {
       "Reference": [
         "application-startup",
-        "controller",
-        "routing",
-        "generic-controller",
         "validation",
         "authorization",
         "middleware",
