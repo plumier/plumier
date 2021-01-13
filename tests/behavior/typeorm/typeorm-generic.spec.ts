@@ -869,6 +869,46 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
+        it("Should able to save relation with ID", async () => {
+            function createApp(entities: Function[], opt?: Partial<Configuration>) {
+                return new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new TypeORMFacility({ connection: getConn(entities) }))
+                    .set(new JwtAuthFacility({ secret: "lorem ipsum" }))
+                    .set({ ...opt, controller: entities as any })
+                    .initialize()
+            }
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            @Entity()
+            @route.controller(c => c.all().authorize("Public"))
+            class Todo {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                message: string
+                @ManyToOne(x => User)
+                user: User
+            }
+            const app = await createApp([Todo, User], { mode: "production" })
+            const userRepo = getManager().getRepository(User)
+            const todoRepo = getManager().getRepository(Todo)
+            const ids = await userRepo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+            const { body } = await supertest(app.callback())
+                .post("/todos")
+                .send({ message: "Lorem ipsum", user: ids.raw })
+                .expect(200)
+            const inserted = await todoRepo.findOne(body.id, { relations: ["user"] })
+            expect(inserted).toMatchSnapshot()
+        })
     })
     describe("Nested CRUD One to Many Function", () => {
         async function createUser<T>(type: Class<T>): Promise<T> {
