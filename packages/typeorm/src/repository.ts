@@ -1,5 +1,6 @@
 import {
     Class,
+    entity,
     FilterEntity,
     FilterQuery,
     getGenericControllerOneToOneRelations,
@@ -148,12 +149,15 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
 
     async insert(pid: any, data: Partial<T>) {
         const parent = await this.nativeParentRepository.findOne(pid)
-        const inserted = await this.nativeRepository.insert(data as any);
+        const result = await this.nativeRepository.insert(data as any);
+        const first = result.identifiers[0]
+        const idName = Object.keys(first)[0]
+        const id = (first as any)[idName]
         await this.nativeParentRepository.createQueryBuilder()
             .relation(this.relation)
             .of(parent)
-            .add(inserted.raw)
-        return (await this.nativeRepository.findOne(inserted.raw))!
+            .add(id)
+        return (await this.nativeRepository.findOne(id))!
     }
 
     findParentById(id: any): Promise<P | undefined> {

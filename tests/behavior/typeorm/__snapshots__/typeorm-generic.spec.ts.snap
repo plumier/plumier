@@ -814,6 +814,18 @@ User {
 }
 `;
 
+exports[`CRUD Nested CRUD One to Many Function Should serve POST /users/:parentId/animals 2`] = `
+Animal {
+  "id": 1,
+  "name": "Mimi",
+  "user": User {
+    "email": "john.doe@gmail.com",
+    "id": 1,
+    "name": "John Doe",
+  },
+}
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should serve PUT /users/:parentId/animals/:id 1`] = `
 Animal {
   "id": 1,
