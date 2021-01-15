@@ -869,6 +869,46 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
+        it("Should able to save relation with ID", async () => {
+            function createApp(entities: Function[], opt?: Partial<Configuration>) {
+                return new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new TypeORMFacility({ connection: getConn(entities) }))
+                    .set(new JwtAuthFacility({ secret: "lorem ipsum" }))
+                    .set({ ...opt, controller: entities as any })
+                    .initialize()
+            }
+            @Entity()
+            @route.controller()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            @Entity()
+            @route.controller(c => c.all().authorize("Public"))
+            class Todo {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                message: string
+                @ManyToOne(x => User)
+                user: User
+            }
+            const app = await createApp([Todo, User], { mode: "production" })
+            const userRepo = getManager().getRepository(User)
+            const todoRepo = getManager().getRepository(Todo)
+            const ids = await userRepo.insert({ email: "john.doe@gmail.com", name: "John Doe" })
+            const { body } = await supertest(app.callback())
+                .post("/todos")
+                .send({ message: "Lorem ipsum", user: ids.raw })
+                .expect(200)
+            const inserted = await todoRepo.findOne(body.id, { relations: ["user"] })
+            expect(inserted).toMatchSnapshot()
+        })
     })
     describe("Nested CRUD One to Many Function", () => {
         async function createUser<T>(type: Class<T>): Promise<T> {
@@ -1149,7 +1189,8 @@ describe("CRUD", () => {
             const app = await createApp([User, Animal], { mode: "production" })
             const user = await createUser(User)
             const parentRepo = getManager().getRepository(User)
-            await supertest(app.callback())
+            const animalRepo = getManager().getRepository(Animal)
+            const {body} = await supertest(app.callback())
                 .post(`/users/${user.id}/animals`)
                 .send({ name: "Mimi" })
                 .expect(200)
@@ -1158,7 +1199,10 @@ describe("CRUD", () => {
                 .send({ name: "Mimi" })
                 .expect(200)
             const inserted = await parentRepo.findOne(user.id, { relations: ["animals"] })
+            const animal = await animalRepo.findOne(body.id, {relations: ["user"]})
             expect(inserted).toMatchSnapshot()
+            expect(animal).toMatchSnapshot()
+
         })
         it("Should throw 404 if parent not found POST /users/:parentId/animals", async () => {
             @Entity()

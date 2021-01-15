@@ -61,7 +61,17 @@ Route Analysis Report
 6. TypeORMControllerGeneric.delete(id, ctx) -> Public DELETE /api/v1/users/:id
 ```
 
-Above showing that now all the routes path started with `/api/v1`. 
+Above showing that now all the routes path started with `/api/v1`. Plumier generic controller follows restful best practice to serve CRUD API functionalities, for each resource generic controller serve six endpoints to perform CRUD: 
+
+| Method | Path                | Description                                                                |
+| ------ | ------------------- | -------------------------------------------------------------------------- |
+| POST   | `/api/v1/users`     | Create new user                                                            |
+| GET    | `/api/v1/users`     | Get many users, supported filter, order, projection supplied in parameters |
+| GET    | `/api/v1/users/:id` | Get single user, supported projection in parameter                         |
+| PUT    | `/api/v1/users/:id` | Modify user, required validator checked                                    |
+| PATCH  | `/api/v1/users/:id` | Modify user using partial data, required validator ignored                 |
+| DELETE | `/api/v1/users/:id` | Delete user (permanent/flag) based on configuration                        |
+
 
 ## Modify User Entity
 
@@ -69,7 +79,7 @@ Project starter already provide User entity on `src/api/user/user-entity.ts`. It
 
 Locate the user entity and copy paste code below 
 
-```typescript
+```typescript title="src/api/user/user-entity.ts"
 import bcrypt from "bcryptjs"
 import { preSave, route, val } from "plumier"
 import { Column, Entity } from "typeorm"
@@ -146,7 +156,7 @@ You may notice when getting list of users the `password` field visible on the JS
 
 Hiding property in Plumier is quite easy, since password property behavior is `writeonly` we can configure it appropriately. Plumier provided `@authorize.writeonly()` decorator for that. Put that above the `password` property like code below.
 
-```typescript {1,8}
+```typescript {1,8} title="src/api/user/user-entity.ts"
 import { authorize, preSave, route, val } from "plumier"
 /** other imports **/
 
@@ -176,7 +186,7 @@ Generic controller has feature to filter the response result. By default this fe
 
 In this tutorial we will enable filter for `email` and `name` field. Navigate to `user-entity.ts` file and add `@authorize.filter()` on the `email` and `name` field like below. 
 
-```typescript {2,11}
+```typescript {2,11} title="src/api/user/user-entity.ts"
 export class User extends EntityBase {
     @authorize.filter()
     @val.required()
@@ -206,7 +216,7 @@ We successfully modify User entity and map it into API properly, now we will add
 
 Create a new directory under `src/api` directory named `todo` then create file named `todo-entity.ts`. Copy paste code below into the `todo-entity.ts` file.
 
-```typescript
+```typescript title="src/api/todo/todo-entity.ts"
 import { route, val } from "plumier"
 import { Column, Entity, ManyToOne } from "typeorm"
 
@@ -255,6 +265,12 @@ Go back to the swagger UI and try adding a todo data like picture below
 
 Note that on picture above we provide `2` for user value which is a valid ID of a user. On the next section we will learn how to automatically populate this value with current login user using request hook. 
 
+We can also try the get all Todo API to check if our last action saved correctly. 
+
+![get todo](assets/tutorial-01/swagger-todo-get-all.png)
+
+Like you see above, our records saved properly, the user relation also returned correctly. Notice also the `password` field is not visible here.
+
 ## Todo Comment Entity (Nested Restful API)
 
 In this section we will create a nested restful API. We used nested API usually with parent - children relation data, which has form like this `/parents/{parentId}/children` to make the API more readable.
@@ -263,7 +279,7 @@ Since todo and comment is a parent children relation we can use nested restful a
 
 Create a directory under `/src/api` named `todo-comment` and add a file named `comment-entity.ts` and copy paste code below 
 
-```typescript
+```typescript title="src/api/todo-comment/comment-entity.ts"
 import { authorize, val } from "plumier"
 import { Column, Entity, ManyToOne } from "typeorm"
 
@@ -292,7 +308,7 @@ Above is the comment entity, we don't specify route mapping for it because the m
 
 Next we will modify the Todo entity by adding one to many relation to Comment entity by adding `comments` property. 
 
-```typescript {8}
+```typescript {8} title="src/api/todo/todo-entity.ts"
 import { Comment } from "../todo-comment/comment-entity"
 /** other imports **/
 
@@ -321,16 +337,19 @@ Route Analysis Report
  7. TypeORMOneToMany...eneric.list           -> Public GET    /api/v1/todos/:pid/comments
  8. TypeORMOneToMany...eneric.save           -> Public POST   /api/v1/todos/:pid/comments
  9. TypeORMOneToMany...eneric.get            -> Public GET    /api/v1/todos/:pid/comments/:id
-10. TypeORMOneToMany...eneric.modify         -> Public PATCH  /api/v1/todos/:pid/comments/:id
-11. TypeORMOneToMany...eneric.replace        -> Public PUT    /api/v1/todos/:pid/comments/:id
-12. TypeORMOneToMany...eneric.delete         -> Public DELETE /api/v1/todos/:pid/comments/:id
-13. TypeORMControllerGeneric.list            -> Public GET    /api/v1/users
-14. TypeORMControllerGeneric.save(data, ctx) -> Public POST   /api/v1/users
-15. TypeORMControllerGeneric.get             -> Public GET    /api/v1/users/:id
-16. TypeORMControllerGeneric.modify          -> Public PATCH  /api/v1/users/:id
-17. TypeORMControllerGeneric.replace         -> Public PUT    /api/v1/users/:id
-18. TypeORMControllerGeneric.delete(id, ctx) -> Public DELETE /api/v1/users/:id
+1.  TypeORMOneToMany...eneric.modify         -> Public PATCH  /api/v1/todos/:pid/comments/:id
+2.  TypeORMOneToMany...eneric.replace        -> Public PUT    /api/v1/todos/:pid/comments/:id
+3.  TypeORMOneToMany...eneric.delete         -> Public DELETE /api/v1/todos/:pid/comments/:id
+4.  TypeORMControllerGeneric.list            -> Public GET    /api/v1/users
+5.  TypeORMControllerGeneric.save(data, ctx) -> Public POST   /api/v1/users
+6.  TypeORMControllerGeneric.get             -> Public GET    /api/v1/users/:id
+7.  TypeORMControllerGeneric.modify          -> Public PATCH  /api/v1/users/:id
+8.  TypeORMControllerGeneric.replace         -> Public PUT    /api/v1/users/:id
+9.  TypeORMControllerGeneric.delete(id, ctx) -> Public DELETE /api/v1/users/:id
 ```
 
-Now we ready to test the Todo Comment API. Go back to swagger UI add a comment like below. 
+Now we ready to test the Todo Comment API. Go back to swagger UI add a post comment like below. 
 
+![add comment](assets/tutorial-01/swagger-post-todo-comment.png)
+
+That's it! all the required API created and works correctly, on the next section we will learn about user authentication and authorization and how to secure our API.

@@ -77,6 +77,18 @@ Array [
 ]
 `;
 
+exports[`CRUD CRUD Function Should able to save relation with ID 1`] = `
+Todo {
+  "id": 1,
+  "message": "Lorem ipsum",
+  "user": User {
+    "email": "john.doe@gmail.com",
+    "id": 1,
+    "name": "John Doe",
+  },
+}
+`;
+
 exports[`CRUD CRUD Function Should able to select by properties GET /users/:id 1`] = `
 Object {
   "age": 21,
@@ -799,6 +811,18 @@ User {
   "email": "john.doe@gmail.com",
   "id": 1,
   "name": "John Doe",
+}
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should serve POST /users/:parentId/animals 2`] = `
+Animal {
+  "id": 1,
+  "name": "Mimi",
+  "user": User {
+    "email": "john.doe@gmail.com",
+    "id": 1,
+    "name": "John Doe",
+  },
 }
 `;
 

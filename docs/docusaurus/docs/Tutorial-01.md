@@ -15,7 +15,6 @@ On this tutorial We will created 3 CRUD API using generic controller, and one cu
 | User API         | `/api/v1/users`                   | CRUD   |
 | Todo API         | `/api/v1/todos`                   | CRUD   |
 | Todo Comment API | `/api/v1/todos/{todoId}/comments` | CRUD   |
-| User login       | `/api/v1/login`                   | POST   |
 
 
 ## Software Requirements 
@@ -81,9 +80,12 @@ Plumier TypeORM Rest API project starter contains minimal files required to crea
 - src/
   - api/
     - _shared/
-      - entity-base.ts      // default base entity
+      - entity-base.ts      // entity base class
+      - login-user.ts       // Jwt Claim data structure
+    - auth/
+      - auth-controller.ts  // authentication controller (login/logout/refresh token etc)
     - user/
-      - user-entity.ts      // simple user entity 
+      - user-entity.ts      // user entity with minimum properties
   - app.ts                  // Plumier bootstrap application
   - index.ts                // main entry of our API
 - .env-example              // example dot env file (rename into .env)
@@ -104,20 +106,30 @@ npm run debug
 If you are follow step above correctly then above code will print message indicating it serve CRUD user API like below 
 
 ```
-> rest-api-typeorm@1.0.0 debug /
+> rest-api-typeorm@1.0.0 debug /Users/ktutnik/Documents/todo-api
 > ts-node-dev --inspect -- src/index
 
-[INFO] 06:30:39 ts-node-dev ver. 1.1.1 (using ts-node ver. 9.1.1, typescript ver. 4.1.3)
-Debugger listening on ws://127.0.0.1:9229/c1c7d1b2-e887-4c50-9520-a832526e370d
+[INFO] 05:02:34 ts-node-dev ver. 1.1.1 (using ts-node ver. 9.1.1, typescript ver. 4.1.3)
+Debugger listening on ws://127.0.0.1:9229/a0b8a811-cf64-485c-9686-5a5a66abed7e
 For help, see: https://nodejs.org/en/docs/inspector
+node-pre-gyp info This Node instance does not support builds for N-API version 6
+node-pre-gyp info This Node instance does not support builds for N-API version 6
 
 Route Analysis Report
-1. TypeORMControllerGeneric.list            -> Authenticated GET    /users
-2. TypeORMControllerGeneric.save(data, ctx) -> Authenticated POST   /users
-3. TypeORMControllerGeneric.get             -> Authenticated GET    /users/:id
-4. TypeORMControllerGeneric.modify          -> Authenticated PATCH  /users/:id
-5. TypeORMControllerGeneric.replace         -> Authenticated PUT    /users/:id
-6. TypeORMControllerGeneric.delete(id, ctx) -> Authenticated DELETE /users/:id
+1. AuthController.login(email, password)    -> Public        POST   /auth/login
+2. AuthController.refresh(user)             -> RefreshToken  POST   /auth/refresh
+3. AuthController.logout()                  -> Authenticated GET    /auth/logout
+4. TypeORMControllerGeneric.list            -> Authenticated GET    /users
+5. TypeORMControllerGeneric.save(data, ctx) -> Public        POST   /users
+6. TypeORMControllerGeneric.get             -> Authenticated GET    /users/:id
+7. TypeORMControllerGeneric.modify          -> Authenticated PATCH  /users/:id
+8. TypeORMControllerGeneric.replace         -> Authenticated PUT    /users/:id
+9. TypeORMControllerGeneric.delete(id, ctx) -> Authenticated DELETE /users/:id
 ```
+
+Above is the route analysis report created by Plumier route generator system, it prints generated routes from controllers and generic controllers during the generation process, it may print issues on each route if occur.
+
+On the left is the controller's action handles the route, 
+
 
 Next step we will start program the API, adding entities and map them into API with first class entity. 
