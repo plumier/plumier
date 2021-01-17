@@ -15,7 +15,7 @@
     "@plumier/serve-static": "1.0.0-rc.4",
     "@types/swagger-ui-dist": "^3.30.0",
     "openapi3-ts": "^2.0.1",
-    "swagger-ui-dist": "3.38.0"
+    "swagger-ui-dist": "3.40.0"
   },
   "devDependencies": {
     "cpy-cli": "^3.1.1"
