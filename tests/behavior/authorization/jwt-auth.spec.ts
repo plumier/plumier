@@ -6,6 +6,7 @@ import {
     Authorizer,
     AuthPolicy,
     authPolicy,
+    bind,
     CustomAuthorizer,
     CustomAuthorizerFunction,
     DefaultDependencyResolver,
@@ -331,6 +332,23 @@ describe("JwtAuth", () => {
                 .expect(403)
         })
 
+        it("Should prioritize header vs cookie if specified both", async () => {
+            class AnimalController {
+                @authorize.route("admin", "user")
+                get(@bind.user() { role, email }: any) { return { email, role } }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+
+            const { body } = await Supertest(app.callback())
+                .get("/animal/get")
+                .set("cookie", `Authorization=${ADMIN_TOKEN}`)
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+
         it("Should able to send token using cookie with custom name", async () => {
             class AnimalController {
                 @authorize.route("admin")
@@ -351,6 +369,38 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .expect(403)
+        })
+
+        it("Should throw error when no auth scheme defined", async () => {
+            class AnimalController {
+                @authorize.route("admin", "user")
+                get(@bind.user() { role, email }: any) { return { email, role } }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            app.on("error", () => { })
+
+            const { body } = await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `${USER_TOKEN}`)
+                .expect(500)
+        })
+
+        it("Should throw error when auth scheme other than bearer provided", async () => {
+            class AnimalController {
+                @authorize.route("admin", "user")
+                get(@bind.user() { role, email }: any) { return { email, role } }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            app.on("error", () => { })
+
+            const { body } = await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Basic ${USER_TOKEN}`)
+                .expect(500)
         })
 
         it("Should able to apply authorization to specific method from controller", async () => {
