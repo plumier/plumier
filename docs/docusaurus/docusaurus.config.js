@@ -7,6 +7,12 @@ module.exports = {
   organizationName: 'plumier', // Usually your GitHub org/user name.
   projectName: 'plumier.github.io', // Usually your repo name.
   themeConfig: {
+    algolia: {
+      apiKey: 'cc5032f20c325b27c07de03fe7078651',
+      indexName: 'plumierjs',
+      contextualSearch: true,
+      searchParameters: {},
+    },
     navbar: {
       title: 'Plumier',
       logo: {
