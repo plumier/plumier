@@ -5,38 +5,17 @@ title: Step 1 - Get Started
 
 This tutorial will walk you through creating a Restful API managing a Todo data with MySQL database, first we will learn about how to create a Plumier project, then we will learn how to create CRUD API using generic controller then finally we add authorization to protect the data.
 
-## Project Description
-
-On this tutorial We will created 3 CRUD API using generic controller, and one custom controller for login endpoint. The APIs will be like below
-
-
-| Functions        | Path                              | Action |
-| ---------------- | --------------------------------- | ------ |
-| User API         | `/api/v1/users`                   | CRUD   |
-| Todo API         | `/api/v1/todos`                   | CRUD   |
-| Todo Comment API | `/api/v1/todos/{todoId}/comments` | CRUD   |
-
-
 ## Software Requirements 
 
 To be able to follow this example you need some software installed in your computer.
 * [Node.js](https://nodejs.org/en/) v10 or newer 
 * Any terminal app
 * Any text editor, in this example using VSCode
-
-Confirm that Node.js installed properly on your machine by execute command below in your terminal
-
-```
-node -v
-```
+* MySQL database and MySQL client
 
 ## Init Project
 
 To get started we need to download [TypeORM Rest API project starters](https://github.com/plumier/starters/tree/master/rest-api-typeorm) from GitHub repository. In this example we will use [Degit](https://www.npmjs.com/package/degit) to download it. 
-
-:::info
-There are more project starters available on the `plumier/starters`, check the [repository](https://github.com/plumier/starters) readme file for more information.
-:::
 
 Execute commands below in your terminal to download the project starter
 
@@ -46,10 +25,10 @@ npx degit plumier/starters/rest-api-typeorm todo-api
 
 Above command will download Degit locally then download Plumier TypeORM Rest API project starter into `todo-api` directory. 
 
-:::caution
+:::info
 If you having problem executing `npx` you can manually install Degit globally
 ```sh
-npm i -g degit
+npm i -g degit 
 ```
 
 Then followed by executing Degit manually like below
@@ -74,24 +53,32 @@ npm install
 ## Project Starter File Structure
 Open the project directory using your favorite text editor or IDE, on this example we will use VSCode. 
 
-Plumier TypeORM Rest API project starter contains minimal files required to create API with SQL database using Node.js and TypeScript. The project structure is like below
+![project structure](assets/tutorial-01/project-structure.png)
 
-```
-- src/
-  - api/
-    - _shared/
-      - entity-base.ts      // entity base class
-      - login-user.ts       // Jwt Claim data structure
-    - auth/
-      - auth-controller.ts  // authentication controller (login/logout/refresh token etc)
-    - user/
-      - user-entity.ts      // user entity with minimum properties
-  - app.ts                  // Plumier bootstrap application
-  - index.ts                // main entry of our API
-- .env-example              // example dot env file (rename into .env)
-- tsconfig.json
-- package.json 
-```
+ Project starter already has a simple user management and login functionality generates JWT tokens. Its contains authorization setup to secure the API.
+
+### File Structure
+The default file structure is separate files per resource, a resource consists of several endpoints to serve CRUD functionality.
+
+### User System 
+Project starter shipped with user management system, consist of login API and simple user API and authorization setup.
+
+The login API uses basic login function using email/password returned JWT tokens (login token and refresh token). The login token has limited live time while refresh token will never expired. 
+
+The user api served by a generic controller using `User` entity. The `POST /users` intended to be accessible by public 
+
+
+An authorization already defined so by default all API endpoints are protected by default, user should use login token to access resources. 
+
+### Authorization
+
+
+Plumier TypeORM Rest API project starter contains some files required to create API with SQL database using Node.js and TypeScript.
+
+* `entity-base.ts` is a TypeORM base class entity contains basic properties required by an Entity, such as ID, Created Date, Updated Date and Delete Flag column. 
+* `login-user.ts` is data type of current login user, its the JWT claims used as a bearer authentication.
+* `auth-controller.ts` is the login functionality, its provides login using email and password, provides a refresh token API and logout functionality. 
+* `auth-policy.ts` is authorization policy definitions, contains definition of global auth policy and and refresh token policy 
 
 ## Running The Project
 

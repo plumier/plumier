@@ -59,6 +59,13 @@ Array [
 ]
 `;
 
+exports[`JwtAuth Basic Authorization Should prioritize header vs cookie if specified both 1`] = `
+Object {
+  "email": "ketut@gmail.com",
+  "role": "user",
+}
+`;
+
 exports[`JwtAuth Default Configuration Should throw error when no secret provided nor environment variable 1`] = `
 Array [
   Array [
