@@ -1,15 +1,8 @@
 module.exports = {
   overview: [
     "fundamentals",
-    {
-      "Tutorial - Todo API": [
-        "tutorial-01",
-        "tutorial-02",
-        "tutorial-03",
-      ],
-    },
+    "tutorial-01",
     "controller",
-    "routing",
     "generic-controller",
     {
       "Data Access": [
@@ -24,6 +17,7 @@ module.exports = {
     {
       "Reference": [
         "application-startup",
+        "routing",
         "validation",
         "authorization",
         "middleware",
