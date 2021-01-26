@@ -1,8 +1,7 @@
-import { Context } from 'koa'
-import { ClassReflection, reflection, ParameterReflection, PropertyReflection, reflect } from "@plumier/reflect"
+import { ClassReflection, ParameterReflection, PropertyReflection, reflect, reflection } from "@plumier/reflect"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
-import { ResponseTypeDecorator } from './decorator/common'
+import { ResponseTypeDecorator } from "./decorator/common"
 import { EntityIdDecorator, RelationDecorator } from "./decorator/entity"
 import { HttpStatus } from "./http-status"
 import {
@@ -26,7 +25,7 @@ import {
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-type AuthorizerFunction = (info: AuthorizationContext, location: "Class" | "Parameter" | "Method") => boolean | Promise<boolean>
+type AuthorizerFunction = (info: AuthorizationContext) => boolean | Promise<boolean>
 
 interface AuthorizeDecorator {
     type: "plumier-meta:authorize",
@@ -111,7 +110,7 @@ class PolicyAuthorizer implements Authorizer {
     constructor(policies: Class<AuthPolicy>[], private keys: string[]) {
         this.policies.push(...policies)
     }
-    async authorize(ctx: AuthorizationContext, location: 'Class' | 'Parameter' | 'Method'): Promise<boolean> {
+    async authorize(ctx: AuthorizationContext): Promise<boolean> {
         // check role first because its faster 
         for (const role of ctx.role) {
             for (const key of this.keys) {
@@ -123,7 +122,7 @@ class PolicyAuthorizer implements Authorizer {
             const authPolicy = new Auth()
             for (const policy of this.keys) {
                 if (authPolicy.equals(policy, ctx)) {
-                    const authorize = await authPolicy.authorize(ctx, location)
+                    const authorize = await authPolicy.authorize(ctx)
                     if (authorize) return true
                 }
             }
@@ -155,12 +154,12 @@ class CustomAuthPolicy implements AuthPolicy {
     equals(id: string, ctx: AuthorizationContext): boolean {
         return id === this.id
     }
-    async authorize(ctx: AuthorizationContext, location: 'Class' | 'Parameter' | 'Method'): Promise<boolean> {
+    async authorize(ctx: AuthorizationContext): Promise<boolean> {
         try {
             if (typeof this.authorizer === "function")
-                return this.authorizer(ctx, location)
+                return this.authorizer(ctx)
             else
-                return this.authorizer.authorize(ctx, "Class")
+                return this.authorizer.authorize(ctx)
         }
         catch (e) {
             const message = e instanceof Error ? e.stack : e
@@ -302,7 +301,7 @@ function createAuthorizer(decorator: AuthorizeDecorator, info: AuthorizationCont
 
 function executeAuthorizer(decorator: AuthorizeDecorator, info: AuthorizationContext) {
     const instance = createAuthorizer(decorator, info)
-    return instance.authorize(info, decorator.location)
+    return instance.authorize(info)
 }
 
 // --------------------------------------------------------------------- //
@@ -500,7 +499,7 @@ async function getAuthorize(authorizers: (boolean | Authorizer)[], ctx: Authoriz
     for (const auth of authorizers) {
         if (auth === true) return true
         if (typeof auth === "object") {
-            const result = await auth.authorize(ctx, "Parameter")
+            const result = await auth.authorize(ctx)
             if (result) return true
         }
     }

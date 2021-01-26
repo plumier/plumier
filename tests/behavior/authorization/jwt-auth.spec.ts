@@ -629,7 +629,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to get decorator position in class scope", async () => {
-            @authorize.custom((i, pos) => pos === "Class" && i.role.some(x => x === "admin"), { access: "route" })
+            @authorize.custom((i) => i.metadata.current?.kind === "Class" && i.role.some(x => x === "admin"), { access: "route" })
             class AnimalController {
                 get() { return "Hello" }
             }
@@ -645,7 +645,7 @@ describe("JwtAuth", () => {
 
         it("Should able to get decorator position in method scope", async () => {
             class AnimalController {
-                @authorize.custom((i, pos) => pos === "Method" && i.role.some(x => x === "admin"), { access: "route" })
+                @authorize.custom((i) => i.metadata.current?.kind === "Method" && i.role.some(x => x === "admin"), { access: "route" })
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -661,7 +661,7 @@ describe("JwtAuth", () => {
         it("Should able to get decorator position in parameter scope", async () => {
             class AnimalController {
                 get(
-                    @authorize.custom((i, pos) => pos === "Parameter" && i.role.some(x => x === "admin"), { access: "route" })
+                    @authorize.custom((i) => i.metadata.current?.kind === "Parameter" && i.role.some(x => x === "admin"), { access: "route" })
                     data: string) { return "Hello" }
             }
             const app = await fixture(AnimalController)
@@ -3389,7 +3389,7 @@ describe("JwtAuth", () => {
                 get() { return "Hello" }
             }
             class HasUserAuthPolicy implements CustomAuthorizer {
-                authorize(info: AuthorizationContext, location: 'Class' | 'Parameter' | 'Method'): boolean | Promise<boolean> {
+                authorize(info: AuthorizationContext): boolean | Promise<boolean> {
                     return info.role.some(x => x === "user")
                 }
             }

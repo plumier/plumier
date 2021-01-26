@@ -464,12 +464,12 @@ export interface AuthorizationContext {
 }
 
 export interface Authorizer {
-    authorize(info: AuthorizationContext, location: "Class" | "Parameter" | "Method"): boolean | Promise<boolean>
+    authorize(info: AuthorizationContext): boolean | Promise<boolean>
 }
 
 export interface AuthPolicy {
     equals(id: string, ctx: AuthorizationContext): boolean
-    authorize(ctx: AuthorizationContext, location: 'Class' | 'Parameter' | 'Method'): Promise<boolean>
+    authorize(ctx: AuthorizationContext): Promise<boolean>
 }
 
 // --------------------------------------------------------------------- //
