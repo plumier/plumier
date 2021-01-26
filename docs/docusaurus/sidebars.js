@@ -1,15 +1,14 @@
 module.exports = {
   overview: [
     "fundamentals",
-    "get-started",
+    "tutorial-01",
+    "controller",
+    "generic-controller",
     {
-      type: 'category',
-      label: 'Data Access',
-      collapsed: false,
-      items: [
+      "Data Access": [
         "typeorm-helper",
         "mongoose-helper"
-      ],
+      ]
     },
     "swagger",
     "social-login",
@@ -18,9 +17,7 @@ module.exports = {
     {
       "Reference": [
         "application-startup",
-        "controller",
         "routing",
-        "generic-controller",
         "validation",
         "authorization",
         "middleware",
