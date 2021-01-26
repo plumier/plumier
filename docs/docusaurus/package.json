@@ -1,11 +1,12 @@
 {
   "name": "plumier-docs",
-  "version": "0.0.0",
+  "version": "1.0.0-rc.5",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
     "build": "docusaurus build",
+    "postbuild": "cp -R build/ ../website",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "serve": "docusaurus serve"
@@ -17,6 +18,9 @@
     "clsx": "^1.1.1",
     "react": "^16.8.4",
     "react-dom": "^16.8.4"
+  },
+  "devDependencies": {
+    "cpy-cli": "^3.1.1"
   },
   "browserslist": {
     "production": [

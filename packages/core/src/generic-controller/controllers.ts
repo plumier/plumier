@@ -170,7 +170,6 @@ function getDeletedProperty(type: Class) {
     return meta.properties.find(x => x.decorators.some((d: DeleteColumnDecorator) => d.kind === "plumier-meta:delete-column"))
 }
 
-
 async function getIdentifierResult(type: Class, obj: any) {
     const data = await obj
     const meta = reflect(type)

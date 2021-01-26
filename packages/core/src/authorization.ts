@@ -3,7 +3,7 @@ import { ClassReflection, reflection, ParameterReflection, PropertyReflection, r
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
 import { ResponseTypeDecorator } from './decorator/common'
-import { EntityIdDecorator } from "./decorator/entity"
+import { EntityIdDecorator, RelationDecorator } from "./decorator/entity"
 import { HttpStatus } from "./http-status"
 import {
     AccessModifier,
@@ -388,6 +388,9 @@ async function checkParameters(meta: (PropertyReflection | ParameterReflection)[
     const result: string[] = []
     for (let i = 0; i < meta.length; i++) {
         const prop = meta[i];
+        // if the property is a relation property just skip checking, since we allow set relation using ID
+        const isRelation = prop.decorators.some((x: RelationDecorator) => x.kind === "plumier-meta:relation")
+        if(isRelation) continue
         const issues = await checkParameter(prop, value[i], { ...ctx, path: ctx.path.concat(prop.name), })
         result.push(...issues)
     }

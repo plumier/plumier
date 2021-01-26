@@ -1433,6 +1433,53 @@ Array [
 ]
 `;
 
+exports[`Request Hook Should able to hook on array type parameter 1`] = `
+Array [
+  Array [
+    User {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe 1",
+      "password": "lorem ipsum",
+    },
+  ],
+  Array [
+    User {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe 2",
+      "password": "lorem ipsum",
+    },
+  ],
+  Array [
+    User {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe 3",
+      "password": "lorem ipsum",
+    },
+  ],
+  Array [
+    User {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe 1",
+      "password": "lorem ipsum",
+    },
+  ],
+  Array [
+    User {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe 2",
+      "password": "lorem ipsum",
+    },
+  ],
+  Array [
+    User {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe 3",
+      "password": "lorem ipsum",
+    },
+  ],
+]
+`;
+
 exports[`Request Hook Should able to hook request in generic controller 1`] = `
 Array [
   Array [

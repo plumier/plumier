@@ -2,7 +2,6 @@
 	"private": true,
 	"description": "Delightful Node.js Rest Framework",
 	"scripts": {
-		"postinstall": "cd website && yarn install",
 		"test": "jest --maxWorkers=4",
 		"lint": "tslint -c ./tslint.json --project ./tsconfig.json --format stylish",
 		"clean": "node script/cleanup",
@@ -13,8 +12,8 @@
 		"publish:canary": "lerna run compile && lerna publish patch --exact --canary --preid=\"canary.$(node script/canary-id)\" --force-publish --yes",
 		"publish:prod": "yarn compile && lerna publish && yarn clean",
 		"benchmark": "ts-node -r tsconfig-paths/register tests/manual/benchmark/run",
-		"doc:start": "cd website && yarn start",
-		"doc:build": "cd website && yarn build",
+		"doc:start": "yarn workspace plumier-docs start",
+		"doc:build": "yarn workspace plumier-docs build",
 		"social:start": "ts-node -r tsconfig-paths/register tests/manual/social-login-test/index.ts",
 		"typeorm:start": "ts-node-script -r tsconfig-paths/register tests/manual/typeorm/index.ts",
 		"swagger:start": "ts-node -r tsconfig-paths/register tests/manual/swagger/index.ts",
@@ -25,17 +24,17 @@
 		"@hapi/joi": "^17.1.1",
 		"@types/body-parser": "^1.19.0",
 		"@types/cors": "^2.8.9",
-		"@types/express": "^4.17.9",
-		"@types/express-jwt": "^0.0.42",
+		"@types/express": "^4.17.11",
+		"@types/express-jwt": "^6.0.0",
 		"@types/faker": "^5.1.5",
-		"@types/fs-extra": "^9.0.5",
-		"@types/jest": "^26.0.19",
+		"@types/fs-extra": "^9.0.6",
+		"@types/jest": "^26.0.20",
 		"@types/hapi__joi": "^17.1.6",
 		"@types/jsonwebtoken": "^8.5.0",
 		"@types/koa-router": "^7.4.1",
 		"@types/rimraf": "^3.0.0",
 		"@types/supertest": "^2.0.10",
-		"autocannon": "^7.0.0",
+		"autocannon": "^7.0.3",
 		"babel-core": "^6.26.3",
 		"benalu": "^2.0.0-beta-1",
 		"body-parser": "^1.19.0",
@@ -47,26 +46,33 @@
 		"express": "^4.17.1",
 		"express-jwt": "^6.0.0",
 		"faker": "^5.1.0",
-		"fs-extra": "^9.0.1",
+		"fs-extra": "^9.1.0",
 		"get-port": "5.1.1",
 		"jest": "^26.6.3",
 		"jsonwebtoken": "^8.5.1",
 		"koa-better-body": "^3.3.9",
 		"koa-router": "^10.0.0",
 		"lerna": "3.22.1",
-		"mongodb-memory-server-global": "6.9.2",
+		"mongodb-memory-server-global": "6.9.3",
 		"pre-push": "^0.1.1",
 		"reflect-metadata": "^0.1.13",
 		"rimraf": "^3.0.2",
-		"supertest": "^6.0.1",
-		"sqlite3": "^5.0.0",
+		"supertest": "^6.1.2",
+		"sqlite3": "5.0.0",
 		"ts-jest": "^26.4.4",
 		"ts-node": "^9.1.1",
 		"tsconfig-paths": "^3.9.0",
 		"tslint": "^6.1.3",
-		"typescript": "^4.1.2"
+		"typescript": "^4.1.3"
 	},
-	"workspaces": [
-		"packages/*"
-	]
+	"workspaces": {
+		"packages": [
+			"packages/*",
+			"docs/*"
+		],
+		"nohoist": [
+			"**/docs/docusaurus",
+			"**/docs/docusaurus/**"
+		]
+	}
 }
