@@ -10,4 +10,4 @@ git branch -D update-documentation
 git checkout -b update-documentation
 git add .
 git commit -m "chore: Publish documentation"
-git push -u origin update-documentation
+git push -u --no-verify origin update-documentation
