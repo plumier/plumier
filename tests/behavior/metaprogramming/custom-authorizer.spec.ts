@@ -1,4 +1,4 @@
-import { authorize, CustomAuthorizerFunction, route, domain } from "@plumier/core"
+import { authorize, CustomAuthorizerFunction, route, domain, authPolicy } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { noop, type } from '@plumier/reflect'
 import { sign } from "jsonwebtoken"
@@ -12,17 +12,17 @@ describe("Custom Authorizer", () => {
         const secret = "secret"
         const token = sign({ id: 123, role: "User" }, secret)
         const fn = jest.fn()
-        const customAuthorizer: CustomAuthorizerFunction = ({ metadata }) => {
+        const authPolicies = authPolicy().define("custom", ({ metadata }) => {
             fn(metadata)
             return true
-        }
+        })
         class AnimalController {
             @route.get()
-            @authorize.custom(customAuthorizer, { access: "route" })
+            @authorize.route("custom")
             get(id: number) { return { id } }
         }
         const app = await fixture(AnimalController)
-            .set(new JwtAuthFacility({ secret }))
+            .set(new JwtAuthFacility({ secret, authPolicies }))
             .initialize()
         await supertest(app.callback())
             .get("/animal/get?id=1234")
@@ -35,17 +35,17 @@ describe("Custom Authorizer", () => {
         const secret = "secret"
         const token = sign({ id: 123, role: "User" }, secret)
         const fn = jest.fn()
-        const customAuthorizer: CustomAuthorizerFunction = ({ metadata }) => {
+        const authPolicies = authPolicy().define("custom", ({ metadata }) => {
             fn(metadata.actionParams)
             return true
-        }
-        @authorize.custom(customAuthorizer, { access: "route" })
+        })
+        @authorize.route("custom")
         class AnimalController {
             @route.get()
             get(id: number) { return { id } }
         }
         const app = await fixture(AnimalController)
-            .set(new JwtAuthFacility({ secret }))
+            .set(new JwtAuthFacility({ secret, authPolicies }))
             .initialize()
         await supertest(app.callback())
             .get("/animal/get?id=1234")
@@ -58,17 +58,17 @@ describe("Custom Authorizer", () => {
         const secret = "secret"
         const token = sign({ id: 123, role: "User" }, secret)
         const fn = jest.fn()
-        const customAuthorizer: CustomAuthorizerFunction = ({ metadata }) => {
+        const authPolicies = authPolicy().define("custom", ({ metadata }) => {
             fn(metadata.current)
             return true
-        }
-        @authorize.custom(customAuthorizer, { access: "route" })
+        })
+        @authorize.route("custom")
         class AnimalController {
             @route.get()
             get(id: number) { return { id } }
         }
         const app = await fixture(AnimalController)
-            .set(new JwtAuthFacility({ secret }))
+            .set(new JwtAuthFacility({ secret, authPolicies }))
             .initialize()
         await supertest(app.callback())
             .get("/animal/get?id=1234")
@@ -81,17 +81,17 @@ describe("Custom Authorizer", () => {
         const secret = "secret"
         const token = sign({ id: 123, role: "User" }, secret)
         const fn = jest.fn()
-        const customAuthorizer: CustomAuthorizerFunction = ({ metadata }) => {
+        const authPolicies = authPolicy().define("custom", ({ metadata }) => {
             fn(metadata.current)
             return true
-        }
+        })
         class AnimalController {
             @route.get()
-            @authorize.custom(customAuthorizer, { access: "route" })
+            @authorize.route("custom")
             get(id: number) { return { id } }
         }
         const app = await fixture(AnimalController)
-            .set(new JwtAuthFacility({ secret }))
+            .set(new JwtAuthFacility({ secret, authPolicies }))
             .initialize()
         await supertest(app.callback())
             .get("/animal/get?id=1234")
@@ -104,16 +104,16 @@ describe("Custom Authorizer", () => {
         const secret = "secret"
         const token = sign({ id: 123, role: "User" }, secret)
         const fn = jest.fn()
-        const customAuthorizer: CustomAuthorizerFunction = ({ metadata }) => {
+        const authPolicies = authPolicy().define("custom", ({ metadata }) => {
             fn(metadata.current)
             return true
-        }
+        })
         class AnimalController {
             @route.post()
-            save(@authorize.custom(customAuthorizer, { access: "write" }) id: number) { return { id } }
+            save(@authorize.write("custom") id: number) { return { id } }
         }
         const app = await fixture(AnimalController)
-            .set(new JwtAuthFacility({ secret }))
+            .set(new JwtAuthFacility({ secret, authPolicies }))
             .initialize()
         await supertest(app.callback())
             .post("/animal/save?id=1234")
@@ -126,20 +126,20 @@ describe("Custom Authorizer", () => {
         const secret = "secret"
         const token = sign({ id: 123, role: "User" }, secret)
         const fn = jest.fn()
-        const customAuthorizer: CustomAuthorizerFunction = ({ metadata }) => {
+        const authPolicies = authPolicy().define("custom", ({ metadata }) => {
             fn(metadata.current)
             return true
-        }
+        })
         @domain()
         class Animal {
-            constructor(@authorize.custom(customAuthorizer, { access: "write" }) public name: string) { }
+            constructor(@authorize.write("custom") public name: string) { }
         }
         class AnimalController {
             @route.post()
             save(data: Animal) { return { data } }
         }
         const app = await fixture(AnimalController)
-            .set(new JwtAuthFacility({ secret }))
+            .set(new JwtAuthFacility({ secret, authPolicies }))
             .initialize()
         await supertest(app.callback())
             .post("/animal/save")
@@ -153,13 +153,13 @@ describe("Custom Authorizer", () => {
         const secret = "secret"
         const token = sign({ id: 123, role: "User" }, secret)
         const fn = jest.fn()
-        const customAuthorizer: CustomAuthorizerFunction = ({ metadata }) => {
+        const authPolicies = authPolicy().define("custom", ({ metadata }) => {
             fn(metadata.current)
             return true
-        }
+        })
         @domain()
         class Animal {
-            constructor(@authorize.custom(customAuthorizer, { access: "read" }) public name: string) { }
+            constructor(@authorize.read("custom") public name: string) { }
         }
         class AnimalController {
             @route.get()
@@ -167,7 +167,7 @@ describe("Custom Authorizer", () => {
             get() { return { name: "Bingo" } }
         }
         const app = await fixture(AnimalController)
-            .set(new JwtAuthFacility({ secret }))
+            .set(new JwtAuthFacility({ secret, authPolicies }))
             .initialize()
         await supertest(app.callback())
             .get("/animal/get")
@@ -180,12 +180,12 @@ describe("Custom Authorizer", () => {
         const secret = "secret"
         const token = sign({ id: 123, role: "User" }, secret)
         const fn = jest.fn()
-        const customAuthorizer: CustomAuthorizerFunction = ({ metadata }) => {
+        const authPolicies = authPolicy().define("custom", ({ metadata }) => {
             fn(metadata.current)
             return true
-        }
+        })
         class Animal {
-            @authorize.custom(customAuthorizer, { access: "read" })
+            @authorize.read("custom")
             name: string
         }
         class AnimalController {
@@ -194,7 +194,7 @@ describe("Custom Authorizer", () => {
             get() { return { name: "Bingo" } }
         }
         const app = await fixture(AnimalController)
-            .set(new JwtAuthFacility({ secret }))
+            .set(new JwtAuthFacility({ secret, authPolicies }))
             .initialize()
         await supertest(app.callback())
             .get("/animal/get")

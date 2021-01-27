@@ -13,7 +13,6 @@ import reflect, {
 import { Result, VisitorInvocation } from "@plumier/validator"
 import { promisify } from "util"
 
-import { EntityProviderQuery, RoleField } from "./authorization"
 import { Class } from "./common"
 import { domain } from './decorator/common'
 import { HttpStatus } from "./http-status"
@@ -438,11 +437,6 @@ export interface AuthorizationContext {
     parentValue?: any
 
     /**
-     * List of user roles
-     */
-    role: string[]
-
-    /**
      * Current login user JWT claim
      */
     user: { [key: string]: any } | undefined
@@ -516,12 +510,6 @@ export interface Configuration {
     analyzers?: RouteAnalyzerFunction[],
 
     /**
-     * Role field / function used to specify current login user role inside JWT claim for authorization
-     */
-    roleField: RoleField,
-
-
-    /**
      * Global authorization decorators, use mergeDecorator for multiple
      */
     globalAuthorizationDecorators?: (...args: any[]) => void
@@ -556,7 +544,7 @@ export interface Configuration {
     /**
      * Custom authorization policy
      */
-    authPolicies?: Class<AuthPolicy>[]
+    authPolicies: Class<AuthPolicy>[]
 
     /**
      * Transform value before its being parsed by response projection authorization 

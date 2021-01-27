@@ -283,7 +283,7 @@ function authorizeActions(config: GenericControllerConfig) {
     for (const action of actions) {
         const opt = config.map.get(action)
         if (!opt || !opt.authorize) continue
-        result.push(authorize.custom({ policies: opt.authorize }, { access: "route", applyTo: action, tag: opt.authorize.join("|") }))
+        result.push(authorize.custom(opt.authorize, { access: "route", applyTo: action, tag: opt.authorize.join("|") }))
     }
     return result
 }

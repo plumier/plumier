@@ -11,7 +11,6 @@ export type RoleField = string | ((value: any) => Promise<string[]>)
 
 export interface JwtAuthFacilityOption {
     secret?: string,
-    roleField?: RoleField,
     global?: (...args: any[]) => void,
     authPolicies?: Class<AuthPolicy> | Class<AuthPolicy>[] | string | string[]
 }
@@ -76,7 +75,6 @@ export class JwtAuthFacility extends DefaultFacility {
 
     setup(app: Readonly<PlumierApplication>) {
         app.set({ enableAuthorization: true })
-        app.set({ roleField: this.option?.roleField || "role" })
         app.set({ globalAuthorizationDecorators: this.option?.global })
         const secret = this.option?.secret ?? process.env.PLUM_JWT_SECRET
         if (!secret) throw new Error("JWT Secret not provided. Provide secret on JwtAuthFacility constructor or environment variable PLUM_JWT_SECRET")

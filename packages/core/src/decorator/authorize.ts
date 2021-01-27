@@ -51,99 +51,92 @@ class AuthDecoratorImpl {
      * @param modifier modifier access (for property and parameter authorizer)
      * @param tag authorizer name visible on route generator
      */
-    custom(authorize: symbol | string | AuthorizerFunction | Authorizer | { policies: string[] }, opt: CustomAuthorizeOption) {
+    custom( policies: string[], opt: CustomAuthorizeOption) {
         const option = { tag: "Custom", evaluation: "Dynamic", ...opt }
         return decorate((...args: any[]) => {
             const location = args.length === 1 ? "Class" : args.length === 2 ? "Method" : "Parameter"
             return <AuthorizeDecorator>{
                 type: "plumier-meta:authorize",
-                tag: option.tag, authorize, location,
+                tag: option.tag, policies, location,
                 access: option.access, evaluation: option.evaluation,
             }
         }, ["Class", "Parameter", "Method", "Property"], option)
     }
 
-    /**
-     * Authorize controller or action accessible by public
-     */
-    public(opt?: ApplyToOption): (target: any, name?: string) => void {
-        return this.custom({ policies: [Public] }, { access: "route", tag: Public, ...opt })
-    }
-
-    private byRole(roles: any[], access: AccessModifier) {
-        const last = roles[roles.length - 1]
+    private byPolicies(policies: any[], access: AccessModifier) {
+        const last = policies[policies.length - 1]
         const defaultOpt = { access, methods: [] }
         const opt: AuthorizeSelectorOption = typeof last === "string" ? defaultOpt : { ...defaultOpt, ...last }
-        const allRoles: string[] = typeof last === "string" ? roles : roles.slice(0, roles.length - 1)
-        return this.custom({ policies: allRoles }, { ...opt, tag: allRoles.join("|"), evaluation: "Dynamic" })
+        const allPolicies: string[] = typeof last === "string" ? policies : policies.slice(0, policies.length - 1)
+        return this.custom(allPolicies, { ...opt, tag: allPolicies.join("|"), evaluation: "Dynamic" })
     }
 
     /**
-     * Authorize controller or action to be accessible by specific role
-     * @param role Allowed role
+     * Authorize controller or action to be accessible by specific policy
+     * @param policy Allowed policy
      * @param option Selector option. Only for controller scoped authorizer
      */
-    route(role: string, option?: ApplyToOption): (target: any, name?: string) => void
+    route(policy: string, option?: ApplyToOption): (target: any, name?: string) => void
     /**
-     * Authorize controller or action to be accessible by specific role(s)
-     * @param role1 Allowed role
-     * @param role2 Allowed role
+     * Authorize controller or action to be accessible by specific policy(s)
+     * @param policy1 Allowed policy
+     * @param policy2 Allowed policy
      * @param option Selector option. Only for controller scoped authorizer
      */
-    route(role1: string, role2: string, option?: ApplyToOption): (target: any, name?: string) => void
+    route(policy1: string, policy2: string, option?: ApplyToOption): (target: any, name?: string) => void
     /**
-     * Authorize controller or action to be accessible by specific role(s)
-     * @param role1 Allowed role
-     * @param role2 Allowed role
-     * @param role3 Allowed role
+     * Authorize controller or action to be accessible by specific policy(s)
+     * @param policy1 Allowed policy
+     * @param policy2 Allowed policy
+     * @param policy3 Allowed policy
      * @param option Selector option. Only for controller scoped authorizer
      */
-    route(role1: string, role2: string, role3: string, option?: ApplyToOption): (target: any, name?: string) => void
+    route(policy1: string, policy2: string, policy3: string, option?: ApplyToOption): (target: any, name?: string) => void
     /**
-     * Authorize controller or action to be accessible by specific role(s)
-     * @param role1 Allowed role
-     * @param role2 Allowed role
-     * @param role3 Allowed role
-     * @param role4 Allowed role
+     * Authorize controller or action to be accessible by specific policy(s)
+     * @param policy1 Allowed policy
+     * @param policy2 Allowed policy
+     * @param policy3 Allowed policy
+     * @param policy4 Allowed policy
      * @param option Selector option. Only for controller scoped authorizer
      */
-    route(role1: string, role2: string, role3: string, role4: string, option?: ApplyToOption): (target: any, name?: string) => void
+    route(policy1: string, policy2: string, policy3: string, policy4: string, option?: ApplyToOption): (target: any, name?: string) => void
     /**
-     * Authorize controller or action to be accessible by specific role(s)
-     * @param role1 Allowed role
-     * @param role2 Allowed role
-     * @param role3 Allowed role
-     * @param role4 Allowed role
-     * @param role5 Allowed role
+     * Authorize controller or action to be accessible by specific policy(s)
+     * @param policy1 Allowed policy
+     * @param policy2 Allowed policy
+     * @param policy3 Allowed policy
+     * @param policy4 Allowed policy
+     * @param policy5 Allowed policy
      * @param option Selector option. Only for controller scoped authorizer
      */
-    route(role1: string, role2: string, role3: string, role4: string, role5: string, option?: ApplyToOption): (target: any, name?: string) => void
-    route(...roles: any[]) {
-        return this.byRole(roles, "route")
+    route(policy1: string, policy2: string, policy3: string, policy4: string, policy5: string, option?: ApplyToOption): (target: any, name?: string) => void
+    route(...policies: any[]) {
+        return this.byPolicies(policies, "route")
     }
 
     /**
-     * Authorize domain or entity property only can be retrieved by specific role
-     * @param roles List of allowed roles
+     * Authorize domain or entity property only can be retrieved by specific policy
+     * @param policies List of allowed policies
      */
-    read(...roles: string[]): CustomPropertyDecorator {
-        return this.byRole(roles, "read")
+    read(...policies: string[]): CustomPropertyDecorator {
+        return this.byPolicies(policies, "read")
     }
 
     /**
-     * Authorize domain or entity property only can be set by specific role
-     * @param roles List of allowed roles
+     * Authorize domain or entity property only can be set by specific policy
+     * @param policies List of allowed policies
      */
-    write(...roles: string[]): CustomPropertyDecorator {
-        return this.byRole(roles, "write")
+    write(...policies: string[]): CustomPropertyDecorator {
+        return this.byPolicies(policies, "write")
     }
 
     /**
      * Authorize a domain property to be used as query string filter
-     * @param roles List of allowed roles
+     * @param policies List of allowed policies
      */
-    filter(...roles: string[]): CustomPropertyDecorator {
-        return this.byRole(roles.length == 0 ? ["Authenticated"] : roles, "filter")
+    filter(...policies: string[]): CustomPropertyDecorator {
+        return this.byPolicies(policies.length == 0 ? ["Authenticated"] : policies, "filter")
     }
 
     /**

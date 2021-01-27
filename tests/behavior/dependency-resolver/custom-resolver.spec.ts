@@ -48,13 +48,13 @@ class AnimalMiddleware implements Middleware {
     }
 }
 
-class AnimalAuthorizer implements Authorizer {
-    constructor(@inject.name("repository") private repository: AnimalRepository) { }
+// class AnimalAuthorizer implements Authorizer {
+//     constructor(@inject.name("repository") private repository: AnimalRepository) { }
 
-    authorize({ user }: AuthorizationContext) {
-        return this.repository.authorize(user)
-    }
-}
+//     authorize({ user }: AuthorizationContext) {
+//         return this.repository.authorize(user)
+//     }
+// }
 
 class AnimalValidator implements CustomValidator {
     constructor(@inject.name("repository") private repository: AnimalRepository) { }
@@ -70,7 +70,7 @@ class CustomResolver implements DependencyResolver {
         this.kernel.register("repository").asType(AnimalRepositoryImpl)
         this.kernel.register("middleware").asType(AnimalMiddleware)
         this.kernel.register("validator").asType(AnimalValidator)
-        this.kernel.register("authorizer").asType(AnimalAuthorizer)
+        //this.kernel.register("authorizer").asType(AnimalAuthorizer)
         this.kernel.register(AnimalsController)
     }
 
@@ -82,7 +82,7 @@ class CustomResolver implements DependencyResolver {
 }
 
 
-@authorize.public()
+@authorize.route("Public")
 class AnimalsController {
     constructor(@inject.name("repository") private repository: AnimalRepository) { }
 
@@ -91,10 +91,10 @@ class AnimalsController {
         return this.repository.save(animal)
     }
 
-    @authorize.custom("authorizer", { access: "route" })
-    secret() {
-        return { secret: "secret" }
-    }
+    // @authorize.custom("authorizer", { access: "route" })
+    // secret() {
+    //     return { secret: "secret" }
+    // }
 
     @route.post()
     validate(@val.custom("validator") data: any) {
@@ -132,20 +132,20 @@ describe("Custom Dependency Resolver", () => {
             .expect(200, { name: "Mimi", dateOfBirth: '2002-12-4' })
     })
 
-    it("Should able to resolve authorizers dependencies", async () => {
-        const koa = await plumier.initialize()
-        await supertest(koa.callback())
-            .get("/animals/secret")
-            .expect(403)
-        await supertest(koa.callback())
-            .get("/animals/secret")
-            .set("Authorization", `Bearer ${userToken}`)
-            .expect(401)
-        await supertest(koa.callback())
-            .get("/animals/secret")
-            .set("Authorization", `Bearer ${adminToken}`)
-            .expect(200, { secret: "secret" })
-    })
+    // it("Should able to resolve authorizers dependencies", async () => {
+    //     const koa = await plumier.initialize()
+    //     await supertest(koa.callback())
+    //         .get("/animals/secret")
+    //         .expect(403)
+    //     await supertest(koa.callback())
+    //         .get("/animals/secret")
+    //         .set("Authorization", `Bearer ${userToken}`)
+    //         .expect(401)
+    //     await supertest(koa.callback())
+    //         .get("/animals/secret")
+    //         .set("Authorization", `Bearer ${adminToken}`)
+    //         .expect(200, { secret: "secret" })
+    // })
 
     it("Should able to resolve validator's dependencies", async () => {
         const koa = await plumier.initialize()

@@ -1,15 +1,10 @@
-import "@plumier/testing"
-
 import {
     Authenticated,
     AuthorizationContext,
-    Authorizer,
     AuthPolicy,
     authPolicy,
     bind,
     CustomAuthorizer,
-    CustomAuthorizerFunction,
-    DefaultDependencyResolver,
     DefaultFacility,
     entity,
     entityPolicy,
@@ -17,22 +12,27 @@ import {
     PlumierApplication,
     Public,
     responseType,
-    RouteMetadata,
+    RouteMetadata
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import { cleanupConsole } from "@plumier/testing"
 import { noop, reflect, type } from "@plumier/reflect"
+import "@plumier/testing"
+import { cleanupConsole } from "@plumier/testing"
 import { sign } from "jsonwebtoken"
 import Koa from "koa"
 import { authorize, domain, route, val } from "plumier"
 import Supertest from "supertest"
-
 import { fixture } from "../helper"
+
+
 
 const SECRET = "super secret"
 const USER_TOKEN = sign({ email: "ketut@gmail.com", role: "user" }, SECRET)
 const ADMIN_TOKEN = sign({ email: "ketut@gmail.com", role: "admin" }, SECRET)
 const SUPER_ADMIN_TOKEN = sign({ email: "ketut@gmail.com", role: "superadmin" }, SECRET)
+
+const createPolicy = (name: string) => authPolicy().define(name, x => x.user?.role === name)
+const authPolicies = [createPolicy("user"), createPolicy("admin"), createPolicy("superadmin")]
 
 describe("JwtAuth", () => {
     describe("Basic Authorization", () => {
@@ -44,7 +44,7 @@ describe("JwtAuth", () => {
                 save() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -55,13 +55,13 @@ describe("JwtAuth", () => {
                 .expect(403, { status: 403, message: "Forbidden" })
         })
 
-        it("Should able to access route decorated with @authorize.public()", async () => {
+        it("Should able to access route decorated with @authorize.route(Public)", async () => {
             class AnimalController {
-                @authorize.public()
+                @authorize.route("Public")
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -69,14 +69,14 @@ describe("JwtAuth", () => {
                 .expect(200)
         })
 
-        it("Should able to decorate @authorize.public() in class scope", async () => {
-            @authorize.public()
+        it("Should able to decorate @authorize.route(Public) in class scope", async () => {
+            @authorize.route("Public")
             class AnimalController {
                 get() { return "Hello" }
                 hello() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -92,7 +92,7 @@ describe("JwtAuth", () => {
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -115,7 +115,7 @@ describe("JwtAuth", () => {
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -138,7 +138,7 @@ describe("JwtAuth", () => {
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -162,7 +162,7 @@ describe("JwtAuth", () => {
                 hello() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -191,7 +191,7 @@ describe("JwtAuth", () => {
                 hello() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -209,37 +209,6 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/hello")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
-                .expect(200)
-        })
-
-        it("Should able to define role with different name", async () => {
-            const CUSTOM_ROLE_TOKEN = sign({ email: "ketut@gmail.com", position: "superadmin" }, SECRET)
-            class AnimalController {
-                @authorize.route("superadmin")
-                get() { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, roleField: "position" }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${CUSTOM_ROLE_TOKEN}`)
-                .expect(200)
-        })
-
-        it("Should able to define role without share it in the token", async () => {
-            class AnimalController {
-                @authorize.route("superadmin")
-                get() { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, roleField: async x => ["superadmin"] }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .expect(200)
         })
 
@@ -249,7 +218,7 @@ describe("JwtAuth", () => {
             }
             const fn = jest.fn()
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .use(i => {
                     fn()
                     return i.proceed()
@@ -269,7 +238,7 @@ describe("JwtAuth", () => {
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -286,14 +255,14 @@ describe("JwtAuth", () => {
                 .expect(200)
         })
 
-        it("Should allow authorize using @authorize.public() and @authorize.route() in the same action", async () => {
+        it("Should allow authorize using @authorize.route(Public) and @authorize.route() in the same action", async () => {
             class AnimalController {
-                @authorize.public()
+                @authorize.route("Public")
                 @authorize.route("admin")
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -316,7 +285,7 @@ describe("JwtAuth", () => {
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -338,7 +307,7 @@ describe("JwtAuth", () => {
                 get(@bind.user() { role, email }: any) { return { email, role } }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
 
             const { body } = await Supertest(app.callback())
@@ -355,7 +324,7 @@ describe("JwtAuth", () => {
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, cookie: "__JWT" }))
+                .set(new JwtAuthFacility({ secret: SECRET, cookie: "__JWT", authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -377,7 +346,7 @@ describe("JwtAuth", () => {
                 get(@bind.user() { role, email }: any) { return { email, role } }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             app.on("error", () => { })
 
@@ -393,7 +362,7 @@ describe("JwtAuth", () => {
                 get(@bind.user() { role, email }: any) { return { email, role } }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             app.on("error", () => { })
 
@@ -410,7 +379,7 @@ describe("JwtAuth", () => {
                 list() { return ["Hello", "hello"] }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             // get
             await Supertest(app.callback())
@@ -440,7 +409,7 @@ describe("JwtAuth", () => {
                 save() { }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             // get
             await Supertest(app.callback())
@@ -472,13 +441,13 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply public authorization to specific method from controller", async () => {
-            @authorize.public({ applyTo: "get" })
+            @authorize.route("Public", { applyTo: "get" })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             // get
             await Supertest(app.callback())
@@ -499,14 +468,14 @@ describe("JwtAuth", () => {
         })
 
         it("Should able to apply public authorization to specific methods from controller", async () => {
-            @authorize.public({ applyTo: ["get", "save"] })
+            @authorize.route("Public", { applyTo: ["get", "save"] })
             class AnimalController {
                 get() { return "Hello" }
                 list() { return ["Hello", "hello"] }
                 save() { }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             // get
             await Supertest(app.callback())
@@ -544,7 +513,7 @@ describe("JwtAuth", () => {
             }
             const mock = console.mock()
             const app = await fixture(AnimalController, { mode: "debug" })
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             expect(mock.mock.calls).toMatchSnapshot()
             // get
@@ -569,207 +538,6 @@ describe("JwtAuth", () => {
         })
     })
 
-    describe("Custom Authorization", () => {
-        it("Should able to use @authorize.custom()", async () => {
-            class AnimalController {
-                @authorize.custom(i => i.role.some(x => x === "admin"), { access: "route" })
-                get() { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(401)
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(200)
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
-                .expect(401)
-        })
-
-        it("Should able to use async @authorize.custom()", async () => {
-            class AnimalController {
-                @authorize.custom(async i => i.role.some(x => x === "admin"), { access: "route" })
-                get() { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(200)
-        })
-
-        it("Should able to use Class based authorizer", async () => {
-            class IsAdmin implements Authorizer {
-                authorize(info: AuthorizationContext) {
-                    return info.role.some(x => x === "admin")
-                }
-            }
-
-            class AnimalController {
-                @authorize.custom(new IsAdmin(), { access: "route" })
-                get() { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(200)
-        })
-
-        it("Should able to get decorator position in class scope", async () => {
-            @authorize.custom((i) => i.metadata.current?.kind === "Class" && i.role.some(x => x === "admin"), { access: "route" })
-            class AnimalController {
-                get() { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(200)
-        })
-
-        it("Should able to get decorator position in method scope", async () => {
-            class AnimalController {
-                @authorize.custom((i) => i.metadata.current?.kind === "Method" && i.role.some(x => x === "admin"), { access: "route" })
-                get() { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(200)
-        })
-
-        it("Should able to get decorator position in parameter scope", async () => {
-            class AnimalController {
-                get(
-                    @authorize.custom((i) => i.metadata.current?.kind === "Parameter" && i.role.some(x => x === "admin"), { access: "route" })
-                    data: string) { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/get?data=123")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(200)
-        })
-
-        it("Should able to get parameter value in parameter scope", async () => {
-            class AnimalController {
-                get(
-                    @authorize.custom(i => i.value === "123" && i.role.some(x => x === "admin"), { access: "route" })
-                    data: string) { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/get?data=123")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(200)
-        })
-
-        it("Should able to get context information", async () => {
-            class AnimalController {
-                @authorize.custom(i => i.ctx.path === "/animal/get" && i.role.some(x => x === "admin"), { access: "route" })
-                get() { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(200)
-        })
-
-        it("Should able to get cleansed parameter binding information", async () => {
-            class AnimalController {
-                @authorize.custom(i => {
-                    expect(i.ctx.parameters).toMatchObject(["abc", 123, false])
-                    return true
-                }, { access: "route" })
-                get(str: string, num: number, bool: boolean) { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/get?str=abc&num=123&bool=false")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(200)
-        })
-
-        it("Should contains undefined user when accessed by public", async () => {
-            class AnimalController {
-                @authorize.custom(i => (i.user && i.user.role) === "admin", { access: "route" })
-                get() { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .expect(403)
-        })
-    })
-
-    describe("Separate Decorator And Implementation with Object Registry", () => {
-        const OTHER_USER_TOKEN = sign({ email: "other-ketut@gmail.com", role: "user" }, SECRET)
-        const resolver = new DefaultDependencyResolver()
-
-        @resolver.register("isOwner")
-        class OwnerAuthorizer implements Authorizer {
-            authorize(info: AuthorizationContext) {
-                return info.ctx.parameters[0] === info.user!.email
-            }
-        }
-
-        it("Should able to use separate implementation", async () => {
-            class AnimalController {
-                @authorize.custom("isOwner", { access: "route" })
-                @route.get()
-                save(email: string) { return "Hello" }
-            }
-            const app = await fixture(AnimalController)
-                .set({ dependencyResolver: resolver })
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/save?email=ketut@gmail.com")
-                .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(200)
-            await Supertest(app.callback())
-                .get("/animal/save?email=ketut@gmail.com")
-                .set("Authorization", `Bearer ${OTHER_USER_TOKEN}`)
-                .expect(401, { status: 401, message: "Unauthorized" })
-        })
-    })
-
     describe("Global Authorization", () => {
         it("Should able to set authorize on global level using public", async () => {
             class AnimalController {
@@ -778,7 +546,7 @@ describe("JwtAuth", () => {
                 save() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.route("Public") }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -796,7 +564,7 @@ describe("JwtAuth", () => {
                 save() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.route("superadmin") }))
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.route("superadmin"), authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -817,7 +585,7 @@ describe("JwtAuth", () => {
                 save() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.route("Public"), authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -837,7 +605,7 @@ describe("JwtAuth", () => {
                 save() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.route("Public"), authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -857,7 +625,7 @@ describe("JwtAuth", () => {
             }
             console.mock()
             await fixture(AnimalController, { mode: "debug" })
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             console.log(mock.mock.calls)
@@ -872,7 +640,7 @@ describe("JwtAuth", () => {
             }
             console.mock()
             await fixture(AnimalController, { mode: "debug" })
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("Admin")
@@ -886,24 +654,10 @@ describe("JwtAuth", () => {
             }
             console.mock()
             await fixture(AnimalController, { mode: "debug" })
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("Admin")
-            console.mockClear()
-        })
-
-        it("Should print Custom if provided @authorize.custom", async () => {
-            class AnimalController {
-                @authorize.custom(async i => true, { access: "route" })
-                get() { }
-            }
-            console.mock()
-            await fixture(AnimalController, { mode: "debug" })
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-            const mock = (console.log as jest.Mock)
-            expect(mock.mock.calls[2][0]).toContain("Custom")
             console.mockClear()
         })
 
@@ -913,7 +667,7 @@ describe("JwtAuth", () => {
             }
             console.mock()
             await fixture(AnimalController, { mode: "debug" })
-                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.route("Public") }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("Public")
@@ -927,7 +681,7 @@ describe("JwtAuth", () => {
             }
             console.mock()
             await fixture(AnimalController, { mode: "debug" })
-                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.route("Public") }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("Admin")
@@ -942,7 +696,7 @@ describe("JwtAuth", () => {
             }
             console.mock()
             await fixture(AnimalController, { mode: "debug" })
-                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.route("Public") }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("User|Admin")
@@ -956,7 +710,7 @@ describe("JwtAuth", () => {
             }
             console.mock()
             await fixture(AnimalController, { mode: "debug" })
-                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.route("Public") }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("Admin|User")
@@ -966,7 +720,7 @@ describe("JwtAuth", () => {
         it("Should print nicely", async () => {
             class AnimalController {
                 authenticated() { }
-                @authorize.public()
+                @authorize.route("Public")
                 public() { }
                 @authorize.route("Admin")
                 admin() { }
@@ -977,7 +731,7 @@ describe("JwtAuth", () => {
             }
             console.mock()
             await fixture(AnimalController, { mode: "debug" })
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             const [, ...calls] = mock.mock.calls.map(x => x[0]).filter(x => !!x)
@@ -994,7 +748,7 @@ describe("JwtAuth", () => {
         it("Should not print if JwtAuthFacility not installed", async () => {
             class AnimalController {
                 authenticated() { }
-                @authorize.public()
+                @authorize.route("Public")
                 public() { }
                 @authorize.route("Admin")
                 admin() { }
@@ -1082,78 +836,6 @@ describe("JwtAuth", () => {
         })
     })
 
-    describe("Hierarchical Role", () => {
-        const MANAGER_ROLE_TOKEN = sign({ email: "ketut@gmail.com", role: ["level1", "level2", "level3"] }, SECRET)
-        const SUPER_ROLE_TOKEN = sign({ email: "ketut@gmail.com", role: ["level2", "level3"] }, SECRET)
-        const QA_ROLE_TOKEN = sign({ email: "ketut@gmail.com", role: ["level3"] }, SECRET)
-
-        class AnimalController {
-            @authorize.route("level1")
-            level1() { return "Hello" }
-            @authorize.route("level2")
-            level2() { return "Hello" }
-            @authorize.route("level3")
-            level3() { return "Hello" }
-        }
-
-        it("Manager should able to access all", async () => {
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/level1")
-                .set("Authorization", `Bearer ${MANAGER_ROLE_TOKEN}`)
-                .expect(200)
-            await Supertest(app.callback())
-                .get("/animal/level2")
-                .set("Authorization", `Bearer ${MANAGER_ROLE_TOKEN}`)
-                .expect(200)
-            await Supertest(app.callback())
-                .get("/animal/level3")
-                .set("Authorization", `Bearer ${MANAGER_ROLE_TOKEN}`)
-                .expect(200)
-        })
-
-        it("Super only able to access level2 and level3", async () => {
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/level1")
-                .set("Authorization", `Bearer ${SUPER_ROLE_TOKEN}`)
-                .expect(401)
-            await Supertest(app.callback())
-                .get("/animal/level2")
-                .set("Authorization", `Bearer ${SUPER_ROLE_TOKEN}`)
-                .expect(200)
-            await Supertest(app.callback())
-                .get("/animal/level3")
-                .set("Authorization", `Bearer ${SUPER_ROLE_TOKEN}`)
-                .expect(200)
-        })
-
-        it("QA only able to access level3", async () => {
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
-                .initialize()
-
-            await Supertest(app.callback())
-                .get("/animal/level1")
-                .set("Authorization", `Bearer ${QA_ROLE_TOKEN}`)
-                .expect(401)
-            await Supertest(app.callback())
-                .get("/animal/level2")
-                .set("Authorization", `Bearer ${QA_ROLE_TOKEN}`)
-                .expect(401)
-            await Supertest(app.callback())
-                .get("/animal/level3")
-                .set("Authorization", `Bearer ${QA_ROLE_TOKEN}`)
-                .expect(200)
-        })
-    })
-
     describe("Parameter Authorization", () => {
         describe("Parameter Authorization", () => {
             class AnimalController {
@@ -1167,7 +849,7 @@ describe("JwtAuth", () => {
 
             it("Should be able to authorize parameter", async () => {
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1180,7 +862,7 @@ describe("JwtAuth", () => {
             it("Should throw 403 when accessed by public without auth info", async () => {
                 class AnimalController {
                     @route.post()
-                    @authorize.public()
+                    @authorize.route("Public")
                     save(name: string,
                         @authorize.write("admin")
                         id: number | undefined,
@@ -1189,7 +871,7 @@ describe("JwtAuth", () => {
                 }
 
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1200,7 +882,7 @@ describe("JwtAuth", () => {
 
             it("Should be able to pass authorization by provided undefined", async () => {
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1212,7 +894,7 @@ describe("JwtAuth", () => {
 
             it("Should be able to pass authorization by provided valid token", async () => {
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1244,7 +926,7 @@ describe("JwtAuth", () => {
 
             it("Should be able to authorize parameter", async () => {
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1256,7 +938,7 @@ describe("JwtAuth", () => {
 
             it("Should be able to pass authorization by provided undefined", async () => {
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1292,7 +974,7 @@ describe("JwtAuth", () => {
                 }
 
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1304,7 +986,7 @@ describe("JwtAuth", () => {
 
             it("Should be able to pass authorization by provided valid token", async () => {
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1321,7 +1003,7 @@ describe("JwtAuth", () => {
                 }
 
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1339,7 +1021,7 @@ describe("JwtAuth", () => {
 
             it("Should skip authorization on GET method", async () => {
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1366,7 +1048,7 @@ describe("JwtAuth", () => {
 
             it("Should be able to authorize parameter", async () => {
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1378,7 +1060,7 @@ describe("JwtAuth", () => {
 
             it("Should be able to pass authorization by provided undefined", async () => {
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1390,7 +1072,7 @@ describe("JwtAuth", () => {
 
             it("Should be able to pass authorization by provided valid token", async () => {
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1402,13 +1084,13 @@ describe("JwtAuth", () => {
 
             it("Should check for parameter authorization even if the action access is public", async () => {
                 class AnimalController {
-                    @authorize.public()
+                    @authorize.route("Public")
                     @route.post()
                     save(@reflect.type([Animal]) data: Animal[]) { return "Hello" }
                 }
 
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1419,14 +1101,14 @@ describe("JwtAuth", () => {
             })
 
             it("Should check for parameter authorization even if the controller access is public", async () => {
-                @authorize.public()
+                @authorize.route("Public")
                 class AnimalController {
                     @route.post()
                     save(@reflect.type([Animal]) data: Animal[]) { return "Hello" }
                 }
 
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1443,7 +1125,7 @@ describe("JwtAuth", () => {
                 }
 
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                    .set(new JwtAuthFacility({ secret: SECRET, global: authorize.route("Public") }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1484,7 +1166,7 @@ describe("JwtAuth", () => {
 
             it("Should able to set non secured property", async () => {
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1496,7 +1178,7 @@ describe("JwtAuth", () => {
 
             it("Should not able to set secured property", async () => {
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1542,7 +1224,7 @@ describe("JwtAuth", () => {
 
             it("Should not able to set secured property", async () => {
                 const app = await fixture(UserController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -1554,100 +1236,13 @@ describe("JwtAuth", () => {
 
             it("Should not able to get secured property", async () => {
                 const app = await fixture(UserController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
 
                 await Supertest(app.callback())
                     .get("/user/get")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .expect(200, { name: "John Doe" })
-            })
-        })
-
-        describe("Custom Parameter Authorizer", () => {
-            it("Should be able to authorize using custom parameter", async () => {
-                const onlyAdmin: CustomAuthorizerFunction = info => {
-                    return info.role.some(x => x === "admin")
-                }
-                @domain()
-                class Animal {
-                    constructor(name: string,
-                        id: number | undefined,
-                        @authorize.custom(onlyAdmin, { access: "write" })
-                        deceased: boolean | undefined) { }
-                }
-                class AnimalController {
-                    @route.post()
-                    save(data: Animal) { return "Hello" }
-                }
-                const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
-                    .initialize()
-                await Supertest(app.callback())
-                    .post("/animal/save")
-                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                    .send({ id: "123", deceased: "Yes" })
-                    .expect(200)
-                await Supertest(app.callback())
-                    .post("/animal/save")
-                    .set("Authorization", `Bearer ${USER_TOKEN}`)
-                    .send({ id: "123", deceased: "Yes" })
-                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.deceased)" })
-            })
-            it("Should be able get value and its parent value", async () => {
-                const fn = jest.fn()
-                const onlyAdmin: CustomAuthorizerFunction = ({ role, parentValue, value }) => {
-                    fn({ parentValue, value })
-                    return role.some(x => x === "admin")
-                }
-                @domain()
-                class Animal {
-                    constructor(name: string,
-                        id: number | undefined,
-                        @authorize.custom(onlyAdmin, { access: "write" })
-                        deceased: boolean | undefined) { }
-                }
-                class AnimalController {
-                    @route.post()
-                    save(data: Animal) { return "Hello" }
-                }
-                const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
-                    .initialize()
-                await Supertest(app.callback())
-                    .post("/animal/save")
-                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                    .send({ id: "123", deceased: "Yes" })
-                    .expect(200)
-                expect(fn.mock.calls).toMatchSnapshot()
-            })
-            it("Should be able get current metadata information", async () => {
-                const fn = jest.fn()
-                const onlyAdmin: CustomAuthorizerFunction = ({ role, metadata }) => {
-                    fn(metadata.current)
-                    return role.some(x => x === "admin")
-                }
-                @domain()
-                class Animal {
-                    constructor(name: string,
-                        @authorize.custom(onlyAdmin, { access: "write" })
-                        id: number | undefined,
-                        @authorize.custom(onlyAdmin, { access: "write" })
-                        deceased: boolean | undefined) { }
-                }
-                class AnimalController {
-                    @route.post()
-                    save(data: Animal) { return "Hello" }
-                }
-                const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
-                    .initialize()
-                await Supertest(app.callback())
-                    .post("/animal/save")
-                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                    .send({ id: "123", deceased: "Yes" })
-                    .expect(200)
-                expect(fn.mock.calls).toMatchSnapshot()
             })
         })
 
@@ -1660,7 +1255,7 @@ describe("JwtAuth", () => {
                         id: number | undefined) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -1682,7 +1277,7 @@ describe("JwtAuth", () => {
                         id: number | undefined) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -1704,7 +1299,7 @@ describe("JwtAuth", () => {
                         id: number | undefined) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -1726,7 +1321,7 @@ describe("JwtAuth", () => {
                         id: number | undefined) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -1750,7 +1345,7 @@ describe("JwtAuth", () => {
                             id: number | undefined) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -1778,7 +1373,7 @@ describe("JwtAuth", () => {
                         save(data: Entity) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -1805,7 +1400,7 @@ describe("JwtAuth", () => {
                         save(data: Entity) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -1832,7 +1427,7 @@ describe("JwtAuth", () => {
                         save(data: Entity) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -1859,7 +1454,7 @@ describe("JwtAuth", () => {
                         save(data: Entity) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -1887,7 +1482,7 @@ describe("JwtAuth", () => {
                         save(data: Entity) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -1921,7 +1516,7 @@ describe("JwtAuth", () => {
                         save(data: Parent) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -1954,7 +1549,7 @@ describe("JwtAuth", () => {
                         save(data: Parent) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -1987,7 +1582,7 @@ describe("JwtAuth", () => {
                         save(data: Parent) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -2020,7 +1615,7 @@ describe("JwtAuth", () => {
                         save(data: Parent) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -2054,7 +1649,7 @@ describe("JwtAuth", () => {
                         save(data: Parent) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -2082,7 +1677,7 @@ describe("JwtAuth", () => {
                         save(@reflect.type([Entity]) data: Entity[]) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -2109,7 +1704,7 @@ describe("JwtAuth", () => {
                         save(@reflect.type([Entity]) data: Entity[]) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -2136,7 +1731,7 @@ describe("JwtAuth", () => {
                         save(@reflect.type([Entity]) data: Entity[]) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -2163,7 +1758,7 @@ describe("JwtAuth", () => {
                         save(@reflect.type([Entity]) data: Entity[]) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -2191,7 +1786,7 @@ describe("JwtAuth", () => {
                         save(@reflect.type([Entity]) data: Entity[]) { return "Hello" }
                     }
                     const app = await fixture(AnimalController)
-                        .set(new JwtAuthFacility({ secret: SECRET }))
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                         .initialize()
 
                     await Supertest(app.callback())
@@ -2228,7 +1823,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2255,7 +1850,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .post("/users")
@@ -2282,7 +1877,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2307,7 +1902,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .post("/users")
@@ -2337,7 +1932,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2368,7 +1963,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2399,7 +1994,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2426,7 +2021,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2456,7 +2051,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2484,7 +2079,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2515,7 +2110,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2546,7 +2141,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2573,7 +2168,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2600,7 +2195,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 const { body } = await Supertest(app.callback())
                     .get("/users/get")
@@ -2631,7 +2226,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2663,7 +2258,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2698,7 +2293,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2733,7 +2328,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2764,7 +2359,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2797,7 +2392,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -2807,204 +2402,6 @@ describe("JwtAuth", () => {
                     .get("/users/get")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .expect(200, { user: { name: "admin" } })
-            })
-        })
-
-        describe("Custom Authorizer", () => {
-            it("Should able to use custom authorizer", async () => {
-                const onlyAdmin: CustomAuthorizerFunction = info => {
-                    return info.role.some(x => x === "admin")
-                }
-                @domain()
-                class User {
-                    constructor(
-                        public name: string,
-                        @authorize.custom(onlyAdmin, { access: "read" })
-                        public password: string
-                    ) { }
-                }
-                class UsersController {
-                    @reflect.type(User)
-                    get() {
-                        return new User("admin", "secret")
-                    }
-                }
-                const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
-                    .initialize()
-                await Supertest(app.callback())
-                    .get("/users/get")
-                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                    .expect(200, { name: "admin", password: "secret" })
-                await Supertest(app.callback())
-                    .get("/users/get")
-                    .set("Authorization", `Bearer ${USER_TOKEN}`)
-                    .expect(200, { name: "admin" })
-            })
-            it("Should able to use custom authorizer on array of object", async () => {
-                const onlyAdmin: CustomAuthorizerFunction = info => {
-                    return info.role.some(x => x === "admin")
-                }
-                @domain()
-                class User {
-                    constructor(
-                        public name: string,
-                        @authorize.custom(onlyAdmin, { access: "read" })
-                        public password: string
-                    ) { }
-                }
-                class UsersController {
-                    @reflect.type([User])
-                    get() {
-                        return [new User("admin", "secret"), new User("user", "secret")]
-                    }
-                }
-                const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
-                    .initialize()
-                await Supertest(app.callback())
-                    .get("/users/get")
-                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                    .expect(200, [{ name: "admin", password: "secret" }, { name: "user", password: "secret" }])
-                await Supertest(app.callback())
-                    .get("/users/get")
-                    .set("Authorization", `Bearer ${USER_TOKEN}`)
-                    .expect(200, [{ name: "admin" }, { name: "user" }])
-            })
-            it("Should able to use custom authorizer on nested object", async () => {
-                const onlyAdmin: CustomAuthorizerFunction = info => {
-                    return info.role.some(x => x === "admin")
-                }
-                @domain()
-                class User {
-                    constructor(
-                        public name: string,
-                        @authorize.custom(onlyAdmin, { access: "read" })
-                        public password: string
-                    ) { }
-                }
-                @domain()
-                class Parent {
-                    constructor(public user: User) { }
-                }
-                class UsersController {
-                    @reflect.type(Parent)
-                    get() {
-                        return new Parent(new User("admin", "secret"))
-                    }
-                }
-                const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
-                    .initialize()
-                await Supertest(app.callback())
-                    .get("/users/get")
-                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                    .expect(200, { user: { name: "admin", password: "secret" } })
-                await Supertest(app.callback())
-                    .get("/users/get")
-                    .set("Authorization", `Bearer ${USER_TOKEN}`)
-                    .expect(200, { user: { name: "admin" } })
-            })
-            it("Should able to specify access modifier", async () => {
-                const onlyAdmin: CustomAuthorizerFunction = info => {
-                    return info.role.some(x => x === "admin")
-                }
-                @domain()
-                class User {
-                    constructor(
-                        public name: string,
-                        @authorize.custom(onlyAdmin, { access: "read" })
-                        public password: string
-                    ) { }
-                }
-                class UsersController {
-                    @reflect.type(User)
-                    get() {
-                        return new User("admin", "secret")
-                    }
-                    @route.post()
-                    save(data: User) { }
-                }
-                const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
-                    .initialize()
-                await Supertest(app.callback())
-                    .post("/users/save")
-                    .send({ name: "lorem", password: "ipsum" })
-                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                    .expect(200)
-                await Supertest(app.callback())
-                    .post("/users/save")
-                    .send({ name: "lorem", password: "ipsum" })
-                    .set("Authorization", `Bearer ${USER_TOKEN}`)
-                    .expect(200)
-                await Supertest(app.callback())
-                    .get("/users/get")
-                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                    .expect(200, { name: "admin", password: "secret" })
-                await Supertest(app.callback())
-                    .get("/users/get")
-                    .set("Authorization", `Bearer ${USER_TOKEN}`)
-                    .expect(200, { name: "admin" })
-            })
-            it("Should able to access value and parent value", async () => {
-                const fn = jest.fn()
-                const onlyAdmin: CustomAuthorizerFunction = ({ value, parentValue, role }) => {
-                    fn({ value, parentValue })
-                    return role.some(x => x === "admin")
-                }
-                @domain()
-                class User {
-                    constructor(
-                        public name: string,
-                        @authorize.custom(onlyAdmin, { access: "read" })
-                        public password: string
-                    ) { }
-                }
-                class UsersController {
-                    @reflect.type(User)
-                    get() {
-                        return new User("admin", "secret")
-                    }
-                }
-                const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
-                    .initialize()
-                await Supertest(app.callback())
-                    .get("/users/get")
-                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                    .expect(200)
-                expect(fn.mock.calls).toMatchSnapshot()
-            })
-            it("Should able to access current property metadata", async () => {
-                const fn = jest.fn()
-                const onlyAdmin: CustomAuthorizerFunction = ({ metadata, role }) => {
-                    fn(metadata.current)
-                    return role.some(x => x === "admin")
-                }
-                @domain()
-                class User {
-                    constructor(
-                        @authorize.custom(onlyAdmin, { access: "read" })
-                        public name: string,
-                        @authorize.custom(onlyAdmin, { access: "read" })
-                        public password: string
-                    ) { }
-                }
-                class UsersController {
-                    @reflect.type(User)
-                    get() {
-                        return new User("admin", "secret")
-                    }
-                }
-                const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
-                    .initialize()
-                await Supertest(app.callback())
-                    .get("/users/get")
-                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                    .expect(200)
-                expect(fn.mock.calls).toMatchSnapshot()
             })
         })
 
@@ -3034,7 +2431,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -3070,7 +2467,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -3106,7 +2503,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -3146,7 +2543,7 @@ describe("JwtAuth", () => {
                     }
                 }
                 const app = await fixture(UsersController)
-                    .set(new JwtAuthFacility({ secret: SECRET }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                     .initialize()
                 await Supertest(app.callback())
                     .get("/users/get")
@@ -3166,7 +2563,7 @@ describe("JwtAuth", () => {
                 get(@authorize.filter("admin") filter: string) { }
             }
             const app = await fixture(UsersController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             await Supertest(app.callback())
                 .get("/users/get?filter=abcd")
@@ -3193,7 +2590,7 @@ describe("JwtAuth", () => {
                 get(filter: User) { }
             }
             const app = await fixture(UsersController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             await Supertest(app.callback())
                 .get("/users/get?filter[password]=lorem&filter[email]=abcd&filter[name]=abcd")
@@ -3217,7 +2614,7 @@ describe("JwtAuth", () => {
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET }))
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             await Supertest(app.callback())
                 .get("/animal/get")
@@ -3229,7 +2626,7 @@ describe("JwtAuth", () => {
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.public() }))
+                .set(new JwtAuthFacility({ secret: SECRET, global: authorize.route("Public") }))
                 .initialize()
             await Supertest(app.callback())
                 .get("/animal/get")
@@ -3247,7 +2644,7 @@ describe("JwtAuth", () => {
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({
                     secret: SECRET,
-                    authPolicies: [authPolicy().define("HasUser", i => i.role.some(x => x === "user"))]
+                    authPolicies: [authPolicy().define("HasUser", i => i.user?.role === "user")]
                 }))
                 .initialize()
             await Supertest(app.callback())
@@ -3264,33 +2661,12 @@ describe("JwtAuth", () => {
                 @authorize.route("HasUser", "HasAdmin")
                 get() { return "Hello" }
             }
-            const HasUserPolicy = authPolicy().define("HasUser", i => i.role.some(x => x === "user"))
-            const HasAdminPolicy = authPolicy().define("HasAdmin", i => i.role.some(x => x === "admin"))
+            const HasUserPolicy = authPolicy().define("HasUser", i => i.user?.role === "user")
+            const HasAdminPolicy = authPolicy().define("HasAdmin", i => i.user?.role === "admin")
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({
                     secret: SECRET,
                     authPolicies: [HasUserPolicy, HasAdminPolicy]
-                }))
-                .initialize()
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(200)
-            await Supertest(app.callback())
-                .get("/animal/get")
-                .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(200)
-        })
-        it("Should able to apply policies mixed with role", async () => {
-            class AnimalController {
-                @authorize.route("HasUser", "admin")
-                get() { return "Hello" }
-            }
-            const HasUserPolicy = authPolicy().define("HasUser", i => i.role.some(x => x === "user"))
-            const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({
-                    secret: SECRET,
-                    authPolicies: [HasUserPolicy]
                 }))
                 .initialize()
             await Supertest(app.callback())
@@ -3307,7 +2683,7 @@ describe("JwtAuth", () => {
                 @route.post()
                 save(@authorize.write("HasUser") name: string) { return "Hello" }
             }
-            const HasUserPolicy = authPolicy().define("HasUser", i => i.role.some(x => x === "user"))
+            const HasUserPolicy = authPolicy().define("HasUser", i => i.user?.role === "user")
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({
                     secret: SECRET,
@@ -3336,7 +2712,7 @@ describe("JwtAuth", () => {
                 @type(Animal)
                 get() { return <Animal>{ secret: "secret", name: "mimi" } }
             }
-            const HasUserPolicy = authPolicy().define("HasUser", i => i.role.some(x => x === "user"))
+            const HasUserPolicy = authPolicy().define("HasUser", i => i.user?.role === "user")
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({
                     secret: SECRET,
@@ -3365,11 +2741,12 @@ describe("JwtAuth", () => {
                 @type(Animal)
                 get() { return <Animal>{ secret: "secret", name: "mimi" } }
             }
-            const HasUserPolicy = authPolicy().define("HasUser", i => i.role.some(x => x === "user"))
+            const HasUserPolicy = authPolicy().define("HasUser", i => i.user?.role === "user")
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({
                     secret: SECRET,
-                    authPolicies: [HasUserPolicy]
+                    authPolicies: [HasUserPolicy, ...authPolicies],
+
                 }))
                 .initialize()
             const { body: byAdmin } = await Supertest(app.callback())
@@ -3390,7 +2767,7 @@ describe("JwtAuth", () => {
             }
             class HasUserAuthPolicy implements CustomAuthorizer {
                 authorize(info: AuthorizationContext): boolean | Promise<boolean> {
-                    return info.role.some(x => x === "user")
+                    return info.user?.role === "user"
                 }
             }
             const app = await fixture(AnimalController)
@@ -3420,7 +2797,7 @@ describe("JwtAuth", () => {
                     return id === "HasUser"
                 }
                 async authorize(ctx: AuthorizationContext): Promise<boolean> {
-                    return ctx.role.some(x => x === "user")
+                    return ctx.user?.role === "user"
                 }
             }
             const app = await fixture(AnimalController)
@@ -3542,7 +2919,7 @@ describe("JwtAuth", () => {
                 @authorize.route("HasUser")
                 get() { return "Hello" }
             }
-            authPolicy().register("HasUser", i => i.role.some(x => x === "user"))
+            authPolicy().register("HasUser", i => i.user?.role === "user")
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({
                     secret: SECRET
