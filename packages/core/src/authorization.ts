@@ -29,20 +29,16 @@ type AuthorizerFunction = (info: AuthorizationContext) => boolean | Promise<bool
 
 interface AuthorizeDecorator {
     type: "plumier-meta:authorize",
-    authorize: string | AuthorizerFunction | Authorizer | { policies: string[] }
+    policies: string[]
     access: AccessModifier
     tag: string,
     location: "Class" | "Parameter" | "Method",
     evaluation: "Static" | "Dynamic"
 }
 
-
 type CustomAuthorizer = Authorizer
 type CustomAuthorizerFunction = AuthorizerFunction
 type AuthorizerContext = AuthorizationContext
-
-type RoleField = string | ((value: any) => Promise<string[]>)
-
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- HELPERS --------------------------------------- */
@@ -73,16 +69,15 @@ function getRouteAuthorizeDecorators(info: RouteInfo, globalDecorator?: (...args
 }
 
 async function createAuthContext(ctx: ActionContext, access: AccessModifier): Promise<AuthorizationContext> {
-    const { route, parameters, state, config } = ctx
-    const userRoles = await getRole(state.user, config.roleField)
+    const { route, state } = ctx
     return <AuthorizationContext>{
-        role: userRoles, user: state.user, route, ctx, access, policyIds: [],
+        user: state.user, route, ctx, access, policyIds: [],
         metadata: new MetadataImpl(ctx.parameters, ctx.route, {} as any),
     }
 }
 
 function throwAuthError(ctx: AuthorizerContext, msg?: string) {
-    if (ctx.role.length === 0) throw new HttpStatusError(HttpStatus.Forbidden, msg ?? "Forbidden")
+    if (!ctx.user) throw new HttpStatusError(HttpStatus.Forbidden, msg ?? "Forbidden")
     else throw new HttpStatusError(HttpStatus.Unauthorized, msg ?? "Unauthorized")
 }
 
@@ -111,12 +106,6 @@ class PolicyAuthorizer implements Authorizer {
         this.policies.push(...policies)
     }
     async authorize(ctx: AuthorizationContext): Promise<boolean> {
-        // check role first because its faster 
-        for (const role of ctx.role) {
-            for (const key of this.keys) {
-                if (key === role) return true
-            }
-        }
         // test for auth policy
         for (const Auth of this.policies.reverse()) {
             const authPolicy = new Auth()
@@ -273,7 +262,7 @@ class EntityPolicyBuilder<T> {
     }
 }
 
-const globalPolicies:Class<AuthPolicy>[] = []
+const globalPolicies: Class<AuthPolicy>[] = []
 
 function authPolicy() {
     return new AuthPolicyBuilder(globalPolicies)
@@ -287,20 +276,8 @@ function entityPolicy<T>(entity: Class<T>) {
 // ---------------------- MAIN AUTHORIZER FUNCTION --------------------- //
 // --------------------------------------------------------------------- //
 
-function createAuthorizer(decorator: AuthorizeDecorator, info: AuthorizationContext): Authorizer {
-    const authorize = decorator.authorize
-    if (typeof authorize === "function")
-        return { authorize }
-    else if (hasKeyOf<Authorizer>(authorize, "authorize"))
-        return authorize
-    else if (hasKeyOf<{ policies: string[] }>(authorize, "policies"))
-        return new PolicyAuthorizer(info.ctx.config.authPolicies ?? [], authorize.policies)
-    else
-        return info.ctx.config.dependencyResolver.resolve(authorize)
-}
-
 function executeAuthorizer(decorator: AuthorizeDecorator, info: AuthorizationContext) {
-    const instance = createAuthorizer(decorator, info)
+    const instance = new PolicyAuthorizer(info.ctx.config.authPolicies, decorator.policies)
     return instance.authorize(info)
 }
 
@@ -389,7 +366,7 @@ async function checkParameters(meta: (PropertyReflection | ParameterReflection)[
         const prop = meta[i];
         // if the property is a relation property just skip checking, since we allow set relation using ID
         const isRelation = prop.decorators.some((x: RelationDecorator) => x.kind === "plumier-meta:relation")
-        if(isRelation) continue
+        if (isRelation) continue
         const issues = await checkParameter(prop, value[i], { ...ctx, path: ctx.path.concat(prop.name), })
         result.push(...issues)
     }
@@ -420,16 +397,6 @@ function updateRouteAuthorizationAccess(routes: RouteMetadata[], config: Configu
     }
 }
 
-async function getRole(user: any, roleField: RoleField): Promise<string[]> {
-    if (!user) return []
-    if (typeof roleField === "function")
-        return await roleField(user)
-    else {
-        const role = user[roleField]
-        return Array.isArray(role) ? role : [role]
-    }
-}
-
 async function checkAuthorize(ctx: ActionContext) {
     if (ctx.config.enableAuthorization) {
         const { route, parameters, config } = ctx
@@ -446,6 +413,7 @@ async function checkAuthorize(ctx: ActionContext) {
 // ----------------------- RESPONSE AUTHORIZATION ---------------------- //
 // --------------------------------------------------------------------- //
 
+
 type FilterNode = ArrayNode | ClassNode | ValueNode
 
 interface ValueNode {
@@ -459,16 +427,22 @@ interface ArrayNode {
 
 interface ClassNode {
     kind: "Class"
-    properties: { name: string, meta: PropertyReflection & { parent?: Class }, authorizer: (boolean | Authorizer)[], type: FilterNode }[]
+    properties: {
+        name: string,
+        meta: PropertyReflection & { parent?: Class },
+        authorizer: boolean | Authorizer,
+        type: FilterNode
+    }[]
 }
 
 async function createPropertyNode(prop: PropertyReflection, info: AuthorizerContext) {
     const decorators = prop.decorators.filter(createDecoratorFilter(x => x.access === "read"))
-    // if no authorize decorator then always allow to access
-    let authorizer: (boolean | Authorizer)[] = [decorators.length === 0]
+    let policies = []
     for (const dec of decorators) {
-        authorizer.push(createAuthorizer(dec, info))
+        policies.push(...dec.policies)
     }
+    // if no authorize decorator then always allow to access
+    const authorizer = policies.length === 0 ? true : new PolicyAuthorizer(info.ctx.config.authPolicies, policies)
     return { name: prop.name, authorizer }
 }
 
@@ -495,15 +469,9 @@ async function compileType(type: Class | Class[], ctx: AuthorizerContext, parent
     else return { kind: "Value" }
 }
 
-async function getAuthorize(authorizers: (boolean | Authorizer)[], ctx: AuthorizerContext) {
-    for (const auth of authorizers) {
-        if (auth === true) return true
-        if (typeof auth === "object") {
-            const result = await auth.authorize(ctx)
-            if (result) return true
-        }
-    }
-    return false
+async function getAuthorize(authorizers: boolean | Authorizer, ctx: AuthorizerContext) {
+    if(typeof authorizers === "boolean") return authorizers
+    return authorizers.authorize(ctx)
 }
 
 async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): Promise<any> {
@@ -571,7 +539,7 @@ class AuthorizerMiddleware implements Middleware {
 }
 
 export {
-    AuthorizerFunction, RoleField, Authorizer, checkAuthorize, AuthorizeDecorator,
+    AuthorizerFunction, Authorizer, checkAuthorize, AuthorizeDecorator,
     getRouteAuthorizeDecorators, updateRouteAuthorizationAccess, AuthorizerMiddleware,
     CustomAuthorizer, CustomAuthorizerFunction, AuthorizationContext, AuthorizerContext,
     AccessModifier, EntityPolicyProviderDecorator, EntityProviderQuery,

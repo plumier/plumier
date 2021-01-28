@@ -1890,7 +1890,7 @@ describe("Open API 3.0 Generation", () => {
         })
         it("Should not apply security on public operation", async () => {
             class UsersController {
-                @authorize.public()
+                @authorize.route("Public")
                 @route.get("")
                 get(id: string) {
                     return {} as any
@@ -1903,7 +1903,7 @@ describe("Open API 3.0 Generation", () => {
             expect(body.paths["/users"].get.security).toMatchSnapshot()
         })
         it("Should not apply security on class scope public with filter", async () => {
-            @authorize.public({ applyTo: "get" })
+            @authorize.route("Public", { applyTo: "get" })
             class UsersController {
                 @route.get("")
                 get(id: string) {
@@ -1932,7 +1932,7 @@ describe("Open API 3.0 Generation", () => {
         })
         it("Should not apply security response on public operation", async () => {
             class UsersController {
-                @authorize.public()
+                @authorize.route("Public")
                 @route.get("")
                 get(id: string) {
                     return {} as any

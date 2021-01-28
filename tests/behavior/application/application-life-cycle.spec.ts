@@ -1,6 +1,7 @@
 import {
     authorize,
     AuthorizerFunction,
+    authPolicy,
     bind,
     CustomValidatorFunction,
     middleware,
@@ -27,10 +28,10 @@ describe("Application life cycle", () => {
             return result;
         }
 
-        const customAuthorizer: AuthorizerFunction = i => {
+        const authPolicies = authPolicy().define("custom",  i => {
             spy("authorizer")
             return true
-        }
+        })
 
         const customBinder = (x: Context) => {
             spy("parameter binder")
@@ -47,7 +48,7 @@ describe("Application life cycle", () => {
         class AnimalController {
             @middleware.use(createMdw("action 1"))
             @middleware.use(createMdw("action 2"))
-            @authorize.custom(customAuthorizer, { access: "route" })
+            @authorize.route("custom")
             @route.get()
             index(@bind.custom(customBinder) @val.custom(customValidator) data: string) {
                 spy("action")
@@ -57,7 +58,7 @@ describe("Application life cycle", () => {
 
         const koa = await new Plumier()
             .set(new WebApiFacility({ controller: AnimalController }))
-            .set(new JwtAuthFacility({ secret: SECRET }))
+            .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
             .set({ mode: "production" })
             .use(createMdw("global 1"))
             .use(createMdw("global 2"))
@@ -78,12 +79,11 @@ describe("Application life cycle", () => {
         const SECRET = "abcd"
         const USER_TOKEN = sign({ email: "ketut@gmail.com", role: "user" }, SECRET)
 
-
-        const customAuthorizer: AuthorizerFunction = i => {
+        const authPolicies = authPolicy().define("custom",  i => {
             spy("authorizer")
             spy("parameters:", i.ctx.parameters)
             return true
-        }
+        })
 
         const customValidator: CustomValidatorFunction = (x, i) => {
             spy("validator")
@@ -92,7 +92,7 @@ describe("Application life cycle", () => {
         }
 
         class AnimalController {
-            @authorize.custom(customAuthorizer, { access: "route" })
+            @authorize.route("custom")
             @route.get()
             index(@val.custom(customValidator) data: number) {
                 spy("action")
@@ -102,7 +102,7 @@ describe("Application life cycle", () => {
 
         const koa = await new Plumier()
             .set(new WebApiFacility({ controller: AnimalController }))
-            .set(new JwtAuthFacility({ secret: SECRET }))
+            .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
             .set({ mode: "production" })
             .initialize()
 

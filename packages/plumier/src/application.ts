@@ -30,11 +30,11 @@ export class Plumier implements PlumierApplication {
             dependencyResolver: new DefaultDependencyResolver(),
             middlewares: [],
             facilities: [],
-            roleField: "role",
             enableAuthorization: false,
             rootDir: "__UNSET__",
             trustProxyHeader: false,
-            typeConverterVisitors: []
+            typeConverterVisitors: [],
+            authPolicies: []
         }
     }
 

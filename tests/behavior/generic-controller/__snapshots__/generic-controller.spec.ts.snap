@@ -1886,34 +1886,6 @@ Array [
 ]
 `;
 
-exports[`Route Generator Generic Controller Should able to set custom authorizer from entity 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultControllerGeneric.list            -> Custom GET    /user",
-  ],
-  Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> Custom POST   /user",
-  ],
-  Array [
-    "3. DefaultControllerGeneric.get             -> Custom GET    /user/:id",
-  ],
-  Array [
-    "4. DefaultControllerGeneric.modify          -> Custom PATCH  /user/:id",
-  ],
-  Array [
-    "5. DefaultControllerGeneric.replace         -> Custom PUT    /user/:id",
-  ],
-  Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> Custom DELETE /user/:id",
-  ],
-  Array [],
-]
-`;
-
 exports[`Route Generator Generic Controller Should able to set public authorizer from entity 1`] = `
 Array [
   Array [],

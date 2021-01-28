@@ -339,25 +339,7 @@ describe("Route Generator", () => {
         it("Should able to set public authorizer from entity", async () => {
             @route.controller()
             @domain()
-            @authorize.public()
-            class User {
-                constructor(
-                    @entity.primaryId()
-                    public id: number,
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = console.mock()
-            await createApp({ controller: [User] })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set custom authorizer from entity", async () => {
-            @route.controller()
-            @domain()
-            @authorize.custom(x => (x.user && x.user.role) === "Admin", { access: "route" })
+            @authorize.route("Public")
             class User {
                 constructor(
                     @entity.primaryId()
