@@ -11,7 +11,7 @@ export type RoleField = string | ((value: any) => Promise<string[]>)
 
 export interface JwtAuthFacilityOption {
     secret?: string,
-    global?: (...args: any[]) => void,
+    global?: string | string[],
     authPolicies?: Class<AuthPolicy> | Class<AuthPolicy>[] | string | string[]
 }
 

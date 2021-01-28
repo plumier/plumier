@@ -512,7 +512,7 @@ export interface Configuration {
     /**
      * Global authorization decorators, use mergeDecorator for multiple
      */
-    globalAuthorizationDecorators?: (...args: any[]) => void
+    globalAuthorizationDecorators?: string | string[]
 
     /**
      * Enable/disable authorization, when enabled all routes will be private by default. Default false
