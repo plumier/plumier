@@ -1134,7 +1134,7 @@ describe("Response Projection Transformer", () => {
         }
         delete process.env.PLUM_MONGODB_URI
         const app = await fixture(DummyController)
-            .set(new JwtAuthFacility({ secret: "lorem", global: authorize.route("Public") }))
+            .set(new JwtAuthFacility({ secret: "lorem", global: "Public" }))
             .set(new MongooseFacility())
             .initialize()
         const { body } = await supertest(app.callback())
@@ -1180,7 +1180,7 @@ describe("Response Projection Transformer", () => {
         }
         delete process.env.PLUM_MONGODB_URI
         const app = await fixture(DummyController)
-            .set(new JwtAuthFacility({ secret: "lorem", global: authorize.route("Public") }))
+            .set(new JwtAuthFacility({ secret: "lorem", global: "Public" }))
             .set(new MongooseFacility())
             .initialize()
         const { body } = await supertest(app.callback())
@@ -1227,7 +1227,7 @@ describe("Response Projection Transformer", () => {
         }
         delete process.env.PLUM_MONGODB_URI
         const app = await fixture(DummyController)
-            .set(new JwtAuthFacility({ secret: "lorem", global: authorize.route("Public") }))
+            .set(new JwtAuthFacility({ secret: "lorem", global: "Public" }))
             .set(new MongooseFacility())
             .initialize()
         const { body } = await supertest(app.callback())
@@ -1273,7 +1273,7 @@ describe("Response Projection Transformer", () => {
         }
         delete process.env.PLUM_MONGODB_URI
         const app = await fixture(DummyController)
-            .set(new JwtAuthFacility({ secret: "lorem", global: authorize.route("Public") }))
+            .set(new JwtAuthFacility({ secret: "lorem", global: "Public" }))
             .set(new MongooseFacility())
             .initialize()
         const { body } = await supertest(app.callback())

@@ -44,21 +44,26 @@ type AuthorizerContext = AuthorizationContext
 /* ------------------------------- HELPERS --------------------------------------- */
 /* ------------------------------------------------------------------------------- */
 
-function createDecoratorFilter(predicate: (x: AuthorizeDecorator) => boolean = x => true) {
+function createDecoratorFilter(predicate: (x: AuthorizeDecorator) => boolean) {
     return (x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize" && predicate(x)
 }
 
-function getGlobalDecorators(globalDecorator?: (...args: any[]) => void) {
+function getGlobalDecorators(globalDecorator?: string | string[]) {
     if (globalDecorator) {
-        @globalDecorator
-        class DummyClass { }
-        const meta = reflect(DummyClass)
-        return meta.decorators.filter(createDecoratorFilter())
+        const policies = typeof globalDecorator === "string" ? [globalDecorator] : globalDecorator
+        return [<AuthorizeDecorator>{
+            type: "plumier-meta:authorize",
+            policies,
+            tag: policies.join("|"),
+            access: "route",
+            evaluation: "Dynamic",
+            location: "Method"
+        }]
     }
     else return []
 }
 
-function getRouteAuthorizeDecorators(info: RouteInfo, globalDecorator?: (...args: any[]) => void) {
+function getRouteAuthorizeDecorators(info: RouteInfo, globalDecorator?: string | string[]) {
     // if action has decorators then return immediately to prioritize the action decorator
     const actionDecs = info.action.decorators.filter(createDecoratorFilter(x => x.access === "route"))
     if (actionDecs.length > 0) return actionDecs
@@ -470,7 +475,7 @@ async function compileType(type: Class | Class[], ctx: AuthorizerContext, parent
 }
 
 async function getAuthorize(authorizers: boolean | Authorizer, ctx: AuthorizerContext) {
-    if(typeof authorizers === "boolean") return authorizers
+    if (typeof authorizers === "boolean") return authorizers
     return authorizers.authorize(ctx)
 }
 
