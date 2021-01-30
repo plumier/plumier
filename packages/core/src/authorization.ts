@@ -48,22 +48,19 @@ function createDecoratorFilter(predicate: (x: AuthorizeDecorator) => boolean) {
     return (x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize" && predicate(x)
 }
 
-function getGlobalDecorators(globalDecorator?: string | string[]) {
-    if (globalDecorator) {
-        const policies = typeof globalDecorator === "string" ? [globalDecorator] : globalDecorator
-        return [<AuthorizeDecorator>{
-            type: "plumier-meta:authorize",
-            policies,
-            tag: policies.join("|"),
-            access: "route",
-            evaluation: "Dynamic",
-            location: "Method"
-        }]
-    }
-    else return []
+function getGlobalDecorators(globalDecorator: string | string[]) {
+    const policies = typeof globalDecorator === "string" ? [globalDecorator] : globalDecorator
+    return [<AuthorizeDecorator>{
+        type: "plumier-meta:authorize",
+        policies,
+        tag: policies.join("|"),
+        access: "route",
+        evaluation: "Dynamic",
+        location: "Method"
+    }]
 }
 
-function getRouteAuthorizeDecorators(info: RouteInfo, globalDecorator?: string | string[]) {
+function getRouteAuthorizeDecorators(info: RouteInfo, globalDecorator: string | string[]) {
     // if action has decorators then return immediately to prioritize the action decorator
     const actionDecs = info.action.decorators.filter(createDecoratorFilter(x => x.access === "route"))
     if (actionDecs.length > 0) return actionDecs
@@ -301,8 +298,6 @@ function fixContext(decorator: AuthorizeDecorator, info: AuthorizerContext) {
 }
 
 async function checkUserAccessToRoute(decorators: AuthorizeDecorator[], info: AuthorizationContext) {
-    // if no rule applied but Authenticated then pass
-    if (decorators.length === 0 && !!info.user) return
     const conditions = await Promise.all(decorators.map(x => executeAuthorizer(x, fixContext(x, info))))
     // if authorized once then pass
     if (conditions.some(x => x === true)) return
@@ -388,30 +383,25 @@ async function checkUserAccessToParameters(meta: ParameterReflection[], values: 
 // --------------------------- AUTHORIZATION --------------------------- //
 // --------------------------------------------------------------------- //
 
-function updateRouteAuthorizationAccess(routes: RouteMetadata[], config: Configuration) {
-    if (config.enableAuthorization) {
-        routes.forEach(x => {
-            if (x.kind === "ActionRoute") {
-                const decorators = getRouteAuthorizeDecorators(x, config.globalAuthorizationDecorators)
-                if (decorators.length > 0)
-                    x.access = decorators.map(x => x.tag).join("|")
-                else
-                    x.access = "Authenticated"
-            }
-        })
-    }
-}
-
 async function checkAuthorize(ctx: ActionContext) {
     if (ctx.config.enableAuthorization) {
         const { route, parameters, config } = ctx
         const info = await createAuthContext(ctx, "route")
-        const decorator = getRouteAuthorizeDecorators(route, config.globalAuthorizationDecorators)
+        const decorator = getRouteAuthorizeDecorators(route, config.globalAuthorizations)
         //check user access
         await checkUserAccessToRoute(decorator, info)
         //if ok check parameter access
         await checkUserAccessToParameters(route.action.parameters, parameters, { ...info, access: "write" })
     }
+}
+
+function updateRouteAuthorizationAccess(routes: RouteMetadata[], config: Configuration) {
+    routes.forEach(x => {
+        if (x.kind === "ActionRoute") {
+            const decorators = getRouteAuthorizeDecorators(x, config.globalAuthorizations)
+            x.access = decorators.map(x => x.tag).join("|")
+        }
+    })
 }
 
 // --------------------------------------------------------------------- //
@@ -501,7 +491,7 @@ async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): P
             })
             if (authorized) {
                 const candidate = await filterType(value, prop.type, ctx)
-                const transform = ctx.ctx.config.responseProjectionTransformer ?? ((a, b) => b)
+                const transform = ctx.ctx.config.responseTransformer ?? ((a, b) => b)
                 const val = transform(prop.meta, candidate)
                 if (val !== undefined)
                     result[prop.name] = val
@@ -545,7 +535,7 @@ class AuthorizerMiddleware implements Middleware {
 
 export {
     AuthorizerFunction, Authorizer, checkAuthorize, AuthorizeDecorator,
-    getRouteAuthorizeDecorators, updateRouteAuthorizationAccess, AuthorizerMiddleware,
+    getRouteAuthorizeDecorators, AuthorizerMiddleware, updateRouteAuthorizationAccess,
     CustomAuthorizer, CustomAuthorizerFunction, AuthorizationContext, AuthorizerContext,
     AccessModifier, EntityPolicyProviderDecorator, EntityProviderQuery,
     authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, Public, Authenticated,
