@@ -12,8 +12,7 @@ import {
     printAnalysis,
     RouteInfo,
     RouteMetadata,
-    router,
-    updateRouteAuthorizationAccess,
+    router
 } from "@plumier/core"
 import Koa from "koa"
 import { dirname } from "path"
@@ -34,7 +33,8 @@ export class Plumier implements PlumierApplication {
             rootDir: "__UNSET__",
             trustProxyHeader: false,
             typeConverterVisitors: [],
-            authPolicies: []
+            authPolicies: [],
+            globalAuthorizations: []
         }
     }
 
@@ -73,8 +73,6 @@ export class Plumier implements PlumierApplication {
                 const genRoutes = await facility.generateRoutes(this)
                 routes.push(...genRoutes)
             }
-            // update authorization access on route.access property
-            updateRouteAuthorizationAccess(routes, this.config)
             //run initialize
             for (const facility of this.config.facilities) {
                 await facility.initialize(this, routes)

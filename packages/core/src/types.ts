@@ -510,9 +510,9 @@ export interface Configuration {
     analyzers?: RouteAnalyzerFunction[],
 
     /**
-     * Global authorization decorators, use mergeDecorator for multiple
+     * Global authorizations
      */
-    globalAuthorizationDecorators?: string | string[]
+    globalAuthorizations: string | string[]
 
     /**
      * Enable/disable authorization, when enabled all routes will be private by default. Default false
@@ -547,9 +547,9 @@ export interface Configuration {
     authPolicies: Class<AuthPolicy>[]
 
     /**
-     * Transform value before its being parsed by response projection authorization 
+     * Transform property value of response before its being parsed by response authorization 
      */
-    responseProjectionTransformer?: (prop: PropertyReflection, value: any) => any
+    responseTransformer?: (prop: PropertyReflection, value: any) => any
 }
 
 export interface PlumierConfiguration extends Configuration {
