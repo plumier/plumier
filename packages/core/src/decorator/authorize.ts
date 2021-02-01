@@ -1,6 +1,6 @@
 import { CustomPropertyDecorator, decorate, mergeDecorator } from "@plumier/reflect"
 
-import { AccessModifier, AuthorizeDecorator, Authorizer, AuthorizerFunction, Public } from "../authorization"
+import { AccessModifier, Authenticated, AuthorizeDecorator } from "../authorization"
 import { ApplyToOption, FilterQueryType } from "../types"
 import { api } from "./api"
 
@@ -136,7 +136,7 @@ class AuthDecoratorImpl {
      * @param policies List of allowed policies
      */
     filter(...policies: string[]): CustomPropertyDecorator {
-        return this.byPolicies(policies.length == 0 ? ["Authenticated"] : policies, "filter")
+        return this.byPolicies(policies.length == 0 ? [Authenticated] : policies, "filter")
     }
 
     /**
