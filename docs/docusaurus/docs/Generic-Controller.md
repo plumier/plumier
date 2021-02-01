@@ -188,7 +188,7 @@ Above code showing that we apply `@route.controller()` on the `User.emails` rela
 | DELETE | `/users/:pid/emails/:id`        | Delete user's email by ID                                           |
 | GET    | `/users/:pid/emails`            | Get list of user's emails with paging, filter, order and projection |
 
-:::info
+:::note
 If you separate your code per entity, you may found that configuring on relation is not so clean, because your controller configuration is not in your entity. You can keep specify decorator on the child entity but use `useNested` configuration like below.
 
 ```typescript
@@ -336,7 +336,7 @@ Both get by id and get list route has some extra query string to manipulate the 
 
 Above query string supported by generic controller and nested generic controller. 
 
-### Get By ID 
+#### Get By ID 
 Get by ID for generic controller and nested generic controller supported `select` query string like below 
 
 ```
@@ -344,7 +344,7 @@ GET /users/:id?select=name,email,dob
 GET /users/:pid/pets/:id?select=name,active,dob
 ```
 
-### Get List 
+#### Get List 
 Get list supported all the query string, it can be combined in single request 
 
 ```
@@ -649,7 +649,7 @@ When using response transform, the `select` query may still applied but the resp
 ## Custom Query
 Unlike transform response, with custom query you provide a custom database query for `getOne` and/or `getMany` method to get different response result than the default generic controller query provided. 
 
-```typescript {3,9}
+```typescript 
 import { route } from "plumier"
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm"
 import { noop } from "@plumier/reflect"
@@ -701,8 +701,8 @@ Query callback signature for `getOne()` and `getMany()` is like below
 * `param` contains the action parameter such as `id`, `limit`, `offset` etc. The parameter is differ between `getOne()` and `getMany()`.
 * `ctx` is the request context
 
-## Entity Policy
-Entity Policy (Entity authorization policy) is a custom [auth policy](Authorization.md#policy-based-authorization) designed to secure entity based on authorization policy which the logic defined by you. 
+## Entity Authorization Policy
+Entity Authorization Policy (Entity Policy) is a custom [auth policy](Authorization.md#policy-based-authorization) designed to secure entity based on authorization policy which the logic defined by you. 
 
 With entity policy you can define current login user access to the entity programmatically instead of just using user role. Important to note that you can register the same name for different entity.
 
@@ -953,6 +953,6 @@ new Plumier()
     })
 ```
 
-:::warning
+:::note
 Make sure you register the controller under the `TypeORMFacility` or `MongooseFacility` to take effect. 
 :::
