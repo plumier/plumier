@@ -22,7 +22,7 @@ import { sign } from "jsonwebtoken"
 import Koa from "koa"
 import { authorize, domain, route, val } from "plumier"
 import Supertest from "supertest"
-import { fixture } from "../helper"
+import { expectError, fixture } from "../helper"
 
 
 
@@ -2817,8 +2817,12 @@ describe("JwtAuth", () => {
                 pub() { }
             }
             class CustomPolicy implements AuthPolicy {
+                id = "HasUser"
+                conflict(other: AuthPolicy): boolean {
+                    return this.id === other.id
+                }
                 equals(id: string, ctx: AuthorizationContext): boolean {
-                    return id === "HasUser"
+                    return id === this.id
                 }
                 async authorize(ctx: AuthorizationContext): Promise<boolean> {
                     return ctx.user?.role === "user"
@@ -2957,6 +2961,69 @@ describe("JwtAuth", () => {
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .expect(200)
+        })
+        it("Should detect conflict auth policy name", async () => {
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            const OrangePolicy = authPolicy().define("Orange", i => i.user?.role === "user")
+            const MangoPolicy = authPolicy().define("Orange", i => i.user?.role === "user")
+            const mock = await expectError(fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [OrangePolicy, MangoPolicy]
+                }))
+                .initialize())
+            expect(mock.mock.calls).toMatchSnapshot()
+        })
+        it("Should detect conflict auth policy name when more policy added", async () => {
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            const GrapePolicy = authPolicy().define("Grape", i => i.user?.role === "user")
+            const StrawberryPolicy = authPolicy().define("Strawberry", i => i.user?.role === "user")
+            const OrangePolicy = authPolicy().define("Orange", i => i.user?.role === "user")
+            const MangoPolicy = authPolicy().define("Orange", i => i.user?.role === "user")
+            const mock = await expectError(fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [GrapePolicy, StrawberryPolicy, OrangePolicy, MangoPolicy]
+                }))
+                .initialize())
+            expect(mock.mock.calls).toMatchSnapshot()
+        })
+        it("Should detect conflict auth policy name once at a time", async () => {
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            const GrapePolicy = authPolicy().define("Grape", i => i.user?.role === "user")
+            const StrawberryPolicy = authPolicy().define("Grape", i => i.user?.role === "user")
+            const OrangePolicy = authPolicy().define("Orange", i => i.user?.role === "user")
+            const MangoPolicy = authPolicy().define("Orange", i => i.user?.role === "user")
+            const mock = await expectError(fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [GrapePolicy, StrawberryPolicy, OrangePolicy, MangoPolicy]
+                }))
+                .initialize())
+            expect(mock.mock.calls).toMatchSnapshot()
+        })
+        it("Should detect conflict auth policy name with default policies", async () => {
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            const MangoPolicy = authPolicy().define("Public", i => i.user?.role === "user")
+            const mock = await expectError(fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [MangoPolicy]
+                }))
+                .initialize())
+            expect(mock.mock.calls).toMatchSnapshot()
         })
     })
 
@@ -3367,6 +3434,88 @@ describe("JwtAuth", () => {
             await request(app, "/shops/1", USER_TWO).expect(401)
             await request(app, "/shops/2", USER_ONE).expect(401)
             await request(app, "/shops/2", USER_TWO).expect(200)
+        })
+        it("Should detect entity policy name conflict", async () => {
+            class ShopsController {
+                @route.get(":id")
+                @type(Shop)
+                @entityProvider(Shop, "id")
+                @authorize.route("ShopAdmin")
+                get(id: number) {
+                    return shops.find(x => x.id === id)
+                }
+            }
+            const MangoPolicy = entityPolicy(Shop)
+                .define("Tomato", (i, id) => {
+                    const shop = shops.find(x => x.id === id)
+                    return shop!.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })
+            const StarPolicy = entityPolicy(Shop)
+                .define("Tomato", (i, id) => {
+                    const shop = shops.find(x => x.id === id)
+                    return shop!.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })
+            const mock = await expectError(fixture(ShopsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [MangoPolicy, StarPolicy]
+                }))
+                .initialize())
+            expect(mock.mock.calls).toMatchSnapshot()
+        })
+        it("Should not conflict when the same name with different entity", async () => {
+            class Sheep{}
+            class ShopsController {
+                @route.get(":id")
+                @type(Shop)
+                @entityProvider(Shop, "id")
+                @authorize.route("ShopAdmin")
+                get(id: number) {
+                    return shops.find(x => x.id === id)
+                }
+            }
+            const MangoPolicy = entityPolicy(Sheep)
+                .define("Tomato", (i, id) => {
+                    const shop = shops.find(x => x.id === id)
+                    return shop!.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })
+            const StarPolicy = entityPolicy(Shop)
+                .define("Tomato", (i, id) => {
+                    const shop = shops.find(x => x.id === id)
+                    return shop!.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })
+            const mock = await expectError(fixture(ShopsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [MangoPolicy, StarPolicy]
+                }))
+                .initialize())
+            expect(mock.mock.calls).toMatchSnapshot()
+        })
+        it("Should detect entity policy name conflict with auth policy name", async () => {
+            class ShopsController {
+                @route.get(":id")
+                @type(Shop)
+                @entityProvider(Shop, "id")
+                @authorize.route("ShopAdmin")
+                get(id: number) {
+                    return shops.find(x => x.id === id)
+                }
+            }
+            const MangoPolicy = authPolicy()
+                .define("Tomato", (i) => i.user?.role === "Tomato")
+            const StarPolicy = entityPolicy(Shop)
+                .define("Tomato", (i, id) => {
+                    const shop = shops.find(x => x.id === id)
+                    return shop!.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })
+            const mock = await expectError(fixture(ShopsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [MangoPolicy, StarPolicy]
+                }))
+                .initialize())
+            expect(mock.mock.calls).toMatchSnapshot()
         })
     })
 })

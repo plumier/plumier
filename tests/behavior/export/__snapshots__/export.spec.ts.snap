@@ -5,6 +5,7 @@ Object {
   "ActionResult": ActionResult,
   "AuthDecoratorImpl": AuthDecoratorImpl,
   "Authenticated": "Authenticated",
+  "AuthenticatedAuthPolicy": AuthenticatedAuthPolicy,
   "ControllerBuilder": ControllerBuilder,
   "ControllerGeneric": ControllerGeneric,
   "CustomAuthPolicy": CustomAuthPolicy,
@@ -150,6 +151,7 @@ Object {
   "ParameterBinderMiddleware": ParameterBinderMiddleware,
   "PolicyAuthorizer": PolicyAuthorizer,
   "Public": "Public",
+  "PublicAuthPolicy": PublicAuthPolicy,
   "RedirectActionResult": RedirectActionResult,
   "RepoBaseControllerGeneric": RepoBaseControllerGeneric,
   "RepoBaseOneToManyControllerGeneric": RepoBaseOneToManyControllerGeneric,
@@ -157,6 +159,7 @@ Object {
   "RouteDecoratorImpl": RouteDecoratorImpl,
   "ValidationError": ValidationError,
   "ValidatorMiddleware": ValidatorMiddleware,
+  "analyzeAuthPolicyNameConflict": analyzeAuthPolicyNameConflict,
   "analyzeModel": analyzeModel,
   "analyzeRoutes": analyzeRoutes,
   "api": Object {

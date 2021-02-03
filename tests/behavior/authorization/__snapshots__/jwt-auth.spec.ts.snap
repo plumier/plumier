@@ -43,6 +43,38 @@ Object {
 }
 `;
 
+exports[`JwtAuth Authorization Policy Should detect conflict auth policy name 1`] = `
+Array [
+  Array [
+    [Error: There are more than one authorization policies named Orange],
+  ],
+]
+`;
+
+exports[`JwtAuth Authorization Policy Should detect conflict auth policy name once at a time 1`] = `
+Array [
+  Array [
+    [Error: There are more than one authorization policies named Grape],
+  ],
+]
+`;
+
+exports[`JwtAuth Authorization Policy Should detect conflict auth policy name when more policy added 1`] = `
+Array [
+  Array [
+    [Error: There are more than one authorization policies named Orange],
+  ],
+]
+`;
+
+exports[`JwtAuth Authorization Policy Should detect conflict auth policy name with default policies 1`] = `
+Array [
+  Array [
+    [Error: There are more than one authorization policies named Public],
+  ],
+]
+`;
+
 exports[`JwtAuth Basic Authorization Should able to mix controller scope authorizer with other decorators 1`] = `
 Array [
   Array [],
@@ -92,3 +124,21 @@ Object {
   "shop": 1,
 }
 `;
+
+exports[`JwtAuth Entity Policy Should detect entity policy name conflict 1`] = `
+Array [
+  Array [
+    [Error: There are more than one authorization policies named Tomato],
+  ],
+]
+`;
+
+exports[`JwtAuth Entity Policy Should detect entity policy name conflict with auth policy name 1`] = `
+Array [
+  Array [
+    [Error: There are more than one authorization policies named Tomato],
+  ],
+]
+`;
+
+exports[`JwtAuth Entity Policy Should not conflict when the same name with different entity 1`] = `Array []`;
