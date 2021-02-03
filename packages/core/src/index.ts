@@ -7,7 +7,7 @@ export {
     AuthorizationContext, AuthorizerContext, AuthorizeDecorator, updateRouteAuthorizationAccess,
     authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, Public, Authenticated,
     AuthPolicy, CustomAuthPolicy, EntityAuthPolicy, EntityProviderQuery, EntityPolicyProviderDecorator,
-    globalPolicies
+    globalPolicies, analyzeAuthPolicyNameConflict, PublicAuthPolicy, AuthenticatedAuthPolicy
 } from "./authorization";
 export { HeaderPart, RequestPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction } from "./binder";
 export { invoke } from "./application-pipeline";
