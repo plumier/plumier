@@ -1,5 +1,117 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on action 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated() -> lorem GET /animal/authenticated
+ - error AnimalController.authenticated uses unknown authorization policy lorem",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on action parameter 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated(id, name) -> Authenticated GET /animal/authenticated
+ - error Parameter id in AnimalController.authenticated uses unknown authorization policy lorem",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on action parameter with custom type 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated(data) -> Authenticated POST /animal/authenticated
+ - error Property name of Animal class uses unknown authorization policy lorem",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on action return type 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated() -> Authenticated POST /animal/authenticated
+ - error Property name of Animal class uses unknown authorization policy lorem",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on action return type of type array 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated() -> Authenticated POST /animal/authenticated
+ - error Property name of Animal class uses unknown authorization policy lorem",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated() -> lorem GET /animal/authenticated
+ - error AnimalController uses unknown authorization policy lorem",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on controller with multiple policies 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated() -> lorem|ipsum|dolor GET /animal/authenticated
+ - error AnimalController uses unknown authorization policy lorem, ipsum, dolor",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on controller with multiple policies, multiple decorators 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated() -> sit|amet|admin|ipsum|dolor GET /animal/authenticated
+ - error AnimalController uses unknown authorization policy sit, amet, ipsum, dolor",
+  ],
+  Array [],
+]
+`;
+
 exports[`JwtAuth Analyzer Message Should print access on virtual route 1`] = `
 Array [
   Array [],
