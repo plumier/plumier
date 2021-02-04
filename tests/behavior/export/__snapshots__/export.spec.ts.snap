@@ -190,6 +190,7 @@ Object {
   "binder": binder,
   "checkAuthorize": checkAuthorize,
   "createGenericController": createGenericController,
+  "createMistypeRouteAnalyzer": createMistypeRouteAnalyzer,
   "createOneToManyGenericController": createOneToManyGenericController,
   "domain": domain,
   "ellipsis": ellipsis,

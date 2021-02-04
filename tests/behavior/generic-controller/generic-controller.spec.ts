@@ -5,6 +5,7 @@ import {
     api,
     Authenticated,
     authorize,
+    authPolicy,
     bind,
     Configuration,
     DefaultControllerGeneric,
@@ -312,9 +313,12 @@ describe("Route Generator", () => {
                     public email: string
                 ) { }
             }
+            const authPolicies = [
+                authPolicy().define("admin", i => i.user?.role === "admin")
+            ]
             const mock = console.mock()
             await createApp({ controller: [User] })
-                .set(new JwtAuthFacility({ secret: "secret" }))
+                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -330,9 +334,12 @@ describe("Route Generator", () => {
                     public email: string
                 ) { }
             }
+            const authPolicies = [
+                authPolicy().define("admin", i => i.user?.role === "admin")
+            ]
             const mock = console.mock()
             await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
+                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -679,9 +686,12 @@ describe("Route Generator", () => {
                 @route.controller()
                 public animals: Animal[]
             }
+            const authPolicies = [
+                authPolicy().define("admin", i => i.user?.role === "admin")
+            ]
             const mock = console.mock()
             await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
+                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -705,9 +715,12 @@ describe("Route Generator", () => {
                 @route.controller()
                 public animals: Animal[]
             }
+            const authPolicies = [
+                authPolicy().define("admin", i => i.user?.role === "admin")
+            ]
             const mock = console.mock()
             await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
+                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2475,11 +2488,14 @@ describe("Controller Builder", () => {
     })
     describe("Authorization", () => {
         function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
+            const admin = authPolicy().define("Admin", x => x.user?.role === "Admin")
+            const superAdmin = authPolicy().define("SuperAdmin", x => x.user?.role === "SuperAdmin")
+            const authPolicies = [admin, superAdmin]
             return new Plumier()
                 .set({ ...config })
                 .set(new WebApiFacility())
                 .set(new ControllerFacility(opt))
-                .set(new JwtAuthFacility({ secret: "lorem" }))
+                .set(new JwtAuthFacility({ secret: "lorem", authPolicies }))
         }
         it("Should able to authorize specific routes", async () => {
             @route.controller(c => c.mutators().authorize("Admin"))

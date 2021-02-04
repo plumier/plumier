@@ -17,6 +17,8 @@ import {
     Metadata,
     MetadataImpl,
     Middleware,
+    RouteAnalyzerFunction,
+    RouteAnalyzerIssue,
     RouteInfo,
     RouteMetadata,
 } from "./types"
@@ -117,9 +119,9 @@ class PolicyAuthorizer implements Authorizer {
 }
 
 class CustomAuthPolicy implements AuthPolicy {
-    constructor(public id: string, private authorizer: CustomAuthorizerFunction | CustomAuthorizer) { }
+    constructor(public name: string, private authorizer: CustomAuthorizerFunction | CustomAuthorizer) { }
     equals(id: string, ctx: AuthorizationContext): boolean {
-        return id === this.id
+        return id === this.name
     }
     async authorize(ctx: AuthorizationContext): Promise<boolean> {
         try {
@@ -131,30 +133,30 @@ class CustomAuthPolicy implements AuthPolicy {
         catch (e) {
             const message = e instanceof Error ? e.stack : e
             const location = getErrorLocation(ctx.metadata)
-            throw new Error(`Error occur inside authorization policy ${this.id} on ${location} \n ${message}`)
+            throw new Error(`Error occur inside authorization policy ${this.name} on ${location} \n ${message}`)
         }
     }
     conflict(other: AuthPolicy): boolean {
-        return this.id === other.id
+        return this.name === other.name
     }
 }
 
 class PublicAuthPolicy extends CustomAuthPolicy {
-    id = Public
+    name = Public
     async authorize(ctx: AuthorizationContext): Promise<boolean> {
         return true
     }
 }
 
 class AuthenticatedAuthPolicy extends CustomAuthPolicy {
-    id = Authenticated
+    name = Authenticated
     async authorize(ctx: AuthorizationContext): Promise<boolean> {
         return !!ctx.user
     }
 }
 
 class EntityAuthPolicy<T> implements AuthPolicy {
-    constructor(public id: string, private entity: Class<T>, private authorizer: EntityPolicyAuthorizerFunction) { }
+    constructor(public name: string, private entity: Class<T>, private authorizer: EntityPolicyAuthorizerFunction) { }
     private getEntity(ctx: AuthorizerContext): { entity: Class, id: any } {
         if (ctx.access === "route" || ctx.access === "write") {
             // when the entity provider is Route 
@@ -183,7 +185,7 @@ class EntityAuthPolicy<T> implements AuthPolicy {
         }
     }
     equals(id: string, ctx: AuthorizationContext): boolean {
-        if (id === this.id) {
+        if (id === this.name) {
             const provider = this.getEntity(ctx)
             return this.entity === provider.entity
         }
@@ -197,14 +199,14 @@ class EntityAuthPolicy<T> implements AuthPolicy {
         catch (e) {
             const message = e instanceof Error ? e.stack : e
             const location = getErrorLocation(ctx.metadata)
-            throw new Error(`Error occur inside authorization policy ${this.id} for entity ${this.entity.name} on ${location} \n ${message}`)
+            throw new Error(`Error occur inside authorization policy ${this.name} for entity ${this.entity.name} on ${location} \n ${message}`)
         }
     }
     conflict(other: AuthPolicy): boolean {
         if (other instanceof EntityAuthPolicy)
-            return this.id === other.id && this.entity === other.entity
+            return this.name === other.name && this.entity === other.entity
         else
-            return this.id === other.id
+            return this.name === other.name
     }
 }
 
@@ -540,9 +542,83 @@ function analyzeAuthPolicyNameConflict(policies: Class<AuthPolicy>[]) {
         for (let j = nextI; j < policies.length; j++) {
             const next = new policies[j]();
             if (policy.conflict(next))
-                throw new Error(`There are more than one authorization policies named ${policy.id}`)
+                throw new Error(`There are more than one authorization policies named ${policy.name}`)
         }
     }
+}
+
+function getPolicies(decorators: any[]) {
+    const ctlAuth = decorators.filter((x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize")
+    const result = []
+    for (const item of ctlAuth) {
+        result.push(...item.policies)
+    }
+    return result
+}
+
+function mistypedPolicies(decorators: any[], policies: string[]) {
+    return getPolicies(decorators).filter(x => !policies.includes(x))
+}
+
+function errorMessage(header: string, mistyped: string[]): RouteAnalyzerIssue {
+    return { type: "error", "message": `${header} uses unknown authorization policy ${mistyped.join(", ")}` }
+}
+
+function checkMistypedPolicyNameOnType(typeDef: Class | Class[], policies: string[]) {
+    const issue: RouteAnalyzerIssue[] = []
+    const type = Array.isArray(typeDef) ? typeDef[0] : typeDef
+    if (!isCustomClass(type)) return issue;
+    const meta = reflect(type)
+    for (const prop of meta.properties) {
+        const mis = mistypedPolicies(prop.decorators, policies)
+        if (mis.length > 0)
+            issue.push(errorMessage(`Property ${prop.name} of ${type.name} class`, mis))
+    }
+    return issue
+}
+
+function checkMistypedOnController(route: RouteInfo, policies: string[]): RouteAnalyzerIssue[] {
+    const issue: RouteAnalyzerIssue[] = []
+    const ctl = mistypedPolicies(route.controller.decorators, policies)
+    if (ctl.length > 0)
+        issue.push(errorMessage(route.controller.name, ctl))
+    return issue
+}
+
+function checkMistypedOnAction(route: RouteInfo, policies: string[]): RouteAnalyzerIssue[] {
+    const issue: RouteAnalyzerIssue[] = []
+    const actions = mistypedPolicies(route.action.decorators, policies)
+    if (actions.length > 0)
+        issue.push(errorMessage(`${route.controller.name}.${route.action.name}`, actions))
+    return issue
+}
+
+function checkMistypedOnActionParameters(route: RouteInfo, policies: string[]): RouteAnalyzerIssue[] {
+    const issue: RouteAnalyzerIssue[] = []
+    for (const par of route.action.parameters) {
+        const parMistypes = mistypedPolicies(par.decorators, policies)
+        if (parMistypes.length > 0)
+            issue.push(errorMessage(`Parameter ${par.name} in ${route.controller.name}.${route.action.name}`, parMistypes))
+        // check if its data type is a custom type 
+        const parType = checkMistypedPolicyNameOnType(par.type, policies)
+        issue.push(...parType)
+    }
+    return issue
+}
+
+function checkMistypedOnActionReturnType(route: RouteInfo, policies: string[]): RouteAnalyzerIssue[] {
+    return checkMistypedPolicyNameOnType(route.action.returnType, policies)
+}
+
+function createMistypeRouteAnalyzer(policyClasses: Class<AuthPolicy>[]): RouteAnalyzerFunction[] {
+    const analyzers = [
+        checkMistypedOnController,
+        checkMistypedOnAction,
+        checkMistypedOnActionParameters,
+        checkMistypedOnActionReturnType
+    ]
+    const policies = policyClasses.map(x => new x().name)
+    return analyzers.map(analyser => (info: RouteMetadata) => info.kind === "VirtualRoute" ? [] : analyser(info, policies));
 }
 
 export {
@@ -551,5 +627,6 @@ export {
     CustomAuthorizer, CustomAuthorizerFunction, AuthorizationContext, AuthorizerContext,
     AccessModifier, EntityPolicyProviderDecorator, EntityProviderQuery, PublicAuthPolicy, AuthenticatedAuthPolicy,
     authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, Public, Authenticated,
-    AuthPolicy, CustomAuthPolicy, EntityAuthPolicy, globalPolicies, analyzeAuthPolicyNameConflict
+    AuthPolicy, CustomAuthPolicy, EntityAuthPolicy, globalPolicies, analyzeAuthPolicyNameConflict,
+    createMistypeRouteAnalyzer
 }

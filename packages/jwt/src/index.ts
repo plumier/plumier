@@ -1,4 +1,4 @@
-import { analyzeAuthPolicyNameConflict, Authenticated, AuthenticatedAuthPolicy, AuthPolicy, Class, DefaultFacility, findClassRecursive, globalPolicies, PlumierApplication, PublicAuthPolicy, RouteMetadata, updateRouteAuthorizationAccess } from "@plumier/core"
+import { analyzeAuthPolicyNameConflict, Authenticated, AuthenticatedAuthPolicy, AuthPolicy, Class, createMistypeRouteAnalyzer, DefaultFacility, findClassRecursive, globalPolicies, PlumierApplication, PublicAuthPolicy, RouteMetadata, updateRouteAuthorizationAccess } from "@plumier/core"
 import KoaJwt from "koa-jwt"
 import { join } from "path"
 import { Context } from "koa"
@@ -67,12 +67,18 @@ export class JwtAuthFacility extends DefaultFacility {
     constructor(private option?: JwtAuthFacilityOption & Partial<KoaJwt.Options>) { super() }
 
     async preInitialize(app: Readonly<PlumierApplication>) {
+        // set auth policies
         const configPolicies = !!this.option?.authPolicies ?
             globalPolicies.concat(await getPoliciesByFile(app.config.rootDir, this.option.authPolicies)) :
             globalPolicies
         const authPolicies = [PublicAuthPolicy, AuthenticatedAuthPolicy, ...configPolicies]
-        analyzeAuthPolicyNameConflict(authPolicies)
         app.set({ authPolicies })
+        // analyze auth policies and throw error
+        analyzeAuthPolicyNameConflict(authPolicies)
+        // set auth policies analyzers
+        const defaultAnalyzers = app.config.analyzers ?? []
+        const analyzers = createMistypeRouteAnalyzer(authPolicies)
+        app.set({analyzers: [...defaultAnalyzers, ...analyzers]})
     }
 
     async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]) {

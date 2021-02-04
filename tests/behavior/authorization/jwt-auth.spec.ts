@@ -746,11 +746,11 @@ describe("JwtAuth", () => {
                 authenticated() { }
                 @authorize.route("Public")
                 public() { }
-                @authorize.route("Admin")
+                @authorize.route("admin")
                 admin() { }
-                @authorize.route("User")
+                @authorize.route("user")
                 user() { }
-                @authorize.route("Admin", "User")
+                @authorize.route("admin", "user")
                 mix() { }
             }
             console.mock()
@@ -762,9 +762,9 @@ describe("JwtAuth", () => {
             expect(calls).toEqual([
                 '1. AnimalController.authenticated() -> Authenticated GET /animal/authenticated',
                 '2. AnimalController.public()        -> Public        GET /animal/public',
-                '3. AnimalController.admin()         -> Admin         GET /animal/admin',
-                '4. AnimalController.user()          -> User          GET /animal/user',
-                '5. AnimalController.mix()           -> Admin|User    GET /animal/mix',
+                '3. AnimalController.admin()         -> admin         GET /animal/admin',
+                '4. AnimalController.user()          -> user          GET /animal/user',
+                '5. AnimalController.mix()           -> admin|user    GET /animal/mix',
             ])
             console.mockClear()
         })
@@ -817,6 +817,133 @@ describe("JwtAuth", () => {
             await fixture(AnimalController, { mode: "debug" })
                 .set(new JwtAuthFacility({ secret: "lorem" }))
                 .set(new MyFacility())
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
+
+        it("Should detect mistyped auth name on controller", async () => {
+            @authorize.route("lorem")
+            class AnimalController {
+                authenticated() { }
+            }
+            const mock = console.mock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
+
+        it("Should detect mistyped auth name on controller with multiple policies", async () => {
+            @authorize.route("lorem", "ipsum", "dolor")
+            class AnimalController {
+                authenticated() { }
+            }
+            const mock = console.mock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
+
+        it("Should detect mistyped auth name on controller with multiple policies, multiple decorators", async () => {
+            @authorize.route("admin", "ipsum", "dolor")
+            @authorize.route("sit", "amet")
+            class AnimalController {
+                authenticated() { }
+            }
+            const mock = console.mock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
+
+        it("Should detect mistyped auth name on action", async () => {
+            class AnimalController {
+                @authorize.route("lorem")
+                authenticated() { }
+            }
+            const mock = console.mock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
+
+        it("Should detect mistyped auth name on action parameter", async () => {
+            class AnimalController {
+                authenticated(@authorize.write("lorem") id: string, name:string) { }
+            }
+            const mock = console.mock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
+
+        it("Should detect mistyped auth name on action parameter with custom type", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    @authorize.write("lorem")
+                    public name:string
+                ){}
+            }
+            class AnimalController {
+                @route.post()
+                authenticated(data: Animal) { }
+            }
+            const mock = console.mock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
+
+        it("Should detect mistyped auth name on action return type", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    @authorize.read("lorem")
+                    public name:string
+                ){}
+            }
+            class AnimalController {
+                @route.post()
+                @type(Animal)
+                authenticated() { }
+            }
+            const mock = console.mock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
+
+        it("Should detect mistyped auth name on action return type of type array", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    @authorize.read("lorem")
+                    public name:string
+                ){}
+            }
+            class AnimalController {
+                @route.post()
+                @type([Animal])
+                authenticated() { }
+            }
+            const mock = console.mock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
@@ -2817,12 +2944,12 @@ describe("JwtAuth", () => {
                 pub() { }
             }
             class CustomPolicy implements AuthPolicy {
-                id = "HasUser"
+                name = "HasUser"
                 conflict(other: AuthPolicy): boolean {
-                    return this.id === other.id
+                    return this.name === other.name
                 }
                 equals(id: string, ctx: AuthorizationContext): boolean {
-                    return id === this.id
+                    return id === this.name
                 }
                 async authorize(ctx: AuthorizationContext): Promise<boolean> {
                     return ctx.user?.role === "user"
@@ -3464,7 +3591,7 @@ describe("JwtAuth", () => {
             expect(mock.mock.calls).toMatchSnapshot()
         })
         it("Should not conflict when the same name with different entity", async () => {
-            class Sheep{}
+            class Sheep { }
             class ShopsController {
                 @route.get(":id")
                 @type(Shop)
