@@ -1,4 +1,4 @@
-import { TypeOverride } from "@plumier/reflect"
+import { CustomPropertyDecorator, TypeOverride } from "@plumier/reflect"
 import validatorJs from "validator"
 
 import * as v from "./validation"
@@ -10,7 +10,10 @@ namespace val {
         return v.createValidation(x => !validator(x) ? message : undefined)
     }
 
-    export function after(opt?: Opt & { date?: string }) {
+    export function after(date?: string): CustomPropertyDecorator
+    export function after(opt?: Opt & { date?: string }): CustomPropertyDecorator
+    export function after(op?: string | Opt & { date?: string }) {
+        const opt = typeof op === "string" ? { date: op, message: undefined } : op
         return check(x => validatorJs.isAfter(x, opt && opt.date), opt && opt.message || `Date must be greater than ${opt && opt.date || "today"}`)
     }
 
@@ -30,7 +33,10 @@ namespace val {
         return check(x => validatorJs.isBase64(x), opt && opt.message || "Invalid base 64")
     }
 
-    export function before(opt?: Opt & { date?: string }) {
+    export function before(date?: string): CustomPropertyDecorator
+    export function before(opt?: Opt & { date?: string }): CustomPropertyDecorator
+    export function before(op?: string | Opt & { date?: string }) {
+        const opt = typeof op === "string" ? { date: op, message: undefined } : op
         return check(x => validatorJs.isBefore(x, opt && opt.date), opt && opt.message || `Date must be less than ${opt && opt.date || "today"}`)
     }
 
@@ -54,7 +60,10 @@ namespace val {
         return check(x => validatorJs.isDecimal(x, opt), opt && opt.message || "Invalid decimal")
     }
 
-    export function divisibleBy(opt: Opt & { num: number }) {
+    export function divisibleBy(num: number): CustomPropertyDecorator
+    export function divisibleBy(opt: Opt & { num: number }): CustomPropertyDecorator
+    export function divisibleBy(op: number | Opt & { num: number }) {
+        const opt = typeof op === "number" ? { num: op, message: undefined } : op
         return check(x => validatorJs.isDivisibleBy(x, opt.num), opt && opt.message || `Not divisible by ${opt.num}`)
     }
 
@@ -78,7 +87,10 @@ namespace val {
         return check(x => validatorJs.isHalfWidth(x), opt && opt.message || "Invalid value provided")
     }
 
-    export function hash(opt: Opt & { algorithm: validatorJs.HashAlgorithm }) {
+    export function hash(algorithm: validatorJs.HashAlgorithm): CustomPropertyDecorator
+    export function hash(opt: Opt & { algorithm: validatorJs.HashAlgorithm }): CustomPropertyDecorator
+    export function hash(op: validatorJs.HashAlgorithm | Opt & { algorithm: validatorJs.HashAlgorithm }) {
+        const opt = typeof op === "string" ? { algorithm: op, message: undefined } : op
         return check(x => validatorJs.isHash(x, opt.algorithm), opt && opt.message || "Invalid hash")
     }
 
@@ -90,11 +102,17 @@ namespace val {
         return check(x => validatorJs.isHexadecimal(x), opt && opt.message || "Invalid hexadecimal")
     }
 
-    export function ip(opt?: Opt & { version?: "4" | "6" }) {
+    export function ip(version?: "4" | "6"): CustomPropertyDecorator
+    export function ip(opt?: Opt & { version?: "4" | "6" }): CustomPropertyDecorator
+    export function ip(op?: "4" | "6" | Opt & { version?: "4" | "6" }) {
+        const opt = typeof op === "string" ? { version: op, message: undefined } : op
         return check(x => validatorJs.isIP(x, opt && opt.version), opt && opt.message || "Invalid IP address")
     }
 
-    export function isbn(opt?: Opt & { version?: "10" | "13" }) {
+    export function isbn(version?: "10" | "13"): CustomPropertyDecorator
+    export function isbn(opt?: Opt & { version?: "10" | "13" }): CustomPropertyDecorator
+    export function isbn(op?: "10" | "13" | Opt & { version?: "10" | "13" }) {
+        const opt = typeof op === "string" ? { version: op, message: undefined } : op
         return check(x => validatorJs.isISBN(x, opt && opt.version), opt && opt.message || "Invalid ISBN")
     }
 
@@ -142,10 +160,6 @@ namespace val {
         return check(x => validatorJs.isMACAddress(x), opt && opt.message || "Invalid MAC address")
     }
 
-    export function matches(opt: Opt & { pattern: string, modifier?: string }) {
-        return check(x => validatorJs.matches(x, opt.pattern, opt.modifier), opt.message || "Invalid string")
-    }
-
     export function md5(opt?: Opt) {
         return check(x => validatorJs.isMD5(x), opt && opt.message || "Invalid MD5 hash")
     }
@@ -176,6 +190,13 @@ namespace val {
 
     export function postalCode(opt?: Opt & { locale?: validatorJs.PostalCodeLocale }) {
         return check(x => validatorJs.isPostalCode(x, opt && opt.locale || "any"), opt && opt.message || "Invalid postal code")
+    }
+
+    export function regex(pattern: RegExp): CustomPropertyDecorator
+    export function regex(opt: Opt & { pattern: RegExp }): CustomPropertyDecorator
+    export function regex(op: RegExp | Opt & { pattern: RegExp }) {
+        const opt = op instanceof RegExp ? { pattern: op, message: undefined } : op
+        return check(x => validatorJs.matches(x, opt.pattern), opt.message || "Invalid string")
     }
 
     export function slug(opt?: Opt) {

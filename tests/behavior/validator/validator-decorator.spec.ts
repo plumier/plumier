@@ -21,7 +21,7 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.after({ date: "2018-2-2" })
+                @val.after("2018-2-2")
                 public property: Date
             ) { }
         }
@@ -81,7 +81,7 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.before({ date: "2018-2-2" })
+                @val.before("2018-2-2")
                 public property: Date
             ) { }
         }
@@ -165,7 +165,7 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.divisibleBy({ num: 4 })
+                @val.divisibleBy(4)
                 public property: string
             ) { }
         }
@@ -237,7 +237,7 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.hash({ algorithm: "md5" })
+                @val.hash("md5")
                 public property: string
             ) { }
         }
@@ -273,7 +273,7 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.ip()
+                @val.ip("4")
                 public property: string
             ) { }
         }
@@ -285,7 +285,7 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.isbn()
+                @val.isbn("10")
                 public property: string
             ) { }
         }
@@ -429,7 +429,7 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.matches({ pattern: "^[a-z0-9 ]+$" })
+                @val.regex(/^[a-z0-9 ]+$/)
                 public property: string
             ) { }
         }

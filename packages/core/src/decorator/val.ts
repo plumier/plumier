@@ -7,14 +7,15 @@ import { api } from './api'
 
 declare module "@plumier/validator" {
     namespace val {
-        export function custom(validator: CustomValidatorFunction): (...args:any[]) => void
-        export function custom(validator: CustomValidator): (...args:any[]) => void
-        export function custom(id: string): (...args:any[]) => void
-        export function custom(id: symbol): (...args:any[]) => void
-        export function custom(val: CustomValidatorFunction | string | symbol | CustomValidator): (...args:any[]) => void
-        export function custom(...validators: (CustomValidatorFunction | string | symbol | CustomValidator)[]): (...args:any[]) => void
+        export function custom(validator: CustomValidatorFunction): (...args: any[]) => void
+        export function custom(validator: CustomValidator): (...args: any[]) => void
+        export function custom(id: string): (...args: any[]) => void
+        export function custom(id: symbol): (...args: any[]) => void
+        export function custom(val: CustomValidatorFunction | string | symbol | CustomValidator): (...args: any[]) => void
+        export function custom(...validators: (CustomValidatorFunction | string | symbol | CustomValidator)[]): (...args: any[]) => void
         export function result(path: string, messages: string | string[]): AsyncValidatorResult[]
-        export function enums(opt: { enums: string[], message?: string }): (...args:any[]) => void
+        export function enums(enums: string[]): (...args: any[]) => void
+        export function enums(opt: { enums: string[], message?: string }): (...args: any[]) => void
     }
 }
 
@@ -27,7 +28,8 @@ tc.val.result = (a: string, b: string | string[]) => {
     else return [{ path: a, messages: [b] }]
 }
 
-tc.val.enums = (opt) => {
+tc.val.enums = (op: string[] | { enums: string[], message?: string }) => {
+    const opt = Array.isArray(op) ? { enums: op, message: undefined } : op
     return mergeDecorator(tc.val.custom(x => {
         if (!opt.enums.some(y => x === y))
             return opt.message || `Value must be one of ${opt.enums.join(", ")}`
