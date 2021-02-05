@@ -1,5 +1,117 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on action 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated() -> lorem GET /animal/authenticated
+ - error AnimalController.authenticated uses unknown authorization policy lorem",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on action parameter 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated(id, name) -> Authenticated GET /animal/authenticated
+ - error Parameter id in AnimalController.authenticated uses unknown authorization policy lorem",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on action parameter with custom type 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated(data) -> Authenticated POST /animal/authenticated
+ - error Property name of Animal class uses unknown authorization policy lorem",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on action return type 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated() -> Authenticated POST /animal/authenticated
+ - error Property name of Animal class uses unknown authorization policy lorem",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on action return type of type array 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated() -> Authenticated POST /animal/authenticated
+ - error Property name of Animal class uses unknown authorization policy lorem",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated() -> lorem GET /animal/authenticated
+ - error AnimalController uses unknown authorization policy lorem",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on controller with multiple policies 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated() -> lorem|ipsum|dolor GET /animal/authenticated
+ - error AnimalController uses unknown authorization policy lorem, ipsum, dolor",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on controller with multiple policies, multiple decorators 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated() -> sit|amet|admin|ipsum|dolor GET /animal/authenticated
+ - error AnimalController uses unknown authorization policy sit, amet, ipsum, dolor",
+  ],
+  Array [],
+]
+`;
+
 exports[`JwtAuth Analyzer Message Should print access on virtual route 1`] = `
 Array [
   Array [],
@@ -41,6 +153,38 @@ Object {
   "name": "mimi",
   "secret": "secret",
 }
+`;
+
+exports[`JwtAuth Authorization Policy Should detect conflict auth policy name 1`] = `
+Array [
+  Array [
+    [Error: There are more than one authorization policies named Orange],
+  ],
+]
+`;
+
+exports[`JwtAuth Authorization Policy Should detect conflict auth policy name once at a time 1`] = `
+Array [
+  Array [
+    [Error: There are more than one authorization policies named Grape],
+  ],
+]
+`;
+
+exports[`JwtAuth Authorization Policy Should detect conflict auth policy name when more policy added 1`] = `
+Array [
+  Array [
+    [Error: There are more than one authorization policies named Orange],
+  ],
+]
+`;
+
+exports[`JwtAuth Authorization Policy Should detect conflict auth policy name with default policies 1`] = `
+Array [
+  Array [
+    [Error: There are more than one authorization policies named Public],
+  ],
+]
 `;
 
 exports[`JwtAuth Basic Authorization Should able to mix controller scope authorizer with other decorators 1`] = `
@@ -93,168 +237,20 @@ Object {
 }
 `;
 
-exports[`JwtAuth Parameter Authorization Custom Parameter Authorizer Should be able get current metadata information 1`] = `
+exports[`JwtAuth Entity Policy Should detect entity policy name conflict 1`] = `
 Array [
   Array [
-    Object {
-      "decorators": Array [
-        Object {
-          "access": "write",
-          "authorize": onlyAdmin,
-          "evaluation": "Dynamic",
-          "location": "Parameter",
-          "tag": "Custom",
-          "type": "plumier-meta:authorize",
-          Symbol(tinspector:decoratorOption): Object {
-            "access": "write",
-            "allowMultiple": true,
-            "applyTo": Array [],
-            "evaluation": "Dynamic",
-            "inherit": true,
-            "removeApplied": true,
-            "tag": "Custom",
-          },
-        },
-      ],
-      "get": undefined,
-      "index": 1,
-      "isParameter": true,
-      "kind": "Property",
-      "name": "id",
-      "parent": Animal,
-      "set": undefined,
-      "type": Object,
-      "typeClassification": "Primitive",
-    },
-  ],
-  Array [
-    Object {
-      "decorators": Array [
-        Object {
-          "access": "write",
-          "authorize": onlyAdmin,
-          "evaluation": "Dynamic",
-          "location": "Parameter",
-          "tag": "Custom",
-          "type": "plumier-meta:authorize",
-          Symbol(tinspector:decoratorOption): Object {
-            "access": "write",
-            "allowMultiple": true,
-            "applyTo": Array [],
-            "evaluation": "Dynamic",
-            "inherit": true,
-            "removeApplied": true,
-            "tag": "Custom",
-          },
-        },
-      ],
-      "get": undefined,
-      "index": 2,
-      "isParameter": true,
-      "kind": "Property",
-      "name": "deceased",
-      "parent": Animal,
-      "set": undefined,
-      "type": Object,
-      "typeClassification": "Primitive",
-    },
+    [Error: There are more than one authorization policies named Tomato],
   ],
 ]
 `;
 
-exports[`JwtAuth Parameter Authorization Custom Parameter Authorizer Should be able get value and its parent value 1`] = `
+exports[`JwtAuth Entity Policy Should detect entity policy name conflict with auth policy name 1`] = `
 Array [
   Array [
-    Object {
-      "parentValue": Animal {
-        "deceased": "Yes",
-        "id": "123",
-      },
-      "value": "Yes",
-    },
+    [Error: There are more than one authorization policies named Tomato],
   ],
 ]
 `;
 
-exports[`JwtAuth Response Authorization Custom Authorizer Should able to access current property metadata 1`] = `
-Array [
-  Array [
-    Object {
-      "decorators": Array [
-        Object {
-          "access": "read",
-          "authorize": onlyAdmin,
-          "evaluation": "Dynamic",
-          "location": "Parameter",
-          "tag": "Custom",
-          "type": "plumier-meta:authorize",
-          Symbol(tinspector:decoratorOption): Object {
-            "access": "read",
-            "allowMultiple": true,
-            "applyTo": Array [],
-            "evaluation": "Dynamic",
-            "inherit": true,
-            "removeApplied": true,
-            "tag": "Custom",
-          },
-        },
-      ],
-      "get": undefined,
-      "index": 0,
-      "isParameter": true,
-      "kind": "Property",
-      "name": "name",
-      "parent": User,
-      "set": undefined,
-      "type": String,
-      "typeClassification": "Primitive",
-    },
-  ],
-  Array [
-    Object {
-      "decorators": Array [
-        Object {
-          "access": "read",
-          "authorize": onlyAdmin,
-          "evaluation": "Dynamic",
-          "location": "Parameter",
-          "tag": "Custom",
-          "type": "plumier-meta:authorize",
-          Symbol(tinspector:decoratorOption): Object {
-            "access": "read",
-            "allowMultiple": true,
-            "applyTo": Array [],
-            "evaluation": "Dynamic",
-            "inherit": true,
-            "removeApplied": true,
-            "tag": "Custom",
-          },
-        },
-      ],
-      "get": undefined,
-      "index": 1,
-      "isParameter": true,
-      "kind": "Property",
-      "name": "password",
-      "parent": User,
-      "set": undefined,
-      "type": String,
-      "typeClassification": "Primitive",
-    },
-  ],
-]
-`;
-
-exports[`JwtAuth Response Authorization Custom Authorizer Should able to access value and parent value 1`] = `
-Array [
-  Array [
-    Object {
-      "parentValue": User {
-        "name": "admin",
-        "password": "secret",
-      },
-      "value": "secret",
-    },
-  ],
-]
-`;
+exports[`JwtAuth Entity Policy Should not conflict when the same name with different entity 1`] = `Array []`;

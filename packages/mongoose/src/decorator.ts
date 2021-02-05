@@ -15,7 +15,7 @@ function collection(option?: NamedSchemaOption): ClassDecorator {
     )
 }
 
-collection.property = (option?: SchemaTypeOptions<any>) => {
+collection.property = (option?: Partial<SchemaTypeOptions<any>>) => {
     return decorateProperty(<PropertyOptionDecorator>{ name: "PropertyOption", option })
 }
 

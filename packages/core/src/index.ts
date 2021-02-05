@@ -3,11 +3,11 @@ import { val } from "@plumier/validator"
 import "./decorator/val"
 export { val }
 export {
-    AuthorizerFunction, checkAuthorize, RoleField, Authorizer, CustomAuthorizer, CustomAuthorizerFunction,
+    AuthorizerFunction, checkAuthorize, Authorizer, CustomAuthorizer, CustomAuthorizerFunction,
     AuthorizationContext, AuthorizerContext, AuthorizeDecorator, updateRouteAuthorizationAccess,
     authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, Public, Authenticated,
     AuthPolicy, CustomAuthPolicy, EntityAuthPolicy, EntityProviderQuery, EntityPolicyProviderDecorator,
-    globalPolicies
+    globalPolicies, analyzeAuthPolicyNameConflict, PublicAuthPolicy, AuthenticatedAuthPolicy, createMistypeRouteAnalyzer
 } from "./authorization";
 export { HeaderPart, RequestPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction } from "./binder";
 export { invoke } from "./application-pipeline";

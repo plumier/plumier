@@ -771,7 +771,7 @@ describe("Facility", () => {
             const AnimalModel = globalModel(Animal)
             class AnimalController {
                 @route.post()
-                @authorize.public()
+                @authorize.route("Public")
                 async save(data: Animal) {
                     const newly = await new AnimalModel(data).save()
                     return newly._id
@@ -807,7 +807,7 @@ describe("Facility", () => {
             const AnimalModel = globalModel(Animal)
             class AnimalController {
                 @route.post()
-                @authorize.public()
+                @authorize.route("Public")
                 async save(data: Animal) {
                     const newly = await new AnimalModel(data).save()
                     return newly._id
@@ -840,7 +840,7 @@ describe("Facility", () => {
             const AnimalModel = globalModel(Animal)
             class AnimalController {
                 @route.post()
-                @authorize.public()
+                @authorize.route("Public")
                 async save(data: Animal) {
                     const newly = await new AnimalModel(data).save()
                     return newly._id
@@ -872,7 +872,7 @@ describe("Facility", () => {
             const AnimalModel = globalModel(Animal)
             class AnimalController {
                 @route.post()
-                @authorize.public()
+                @authorize.route("Public")
                 async save(data: Animal) {
                     const newly = await new AnimalModel(data).save()
                     return newly._id
@@ -912,7 +912,7 @@ describe("Facility", () => {
             const AnimalModel = globalModel(Animal)
             class AnimalController {
                 @route.post()
-                @authorize.public()
+                @authorize.route("Public")
                 async save(data: Animal) {
                     const newly = await new AnimalModel(data).save()
                     return newly._id
@@ -946,7 +946,7 @@ describe("Facility", () => {
             const AnimalModel = globalModel(Animal)
             class AnimalController {
                 @route.post()
-                @authorize.public()
+                @authorize.route("Public")
                 async save(data: Animal) {
                     const newly = await new AnimalModel(data).save()
                     return newly._id
@@ -986,7 +986,7 @@ describe("Facility", () => {
             const AnimalModel = globalModel(Animal)
             class AnimalController {
                 @route.post()
-                @authorize.public()
+                @authorize.route("Public")
                 async save(data: Animal) {
                     const newly = await new AnimalModel(data).save()
                     return newly._id
@@ -1015,7 +1015,7 @@ describe("Facility", () => {
             const fn = jest.fn()
             class AnimalController {
                 @route.get(":id")
-                @authorize.public()
+                @authorize.route("Public")
                 async get(id: string) {
                     fn(typeof id)
                 }
@@ -1134,7 +1134,7 @@ describe("Response Projection Transformer", () => {
         }
         delete process.env.PLUM_MONGODB_URI
         const app = await fixture(DummyController)
-            .set(new JwtAuthFacility({ secret: "lorem", global: authorize.public() }))
+            .set(new JwtAuthFacility({ secret: "lorem", global: "Public" }))
             .set(new MongooseFacility())
             .initialize()
         const { body } = await supertest(app.callback())
@@ -1180,7 +1180,7 @@ describe("Response Projection Transformer", () => {
         }
         delete process.env.PLUM_MONGODB_URI
         const app = await fixture(DummyController)
-            .set(new JwtAuthFacility({ secret: "lorem", global: authorize.public() }))
+            .set(new JwtAuthFacility({ secret: "lorem", global: "Public" }))
             .set(new MongooseFacility())
             .initialize()
         const { body } = await supertest(app.callback())
@@ -1227,7 +1227,7 @@ describe("Response Projection Transformer", () => {
         }
         delete process.env.PLUM_MONGODB_URI
         const app = await fixture(DummyController)
-            .set(new JwtAuthFacility({ secret: "lorem", global: authorize.public() }))
+            .set(new JwtAuthFacility({ secret: "lorem", global: "Public" }))
             .set(new MongooseFacility())
             .initialize()
         const { body } = await supertest(app.callback())
@@ -1273,7 +1273,7 @@ describe("Response Projection Transformer", () => {
         }
         delete process.env.PLUM_MONGODB_URI
         const app = await fixture(DummyController)
-            .set(new JwtAuthFacility({ secret: "lorem", global: authorize.public() }))
+            .set(new JwtAuthFacility({ secret: "lorem", global: "Public" }))
             .set(new MongooseFacility())
             .initialize()
         const { body } = await supertest(app.callback())

@@ -70,7 +70,7 @@ export class MongooseFacility extends DefaultFacility {
         } as MongooseHelper
         app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter, ...filterConverters] })
         app.set({
-            responseProjectionTransformer: (p, v) => {
+            responseTransformer: (p, v) => {
                 return (p.name === "id" && v && v.constructor === Buffer) ? undefined : v
             }
         })

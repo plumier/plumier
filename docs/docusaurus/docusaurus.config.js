@@ -14,6 +14,7 @@ module.exports = {
       searchParameters: {},
     },
     navbar: {
+      hideOnScroll: true,
       title: 'Plumier',
       logo: {
         alt: 'Plumier logo',

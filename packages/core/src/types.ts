@@ -13,7 +13,6 @@ import reflect, {
 import { Result, VisitorInvocation } from "@plumier/validator"
 import { promisify } from "util"
 
-import { EntityProviderQuery, RoleField } from "./authorization"
 import { Class } from "./common"
 import { domain } from './decorator/common'
 import { HttpStatus } from "./http-status"
@@ -438,11 +437,6 @@ export interface AuthorizationContext {
     parentValue?: any
 
     /**
-     * List of user roles
-     */
-    role: string[]
-
-    /**
      * Current login user JWT claim
      */
     user: { [key: string]: any } | undefined
@@ -464,12 +458,14 @@ export interface AuthorizationContext {
 }
 
 export interface Authorizer {
-    authorize(info: AuthorizationContext, location: "Class" | "Parameter" | "Method"): boolean | Promise<boolean>
+    authorize(info: AuthorizationContext): boolean | Promise<boolean>
 }
 
 export interface AuthPolicy {
+    name:string
     equals(id: string, ctx: AuthorizationContext): boolean
-    authorize(ctx: AuthorizationContext, location: 'Class' | 'Parameter' | 'Method'): Promise<boolean>
+    authorize(ctx: AuthorizationContext): Promise<boolean>
+    conflict(other:AuthPolicy):boolean
 }
 
 // --------------------------------------------------------------------- //
@@ -516,15 +512,9 @@ export interface Configuration {
     analyzers?: RouteAnalyzerFunction[],
 
     /**
-     * Role field / function used to specify current login user role inside JWT claim for authorization
+     * Global authorizations
      */
-    roleField: RoleField,
-
-
-    /**
-     * Global authorization decorators, use mergeDecorator for multiple
-     */
-    globalAuthorizationDecorators?: (...args: any[]) => void
+    globalAuthorizations: string | string[]
 
     /**
      * Enable/disable authorization, when enabled all routes will be private by default. Default false
@@ -556,12 +546,12 @@ export interface Configuration {
     /**
      * Custom authorization policy
      */
-    authPolicies?: Class<AuthPolicy>[]
+    authPolicies: Class<AuthPolicy>[]
 
     /**
-     * Transform value before its being parsed by response projection authorization 
+     * Transform property value of response before its being parsed by response authorization 
      */
-    responseProjectionTransformer?: (prop: PropertyReflection, value: any) => any
+    responseTransformer?: (prop: PropertyReflection, value: any) => any
 }
 
 export interface PlumierConfiguration extends Configuration {

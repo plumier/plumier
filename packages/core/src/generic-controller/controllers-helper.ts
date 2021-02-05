@@ -34,7 +34,6 @@ import {
 // --------------------------------------------------------------------- //
 
 type ActionNotation = "Put" | "Patch" | "Post" | "GetMany" | "GetOne" | "Delete"
-type ActionName = "delete" | "list" | "get" | "modify" | "save" | "replace"
 
 interface ActionConfig {
     authorize?: string[]
@@ -44,12 +43,12 @@ interface ActionConfig {
     getManyCustomQuery?: { type: Class | [Class], query: GetManyCustomQueryFunction }
 }
 
-type ActionConfigMap = Map<ActionName, ActionConfig>
+type ActionConfigMap = Map<string, ActionConfig>
 
 interface GenericControllerConfig {
     path?: string
     map: ActionConfigMap
-    actions(): ActionName[]
+    actions(): string[]
 }
 
 function getActionName(method: ActionNotation) {
@@ -91,6 +90,13 @@ class ControllerBuilder {
      */
     actions(...notations: ActionNotation[]) {
         return new ActionsBuilder(this.map, notations.map(x => getActionName(x)))
+    }
+
+    /**
+     * Configure multiple generic controller actions based on their name
+     */
+    actionNames(...names: string[]){
+        return new ActionsBuilder(this.map, names)
     }
 
     /**
@@ -170,11 +176,11 @@ class ControllerBuilder {
 }
 
 class ActionsBuilder {
-    constructor(private actions: ActionConfigMap, protected names: ActionName[]) {
+    constructor(private actions: ActionConfigMap, protected names: string[]) {
         this.setConfig(names, {})
     }
 
-    protected setConfig(names: ActionName[], config: ActionConfig) {
+    protected setConfig(names: string[], config: ActionConfig) {
         for (const action of names) {
             const cnf = this.actions.get(action)!
             this.actions.set(action, { ...cnf, ...config })
@@ -290,7 +296,7 @@ function authorizeActions(config: GenericControllerConfig) {
     for (const action of actions) {
         const opt = config.map.get(action)
         if (!opt || !opt.authorize) continue
-        result.push(authorize.custom({ policies: opt.authorize }, { access: "route", applyTo: action, tag: opt.authorize.join("|") }))
+        result.push(authorize.custom(opt.authorize, { access: "route", applyTo: action, tag: opt.authorize.join("|") }))
     }
     return result
 }

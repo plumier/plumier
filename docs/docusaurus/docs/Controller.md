@@ -8,6 +8,31 @@ Controller is a group of similar functionalities placed in a single class, for e
 ## Controller Naming
 Plumier doesn't strictly limit the controller name, except it must end with `Controller` word. This is useful when you have non controller class inside `controller/` directory. Controller naming best practice is using plural word, such as `AnimalsController`, `UsersController` 
 
+## Registration
+By default controller registered automatically by traversed through all files contains Controller class inside `controller/` directory.
+
+Position of the `controller/` directory should be the same directory level with the script file that call `Plumier.initialize()` method. 
+
+```typescript
+new Plumier()
+    .set(new WebApiFacility())
+    .initialize()
+    .then(koa => koa.listen(8000))
+```
+
+Registration above will search for controllers classes inside `controller/` directory that the same level as the script above.
+
+Its also possible to register controller in separate place using `ControllerFacility` using relative/absolute or glob path. 
+
+```typescript
+new Plumier()
+    .set(new WebApiFacility())
+    .set(new ControllerFacility({ controller: "api/*/*-controller.*(ts|js)", rootPath: "api/v1" }))
+    .set(new ControllerFacility({ controller: "controller/*-controller.*(ts|js)" }))
+    .initialize()
+    .then(koa => koa.listen(8000))
+```
+
 ## Parameter Binding
 Parameter binding is a Plumier feature to automatically bound request part (context/query/body) into action parameters. Plumier provided 3 kind of parameter binding: Decorator Binding, Name Binding, Model Binding. 
 
@@ -15,7 +40,7 @@ Parameter binding is a Plumier feature to automatically bound request part (cont
 * Name binding: Bind query or request body part into action parameter based on parameter name.
 * Model binding: Bind request body into parameter which is of type custom class and doesn't match above criteria (decorator binding, name binding)
 
-### Decorator Binding
+#### Decorator Binding
 Bind action parameter using `@bind` decorator like example below
 
 ```typescript
@@ -57,7 +82,7 @@ There are several built in binding decorator provided
 | `@bind.file()`    | Bind file into parameter. [See here](File-Upload.md#Bind-File-Parser) on detail how to use file binding |
 
 
-### Name Binding
+#### Name Binding
 Name binding is when action parameter automatically assigned with query parameter or part of body request based on its name. For example: 
 
 ```
@@ -122,7 +147,7 @@ class AnimalController {
 Example above showing that `type` parameter assigned with the query string `canine` and the request body spread into 3 parameters `name`, `birthDate` and `owner`.
 
 
-### Model Binding 
+#### Model Binding 
 Model binding is the default behavior of parameter binding. Plumier by default will assigned request body to any parameter that has custom class type and doesn't match any binding criteria (Name Binding/Decorator binding).
 
 ```typescript
@@ -155,7 +180,7 @@ body:
 
 Above code, the `animal` parameter in `save` action will automatically bound with request body.
 
-### File Binding 
+#### File Binding 
 Unlike File binding, File binding works like name binding and retrieve file(s) that already parsed into the parameter. Parameter type should be of type `FormFile`. 
 
 ```typescript
@@ -214,7 +239,7 @@ class PictureController {
 }
 ```
 
-### Binding Behavior
+#### Binding Behavior
 In order to properly bound the request, plumier use priority based on parameter binding kind above.
 
 * Decorator binding is be the first priority
@@ -224,10 +249,10 @@ In order to properly bound the request, plumier use priority based on parameter 
 Its mean when an action parameter decorated with `@bind` decorator it will not further check for name binding nor model binding. If an action parameter doesn't decorated with `@bind` but its name match with a query parameter, it will not further check for model binding and so on.
 
 
-## Type Conversion
+## Type Converter
 Plumier automatically convert values provided by parameter binding match with parameter data type. If provided value doesn't match provided data type type http 422 error will be thrown. 
 
-### Number Converter
+#### Number Converter
 
 ```typescript
 export class AnimalController {
@@ -244,7 +269,7 @@ GET /animal/get?id=123.33 -> 123.33
 GET /animal/get?id=hello  -> Error status 400 
 ```
 
-### Boolean Converter
+#### Boolean Converter
 ```typescript
 export class AnimalController {
     @route.get()
@@ -264,7 +289,7 @@ GET /animal/get?id=Hello -> Error status 400
 // ON, OFF, YES, NO, TRUE, FALSE, 1, 0
 ```
 
-### Date Converter
+#### Date Converter
 ```typescript
 export class AnimalController {
     @route.get()
@@ -277,7 +302,7 @@ GET /animal/get?id=2018-2-1    -> equals to new Date(2018, 2, 1)
 GET /animal/get?id=hello       -> Error status 400
 ```
 
-### Object Converter
+#### Object Converter
 Object converter only works for POST and PUT method
 
 ```typescript
@@ -367,7 +392,7 @@ Animal {
 }
 ```
 
-### Array Converter
+#### Array Converter
 Array converter a little bit different due to TypeScript [design type emit limitation](https://github.com/Microsoft/TypeScript/issues/12463), use `@plumier/reflect` `@type()` decorator to specify array element data type.
 
 ```typescript
@@ -415,7 +440,7 @@ class AnimalController {
 }
 ```
 
-### Return Value Data Type 
+#### Return Value Data Type 
 To get the proper result (for swagger and response authorization) its required to specify data type of the action return value by using `@type` decorator. 
 
 ```typescript {5,11}
@@ -441,7 +466,7 @@ For more advance result that require setting http status or response header can 
 
 `ActionResult` is a special class that used to create an Http Response. `ActionResult` has ability to modify Http Response which make it possible to make a custom response such as return an html, file, file download etc. 
 
-### Action Result Signature
+#### Action Result Signature
 `ActionResult` signature has some similarities with the http response like below:
 
 ```typescript
@@ -467,7 +492,7 @@ return new ActionResult({ message: "The body" })
     .setHeader("key", "value")
 ```
 
-### Action Result Implementation
+#### Action Result Implementation
 Currently now Plumier has three types of `ActionResult` implementation: 
 
 * `ActionResult` by default will returned JSON response
@@ -487,7 +512,7 @@ class AnimalController {
 }
 ```
 
-### Custom Action Result
+#### Custom Action Result
 
 It is possible to extends the ability of `ActionResult` to modify the Http response to return custom http response. The main logic is on the `execute` method.
 
@@ -513,68 +538,14 @@ export class FileActionResult extends ActionResult {
 ## Throwing Errors
 Any uncaught error will automatically handled by Plumier and translated into http response with status 500. You can throw `HttpStatusError` to provide custom error message with some http status that will be rendered into proper JSON response with appropriate status.
 
-## Registration
-By default controller registration done by traverse through all files contains Controller class inside `controller/` directory.
-
-Position of the `controller/` directory should be the same directory level with the script file that call `Plumier.initialize()` method. 
-
 ```typescript
-new Plumier()
-    .set(new WebApiFacility())
-    .initialize()
-    .then(koa => koa.listen(8000))
-```
+import {route, response} from "plumier"
 
-Registration above will search for controllers classes inside `controller/` directory that the same level as the script above.
-
-Registration can be specified from `WebApiFacility` or `RestfulApiFacility` by providing one of below:
-
-### Absolute directory
-
-```typescript
-new Plumier()
-    .set(new WebApiFacility({ controller: join(__dirname, "custom-path") }))
-    .initialize()
-    .then(koa => koa.listen(8000))
-```
-
-### Relative directory
-
-```typescript
-new Plumier()
-    .set(new WebApiFacility({ controller: "custom-path" }))
-    .initialize()
-    .then(koa => koa.listen(8000))
-```
-
-### Controller class
-
-```typescript
-new Plumier()
-    .set(new WebApiFacility({ controller: AnimalsController }))
-    .initialize()
-    .then(koa => koa.listen(8000))
-```
-
-### Array of controller class 
-
-```typescript
-new Plumier()
-    .set(new WebApiFacility({ controller: [
-        AnimalsController,
-        UsersController
-    }))
-    .initialize()
-    .then(koa => koa.listen(8000))
-```
-
-Its also possible to register controller in separate place using `ControllerFacility` using relative/absolute or glob path. 
-
-```typescript
-new Plumier()
-    .set(new WebApiFacility())
-    .set(new ControllerFacility({ controller: "api/*/*-controller.*(ts|js)", rootPath: "api/v1" }))
-    .set(new ControllerFacility({ controller: "controller/*-controller.*(ts|js)" }))
-    .initialize()
-    .then(koa => koa.listen(8000))
+class AnimalController {
+    @route.get()
+    index(){
+        // other code 
+        throw new HttpStatusError(400, "Please provide a good request")
+    }
+}
 ```

@@ -1,4 +1,4 @@
-import { AuthPolicy, Class, DefaultFacility, findClassRecursive, globalPolicies, PlumierApplication } from "@plumier/core"
+import { analyzeAuthPolicyNameConflict, Authenticated, AuthenticatedAuthPolicy, AuthPolicy, Class, createMistypeRouteAnalyzer, DefaultFacility, findClassRecursive, globalPolicies, PlumierApplication, PublicAuthPolicy, RouteMetadata, updateRouteAuthorizationAccess } from "@plumier/core"
 import KoaJwt from "koa-jwt"
 import { join } from "path"
 import { Context } from "koa"
@@ -11,8 +11,7 @@ export type RoleField = string | ((value: any) => Promise<string[]>)
 
 export interface JwtAuthFacilityOption {
     secret?: string,
-    roleField?: RoleField,
-    global?: (...args: any[]) => void,
+    global?: string | string[],
     authPolicies?: Class<AuthPolicy> | Class<AuthPolicy>[] | string | string[]
 }
 
@@ -37,13 +36,13 @@ async function getPoliciesByFile(root: string, opt: Class<AuthPolicy> | Class<Au
 // --------------------------- TOKEN RESOLVER -------------------------- //
 // --------------------------------------------------------------------- //
 
-function resolveAuthorizationHeader(ctx: Context, opts:KoaJwt.Options) {
-    if (!ctx.header || !ctx.header.authorization) 
+function resolveAuthorizationHeader(ctx: Context, opts: KoaJwt.Options) {
+    if (!ctx.header || !ctx.header.authorization)
         return;
     const parts = ctx.header.authorization.trim().split(' ');
     if (parts.length === 2) {
         const scheme = parts[0];
-        const credentials:string = parts[1];
+        const credentials: string = parts[1];
 
         if (/^Bearer$/i.test(scheme)) {
             return credentials;
@@ -52,11 +51,11 @@ function resolveAuthorizationHeader(ctx: Context, opts:KoaJwt.Options) {
     throw new Error("Only Bearer authorization scheme supported")
 }
 
-function resolveCookies(ctx: Context, opts:KoaJwt.Options) {
+function resolveCookies(ctx: Context, opts: KoaJwt.Options) {
     return opts.cookie && ctx.cookies.get(opts.cookie);
 }
 
-function getToken(ctx: Context, opts:KoaJwt.Options) {
+function getToken(ctx: Context, opts: KoaJwt.Options) {
     return resolveAuthorizationHeader(ctx, opts) ?? resolveCookies(ctx, opts)!
 }
 
@@ -68,16 +67,30 @@ export class JwtAuthFacility extends DefaultFacility {
     constructor(private option?: JwtAuthFacilityOption & Partial<KoaJwt.Options>) { super() }
 
     async preInitialize(app: Readonly<PlumierApplication>) {
-        const authPolicies = !!this.option?.authPolicies ?
+        // set auth policies
+        const configPolicies = !!this.option?.authPolicies ?
             globalPolicies.concat(await getPoliciesByFile(app.config.rootDir, this.option.authPolicies)) :
             globalPolicies
+        const authPolicies = [PublicAuthPolicy, AuthenticatedAuthPolicy, ...configPolicies]
         app.set({ authPolicies })
+        // analyze auth policies and throw error
+        analyzeAuthPolicyNameConflict(authPolicies)
+        // set auth policies analyzers
+        const defaultAnalyzers = app.config.analyzers ?? []
+        const analyzers = createMistypeRouteAnalyzer(authPolicies)
+        app.set({analyzers: [...defaultAnalyzers, ...analyzers]})
+    }
+
+    async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]) {
+        // show authorization applied for route analysis
+        updateRouteAuthorizationAccess(routes, app.config)
     }
 
     setup(app: Readonly<PlumierApplication>) {
         app.set({ enableAuthorization: true })
-        app.set({ roleField: this.option?.roleField || "role" })
-        app.set({ globalAuthorizationDecorators: this.option?.global })
+        // global authorization if not defined then its Authenticated by default
+        const globalAuthorizations = !this.option?.global || this.option.global.length === 0 ? [Authenticated] : this.option.global
+        app.set({ globalAuthorizations })
         const secret = this.option?.secret ?? process.env.PLUM_JWT_SECRET
         if (!secret) throw new Error("JWT Secret not provided. Provide secret on JwtAuthFacility constructor or environment variable PLUM_JWT_SECRET")
         app.koa.use(KoaJwt({ cookie: "Authorization", getToken, ...this.option, secret, passthrough: true }))

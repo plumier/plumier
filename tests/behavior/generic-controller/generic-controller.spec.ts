@@ -5,6 +5,7 @@ import {
     api,
     Authenticated,
     authorize,
+    authPolicy,
     bind,
     Configuration,
     DefaultControllerGeneric,
@@ -312,9 +313,12 @@ describe("Route Generator", () => {
                     public email: string
                 ) { }
             }
+            const authPolicies = [
+                authPolicy().define("admin", i => i.user?.role === "admin")
+            ]
             const mock = console.mock()
             await createApp({ controller: [User] })
-                .set(new JwtAuthFacility({ secret: "secret" }))
+                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -330,34 +334,19 @@ describe("Route Generator", () => {
                     public email: string
                 ) { }
             }
+            const authPolicies = [
+                authPolicy().define("admin", i => i.user?.role === "admin")
+            ]
             const mock = console.mock()
             await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
+                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to set public authorizer from entity", async () => {
             @route.controller()
             @domain()
-            @authorize.public()
-            class User {
-                constructor(
-                    @entity.primaryId()
-                    public id: number,
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = console.mock()
-            await createApp({ controller: [User] })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set custom authorizer from entity", async () => {
-            @route.controller()
-            @domain()
-            @authorize.custom(x => (x.user && x.user.role) === "Admin", { access: "route" })
+            @authorize.route("Public")
             class User {
                 constructor(
                     @entity.primaryId()
@@ -697,9 +686,12 @@ describe("Route Generator", () => {
                 @route.controller()
                 public animals: Animal[]
             }
+            const authPolicies = [
+                authPolicy().define("admin", i => i.user?.role === "admin")
+            ]
             const mock = console.mock()
             await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
+                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -723,9 +715,12 @@ describe("Route Generator", () => {
                 @route.controller()
                 public animals: Animal[]
             }
+            const authPolicies = [
+                authPolicy().define("admin", i => i.user?.role === "admin")
+            ]
             const mock = console.mock()
             await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret" }))
+                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2490,14 +2485,34 @@ describe("Controller Builder", () => {
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
+        it("Should able to ignore routes by specify its name", async () => {
+            @route.controller(c => {
+                c.actionNames("save", "list").ignore()
+            })
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = console.mock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
     })
     describe("Authorization", () => {
         function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
+            const admin = authPolicy().define("Admin", x => x.user?.role === "Admin")
+            const superAdmin = authPolicy().define("SuperAdmin", x => x.user?.role === "SuperAdmin")
+            const authPolicies = [admin, superAdmin]
             return new Plumier()
                 .set({ ...config })
                 .set(new WebApiFacility())
                 .set(new ControllerFacility(opt))
-                .set(new JwtAuthFacility({ secret: "lorem" }))
+                .set(new JwtAuthFacility({ secret: "lorem", authPolicies }))
         }
         it("Should able to authorize specific routes", async () => {
             @route.controller(c => c.mutators().authorize("Admin"))
@@ -2626,6 +2641,23 @@ describe("Controller Builder", () => {
             @route.controller(c => {
                 c.mutators().authorize("Admin")
                 c.accessors().authorize(Authenticated)
+            })
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = console.mock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to authorize routes by specify its name", async () => {
+            @route.controller(c => {
+                c.actionNames("save", "get").authorize("Admin")
             })
             @domain()
             class User {

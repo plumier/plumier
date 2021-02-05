@@ -3,6 +3,7 @@ module.exports = {
     "fundamentals",
     "tutorial-01",
     "controller",
+    "security",
     "generic-controller",
     {
       "Data Access": [
