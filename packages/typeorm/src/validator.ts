@@ -15,6 +15,9 @@ async function isUnique(value: string, target: Class, field: string, method: str
 
 declare module "@plumier/validator" {
     namespace val {
+        /**
+         * Check if specified property is unique, checked using TypeORM functions
+         */
         function unique(): CustomPropertyDecorator
     }
 }

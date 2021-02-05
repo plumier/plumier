@@ -17,6 +17,9 @@ async function isUnique(value: string, target: Class | undefined, field: string,
 
 declare module "@plumier/validator" {
     namespace val {
+        /**
+         * Check if specified property is unique, checked using Mongoose functions
+         */
         function unique(helper?:MongooseHelper): (target: any, name: string, index?: any) => void
     }
 }
