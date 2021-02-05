@@ -112,6 +112,34 @@ Array [
 ]
 `;
 
+exports[`Controller Builder Authorization Should able to authorize routes by specify its name 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Admin         POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Admin         GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`Controller Builder Authorization Should able to authorize specific routes 1`] = `
 Array [
   Array [],
@@ -293,6 +321,28 @@ Array [
   ],
   Array [
     "2. DefaultControllerGeneric.get  -> GET /user/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Controller Builder Ignore Route Should able to ignore routes by specify its name 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.get             -> GET    /user/:id",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.replace         -> PUT    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
   ],
   Array [],
 ]
