@@ -2485,6 +2485,23 @@ describe("Controller Builder", () => {
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
+        it("Should able to ignore routes by specify its name", async () => {
+            @route.controller(c => {
+                c.actionNames("save", "list").ignore()
+            })
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = console.mock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
     })
     describe("Authorization", () => {
         function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
@@ -2624,6 +2641,23 @@ describe("Controller Builder", () => {
             @route.controller(c => {
                 c.mutators().authorize("Admin")
                 c.accessors().authorize(Authenticated)
+            })
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const mock = console.mock()
+            await createApp({ controller: User }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to authorize routes by specify its name", async () => {
+            @route.controller(c => {
+                c.actionNames("save", "get").authorize("Admin")
             })
             @domain()
             class User {
