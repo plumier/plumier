@@ -644,7 +644,7 @@ describe("Class Scope Validation", () => {
 describe("Enums Validation", () => {
     it("Should validate based on enum values", async () => {
         class AnimalController {
-            get(@val.enums({ enums: ["Male", "Female"] }) gender: "Male" | "Female") { }
+            get(@val.enums(["Male", "Female"]) gender: "Male" | "Female") { }
         }
         const koa = await fixture(AnimalController).initialize()
         await Supertest(koa.callback())

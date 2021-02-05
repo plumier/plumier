@@ -213,7 +213,7 @@ describe("Validator Decorator Tests", () => {
     })
     
     test("matches", async () => {
-        expect(await harness({ validator: val.matches({ message: "Lorem ipsum dolor", pattern: "^[a-z0-9 ]+$" }), type: String, testValue: "the;hero" }))
+        expect(await harness({ validator: val.regex({ message: "Lorem ipsum dolor", pattern: /^[a-z0-9 ]+$/ }), type: String, testValue: "the;hero" }))
             .toMatchObject([{path: ["data", "property"], messages: ["Lorem ipsum dolor"]}])
     })
     

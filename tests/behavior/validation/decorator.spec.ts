@@ -213,7 +213,7 @@ describe("Validator Decorator Tests", () => {
     })
 
     test("matches", async () => {
-        expect(await harness({ validator: val.matches({ pattern: "^[a-z0-9 ]+$" }), type: String, testValue: "the;hero" }))
+        expect(await harness({ validator: val.regex(/^[a-z0-9 ]+$/), type: String, testValue: "the;hero" }))
             .toMatchObject([{ path: ["data", "property"], messages: ["Invalid string"] }])
     })
 
