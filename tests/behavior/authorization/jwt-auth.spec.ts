@@ -948,6 +948,28 @@ describe("JwtAuth", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
         })
+
+        it("Should not showing readonly and writeonly error message", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    @authorize.readonly()
+                    @authorize.writeonly()
+                    public name:string,
+                ){}
+            }
+            class AnimalController {
+                @route.post()
+                @type([Animal])
+                authenticated() { }
+            }
+            const mock = console.mock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
     })
 
     describe("Default Configuration", () => {
