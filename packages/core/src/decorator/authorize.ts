@@ -1,6 +1,6 @@
 import { CustomPropertyDecorator, decorate, mergeDecorator } from "@plumier/reflect"
 
-import { AccessModifier, Authenticated, AuthorizeDecorator } from "../authorization"
+import { AccessModifier, Authenticated, AuthorizeDecorator, AuthorizeReadonly, AuthorizeWriteonly } from "../authorization"
 import { ApplyToOption, FilterQueryType } from "../types"
 import { api } from "./api"
 
@@ -143,14 +143,14 @@ class AuthDecoratorImpl {
      * Mark parameter or property as readonly, no Role can set its value
      */
     readonly(): CustomPropertyDecorator {
-        return mergeDecorator(this.write("plumier::readonly"), api.readonly())
+        return mergeDecorator(this.write(AuthorizeReadonly), api.readonly())
     }
 
     /**
      * Mark parameter or property as writeonly, no Role can read its value
      */
     writeonly(): CustomPropertyDecorator {
-        return mergeDecorator(this.read("plumier::writeonly"), api.writeonly())
+        return mergeDecorator(this.read(AuthorizeWriteonly), api.writeonly())
     }
 }
 
