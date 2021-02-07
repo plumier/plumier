@@ -2988,6 +2988,25 @@ describe("JwtAuth", () => {
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .expect(200)
         })
+        it("Should able to load external auth by default", async () => {
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
         it("Should able to load external auth policy", async () => {
             class AnimalController {
                 @authorize.route("HasUser")
@@ -3093,10 +3112,10 @@ describe("JwtAuth", () => {
         })
         it("Should able to register to global auth policies", async () => {
             class AnimalController {
-                @authorize.route("HasUser")
+                @authorize.route("UseUser")
                 get() { return "Hello" }
             }
-            authPolicy().register("HasUser", i => i.user?.role === "user")
+            authPolicy().register("UseUser", i => i.user?.role === "user")
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({
                     secret: SECRET
