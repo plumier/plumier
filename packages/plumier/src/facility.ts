@@ -197,6 +197,10 @@ export class ControllerFacility extends DefaultFacility {
         super()
     }
 
+    setup(app:Readonly<PlumierApplication>){
+        app.set({ controller: "__UNSET__" })
+    }
+
     async generateRoutes(app: Readonly<PlumierApplication>) {
         const { rootDir } = app.config
         const controller = this.option.controller

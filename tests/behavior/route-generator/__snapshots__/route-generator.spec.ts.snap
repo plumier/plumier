@@ -252,57 +252,11 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. AnimalController.get()   -> GET /animal/get
- - error Duplicate route found in AnimalController.get() AnimalController.get() AnimalController.get()",
+    "1. AnimalController.get()  -> GET /animal/get
+ - error Duplicate route found in AnimalController.get() AnimalController.get()",
   ],
   Array [
-    "2. BeastController.get()    -> GET /beast/get",
-  ],
-  Array [
-    "3. CreatureController.get() -> GET /creature/get",
-  ],
-  Array [
-    "4. AnimalController.get()   -> GET /animal/get
- - error Duplicate route found in AnimalController.get() AnimalController.get() AnimalController.get()",
-  ],
-  Array [
-    "5. CatController.get()      -> GET /kitty/get",
-  ],
-  Array [
-    "6. DuckController.get()     -> GET /quack/get",
-  ],
-  Array [
-    "7. ChickenController.get()  -> GET /chicken",
-  ],
-  Array [
-    "8. AnimalController.get()   -> GET /animal/get
- - error Duplicate route found in AnimalController.get() AnimalController.get() AnimalController.get()",
-  ],
-  Array [],
-]
-`;
-
-exports[`Route Grouping Should able to combine with default controller path 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. AnimalController.get()   -> GET /animal/get",
-  ],
-  Array [
-    "2. BeastController.get()    -> GET /beast/get",
-  ],
-  Array [
-    "3. CreatureController.get() -> GET /creature/get",
-  ],
-  Array [],
-  Array [
-    "1. AnimalController.get()  -> GET /api/v1/animal/get",
-  ],
-  Array [
-    "2. CatController.get()     -> GET /api/v1/kitty/get",
+    "2. CatController.get()     -> GET /kitty/get",
   ],
   Array [
     "3. DuckController.get()    -> GET /quack/get",
@@ -310,9 +264,9 @@ Array [
   Array [
     "4. ChickenController.get() -> GET /chicken",
   ],
-  Array [],
   Array [
-    "1. AnimalController.get() -> GET /api/v2/animal/get",
+    "5. AnimalController.get()  -> GET /animal/get
+ - error Duplicate route found in AnimalController.get() AnimalController.get()",
   ],
   Array [],
 ]
@@ -436,6 +390,32 @@ Array [
   Array [
     "5. AnimalController.get()  -> GET /api/v1/animal/get
  - error Duplicate route found in AnimalController.get() AnimalController.get()",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Grouping Should skip global controller setting if ControllerFacilityProvided 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.get()  -> GET /api/v1/animal/get",
+  ],
+  Array [
+    "2. CatController.get()     -> GET /api/v1/kitty/get",
+  ],
+  Array [
+    "3. DuckController.get()    -> GET /quack/get",
+  ],
+  Array [
+    "4. ChickenController.get() -> GET /chicken",
+  ],
+  Array [],
+  Array [
+    "1. AnimalController.get() -> GET /api/v2/animal/get",
   ],
   Array [],
 ]

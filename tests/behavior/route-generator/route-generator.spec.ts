@@ -1719,7 +1719,7 @@ describe("Route Grouping", () => {
         expect(mock.mock.calls).toMatchSnapshot()
         console.mockClear()
     })
-    it("Should able to combine with default controller path", async () => {
+    it("Should skip global controller setting if ControllerFacilityProvided", async () => {
         const mock = console.mock()
         await createApp()
             .set({ controller: "./controller" })
