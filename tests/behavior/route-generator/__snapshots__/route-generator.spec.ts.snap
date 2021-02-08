@@ -509,3 +509,83 @@ Array [
   Array [],
 ]
 `;
+
+exports[`Router with external controller Should load controllers 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. HomeController.get()     -> GET /home/get",
+  ],
+  Array [
+    " 2. AnimalController.get()   -> GET /animal/get
+ - error Duplicate route found in AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get()",
+  ],
+  Array [
+    " 3. BeastController.get()    -> GET /beast/get
+ - error Duplicate route found in BeastController.get() BeastController.get()",
+  ],
+  Array [
+    " 4. CreatureController.get() -> GET /creature/get
+ - error Duplicate route found in CreatureController.get() CreatureController.get()",
+  ],
+  Array [
+    " 5. AnimalController.get()   -> GET /animal/get
+ - error Duplicate route found in AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get()",
+  ],
+  Array [
+    " 6. BeastController.get()    -> GET /beast/get
+ - error Duplicate route found in BeastController.get() BeastController.get()",
+  ],
+  Array [
+    " 7. CreatureController.get() -> GET /creature/get
+ - error Duplicate route found in CreatureController.get() CreatureController.get()",
+  ],
+  Array [
+    " 8. UsersController.save()   -> GET /users/save",
+  ],
+  Array [
+    " 9. AnimalController.get()   -> GET /animal/get
+ - error Duplicate route found in AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get()",
+  ],
+  Array [
+    "10. CatController.get()      -> GET /kitty/get
+ - error Duplicate route found in CatController.get() CatController.get()",
+  ],
+  Array [
+    "11. DuckController.get()     -> GET /quack/get
+ - error Duplicate route found in DuckController.get() DuckController.get()",
+  ],
+  Array [
+    "12. ChickenController.get()  -> GET /chicken
+ - error Duplicate route found in ChickenController.get() ChickenController.get()",
+  ],
+  Array [
+    "13. AnimalController.get()   -> GET /animal/get
+ - error Duplicate route found in AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get()",
+  ],
+  Array [
+    "14. AnimalController.get()   -> GET /animal/get
+ - error Duplicate route found in AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get()",
+  ],
+  Array [
+    "15. CatController.get()      -> GET /kitty/get
+ - error Duplicate route found in CatController.get() CatController.get()",
+  ],
+  Array [
+    "16. DuckController.get()     -> GET /quack/get
+ - error Duplicate route found in DuckController.get() DuckController.get()",
+  ],
+  Array [
+    "17. ChickenController.get()  -> GET /chicken
+ - error Duplicate route found in ChickenController.get() ChickenController.get()",
+  ],
+  Array [
+    "18. AnimalController.get()   -> GET /animal/get
+ - error Duplicate route found in AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get() AnimalController.get()",
+  ],
+  Array [],
+]
+`;

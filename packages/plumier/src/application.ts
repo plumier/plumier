@@ -26,7 +26,7 @@ export class Plumier implements PlumierApplication {
         this.config = {
             mode: "debug",
             controller: [
-                __filename,
+                require.main!.filename,
                 "./controller", 
                 "./**/*controller.+(ts|js)",
                 "./**/*entity.+(ts|js)"
