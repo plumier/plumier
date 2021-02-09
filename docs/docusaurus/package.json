@@ -1,6 +1,6 @@
 {
   "name": "plumier-docs",
-  "version": "1.0.0-rc.5",
+  "version": "1.0.0-rc.6",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",

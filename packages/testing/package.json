@@ -1,6 +1,6 @@
 {
   "name": "@plumier/testing",
-  "version": "1.0.0-rc.5",
+  "version": "1.0.0-rc.6",
   "description": "Plumier testing modules",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
