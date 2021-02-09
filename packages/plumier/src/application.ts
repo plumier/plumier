@@ -25,7 +25,12 @@ export class Plumier implements PlumierApplication {
         this.koa = new Koa()
         this.config = {
             mode: "debug",
-            controller: "./controller",
+            controller: [
+                require.main!.filename,
+                "./controller", 
+                "./**/*controller.+(ts|js)",
+                "./**/*entity.+(ts|js)"
+            ],
             dependencyResolver: new DefaultDependencyResolver(),
             middlewares: [],
             facilities: [],

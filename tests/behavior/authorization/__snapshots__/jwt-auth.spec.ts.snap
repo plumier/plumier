@@ -112,6 +112,19 @@ Array [
 ]
 `;
 
+exports[`JwtAuth Analyzer Message Should not showing readonly and writeonly error message 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated() -> Authenticated POST /animal/authenticated",
+  ],
+  Array [],
+]
+`;
+
 exports[`JwtAuth Analyzer Message Should print access on virtual route 1`] = `
 Array [
   Array [],

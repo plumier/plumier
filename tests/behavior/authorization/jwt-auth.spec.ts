@@ -24,8 +24,6 @@ import { authorize, domain, route, val } from "plumier"
 import Supertest from "supertest"
 import { expectError, fixture } from "../helper"
 
-
-
 const SECRET = "super secret"
 const USER_TOKEN = sign({ email: "ketut@gmail.com", role: "user" }, SECRET)
 const ADMIN_TOKEN = sign({ email: "ketut@gmail.com", role: "admin" }, SECRET)
@@ -33,6 +31,7 @@ const SUPER_ADMIN_TOKEN = sign({ email: "ketut@gmail.com", role: "superadmin" },
 
 const createPolicy = (name: string) => authPolicy().define(name, x => x.user?.role === name)
 const authPolicies = [createPolicy("user"), createPolicy("admin"), createPolicy("superadmin")]
+export const SecretPolicy = authPolicy().define("Secret", ({ user }) => !!user)
 
 describe("JwtAuth", () => {
     describe("Basic Authorization", () => {
@@ -877,7 +876,7 @@ describe("JwtAuth", () => {
 
         it("Should detect mistyped auth name on action parameter", async () => {
             class AnimalController {
-                authenticated(@authorize.write("lorem") id: string, name:string) { }
+                authenticated(@authorize.write("lorem") id: string, name: string) { }
             }
             const mock = console.mock()
             await fixture(AnimalController, { mode: "debug" })
@@ -892,8 +891,8 @@ describe("JwtAuth", () => {
             class Animal {
                 constructor(
                     @authorize.write("lorem")
-                    public name:string
-                ){}
+                    public name: string
+                ) { }
             }
             class AnimalController {
                 @route.post()
@@ -912,8 +911,8 @@ describe("JwtAuth", () => {
             class Animal {
                 constructor(
                     @authorize.read("lorem")
-                    public name:string
-                ){}
+                    public name: string
+                ) { }
             }
             class AnimalController {
                 @route.post()
@@ -933,8 +932,30 @@ describe("JwtAuth", () => {
             class Animal {
                 constructor(
                     @authorize.read("lorem")
-                    public name:string
-                ){}
+                    public name: string
+                ) { }
+            }
+            class AnimalController {
+                @route.post()
+                @type([Animal])
+                authenticated() { }
+            }
+            const mock = console.mock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
+
+        it("Should not showing readonly and writeonly error message", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    @authorize.readonly()
+                    @authorize.writeonly()
+                    public name: string,
+                ) { }
             }
             class AnimalController {
                 @route.post()
@@ -2787,6 +2808,22 @@ describe("JwtAuth", () => {
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .expect(200)
         })
+        it("Should load policy in current file by default", async () => {
+            class AnimalController {
+                @authorize.route("Secret")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .expect(403)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
         it("Should able to create custom auth policy using lambda", async () => {
             class AnimalController {
                 @authorize.route("HasUser")
@@ -2966,6 +3003,25 @@ describe("JwtAuth", () => {
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .expect(200)
         })
+        it("Should able to load external auth by default", async () => {
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(401)
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+        })
         it("Should able to load external auth policy", async () => {
             class AnimalController {
                 @authorize.route("HasUser")
@@ -3071,10 +3127,10 @@ describe("JwtAuth", () => {
         })
         it("Should able to register to global auth policies", async () => {
             class AnimalController {
-                @authorize.route("HasUser")
+                @authorize.route("UseUser")
                 get() { return "Hello" }
             }
-            authPolicy().register("HasUser", i => i.user?.role === "user")
+            authPolicy().register("UseUser", i => i.user?.role === "user")
             const app = await fixture(AnimalController)
                 .set(new JwtAuthFacility({
                     secret: SECRET

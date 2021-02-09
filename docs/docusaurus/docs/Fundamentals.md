@@ -437,11 +437,9 @@ This style usually used by Express for small app with a fewer code. Put all cont
 
 ```typescript
 new Plumier()
-    .set(new WebApiFacility({ controller: ___filename }))
+    .set(new WebApiFacility())
     .listen(8000)
 ```
-
-By providing `__filename` you ask Plumier to search your controllers in the same file. 
 
 #### Classic MVC Style 
 This is default style supported by Plumier. Classic MVC style app separate project files by functionalities such as `controllers`, `models`, `repositories`, `entities`, `services` etc.
@@ -477,6 +475,8 @@ new Plumier()
 #### Modular Style 
 This style usually used by modern frameworks, files separated by module per directory, each directory consist of controller, model, service, entity etc separated in different files. 
 
+To use this style you must follow the file name convention by creating file ends with `controller` word like below.
+
 ```
 + src/
   + item/
@@ -495,11 +495,10 @@ This style usually used by modern frameworks, files separated by module per dire
 - tsconfig.json
 ```
 
-Use `ControllerFacility` to locate the controller location. Plumier will automatically search through all files to find controllers.
+No more setup required to use this style, Plumier will automatically search through all files to find controllers.
 
 ```typescript
 new Plumier()
     .set(new WebApiFacility())
-    .set(new ControllerFacility({ controller: "./*/*.controller.{ts,js}" }))
     .listen(8000)
 ```

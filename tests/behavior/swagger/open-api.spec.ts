@@ -2335,26 +2335,6 @@ describe("Open API 3.0 Generation", () => {
                 .get("/swagger/v2/swagger.json")
                 .expect(200)
         })
-        it("Should able to separated with default controller", async () => {
-            class AnimalController {
-                @route.get()
-                method() { }
-            }
-            const app = await createApp()
-                .set({ controller: AnimalController })
-                .set(new ControllerFacility({ controller: AnimalController, group: "v1", rootPath: "api/v1" }))
-                .set(new ControllerFacility({ controller: AnimalController, group: "v2", rootPath: "api/v2" }))
-                .initialize()
-            await supertest(app.callback())
-                .get("/swagger/swagger.json")
-                .expect(200)
-            await supertest(app.callback())
-                .get("/swagger/v1/swagger.json")
-                .expect(200)
-            await supertest(app.callback())
-                .get("/swagger/v2/swagger.json")
-                .expect(200)
-        })
     })
 
     describe("Request Body With Relation Property", () => {

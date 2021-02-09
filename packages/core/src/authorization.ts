@@ -98,6 +98,8 @@ function getErrorLocation(metadata: Metadata) {
 
 const Public = "Public"
 const Authenticated = "Authenticated"
+const AuthorizeReadonly = "plumier::readonly"
+const AuthorizeWriteonly = "plumier::writeonly"
 type EntityProviderQuery<T = any> = (entity: Class, id: any) => Promise<T>
 interface EntityPolicyProviderDecorator { kind: "plumier-meta:entity-policy-provider", entity: Class, idParam: string }
 type EntityPolicyAuthorizerFunction = (ctx: AuthorizerContext, id: any) => boolean | Promise<boolean>
@@ -152,6 +154,20 @@ class AuthenticatedAuthPolicy extends CustomAuthPolicy {
     name = Authenticated
     async authorize(ctx: AuthorizationContext): Promise<boolean> {
         return !!ctx.user
+    }
+}
+
+class ReadonlyAuthPolicy extends CustomAuthPolicy {
+    name = AuthorizeReadonly
+    async authorize(ctx: AuthorizationContext): Promise<boolean> {
+        return false
+    }
+}
+
+class WriteonlyAuthPolicy extends CustomAuthPolicy {
+    name = AuthorizeWriteonly
+    async authorize(ctx: AuthorizationContext): Promise<boolean> {
+        return false
     }
 }
 
@@ -628,5 +644,5 @@ export {
     AccessModifier, EntityPolicyProviderDecorator, EntityProviderQuery, PublicAuthPolicy, AuthenticatedAuthPolicy,
     authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, Public, Authenticated,
     AuthPolicy, CustomAuthPolicy, EntityAuthPolicy, globalPolicies, analyzeAuthPolicyNameConflict,
-    createMistypeRouteAnalyzer
+    createMistypeRouteAnalyzer, AuthorizeReadonly, AuthorizeWriteonly, ReadonlyAuthPolicy, WriteonlyAuthPolicy
 }

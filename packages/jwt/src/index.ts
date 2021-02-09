@@ -1,6 +1,6 @@
-import { analyzeAuthPolicyNameConflict, Authenticated, AuthenticatedAuthPolicy, AuthPolicy, Class, createMistypeRouteAnalyzer, DefaultFacility, findClassRecursive, globalPolicies, PlumierApplication, PublicAuthPolicy, RouteMetadata, updateRouteAuthorizationAccess } from "@plumier/core"
+import { analyzeAuthPolicyNameConflict, Authenticated, AuthenticatedAuthPolicy, AuthPolicy, Class, createMistypeRouteAnalyzer, DefaultFacility, findClassRecursive, globalPolicies, PlumierApplication, PublicAuthPolicy, ReadonlyAuthPolicy, RouteMetadata, updateRouteAuthorizationAccess, WriteonlyAuthPolicy } from "@plumier/core"
 import KoaJwt from "koa-jwt"
-import { join } from "path"
+import { join, isAbsolute } from "path"
 import { Context } from "koa"
 
 /* ------------------------------------------------------------------------------- */
@@ -24,7 +24,8 @@ async function getPoliciesByFile(root: string, opt: Class<AuthPolicy> | Class<Au
         return result
     }
     if (typeof opt === "string") {
-        const result = await findClassRecursive(join(root, opt))
+        const path = isAbsolute(opt) ? opt : join(root, opt)
+        const result = await findClassRecursive(path)
         return getPoliciesByFile(root, result.map(x => x.type))
     }
     else {
@@ -68,17 +69,17 @@ export class JwtAuthFacility extends DefaultFacility {
 
     async preInitialize(app: Readonly<PlumierApplication>) {
         // set auth policies
-        const configPolicies = !!this.option?.authPolicies ?
-            globalPolicies.concat(await getPoliciesByFile(app.config.rootDir, this.option.authPolicies)) :
-            globalPolicies
-        const authPolicies = [PublicAuthPolicy, AuthenticatedAuthPolicy, ...configPolicies]
+        const defaultPolicies = [PublicAuthPolicy, AuthenticatedAuthPolicy, ReadonlyAuthPolicy, WriteonlyAuthPolicy]
+        const defaultPath = [require.main!.filename, "./**/*policy.+(ts|js)"]
+        const configPolicies = globalPolicies.concat(await getPoliciesByFile(app.config.rootDir, this.option?.authPolicies ?? defaultPath))
+        const authPolicies = [...defaultPolicies, ...configPolicies]
         app.set({ authPolicies })
         // analyze auth policies and throw error
         analyzeAuthPolicyNameConflict(authPolicies)
         // set auth policies analyzers
         const defaultAnalyzers = app.config.analyzers ?? []
         const analyzers = createMistypeRouteAnalyzer(authPolicies)
-        app.set({analyzers: [...defaultAnalyzers, ...analyzers]})
+        app.set({ analyzers: [...defaultAnalyzers, ...analyzers] })
     }
 
     async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]) {

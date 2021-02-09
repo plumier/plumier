@@ -10,7 +10,9 @@ import { fixture } from "../helper"
 import { cleanupConsole } from "@plumier/testing"
 
 
-
+export class HomeController {
+    get(){}
+}
 
 
 describe("Route Generator", () => {
@@ -1526,13 +1528,11 @@ describe("Route Generator", () => {
 describe("Router with external controller", () => {
 
     it("Should load controllers", async () => {
-        console.mock()
+        const mock = console.mock()
         const app = await new Plumier()
             .set(new RestfulApiFacility())
             .initialize()
-        expect((console.log as any).mock.calls[2][0]).toContain("GET /animal/get")
-        expect((console.log as any).mock.calls[3][0]).toContain("GET /beast/get")
-        expect((console.log as any).mock.calls[4][0]).toContain("GET /creature/get")
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         console.mockClear()
     })
 
@@ -1719,7 +1719,7 @@ describe("Route Grouping", () => {
         expect(mock.mock.calls).toMatchSnapshot()
         console.mockClear()
     })
-    it("Should able to combine with default controller path", async () => {
+    it("Should skip global controller setting if ControllerFacilityProvided", async () => {
         const mock = console.mock()
         await createApp()
             .set({ controller: "./controller" })
