@@ -135,13 +135,10 @@ npm run debug
 
 On this step we will add API version by adding root path `/api/v1` for all generated routes. To do that we will need to configure the Plumier application bootstrap.
 
-Open the `src/app.ts` file and locate the `ControllerFacility` add another configuration `rootPath: "/api/v1"` on the parameter, so the code will be like below. 
+Open the `src/app.ts` file and locate the `WebApiFacility` add configuration `rootPath: "/api/v1"` on the parameter, so the code will be like below. 
 
 ```typescript {3}
-.set(new ControllerFacility({ 
-    controller: "./api/**/*-*(entity|controller).*(ts|js)",
-    rootPath: "/api/v1"
-}))
+.set(new WebApiFacility({ rootPath: "/api/v1" }))
 ```
 
 Save the file and see the log on terminal app will show our change like below.
