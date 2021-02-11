@@ -9,20 +9,9 @@ Controller is a group of similar functionalities placed in a single class, for e
 Plumier doesn't strictly limit the controller name, except it must end with `Controller` word. This is useful when you have non controller class inside `controller/` directory. Controller naming best practice is using plural word, such as `AnimalsController`, `UsersController` 
 
 ## Registration
-By default controller registered automatically by traversed through all files contains Controller class inside `controller/` directory.
+By default controller registered automatically by traversed through all files ends with `controller` recursively (`./**/*policy.+(ts|js)`). For example `user-controller.ts` or `user_controller.ts`. 
 
-Position of the `controller/` directory should be the same directory level with the script file that call `Plumier.initialize()` method. 
-
-```typescript
-new Plumier()
-    .set(new WebApiFacility())
-    .initialize()
-    .then(koa => koa.listen(8000))
-```
-
-Registration above will search for controllers classes inside `controller/` directory that the same level as the script above.
-
-Its also possible to register controller in separate place using `ControllerFacility` using relative/absolute or glob path. 
+Its also possible to register controller in specific place using `ControllerFacility` using relative/absolute or glob path. 
 
 ```typescript
 new Plumier()
@@ -32,6 +21,8 @@ new Plumier()
     .initialize()
     .then(koa => koa.listen(8000))
 ```
+
+But keep on mind that when using `ControllerFacility` the default registration behavior is overridden. 
 
 ## Parameter Binding
 Parameter binding is a Plumier feature to automatically bound request part (context/query/body) into action parameters. Plumier provided 3 kind of parameter binding: Decorator Binding, Name Binding, Model Binding. 

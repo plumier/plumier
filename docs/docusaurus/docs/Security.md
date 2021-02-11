@@ -121,18 +121,22 @@ authPolicy()
 Above example created several authorization policies named `User`, `Admin`, `SuperAdmin` by checking the `role` claim. Authorization policy allowed to returned `boolean` or `Promise<boolean>` for asynchronous authorization logic.
 
 :::note
-Plumier automatically search for file ends with `policy` (`./**/*policy.+(ts|js)`). If you are put your authorization policy file in separate file make sure to give the proper name. This behavior can be change using configuration below.
+Plumier has two predefined auth policy that is ready to use
+
+* `Public`:  Used to make resource accessible by public, this authorization callback is always return true.
+* `Authenticated`: Default auth policy, used to secure routes only for login user (role omitted).
+:::
+
+## Authorization Policy File Registration
+
+Authorization policy registration can be put anywhere with file name ends with `policy` (`./**/*policy.+(ts|js)`), for example `user-policy.ts` or `user_policy.ts`. 
+
+This behavior can be change using configuration below.
 
 ```typescript
 app.set(new JwtAuthFacility({ authPolicies: "./path/of/policies.*(ts|js)" }))
 ```
 The `authPolicies` configuration receive file path, directory or file glob to specify the location of the auth policy. 
-:::
-
-Plumier has two predefined auth policy that is ready to use
-
-* `Public`:  Used to make resource accessible by public, this authorization callback is always return true.
-* `Authenticated`: Default auth policy, used to secure routes only for login user (role omitted).
 
 ## Applying Authorization Policy
 
