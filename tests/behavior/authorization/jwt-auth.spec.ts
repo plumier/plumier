@@ -1975,6 +1975,55 @@ describe("JwtAuth", () => {
             })
         })
 
+        describe("ReadWrite authorization", () => {
+            @domain()
+            class User {
+                constructor(
+                    public name: string,
+                    @authorize.readWrite("admin")
+                    public role: string
+                ) { }
+            }
+            class UsersController {
+                @route.post()
+                save(user: User) { }
+                @reflect.type(User)
+                get() {
+                    return new User("John Doe", "admin")
+                }
+            }
+
+            it("Should able to authorize request by role", async () => {
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .post("/users/save")
+                    .send({ name: "John Doe", role: "admin" })
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200)
+                await Supertest(app.callback())
+                    .post("/users/save")
+                    .send({ name: "John Doe", role: "admin" })
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(401)
+            })
+
+            it("Should able to authorize response by role", async () => {
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { name: "John Doe", role: "admin" })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { name: "John Doe" })
+            })
+        })
+
     })
 
     describe("Response Authorization", () => {
