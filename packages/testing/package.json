@@ -14,13 +14,17 @@
     "TDD"
   ],
   "scripts": {
-    "compile": "tsc -p tsconfig.build.json"
+    "compile": "tsc -p tsconfig.build.json",
+    "copy-readme": "cpy ../../readme.md ."
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
     "@types/jest": "^26.0.20",
     "jest": "^26.6.3"
+  },
+  "devDependencies": {
+    "cpy-cli": "^3.1.1"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"

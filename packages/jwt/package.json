@@ -5,13 +5,17 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "compile": "tsc -p tsconfig.build.json"
+    "compile": "tsc -p tsconfig.build.json",
+    "copy-readme": "cpy ../../readme.md ."
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
     "@plumier/core": "1.0.0-rc.6",
     "koa-jwt": "^4.0.0"
+  },
+  "devDependencies": {
+    "cpy-cli": "^3.1.1"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"

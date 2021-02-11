@@ -6,7 +6,8 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "compile": "tsc -p tsconfig.build.json",
-    "postcompile": "cpy src/index.html lib"
+    "postcompile": "cpy src/index.html lib",
+    "copy-readme": "cpy ../../readme.md ."
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
