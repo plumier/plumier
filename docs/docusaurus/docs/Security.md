@@ -129,7 +129,7 @@ Plumier has two predefined auth policy that is ready to use
 
 ## Authorization Policy File Registration
 
-Authorization policy registration can be put anywhere with file name ends with `policy` (`./**/*policy.+(ts|js)`), for example `user-policy.ts` or `user_policy.ts`. 
+Authorization policy registration can be put anywhere with file name ends with `policy`, `controller` or `entity`, for example `user-policy.ts`, `user_policy.ts`, `user-controller.ts` etc. 
 
 This behavior can be change using configuration below.
 

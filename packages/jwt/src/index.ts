@@ -70,7 +70,7 @@ export class JwtAuthFacility extends DefaultFacility {
     async preInitialize(app: Readonly<PlumierApplication>) {
         // set auth policies
         const defaultPolicies = [PublicAuthPolicy, AuthenticatedAuthPolicy, ReadonlyAuthPolicy, WriteonlyAuthPolicy]
-        const defaultPath = [require.main!.filename, "./**/*policy.+(ts|js)"]
+        const defaultPath = [require.main!.filename, "./**/*policy.+(ts|js)", "./**/*controller.+(ts|js)", "./**/*entity.+(ts|js)"]
         const configPolicies = globalPolicies.concat(await getPoliciesByFile(app.config.rootDir, this.option?.authPolicies ?? defaultPath))
         const authPolicies = [...defaultPolicies, ...configPolicies]
         app.set({ authPolicies })
