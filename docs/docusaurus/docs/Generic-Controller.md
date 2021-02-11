@@ -415,7 +415,7 @@ Above code will generate routes below
 Plumier provide functionality to protect your data easily, you can use `@authorize` decorator to authorize user to write or read your entity property. 
 
 :::info
-Refer to [Authorization](Authorization.md) on how to setup user authorization on your Plumier application 
+Refer to [Security](Security.md) on how to setup user authorization on your Plumier application 
 :::
 
 ```typescript {13,20}
@@ -453,7 +453,6 @@ Above code showing that we apply `@authorize` decorator on `password` and `role`
 | `@authorize.read("SuperAdmin")`  | Protect property only can be read by specific role (`SuperAdmin`)            |
 | `@authorize.readonly()`          | Protect property only can be read and no other role can write it             |
 | `@authorize.writeonly()`         | Protect property only can be write and no other role can read it             |
-| `@authorize.custom()`            | Protect property using [custom authorizer function](Custom-Authorization.md) |
 
 
 ## Control Access To The Generated Routes 
@@ -702,7 +701,7 @@ Query callback signature for `getOne()` and `getMany()` is like below
 * `ctx` is the request context
 
 ## Entity Authorization Policy
-Entity Authorization Policy (Entity Policy) is a custom [auth policy](Authorization.md#policy-based-authorization) designed to secure entity based on authorization policy which the logic defined by you. 
+Entity Authorization Policy (Entity Policy) is a custom [auth policy](Security.md#authorization) designed to secure entity based on authorization policy which the logic defined by you. 
 
 With entity policy you can define current login user access to the entity programmatically instead of just using user role. Important to note that you can register the same name for different entity.
 
