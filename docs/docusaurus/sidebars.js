@@ -20,7 +20,6 @@ module.exports = {
         "application-startup",
         "routing",
         "validation",
-        "authorization",
         "middleware",
         "facility",
         "default-environment-variable"
@@ -33,7 +32,6 @@ module.exports = {
         "metaprogramming",
         "custom-parameter-binding",
         "custom-validator",
-        "custom-authorization",
         "custom-dependency-resolver",
         "custom-route-generator"
       ]
