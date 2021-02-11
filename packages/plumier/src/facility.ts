@@ -18,12 +18,38 @@ import BodyParser from "koa-body"
 import qs from "qs"
 
 export interface WebApiFacilityOption {
-    controller?: string | string[] | Class | Class[],
     bodyParser?: BodyParser.IKoaBodyOptions,
     cors?: Cors.Options | boolean,
+    
+    /**
+     * Trust X-Forwarded-For header 
+     */
     trustProxyHeader?: boolean,
+
+    /**
+     * Redirect all http request into https, enable trustProxyHeader option when using proxy server
+     */
     forceHttps?: boolean,
-    dependencyResolver?: DependencyResolver
+
+    /**
+     * Set custom dependency resolver for dependency injection
+     */
+    dependencyResolver?: DependencyResolver,
+
+    /**
+     * Root path of the endpoint generated, for example /api/v1
+     */
+    rootPath?: string
+
+    /**
+     * Controllers or controller path
+     */
+    controller?: string | string[] | Class | Class[],
+
+    /**
+     * Transform nested directories as route path, disabled when glob path specified on controller configuration, default true
+     */
+    directoryAsPath?: boolean
 }
 
 interface CustomQuery {
@@ -73,7 +99,7 @@ export class WebApiFacility extends DefaultFacility {
 
     async generateRoutes(app: Readonly<PlumierApplication>) {
         const { controller } = app.config
-        return generateRoutes(controller, { ...app.config })
+        return generateRoutes(controller, { ...app.config, ...this.opt })
     }
 
     setup(app: Readonly<PlumierApplication>) {
@@ -187,7 +213,7 @@ export interface ControllerFacilityOption {
     controller: string | string[] | Class | Class[],
 
     /**
-     * Transform nested directories as route path, default true
+     * Transform nested directories as route path, disabled when glob path specified on controller configuration, default true
      */
     directoryAsPath?: boolean
 }

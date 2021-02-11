@@ -1536,6 +1536,24 @@ describe("Router with external controller", () => {
         console.mockClear()
     })
 
+    it("Should able to specify rootPath", async () => {
+        const mock = console.mock()
+        const app = await new Plumier()
+            .set(new RestfulApiFacility({ rootPath: "api/v1"}))
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        console.mockClear()
+    })
+
+    it("Should able to disable directoryAsPath", async () => {
+        const mock = console.mock()
+        const app = await new Plumier()
+            .set(new RestfulApiFacility({ directoryAsPath:false, controller: "./nested" }))
+            .initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        console.mockClear()
+    })
+
     it("Should able to specify file instead of folder", async () => {
         console.mock()
         const app = await new Plumier()
