@@ -67,7 +67,7 @@ export class Plumier implements PlumierApplication {
             //get file location of script who initialized the application to calculate the controller path
             //module.parent.parent.filename -> because Plumier app also exported in plumier/src/index.ts
             if (this.config.rootDir === "__UNSET__")
-                (this.config as Configuration).rootDir = dirname(module.parent!.parent!.filename)
+                (this.config as Configuration).rootDir = dirname(require.main!.filename)
             //pre initialize
             for (const facility of this.config.facilities) {
                 await facility.preInitialize(this)
