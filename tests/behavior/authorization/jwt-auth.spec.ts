@@ -3257,6 +3257,22 @@ describe("JwtAuth", () => {
                 .initialize())
             expect(mock.mock.calls).toMatchSnapshot()
         })
+        it("Should able to register auth policy on the controller file", async () => {
+            const ADMIN_TOKEN = sign({ email: "ketut@gmail.com", role: "AbcAdmin" }, SECRET)
+            const app = await fixture("./controller/*controller.ts")
+                .set(new JwtAuthFacility({
+                    secret: SECRET
+                }))
+                .initialize()
+            await Supertest(app.callback())
+                .get("/user/get")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .get("/user/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(401)
+        })
     })
 
     describe("Entity Policy", () => {
