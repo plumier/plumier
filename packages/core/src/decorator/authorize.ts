@@ -132,6 +132,14 @@ class AuthDecoratorImpl {
     }
 
     /**
+     * Authorize domain or entity property only can be retrieved or set by specific policy
+     * @param policies List of allowed policies
+     */
+    readWrite(...policies: string[]): CustomPropertyDecorator {
+        return mergeDecorator(this.byPolicies(policies, "read"), this.byPolicies(policies, "write"))
+    }
+
+    /**
      * Authorize a domain property to be used as query string filter
      * @param policies List of allowed policies
      */
