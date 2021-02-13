@@ -446,13 +446,13 @@ class User {
 
 Above code showing that we apply `@authorize` decorator on `password` and `role` property which contains sensitive data. Using above configuration `password` will not be visible on any response, and `role` only can be set by `SuperAdmin` and `Admin`. Below list of authorization you can use to protect property of the entity
 
-| Decorator                        | Description                                                                  |
-| -------------------------------- | ---------------------------------------------------------------------------- |
-| `@authorize.route("SuperAdmin")` | Protect route can be accessed by specific role (`SuperAdmin`)                |
-| `@authorize.write("SuperAdmin")` | Protect property only can be write by specific role (`SuperAdmin`)           |
-| `@authorize.read("SuperAdmin")`  | Protect property only can be read by specific role (`SuperAdmin`)            |
-| `@authorize.readonly()`          | Protect property only can be read and no other role can write it             |
-| `@authorize.writeonly()`         | Protect property only can be write and no other role can read it             |
+| Decorator                        | Description                                                        |
+| -------------------------------- | ------------------------------------------------------------------ |
+| `@authorize.route("SuperAdmin")` | Protect route can be accessed by specific role (`SuperAdmin`)      |
+| `@authorize.write("SuperAdmin")` | Protect property only can be write by specific role (`SuperAdmin`) |
+| `@authorize.read("SuperAdmin")`  | Protect property only can be read by specific role (`SuperAdmin`)  |
+| `@authorize.readonly()`          | Protect property only can be read and no other role can write it   |
+| `@authorize.writeonly()`         | Protect property only can be write and no other role can read it   |
 
 
 ## Control Access To The Generated Routes 
@@ -701,78 +701,39 @@ Query callback signature for `getOne()` and `getMany()` is like below
 * `ctx` is the request context
 
 ## Entity Authorization Policy
-Entity Authorization Policy (Entity Policy) is a custom [auth policy](Security.md#authorization) designed to secure entity based on authorization policy which the logic defined by you. 
+Entity Authorization Policy (Entity Policy) is a custom [auth policy](Security.md#authorization) designed to secure entity data by ID. 
 
-With entity policy you can define current login user access to the entity programmatically instead of just using user role. Important to note that you can register the same name for different entity.
-
-For example we can define `Owner` policy to define the owner of the data. 
+Entity policy requires unique combination between policy name and the entity type, the definition is like below.
 
 ```typescript
-@Entity()
-export class User {
-    @PrimaryGeneratedColumn()
-    id:number
-
-    @Column()
-    email: string
-
-    @Column()
-    name: string
-}
-
-@Entity()
-export class Todo {
-    @PrimaryGeneratedColumn()
-    id:number
-
-    @Column()
-    message: string
-
-    @Column({ default: false })
-    completed: boolean
-
-    @authorize.readonly()
-    @ManyToOne(x => User)
-    user: User
-}
+entityPolicy(ENTITY_CLASS)
+    .register(POLICY_NAME, (auth:AuthorizationContext, id:any) => boolean)
 ```
 
-Giving above code, we know that the Owner of each records on `User` table and `Todo` table can be defined as below
-* `Owner` of `User` data is when current login `userId` the same as the `id` of the user. 
-* `Owner` of the `Todo` data is when the current login `userId` the same as `user.id` of the `Todo`
+* `ENTITY_CLASS` is the entity which authorization policy registered to.
+* `POLICY_NAME` is the policy name, policy name may the same with other entity but must be unique when combined with entity class.
+* Authorization callback is where you put the authorization logic, return `true` or `Promise<true>` to allow otherwise `false` to restrict.
 
-Using above definition we can register `Owner` policy for each entity like below
+Since the internal process of entity policy is quite complex, its a lot easier to understand entity policy from its implementation. For example we created an entity policy named `ResourceOwner` which means the current data is owned by the login user. Then its easy to understand that for entity `User`, the logic of `ResourceOwner` is when the provided ID by authorization callback is the same as the current login user ID like below. 
 
 ```typescript
-// define "Owner" policy for User entity
+// define policy for User entity
 entityPolicy(User)
-    // Owner of User is when current login user id is the same as current accessed User id 
-    .register("Owner", (ctx, id) => ctx.user?.userId === id)
-
-// define "Owner" policy for Todo entity
-entityPolicy(Todo)
-    .register("Owner", async (ctx, id) => {
-        const repo = getManager().getRepository(Todo)
-        const todo = await repo.findOne(id, { relations: ["user"], cache: true })
-        // Owner of Todo is when current login user is the same as todo.user.id
-        return ctx.user?.userId === todo?.user?.id
-    })
+    // ResourceOwner is when current login user id is the same as current User id 
+    .register("ResourceOwner", (auth, id) => auth.user?.userId === id)
 ```
 
-Above code is quite straight forward, we register each policy using `entityPolicy` function and define the logic to get the data by provided `id` from the callback and return the appropriate condition `true` if authorized otherwise `false`.
+This policy then can be applied on the generic controller configuration builder, to secure specific route like below.
 
-Next step we can apply the policy by using `@authorize` decorator or from the `@route.controller()` configuration like below.
-
-```typescript {3,10}
+```typescript {2}
 @route.controller(c => {
-    c.actions("Put", "Patch", "Delete").authorize("Owner")
+    c.delete().authorize("ResourceOwner")
 })
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
     id:number
 
-    @authorize.read("Owner")
     @Column()
     email: string
 
@@ -781,7 +742,40 @@ export class User {
 }
 ```
 
-Above code showing that we secure the `PUT`, `PATCH`, `DELETE` method of the `/users` endpoint only accessible by the `Owner`. We also secure the `email` property only visible by the `Owner`. Note that `email` will keep its visibility even if it used in deep nested properties. 
+By using above configuration only the `ResourceOwner` of the User entity allowed to access `DELETE /users/{id}` route. By giving `DELETE /users/12345` only user with user ID `12345` allowed to access it. 
+
+The policy also can be used to secure property using `@authorize.read()` or `@authorize.write()` like below.
+
+```typescript {7}
+@route.controller()
+@Entity()
+export class User {
+    @PrimaryGeneratedColumn()
+    id:number
+
+    @authorize.read("ResourceOwner")
+    @Column()
+    email: string
+
+    @Column()
+    name: string
+}
+```
+
+Above configuration will make `email` filed only visible (in response body) by the owner of user, this behavior applied when the `User` entity used as child property. 
+
+#### Entity Policy Restriction
+
+Since entity policy designed to secure resources by ID, its important to note that route authorization (defined with `@authorize.route()` or `ActionBuilder.authorize()`) and parameter authorization (`@authorize.write()`) only works on route with entity ID specified.
+
+| Route                             | Description                                     |
+| --------------------------------- | ----------------------------------------------- |
+| `POST /users`                     | Not allowed, since no ID specified              |
+| `DELETE /users/{id}`              | Allowed, Callback called with ID of User entity |
+| `POST /users/{id}/logs`           | Allowed, Callback called with ID of User entity |
+| `DELETE /users/{id}/logs/{logId}` | Allowed, Callback called with ID of Log entity  |
+
+Important to note that response authorization (`@authorize.read()`) has no restriction, its mean it will always work on all routes.
 
 ## Request Hook
 
