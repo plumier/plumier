@@ -51,7 +51,7 @@ npm install
 ```
 
 ## Project Starter File Structure
-Open the project directory using your favorite text editor or IDE, on this example we will use VSCode. 
+Open the project directory using your favorite text editor or IDE, its recommended to use VSCode to easily follow this tutorial. 
 
 ![project structure](assets/tutorial-01/project-structure.png)
 

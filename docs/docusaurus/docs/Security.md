@@ -268,12 +268,14 @@ class UsersController {
 
 Using above configuration `email` and `role` property will be visible only to `Admin` and `SuperAdmin`. The response vary based on user role.
 
-## Authorization Evaluation
+## Authorization Evaluation Order
 
-Authorization applied to global, controller or action evaluated with some priority. Authorization system separated into three main process, which is Route Authorization, Query/Request Body Authorization, Response Authorization.
+Authorization applied to global, controller or action evaluated with some priority. Authorization system separated into three category, which is Route Authorization, Parameter Authorization, Response Authorization. 
 
-* Route authorization (global, controller, action) has the most priority evaluation, when a user doesn't have access it means he doesn't have access to the Query/Request Body or Response.
-* Query/Request Body and Response Authorization will be evaluated later after Route authorization. 
+
+
+* Route authorization (global, controller, action) has the most priority evaluation, when a user doesn't have access it means he doesn't have access to the Parameter or Response.
+* Parameter and Response Authorization will be evaluated later after Route authorization. 
 
 Route authorization separated into three location, which is Global Authorization, Controller Authorization and Action Authorization. 
 * Action authorization has the most priority evaluated. If user allowed to access action then Controller Authorization and Global Authorization ignore.

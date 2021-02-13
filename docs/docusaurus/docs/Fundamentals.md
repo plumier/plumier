@@ -1,6 +1,6 @@
 ---
 id: fundamentals
-title: Fundamentals
+title: Plumier in Five Minutes
 slug: /
 ---
 
