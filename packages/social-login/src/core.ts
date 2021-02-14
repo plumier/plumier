@@ -253,7 +253,7 @@ async function oAuth10aLoginGenerator(ctx: Context, opt: OAuthOptions, redirectU
 async function oAuth20ProfileParser(ctx: Context, option: OAuthOptions, redirect_uri: string): Promise<ParserResult> {
     const req = ctx.request
     const secret = ctx.cookies.get(CookieName.csrfSecret)!
-    if (!new Csrf().verify(secret, req.query.state)) {
+    if (!new Csrf().verify(secret, req.query.state as string)) {
         log.error("*** Invalid csrf token ***")
         log.error("CSRF Secret: %s", secret)
         log.error("CSRF Token: %s", req.query.state)
