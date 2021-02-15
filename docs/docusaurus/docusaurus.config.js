@@ -1,6 +1,6 @@
 module.exports = {
   title: 'Plumier',
-  tagline: 'A TypeScript backend framework focuses on development productivity, uses dedicated reflection library to help you create a robust, secure and fast API delightfully.',
+  tagline: 'Delightful TypeScript Backend Framework',
   url: 'https://plumierjs.com',
   baseUrl: '/',
   favicon: 'img/plumier.png',
@@ -21,6 +21,18 @@ module.exports = {
         src: 'img/plumier.png',
       },
       items: [
+        {
+          to: 'quick-start',
+          activeBasePath: 'quick-start',
+          label: 'Quick Start',
+          position: 'left',
+        },
+        {
+          to: 'plumier-in-five-minutes',
+          activeBasePath: 'plumier-in-five-minutes',
+          label: 'Plumier in Five Minutes',
+          position: 'left',
+        },
         {
           href: 'https://github.com/plumier/plumier',
           label: 'GitHub',
@@ -69,6 +81,9 @@ module.exports = {
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Plumier.`,
     },
+    colorMode: {
+      defaultMode: 'light',
+    }
   },
   presets: [
     [

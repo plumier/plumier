@@ -1,6 +1,6 @@
 ---
-id: tutorial-01
-title: Get Started
+id: quick-start
+title: Quick Start
 ---
 
 This tutorial will walk you through creating a Restful API managing a Todo data with MySQL database, first we will learn about how to create a Plumier project, then we will learn how to create CRUD API using generic controller then finally we add authorization to protect the data.

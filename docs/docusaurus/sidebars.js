@@ -1,7 +1,7 @@
 module.exports = {
   overview: [
-    "fundamentals",
-    "tutorial-01",
+    "plumier-in-five-minutes",
+    "quick-start",
     "controller",
     "security",
     "generic-controller",
