@@ -17,7 +17,7 @@
   /* table */
   --ifm-table-cell-padding: 3px 12px;
   /* inline code & color */
-  /* --ifm-code-font-size: 100%; */
+  --ifm-code-font-size: 80%;
   /* --ifm-code-background: none; */
   --ifm-code-border-radius: 1px;
   --ifm-code-padding-horizontal: 2px;
@@ -37,3 +37,8 @@
 table {
   display: table;
 }
+
+table tr:nth-child(2n) {
+  background: none;
+}
+

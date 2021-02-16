@@ -1,7 +1,7 @@
 ---
-id: fundamentals
+id: plumier-in-five-minutes
 title: Plumier in Five Minutes
-slug: /
+#slug: /
 ---
 
 Plumier is A TypeScript backend framework focuses on development productivity to help you create a robust, secure and fast Node.js restful API delightfully. Plumier shipped with some built-in feature to speed up your API development.

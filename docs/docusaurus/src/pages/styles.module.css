@@ -5,16 +5,27 @@
  * and scoped locally.
  */
 
-.heroBanner {
+ .heroBanner {
   padding: 4rem 0;
   text-align: center;
   position: relative;
   overflow: hidden;
+  height: 650px;
 }
 
 @media screen and (max-width: 966px) {
   .heroBanner {
     padding: 2rem;
+  }
+}
+
+.heroContainer {
+  width: 800px;
+}
+
+@media screen and (max-width: 800px) {
+  .heroContainer {
+    width: auto;
   }
 }
 
@@ -24,6 +35,10 @@
   justify-content: center;
 }
 
+.buttons a {
+  margin-left: 10px;
+}
+
 .features {
   display: flex;
   align-items: center;
@@ -31,7 +46,68 @@
   width: 100%;
 }
 
+.feature {
+  margin: 80px 0;
+}
+
+.featuresLight {
+  border-top: solid 1px #eee;
+}
+
+.featureContainer {
+  display: flex;
+  align-items: center;
+}
+
+.featureContainerOdd {
+  flex-direction: row-reverse;
+}
+
+.featureButton {
+  margin: 20px 0;
+}
+
+.codeFont {
+  font-size: 80%;
+}
+
+.codeBorder {
+  background: rgb(41, 45, 62);
+  padding: 10px 0 0;
+  color: #eee;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgb(0 0 0 / 60%);
+}
+
+.codeTitleBox {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px 17px 10px;
+  font-size: 14px;
+}
+
+.codeRgb {
+  height: 12px;
+  width: 12px;
+  border-radius: 12px;
+  background: rgb(105, 105, 105);
+  margin-right: 8px;
+}
+
+.rgbRed{
+  background: #FF5F56;
+}
+
+.rgbGreen {
+  background: #FFBD2E;
+}
+
+.rgbBlue {
+  background: #27C93F;
+}
+
 .featureImage {
-  height: 200px;
-  width: 200px;
+  height: 550px;
+  width: auto;
 }
