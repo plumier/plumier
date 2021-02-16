@@ -97,12 +97,18 @@ export class Item {
 
       description: (<>
           <p>
-              Define your authorization logic in separate location, then apply it using decorators. 
+            Plumier supported securing API with JWT out of the box. 
+            Plumier also provided authorization to restrict user access based on specific logic defined by you.
+            You define your authorization logic in separate location, then apply it using decorators. 
+          </p>
+          <p>
+            In the background Plumier validates your authorization policy to prevent mistyped policy name, 
+            or possibly duplicate/conflict policy name.
           </p>
       </>),
 
       link: {
-          url: "controller",
+          url: "security",
       },
 
       code:
