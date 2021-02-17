@@ -16,10 +16,9 @@ const features = [
       <p>
         Upgrade ORM entity into First Class Entity to have more control to most framework features
         such as request/response body schema, authorization, validation, generated routes.
-        In the background,
         </p>
       <p>
-        Plumier creates CRUD Restful generic controller uses ORM entity as its data model,
+        In the background, Plumier creates CRUD Restful generic controller uses ORM entity as its data model,
         example produces:
           </p>
       <ul>
