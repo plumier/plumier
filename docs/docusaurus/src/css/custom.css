@@ -4,6 +4,10 @@
  * work well for content-centric websites.
  */
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 :root {
   --ifm-color-primary: #25c2a0;
   --ifm-color-primary-dark: rgb(33, 175, 144);
@@ -42,3 +46,6 @@ table tr:nth-child(2n) {
   background: none;
 }
 
+.main-wrapper .hero {
+  background-color: inherit;
+}
