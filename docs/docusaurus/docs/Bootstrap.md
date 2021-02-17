@@ -1,7 +1,9 @@
 ---
-id: application-startup
-title: Application Startup
+id: bootstrap
+title: Bootstrap
 ---
+
+The main 
 
 Entry point of plumier rest api is the plumier startup application. Once initialized Plumier application will returned promised Koa instance.
 

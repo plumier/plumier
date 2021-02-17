@@ -2,6 +2,7 @@ module.exports = {
   overview: [
     "plumier-in-five-minutes",
     "quick-start",
+    "bootstrap",
     "controller",
     "security",
     "generic-controller",
@@ -17,7 +18,6 @@ module.exports = {
     "file-upload",
     {
       "Reference": [
-        "application-startup",
         "routing",
         "validation",
         "middleware",

@@ -30,7 +30,7 @@ module.exports = {
         {
           to: 'plumier-in-five-minutes',
           activeBasePath: 'plumier-in-five-minutes',
-          label: 'Plumier in Five Minutes',
+          label: 'Docs',
           position: 'left',
         },
         {
