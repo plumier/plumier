@@ -16,7 +16,10 @@ const features = [
       <p>
         Upgrade ORM entity into First Class Entity to have more control to most framework features
         such as request/response body schema, authorization, validation, generated routes.
-        In the background, Plumier creates CRUD Restful generic controller uses ORM entity as its data model,
+        In the background,
+        </p>
+      <p>
+        Plumier creates CRUD Restful generic controller uses ORM entity as its data model,
         example produces:
           </p>
       <ul>
@@ -68,7 +71,8 @@ export class Item {
 
     description: (<>
       <p>
-        Turn One-To-Many relation of ORM entity into nested API Restful API, that handled by a nested generic controller.
+        Turn One-To-Many relation of ORM entity into nested Restful API.
+        Nested first class entity handled by specialized nested generic controller.
         </p>
       <ul>
         <li><code>POST /posts/&#123;pid&#125;/comments</code></li>
@@ -177,6 +181,13 @@ authPolicy()
       // return value or Promise 
       // automatically rendered into JSON response
       return this.repo.findOne(id)
+  }
+
+  // POST /users
+  @route.post("")
+  // data parameter bound to request body
+  save(data:User) {
+    return this.repo.insert(data)
   }
 }`
   },
