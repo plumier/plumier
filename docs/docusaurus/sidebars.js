@@ -2,7 +2,7 @@ module.exports = {
   overview: [
     "plumier-in-five-minutes",
     "quick-start",
-    "bootstrap",
+    "entry-point",
     "controller",
     "security",
     "generic-controller",

@@ -22,12 +22,6 @@ module.exports = {
       },
       items: [
         {
-          to: 'quick-start',
-          activeBasePath: 'quick-start',
-          label: 'Quick Start',
-          position: 'left',
-        },
-        {
           to: 'plumier-in-five-minutes',
           activeBasePath: 'plumier-in-five-minutes',
           label: 'Docs',
@@ -48,11 +42,11 @@ module.exports = {
           items: [
             {
               label: 'Fundamentals',
-              to: '/',
+              to: 'plumier-in-five-minutes',
             },
             {
-              label: 'Get Started',
-              to: 'get-started',
+              label: 'Plumier in Five Minutes',
+              to: 'quick-start',
             },
             {
               label: 'Extending Plumier',
@@ -94,7 +88,7 @@ module.exports = {
           routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl: 'https://github.com/plumier/plumier/edit/master/website/',
+          editUrl: 'https://github.com/plumier/plumier/edit/master/docs/docusaurus/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
