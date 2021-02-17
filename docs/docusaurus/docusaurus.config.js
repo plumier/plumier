@@ -22,15 +22,9 @@ module.exports = {
       },
       items: [
         {
-          to: 'quick-start',
-          activeBasePath: 'quick-start',
-          label: 'Quick Start',
-          position: 'left',
-        },
-        {
           to: 'plumier-in-five-minutes',
           activeBasePath: 'plumier-in-five-minutes',
-          label: 'Plumier in Five Minutes',
+          label: 'Docs',
           position: 'left',
         },
         {
