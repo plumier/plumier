@@ -65,6 +65,44 @@ export class Item {
 }`
   },
 
+
+  {
+    title: 'Policy Based Authorization',
+
+    description: (<>
+      <p>
+        Plumier supported securing API with JWT out of the box.
+        Plumier also provided authorization to restrict user access based on specific logic defined by you.
+        You define your authorization logic in separate location, then apply it using decorators.
+          </p>
+      <p>
+        In the background Plumier validates your authorization policy to prevent mistyped policy name,
+        or possibly duplicate/conflict policy name.
+          </p>
+    </>),
+
+    link: {
+      url: "security",
+    },
+
+    code:
+      `// register with authorization policy builder
+authPolicy()
+
+  // register role
+  .register("Supervisor", ({ user }) => {
+      // "user" is JWT claim from request header
+      // return true to authorize otherwise false
+      // also possible to return Promise<boolean>
+      return user?.role === "Supervisor"
+  })
+
+  // chain-able registration method
+  .register("Staff", ({ user }) => {
+      return user?.role === "Staff"
+  })`
+  },
+  
   {
     title: 'Nested First Class Entity',
 
@@ -107,43 +145,6 @@ export class Comment {
   @Column()
   comment:string
 }`
-  },
-
-  {
-    title: 'Policy Based Authorization',
-
-    description: (<>
-      <p>
-        Plumier supported securing API with JWT out of the box.
-        Plumier also provided authorization to restrict user access based on specific logic defined by you.
-        You define your authorization logic in separate location, then apply it using decorators.
-          </p>
-      <p>
-        In the background Plumier validates your authorization policy to prevent mistyped policy name,
-        or possibly duplicate/conflict policy name.
-          </p>
-    </>),
-
-    link: {
-      url: "security",
-    },
-
-    code:
-      `// register with authorization policy builder
-authPolicy()
-
-  // register role
-  .register("Supervisor", ({ user }) => {
-      // "user" is JWT claim from request header
-      // return true to authorize otherwise false
-      // also possible to return Promise<boolean>
-      return user?.role === "Supervisor"
-  })
-
-  // chain-able registration method
-  .register("Staff", ({ user }) => {
-      return user?.role === "Staff"
-  })`
   },
 
   {
@@ -207,6 +208,20 @@ authPolicy()
 
     image: "/img/swagger.png"
   },
+
+  {
+    title: 'Performance is Top Priority',
+
+    description: (<>
+      <p>
+        Plumier shipped with efficient routing and <Link to="https://www.npmjs.com/package/@plumier/validator">validator and type converter library</Link>. 
+        Check the full stack benchmark of performance comparison between Koa, Express, Nest, Loopback 4 on <Link to="https://github.com/ktutnik/full-stack-benchmarks">this repository</Link>, 
+        which tests basic framework functionality: routing, body parser, validation and type conversion
+        </p>
+    </>),
+
+    image: "/img/benchmark.png"
+  },
 ];
 
 
@@ -235,7 +250,9 @@ function Feature({ description, title, code, link, index, image }) {
             <h3>Feature</h3>
             <h1>{title}</h1>
             <div>{description}</div>
-            <Link to={link.url} className={clsx('button button--secondary button--lg', styles.featureButton)}>Learn more about this feature</Link>
+            {
+              link ? <Link to={link.url} className={clsx('button button--secondary button--lg', styles.featureButton)}>Learn more about this feature</Link> : ""
+            }
           </div>
         </div>
       </div>
