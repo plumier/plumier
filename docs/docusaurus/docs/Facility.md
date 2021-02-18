@@ -14,12 +14,14 @@ Facility is a class that implements `Facility`, the signature of `Facility` is l
 export interface Facility {
     setup(app: Readonly<PlumierApplication>): void
     generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]>
+    preInitialize(app: Readonly<PlumierApplication>): Promise<void>
     initialize(app: Readonly<PlumierApplication>, routes:RouteMetadata:[]): Promise<void>
 }
 ```
 
 * `setup` called during setup process. This method usually used for registering configurations and middlewares
 * `generateRoutes` called during initialization process before the `initialize` method. This method provides list of routes produced by Facility. 
+* `preInitialize` called before `initialize` called. This method usually used for some preparation before initialization.
 * `initialize` called during initialization process. This method usually used for some preparation required before application run, and possible to call promised functions
 
 ## Develop Your Own Facility 
@@ -56,14 +58,12 @@ Error handler in the top most, it means it will handle all error caused by the n
 In some case if you want to configure Koa, you can do it in facility.
 
 ```typescript 
-import Cors from "@koa/cors"
-import BodyParser from "koa-bodyparser"
 import { DefaultFacility, PlumierApplication } from "plumier"
 
 export class WebApiFacility extends DefaultFacility {
-    async setup({ koa }: Readonly<PlumierApplication>) {
+    setup({ koa }: Readonly<PlumierApplication>) {
         //do something with the Koa instance
-        koa.use(<koa middleware>)
+        koa.use(KOA_MIDDLEWARE)
     }
 }
 ```
