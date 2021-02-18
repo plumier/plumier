@@ -49,3 +49,7 @@ table tr:nth-child(2n) {
 .main-wrapper .hero {
   background-color: inherit;
 }
+
+img {
+  border-radius: 8px;
+}
