@@ -969,6 +969,10 @@ describe("JwtAuth", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
         })
+
+        it("Should detect mistyped entity policy", async () => {
+            
+        })
     })
 
     describe("Default Configuration", () => {

@@ -59,6 +59,7 @@ class AuthDecoratorImpl {
                 type: "plumier-meta:authorize",
                 tag: option.tag, policies, location,
                 access: option.access, evaluation: option.evaluation,
+                appliedClass: args[0]
             }
         }, ["Class", "Parameter", "Method", "Property"], option)
     }
