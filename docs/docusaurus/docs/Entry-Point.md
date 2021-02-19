@@ -62,7 +62,8 @@ import Plumier, { Configuration, WebApiFacility } from "plumier"
 
 function createApp(config?: Partial<Configuration>) {
     return new Plumier()
-        .set({ ...config})
+        // specify the rootDir since it will be executed in different directory (test dir)
+        .set({ ...config, rootDir: __dirname })
         .set(new WebApiFacility())
         .initialize()
 }
