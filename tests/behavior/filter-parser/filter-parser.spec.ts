@@ -430,6 +430,57 @@ describe("Filter Parser", () => {
                 .expect(200)
             expect(fn.mock.calls).toMatchSnapshot()
         })
+        it("Should able to filter by number with falsy value", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    @authorize.filter()
+                    public name: number,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            await supertest(app.callback())
+                .get(`/user?filter[name]=0`)
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should able to filter by boolean with falsy value", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    @authorize.filter()
+                    public bool: boolean,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            await supertest(app.callback())
+                .get(`/user?filter[bool]=false`)
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
+        it("Should parse equal filter on type number properly", async () => {
+            @route.controller()
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    @authorize.filter()
+                    public name: number,
+                ) { }
+            }
+            const app = await createApp({ controller: User }).initialize()
+            await supertest(app.callback())
+                .get(`/user?filter[name]=12345`)
+                .expect(200)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
         it("Should parse equal filter on type date properly", async () => {
             @route.controller()
             @domain()
