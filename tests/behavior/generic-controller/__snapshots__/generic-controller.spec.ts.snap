@@ -773,6 +773,7 @@ Array [
         },
       ],
     },
+    "style": "deepObject",
   },
   Object {
     "in": "query",
@@ -1084,6 +1085,7 @@ Array [
         },
       ],
     },
+    "style": "deepObject",
   },
   Object {
     "in": "query",
@@ -1176,6 +1178,7 @@ Array [
         },
       ],
     },
+    "style": "deepObject",
   },
   Object {
     "in": "query",

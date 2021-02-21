@@ -2386,6 +2386,7 @@ Array [
     "schema": Object {
       "$ref": "#/components/schemas/Item",
     },
+    "style": "deepObject",
   },
 ]
 `;
@@ -2418,6 +2419,7 @@ Array [
         },
       ],
     },
+    "style": "deepObject",
   },
 ]
 `;
@@ -2465,6 +2467,7 @@ Array [
         },
       ],
     },
+    "style": "deepObject",
   },
 ]
 `;

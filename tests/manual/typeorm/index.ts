@@ -68,10 +68,34 @@ export class Variants {
     item: Item
 }
 
+@route.controller()
+@Entity()
+export class Primitive {
+    @authorize.filter()
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @authorize.filter()
+    @Column()
+    string: string
+
+    @authorize.filter()
+    @Column()
+    date: Date
+
+    @authorize.filter()
+    @Column()
+    number: number
+
+    @authorize.filter()
+    @Column()
+    boolean: boolean
+}
+
 new Plumier()
-    .set(new WebApiFacility({ controller: __dirname }))
+    .set(new WebApiFacility())
     .set(new LoggerFacility())
-    .set(new JwtAuthFacility({ secret: "lorem", global: authorize.public() }))
+    .set(new JwtAuthFacility({ secret: "lorem", global: "Public" }))
     .set(new TypeORMFacility({
         connection: {
             type: "sqlite",
