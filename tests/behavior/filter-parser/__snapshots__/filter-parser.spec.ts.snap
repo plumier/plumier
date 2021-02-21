@@ -94,6 +94,36 @@ Object {
 }
 `;
 
+exports[`Filter Parser Equal Filter Should able to filter by boolean with falsy value 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "bool": Object {
+        "type": "equal",
+        "value": false,
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Equal Filter Should able to filter by number with falsy value 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "name": Object {
+        "type": "equal",
+        "value": 0,
+      },
+    },
+  ],
+]
+`;
+
 exports[`Filter Parser Equal Filter Should parse equal filter on type boolean properly 1`] = `
 Array [
   Array [
@@ -125,6 +155,21 @@ Array [
 `;
 
 exports[`Filter Parser Equal Filter Should parse equal filter on type number properly 1`] = `
+Array [
+  Array [
+    0,
+    50,
+    User {
+      "name": Object {
+        "type": "equal",
+        "value": 12345,
+      },
+    },
+  ],
+]
+`;
+
+exports[`Filter Parser Equal Filter Should parse equal filter on type number properly 2`] = `
 Array [
   Array [
     0,

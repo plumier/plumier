@@ -33,7 +33,7 @@ function convert(decorators: any[], type: Class, value: string): [any, string?] 
     }
     const converter = defaultConverters.get(type)!
     const result = converter(value)
-    if (!result) return [, `Unable to convert "${value}" into ${type.name}`]
+    if (result === undefined) return [, `Unable to convert "${value}" into ${type.name}`]
     return [result]
 }
 
