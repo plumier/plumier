@@ -23,8 +23,9 @@ function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObj
         const filterProps = entityMeta.properties.filter(x => x.decorators
             .some((y: AuthorizeDecorator) => y.type === "plumier-meta:authorize" && y.access === "filter"))
         // if no properties contains @authorize.filter() then disable the filter completely
-        if(filterProps.length === 0) return []
-        return [createParameterObject(node, ctx, { overrides: ["RelationAsId", "Filter"] })]
+        if (filterProps.length === 0) return []
+        const par = createParameterObject(node, ctx, { overrides: ["RelationAsId", "Filter"] })
+        return [{ ...par, style: "deepObject" }]
     }
     // split decorator binding defined with class into flat properties
     if (node.typeName === "Class" && node.binding) {
