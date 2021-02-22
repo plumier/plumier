@@ -286,7 +286,7 @@ For example if we have authorization configuration like below
 
 ```typescript {2}
 // global authorization
-app.set(new JwtAuthFacility({ global: ["Admin", "SuperAdmin"] }))
+app.set(new JwtAuthFacility({ global: "Public" }))
 
 // controller authorization
 @authorize.route("Admin", "SuperAdmin")
