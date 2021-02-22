@@ -2,12 +2,11 @@ import { isAbsolute, join } from "path"
 import { ClassReflection, MethodReflection, reflect } from "@plumier/reflect"
 
 import { Class, findFilesRecursive } from "./common"
-import { DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from './controllers'
 import {
    createGenericControllers,
    genericControllerRegistry,
 } from "./controllers-helper"
-import { GenericController, HttpMethod, RouteInfo, RouteMetadata } from "./types"
+import { errorMessage, GenericController, HttpMethod, RouteInfo, RouteMetadata } from "./types"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -24,6 +23,7 @@ interface TransformOption {
    genericController?: GenericController
    genericControllerNameConversion?: (x: string) => string
 }
+type TransformControllerOption = Required<Omit<TransformOption, "genericController">> & { genericController?: GenericController }
 interface ClassWithRoot {
    root: string,
    type: Class
@@ -87,12 +87,12 @@ async function findClassRecursive(path: string): Promise<ClassWithRoot[]> {
 
 
 class ParamMapper {
-   constructor(private map:any[]){}
-   alias(parName:string) {
-      let result:string|undefined
+   constructor(private map: any[]) { }
+   alias(parName: string) {
+      let result: string | undefined
       for (const item of this.map) {
          result = item[parName]
-         if(!!result) break
+         if (!!result) break
       }
       return result ?? parName
    }
@@ -139,7 +139,7 @@ function transformMethod(root: RouteRoot, controller: ClassReflection, method: M
       url: appendRoute(root.root, method.name),
       controller,
       action: method,
-      paramMapper: new ParamMapper([root.map]) 
+      paramMapper: new ParamMapper([root.map])
    }]
 }
 
@@ -152,7 +152,7 @@ function isGenericController(meta: ClassReflection) {
    return !!cache
 }
 
-function transformController(object: Class, opt: Required<TransformOption>) {
+function transformController(object: Class, opt: TransformControllerOption) {
    const controller = reflect(object)
    const rootRoutes = getRootRoutes(opt.rootPath, controller)
    const infos: RouteInfo[] = []
@@ -172,7 +172,7 @@ function transformController(object: Class, opt: Required<TransformOption>) {
    return infos
 }
 
-async function extractController(controller: string | string[] | Class[] | Class, option: Required<TransformOption>): Promise<ClassWithRoot[]> {
+async function extractController(controller: string | string[] | Class[] | Class, option: TransformControllerOption): Promise<ClassWithRoot[]> {
    if (typeof controller === "string") {
       const ctl = isAbsolute(controller) ? controller : join(option.rootDir, controller)
       const types = await findClassRecursive(ctl)
@@ -196,6 +196,8 @@ async function extractController(controller: string | string[] | Class[] | Class
    if (isController(meta)) return [{ root: "", type: controller }]
    // entity marked with generic controller
    if (isGenericController(meta)) {
+      if (!option.genericController)
+         throw new Error(errorMessage.GenericControllerRequired)
       return createGenericControllers(controller, option.genericController, option.genericControllerNameConversion)
          .map(type => ({ root: "", type }))
    }
@@ -203,8 +205,7 @@ async function extractController(controller: string | string[] | Class[] | Class
 }
 
 async function generateRoutes(controller: string | string[] | Class[] | Class, option?: TransformOption): Promise<RouteMetadata[]> {
-   const opt: Required<TransformOption> = {
-      genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric],
+   const opt = {
       genericControllerNameConversion: (x: string) => x,
       group: undefined as any, rootPath: "", rootDir: "",
       directoryAsPath: true,

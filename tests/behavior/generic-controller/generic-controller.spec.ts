@@ -8,11 +8,7 @@ import {
     authPolicy,
     bind,
     Configuration,
-    DefaultControllerGeneric,
     DefaultFacility,
-    DefaultOneToManyControllerGeneric,
-    DefaultOneToManyRepository,
-    DefaultRepository,
     entity,
     entityPolicy,
     FilterEntity,
@@ -44,12 +40,6 @@ import supertest from "supertest"
 import { expectError } from "../helper"
 
 
-function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
-    return new Plumier()
-        .set({ ...config })
-        .set(new WebApiFacility())
-        .set(new ControllerFacility(opt))
-}
 
 class RouteHookFacility extends DefaultFacility {
     constructor(private callback: ((x: RouteMetadata[]) => void)) { super() }
@@ -134,6 +124,25 @@ function getParameters(routes: RouteMetadata[]) {
             return { name: x.action.name, pars: x.action.parameters.map(y => ({ name: y.name, type: y.type })) }
         }
     })
+}
+
+@generic.template("T", "TID")
+@generic.type("T", "TID")
+class DefaultControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
+    constructor() { super(fac => new MockRepo<T>(jest.fn())) }
+}
+@generic.template("P", "T", "PID", "TID")
+@generic.type("P", "T", "PID", "TID")
+class DefaultOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{
+    constructor() { super(fac => new MockOneToManyRepo<P, T>(jest.fn())) }
+}
+
+function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
+    return new Plumier()
+        .set({ ...config })
+        .set(new WebApiFacility())
+        .set(new ControllerFacility(opt))
+        .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
 }
 
 describe("Route Generator", () => {
@@ -372,38 +381,11 @@ describe("Route Generator", () => {
                     public email: string
                 ) { }
             }
-            const koa = await createApp({ controller: [User] }, { mode: "production" })
+            const app = await createApp({ controller: [User] }, { mode: "production" })
                 .use(new ErrorHandlerMiddleware())
-                .initialize()
-            const error = { error: "Generic controller implementation not installed" }
-            const request = supertest(koa.callback())
-            await request.post("/user").expect(500, error)
-            await request.get("/user").expect(500, error)
-            await request.put("/user/123").expect(500, error)
-            await request.patch("/user/123").expect(500, error)
-            await request.delete("/user/123").expect(500, error)
-            await request.get("/user/123").expect(500, error)
-            const repo = new DefaultRepository()
-            const mock = await expectError(repo.count())
+                .set({ genericController: undefined })
+            const mock = await expectError(app.initialize())
             expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should throw error properly", () => {
-            const fn = jest.fn()
-            const error = async (f: () => Promise<any>) => {
-                try {
-                    await f()
-                }
-                catch (e) {
-                    fn(e.message)
-                }
-            }
-            const ctl = new DefaultRepository()
-            error(async () => ctl.delete(123))
-            error(async () => ctl.findById(123))
-            error(async () => ctl.find(1, 2, []))
-            error(async () => ctl.update(123, {}))
-            error(async () => ctl.insert({}))
-            expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should able to apply multiple controller on single entities", async () => {
             @route.controller()
@@ -743,40 +725,13 @@ describe("Route Generator", () => {
                 @route.controller()
                 public animals: Animal[]
             }
-            const koa = await createApp({ controller: User }, { mode: "production" })
+            const app = await createApp({ controller: [User] }, { mode: "production" })
                 .use(new ErrorHandlerMiddleware())
-                .initialize()
-            const error = { error: "Generic controller implementation not installed" }
-            const request = supertest(koa.callback())
-            await request.post("/user/123/animals").expect(500, error)
-            await request.get("/user/123/animals").expect(500, error)
-            await request.put("/user/123/animals/123").expect(500, error)
-            await request.patch("/user/123/animals/123").expect(500, error)
-            await request.delete("/user/123/animals/123").expect(500, error)
-            await request.get("/user/123/animals/123").expect(500, error)
-            const repo = new DefaultOneToManyRepository()
-            const mock = await expectError(repo.count())
+                .set({ genericController: undefined })
+            const mock = await expectError(app.initialize())
             expect(mock.mock.calls).toMatchSnapshot()
         })
-        it("Should throw error properly", () => {
-            const fn = jest.fn()
-            const error = async (f: () => Promise<any>) => {
-                try {
-                    await f()
-                }
-                catch (e) {
-                    fn(e.message)
-                }
-            }
-            const ctl = new DefaultOneToManyRepository()
-            error(async () => ctl.delete(123))
-            error(async () => ctl.findById(123))
-            error(async () => ctl.find(1, 1, 2, []))
-            error(async () => ctl.update(123, {}))
-            error(async () => ctl.insert(1, {}))
-            error(async () => ctl.findParentById(1))
-            expect(fn.mock.calls).toMatchSnapshot()
-        })
+        
         it("Should throw error when the relation doesn't have type information", async () => {
             @domain()
             class Animal {
@@ -877,6 +832,7 @@ describe("Route Generator", () => {
                 .set(new WebApiFacility())
                 .set(new ControllerFacility({ controller: User, group: "v2", rootPath: "api/v2" }))
                 .set(new ControllerFacility({ controller: User, group: "v1", rootPath: "api/v1" }))
+                .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -908,6 +864,7 @@ describe("Route Generator", () => {
                 .set(new WebApiFacility())
                 .set(new ControllerFacility({ controller: User, group: "v2", rootPath: "api/v2" }))
                 .set(new ControllerFacility({ controller: User, group: "v1", rootPath: "api/v1" }))
+                .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -2513,7 +2470,8 @@ describe("Controller Builder", () => {
                 .set(new WebApiFacility())
                 .set(new ControllerFacility(opt))
                 .set(new JwtAuthFacility({ secret: "lorem", authPolicies }))
-        }
+                .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
+            }
         it("Should able to authorize specific routes", async () => {
             @route.controller(c => c.mutators().authorize("Admin"))
             @domain()

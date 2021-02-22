@@ -2285,8 +2285,6 @@ Array [
 ]
 `;
 
-exports[`Route Generator Generic Controller Should throw error properly 1`] = `Array []`;
-
 exports[`Route Generator Generic Controller Should throw error when entity doesn't have ID specified 1`] = `
 Array [
   Array [
@@ -2298,7 +2296,7 @@ Array [
 exports[`Route Generator Generic Controller Should throw error when using default generic controller 1`] = `
 Array [
   Array [
-    [Error: Generic controller implementation not installed],
+    [Error: @route.controller() required generic controller implementation, please install the appropriate facility],
   ],
 ]
 `;
@@ -2878,8 +2876,6 @@ Array [
 ]
 `;
 
-exports[`Route Generator One To Many Controller Should throw error properly 1`] = `Array []`;
-
 exports[`Route Generator One To Many Controller Should throw error when no ID specified on entity 1`] = `
 Array [
   Array [
@@ -2899,7 +2895,7 @@ Array [
 exports[`Route Generator One To Many Controller Should throw error when no generic controller impl found 1`] = `
 Array [
   Array [
-    [Error: Generic controller implementation not installed],
+    [Error: @route.controller() required generic controller implementation, please install the appropriate facility],
   ],
 ]
 `;
