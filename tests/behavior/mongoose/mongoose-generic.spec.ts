@@ -4,8 +4,6 @@ import {
     authorize,
     Class,
     Configuration,
-    DefaultControllerGeneric,
-    DefaultOneToManyControllerGeneric,
     entity,
     entityPolicy,
     postSave,
@@ -728,7 +726,7 @@ describe("CRUD", () => {
             const app = await new Plumier()
                 .set(new WebApiFacility())
                 .set(new MongooseFacility())
-                .set({ mode: "production", controller: User, genericController: [MyCustomGeneric, DefaultOneToManyControllerGeneric] })
+                .set({ mode: "production", controller: User, genericController: [MyCustomGeneric, MongooseOneToManyControllerGeneric] })
                 .initialize()
             await supertest(app.callback())
                 .post("/users")
@@ -1973,7 +1971,7 @@ describe("CRUD", () => {
             const app = await new Plumier()
                 .set(new WebApiFacility())
                 .set(new MongooseFacility())
-                .set({ mode: "production", controller: User, genericController: [DefaultControllerGeneric, MyCustomGeneric] })
+                .set({ mode: "production", controller: User, genericController: [MongooseControllerGeneric, MyCustomGeneric] })
                 .initialize()
             await supertest(app.callback())
                 .post(`/users/${user._id}/animals`)

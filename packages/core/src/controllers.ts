@@ -363,71 +363,9 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
 }
 
 
-// --------------------------------------------------------------------- //
-// ------------- DEFAULT GENERIC CONTROLLER IMPLEMENTATION ------------- //
-// --------------------------------------------------------------------- //
-
-class DefaultRepository<T> implements Repository<T> {
-    async count(query?: FilterEntity<T>): Promise<number> {
-        throw new Error(errorMessage.GenericControllerImplementationNotFound)
-    }
-    find(offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
-        throw new Error(errorMessage.GenericControllerImplementationNotFound)
-    }
-    insert(data: Partial<T>): Promise<T> {
-        throw new Error(errorMessage.GenericControllerImplementationNotFound)
-    }
-    findById(id: any): Promise<T | undefined> {
-        throw new Error(errorMessage.GenericControllerImplementationNotFound)
-    }
-    update(id: any, data: Partial<T>): Promise<T | undefined> {
-        throw new Error(errorMessage.GenericControllerImplementationNotFound)
-    }
-    delete(id: any): Promise<T | undefined> {
-        throw new Error(errorMessage.GenericControllerImplementationNotFound)
-    }
-}
-
-class DefaultOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
-    async count(query?: FilterEntity<T>): Promise<number> {
-        throw new Error(errorMessage.GenericControllerImplementationNotFound)
-    }
-    find(pid: any, offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
-        throw new Error(errorMessage.GenericControllerImplementationNotFound)
-    }
-    insert(pid: any, data: Partial<T>): Promise<T> {
-        throw new Error(errorMessage.GenericControllerImplementationNotFound)
-    }
-    findParentById(id: any): Promise<P | undefined> {
-        throw new Error(errorMessage.GenericControllerImplementationNotFound)
-    }
-    findById(id: any): Promise<T | undefined> {
-        throw new Error(errorMessage.GenericControllerImplementationNotFound)
-    }
-    update(id: any, data: Partial<T>): Promise<T | undefined> {
-        throw new Error(errorMessage.GenericControllerImplementationNotFound)
-    }
-    delete(id: any): Promise<T | undefined> {
-        throw new Error(errorMessage.GenericControllerImplementationNotFound)
-    }
-}
-
-@generic.template("T", "TID")
-@generic.type("T", "TID")
-class DefaultControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
-    constructor() { super(x => new DefaultRepository()) }
-}
-
-@generic.template("P", "T", "PID", "TID")
-@generic.type("P", "T", "PID", "TID")
-class DefaultOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{
-    constructor() { super(x => new DefaultOneToManyRepository()) }
-}
-
 
 export {
     RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
-    DefaultControllerGeneric, DefaultOneToManyControllerGeneric, DefaultRepository, DefaultOneToManyRepository,
     parseSelect, decorateRoute, IdentifierResult, getGenericControllerRelation,
     getGenericControllerReverseRelation, ResponseTransformer, responseTransformer,
     GetOneCustomQueryFunction, GetOneCustomQueryDecorator, GetOneParams,

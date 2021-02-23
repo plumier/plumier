@@ -4,23 +4,27 @@ import {
     AuthPolicy,
     authPolicy,
     bind,
+    Class,
+    ControllerGeneric,
     CustomAuthorizer,
     DefaultFacility,
     entity,
     entityPolicy,
     entityProvider,
+    OneToManyControllerGeneric,
     PlumierApplication,
     Public,
     responseType,
     RouteMetadata
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
+import { controller, MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "@plumier/mongoose"
 import { noop, reflect, type } from "@plumier/reflect"
 import "@plumier/testing"
 import { cleanupConsole } from "@plumier/testing"
 import { sign } from "jsonwebtoken"
 import Koa from "koa"
-import { authorize, domain, route, val } from "plumier"
+import Plumier, { authorize, domain, route, val, WebApiFacility } from "plumier"
 import Supertest from "supertest"
 import { expectError, fixture } from "../helper"
 
@@ -971,7 +975,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should detect mistyped entity policy", async () => {
-            
+
         })
     })
 
@@ -3768,6 +3772,62 @@ describe("JwtAuth", () => {
                 }))
                 .initialize())
             expect(mock.mock.calls).toMatchSnapshot()
+        })
+        it("Should detect mistyped policy name on route distinguished by entity type", async () => {
+            @route.controller(c => {
+                c.actions("GetOne").authorize("ResourceOwner")
+            })
+            class User {
+                @entity.primaryId()
+                id: number
+            }
+            @route.controller(c => {
+                c.actions("GetOne").authorize("ResourceOwner")
+            })
+            class Item {
+                @entity.primaryId()
+                id: number
+            }
+            const authPolicies = [
+                entityPolicy(User).define("ResourceOwner", (ctx, x) => !!x.id),
+            ]
+            const mock = console.mock()
+            await new Plumier()
+                .set(new WebApiFacility({ controller: [User, Item] }))
+                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
+                .set({ genericController: [MongooseControllerGeneric, MongooseOneToManyControllerGeneric] })
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
+        it("Should detect mistyped policy name on property distinguished by entity type", async () => {
+            @route.controller()
+            class User {
+                @entity.primaryId()
+                id: number
+
+                @authorize.write("ResourceOwner")
+                name:string
+            }
+            @route.controller()
+            class Item {
+                @entity.primaryId()
+                id: number
+
+                @authorize.write("ResourceOwner")
+                name:string
+            }
+            const authPolicies = [
+                entityPolicy(User).define("ResourceOwner", (ctx, x) => !!x.id),
+            ]
+            const mock = console.mock()
+            await new Plumier()
+                .set(new WebApiFacility({ controller: [User, Item] }))
+                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
+                .set({ genericController: [MongooseControllerGeneric, MongooseOneToManyControllerGeneric] })
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
         })
     })
 })

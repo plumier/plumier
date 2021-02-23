@@ -583,9 +583,16 @@ function mistypedPolicies(decorators: any[], registeredPolicy: AuthPolicy[]) {
     for (const typed of typedPolicies) {
         let match = false
         for (const policy of registeredPolicy) {
-            // if typed policy is an entity policy
-            if (policy instanceof EntityAuthPolicy && policy.name === typed.policy && policy.entity === typed.entity)
-                match = true;
+            if (policy instanceof EntityAuthPolicy && policy.name === typed.policy) {
+                // if typed policy is an entity policy 
+                if (policy.entity === typed.entity)
+                    match = true
+                // if action is entity provider 
+                const dec = decorators.find((x:EntityPolicyProviderDecorator): x is EntityPolicyProviderDecorator => x.kind === "plumier-meta:entity-policy-provider")
+                if (dec?.entity === policy.entity)
+                    match = true
+                continue;
+            }
             if (policy.name === typed.policy)
                 match = true;
         }
