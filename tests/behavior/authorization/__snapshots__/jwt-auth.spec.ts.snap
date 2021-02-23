@@ -266,4 +266,103 @@ Array [
 ]
 `;
 
+exports[`JwtAuth Entity Policy Should detect mistyped policy name on property distinguished by entity type 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MongooseControllerGeneric.get     -> Authenticated GET    /user/:id",
+  ],
+  Array [
+    " 2. MongooseControllerGeneric.modify  -> Authenticated PATCH  /user/:id",
+  ],
+  Array [
+    " 3. MongooseControllerGeneric.replace -> Authenticated PUT    /user/:id",
+  ],
+  Array [
+    " 4. MongooseControllerGeneric.delete  -> Authenticated DELETE /user/:id",
+  ],
+  Array [
+    " 5. MongooseControllerGeneric.list    -> Authenticated GET    /user",
+  ],
+  Array [
+    " 6. MongooseControllerGeneric.save    -> Authenticated POST   /user",
+  ],
+  Array [
+    " 7. MongooseControllerGeneric.get     -> Authenticated GET    /item/:id
+ - error Property name of Item class uses unknown authorization policy ResourceOwner",
+  ],
+  Array [
+    " 8. MongooseControllerGeneric.modify  -> Authenticated PATCH  /item/:id
+ - error Property name of Item class uses unknown authorization policy ResourceOwner",
+  ],
+  Array [
+    " 9. MongooseControllerGeneric.replace -> Authenticated PUT    /item/:id
+ - error Property name of Item class uses unknown authorization policy ResourceOwner",
+  ],
+  Array [
+    "10. MongooseControllerGeneric.delete  -> Authenticated DELETE /item/:id",
+  ],
+  Array [
+    "11. MongooseControllerGeneric.list    -> Authenticated GET    /item
+ - error Property name of Item class uses unknown authorization policy ResourceOwner
+ - error Property name of Item class uses unknown authorization policy ResourceOwner",
+  ],
+  Array [
+    "12. MongooseControllerGeneric.save    -> Authenticated POST   /item
+ - error Property name of Item class uses unknown authorization policy ResourceOwner",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Entity Policy Should detect mistyped policy name on route distinguished by entity type 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MongooseControllerGeneric.get     -> ResourceOwner GET    /user/:id",
+  ],
+  Array [
+    " 2. MongooseControllerGeneric.modify  -> Authenticated PATCH  /user/:id",
+  ],
+  Array [
+    " 3. MongooseControllerGeneric.replace -> Authenticated PUT    /user/:id",
+  ],
+  Array [
+    " 4. MongooseControllerGeneric.delete  -> Authenticated DELETE /user/:id",
+  ],
+  Array [
+    " 5. MongooseControllerGeneric.list    -> Authenticated GET    /user",
+  ],
+  Array [
+    " 6. MongooseControllerGeneric.save    -> Authenticated POST   /user",
+  ],
+  Array [
+    " 7. MongooseControllerGeneric.get     -> ResourceOwner GET    /item/:id
+ - error MongooseControllerGeneric.get uses unknown authorization policy ResourceOwner",
+  ],
+  Array [
+    " 8. MongooseControllerGeneric.modify  -> Authenticated PATCH  /item/:id",
+  ],
+  Array [
+    " 9. MongooseControllerGeneric.replace -> Authenticated PUT    /item/:id",
+  ],
+  Array [
+    "10. MongooseControllerGeneric.delete  -> Authenticated DELETE /item/:id",
+  ],
+  Array [
+    "11. MongooseControllerGeneric.list    -> Authenticated GET    /item",
+  ],
+  Array [
+    "12. MongooseControllerGeneric.save    -> Authenticated POST   /item",
+  ],
+  Array [],
+]
+`;
+
 exports[`JwtAuth Entity Policy Should not conflict when the same name with different entity 1`] = `Array []`;

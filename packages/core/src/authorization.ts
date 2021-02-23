@@ -1,6 +1,7 @@
 import { ClassReflection, ParameterReflection, PropertyReflection, reflect, reflection } from "@plumier/reflect"
 
 import { Class, hasKeyOf, isCustomClass } from "./common"
+import { authorize } from "./decorator/authorize"
 import { ResponseTypeDecorator } from "./decorator/common"
 import { EntityIdDecorator, RelationDecorator } from "./decorator/entity"
 import { HttpStatus } from "./http-status"
@@ -35,7 +36,8 @@ interface AuthorizeDecorator {
     access: AccessModifier
     tag: string,
     location: "Class" | "Parameter" | "Method",
-    evaluation: "Static" | "Dynamic"
+    evaluation: "Static" | "Dynamic",
+    appliedClass: Class
 }
 
 type CustomAuthorizer = Authorizer
@@ -172,7 +174,7 @@ class WriteonlyAuthPolicy extends CustomAuthPolicy {
 }
 
 class EntityAuthPolicy<T> implements AuthPolicy {
-    constructor(public name: string, private entity: Class<T>, private authorizer: EntityPolicyAuthorizerFunction) { }
+    constructor(public name: string, public entity: Class<T>, private authorizer: EntityPolicyAuthorizerFunction) { }
     private getEntity(ctx: AuthorizerContext): { entity: Class, id: any } {
         if (ctx.access === "route" || ctx.access === "write") {
             // when the entity provider is Route 
@@ -563,24 +565,48 @@ function analyzeAuthPolicyNameConflict(policies: Class<AuthPolicy>[]) {
     }
 }
 
-function getPolicies(decorators: any[]) {
+interface AuthDecorator { policy: string, entity: Class }
+
+function getPolicyFromDecorators(decorators: any[]): AuthDecorator[] {
     const ctlAuth = decorators.filter((x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize")
     const result = []
     for (const item of ctlAuth) {
-        result.push(...item.policies)
+        result.push(...item.policies.map(x => ({ policy: x, entity: item.appliedClass })))
     }
     return result
 }
 
-function mistypedPolicies(decorators: any[], policies: string[]) {
-    return getPolicies(decorators).filter(x => !policies.includes(x))
+function mistypedPolicies(decorators: any[], registeredPolicy: AuthPolicy[]) {
+    // get policy names provided in decorators
+    const typedPolicies = getPolicyFromDecorators(decorators)
+    const mistyped = []
+    for (const typed of typedPolicies) {
+        let match = false
+        for (const policy of registeredPolicy) {
+            if (policy instanceof EntityAuthPolicy && policy.name === typed.policy) {
+                // if typed policy is an entity policy 
+                if (policy.entity === typed.entity)
+                    match = true
+                // if action is entity provider 
+                const dec = decorators.find((x:EntityPolicyProviderDecorator): x is EntityPolicyProviderDecorator => x.kind === "plumier-meta:entity-policy-provider")
+                if (dec?.entity === policy.entity)
+                    match = true
+                continue;
+            }
+            if (policy.name === typed.policy)
+                match = true;
+        }
+        if (!match)
+            mistyped.push(typed.policy)
+    }
+    return mistyped
 }
 
 function errorMessage(header: string, mistyped: string[]): RouteAnalyzerIssue {
     return { type: "error", "message": `${header} uses unknown authorization policy ${mistyped.join(", ")}` }
 }
 
-function checkMistypedPolicyNameOnType(typeDef: Class | Class[], policies: string[]) {
+function checkMistypedPolicyNameOnType(typeDef: Class | Class[], policies: AuthPolicy[]) {
     const issue: RouteAnalyzerIssue[] = []
     const type = Array.isArray(typeDef) ? typeDef[0] : typeDef
     if (!isCustomClass(type)) return issue;
@@ -593,7 +619,7 @@ function checkMistypedPolicyNameOnType(typeDef: Class | Class[], policies: strin
     return issue
 }
 
-function checkMistypedOnController(route: RouteInfo, policies: string[]): RouteAnalyzerIssue[] {
+function checkMistypedOnController(route: RouteInfo, policies: AuthPolicy[]): RouteAnalyzerIssue[] {
     const issue: RouteAnalyzerIssue[] = []
     const ctl = mistypedPolicies(route.controller.decorators, policies)
     if (ctl.length > 0)
@@ -601,7 +627,7 @@ function checkMistypedOnController(route: RouteInfo, policies: string[]): RouteA
     return issue
 }
 
-function checkMistypedOnAction(route: RouteInfo, policies: string[]): RouteAnalyzerIssue[] {
+function checkMistypedOnAction(route: RouteInfo, policies: AuthPolicy[]): RouteAnalyzerIssue[] {
     const issue: RouteAnalyzerIssue[] = []
     const actions = mistypedPolicies(route.action.decorators, policies)
     if (actions.length > 0)
@@ -609,7 +635,7 @@ function checkMistypedOnAction(route: RouteInfo, policies: string[]): RouteAnaly
     return issue
 }
 
-function checkMistypedOnActionParameters(route: RouteInfo, policies: string[]): RouteAnalyzerIssue[] {
+function checkMistypedOnActionParameters(route: RouteInfo, policies: AuthPolicy[]): RouteAnalyzerIssue[] {
     const issue: RouteAnalyzerIssue[] = []
     for (const par of route.action.parameters) {
         const parMistypes = mistypedPolicies(par.decorators, policies)
@@ -622,7 +648,7 @@ function checkMistypedOnActionParameters(route: RouteInfo, policies: string[]): 
     return issue
 }
 
-function checkMistypedOnActionReturnType(route: RouteInfo, policies: string[]): RouteAnalyzerIssue[] {
+function checkMistypedOnActionReturnType(route: RouteInfo, policies: AuthPolicy[]): RouteAnalyzerIssue[] {
     return checkMistypedPolicyNameOnType(route.action.returnType, policies)
 }
 
@@ -633,7 +659,7 @@ function createMistypeRouteAnalyzer(policyClasses: Class<AuthPolicy>[]): RouteAn
         checkMistypedOnActionParameters,
         checkMistypedOnActionReturnType
     ]
-    const policies = policyClasses.map(x => new x().name)
+    const policies = policyClasses.map(x => new x())
     return analyzers.map(analyser => (info: RouteMetadata) => info.kind === "VirtualRoute" ? [] : analyser(info, policies));
 }
 
