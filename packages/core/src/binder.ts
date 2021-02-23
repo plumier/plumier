@@ -3,7 +3,6 @@ import { Context, Request } from "koa"
 import { MethodReflection, ParameterReflection } from "@plumier/reflect"
 
 import { isCustomClass } from "./common"
-import { RouteDecorator } from './route-generator'
 import { ActionContext, ActionResult, Invocation, Middleware, MetadataImpl, GlobalMetadata, FormFile } from "./types"
 
 

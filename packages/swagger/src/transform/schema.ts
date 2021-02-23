@@ -3,13 +3,12 @@ import {
     Class,
     entityHelper,
     FormFile,
-    getGenericControllerRelation,
     getGenericControllerReverseRelation,
     RelationDecorator,
     RelationPropertyDecorator,
 } from "@plumier/core"
+import reflect from "@plumier/reflect"
 import { ReferenceObject, SchemaObject } from "openapi3-ts"
-import reflect, { ParameterReflection, PropertyReflection } from "@plumier/reflect"
 
 import {
     BaseTransformContext,

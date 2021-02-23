@@ -1,16 +1,14 @@
 import { Node, parse } from "acorn"
-import { getAllMetadata } from "./metadata"
 
+import { getAllMetadata } from "./metadata"
 import {
     Class,
     ClassReflection,
     ConstructorReflection,
     DecoratorOption,
     DecoratorOptionId,
-    DECORATOR_KEY,
     FunctionReflection,
     MethodReflection,
-    NativeDecorator,
     ParameterPropertyReflection,
     ParameterReflection,
     PropertyReflection,

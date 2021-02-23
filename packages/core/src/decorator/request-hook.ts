@@ -1,4 +1,4 @@
-import { decorateMethod, decorateProperty } from "@plumier/reflect";
+import { decorateMethod } from "@plumier/reflect"
 
 
 

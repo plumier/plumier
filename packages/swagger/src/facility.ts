@@ -1,20 +1,19 @@
 import {
     ActionResult,
+    appendRoute,
     DefaultFacility,
     Invocation,
     Middleware,
     PlumierApplication,
     response,
-    RouteInfo,
     RouteMetadata,
-    appendRoute,
 } from "@plumier/core"
 import { ServeStaticMiddleware } from "@plumier/serve-static"
+import { InfoObject } from "openapi3-ts"
 import { join } from "path"
 import dist from "swagger-ui-dist"
 
 import { transform } from "./transform"
-import { InfoObject } from 'openapi3-ts'
 
 
 export interface SwaggerConfiguration { endpoint: string, info?: InfoObject }

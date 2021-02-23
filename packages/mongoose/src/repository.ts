@@ -1,7 +1,5 @@
 import {
-    authorize,
     Class,
-    entity,
     FilterEntity,
     FilterQuery,
     getGenericControllerOneToOneRelations,
@@ -11,9 +9,8 @@ import {
     RelationDecorator,
     Repository,
 } from "@plumier/core"
-import mongoose, { Document, Model } from "mongoose"
 import reflect from "@plumier/reflect"
-import { collection } from './decorator'
+import mongoose, { Document, Model } from "mongoose"
 
 import { globalHelper, MongooseHelper } from "./generator"
 

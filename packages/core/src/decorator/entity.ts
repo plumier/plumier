@@ -1,4 +1,4 @@
-import reflect, { Class, decorateParameter, decorateProperty } from "@plumier/reflect";
+import { decorateParameter, decorateProperty } from "@plumier/reflect"
 
 interface EntityIdDecorator { kind: "plumier-meta:entity-id" }
 interface RelationDecorator { kind: "plumier-meta:relation", inverse?: true }

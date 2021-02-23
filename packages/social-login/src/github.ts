@@ -1,4 +1,4 @@
-import { OAuthProviderBaseFacility, redirectUri, OAuthUser, splitName, OAuthProviderOption, Optional } from "./core"
+import { OAuthProviderBaseFacility, OAuthProviderOption, splitName } from "./core"
 
 const tokenEndPoint = "https://github.com/login/oauth/access_token"
 const profileEndPoint = "https://api.github.com/user"
