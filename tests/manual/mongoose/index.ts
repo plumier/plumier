@@ -2,8 +2,8 @@ import { authorize, OneToManyControllerGeneric, route } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { SwaggerFacility } from "@plumier/swagger"
 import Plumier, { LoggerFacility, WebApiFacility } from "plumier"
-import {collection, MongooseFacility} from "@plumier/mongoose"
-import {type} from "@plumier/reflect"
+import { collection, MongooseFacility } from "@plumier/mongoose"
+import { noop, type } from "@plumier/reflect"
 
 @collection()
 export class User {
@@ -25,34 +25,36 @@ export class Shop {
     @collection.property()
     name: string
 
-    @route.controller()
+    //@route.controller()
     @type(x => [Item])
     items: Item[]
 
     @type(x => User)
-    createdBy:User
+    createdBy: User
 }
 
-@route.controller()
+@route.controller(c => {
+    c.actions("Delete", "GetMany", "GetOne", "Patch", "Put").ignore()
+})
 @collection()
 export class Item {
     @collection.id()
     id: number
 
-    @collection.property()
+    @noop()
     name: string
 
     @authorize.filter()
-    @collection.property()
     price: number
 
-    @type(x => Shop)
+
+    @collection.ref(x => Shop)
     shop: Shop
 
-    @type(x => [Variants])
+    @collection.ref(x => [Variants])
     variants: Variants[]
 
-    @type(x => User)
+    @collection.ref(x => User)
     createdBy: User
 }
 
@@ -73,6 +75,6 @@ new Plumier()
     .set(new WebApiFacility())
     .set(new LoggerFacility())
     .set(new JwtAuthFacility({ secret: "lorem", global: "Public" }))
-    .set(new MongooseFacility({ uri: "mongodb://localhost:27017/lorem"}))
+    .set(new MongooseFacility({ uri: "mongodb://localhost:27017/lorem" }))
     .set(new SwaggerFacility())
     .listen(8000)
