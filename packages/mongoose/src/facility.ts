@@ -77,21 +77,5 @@ export class MongooseFacility extends DefaultFacility {
         if (uri) {
             await helper.connect(uri)
         }
-        const entities = helper.getModels()
-        // update decorators for Open API schema
-        for (const entity of entities) {
-            const meta = reflect(entity)
-            const isGeneric = meta.decorators.find((x: GenericControllerDecorator) => x.name === "plumier-meta:controller")
-            for (const property of meta.properties) {
-                if (["id", "createdAt", "updatedAt"].some(x => property.name === x)) {
-                    Reflect.decorate([api.readonly()], entity.prototype, property.name)
-                }
-                if (isGeneric && property.decorators.find((x: RefDecorator) => x.name === "MongooseRef")) {
-                    if (property.typeClassification === "Array")
-                        Reflect.decorate([api.readonly(), api.writeonly()], entity.prototype, property.name)
-                }
-            }
-            reflect.flush(entity)
-        }
     }
 }
