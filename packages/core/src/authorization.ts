@@ -1,7 +1,6 @@
 import { ClassReflection, ParameterReflection, PropertyReflection, reflect, reflection } from "@plumier/reflect"
 
-import { Class, hasKeyOf, isCustomClass } from "./common"
-import { authorize } from "./decorator/authorize"
+import { Class, isCustomClass } from "./common"
 import { ResponseTypeDecorator } from "./decorator/common"
 import { EntityIdDecorator, RelationDecorator } from "./decorator/entity"
 import { HttpStatus } from "./http-status"

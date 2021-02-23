@@ -25,72 +25,72 @@ export class Shop {
     @Column()
     name: string
 
-    @route.controller()
-    @OneToMany(x => Item, x => x.shop)
-    items: Item[]
+    // @route.controller()
+    // @OneToMany(x => Item, x => x.shop)
+    // items: Item[]
 
     @ManyToOne(x => User, x => x.shops)
     createdBy:User
 }
 
-@route.controller()
-@Entity()
-export class Item {
-    @PrimaryGeneratedColumn()
-    id: number
+// @route.controller()
+// @Entity()
+// export class Item {
+//     @PrimaryGeneratedColumn()
+//     id: number
 
-    @Column()
-    name: string
+//     @Column()
+//     name: string
 
-    @authorize.filter()
-    @Column()
-    price: number
+//     @authorize.filter()
+//     @Column()
+//     price: number
 
-    @ManyToOne(x => Shop, x => x.items)
-    shop: Shop
+//     @ManyToOne(x => Shop, x => x.items)
+//     shop: Shop
 
-    @OneToMany(x => Variants, x => x.item)
-    variants: Variants[]
+//     @OneToMany(x => Variants, x => x.item)
+//     variants: Variants[]
 
-    @ManyToOne(x => User)
-    createdBy: User
-}
+//     @ManyToOne(x => User)
+//     createdBy: User
+// }
 
-@Entity()
-export class Variants {
-    @PrimaryGeneratedColumn()
-    id: number
+// @Entity()
+// export class Variants {
+//     @PrimaryGeneratedColumn()
+//     id: number
 
-    @Column()
-    name: string
+//     @Column()
+//     name: string
 
-    @ManyToOne(x => Item, x => x.variants)
-    item: Item
-}
+//     @ManyToOne(x => Item, x => x.variants)
+//     item: Item
+// }
 
-@route.controller()
-@Entity()
-export class Primitive {
-    @authorize.filter()
-    @PrimaryGeneratedColumn()
-    id: number
+// @route.controller()
+// @Entity()
+// export class Primitive {
+//     @authorize.filter()
+//     @PrimaryGeneratedColumn()
+//     id: number
 
-    @authorize.filter()
-    @Column()
-    string: string
+//     @authorize.filter()
+//     @Column()
+//     string: string
 
-    @authorize.filter()
-    @Column()
-    date: Date
+//     @authorize.filter()
+//     @Column()
+//     date: Date
 
-    @authorize.filter()
-    @Column()
-    number: number
+//     @authorize.filter()
+//     @Column()
+//     number: number
 
-    @authorize.filter()
-    @Column()
-    boolean: boolean
-}
+//     @authorize.filter()
+//     @Column()
+//     boolean: boolean
+// }
 
 new Plumier()
     .set(new WebApiFacility())

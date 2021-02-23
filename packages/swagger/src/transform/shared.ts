@@ -2,19 +2,18 @@ import {
     ApiDescriptionDecorator,
     ApiEnumDecorator,
     ApiFieldNameDecorator,
+    ApiReadOnlyDecorator,
     ApiRequiredDecorator,
     ApiResponseDecorator,
     ApiTagDecorator,
+    ApiWriteOnlyDecorator,
     BindingDecorator,
     Class,
     Configuration,
-    ApiReadOnlyDecorator,
-    ApiWriteOnlyDecorator,
-    EntityIdDecorator,
-    RouteInfo,
     RelationDecorator,
+    RouteInfo,
 } from "@plumier/core"
-import { ValidatorDecorator, PartialValidator } from "@plumier/validator"
+import { PartialValidator, ValidatorDecorator } from "@plumier/validator"
 
 const isRequired = (dec: ApiRequiredDecorator): dec is ApiRequiredDecorator => dec.kind === "ApiRequired"
 const isBind = (dec: BindingDecorator): dec is BindingDecorator => dec.type === "ParameterBinding"

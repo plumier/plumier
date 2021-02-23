@@ -1,10 +1,10 @@
-import { AuthorizeDecorator, HttpMethod, RouteInfo, RouteMetadata, VirtualRoute } from "@plumier/core"
-import { OperationObject, PathItemObject, PathObject, PathsObject } from "openapi3-ts"
+import { HttpMethod, RouteInfo, RouteMetadata, VirtualRoute } from "@plumier/core"
+import { OperationObject, PathItemObject, PathObject } from "openapi3-ts"
 
 import { transformBody } from "./body"
 import { transformParameters } from "./parameter"
 import { transformResponses } from "./response"
-import { TransformContext, isDescription, isTag, BaseTransformContext } from './shared'
+import { BaseTransformContext, isDescription, isTag } from "./shared"
 
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //

@@ -12,10 +12,9 @@ import {
     RepoBaseOneToManyControllerGeneric,
     Repository,
 } from "@plumier/core"
-import pluralize from "pluralize"
 import reflect, { generic, noop, useCache } from "@plumier/reflect"
+import pluralize from "pluralize"
 import { getMetadataArgsStorage } from "typeorm"
-import { RelationType } from 'typeorm/metadata/types/RelationTypes'
 
 import { TypeORMOneToManyRepository, TypeORMRepository } from "./repository"
 

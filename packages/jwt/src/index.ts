@@ -1,7 +1,23 @@
-import { analyzeAuthPolicyNameConflict, Authenticated, AuthenticatedAuthPolicy, AuthPolicy, Class, createMistypeRouteAnalyzer, DefaultFacility, findClassRecursive, globalPolicies, PlumierApplication, PublicAuthPolicy, ReadonlyAuthPolicy, RouteMetadata, updateRouteAuthorizationAccess, WriteonlyAuthPolicy } from "@plumier/core"
-import KoaJwt from "koa-jwt"
-import { join, isAbsolute } from "path"
+import {
+    analyzeAuthPolicyNameConflict,
+    Authenticated,
+    AuthenticatedAuthPolicy,
+    AuthPolicy,
+    Class,
+    createMistypeRouteAnalyzer,
+    DefaultFacility,
+    findClassRecursive,
+    globalPolicies,
+    PlumierApplication,
+    PublicAuthPolicy,
+    ReadonlyAuthPolicy,
+    RouteMetadata,
+    updateRouteAuthorizationAccess,
+    WriteonlyAuthPolicy,
+} from "@plumier/core"
 import { Context } from "koa"
+import KoaJwt from "koa-jwt"
+import { isAbsolute, join } from "path"
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- TYPES ----------------------------------------- */

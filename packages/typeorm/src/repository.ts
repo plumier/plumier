@@ -1,6 +1,5 @@
 import {
     Class,
-    entity,
     FilterEntity,
     FilterQuery,
     getGenericControllerOneToOneRelations,

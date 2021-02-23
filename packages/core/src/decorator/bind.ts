@@ -1,7 +1,7 @@
-import { GetOption } from "cookies"
 import { decorateParameter, mergeDecorator } from "@plumier/reflect"
+import { GetOption } from "cookies"
 
-import { BindActionResult, BindingDecorator, CustomBinderFunction, HeaderPart, RequestPart } from "../binder"
+import { BindingDecorator, CustomBinderFunction, HeaderPart, RequestPart } from "../binder"
 import { getChildValue } from "../common"
 import { api } from "./api"
 

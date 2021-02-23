@@ -1,4 +1,4 @@
-import { decorate, decorateClass, decorateMethod, decorateProperty } from "@plumier/reflect"
+import { decorate, decorateMethod, decorateProperty } from "@plumier/reflect"
 
 import { Class } from "../common"
 

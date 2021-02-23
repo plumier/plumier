@@ -1,4 +1,4 @@
-import { ClassReflection, MethodReflection, ParameterReflection, PropertyReflection } from "./types"
+import { ClassReflection, MethodReflection, PropertyReflection } from "./types"
 
 type MemberReflection = PropertyReflection | MethodReflection
 

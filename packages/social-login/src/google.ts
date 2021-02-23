@@ -1,4 +1,4 @@
-import { OAuthProviderBaseFacility, redirectUri, OAuthUser, OAuthProviderOption, Optional } from "./core"
+import { OAuthProviderBaseFacility, OAuthProviderOption } from "./core"
 
 const tokenEndPoint = "https://www.googleapis.com/oauth2/v4/token"
 const profileEndPoint = "https://www.googleapis.com/oauth2/v2/userinfo"

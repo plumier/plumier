@@ -1,4 +1,4 @@
-import { OAuthProviderBaseFacility, redirectUri, OAuthUser, splitName, OAuthProviderOption, Optional } from "./core"
+import { OAuthProviderBaseFacility, OAuthProviderOption, splitName } from "./core"
 
 const tokenEndPoint = "https://gitlab.com/oauth/token"
 const profileEndPoint = "https://gitlab.com/api/v4/user"
