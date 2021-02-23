@@ -4,8 +4,6 @@ import {
     authorize,
     Class,
     Configuration,
-    DefaultControllerGeneric,
-    DefaultOneToManyControllerGeneric,
     entity,
     entityPolicy,
     postSave,
@@ -737,7 +735,7 @@ describe("CRUD", () => {
             const app = await new Plumier()
                 .set(new WebApiFacility())
                 .set(new TypeORMFacility({ connection: getConn([User]) }))
-                .set({ mode: "production", controller: User, genericController: [MyCustomGeneric, DefaultOneToManyControllerGeneric] })
+                .set({ mode: "production", controller: User, genericController: [MyCustomGeneric, TypeORMOneToManyControllerGeneric] })
                 .initialize()
             await supertest(app.callback())
                 .post("/users")
@@ -1632,7 +1630,7 @@ describe("CRUD", () => {
             const app = await new Plumier()
                 .set(new WebApiFacility({ controller: User }))
                 .set(new TypeORMFacility({ connection: getConn([User, Animal]) }))
-                .set({ mode: "production", genericController: [DefaultControllerGeneric, MyCustomGeneric] })
+                .set({ mode: "production", genericController: [TypeORMControllerGeneric, MyCustomGeneric] })
                 .initialize()
             const user = await createUser(User)
             await supertest(app.callback())

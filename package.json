@@ -17,6 +17,7 @@
 		"social:start": "ts-node -r tsconfig-paths/register tests/manual/social-login-test/index.ts",
 		"typeorm:start": "ts-node-script -r tsconfig-paths/register tests/manual/typeorm/index.ts",
 		"swagger:start": "ts-node -r tsconfig-paths/register tests/manual/swagger/index.ts",
+		"mongoose:start": "ts-node-script -r tsconfig-paths/register tests/manual/mongoose/index.ts",
 		"copy-readme": "lerna run copy-readme"
 	},
 	"author": "Ketut Sandiarsa",
