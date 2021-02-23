@@ -13,6 +13,8 @@ new Plumier()
     .listen(8000)
 ```
 
+By default Plumier will search for controllers using this glob pattern `./**/*controller.+(ts|js)` or `./**/*entity.+(ts|js)`, its mean it will search for all TypeScript/JavaScript files ends with `controller` or `entity` (for first class entity). It also automatically detected exported controller in the same file with the entry point file, this is useful for single file project. 
+
 Above configuration does noting because no controller specified. We can start above code using [ts-node](https://www.npmjs.com/package/ts-node) or [ts-node-dev](https://www.npmjs.com/package/ts-node-dev), by specify it on the `package.json` script like below.
 
 ```json {5}
