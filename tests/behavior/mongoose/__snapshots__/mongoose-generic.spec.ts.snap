@@ -543,6 +543,18 @@ Array [
 ]
 `;
 
+exports[`CRUD Nested CRUD One to Many Function Should not confused on reverse properties with the same type POST /users/:parentId/animals 1`] = `
+Object {
+  "createdBy": Object {
+    "email": "john.doe@gmail.com",
+    "id": "MONGODB UNIQUE ID",
+    "name": "Creator",
+  },
+  "id": "MONGODB UNIQUE ID",
+  "name": "Mimi",
+}
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should not save navigation properties for non populate properties POST /users/:parentId/animals 1`] = `
 Object {
   "__v": 1,
@@ -564,28 +576,10 @@ Object {
 }
 `;
 
-exports[`CRUD Nested CRUD One to Many Function Should save navigation properties POST /users/:parentId/animals 1`] = `
+exports[`CRUD Nested CRUD One to Many Function Should populate inverse property properties POST /users/:parentId/animals 1`] = `
 Object {
-  "__v": 1,
-  "_id": "MONGODB UNIQUE ID",
-  "animals": Array [
-    Object {
-      "__v": 0,
-      "_id": "MONGODB UNIQUE ID",
-      "id": "MONGODB UNIQUE ID",
-      "name": "Mimi",
-      "user": Object {
-        "__v": 1,
-        "_id": "MONGODB UNIQUE ID",
-        "email": "john.doe@gmail.com",
-        "id": "MONGODB UNIQUE ID",
-        "name": "John Doe",
-      },
-    },
-  ],
-  "email": "john.doe@gmail.com",
   "id": "MONGODB UNIQUE ID",
-  "name": "John Doe",
+  "name": "Mimi",
 }
 `;
 

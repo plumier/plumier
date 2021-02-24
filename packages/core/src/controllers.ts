@@ -119,16 +119,12 @@ function getGenericControllerRelation(controller: Class) {
     const entityType = types[1]
     const oneToMany = meta.decorators.find((x: RelationPropertyDecorator): x is RelationPropertyDecorator => x.kind === "plumier-meta:relation-prop-name")
     const relation = oneToMany!.name
-    return { parentEntityType, entityType, relation }
+    return { parentEntityType, entityType, relation, inverseProperty: oneToMany!.inverseProperty }
 }
 
-function getGenericControllerReverseRelation(controller: Class) {
+function getGenericControllerInverseProperty(controller: Class) {
     const rel = getGenericControllerRelation(controller)
-    const meta = reflect(rel.entityType)
-    for (const prop of meta.properties) {
-        if (prop.type === rel.parentEntityType)
-            return prop.name
-    }
+    return rel.inverseProperty
 }
 
 function parseOrder(order?: string) {
@@ -304,7 +300,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
         await this.findParentByIdOrNotFound(pid)
         const query = getManyCustomQuery(this.constructor as any)
         const pOrder = parseOrder(order)
-        const reverseProperty = getGenericControllerReverseRelation(this.constructor as Class)
+        const reverseProperty = getGenericControllerInverseProperty(this.constructor as Class)
         const pSelect = parseSelect(this.entityType, select, reverseProperty)
         const result = query ? await query({ pid, offset, limit, filter, order: pOrder, select: pSelect }, ctx) : await this.repo.find(pid, offset, limit, filter, pSelect, pOrder)
         const transformer = getTransformer(this.constructor as Class, "list")
@@ -326,7 +322,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
         await this.findParentByIdOrNotFound(pid)
         const query = getOneCustomQuery(this.constructor as any)
-        const reverseProperty = getGenericControllerReverseRelation(this.constructor as Class)
+        const reverseProperty = getGenericControllerInverseProperty(this.constructor as Class)
         const pSelect = parseSelect(this.entityType, select, reverseProperty)
         const result = query ? await query({ id, select: pSelect }, ctx) : await this.findByIdOrNotFound(id, pSelect)
         const transformer = getTransformer(this.constructor as Class, "get")
@@ -367,7 +363,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
 export {
     RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
     parseSelect, decorateRoute, IdentifierResult, getGenericControllerRelation,
-    getGenericControllerReverseRelation, ResponseTransformer, responseTransformer,
+    getGenericControllerInverseProperty, ResponseTransformer, responseTransformer,
     GetOneCustomQueryFunction, GetOneCustomQueryDecorator, GetOneParams,
     GetManyCustomQueryFunction, GetManyCustomQueryDecorator, GetManyParams,
 }

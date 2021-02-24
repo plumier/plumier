@@ -1,7 +1,7 @@
 import { decorateParameter, decorateProperty } from "@plumier/reflect"
 
 interface EntityIdDecorator { kind: "plumier-meta:entity-id" }
-interface RelationDecorator { kind: "plumier-meta:relation", inverse?: true }
+interface RelationDecorator { kind: "plumier-meta:relation", inverseProperty?:string }
 interface DeleteColumnDecorator { kind: "plumier-meta:delete-column" }
 interface EntityFilterDecorator { kind: "plumier-meta:entity-filter" }
 
@@ -16,8 +16,8 @@ namespace entity {
     /**
      * Mark entity property as relation
      */
-    export function relation(opt?: { inverse: true }) {
-        return decorateProperty(<RelationDecorator>{ kind: "plumier-meta:relation", inverse: opt?.inverse })
+    export function relation(opt?: { inverseProperty?:string }) {
+        return decorateProperty(<RelationDecorator>{ kind: "plumier-meta:relation",  inverseProperty: opt?.inverseProperty })
     }
 
     /**

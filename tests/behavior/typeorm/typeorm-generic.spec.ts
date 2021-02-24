@@ -1188,7 +1188,7 @@ describe("CRUD", () => {
             const user = await createUser(User)
             const parentRepo = getManager().getRepository(User)
             const animalRepo = getManager().getRepository(Animal)
-            const {body} = await supertest(app.callback())
+            const { body } = await supertest(app.callback())
                 .post(`/users/${user.id}/animals`)
                 .send({ name: "Mimi" })
                 .expect(200)
@@ -1197,7 +1197,7 @@ describe("CRUD", () => {
                 .send({ name: "Mimi" })
                 .expect(200)
             const inserted = await parentRepo.findOne(user.id, { relations: ["animals"] })
-            const animal = await animalRepo.findOne(body.id, {relations: ["user"]})
+            const animal = await animalRepo.findOne(body.id, { relations: ["user"] })
             expect(inserted).toMatchSnapshot()
             expect(animal).toMatchSnapshot()
 

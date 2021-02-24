@@ -148,6 +148,66 @@ describe("TypeOrm", () => {
             expect(extract(MyEntity)).toMatchSnapshot()
             expect(extract(Child)).toMatchSnapshot()
         })
+        it("Should able to reflect one to many with curly braced inverse entity", async () => {
+            @Entity()
+            class MyEntity {
+                @PrimaryGeneratedColumn()
+                id: number = 123
+                @Column()
+                name: string
+                @OneToMany(x => Child, x => { return x.entity })
+                children: Child[]
+            }
+            @Entity()
+            class Child {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => MyEntity, x => x.children)
+                entity: MyEntity
+            }
+            await createApp([MyEntity, Child])
+            const parentRepo = getManager().getRepository(MyEntity)
+            const repo = getManager().getRepository(Child)
+            const parent = await parentRepo.insert({ name: "Mimi" })
+            const inserted = await repo.insert({ name: "Poo" })
+            await parentRepo.createQueryBuilder().relation("children").of(parent.raw).add(inserted.raw)
+            const result = await parentRepo.findOne(parent.raw, { relations: ["children"] })
+            expect(result).toMatchSnapshot()
+            expect(extract(MyEntity)).toMatchSnapshot()
+            expect(extract(Child)).toMatchSnapshot()
+        })
+        it("Should able to reflect one to many with braced inverse entity", async () => {
+            @Entity()
+            class MyEntity {
+                @PrimaryGeneratedColumn()
+                id: number = 123
+                @Column()
+                name: string
+                @OneToMany(x => Child, x =>  (x.entity))
+                children: Child[]
+            }
+            @Entity()
+            class Child {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => MyEntity, x => x.children)
+                entity: MyEntity
+            }
+            await createApp([MyEntity, Child])
+            const parentRepo = getManager().getRepository(MyEntity)
+            const repo = getManager().getRepository(Child)
+            const parent = await parentRepo.insert({ name: "Mimi" })
+            const inserted = await repo.insert({ name: "Poo" })
+            await parentRepo.createQueryBuilder().relation("children").of(parent.raw).add(inserted.raw)
+            const result = await parentRepo.findOne(parent.raw, { relations: ["children"] })
+            expect(result).toMatchSnapshot()
+            expect(extract(MyEntity)).toMatchSnapshot()
+            expect(extract(Child)).toMatchSnapshot()
+        })
         it("Should able to reflect many to many relation", async () => {
             @Entity()
             class MyEntity {

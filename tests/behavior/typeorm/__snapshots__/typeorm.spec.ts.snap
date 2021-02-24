@@ -183,6 +183,104 @@ Array [
 ]
 `;
 
+exports[`TypeOrm Facility Should able to reflect one to many with braced inverse entity 1`] = `
+MyEntity {
+  "children": Array [
+    Child {
+      "id": 1,
+      "name": "Poo",
+    },
+  ],
+  "id": 1,
+  "name": "Mimi",
+}
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to many with braced inverse entity 2`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "name",
+    "type": String,
+  },
+  Object {
+    "name": "children",
+    "type": Array [
+      Child,
+    ],
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to many with braced inverse entity 3`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "name",
+    "type": String,
+  },
+  Object {
+    "name": "entity",
+    "type": MyEntity,
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to many with curly braced inverse entity 1`] = `
+MyEntity {
+  "children": Array [
+    Child {
+      "id": 1,
+      "name": "Poo",
+    },
+  ],
+  "id": 1,
+  "name": "Mimi",
+}
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to many with curly braced inverse entity 2`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "name",
+    "type": String,
+  },
+  Object {
+    "name": "children",
+    "type": Array [
+      Child,
+    ],
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to many with curly braced inverse entity 3`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "name",
+    "type": String,
+  },
+  Object {
+    "name": "entity",
+    "type": MyEntity,
+  },
+]
+`;
+
 exports[`TypeOrm Facility Should able to reflect one to one relation 1`] = `
 Parent {
   "entity": MyEntity {

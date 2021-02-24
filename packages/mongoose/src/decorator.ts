@@ -1,12 +1,13 @@
 import { api, Class, entity } from "@plumier/core"
+import reflect, { decorateClass, decorateMethod, decorateProperty, mergeDecorator } from "@plumier/reflect"
 import { SchemaTypeOptions } from "mongoose"
-import reflect, { decorateClass, decorateProperty, mergeDecorator, decorateMethod } from "@plumier/reflect"
 
-import { ClassOptionDecorator, NamedSchemaOption, PropertyOptionDecorator, RefDecorator, PreSaveDecorator } from "./types"
+import { ClassOptionDecorator, NamedSchemaOption, PreSaveDecorator, PropertyOptionDecorator, RefDecorator } from "./types"
 
 // --------------------------------------------------------------------- //
 // ----------------------------- DECORATORS ---------------------------- //
 // --------------------------------------------------------------------- //
+
 
 function collection(option?: NamedSchemaOption): ClassDecorator {
     return mergeDecorator(
@@ -19,11 +20,11 @@ collection.property = (option?: Partial<SchemaTypeOptions<any>>) => {
     return decorateProperty(<PropertyOptionDecorator>{ name: "PropertyOption", option })
 }
 
-collection.ref = (type: Class | Class[] | ((x: any) => Class | Class[])) => {
+collection.ref = <T>(type: Class<T> | Class<T>[] | ((x: any) => Class<T> | Class<T>[]), inverseProperty?: keyof T) => {
     return mergeDecorator(
-        decorateProperty(<RefDecorator>{ name: "MongooseRef" }),
+        decorateProperty(<RefDecorator>{ name: "MongooseRef", inverseProperty }),
         reflect.type(type),
-        entity.relation()
+        entity.relation({ inverseProperty: inverseProperty as string })
     )
 }
 
