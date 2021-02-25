@@ -6,7 +6,7 @@
 | Filter                | Set readonly on property without @authorize.filter() |
 | RemoveArrayRelation   | Remove array relations (one to many)                 |
 | RemoveChildRelations  | Remove relation of the child property                |
-| RemoveReverseRelation | Remove reverse relation                              |
+| RemoveInverseProperty | Remove reverse relation                              |
 
 decorators: 
 
@@ -17,8 +17,8 @@ decorators:
 
 | Location   | Override Applied                                                   |
 | ---------- | ------------------------------------------------------------------ |
-| POST Body  | RelationAsId, RemoveReverseRelation, Required, RemoveArrayRelation |
-| PUT Body   | RelationAsId, RemoveReverseRelation, Required, RemoveArrayRelation |
-| PATCH Body | RelationAsId, RemoveReverseRelation, RemoveArrayRelation           |
+| POST Body  | RelationAsId, RemoveInverseProperty, Required, RemoveArrayRelation |
+| PUT Body   | RelationAsId, RemoveInverseProperty, Required, RemoveArrayRelation |
+| PATCH Body | RelationAsId, RemoveInverseProperty, RemoveArrayRelation           |
 | Filter     | RelationAsId, Filter                                               |
-| Response   | RemoveArrayRelation, RemoveChildRelations, RemoveReverseRelation   |
+| Response   | RemoveArrayRelation, RemoveChildRelations, RemoveInverseProperty   |

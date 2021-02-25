@@ -17,6 +17,7 @@ import pluralize from "pluralize"
 import { getMetadataArgsStorage } from "typeorm"
 
 import { TypeORMOneToManyRepository, TypeORMRepository } from "./repository"
+import { Node, parse } from "acorn"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //
@@ -38,14 +39,15 @@ function normalizeEntityNoCache(type: Class) {
         Reflect.decorate([reflect.type(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
         if (col.relationType === "many-to-one") {
             // TODO
-            Reflect.decorate([entity.relation({ inverse: true })], (col.target as Function).prototype, col.propertyName, void 0)
+            Reflect.decorate([entity.relation()], (col.target as Function).prototype, col.propertyName, void 0)
         }
         else {
+            const inverseProperty = inverseSideParser(col.inverseSideProperty)
             const cache = genericControllerRegistry.get(rawType)
             // if entity handled with generic controller then hide all one to many relation
             if (cache)
                 Reflect.decorate([api.readonly(), api.writeonly()], (col.target as Function).prototype, col.propertyName, void 0)
-            Reflect.decorate([entity.relation()], (col.target as Function).prototype, col.propertyName, void 0)
+            Reflect.decorate([entity.relation({ inverseProperty })], (col.target as Function).prototype, col.propertyName, void 0)
         }
     }
 }
@@ -53,6 +55,38 @@ function normalizeEntityNoCache(type: Class) {
 const normalizeEntityCache = new Map<Class, any>()
 
 const normalizeEntity = useCache(normalizeEntityCache, normalizeEntityNoCache, x => x)
+
+// --------------------------------------------------------------------- //
+// ---------------------- INVERSE PROPERTY PARSER ---------------------- //
+// --------------------------------------------------------------------- //
+
+function inverseSideParser(expr: string | ((t: any) => any)|undefined) {
+    if (!expr || typeof expr === "string") return expr
+    const node = parse(expr.toString())
+    return getMemberExpression(node)
+}
+
+function getContent(node: any): any {
+    switch (node.type) {
+        case "Program":
+        case "BlockStatement":
+            return node.body[node.body.length - 1]
+        case "ArrowFunctionExpression":
+            return node.body
+        case "ExpressionStatement":
+            return node.expression
+        case "ReturnStatement":
+            return node.argument
+    }
+}
+
+function getMemberExpression(node: any): string {
+    const content = getContent(node)
+    if (content.type === "MemberExpression")
+        return content.property.name
+    else
+        return getMemberExpression(content)
+}
 
 // --------------------------------------------------------------------- //
 // ------------------------ GENERIC CONTROLLERS ------------------------ //

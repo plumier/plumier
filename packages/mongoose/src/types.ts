@@ -10,7 +10,7 @@ type NamedSchemaOption = SchemaOptions & { hook?: GeneratorHook, name?: string }
 type ModelFactory = <T>(type: new (...args: any) => T) => mongoose.Model<T & mongoose.Document>
 interface ClassOptionDecorator { name: "ClassOption", option: NamedSchemaOption }
 interface PropertyOptionDecorator { name: "PropertyOption", option?: SchemaTypeOptions<any> }
-interface RefDecorator { name: "MongooseRef" }
+interface RefDecorator { name: "MongooseRef", inverseProperty?:  string}
 interface PreSaveDecorator { name: "MongoosePreSave" }
 interface ModelStore { name: string, collectionName: string, definition: any, option: NamedSchemaOption }
 interface AnalysisResult { name: string, collection: string, option: string, definition: string }

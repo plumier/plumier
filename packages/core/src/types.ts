@@ -379,7 +379,7 @@ export class FormFile {
 
 export type FilterQueryType = "equal" | "partial" | "range" | "gte" | "gt" | "lte" | "lt" | "ne"
 
-export interface RelationPropertyDecorator { kind: "plumier-meta:relation-prop-name", name: string }
+export interface RelationPropertyDecorator { kind: "plumier-meta:relation-prop-name", name: string, inverseProperty?: string }
 
 export type GenericController = [Class<ControllerGeneric>, Class<OneToManyControllerGeneric>]
 

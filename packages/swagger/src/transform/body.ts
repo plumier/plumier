@@ -29,7 +29,6 @@ function getRequiredProps(props: (PropertyReflection | ParameterReflection)[] ) 
     return required.length > 0 ? required : undefined
 }
 
-
 function transformProperties(props: (PropertyReflection | ParameterReflection)[], ctx: TransformContext): SchemaObject {
     const properties = {} as { [propertyName: string]: (SchemaObject | ReferenceObject); }
     for (const prop of props) {
@@ -47,7 +46,7 @@ function transformModel(model: ParameterNode, ctx: TransformContext) {
         overrides.push("Required")
     // if contains @api.noRelation() then adds remove all relations
     if (!!model.meta.decorators.find((x: ApiHideRelationDecorator) => x.kind === "ApiNoRelation")) {
-        overrides.push("RemoveReverseRelation")
+        overrides.push("RemoveInverseProperty")
         overrides.push("RemoveArrayRelation")
     }
     overrides.push("ReadonlyFields")

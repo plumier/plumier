@@ -3,7 +3,7 @@ import {
     Class,
     entityHelper,
     FormFile,
-    getGenericControllerReverseRelation,
+    getGenericControllerInverseProperty,
     RelationDecorator,
     RelationPropertyDecorator,
 } from "@plumier/core"
@@ -21,7 +21,7 @@ import {
 } from "./shared"
 
 type SchemaOverrideType = "RelationAsId" | "Required" | "Filter" | "RemoveArrayRelation" |
-    "RemoveChildRelations" | "RemoveReverseRelation" | "ReadonlyFields" | "WriteonlyFields"
+    "RemoveChildRelations" | "RemoveInverseProperty" | "ReadonlyFields" | "WriteonlyFields"
 type SchemaOverride = (modelType: (Class | Class[]), ctx: TransformContext) => SchemaObject | undefined
 interface TransformTypeOption {
     decorators?: any[],
@@ -122,12 +122,12 @@ function removeArrayRelationsOverride(modelType: (Class | Class[]), ctx: Transfo
     return Object.keys(result.properties!).length === 0 ? undefined : result
 }
 
-function removeReverseRelationsOverride(modelType: (Class | Class[]), ctx: TransformContext) {
+function removeInversePropertyOverride(modelType: (Class | Class[]), ctx: TransformContext) {
     const meta = getMetadata(modelType)
     const result: SchemaObject = { type: "object", properties: {} }
     const reverseDec = ctx.route.controller.decorators.find((x: RelationPropertyDecorator) => x.kind === "plumier-meta:relation-prop-name")
     if (!reverseDec) return
-    const reverse = getGenericControllerReverseRelation(ctx.route.controller.type)!
+    const reverse = getGenericControllerInverseProperty(ctx.route.controller.type)
     for (const property of meta.properties) {
         if (property.name === reverse) {
             result.properties![property.name] = { readOnly: true, writeOnly: true }
@@ -220,7 +220,7 @@ function transformTypeAdvance(type: Class | Class[] | undefined, ctx: TransformC
         ["Filter", addFilterOverride],
         ["RemoveArrayRelation", removeArrayRelationsOverride],
         ["RemoveChildRelations", removeChildRelationsOverride],
-        ["RemoveReverseRelation", removeReverseRelationsOverride],
+        ["RemoveInverseProperty", removeInversePropertyOverride],
         ["ReadonlyFields", addReadonlyFieldOverride],
         ["WriteonlyFields", addWriteonlyFieldOverride],
     ])

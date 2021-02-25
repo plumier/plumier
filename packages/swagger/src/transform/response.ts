@@ -16,7 +16,7 @@ function successResponse(route: RouteInfo, ctx: TransformContext): SchemaObject 
         // if contains @api.noRelation() then adds remove all relations
         if (!!route.action.decorators.find((x: ApiHideRelationDecorator) => x.kind === "ApiNoRelation")) {
             overrides.push("RemoveChildRelations")
-            overrides.push("RemoveReverseRelation")
+            overrides.push("RemoveInverseProperty")
             overrides.push("RemoveArrayRelation")
         }
         overrides.push("WriteonlyFields")

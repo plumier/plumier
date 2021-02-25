@@ -259,7 +259,7 @@ describe("Open API 3.0 Generation", () => {
                     @noop()
                     name: string
 
-                    @entity.relation()
+                    @entity.relation({ inverseProperty: "shop" })
                     @type(x => [Item])
                     items: Item[]
                 }
@@ -302,7 +302,7 @@ describe("Open API 3.0 Generation", () => {
                     createdBy: User
                 }
                 @generic.type(Shop, Item, Number, Number)
-                @decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: "items" })
+                @decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: "items", inverseProperty: "shop" })
                 class ItemController {
                     @route.post("")
                     save(@api.hideRelations() data: Item) { }
@@ -599,7 +599,7 @@ describe("Open API 3.0 Generation", () => {
                     createdBy: User
                 }
                 @generic.type(Shop, Item, Number, Number)
-                @decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: "items" })
+                @decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: "items", inverseProperty: "shop" })
                 class ItemController {
                     @route.get("")
                     @api.hideRelations()
@@ -614,7 +614,7 @@ describe("Open API 3.0 Generation", () => {
             })
         })
     })
-    
+
     describe("Info", () => {
         it("Should able to provide spec info", async () => {
             class UsersController {
@@ -2448,7 +2448,7 @@ describe("Open API 3.0 Generation", () => {
                     @entity.primaryId()
                     public id: number,
                     public name: string,
-                    @entity.relation({ inverse: true })
+                    @entity.relation()
                     public user: User
                 ) { }
             }

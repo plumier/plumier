@@ -13,6 +13,7 @@ import reflect from "@plumier/reflect"
 import mongoose, { Document, Model } from "mongoose"
 
 import { globalHelper, MongooseHelper } from "./generator"
+import { RefDecorator } from "./types"
 
 function getProjection(select: string[]) {
     return select.reduce((a, x) => {
@@ -113,10 +114,14 @@ class MongooseRepository<T> implements Repository<T>{
 class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
     readonly Model: Model<T & Document>
     readonly ParentModel: Model<P & Document>
+    readonly inverseProperty?: string
     constructor(protected parent: Class<P>, protected type: Class<T>, protected relation: string, helper?: MongooseHelper) {
         const hlp = helper ?? globalHelper
         this.Model = hlp.model(type)
         this.ParentModel = hlp.model(parent)
+        const meta = reflect(parent)
+        const prop = meta.properties.find(x => x.name === relation)!
+        this.inverseProperty = prop.decorators.find((x: RefDecorator): x is RefDecorator => x.name === "MongooseRef")!.inverseProperty
     }
 
     async count(pid: string, query?: FilterEntity<T>): Promise<number> {
@@ -145,20 +150,11 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         return (parent as any)[this.relation]
     }
 
-    private getReverseProperty() {
-        const meta = reflect(this.type)
-        for (const prop of meta.properties) {
-            if (prop.type === this.parent && prop.decorators.some((x: RelationDecorator) => x.kind === "plumier-meta:relation"))
-                return prop.name
-        }
-    }
-
     async insert(pid: string, doc: Partial<T>) {
         const parent = await this.ParentModel.findById(pid);
-        const reverseProp = this.getReverseProperty()
-        if (reverseProp) {
+        if (this.inverseProperty) {
             // add parent navigation
-            (doc as any)[reverseProp] = parent!.id
+            (doc as any)[this.inverseProperty] = parent!.id
         }
         const result = await new this.Model(doc).save();
         // add children navigation

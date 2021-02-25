@@ -413,12 +413,13 @@ function createOneToManyGenericController(parentType: Class, builder: Controller
     const relProp = meta.properties.find(x => x.name === relationProperty)!
     const entityDecorators = relProp.decorators
     const decorators = copyDecorators(entityDecorators, controller)
+    const inverseProperty = entityDecorators.find((x:RelationDecorator):x is RelationDecorator => x.kind === "plumier-meta:relation")?.inverseProperty!
     Reflect.decorate([
         ...decorators,
         ...routes,
         route.root(routePath, { map: routeMap }),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
-        decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: relationProperty }),
+        decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: relationProperty, inverseProperty }),
         ignoreActions(config),
         entityProvider(parentType, "pid", { applyTo: ["list", "save"] }),
         entityProvider(entity, "id", { applyTo: ["get", "modify", "replace", "delete"] }),

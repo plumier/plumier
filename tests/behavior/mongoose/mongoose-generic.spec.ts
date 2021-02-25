@@ -882,9 +882,9 @@ describe("CRUD", () => {
         })
     })
     describe("Nested CRUD One to Many Function", () => {
-        async function createUser<T>(type: Class<T>) {
+        async function createUser<T>(type: Class<T>, user?: Partial<T>) {
             const userRepo = new MongooseRepository(type)
-            const inserted = await userRepo.insert({ email: "john.doe@gmail.com", name: "John Doe" } as any)
+            const inserted = await userRepo.insert({ email: "john.doe@gmail.com", name: "John Doe", ...user } as any)
             const saved = await userRepo.findById(inserted.id, [])
             return saved!
         }
@@ -1064,7 +1064,7 @@ describe("CRUD", () => {
                 email: string
                 @reflect.noop()
                 name: string
-                @collection.ref(x => [Animal])
+                @collection.ref(x => [Animal], "user")
                 @route.controller()
                 animals: Animal[]
             }
@@ -1275,7 +1275,7 @@ describe("CRUD", () => {
             const inserted = await repo.Model.findById(user._id).populate("animals")
             expect(inserted).toMatchSnapshot()
         })
-        it("Should save navigation properties POST /users/:parentId/animals", async () => {
+        it("Should populate inverse property properties POST /users/:parentId/animals", async () => {
             @collection()
             @route.controller()
             class User {
@@ -1285,7 +1285,7 @@ describe("CRUD", () => {
                 email: string
                 @reflect.noop()
                 name: string
-                @collection.ref(x => [Animal])
+                @collection.ref(x => [Animal], "user")
                 @route.controller()
                 animals: Animal[]
             }
@@ -1301,19 +1301,50 @@ describe("CRUD", () => {
             }
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const repo = new MongooseRepository(User)
-            await supertest(app.callback())
+            const { body: added } = await supertest(app.callback())
                 .post(`/users/${user._id}/animals`)
                 .send({ name: "Mimi" })
                 .expect(200)
-            const parent = await repo.Model.findById(user._id).populate({
-                path: "animals",
-                populate: {
-                    path: "user",
-                    select: { animals: 0 }
-                }
-            })
-            expect(parent).toMatchSnapshot()
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals/${added.id}`)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should not confused on reverse properties with the same type POST /users/:parentId/animals", async () => {
+            @collection()
+            @route.controller()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal], "user")
+                @route.controller()
+                animals: Animal[]
+            }
+            @collection()
+            @route.controller()
+            class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => User)
+                user: User
+                @collection.ref(x => User)
+                createdBy: User
+            }
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const otherUser = await createUser(User, { name: "Creator" })
+            const { body: added } = await supertest(app.callback())
+                .post(`/users/${user._id}/animals`)
+                .send({ name: "Mimi", createdBy: otherUser._id })
+                .expect(200)
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals/${added.id}`)
+            expect(body).toMatchSnapshot()
         })
         it("Should not save navigation properties for non populate properties POST /users/:parentId/animals", async () => {
             @collection()
@@ -2082,7 +2113,7 @@ describe("CRUD", () => {
                 email: string
                 @reflect.noop()
                 name: string
-                @collection.ref(x => [Animal])
+                @collection.ref(x => [Animal], "user")
                 @route.controller(c => {
                     c.getOne().custom(AnimalDto, async ({ id }) => {
                         const AnimalModel = model(Animal)
@@ -2126,7 +2157,7 @@ describe("CRUD", () => {
                 email: string
                 @reflect.noop()
                 name: string
-                @collection.ref(x => [Animal])
+                @collection.ref(x => [Animal], "user")
                 @route.controller(c => {
                     c.getMany().custom([AnimalDto], async ({ limit, offset }) => {
                         const AnimalModel = model(Animal)
