@@ -1,12 +1,17 @@
 {
-  "name": "@plumier/typeorm",
+  "name": "@plumier/generic-controller",
   "version": "1.0.0-rc.8",
-  "description": "TypeOrm helper for Plumier",
+  "description": "Plumier generic controller implementation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "keywords": [
-    "typeorm",
-    "plumier"
+    "MVC",
+    "Koa",
+    "IoC",
+    "Dependency Injection",
+    "Web API",
+    "JSON Service",
+    "TDD"
   ],
   "scripts": {
     "compile": "tsc -p tsconfig.build.json",
@@ -15,11 +20,7 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumier/core": "1.0.0-rc.8",
-    "@types/pluralize": "^0.0.29",
-    "@plumier/generic-controller": "1.0.0-rc.8",
-    "pluralize": "^8.0.0",
-    "typeorm": "^0.2.31"
+    "@plumier/core": "^1.0.0-rc.8"
   },
   "devDependencies": {
     "cpy-cli": "^3.1.1"

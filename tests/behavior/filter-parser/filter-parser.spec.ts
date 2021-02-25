@@ -8,16 +8,19 @@ import {
     FilterEntity,
     OneToManyRepository,
     PlumierApplication,
-    RepoBaseControllerGeneric,
-    RepoBaseOneToManyControllerGeneric,
     Repository,
     route,
 } from "@plumier/core"
-import { JwtAuthFacility } from '@plumier/jwt'
-import { sign } from 'jsonwebtoken'
+import {
+    genericController,
+    RepoBaseControllerGeneric,
+    RepoBaseOneToManyControllerGeneric,
+} from "@plumier/generic-controller"
+import { JwtAuthFacility } from "@plumier/jwt"
+import { generic, noop } from "@plumier/reflect"
+import { sign } from "jsonwebtoken"
 import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "plumier"
 import supertest from "supertest"
-import { generic, noop } from "@plumier/reflect"
 
 class MockRepo<T> implements Repository<T>{
     constructor(private fn: jest.Mock) { }
@@ -105,7 +108,7 @@ describe("Filter Parser", () => {
     }
     beforeEach(() => fn.mockClear())
     it("Should not allow non authorized filter", async () => {
-        @route.controller()
+        @genericController()
         @domain()
         class User {
             constructor(
@@ -122,7 +125,7 @@ describe("Filter Parser", () => {
         expect(body).toMatchSnapshot()
     })
     it("Should not allow non authorized filter multiple", async () => {
-        @route.controller()
+        @genericController()
         @domain()
         class User {
             constructor(
@@ -140,7 +143,7 @@ describe("Filter Parser", () => {
     })
     it("Should not not conflict with other authorization", async () => {
         const user = sign({ userId: 123, role: "User" }, "lorem")
-        @route.controller()
+        @genericController()
         @domain()
         class User {
             constructor(
@@ -185,7 +188,7 @@ describe("Filter Parser", () => {
     })
     describe("Range Filter", () => {
         it("Should parse number range filter properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -203,7 +206,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should not allow data type other than number and date", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -221,7 +224,7 @@ describe("Filter Parser", () => {
             expect(body).toMatchSnapshot()
         })
         it("Should validate number value properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -238,7 +241,7 @@ describe("Filter Parser", () => {
             expect(body).toMatchSnapshot()
         })
         it("Should validate right hand number value properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -255,7 +258,7 @@ describe("Filter Parser", () => {
             expect(body).toMatchSnapshot()
         })
         it("Should parse date range filter properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -273,7 +276,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should parse iso date range filter properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -291,7 +294,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should validate date value properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -308,7 +311,7 @@ describe("Filter Parser", () => {
             expect(body).toMatchSnapshot()
         })
         it("Should validate right hand date value properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -327,7 +330,7 @@ describe("Filter Parser", () => {
     })
     describe("Partial Filter", () => {
         it("Should parse partial filter at the end properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -344,7 +347,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should parse partial filter at the start properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -361,7 +364,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should parse partial filter at both properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -378,7 +381,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should not allowed on type other than string", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -397,7 +400,7 @@ describe("Filter Parser", () => {
     })
     describe("Equal Filter", () => {
         it("Should parse equal filter properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -414,7 +417,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should parse equal filter on type number properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -431,7 +434,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should able to filter by number with falsy value", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -448,7 +451,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should able to filter by boolean with falsy value", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -465,7 +468,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should parse equal filter on type number properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -482,7 +485,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should parse equal filter on type date properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -500,7 +503,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should parse equal filter on type boolean properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -517,7 +520,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should validate filter properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -536,7 +539,7 @@ describe("Filter Parser", () => {
     })
     describe("Conditional Filter", () => {
         it("Should parse gte filter properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -553,7 +556,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should parse lte filter properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -570,7 +573,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should parse lt filter properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -587,7 +590,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should parse gt filter properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -604,7 +607,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should validate value", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -621,7 +624,7 @@ describe("Filter Parser", () => {
             expect(body).toMatchSnapshot()
         })
         it("Should validate type", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -640,7 +643,7 @@ describe("Filter Parser", () => {
     })
     describe("Not Equal Filter", () => {
         it("Should parse ne filter on string data properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -657,7 +660,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should parse ne filter on number properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -674,7 +677,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should parse ne filter on date properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -692,7 +695,7 @@ describe("Filter Parser", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should parse ne filter on boolean properly", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(

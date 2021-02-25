@@ -25,7 +25,7 @@ export class Shop {
     @collection.property()
     name: string
 
-    //@route.controller()
+    //@genericController()
     @type(x => [Item])
     items: Item[]
 
@@ -33,7 +33,7 @@ export class Shop {
     createdBy: User
 }
 
-@route.controller(c => {
+@genericController(c => {
     c.actions("Delete", "GetMany", "GetOne", "Patch", "Put").ignore()
 })
 @collection()

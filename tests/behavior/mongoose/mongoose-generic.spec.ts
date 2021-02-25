@@ -14,7 +14,6 @@ import {
 import { JwtAuthFacility } from "@plumier/jwt"
 import model, {
     collection,
-    controller,
     models,
     MongooseControllerGeneric,
     MongooseFacility,
@@ -27,7 +26,7 @@ import reflect, { generic, noop, type } from "@plumier/reflect"
 import { sign } from "jsonwebtoken"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
-import Plumier, { WebApiFacility } from "plumier"
+import Plumier, { WebApiFacility, genericController } from "plumier"
 import supertest from "supertest"
 import { random } from "../helper"
 
@@ -65,7 +64,7 @@ describe("CRUD", () => {
             .initialize()
     }
     it("Should able to use entity policy properly", async () => {
-        @route.controller()
+        @genericController()
         @collection()
         class User {
             @collection.id()
@@ -98,7 +97,7 @@ describe("CRUD", () => {
     })
     it("Should able to update array", async () => {
         @collection()
-        @route.controller()
+        @genericController()
         class Tag {
             @collection.id()
             id: string
@@ -106,7 +105,7 @@ describe("CRUD", () => {
             name: string
         }
         @collection()
-        @route.controller()
+        @genericController()
         class User {
             @collection.id()
             id: string
@@ -137,7 +136,7 @@ describe("CRUD", () => {
     describe("CRUD Function", () => {
         it("Should serve GET /users?offset&limit", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -157,7 +156,7 @@ describe("CRUD", () => {
         })
         it("Should serve GET /users?offset&limit with default value", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -177,7 +176,7 @@ describe("CRUD", () => {
         })
         it("Should able to query by property GET /users?offset&limit&name", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -199,7 +198,7 @@ describe("CRUD", () => {
         })
         it("Should able to filter with exact value GET /users?filter", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -221,7 +220,7 @@ describe("CRUD", () => {
         })
         it("Should able to filter with partial value GET /users?filter", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -243,7 +242,7 @@ describe("CRUD", () => {
         })
         it("Should set partial validation on query GET /users?offset&limit&name", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -266,7 +265,7 @@ describe("CRUD", () => {
         })
         it("Should return empty array when no filter match GET /users?offset&limit&name", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -289,7 +288,7 @@ describe("CRUD", () => {
         })
         it("Should able to select by property GET /users?offset&limit&name", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -314,7 +313,7 @@ describe("CRUD", () => {
         })
         it("Should able to order by property GET /users?offset&limit&name", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -343,7 +342,7 @@ describe("CRUD", () => {
         })
         it("Should serve POST /users", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -365,7 +364,7 @@ describe("CRUD", () => {
         })
         it("Should serve GET /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -386,7 +385,7 @@ describe("CRUD", () => {
         })
         it("Should select by property GET /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -408,7 +407,7 @@ describe("CRUD", () => {
         })
         it("Should ignore wrong property name on select GET /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -430,7 +429,7 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id on GET /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -447,7 +446,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found GET /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -464,7 +463,7 @@ describe("CRUD", () => {
         })
         it("Should serve PUT /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -487,7 +486,7 @@ describe("CRUD", () => {
         })
         it("Should able to clear property using null on PUT /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -509,7 +508,7 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id on PUT /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -527,7 +526,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found PUT /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -545,7 +544,7 @@ describe("CRUD", () => {
         })
         it("Should serve PATCH /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -568,7 +567,7 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id on PATCH /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -586,7 +585,7 @@ describe("CRUD", () => {
         })
         it("Should set partial validation on PATCH /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -610,7 +609,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found PATCH /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -628,7 +627,7 @@ describe("CRUD", () => {
         })
         it("Should serve DELETE /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -649,7 +648,7 @@ describe("CRUD", () => {
         })
         it("Should serve delete using deleteColumn DELETE /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -673,7 +672,7 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id on DELETE /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -690,7 +689,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found DELETE /users/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -707,7 +706,7 @@ describe("CRUD", () => {
         })
         it("Should able to use custom generic controller with custom repository", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -736,7 +735,7 @@ describe("CRUD", () => {
         it("Should able to use request hook", async () => {
             const fn = jest.fn()
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -769,7 +768,7 @@ describe("CRUD", () => {
         })
         it("Should serve data with native array", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -789,43 +788,9 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
-        it("Should able to create controller using builder", async () => {
-            @collection()
-            class User {
-                @collection.id()
-                id: number
-                @noop()
-                email: string
-                @noop()
-                name: string
-            }
-            const UsersController = controller(User).configure()
-            const mock = console.mock()
-            await createApp({ controller: [UsersController] })
-            expect(mock.mock.calls).toMatchSnapshot()
-            console.mockClear()
-        })
-        it("Should able to disable some actions from controller builder", async () => {
-            @collection()
-            class User {
-                @collection.id()
-                id: number
-                @noop()
-                email: string
-                @noop()
-                name: string
-            }
-            const UsersController = controller(User).configure(c => {
-                c.mutators().ignore()
-            })
-            const mock = console.mock()
-            await createApp({ controller: [UsersController] })
-            expect(mock.mock.calls).toMatchSnapshot()
-            console.mockClear()
-        })
         it("Should able to specify custom get one query", async () => {
             @collection()
-            @route.controller(c => {
+            @genericController(c => {
                 c.getOne().custom(UserDto, async ({ id }) => {
                     const UserModel = model(User)
                     const user = await UserModel.findById(id)
@@ -854,7 +819,7 @@ describe("CRUD", () => {
         })
         it("Should able to specify custom get many query", async () => {
             @collection()
-            @route.controller(c => {
+            @genericController(c => {
                 c.getMany().custom([UserDto], async ({ limit, offset }) => {
                     const UserModel = model(User)
                     return UserModel.find({}, { email: 1 }).limit(limit).skip(offset)
@@ -890,7 +855,7 @@ describe("CRUD", () => {
         }
         it("Should serve GET /users/:parentId/animals?offset&limit", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -899,11 +864,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -924,7 +889,7 @@ describe("CRUD", () => {
         })
         it("Should serve GET /users/:parentId/animals?offset&limit with default value", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -933,11 +898,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -957,7 +922,7 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id on GET /users/:parentId/animals?offset&limit", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -966,11 +931,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -986,7 +951,7 @@ describe("CRUD", () => {
         })
         it("Should find by name GET /users/:parentId/animals?offset&limit ", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -995,11 +960,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1021,7 +986,7 @@ describe("CRUD", () => {
         })
         it("Should filter with exact value GET /users/:parentId/animals?filter ", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1030,11 +995,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1056,7 +1021,7 @@ describe("CRUD", () => {
         })
         it("Should able to filter one on one relation GET /users/:parentId/animals?filter ", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1065,11 +1030,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal], "user")
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1093,7 +1058,7 @@ describe("CRUD", () => {
         })
         it("Should filter with partial value GET /users/:parentId/animals?filter ", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1102,11 +1067,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1128,7 +1093,7 @@ describe("CRUD", () => {
         })
         it("Should set partial validation on query on GET /users/:parentId/animals?offset&limit", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1137,11 +1102,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1174,7 +1139,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
@@ -1209,7 +1174,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
@@ -1239,7 +1204,7 @@ describe("CRUD", () => {
         })
         it("Should serve POST /users/:parentId/animals", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1248,11 +1213,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1277,7 +1242,7 @@ describe("CRUD", () => {
         })
         it("Should populate inverse property properties POST /users/:parentId/animals", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1286,11 +1251,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal], "user")
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1311,7 +1276,7 @@ describe("CRUD", () => {
         })
         it("Should not confused on reverse properties with the same type POST /users/:parentId/animals", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1320,11 +1285,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal], "user")
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1348,7 +1313,7 @@ describe("CRUD", () => {
         })
         it("Should not save navigation properties for non populate properties POST /users/:parentId/animals", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1357,11 +1322,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1382,7 +1347,7 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id on POST /users/:parentId/animals", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1391,11 +1356,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1412,7 +1377,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if parent not found POST /users/:parentId/animals", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1421,11 +1386,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1443,7 +1408,7 @@ describe("CRUD", () => {
         })
         it("Should serve GET /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1452,11 +1417,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1478,7 +1443,7 @@ describe("CRUD", () => {
         })
         it("Should able to select by property GET /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1487,11 +1452,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1515,7 +1480,7 @@ describe("CRUD", () => {
         })
         it("Should able to select one to many relation by property GET /users/:parentId", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1524,11 +1489,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1553,7 +1518,7 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id GET /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1562,11 +1527,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1582,7 +1547,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found GET /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1591,11 +1556,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1612,7 +1577,7 @@ describe("CRUD", () => {
         })
         it("Should serve PUT /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1621,11 +1586,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1647,7 +1612,7 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id PUT /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1656,11 +1621,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1677,7 +1642,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found PUT /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1686,11 +1651,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1708,7 +1673,7 @@ describe("CRUD", () => {
         })
         it("Should serve PATCH /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1717,11 +1682,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1743,7 +1708,7 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id PATCH /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1752,11 +1717,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1773,7 +1738,7 @@ describe("CRUD", () => {
         })
         it("Should set partial validation on PATCH /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1782,11 +1747,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1811,7 +1776,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found PATCH /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1820,11 +1785,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1842,7 +1807,7 @@ describe("CRUD", () => {
         })
         it("Should serve DELETE /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1851,11 +1816,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1876,7 +1841,7 @@ describe("CRUD", () => {
         })
         it("Should able to serve delete with deleteColumn DELETE /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1885,11 +1850,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1913,7 +1878,7 @@ describe("CRUD", () => {
         })
         it("Should check prover mongodb id DELETE /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1922,11 +1887,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1942,7 +1907,7 @@ describe("CRUD", () => {
         })
         it("Should throw 404 if not found DELETE /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -1951,11 +1916,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -1980,7 +1945,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
@@ -2011,7 +1976,7 @@ describe("CRUD", () => {
         })
         it("Should serve data with native array GET /users/:parentId/animals/:id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2020,11 +1985,11 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2046,64 +2011,6 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
-        it("Should able to create nested controller using controller builder", async () => {
-            @collection()
-            class User {
-                @collection.id()
-                id: number
-                @noop()
-                email: string
-                @noop()
-                name: string
-                @collection.ref(x => [Animal])
-                animals: Animal[]
-            }
-            @collection()
-            @route.controller()
-            class Animal {
-                @collection.id()
-                id: number
-                @noop()
-                name: string
-                @collection.ref(x => User)
-                user: User
-            }
-            const UsersController = controller([User, Animal, "animals"]).configure()
-            const mock = console.mock()
-            await createApp({ controller: [UsersController] })
-            expect(mock.mock.calls).toMatchSnapshot()
-            console.mockClear()
-        })
-        it("Should able to disable some actions using controller builder", async () => {
-            @collection()
-            class User {
-                @collection.id()
-                id: number
-                @noop()
-                email: string
-                @noop()
-                name: string
-                @collection.ref(x => [Animal])
-                animals: Animal[]
-            }
-            @collection()
-            @route.controller()
-            class Animal {
-                @collection.id()
-                id: number
-                @noop()
-                name: string
-                @collection.ref(x => User)
-                user: User
-            }
-            const UsersController = controller([User, Animal, "animals"]).configure(c => {
-                c.mutators().ignore()
-            })
-            const mock = console.mock()
-            await createApp({ controller: [UsersController] })
-            expect(mock.mock.calls).toMatchSnapshot()
-            console.mockClear()
-        })
         it("Should able to use custom get one query", async () => {
             @collection()
             class User {
@@ -2114,7 +2021,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal], "user")
-                @route.controller(c => {
+                @genericController(c => {
                     c.getOne().custom(AnimalDto, async ({ id }) => {
                         const AnimalModel = model(Animal)
                         const animal = await AnimalModel.findById(id).populate("user")
@@ -2158,7 +2065,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal], "user")
-                @route.controller(c => {
+                @genericController(c => {
                     c.getMany().custom([AnimalDto], async ({ limit, offset }) => {
                         const AnimalModel = model(Animal)
                         const animals = await AnimalModel.find({}).limit(limit).skip(offset).populate("user")
@@ -2196,7 +2103,7 @@ describe("CRUD", () => {
     describe("One To One Function", () => {
         it("Should able to add with ID", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2204,7 +2111,7 @@ describe("CRUD", () => {
                 name: string
             }
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2228,7 +2135,7 @@ describe("CRUD", () => {
         })
         it("Should able to modify relation by ID", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2236,7 +2143,7 @@ describe("CRUD", () => {
                 name: string
             }
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2262,7 +2169,7 @@ describe("CRUD", () => {
         })
         it("Should populated on get by id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2270,7 +2177,7 @@ describe("CRUD", () => {
                 name: string
             }
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2293,7 +2200,7 @@ describe("CRUD", () => {
         })
         it("Should not populate if not selected on get by ID", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2301,7 +2208,7 @@ describe("CRUD", () => {
                 name: string
             }
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2324,7 +2231,7 @@ describe("CRUD", () => {
         })
         it("Should not populate if not selected on get many", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2332,7 +2239,7 @@ describe("CRUD", () => {
                 name: string
             }
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2355,7 +2262,7 @@ describe("CRUD", () => {
         })
         it("Should populated on multiple property", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2363,7 +2270,7 @@ describe("CRUD", () => {
                 name: string
             }
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2389,7 +2296,7 @@ describe("CRUD", () => {
         })
         it("Should not populated one to many", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2397,7 +2304,7 @@ describe("CRUD", () => {
                 name: string
             }
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2406,7 +2313,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @collection.ref(x => [Animal])
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             const AnimalModel = model(Animal)
@@ -2424,7 +2331,7 @@ describe("CRUD", () => {
         })
         it("Should populated multiple result", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2432,7 +2339,7 @@ describe("CRUD", () => {
                 name: string
             }
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2459,7 +2366,7 @@ describe("CRUD", () => {
     describe("One To One on Nested Object", () => {
         it("Should able to add with ID", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2467,7 +2374,7 @@ describe("CRUD", () => {
                 name: string
             }
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2479,14 +2386,14 @@ describe("CRUD", () => {
                 animal: Animal
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Parent {
                 @collection.id()
                 id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
-                @route.controller()
+                @genericController()
                 children: User[]
             }
             const AnimalModel = model(Animal)
@@ -2504,7 +2411,7 @@ describe("CRUD", () => {
         })
         it("Should able to modify relation by ID", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2512,7 +2419,7 @@ describe("CRUD", () => {
                 name: string
             }
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2524,14 +2431,14 @@ describe("CRUD", () => {
                 animal: Animal
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Parent {
                 @collection.id()
                 id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
-                @route.controller()
+                @genericController()
                 children: User[]
             }
             const AnimalModel = model(Animal)
@@ -2551,7 +2458,7 @@ describe("CRUD", () => {
         })
         it("Should populated on get by id", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2559,7 +2466,7 @@ describe("CRUD", () => {
                 name: string
             }
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2571,14 +2478,14 @@ describe("CRUD", () => {
                 animal: Animal
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Parent {
                 @collection.id()
                 id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
-                @route.controller()
+                @genericController()
                 children: User[]
             }
             const AnimalModel = model(Animal)
@@ -2595,7 +2502,7 @@ describe("CRUD", () => {
         })
         it("Should populated on multiple property", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2603,7 +2510,7 @@ describe("CRUD", () => {
                 name: string
             }
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2617,14 +2524,14 @@ describe("CRUD", () => {
                 secondAnimal: Animal
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Parent {
                 @collection.id()
                 id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
-                @route.controller()
+                @genericController()
                 children: User[]
             }
             const AnimalModel = model(Animal)
@@ -2642,7 +2549,7 @@ describe("CRUD", () => {
         })
         it("Should not populated one to many", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2650,7 +2557,7 @@ describe("CRUD", () => {
                 name: string
             }
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2662,14 +2569,14 @@ describe("CRUD", () => {
                 animals: Animal[]
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Parent {
                 @collection.id()
                 id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
-                @route.controller()
+                @genericController()
                 children: User[]
             }
             const AnimalModel = model(Animal)
@@ -2689,7 +2596,7 @@ describe("CRUD", () => {
         })
         it("Should populated multiple result", async () => {
             @collection()
-            @route.controller()
+            @genericController()
             class Animal {
                 @collection.id()
                 id: string
@@ -2697,7 +2604,7 @@ describe("CRUD", () => {
                 name: string
             }
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2709,14 +2616,14 @@ describe("CRUD", () => {
                 animal: Animal
             }
             @collection()
-            @route.controller()
+            @genericController()
             class Parent {
                 @collection.id()
                 id: string
                 @collection.property()
                 name: string
                 @collection.ref([User])
-                @route.controller()
+                @genericController()
                 children: User[]
             }
             const AnimalModel = model(Animal)
@@ -2745,7 +2652,7 @@ describe("CRUD", () => {
         it("Should able to load entity with versioning", async () => {
             const mong = new MongooseHelper()
             @collection()
-            @route.controller()
+            @genericController()
             class User {
                 @collection.id()
                 id: string
@@ -2771,7 +2678,7 @@ describe("CRUD", () => {
                 email: string
                 @reflect.noop()
                 name: string
-                @route.controller()
+                @genericController()
                 @collection.ref(x => [Tag])
                 tags: Tag[]
             }
@@ -2800,7 +2707,7 @@ describe("Repository", () => {
         const uri = await mong?.getUri()
         await helper.connect(uri!)
         @collection()
-        @route.controller()
+        @genericController()
         class User {
             @reflect.noop()
             email: string
@@ -2821,18 +2728,18 @@ describe("Repository", () => {
         const uri = await mong?.getUri()
         await helper.connect(uri!)
         @collection()
-        @route.controller()
+        @genericController()
         class User {
             @reflect.noop()
             email: string
             @reflect.noop()
             name: string
             @collection.ref(x => [Animal])
-            @route.controller()
+            @genericController()
             animals: Animal[]
         }
         @collection()
-        @route.controller()
+        @genericController()
         class Animal {
             @collection.id()
             id: string
@@ -2879,7 +2786,7 @@ describe("Repository", () => {
             @reflect.noop()
             name: string
             @collection.ref(x => [Animal])
-            @route.controller()
+            @genericController()
             animals: Animal[]
         }
         @collection()
@@ -2907,7 +2814,7 @@ describe("Repository", () => {
 })
 
 describe("Filter", () => {
-    @route.controller()
+    @genericController()
     @collection()
     class Parent {
         @collection.id()
@@ -2918,7 +2825,7 @@ describe("Filter", () => {
         number: number
         @authorize.filter()
         boolean: boolean
-        @route.controller()
+        @genericController()
         @collection.ref(x => [Child])
         children: Child[]
     }
@@ -3021,7 +2928,7 @@ describe("Filter", () => {
             expect(body).toMatchSnapshot()
         })
         it("Should give proper validation when asked to query equals on nested property", async () => {
-            @route.controller()
+            @genericController()
             class Child {
                 @collection.id()
                 id: string
@@ -3062,7 +2969,7 @@ describe("Filter", () => {
             expect(body).toMatchSnapshot()
         })
         it("Should give proper validation when asked to query not equals on nested property", async () => {
-            @route.controller()
+            @genericController()
             class Child {
                 @collection.id()
                 id: string

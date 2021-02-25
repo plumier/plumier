@@ -144,7 +144,7 @@ import { genSalt, hash } from "bcryptjs"
 
 @authorize.public(applyTo("post"))
 @route.ignore(applyTo("get", "put", "patch", "delete"))
-@route.controller()
+@genericController()
 @Entity()
 export class User extends EntityBase {
     @val.email()

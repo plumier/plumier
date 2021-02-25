@@ -2,12 +2,12 @@ import {
     Class,
     FilterEntity,
     FilterQuery,
-    getGenericControllerOneToOneRelations,
     OneToManyRepository,
     OrderQuery,
     RelationDecorator,
     Repository,
 } from "@plumier/core"
+import { getGenericControllerOneToOneRelations } from "@plumier/generic-controller"
 import reflect from "@plumier/reflect"
 import {
     Between,

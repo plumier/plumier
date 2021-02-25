@@ -2,13 +2,12 @@ import {
     Class,
     FilterEntity,
     FilterQuery,
-    getGenericControllerOneToOneRelations,
     OneToManyRepository,
     OrderQuery,
-    parseSelect,
     RelationDecorator,
     Repository,
 } from "@plumier/core"
+import { getGenericControllerOneToOneRelations, parseSelect } from "@plumier/generic-controller"
 import reflect from "@plumier/reflect"
 import mongoose, { Document, Model } from "mongoose"
 

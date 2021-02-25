@@ -25,7 +25,7 @@ export class Shop {
     @Column()
     name: string
 
-    // @route.controller()
+    // @genericController()
     // @OneToMany(x => Item, x => x.shop)
     // items: Item[]
 
@@ -33,7 +33,7 @@ export class Shop {
     createdBy:User
 }
 
-// @route.controller()
+// @genericController()
 // @Entity()
 // export class Item {
 //     @PrimaryGeneratedColumn()
@@ -68,7 +68,7 @@ export class Shop {
 //     item: Item
 // }
 
-// @route.controller()
+// @genericController()
 // @Entity()
 // export class Primitive {
 //     @authorize.filter()

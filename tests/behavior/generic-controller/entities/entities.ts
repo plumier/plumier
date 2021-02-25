@@ -1,7 +1,8 @@
-import { domain, entity, route } from "@plumier/core";
+import { domain, entity } from "@plumier/core"
+import { genericController } from "@plumier/generic-controller"
 import reflect from "@plumier/reflect"
 
-@route.controller()
+@genericController()
 @domain()
 export class Animal {
     constructor(
@@ -11,7 +12,7 @@ export class Animal {
     ) { }
 }
 
-@route.controller()
+@genericController()
 @domain()
 export class User {
     constructor(
@@ -21,7 +22,7 @@ export class User {
         public email: string,
         @reflect.type([Animal])
         @entity.relation()
-        @route.controller()
+        @genericController()
         public animals: Animal[]
     ) { }
 }

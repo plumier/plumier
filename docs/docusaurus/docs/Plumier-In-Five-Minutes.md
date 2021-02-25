@@ -20,7 +20,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 // create generic controller based on Item entity on the fly.
 // handles restful API post, put, patch, delete, get (by id), get (list)
-@route.controller()
+@genericController()
 @Entity()
 export class Item {
     @PrimaryGeneratedColumn()
@@ -63,7 +63,7 @@ export class Post {
 
     /** other properties **/
 
-    @route.controller()
+    @genericController()
     @OneToMany(x => Comment, x => x.post)
     comments: Comment[]
 }
@@ -81,7 +81,7 @@ export class Comment {
 }
 ```
 
-Above code showing that the relation property `comments` marked with `@route.controller()` decorators. It tells Plumier to create a nested generic controller to perform parent children operation. Above code will generated into routes below.
+Above code showing that the relation property `comments` marked with `@genericController()` decorators. It tells Plumier to create a nested generic controller to perform parent children operation. Above code will generated into routes below.
 
 | Method | Path                       | Description                                                           |
 | ------ | -------------------------- | --------------------------------------------------------------------- |
@@ -100,7 +100,7 @@ Entities may contains properties that sensitive to some type of users, you may n
 Plumier provided declarative authorization by specifying authorization policy name that can be applied to secure API endpoints, property of request/response body etc. Furthermore you define the authorization policy logic separately.
 
 ```typescript {4,15,20}
-@route.controller((config) => {
+@genericController((config) => {
     // authorize Supervisor and Staff 
     // can mutate (post, put, patch, delete) the resource
     config.mutators().authorize("Supervisor", "Staff");
@@ -152,7 +152,7 @@ Entities may contains properties that is auto generated, such as `createdBy` pro
 Furthermore you may need to restrict anyone to set the `createdBy` property from the request body.
 
 ```typescript 
-@route.controller()
+@genericController()
 @Entity()
 export class Item {
     @PrimaryGeneratedColumn()
@@ -188,7 +188,7 @@ Generic controller provided functionalities to refine the API response, such as 
 import { route, authorize } from "plumier"
 import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn } from "typeorm"
 
-@route.controller()
+@genericController()
 @Entity()
 export class Post {
     @PrimaryGeneratedColumn()

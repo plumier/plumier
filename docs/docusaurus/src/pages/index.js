@@ -38,7 +38,7 @@ const features = [
 
     code:
       `// create CRUD generic controller on the fly
-@route.controller(c => {
+@genericController(c => {
   // authorize post, put, patch, delete
   c.mutators().authorize("Supervisor", "Staff");
 })
@@ -132,7 +132,7 @@ export class Post {
   id: number
 
   // turn one to many relation into nested API
-  @route.controller()
+  @genericController()
   @OneToMany(x => Comment, x => x.post)
   comments: Comment[]
 }

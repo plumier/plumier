@@ -12,7 +12,7 @@ export class Shop {
     @noop()
     name: string
 
-    @route.controller()
+    @genericController()
     @entity.relation()
     @type(x => [Item])
     items: Item[]

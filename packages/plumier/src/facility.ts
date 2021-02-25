@@ -12,6 +12,7 @@ import {
     response,
     toBoolean,
 } from "@plumier/core"
+import { generateGenericControllerRoutes } from "@plumier/generic-controller"
 import chalk from "chalk"
 import { Context } from "koa"
 import BodyParser from "koa-body"
@@ -20,7 +21,7 @@ import qs from "qs"
 export interface WebApiFacilityOption {
     bodyParser?: BodyParser.IKoaBodyOptions,
     cors?: Cors.Options | boolean,
-    
+
     /**
      * Trust X-Forwarded-For header 
      */
@@ -99,7 +100,9 @@ export class WebApiFacility extends DefaultFacility {
 
     async generateRoutes(app: Readonly<PlumierApplication>) {
         const { controller } = app.config
-        return generateRoutes(controller, { ...app.config, ...this.opt })
+        const controllers = await generateRoutes(controller, { ...app.config, ...this.opt })
+        const generics = await generateGenericControllerRoutes(controller, { ...app.config, ...this.opt })
+        return [...controllers, ...generics]
     }
 
     setup(app: Readonly<PlumierApplication>) {
@@ -223,16 +226,15 @@ export class ControllerFacility extends DefaultFacility {
         super()
     }
 
-    setup(app:Readonly<PlumierApplication>){
+    setup(app: Readonly<PlumierApplication>) {
         app.set({ controller: "__UNSET__" })
     }
 
     async generateRoutes(app: Readonly<PlumierApplication>) {
         const { rootDir } = app.config
         const controller = this.option.controller
-        return generateRoutes(controller, {
-            ...app.config,
-            ...this.option
-        })
+        const controllers = await generateRoutes(controller, { ...app.config, ...this.option })
+        const generics = await generateGenericControllerRoutes(controller, { ...app.config, ...this.option })
+        return [...controllers, ...generics]
     }
 }

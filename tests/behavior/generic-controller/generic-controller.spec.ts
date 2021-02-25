@@ -1,5 +1,3 @@
-import "@plumier/testing"
-
 import {
     ActionResult,
     api,
@@ -12,33 +10,29 @@ import {
     entity,
     entityPolicy,
     FilterEntity,
-    IdentifierResult,
     Invocation,
     Middleware,
     OneToManyRepository,
     PlumierApplication,
     postSave,
     preSave,
-    RepoBaseControllerGeneric,
-    RepoBaseOneToManyControllerGeneric,
     Repository,
-    RequestHookMiddleware,
     response,
     route,
-    RouteMetadata,
+    RouteMetadata
 } from "@plumier/core"
+import { IdentifierResult, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, RequestHookMiddleware } from "@plumier/generic-controller"
 import { JwtAuthFacility } from "@plumier/jwt"
-import { cleanupConsole } from "@plumier/testing"
 import reflect, { generic, noop, type } from "@plumier/reflect"
 import { SwaggerFacility } from "@plumier/swagger"
+import "@plumier/testing"
+import { cleanupConsole } from "@plumier/testing"
 import { sign } from "jsonwebtoken"
 import { Context } from "koa"
 import { join } from "path"
-import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility } from "plumier"
+import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility, genericController } from "plumier"
 import supertest from "supertest"
-
 import { expectError } from "../helper"
-
 
 
 class RouteHookFacility extends DefaultFacility {
@@ -140,8 +134,7 @@ class DefaultOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMan
 function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
     return new Plumier()
         .set({ ...config })
-        .set(new WebApiFacility())
-        .set(new ControllerFacility(opt))
+        .set(new WebApiFacility(opt))
         .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
 }
 
@@ -161,12 +154,17 @@ describe("Route Generator", () => {
         await createApp({ controller: "./nested" }).initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
     })
+    it("Should able to flatten nested directories", async () => {
+        const mock = console.mock()
+        await createApp({ controller: "./nested", directoryAsPath:false }).initialize()
+        expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+    })
     it("Should initiate IdentifierResult properly", () => {
         expect(new IdentifierResult<number>(20)).toMatchSnapshot()
     })
     describe("Generic Controller", () => {
         it("Should generate routes with parameter property entity", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -181,7 +179,7 @@ describe("Route Generator", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should generate routes with property field entity", async () => {
-            @route.controller()
+            @genericController()
             class User {
                 @entity.primaryId()
                 id: number
@@ -195,7 +193,7 @@ describe("Route Generator", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to specify ID type by providing decorator", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -212,7 +210,7 @@ describe("Route Generator", () => {
             expect(getParameters(routes)).toMatchSnapshot()
         })
         it("Should able to specify ID of type string by providing decorator", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -230,7 +228,7 @@ describe("Route Generator", () => {
         })
         it("Should throw error when entity doesn't have ID specified", async () => {
             const fn = jest.fn()
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -259,7 +257,7 @@ describe("Route Generator", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to change root path", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -275,7 +273,7 @@ describe("Route Generator", () => {
             expect(mock.mock.calls).toMatchSnapshot()
         })
         it("Should able to use custom controller", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -295,7 +293,7 @@ describe("Route Generator", () => {
             expect(mock.mock.calls).toMatchSnapshot()
         })
         it("Should able to ignore some method of controller from entity", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             @route.ignore({ applyTo: ["get", "save"] })
             class User {
@@ -311,7 +309,7 @@ describe("Route Generator", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to set authorization from entity", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             @authorize.route("admin")
             class User {
@@ -332,7 +330,7 @@ describe("Route Generator", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to set authorization for specific method from entity", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             @authorize.route("admin", { applyTo: ["save", "replace", "delete", "modify"] })
             class User {
@@ -353,7 +351,7 @@ describe("Route Generator", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to set public authorizer from entity", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             @authorize.route("Public")
             class User {
@@ -371,7 +369,7 @@ describe("Route Generator", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should throw error when using default generic controller", async () => {
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -388,8 +386,8 @@ describe("Route Generator", () => {
             expect(mock.mock.calls).toMatchSnapshot()
         })
         it("Should able to apply multiple controller on single entities", async () => {
-            @route.controller()
-            @route.controller(c => c.setPath("user-data/:id"))
+            @genericController()
+            @genericController(c => c.setPath("user-data/:id"))
             @domain()
             class User {
                 constructor(
@@ -414,7 +412,7 @@ describe("Route Generator", () => {
                     public name: string
                 ) { }
             }
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 constructor(
@@ -424,7 +422,7 @@ describe("Route Generator", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller()
+                    @genericController()
                     public animals: Animal[]
                 ) { }
             }
@@ -450,7 +448,7 @@ describe("Route Generator", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller()
+                    @genericController()
                     public animals: Animal[]
                 ) { }
             }
@@ -465,7 +463,7 @@ describe("Route Generator", () => {
                 @reflect.noop()
                 name: string
             }
-            @route.controller()
+            @genericController()
             class User {
                 @entity.primaryId()
                 id: number
@@ -475,7 +473,7 @@ describe("Route Generator", () => {
                 email: string
                 @reflect.type([Animal])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             const mock = console.mock()
@@ -500,7 +498,7 @@ describe("Route Generator", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller()
+                    @genericController()
                     public animals: Animal[]
                 ) { }
             }
@@ -526,7 +524,7 @@ describe("Route Generator", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller()
+                    @genericController()
                     public animals: Animal[]
                 ) { }
             }
@@ -552,7 +550,7 @@ describe("Route Generator", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller()
+                    @genericController()
                     public animals: Animal[]
                 ) { }
             }
@@ -572,7 +570,7 @@ describe("Route Generator", () => {
                 ) { }
             }
             @domain()
-            @route.controller()
+            @genericController()
             class User {
                 constructor(
                     @entity.primaryId()
@@ -581,7 +579,7 @@ describe("Route Generator", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller()
+                    @genericController()
                     public animals: Animal[]
                 ) { }
             }
@@ -608,7 +606,7 @@ describe("Route Generator", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller()
+                    @genericController()
                     public animals: Animal[]
                 ) { }
             }
@@ -639,7 +637,7 @@ describe("Route Generator", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller()
+                    @genericController()
                     @route.ignore({ applyTo: ["save", "list"] })
                     public animals: Animal[]
                 ) { }
@@ -665,7 +663,7 @@ describe("Route Generator", () => {
                 @authorize.route("admin")
                 @reflect.type([Animal])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 public animals: Animal[]
             }
             const authPolicies = [
@@ -694,7 +692,7 @@ describe("Route Generator", () => {
                 @authorize.route("admin", { applyTo: ["save", "replace", "delete", "modify"] })
                 @reflect.type([Animal])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 public animals: Animal[]
             }
             const authPolicies = [
@@ -722,7 +720,7 @@ describe("Route Generator", () => {
                 public email: string
                 @reflect.type([Animal])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 public animals: Animal[]
             }
             const app = await createApp({ controller: [User] }, { mode: "production" })
@@ -741,7 +739,7 @@ describe("Route Generator", () => {
                     public name: string
                 ) { }
             }
-            @route.controller()
+            @genericController()
             @domain()
             class User {
                 @entity.primaryId()
@@ -750,7 +748,7 @@ describe("Route Generator", () => {
                 name: string
                 @noop()
                 email: string
-                @route.controller()
+                @genericController()
                 animals: Animal[]
             }
             const fn = jest.fn()
@@ -762,7 +760,7 @@ describe("Route Generator", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should able to define nested controller from child entity", async () => {
-            @route.controller(c => c.useNested(User, "animals"))
+            @genericController(c => c.useNested(User, "animals"))
             @domain()
             class Animal {
                 constructor(
@@ -805,8 +803,8 @@ describe("Route Generator", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller()
-                    @route.controller(c => c.setPath("user-data/:uid/animal-data/:id"))
+                    @genericController()
+                    @genericController(c => c.setPath("user-data/:uid/animal-data/:id"))
                     public animals: Animal[]
                 ) { }
             }
@@ -818,7 +816,7 @@ describe("Route Generator", () => {
     describe("Grouping", () => {
         it("Should able to group routes", async () => {
             @domain()
-            @route.controller()
+            @genericController()
             class User {
                 constructor(
                     @entity.primaryId()
@@ -855,7 +853,7 @@ describe("Route Generator", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller()
+                    @genericController()
                     public animals: Animal[]
                 ) { }
             }
@@ -874,7 +872,7 @@ describe("Route Generator", () => {
 describe("Custom Route Path", () => {
     describe("Generic Controller", () => {
         it("Should generate routes with parameter property entity", async () => {
-            @route.controller("user/:userId")
+            @genericController("user/:userId")
             @domain()
             class User {
                 constructor(
@@ -900,7 +898,7 @@ describe("Custom Route Path", () => {
                     return {} as any
                 }
             }
-            @route.controller("user/:userId")
+            @genericController("user/:userId")
             @domain()
             class User {
                 constructor(
@@ -924,7 +922,7 @@ describe("Custom Route Path", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should throw error when provided no parameter", async () => {
-            @route.controller("user")
+            @genericController("user")
             @domain()
             class User {
                 constructor(
@@ -938,7 +936,7 @@ describe("Custom Route Path", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should throw error when provided more than one parameter", async () => {
-            @route.controller("user/:userId/data/:dataId")
+            @genericController("user/:userId/data/:dataId")
             @domain()
             class User {
                 constructor(
@@ -952,7 +950,7 @@ describe("Custom Route Path", () => {
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should throw error when no parameter at the end", async () => {
-            @route.controller("user/:userId/data")
+            @genericController("user/:userId/data")
             @domain()
             class User {
                 constructor(
@@ -985,7 +983,7 @@ describe("Custom Route Path", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller("user/:userId/animal/:animalId")
+                    @genericController("user/:userId/animal/:animalId")
                     public animals: Animal[]
                 ) { }
             }
@@ -1022,7 +1020,7 @@ describe("Custom Route Path", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller("user/:userId/animal/:animalId")
+                    @genericController("user/:userId/animal/:animalId")
                     public animals: Animal[]
                 ) { }
             }
@@ -1058,7 +1056,7 @@ describe("Custom Route Path", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller("user/animal")
+                    @genericController("user/animal")
                     public animals: Animal[]
                 ) { }
             }
@@ -1083,7 +1081,7 @@ describe("Custom Route Path", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller("user/:userId")
+                    @genericController("user/:userId")
                     public animals: Animal[]
                 ) { }
             }
@@ -1108,7 +1106,7 @@ describe("Custom Route Path", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller("user/:userId/animal/:animalId/category/:categoryId")
+                    @genericController("user/:userId/animal/:animalId/category/:categoryId")
                     public animals: Animal[]
                 ) { }
             }
@@ -1133,7 +1131,7 @@ describe("Custom Route Path", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller("user/:userId/animal/:animalId/category")
+                    @genericController("user/:userId/animal/:animalId/category")
                     public animals: Animal[]
                 ) { }
             }
@@ -1146,7 +1144,7 @@ describe("Custom Route Path", () => {
 describe("Open Api", () => {
     describe("Generic Controller", () => {
         it("Should provided proper component", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1162,7 +1160,7 @@ describe("Open Api", () => {
             expect(body.components.schemas.Animal).toMatchSnapshot()
         })
         it("Should generate GET /animal properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1179,7 +1177,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal"].get.tags).toMatchSnapshot()
         })
         it("Should generate POST /animal properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1196,7 +1194,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal"].post.tags).toMatchSnapshot()
         })
         it("Should generate GET /animal/:id properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1213,7 +1211,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{id}"].get.tags).toMatchSnapshot()
         })
         it("Should generate DELETE /animal/:id properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1230,7 +1228,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{id}"].delete.tags).toMatchSnapshot()
         })
         it("Should generate PUT /animal/:id properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1247,7 +1245,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{id}"].put.tags).toMatchSnapshot()
         })
         it("Should generate PATCH /animal/:id properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1264,7 +1262,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{id}"].put.tags).toMatchSnapshot()
         })
         it("Should able to add @api.tag() from entity", async () => {
-            @route.controller()
+            @genericController()
             @api.tag("Animals")
             class Animal {
                 @entity.primaryId()
@@ -1281,7 +1279,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal"].get.tags).toMatchSnapshot()
         })
         it("Should able to provide correct parameter name when using custom path name", async () => {
-            @route.controller("animals/:aid")
+            @genericController("animals/:aid")
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1297,7 +1295,7 @@ describe("Open Api", () => {
             expect(body.paths["/animals/{aid}"].get.parameters).toMatchSnapshot()
         })
         it("Should able to provide custom parameter with case", async () => {
-            @route.controller("animals/:aId")
+            @genericController("animals/:aId")
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1313,7 +1311,7 @@ describe("Open Api", () => {
             expect(body.paths["/animals/{aid}"].get.parameters).toMatchSnapshot()
         })
         it("Should able to use custom get many query", async () => {
-            @route.controller(c => {
+            @genericController(c => {
                 c.getMany().custom([AnimalDTO], async x => ([]))
             })
             class Animal {
@@ -1335,7 +1333,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal"].get.responses[200]).toMatchSnapshot()
         })
         it("Should able to use custom get one query", async () => {
-            @route.controller(c => {
+            @genericController(c => {
                 c.getOne().custom(AnimalDTO, async x => ({}))
             })
             class Animal {
@@ -1360,7 +1358,7 @@ describe("Open Api", () => {
 
     describe("Generic One To Many Controller", () => {
         it("Should provide proper component", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1368,7 +1366,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 tags: Tag[]
             }
             class Tag {
@@ -1387,7 +1385,7 @@ describe("Open Api", () => {
             expect(body.components.schemas.Tag).toMatchSnapshot()
         })
         it("Should generate GET /animals properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1395,7 +1393,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 tags: Tag[]
             }
             class Tag {
@@ -1414,7 +1412,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal"].get.tags).toMatchSnapshot()
         })
         it("Should generate POST /animals properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1422,7 +1420,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 tags: Tag[]
             }
             class Tag {
@@ -1441,7 +1439,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal"].post.tags).toMatchSnapshot()
         })
         it("Should generate GET /animals/:id properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1449,7 +1447,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 tags: Tag[]
             }
             class Tag {
@@ -1468,7 +1466,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{id}"].get.tags).toMatchSnapshot()
         })
         it("Should generate DELETE /animals/:id properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1476,7 +1474,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 tags: Tag[]
             }
             class Tag {
@@ -1495,7 +1493,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{id}"].delete.tags).toMatchSnapshot()
         })
         it("Should generate PUT /animals/:id properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1503,7 +1501,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 tags: Tag[]
             }
             class Tag {
@@ -1522,7 +1520,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{id}"].put.tags).toMatchSnapshot()
         })
         it("Should generate PATCH /animals/:id properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1530,7 +1528,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 tags: Tag[]
             }
             class Tag {
@@ -1549,7 +1547,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{id}"].put.tags).toMatchSnapshot()
         })
         it("Should generate GET /animals/{pid}/tags properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1557,7 +1555,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 tags: Tag[]
             }
             class Tag {
@@ -1576,7 +1574,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{pid}/tags"].get.tags).toMatchSnapshot()
         })
         it("Should generate POST /animals/{pid}/tags properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1584,7 +1582,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 tags: Tag[]
             }
             class Tag {
@@ -1603,7 +1601,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{pid}/tags"].post.tags).toMatchSnapshot()
         })
         it("Should generate GET /animals/{pid}/tags/:id properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1611,7 +1609,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 tags: Tag[]
             }
             class Tag {
@@ -1630,7 +1628,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{pid}/tags/{id}"].get.tags).toMatchSnapshot()
         })
         it("Should generate DELETE /animals/{pid}/tags/:id properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1638,7 +1636,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 tags: Tag[]
             }
             class Tag {
@@ -1657,7 +1655,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{pid}/tags/{id}"].delete.tags).toMatchSnapshot()
         })
         it("Should generate PUT /animals/{pid}/tags/:id properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1665,7 +1663,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 tags: Tag[]
             }
             class Tag {
@@ -1684,7 +1682,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{pid}/tags/{id}"].put.tags).toMatchSnapshot()
         })
         it("Should generate PATCH /animals/{pid}/tags/:id properly", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1692,7 +1690,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 tags: Tag[]
             }
             class Tag {
@@ -1718,7 +1716,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller()
+                @genericController()
                 @api.tag("Tags")
                 tags: Tag[]
             }
@@ -1744,7 +1742,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller("animals/:aid/tags/:tid")
+                @genericController("animals/:aid/tags/:tid")
                 tags: Tag[]
             }
             class Tag {
@@ -1769,7 +1767,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller("animals/:aId/tags/:tId")
+                @genericController("animals/:aId/tags/:tId")
                 tags: Tag[]
             }
             class Tag {
@@ -1787,7 +1785,7 @@ describe("Open Api", () => {
             expect(body.paths["/animals/{aid}/tags/{tid}"].get.parameters).toMatchSnapshot()
         })
         it("Should able to use custom get one query", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1795,7 +1793,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller(c => {
+                @genericController(c => {
                     c.getOne().custom(TagDTO, async x => ({}))
                 })
                 tags: Tag[]
@@ -1819,7 +1817,7 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{pid}/tags/{id}"].get.responses[200]).toMatchSnapshot()
         })
         it("Should able to use custom get many query", async () => {
-            @route.controller()
+            @genericController()
             class Animal {
                 @entity.primaryId()
                 id: number
@@ -1827,7 +1825,7 @@ describe("Open Api", () => {
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
-                @route.controller(c => {
+                @genericController(c => {
                     c.getMany().custom([TagDTO], async x => ([]))
                 })
                 tags: Tag[]
@@ -1882,7 +1880,7 @@ describe("Request Hook", () => {
     }
     beforeEach(() => fn.mockClear())
     it("Should able to hook request in generic controller", async () => {
-        @route.controller()
+        @genericController()
         @domain()
         class User {
             constructor(
@@ -1906,7 +1904,7 @@ describe("Request Hook", () => {
         expect(fn.mock.calls).toMatchSnapshot()
     })
     it("Should call request hook in proper order", async () => {
-        @route.controller()
+        @genericController()
         @domain()
         class User {
             constructor(
@@ -1940,7 +1938,7 @@ describe("Request Hook", () => {
             constructor(
                 @entity.primaryId()
                 public id: number,
-                @route.controller()
+                @genericController()
                 @type(x => [User])
                 public users: User[]
             ) { }
@@ -1968,7 +1966,7 @@ describe("Request Hook", () => {
         expect(fn.mock.calls).toMatchSnapshot()
     })
     it("Should able to hook request in specific http method", async () => {
-        @route.controller()
+        @genericController()
         @domain()
         class User {
             constructor(
@@ -1996,7 +1994,7 @@ describe("Request Hook", () => {
         expect(fn.mock.calls).toMatchSnapshot()
     })
     it("Should able to hook request in multiple http methods", async () => {
-        @route.controller()
+        @genericController()
         @domain()
         class User {
             constructor(
@@ -2028,7 +2026,7 @@ describe("Request Hook", () => {
         expect(fn.mock.calls).toMatchSnapshot()
     })
     it("Should able to use multiple hook request", async () => {
-        @route.controller()
+        @genericController()
         @domain()
         class User {
             constructor(
@@ -2062,7 +2060,7 @@ describe("Request Hook", () => {
             constructor(
                 @entity.primaryId()
                 public id: number,
-                @route.controller()
+                @genericController()
                 @type(x => [User])
                 public users: User[]
             ) { }
@@ -2095,7 +2093,7 @@ describe("Request Hook", () => {
             constructor(
                 @entity.primaryId()
                 public id: number,
-                @route.controller()
+                @genericController()
                 @type(x => [User])
                 public users: User[]
             ) { }
@@ -2128,7 +2126,7 @@ describe("Request Hook", () => {
             constructor(
                 @entity.primaryId()
                 public id: number,
-                @route.controller()
+                @genericController()
                 @type(x => [User])
                 public users: User[]
             ) { }
@@ -2158,7 +2156,7 @@ describe("Request Hook", () => {
     })
     it("Should not executed on GET method with model parameter", async () => {
         const myFn = jest.fn()
-        @route.controller()
+        @genericController()
         @domain()
         class User {
             constructor(
@@ -2198,7 +2196,7 @@ describe("Request Hook", () => {
                 .use(new RequestHookMiddleware(), "Action")
                 .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
         }
-        @route.controller()
+        @genericController()
         @domain()
         class User {
             constructor(
@@ -2240,7 +2238,7 @@ describe("Request Hook", () => {
                 .use(new RequestHookMiddleware(), "Action")
                 .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
         }
-        @route.controller()
+        @genericController()
         @domain()
         class User {
             constructor(
@@ -2263,7 +2261,7 @@ describe("Request Hook", () => {
     })
     it("Should able to hook on array type parameter", async () => {
         const fn = jest.fn()
-        @route.controller()
+        @genericController()
         @domain()
         class User {
             constructor(
@@ -2300,7 +2298,7 @@ describe("Request Hook", () => {
 describe("Controller Builder", () => {
     describe("Ignore Route", () => {
         it("Should able to ignore specific routes properly", async () => {
-            @route.controller(c => {
+            @genericController(c => {
                 c.post().ignore()
                 c.patch().ignore()
             })
@@ -2318,7 +2316,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to ignore specific routes using action notations", async () => {
-            @route.controller(c => c.actions("Post", "Patch").ignore())
+            @genericController(c => c.actions("Post", "Patch").ignore())
             @domain()
             class User {
                 constructor(
@@ -2350,7 +2348,7 @@ describe("Controller Builder", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller(c => {
+                    @genericController(c => {
                         c.post().ignore()
                     })
                     public animals: Animal[]
@@ -2361,7 +2359,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to ignore all routes", async () => {
-            @route.controller(c => {
+            @genericController(c => {
                 c.patch().ignore()
                 c.put().ignore()
                 c.post().ignore()
@@ -2383,7 +2381,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to ignore all routes using action notations", async () => {
-            @route.controller(c => c.actions("Delete", "GetMany", "GetOne", "Patch", "Post", "Put").ignore())
+            @genericController(c => c.actions("Delete", "GetMany", "GetOne", "Patch", "Post", "Put").ignore())
             @domain()
             class User {
                 constructor(
@@ -2398,7 +2396,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to ignore all routes using all key", async () => {
-            @route.controller(c => c.all().ignore())
+            @genericController(c => c.all().ignore())
             @domain()
             class User {
                 constructor(
@@ -2413,7 +2411,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to ignore mutator routes", async () => {
-            @route.controller(c => c.mutators().ignore())
+            @genericController(c => c.mutators().ignore())
             @domain()
             class User {
                 constructor(
@@ -2428,7 +2426,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to ignore accessor routes", async () => {
-            @route.controller(c => c.accessors().ignore())
+            @genericController(c => c.accessors().ignore())
             @domain()
             class User {
                 constructor(
@@ -2443,7 +2441,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to ignore routes by specify its name", async () => {
-            @route.controller(c => {
+            @genericController(c => {
                 c.actionNames("save", "list").ignore()
             })
             @domain()
@@ -2473,7 +2471,7 @@ describe("Controller Builder", () => {
                 .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
             }
         it("Should able to authorize specific routes", async () => {
-            @route.controller(c => c.mutators().authorize("Admin"))
+            @genericController(c => c.mutators().authorize("Admin"))
             @domain()
             class User {
                 constructor(
@@ -2488,7 +2486,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to authorize specific routes with multiple roles", async () => {
-            @route.controller(c => c.mutators().authorize("Admin", "SuperAdmin"))
+            @genericController(c => c.mutators().authorize("Admin", "SuperAdmin"))
             @domain()
             class User {
                 constructor(
@@ -2520,7 +2518,7 @@ describe("Controller Builder", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller(c => c.mutators().authorize("Admin"))
+                    @genericController(c => c.mutators().authorize("Admin"))
                     public animals: Animal[]
                 ) { }
             }
@@ -2529,7 +2527,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to authorize all routes", async () => {
-            @route.controller(c => {
+            @genericController(c => {
                 c.patch().authorize("Admin")
                 c.put().authorize("Admin")
                 c.post().authorize("Admin")
@@ -2551,7 +2549,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to authorize all routes using all key", async () => {
-            @route.controller(c => c.all().authorize("Admin"))
+            @genericController(c => c.all().authorize("Admin"))
             @domain()
             class User {
                 constructor(
@@ -2566,7 +2564,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to authorize mutator routes", async () => {
-            @route.controller(c => c.mutators().authorize("Admin"))
+            @genericController(c => c.mutators().authorize("Admin"))
             @domain()
             class User {
                 constructor(
@@ -2581,7 +2579,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to authorize accessor routes", async () => {
-            @route.controller(c => c.accessors().authorize("Admin"))
+            @genericController(c => c.accessors().authorize("Admin"))
             @domain()
             class User {
                 constructor(
@@ -2596,7 +2594,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to combine between accessor and mutator", async () => {
-            @route.controller(c => {
+            @genericController(c => {
                 c.mutators().authorize("Admin")
                 c.accessors().authorize(Authenticated)
             })
@@ -2614,7 +2612,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to authorize routes by specify its name", async () => {
-            @route.controller(c => {
+            @genericController(c => {
                 c.actionNames("save", "get").authorize("Admin")
             })
             @domain()
@@ -2633,7 +2631,7 @@ describe("Controller Builder", () => {
     })
     describe("Set Path", () => {
         it("Should able to set path", async () => {
-            @route.controller(c => c.setPath("users/:uid"))
+            @genericController(c => c.setPath("users/:uid"))
             @domain()
             class User {
                 constructor(
@@ -2665,7 +2663,7 @@ describe("Controller Builder", () => {
                     public email: string,
                     @reflect.type([Animal])
                     @entity.relation()
-                    @route.controller(c => c.setPath("users/:uid/animals/:aid"))
+                    @genericController(c => c.setPath("users/:uid/animals/:aid"))
                     public animals: Animal[]
                 ) { }
             }
@@ -2678,7 +2676,7 @@ describe("Controller Builder", () => {
 
 describe("Entity Policy", () => {
     const fn = jest.fn()
-    @route.controller(c => {
+    @genericController(c => {
         c.getOne().authorize("Owner")
         c.put().authorize("Owner")
         c.patch().authorize("Owner")
@@ -2691,7 +2689,7 @@ describe("Entity Policy", () => {
         name: string
         @authorize.read("Owner")
         email: string
-        @route.controller(c => c.all().authorize("Owner"))
+        @genericController(c => c.all().authorize("Owner"))
         @entity.relation()
         @type(x => [Todo])
         todos: Todo[]
@@ -2899,7 +2897,7 @@ describe("Response Transformer", () => {
         @type(x => [Todo])
         todos: Todo[]
     }
-    @route.controller(c => c.accessors().transformer(UserTrans, x => ({ fullName: x.name })))
+    @genericController(c => c.accessors().transformer(UserTrans, x => ({ fullName: x.name })))
     class User {
         @entity.primaryId()
         id: number
@@ -2907,7 +2905,7 @@ describe("Response Transformer", () => {
         name: string
         @authorize.read("Owner")
         email: string
-        @route.controller(c => c.accessors().transformer(TodoTrans, x => ({ theTitle: x.title })))
+        @genericController(c => c.accessors().transformer(TodoTrans, x => ({ theTitle: x.title })))
         @entity.relation()
         @type(x => [Todo])
         todos: Todo[]

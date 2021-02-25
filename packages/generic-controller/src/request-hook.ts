@@ -1,11 +1,18 @@
+import {
+    ActionContext,
+    ActionResult,
+    binder,
+    Class,
+    ControllerGeneric,
+    Invocation,
+    MetadataImpl,
+    Middleware,
+    OneToManyControllerGeneric,
+    RequestHookDecorator
+} from "@plumier/core"
 import { reflect } from "@plumier/reflect"
 
-import { binder } from "./binder"
-import { Class } from "./common"
-import { RequestHookDecorator } from "./decorator/request-hook"
-import { ActionContext, ActionResult, ControllerGeneric, Invocation, MetadataImpl, Middleware, OneToManyControllerGeneric } from "./types"
-
-export const postSaveValue = Symbol.for("plumier:postSaveEntity")
+const postSaveValue = Symbol.for("plumier:postSaveEntity")
 
 async function executeHooks(ctx: ActionContext, kind: "preSave" | "postSave", type: Class | Class[], value: any | any[]) {
     if(Array.isArray(type)){
@@ -37,8 +44,7 @@ async function executeArrayHooks(ctx: ActionContext, kind: "preSave" | "postSave
     }
 }
 
-
-export class RequestHookMiddleware implements Middleware<ActionContext> {
+class RequestHookMiddleware implements Middleware<ActionContext> {
     async execute({ ctx, proceed }: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
         if (!["POST", "PUT", "PATCH"].some(x => x === ctx.method)) return proceed()
         const isGeneric = ctx.route.controller.type.prototype instanceof ControllerGeneric
@@ -57,3 +63,5 @@ export class RequestHookMiddleware implements Middleware<ActionContext> {
         return result
     }
 }
+
+export { postSaveValue, RequestHookMiddleware }
