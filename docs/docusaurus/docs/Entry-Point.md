@@ -43,17 +43,22 @@ Plumier application is configurable using facility, facility is a framework comp
 There are list of built-in facility that ready to be used.
 
 
-| Facility              | Includes                                                                               | Package                 |
-| --------------------- | -------------------------------------------------------------------------------------- | ----------------------- |
-| `WebApiFacility`      | Body parser, CORS middleware, Default dependency resolver                              | `plumier`               |
-| `RestApiFacility`     | Same as `WebApiFacility` except its provided more strict restful API status code       | `plumier`               |
-| `ControllerFacility`  | Host controllers by path or type, furthermore controllers can be grouped and versioned | `plumier`               |
-| `LoggerFacility`      | Simple request logging and error reporting                                             | `plumier`               |
-| `JwtAuthFacility`     | Jwt middleware, Enable authorization, Jwt Secret configuration                         | `@plumier/jwt`          |
-| `MongooseFacility`    | Mongoose schema generator, generic controller and connection management                | `@plumier/mongoose`     |
-| `TypeORMFacility`     | Provided helper and generic controller for TypeORM                                     | `@plumier/typeorm`      |
-| `ServeStaticFacility` | Serve static files                                                           | `@plumier/serve-static` |
-| `SwaggerFacility`     | Serve Swagger UI and generate Open API 3.0 automatically                               | `@plumier/swagger`      |
+| Facility                | Includes                                                                               | Package                 |
+| ----------------------- | -------------------------------------------------------------------------------------- | ----------------------- |
+| `WebApiFacility`        | Body parser, CORS middleware, Default dependency resolver                              | `plumier`               |
+| `RestApiFacility`       | Same as `WebApiFacility` except its provided more strict restful API status code       | `plumier`               |
+| `ControllerFacility`    | Host controllers by path or type, furthermore controllers can be grouped and versioned | `plumier`               |
+| `LoggerFacility`        | Simple request logging and error reporting                                             | `plumier`               |
+| `JwtAuthFacility`       | Jwt middleware, Enable authorization, Jwt Secret configuration                         | `@plumier/jwt`          |
+| `MongooseFacility`      | Mongoose schema generator, generic controller and connection management                | `@plumier/mongoose`     |
+| `TypeORMFacility`       | Provided helper and generic controller for TypeORM                                     | `@plumier/typeorm`      |
+| `ServeStaticFacility`   | Serve static files                                                                     | `@plumier/serve-static` |
+| `SwaggerFacility`       | Serve Swagger UI and generate Open API 3.0 automatically                               | `@plumier/swagger`      |
+| `FacebookOAuthFacility` | Provide Facebook specific social login functionalities                                 | `@plumier/social-login` |
+| `GoogleOAuthFacility`   | Provide Google specific social login functionalities                                   | `@plumier/social-login` |
+| `GitHubOAuthFacility`   | Provide GitHub specific social login functionalities                                   | `@plumier/social-login` |
+| `GitLabOAuthFacility`   | Provide GitLab specific social login functionalities                                   | `@plumier/social-login` |
+| `TwitterOAuthFacility`  | Provide Twitter specific social login functionalities                                  | `@plumier/social-login` |
 
 ## Application For Testing
 
