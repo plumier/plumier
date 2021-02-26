@@ -10,50 +10,6 @@ Object {
 }
 `;
 
-exports[`CRUD CRUD Function Should able to create controller using builder 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. MongooseControllerGeneric.get     -> GET    /users/:id",
-  ],
-  Array [
-    "2. MongooseControllerGeneric.modify  -> PATCH  /users/:id",
-  ],
-  Array [
-    "3. MongooseControllerGeneric.replace -> PUT    /users/:id",
-  ],
-  Array [
-    "4. MongooseControllerGeneric.delete  -> DELETE /users/:id",
-  ],
-  Array [
-    "5. MongooseControllerGeneric.list    -> GET    /users",
-  ],
-  Array [
-    "6. MongooseControllerGeneric.save    -> POST   /users",
-  ],
-  Array [],
-]
-`;
-
-exports[`CRUD CRUD Function Should able to disable some actions from controller builder 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. MongooseControllerGeneric.get  -> GET /users/:id",
-  ],
-  Array [
-    "2. MongooseControllerGeneric.list -> GET /users",
-  ],
-  Array [],
-]
-`;
-
 exports[`CRUD CRUD Function Should able to filter with exact value GET /users?filter 1`] = `
 Array [
   Object {
@@ -308,50 +264,6 @@ Array [
   ],
   Array [
     "6. MongooseOneToMan...eneric.delete  -> DELETE /users/:pid/tags/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`CRUD Nested CRUD One to Many Function Should able to create nested controller using controller builder 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. MongooseOneToMan...eneric.list    -> GET    /users/:pid/animals",
-  ],
-  Array [
-    "2. MongooseOneToMan...eneric.save    -> POST   /users/:pid/animals",
-  ],
-  Array [
-    "3. MongooseOneToMan...eneric.get     -> GET    /users/:pid/animals/:id",
-  ],
-  Array [
-    "4. MongooseOneToMan...eneric.modify  -> PATCH  /users/:pid/animals/:id",
-  ],
-  Array [
-    "5. MongooseOneToMan...eneric.replace -> PUT    /users/:pid/animals/:id",
-  ],
-  Array [
-    "6. MongooseOneToMan...eneric.delete  -> DELETE /users/:pid/animals/:id",
-  ],
-  Array [],
-]
-`;
-
-exports[`CRUD Nested CRUD One to Many Function Should able to disable some actions using controller builder 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. MongooseOneToMan...eneric.list -> GET /users/:pid/animals",
-  ],
-  Array [
-    "2. MongooseOneToMan...eneric.get  -> GET /users/:pid/animals/:id",
   ],
   Array [],
 ]

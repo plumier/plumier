@@ -103,7 +103,7 @@ Above is the route analysis report created by Plumier route generator system, it
 
 If you see above routes, there are two resources currently hosted that is `/auth` and `/users`. Auth resource used to handle authentication its put on the `api/auth/auth-controller.ts` file. Its handled by a common controller, on the left of the route analysis report you can see the action handles the route `AuthController.login(email, password)`. 
 
-The User resource is quite different, you can see the source code in `api/users/user-entity.ts` it uses first class entity with `@route.controller()` decorator which means its handled by a generic controller. You can see also on the left of the route analysis report the action handled the routes uses `TypeORMControllerGeneric`.
+The User resource is quite different, you can see the source code in `api/users/user-entity.ts` it uses first class entity with `@genericController()` decorator which means its handled by a generic controller. You can see also on the left of the route analysis report the action handled the routes uses `TypeORMControllerGeneric`.
 
 ## Setup MySQL Connection
 
@@ -185,7 +185,7 @@ import { BaseEntity, Column, Entity, ManyToOne } from "typeorm"
 import { LoginUser } from "../_shared/login-user"
 import { User } from "../user/user-entity"
 
-@route.controller(c => {
+@genericController(c => {
     c.actions("Put", "Patch", "Delete").authorize("ResourceOwner", "Admin")
 })
 @Entity()
@@ -210,7 +210,7 @@ export class Todo extends BaseEntity {
 
 If you are a TypeORM user you may a bit familiar with above code. Above is a first class entity, its control most API behavior from the entity itself. 
 
-`@route.controller()` will inform Plumier that this entity handled by a generic controller. Provide simple configuration to set that the Todo data only can be modified (`PUT`, `PATCH`, `DELETE`) by the `ResourceOwner` (user created the todo) and by the `Admin` of the API. 
+`@genericController()` will inform Plumier that this entity handled by a generic controller. Provide simple configuration to set that the Todo data only can be modified (`PUT`, `PATCH`, `DELETE`) by the `ResourceOwner` (user created the todo) and by the `Admin` of the API. 
 
 We apply validation on the `message` property, tells Plumier that this field is required. Plumier will automatically response 422 when this field value does not provided.
 
@@ -319,7 +319,7 @@ export class Comment extends EntityBase {
 
 Above is the Comment entity, the `todo` entity set to readonly, since its a reverse property to the parent entity it will populated automatically by the generic controller.
 
-You may notice that it doesn't have `@route.controller()` decorator. The most important thing is, nested generic controller require an array relation (one to many or many to many) than we can create the API by providing `@route.controller()` on the relation property. 
+You may notice that it doesn't have `@genericController()` decorator. The most important thing is, nested generic controller require an array relation (one to many or many to many) than we can create the API by providing `@genericController()` on the relation property. 
 
 ```typescript 
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm"
@@ -331,7 +331,7 @@ export class Todo extends EntityBase {
 
     /** other properties **/
 
-    @route.controller(c => {
+    @genericController(c => {
         c.actions("Put", "Patch", "Delete").authorize("ResourceOwner", "Admin")
     })
     @OneToMany(x => Comment, x => x.todo)
@@ -339,13 +339,13 @@ export class Todo extends EntityBase {
 }
 ```
 
-Above showing that we modify our current Todo entity by adding a one to many relation to the comment entity. You can see also we add `@route.controller()` decorator above the `comments` property means its will be handled by a nested generic controller.
+Above showing that we modify our current Todo entity by adding a one to many relation to the comment entity. You can see also we add `@genericController()` decorator above the `comments` property means its will be handled by a nested generic controller.
 
 :::info
-Decorating property with `@route.controller()` may make the code less cleaner, since the controller configuration stays in `todo` directory instead of the `todo-comment` directory. Alternatively you can put `@route.controller()` above the Comment entity with `useNested` configuration like below.
+Decorating property with `@genericController()` may make the code less cleaner, since the controller configuration stays in `todo` directory instead of the `todo-comment` directory. Alternatively you can put `@genericController()` above the Comment entity with `useNested` configuration like below.
 
 ```typescript {2}
-@route.controller(c => {
+@genericController(c => {
     c.useNested(Todo, "comments")
     c.actions("Put", "Patch", "Delete").authorize("ResourceOwner", "Admin")
 })

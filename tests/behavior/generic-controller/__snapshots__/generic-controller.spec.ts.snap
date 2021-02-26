@@ -2296,7 +2296,7 @@ Array [
 exports[`Route Generator Generic Controller Should throw error when using default generic controller 1`] = `
 Array [
   Array [
-    [Error: @route.controller() required generic controller implementation, please install the appropriate facility],
+    [Error: @genericController() required generic controller implementation, please install the appropriate facility],
   ],
 ]
 `;
@@ -2895,7 +2895,7 @@ Array [
 exports[`Route Generator One To Many Controller Should throw error when no generic controller impl found 1`] = `
 Array [
   Array [
-    [Error: @route.controller() required generic controller implementation, please install the appropriate facility],
+    [Error: @genericController() required generic controller implementation, please install the appropriate facility],
   ],
 ]
 `;
@@ -2903,8 +2903,72 @@ Array [
 exports[`Route Generator One To Many Controller Should throw error when the relation doesn't have type information 1`] = `
 Array [
   Array [
-    [Error: User.animals marked with @route.controller() but doesn't have type information],
+    [Error: User.animals marked with @genericController() but doesn't have type information],
   ],
+]
+`;
+
+exports[`Route Generator Should able to flatten nested directories 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. DefaultControllerGeneric.list            -> GET    /animal",
+  ],
+  Array [
+    " 2. DefaultControllerGeneric.save(data, ctx) -> POST   /animal",
+  ],
+  Array [
+    " 3. DefaultControllerGeneric.get             -> GET    /animal/:id",
+  ],
+  Array [
+    " 4. DefaultControllerGeneric.modify          -> PATCH  /animal/:id",
+  ],
+  Array [
+    " 5. DefaultControllerGeneric.replace         -> PUT    /animal/:id",
+  ],
+  Array [
+    " 6. DefaultControllerGeneric.delete(id, ctx) -> DELETE /animal/:id",
+  ],
+  Array [
+    " 7. DefaultControllerGeneric.list            -> GET    /user",
+  ],
+  Array [
+    " 8. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
+  ],
+  Array [
+    " 9. DefaultControllerGeneric.get             -> GET    /user/:id",
+  ],
+  Array [
+    "10. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
+  ],
+  Array [
+    "11. DefaultControllerGeneric.replace         -> PUT    /user/:id",
+  ],
+  Array [
+    "12. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
+  ],
+  Array [
+    "13. DefaultOneToMany...eneric.list           -> GET    /user/:pid/animals",
+  ],
+  Array [
+    "14. DefaultOneToMany...eneric.save           -> POST   /user/:pid/animals",
+  ],
+  Array [
+    "15. DefaultOneToMany...eneric.get            -> GET    /user/:pid/animals/:id",
+  ],
+  Array [
+    "16. DefaultOneToMany...eneric.modify         -> PATCH  /user/:pid/animals/:id",
+  ],
+  Array [
+    "17. DefaultOneToMany...eneric.replace        -> PUT    /user/:pid/animals/:id",
+  ],
+  Array [
+    "18. DefaultOneToMany...eneric.delete         -> DELETE /user/:pid/animals/:id",
+  ],
+  Array [],
 ]
 `;
 

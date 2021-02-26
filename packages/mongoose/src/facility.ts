@@ -3,8 +3,8 @@ import {
     filterConverters,
     PlumierApplication,
     RelationDecorator,
-    RequestHookMiddleware,
 } from "@plumier/core"
+import { RequestHookMiddleware } from "@plumier/generic-controller"
 import { Result, ResultMessages, VisitorInvocation } from "@plumier/validator"
 import Mongoose from "mongoose"
 import pluralize from "pluralize"

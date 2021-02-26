@@ -1,23 +1,14 @@
+import { api, authorize, Class, entity, OneToManyRepository, Repository } from "@plumier/core"
 import {
-    api,
-    authorize,
-    Class,
-    ControllerBuilder,
-    createGenericController,
-    createOneToManyGenericController,
-    entity,
     genericControllerRegistry,
-    OneToManyRepository,
     RepoBaseControllerGeneric,
     RepoBaseOneToManyControllerGeneric,
-    Repository,
-} from "@plumier/core"
+} from "@plumier/generic-controller"
 import reflect, { generic, noop, useCache } from "@plumier/reflect"
-import pluralize from "pluralize"
+import { parse } from "acorn"
 import { getMetadataArgsStorage } from "typeorm"
 
 import { TypeORMOneToManyRepository, TypeORMRepository } from "./repository"
-import { Node, parse } from "acorn"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //
@@ -110,26 +101,5 @@ class TypeORMOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMan
 
 type NestedControllerType<T> = [Class<T>, Class, keyof T]
 
-function controller<T>(type: Class | NestedControllerType<T>) {
-    return {
-        configure: (configure?: (cnf: ControllerBuilder) => void) => {
-            const builder = new ControllerBuilder()
-            const nameConversion = (x: string) => pluralize(x)
-            if (configure)
-                configure(builder)
-            if (Array.isArray(type)) {
-                const [parent, entity, relation] = type
-                normalizeEntity(parent)
-                normalizeEntity(entity)
-                return createOneToManyGenericController(parent, builder, entity, relation as string,
-                    TypeORMOneToManyControllerGeneric, nameConversion)
-            }
-            else {
-                normalizeEntity(type)
-                return createGenericController(type, builder, TypeORMControllerGeneric, nameConversion)
-            }
-        }
-    }
-}
 
-export { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric, controller, normalizeEntity }
+export { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric, normalizeEntity }

@@ -3,7 +3,6 @@ import {
     Class,
     entityHelper,
     FormFile,
-    getGenericControllerInverseProperty,
     RelationDecorator,
     RelationPropertyDecorator,
 } from "@plumier/core"
@@ -19,6 +18,7 @@ import {
     isRequired,
     TransformContext,
 } from "./shared"
+import { getGenericControllerInverseProperty } from "@plumier/generic-controller"
 
 type SchemaOverrideType = "RelationAsId" | "Required" | "Filter" | "RemoveArrayRelation" |
     "RemoveChildRelations" | "RemoveInverseProperty" | "ReadonlyFields" | "WriteonlyFields"

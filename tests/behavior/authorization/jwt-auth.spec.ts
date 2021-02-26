@@ -4,27 +4,24 @@ import {
     AuthPolicy,
     authPolicy,
     bind,
-    Class,
-    ControllerGeneric,
     CustomAuthorizer,
     DefaultFacility,
     entity,
     entityPolicy,
     entityProvider,
-    OneToManyControllerGeneric,
     PlumierApplication,
     Public,
     responseType,
     RouteMetadata
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import { controller, MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "@plumier/mongoose"
+import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "@plumier/mongoose"
 import { noop, reflect, type } from "@plumier/reflect"
 import "@plumier/testing"
 import { cleanupConsole } from "@plumier/testing"
 import { sign } from "jsonwebtoken"
 import Koa from "koa"
-import Plumier, { authorize, domain, route, val, WebApiFacility } from "plumier"
+import Plumier, { authorize, domain, route, val, WebApiFacility, genericController } from "plumier"
 import Supertest from "supertest"
 import { expectError, fixture } from "../helper"
 
@@ -3774,14 +3771,14 @@ describe("JwtAuth", () => {
             expect(mock.mock.calls).toMatchSnapshot()
         })
         it("Should detect mistyped policy name on route distinguished by entity type", async () => {
-            @route.controller(c => {
+            @genericController(c => {
                 c.actions("GetOne").authorize("ResourceOwner")
             })
             class User {
                 @entity.primaryId()
                 id: number
             }
-            @route.controller(c => {
+            @genericController(c => {
                 c.actions("GetOne").authorize("ResourceOwner")
             })
             class Item {
@@ -3801,7 +3798,7 @@ describe("JwtAuth", () => {
             console.mockClear()
         })
         it("Should detect mistyped policy name on property distinguished by entity type", async () => {
-            @route.controller()
+            @genericController()
             class User {
                 @entity.primaryId()
                 id: number
@@ -3809,7 +3806,7 @@ describe("JwtAuth", () => {
                 @authorize.write("ResourceOwner")
                 name:string
             }
-            @route.controller()
+            @genericController()
             class Item {
                 @entity.primaryId()
                 id: number

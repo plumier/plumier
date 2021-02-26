@@ -1,14 +1,9 @@
 import { decorate, decorateClass, DecoratorId } from "@plumier/reflect"
 
-import { ControllerBuilder, updateGenericControllerRegistry } from "../controllers-helper"
 import { IgnoreDecorator, RootDecorator, RouteDecorator } from "../route-generator"
 import { HttpMethod } from "../types"
 
 
-interface GenericControllerDecorator {
-   name: "plumier-meta:controller"
-   config: ((x: ControllerBuilder) => void) | undefined
-}
 
 interface ApplyToOption {
    /**
@@ -326,18 +321,8 @@ class RouteDecoratorImpl {
     */
    ignore(opt?: ApplyToOption) { return decorate(<IgnoreDecorator>{ [DecoratorId]: "route:ignore", name: "plumier-meta:ignore" }, ["Class", "Method", "Property", "Parameter"], { allowMultiple: false, ...opt }) }
 
-   /**
-    * Mark an entity will be handled by a generic CRUD controller
-    */
-   controller(opt?: string | ((x: ControllerBuilder) => void)) {
-      const config = typeof opt === "string" ? (x:ControllerBuilder) => x.setPath(opt) : opt
-      return decorate((...args: any[]) => {
-         updateGenericControllerRegistry(args[0])
-         return <GenericControllerDecorator>{ name: "plumier-meta:controller", config }
-      })
-   }
 }
 
 const route = new RouteDecoratorImpl()
 
-export { route, RouteDecoratorImpl, GenericControllerDecorator }
+export { route, RouteDecoratorImpl }

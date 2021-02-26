@@ -2,10 +2,6 @@ import { isAbsolute, join } from "path"
 import { ClassReflection, MethodReflection, reflect } from "@plumier/reflect"
 
 import { Class, findFilesRecursive } from "./common"
-import {
-   createGenericControllers,
-   genericControllerRegistry,
-} from "./controllers-helper"
 import { errorMessage, GenericController, HttpMethod, RouteInfo, RouteMetadata } from "./types"
 
 // --------------------------------------------------------------------- //
@@ -20,10 +16,7 @@ interface TransformOption {
    rootPath?: string,
    group?: string,
    directoryAsPath?: boolean,
-   genericController?: GenericController
-   genericControllerNameConversion?: (x: string) => string
 }
-type TransformControllerOption = Required<Omit<TransformOption, "genericController">> & { genericController?: GenericController }
 interface ClassWithRoot {
    root: string,
    type: Class
@@ -143,16 +136,12 @@ function transformMethod(root: RouteRoot, controller: ClassReflection, method: M
    }]
 }
 
-function isController(meta: ClassReflection) {
+function isController(controller:Class) {
+   const meta = reflect(controller)
    return !!meta.name.match(/controller$/i) || !!meta.decorators.find((x: RootDecorator) => x.name === "plumier-meta:root")
 }
 
-function isGenericController(meta: ClassReflection) {
-   const cache = genericControllerRegistry.get(meta.type)
-   return !!cache
-}
-
-function transformController(object: Class, opt: TransformControllerOption) {
+function transformController(object: Class, opt: Required<TransformOption>) {
    const controller = reflect(object)
    const rootRoutes = getRootRoutes(opt.rootPath, controller)
    const infos: RouteInfo[] = []
@@ -172,7 +161,7 @@ function transformController(object: Class, opt: TransformControllerOption) {
    return infos
 }
 
-async function extractController(controller: string | string[] | Class[] | Class, option: TransformControllerOption): Promise<ClassWithRoot[]> {
+async function extractController(controller: string | string[] | Class[] | Class, option: Required<TransformOption>): Promise<ClassWithRoot[]> {
    if (typeof controller === "string") {
       const ctl = isAbsolute(controller) ? controller : join(option.rootDir, controller)
       const types = await findClassRecursive(ctl)
@@ -191,22 +180,13 @@ async function extractController(controller: string | string[] | Class[] | Class
       const controllers = await Promise.all(raw.map(x => extractController(x, option)))
       return controllers.flatten()
    }
-   const meta = reflect(controller)
    // common controller
-   if (isController(meta)) return [{ root: "", type: controller }]
-   // entity marked with generic controller
-   if (isGenericController(meta)) {
-      if (!option.genericController)
-         throw new Error(errorMessage.GenericControllerRequired)
-      return createGenericControllers(controller, option.genericController, option.genericControllerNameConversion)
-         .map(type => ({ root: "", type }))
-   }
+   if (isController(controller)) return [{ root: "", type: controller }]
    return []
 }
 
 async function generateRoutes(controller: string | string[] | Class[] | Class, option?: TransformOption): Promise<RouteMetadata[]> {
    const opt = {
-      genericControllerNameConversion: (x: string) => x,
       group: undefined as any, rootPath: "", rootDir: "",
       directoryAsPath: true,
       ...option
@@ -222,5 +202,5 @@ async function generateRoutes(controller: string | string[] | Class[] | Class, o
    return routes
 }
 
-export { generateRoutes, RouteDecorator, IgnoreDecorator, RootDecorator, appendRoute, findClassRecursive }
+export { generateRoutes, transformController, RouteDecorator, IgnoreDecorator, RootDecorator, appendRoute, findClassRecursive }
 

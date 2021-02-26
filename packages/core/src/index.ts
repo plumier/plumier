@@ -13,7 +13,7 @@ export {
 export { HeaderPart, RequestPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction } from "./binder";
 export { invoke } from "./application-pipeline";
 export { response } from "./response";
-export { generateRoutes, findClassRecursive, appendRoute, IgnoreDecorator, RouteDecorator } from "./route-generator";
+export { generateRoutes, findClassRecursive, appendRoute, IgnoreDecorator, RouteDecorator, transformController } from "./route-generator";
 export { analyzeRoutes, printAnalysis } from "./route-analyzer";
 export { router } from "./router";
 export {
@@ -27,20 +27,11 @@ export {
 } from "./decorator/api"
 export { bind } from "./decorator/bind";
 export { domain, middleware, entityProvider, responseType, ResponseTypeDecorator } from "./decorator/common";
-export { route, RouteDecoratorImpl, GenericControllerDecorator } from "./decorator/route";
-export { EntityIdDecorator, RelationDecorator, entity, EntityFilterDecorator } from "./decorator/entity";
+export { route, RouteDecoratorImpl } from "./decorator/route";
+export { EntityIdDecorator, RelationDecorator, entity, EntityFilterDecorator, DeleteColumnDecorator } from "./decorator/entity";
 export { preSave, postSave, RequestHookDecorator } from "./decorator/request-hook";
 export { filterConverters } from "./filter-parser"
-export {
-    getGenericControllerOneToOneRelations, genericControllerRegistry, ControllerBuilder,
-    createGenericController, createOneToManyGenericController
-} from "./controllers-helper"
-export {
-    RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, getGenericControllerInverseProperty,
-    parseSelect, IdentifierResult, getGenericControllerRelation
-} from "./controllers"
 export { HttpStatus } from "./http-status";
-export { RequestHookMiddleware } from "./controllers-request-hook"
 export { validate, ValidatorMiddleware, CustomValidator, ValidatorDecorator, CustomValidatorFunction, AsyncValidatorResult, ValidatorContext, } from "./validator"
 export {
     ActionResult, Application, Configuration, DefaultFacility,
@@ -51,5 +42,5 @@ export {
     CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie, FilterEntity,
     Metadata, GlobalMetadata, Omit, Optional, RouteMetadata, VirtualRoute,
     GenericController, ControllerGeneric, OneToManyControllerGeneric, Repository, OneToManyRepository, OrderQuery,
-    FilterQuery, FilterQueryType, RelationPropertyDecorator
+    FilterQuery, FilterQueryType, RelationPropertyDecorator, MetadataImpl
 } from "./types";

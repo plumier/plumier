@@ -1,19 +1,7 @@
-import {
-    bind,
-    Class,
-    ControllerBuilder,
-    createGenericController,
-    createOneToManyGenericController,
-    FilterEntity,
-    OneToManyRepository,
-    RepoBaseControllerGeneric,
-    RepoBaseOneToManyControllerGeneric,
-    Repository,
-    val,
-} from "@plumier/core"
-import { Context } from "koa"
-import pluralize from 'pluralize'
+import { bind, Class, FilterEntity, OneToManyRepository, Repository, val } from "@plumier/core"
+import { RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric } from "@plumier/generic-controller"
 import { generic } from "@plumier/reflect"
+import { Context } from "koa"
 
 import { MongooseOneToManyRepository, MongooseRepository } from "./repository"
 
@@ -73,26 +61,4 @@ class MongooseOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMa
     }
 }
 
-
-type NestedControllerType<T> = [Class<T>, Class, keyof T]
-
-function controller<T>(type: Class | NestedControllerType<T>) {
-    return {
-        configure: (configure?: (cnf: ControllerBuilder) => void) => {
-            const builder = new ControllerBuilder()
-            const nameConversion = (x: string) => pluralize(x)
-            if (configure)
-                configure(builder)
-            if (Array.isArray(type)) {
-                const [parent, entity, relation] = type
-                return createOneToManyGenericController(parent, builder, entity, relation as string,
-                    MongooseOneToManyControllerGeneric, nameConversion)
-            }
-            else {
-                return createGenericController(type, builder, MongooseControllerGeneric, nameConversion)
-            }
-        }
-    }
-}
-
-export { MongooseControllerGeneric, MongooseOneToManyControllerGeneric, controller }
+export { MongooseControllerGeneric, MongooseOneToManyControllerGeneric }

@@ -34,13 +34,13 @@ new Plumier()
 Above facilities is a common facility used if you are using TypeORM or Mongoose with Plumier. In context of generic controller above facilities will normalize entities to make it ready used by generic controller helpers. 
 
 ## Mark Entity Handled by Generic Controller 
-After installing facility above you need to mark specific entity that will be generated into CRUD API with `@route.controller()` like below: 
+After installing facility above you need to mark specific entity that will be generated into CRUD API with `@genericController()` like below: 
 
 ```typescript {4}
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
 import { route } from "plumier"
 
-@route.controller()
+@genericController()
 @Entity()
 class User {
     @PrimaryGeneratedColumn()
@@ -60,7 +60,7 @@ Or if you using Mongoose helper
 import { collection } from "@plumier/mongoose"
 import { route } from "plumier"
 
-@route.controller()
+@genericController()
 @collection()
 class User {
     constructor(
@@ -92,7 +92,7 @@ Swagger supported generic controller, since its just a common controller with a 
 Relational data with single value (one to one or many to one) by default will be populated on each request. For example if we have entity below: 
 
 ```typescript {24}
-@route.controller()
+@genericController()
 @Entity()
 class Address {
     
@@ -105,7 +105,7 @@ class Address {
     address:string
 }
 
-@route.controller()
+@genericController()
 @Entity()
 class User {
     
@@ -156,7 +156,7 @@ class User {
     @Column()
     name:string
 
-    @route.controller()
+    @genericController()
     @OneToMany(x => Email, x => x.user)
     emails:Email[]
 }
@@ -177,7 +177,7 @@ class Email {
 }
 ```
 
-Above code showing that we apply `@route.controller()` on the `User.emails` relation. Using this setup will make Plumier generate a nested routes like below 
+Above code showing that we apply `@genericController()` on the `User.emails` relation. Using this setup will make Plumier generate a nested routes like below 
 
 | Method | Route                           | Description                                                         |
 | ------ | ------------------------------- | ------------------------------------------------------------------- |
@@ -192,7 +192,7 @@ Above code showing that we apply `@route.controller()` on the `User.emails` rela
 If you separate your code per entity, you may found that configuring on relation is not so clean, because your controller configuration is not in your entity. You can keep specify decorator on the child entity but use `useNested` configuration like below.
 
 ```typescript
-@route.controller(c => c.useNested(User, "emails"))
+@genericController(c => c.useNested(User, "emails"))
 @Entity()
 class Email {
     
@@ -203,7 +203,7 @@ The result will be the same as above
 :::
 
 ## Apply Multiple Decorators 
-Its possible to apply multiple `@route.controller()` decorator on entity or entity relation, but the generated route must be unique or the route generator static check will shows errors. 
+Its possible to apply multiple `@genericController()` decorator on entity or entity relation, but the generated route must be unique or the route generator static check will shows errors. 
 
 For example on previous users -> email entity you may need to show `/users/:uid/emails` but you may also wants to enable API to list all emails `/emails` 
 
@@ -220,8 +220,8 @@ class User {
     emails:Email[]
 }
 
-@route.controller(c => c.useNested(User, "emails"))
-@route.controller(c => c.actions("Delete", "GetOne", "Patch", "Post", "Put").ignore())
+@genericController(c => c.useNested(User, "emails"))
+@genericController(c => c.actions("Delete", "GetOne", "Patch", "Post", "Put").ignore())
 @Entity()
 class Email {
     
@@ -257,7 +257,7 @@ Generic controller provided filter query string to narrow API response. To be ab
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
 import { route } from "plumier"
 
-@route.controller()
+@genericController()
 @Entity()
 class User {
     @PrimaryGeneratedColumn()
@@ -354,13 +354,13 @@ GET /users/:pid/pets/:id?select=name,dob&filter[name]=bingo&order=-createdAt,nam
 
 ## Custom Path Name
 
-Plumier provide a default route path name based on entity name (pluralized), you can specify a new path name by provide it on the `@route.controller()` parameter. 
+Plumier provide a default route path name based on entity name (pluralized), you can specify a new path name by provide it on the `@genericController()` parameter. 
 
 ```typescript {4}
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
 import { route } from "plumier"
 
-@route.controller("user-data/:uid")
+@genericController("user-data/:uid")
 @Entity()
 class User {
     @PrimaryGeneratedColumn()
@@ -393,7 +393,7 @@ class User {
     
     /** other columns **/
 
-    @route.controller("user-data/:uid/email-data/:eid")
+    @genericController("user-data/:uid/email-data/:eid")
     @OneToMany(x => Email, x => x.user)
     emails:Email[]
 }
@@ -422,7 +422,7 @@ Refer to [Security](Security.md) on how to setup user authorization on your Plum
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
 import { route, authorize } from "plumier"
 
-@route.controller()
+@genericController()
 @Entity()
 class User {
     @PrimaryGeneratedColumn()
@@ -457,13 +457,13 @@ Above code showing that we apply `@authorize` decorator on `password` and `role`
 
 ## Control Access To The Generated Routes 
 
-You can specify authorization into specific generated route by providing more configuration on the `@route.controller()` decorator.
+You can specify authorization into specific generated route by providing more configuration on the `@genericController()` decorator.
 
 ```typescript {4}
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
 import { route, authorize } from "plumier"
 
-@route.controller(c => c.mutators().authorize("SuperAdmin", "Admin"))
+@genericController(c => c.mutators().authorize("SuperAdmin", "Admin"))
 @Entity()
 class User {
     
@@ -495,7 +495,7 @@ class User {
     
     /** other columns **/
 
-    @route.controller()
+    @genericController()
     @authorize.route(c => c.mutators().authorize("SuperAdmin", "Admin"))
     @OneToMany(x => Email, x => x.user)
     emails:Email[]
@@ -522,7 +522,7 @@ In some case you may want to hide specific route generated. You can use the `ign
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
 import { route } from "plumier"
 
-@route.controller(c => {
+@genericController(c => {
     c.put().ignore()
     c.patch().ignore()
     c.delete().ignore()
@@ -552,7 +552,7 @@ class User {
     
     /** other columns **/
 
-    @route.controller(c => {
+    @genericController(c => {
         c.put().ignore()
         c.patch().ignore()
         c.delete().ignore()
@@ -613,7 +613,7 @@ export class CommentWithUser {
 Then specify the transformation function using `transformer` configuration 
 
 ```typescript 
-@route.controller(c => {
+@genericController(c => {
     c.accessors().transformer(CommentWithUser, x => {
         return {
             id: x.id,
@@ -655,7 +655,7 @@ import { noop } from "@plumier/reflect"
 // for mongoose use import { transformFilter } from "@plumier/mongoose"
 import { transformFilter } from "@plumier/typeorm"
 
-@route.controller(c => {
+@genericController(c => {
     // custom query for GET /users/:id
     c.getOne().custom(UserDto, async ({ id }) => {
         const repo = getManager().getRepository(User)
@@ -726,7 +726,7 @@ entityPolicy(User)
 This policy then can be applied on the generic controller configuration builder, to secure specific route like below.
 
 ```typescript {2}
-@route.controller(c => {
+@genericController(c => {
     c.delete().authorize("ResourceOwner")
 })
 @Entity()
@@ -747,7 +747,7 @@ By using above configuration only the `ResourceOwner` of the User entity allowed
 The policy also can be used to secure property using `@authorize.read()` or `@authorize.write()` like below.
 
 ```typescript {7}
-@route.controller()
+@genericController()
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
@@ -791,7 +791,7 @@ import { Entity, PrimaryGeneratedColumn } from "typeorm"
 import { route, preSave } from "plumier"
 import bcrypt from "bcrypt"
 
-@route.controller()
+@genericController()
 @Entity()
 class User {
     @PrimaryGeneratedColumn()
@@ -835,7 +835,7 @@ import { Entity, PrimaryGeneratedColumn } from "typeorm"
 import { route, preSave } from "plumier"
 import bcrypt from "bcrypt"
 
-@route.controller()
+@genericController()
 @Entity()
 class User {
     
@@ -860,7 +860,7 @@ import { Entity, PrimaryGeneratedColumn } from "typeorm"
 import { route, preSave } from "plumier"
 import bcrypt from "bcrypt"
 
-@route.controller()
+@genericController()
 @Entity()
 class User {
     

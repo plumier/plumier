@@ -1,37 +1,32 @@
-import "./filter-parser"
-
-import { Context } from "koa"
-import reflect, {
-    decorate,
-    DecoratorId,
-    generic,
-    GenericTypeDecorator,
-    mergeDecorator,
-    PropertyReflection,
-    type,
-} from "@plumier/reflect"
-import { val } from "@plumier/validator"
-
-import { Class } from "./common"
-import { postSaveValue } from "./controllers-request-hook"
-import { api } from "./decorator/api"
-import { bind } from "./decorator/bind"
-import { domain, responseType } from "./decorator/common"
-import { DeleteColumnDecorator, entity, EntityIdDecorator, RelationDecorator } from "./decorator/entity"
-import { route } from "./decorator/route"
-import { RouteDecorator } from "./route-generator"
 import {
+    api,
+    bind,
+    Class,
     ControllerGeneric,
-    errorMessage,
+    DeleteColumnDecorator,
+    domain,
+    entity,
+    EntityIdDecorator,
     FilterEntity,
     HttpMethod,
     HttpStatusError,
     OneToManyControllerGeneric,
     OneToManyRepository,
     OrderQuery,
-    RelationPropertyDecorator,
+    RelationDecorator,
     Repository,
-} from "./types"
+    responseType,
+    route,
+    RouteDecorator,
+} from "@plumier/core"
+import reflect, { decorate, DecoratorId, generic, mergeDecorator, PropertyReflection } from "@plumier/reflect"
+import { val } from "@plumier/validator"
+import { Context } from "koa"
+
+import { getGenericControllerInverseProperty, getGenericControllerRelation, getGenericTypeParameters } from "./helper"
+import { postSaveValue } from "./request-hook"
+
+
 
 // --------------------------------------------------------------------- //
 // ----------------------------- DECORATORS ---------------------------- //
@@ -41,7 +36,7 @@ const RouteDecoratorID = Symbol("generic-controller:route")
 
 /**
  * Custom route decorator to make it possible to override @route decorator from class scope decorator. 
- * This is required for custom route path defined with @route.controller("custom/:customId")
+ * This is required for custom route path defined with @genericController("custom/:customId")
  */
 function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: string | string[] }) {
     return decorate(<RouteDecorator & { [DecoratorId]: any }>{
@@ -99,33 +94,10 @@ function getManyCustomQuery(type: Class): GetManyCustomQueryFunction | undefined
     const decorator = meta.decorators.find((x: GetManyCustomQueryDecorator): x is GetManyCustomQueryDecorator => x.kind === "plumier-meta:get-many-query")
     return decorator?.query
 }
+
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
 // --------------------------------------------------------------------- //
-
-function getGenericTypeParameters(controller: Class) {
-    const meta = reflect(controller)
-    const genericDecorator = meta.decorators
-        .find((x: GenericTypeDecorator): x is GenericTypeDecorator => x.kind == "GenericType" && x.target === controller)
-    return {
-        types: genericDecorator!.types.map(x => x as Class),
-        meta
-    }
-}
-
-function getGenericControllerRelation(controller: Class) {
-    const { types, meta } = getGenericTypeParameters(controller)
-    const parentEntityType = types[0]
-    const entityType = types[1]
-    const oneToMany = meta.decorators.find((x: RelationPropertyDecorator): x is RelationPropertyDecorator => x.kind === "plumier-meta:relation-prop-name")
-    const relation = oneToMany!.name
-    return { parentEntityType, entityType, relation, inverseProperty: oneToMany!.inverseProperty }
-}
-
-function getGenericControllerInverseProperty(controller: Class) {
-    const rel = getGenericControllerRelation(controller)
-    return rel.inverseProperty
-}
 
 function parseOrder(order?: string) {
     const tokens = order?.split(",").map(x => x.trim()) ?? []
@@ -362,7 +334,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
 
 export {
     RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
-    parseSelect, decorateRoute, IdentifierResult, getGenericControllerRelation,
+    parseSelect, decorateRoute, IdentifierResult,
     getGenericControllerInverseProperty, ResponseTransformer, responseTransformer,
     GetOneCustomQueryFunction, GetOneCustomQueryDecorator, GetOneParams,
     GetManyCustomQueryFunction, GetManyCustomQueryDecorator, GetManyParams,
