@@ -33,58 +33,11 @@ describe("Filter Parser", () => {
     }
 
     describe(`Equal Parser`, () => { comparison("=") })
-    describe(`Not Equal Parser`, () => { comparison("<>") })
+    describe(`Not Equal Parser`, () => { comparison("!=") })
     describe(`Greater Than Parser`, () => { comparison(">") })
     describe(`Less Than Parser`, () => { comparison("<") })
     describe(`Greater Than Equal Parser`, () => { comparison(">=") })
     describe(`Less Than Equal Parser`, () => { comparison("<=") })
-    describe(`Like Parser`, () => {
-        it("Should throw when compare property with number", () => {
-            expect(() => parseFilter(`column like 12345234554`)).toThrowError()
-            expect(() => parseFilter(`column like 123452.234`)).toThrowError()
-        })
-        it("Should throw when compare property with boolean", () => {
-            expect(() => parseFilter(`column like true`)).toThrowError()
-            expect(() => parseFilter(`column like false`)).toThrowError()
-        })
-        it("Should able to compare property with string", () => {
-            expect(parseFilter(`column like "lorem ipsum"`)).toMatchSnapshot()
-            expect(parseFilter(`column like 'lorem ipsum'`)).toMatchSnapshot()
-        })
-        it("Should skip white space", () => {
-            expect(parseFilter(` column   like   'lorem ipsum'  `)).toMatchSnapshot()
-        })
-        it("Should not allow property name start with number", () => {
-            expect(() => parseFilter(`12column like 'lorem ipsum'`)).toThrowError()
-        })
-        it("Should allow property name ends with number", () => {
-            expect(parseFilter(`column123 like 'lorem ipsum'`)).toMatchSnapshot()
-        })
-        it("Should allow property name with underscore", () => {
-            expect(parseFilter(`column_123 like 'lorem ipsum'`)).toMatchSnapshot()
-        })
-    })
-
-    describe("Between Parser", () => {
-        it("Should able to compare property with number", () => {
-            expect(parseFilter(`column between 100 and 200`)).toMatchSnapshot()
-            expect(parseFilter(`column between 100.20 and 200.20`)).toMatchSnapshot()
-        })
-        it("Should throw when compare property with boolean", () => {
-            expect(() => parseFilter(`column between true and false`)).toThrowError()
-            expect(() => parseFilter(`column between false and false`)).toThrowError()
-        })
-        it("Should able to compare property with string", () => {
-            expect(parseFilter(`column between "2000-1-1" and "2020-1-1"`)).toMatchSnapshot()
-            expect(parseFilter(`column between '2000-1-1' and '2020-1-1'`)).toMatchSnapshot()
-        })
-        it("Should skip white space", () => {
-            expect(parseFilter(` column   between   100.20   and    200.20  `)).toMatchSnapshot()
-        })
-        it("Should not confused when piped with AND operator", () => {
-            expect(parseFilter(`column between 100.20 and 200.20 and otherColumn = 300`)).toMatchSnapshot()
-        })
-    })
 
 
     function logic(opr: string) {
@@ -120,14 +73,56 @@ describe("Filter Parser", () => {
 
     describe("Not Parser", () => {
         it("Should able to use not with expression", () => {
-            expect(parseFilter(`not column=12345234554`)).toMatchSnapshot()
+            expect(parseFilter(`! column=12345234554`)).toMatchSnapshot()
         })
         it("Should able to use not with column", () => {
-            expect(parseFilter(`not column`)).toMatchSnapshot()
+            expect(parseFilter(`! column`)).toMatchSnapshot()
+        })
+        it("Should able to use without space", () => {
+            expect(parseFilter(`!column=123`)).toMatchSnapshot()
+            expect(parseFilter(`!column`)).toMatchSnapshot()
         })
         it("Should prioritized than binary expression", () => {
-            expect(parseFilter(`column=123 and not column=12345234554`)).toMatchSnapshot()
+            expect(parseFilter(`column=123 and !(column=12345234554)`)).toMatchSnapshot()
+        })
+        it("Should not confused in string", () => {
+            expect(parseFilter(`column="!123"`)).toMatchSnapshot()
         })
     })
 
+    describe("Range Value", () => {
+        it("Should parse correctly", () => {
+            expect(parseFilter(`column=1 to 2`)).toMatchSnapshot()
+        })
+        it("Should parse grouping", () => {
+            expect(parseFilter(`column=(1 to 2)`)).toMatchSnapshot()
+        })
+        it("Should parse case insensitive", () => {
+            expect(parseFilter(`column=1 TO 2`)).toMatchSnapshot()
+        })
+        it("Should parse string range", () => {
+            expect(parseFilter(`column="2020-1-1" to "2020-1-1"`)).toMatchSnapshot()
+        })
+        it("Should not parse boolean range", () => {
+            expect(() => parseFilter(`column=true to false`)).toThrowErrorMatchingSnapshot()
+        })
+    })
+
+    describe("Like Value", () => {
+        it("Should parse starts with", () => {
+            expect(parseFilter(`column="abc*"`)).toMatchSnapshot()
+            expect(parseFilter(`column="ab*c*"`)).toMatchSnapshot()
+            expect(parseFilter(`column="ab*c**"`)).toMatchSnapshot()
+        })
+        it("Should parse ends with", () => {
+            expect(parseFilter(`column="*abc"`)).toMatchSnapshot()
+            expect(parseFilter(`column="*ab*c"`)).toMatchSnapshot()
+            expect(parseFilter(`column="**ab*c"`)).toMatchSnapshot()
+        })
+        it("Should parse contains", () => {
+            expect(parseFilter(`column="*abc*"`)).toMatchSnapshot()
+            expect(parseFilter(`column="*a*bc*"`)).toMatchSnapshot()
+            expect(parseFilter(`column="**aba*bc**"`)).toMatchSnapshot()
+        })
+    })
 })

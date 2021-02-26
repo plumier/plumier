@@ -86,88 +86,6 @@ Object {
 }
 `;
 
-exports[`Filter Parser Between Parser Should able to compare property with number 1`] = `
-Object {
-  "name": "between",
-  "prop": "column",
-  "type": "Comparison",
-  "value": Array [
-    100,
-    200,
-  ],
-}
-`;
-
-exports[`Filter Parser Between Parser Should able to compare property with number 2`] = `
-Object {
-  "name": "between",
-  "prop": "column",
-  "type": "Comparison",
-  "value": Array [
-    100.2,
-    200.2,
-  ],
-}
-`;
-
-exports[`Filter Parser Between Parser Should able to compare property with string 1`] = `
-Object {
-  "name": "between",
-  "prop": "column",
-  "type": "Comparison",
-  "value": Array [
-    "2000-1-1",
-    "2020-1-1",
-  ],
-}
-`;
-
-exports[`Filter Parser Between Parser Should able to compare property with string 2`] = `
-Object {
-  "name": "between",
-  "prop": "column",
-  "type": "Comparison",
-  "value": Array [
-    "2000-1-1",
-    "2020-1-1",
-  ],
-}
-`;
-
-exports[`Filter Parser Between Parser Should not confused when piped with AND operator 1`] = `
-Object {
-  "left": Object {
-    "name": "between",
-    "prop": "column",
-    "type": "Comparison",
-    "value": Array [
-      100.2,
-      200.2,
-    ],
-  },
-  "name": "and",
-  "right": Object {
-    "name": "eq",
-    "prop": "otherColumn",
-    "type": "Comparison",
-    "value": 300,
-  },
-  "type": "Binary",
-}
-`;
-
-exports[`Filter Parser Between Parser Should skip white space 1`] = `
-Object {
-  "name": "between",
-  "prop": "column",
-  "type": "Comparison",
-  "value": Array [
-    100.2,
-    200.2,
-  ],
-}
-`;
-
 exports[`Filter Parser Equal Parser Should able to compare property with boolean 1`] = `
 Object {
   "name": "eq",
@@ -440,20 +358,19 @@ Object {
 
 exports[`Filter Parser Group Parser Should able to group comparison 1`] = `
 Object {
-  "type": "Parenthesis",
-  "value": Object {
+  "expr": Object {
     "name": "eq",
     "prop": "column",
     "type": "Comparison",
     "value": 12345234554,
   },
+  "type": "Parenthesis",
 }
 `;
 
 exports[`Filter Parser Group Parser Should able to group logic 1`] = `
 Object {
-  "type": "Parenthesis",
-  "value": Object {
+  "expr": Object {
     "left": Object {
       "name": "eq",
       "prop": "column",
@@ -469,6 +386,7 @@ Object {
     },
     "type": "Binary",
   },
+  "type": "Parenthesis",
 }
 `;
 
@@ -482,8 +400,7 @@ Object {
   },
   "name": "and",
   "right": Object {
-    "type": "Parenthesis",
-    "value": Object {
+    "expr": Object {
       "left": Object {
         "name": "eq",
         "prop": "column",
@@ -499,6 +416,7 @@ Object {
       },
       "type": "Binary",
     },
+    "type": "Parenthesis",
   },
   "type": "Binary",
 }
@@ -515,8 +433,7 @@ Object {
     },
     "name": "and",
     "right": Object {
-      "type": "Parenthesis",
-      "value": Object {
+      "expr": Object {
         "left": Object {
           "name": "eq",
           "prop": "column",
@@ -532,6 +449,7 @@ Object {
         },
         "type": "Binary",
       },
+      "type": "Parenthesis",
     },
     "type": "Binary",
   },
@@ -726,48 +644,84 @@ Object {
 }
 `;
 
-exports[`Filter Parser Like Parser Should able to compare property with string 1`] = `
+exports[`Filter Parser Like Value Should parse contains 1`] = `
 Object {
-  "name": "like",
+  "name": "contains",
   "prop": "column",
   "type": "Comparison",
-  "value": "lorem ipsum",
+  "value": "abc",
 }
 `;
 
-exports[`Filter Parser Like Parser Should able to compare property with string 2`] = `
+exports[`Filter Parser Like Value Should parse contains 2`] = `
 Object {
-  "name": "like",
+  "name": "contains",
   "prop": "column",
   "type": "Comparison",
-  "value": "lorem ipsum",
+  "value": "a*bc",
 }
 `;
 
-exports[`Filter Parser Like Parser Should allow property name ends with number 1`] = `
+exports[`Filter Parser Like Value Should parse contains 3`] = `
 Object {
-  "name": "like",
-  "prop": "column123",
-  "type": "Comparison",
-  "value": "lorem ipsum",
-}
-`;
-
-exports[`Filter Parser Like Parser Should allow property name with underscore 1`] = `
-Object {
-  "name": "like",
-  "prop": "column_123",
-  "type": "Comparison",
-  "value": "lorem ipsum",
-}
-`;
-
-exports[`Filter Parser Like Parser Should skip white space 1`] = `
-Object {
-  "name": "like",
+  "name": "contains",
   "prop": "column",
   "type": "Comparison",
-  "value": "lorem ipsum",
+  "value": "*aba*bc*",
+}
+`;
+
+exports[`Filter Parser Like Value Should parse ends with 1`] = `
+Object {
+  "name": "endsWith",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "abc",
+}
+`;
+
+exports[`Filter Parser Like Value Should parse ends with 2`] = `
+Object {
+  "name": "endsWith",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "ab*c",
+}
+`;
+
+exports[`Filter Parser Like Value Should parse ends with 3`] = `
+Object {
+  "name": "endsWith",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "*ab*c",
+}
+`;
+
+exports[`Filter Parser Like Value Should parse starts with 1`] = `
+Object {
+  "name": "startsWith",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "abc",
+}
+`;
+
+exports[`Filter Parser Like Value Should parse starts with 2`] = `
+Object {
+  "name": "startsWith",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "ab*c",
+}
+`;
+
+exports[`Filter Parser Like Value Should parse starts with 3`] = `
+Object {
+  "name": "startsWith",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "ab*c*",
 }
 `;
 
@@ -884,6 +838,38 @@ Object {
 }
 `;
 
+exports[`Filter Parser Not Parser Should able to use without space 1`] = `
+Object {
+  "expr": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": 123,
+  },
+  "name": "not",
+  "type": "Unary",
+}
+`;
+
+exports[`Filter Parser Not Parser Should able to use without space 2`] = `
+Object {
+  "expr": Object {
+    "prop": "column",
+  },
+  "name": "not",
+  "type": "Unary",
+}
+`;
+
+exports[`Filter Parser Not Parser Should not confused in string 1`] = `
+Object {
+  "name": "eq",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "!123",
+}
+`;
+
 exports[`Filter Parser Not Parser Should prioritized than binary expression 1`] = `
 Object {
   "left": Object {
@@ -895,10 +881,13 @@ Object {
   "name": "and",
   "right": Object {
     "expr": Object {
-      "name": "eq",
-      "prop": "column",
-      "type": "Comparison",
-      "value": 12345234554,
+      "expr": Object {
+        "name": "eq",
+        "prop": "column",
+        "type": "Comparison",
+        "value": 12345234554,
+      },
+      "type": "Parenthesis",
     },
     "name": "not",
     "type": "Unary",
@@ -990,5 +979,78 @@ Object {
     "value": "lorem ipsum",
   },
   "type": "Binary",
+}
+`;
+
+exports[`Filter Parser Range Value Should not parse boolean range 1`] = `
+"Syntax error at line 1 col 13:
+
+1 column=true to false
+              ^
+
+Unexpected \\"t\\". Instead, I was expecting to see one of the following:
+
+A character matching /[ \\\\t\\\\n\\\\v\\\\f]/ based on:
+    wschar →  ● /[ \\\\t\\\\n\\\\v\\\\f]/
+    _$ebnf$1 → _$ebnf$1 ● wschar
+    _ →  ● _$ebnf$1
+    binary → binary ● _ binary$subexpression$2 _ unary
+    main → _ ● binary _
+A character matching /[oO]/ based on:
+    binary$subexpression$1 →  ● /[oO]/ /[rR]/
+    binary → binary _ ● binary$subexpression$1 _ unary
+    main → _ ● binary _
+A character matching /[aA]/ based on:
+    binary$subexpression$2 →  ● /[aA]/ /[nN]/ /[dD]/
+    binary → binary _ ● binary$subexpression$2 _ unary
+    main → _ ● binary _
+"
+`;
+
+exports[`Filter Parser Range Value Should parse case insensitive 1`] = `
+Object {
+  "name": "range",
+  "prop": "column",
+  "type": "Comparison",
+  "value": Array [
+    1,
+    2,
+  ],
+}
+`;
+
+exports[`Filter Parser Range Value Should parse correctly 1`] = `
+Object {
+  "name": "range",
+  "prop": "column",
+  "type": "Comparison",
+  "value": Array [
+    1,
+    2,
+  ],
+}
+`;
+
+exports[`Filter Parser Range Value Should parse grouping 1`] = `
+Object {
+  "name": "range",
+  "prop": "column",
+  "type": "Comparison",
+  "value": Array [
+    1,
+    2,
+  ],
+}
+`;
+
+exports[`Filter Parser Range Value Should parse string range 1`] = `
+Object {
+  "name": "range",
+  "prop": "column",
+  "type": "Comparison",
+  "value": Array [
+    "2020-1-1",
+    "2020-1-1",
+  ],
 }
 `;

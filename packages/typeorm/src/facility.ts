@@ -3,12 +3,12 @@ import {
     DefaultFacility,
     entity,
     entityHelper,
-    filterConverters,
     findFilesRecursive,
     globAsync,
     PlumierApplication,
     RelationDecorator,
 } from "@plumier/core"
+import { filterConverters } from "@plumier/filter-parser"
 import { RequestHookMiddleware } from "@plumier/generic-controller"
 import { Result, ResultMessages, VisitorInvocation } from "@plumier/validator"
 import { lstat } from "fs"
