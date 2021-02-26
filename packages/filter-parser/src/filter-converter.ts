@@ -1,0 +1,159 @@
+import {
+    ActionContext,
+    AuthorizeDecorator,
+    Class,
+    EntityFilterDecorator,
+    entityHelper,
+    FilterQuery,
+    isCustomClass,
+    RelationDecorator,
+} from "@plumier/core"
+import reflect from "@plumier/reflect"
+import { defaultConverters, Result, val, VisitorInvocation } from "@plumier/validator"
+
+// --------------------------------------------------------------------- //
+// ------------------------------- HELPER ------------------------------ //
+// --------------------------------------------------------------------- //
+
+const findAuthorizeFilter = (x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize" && x.access === "filter"
+const isNumber = (value: string) => !Number.isNaN(Number(value))
+const isDate = (value: string) => !Number.isNaN(new Date(value).getTime())
+const isComparableValue = (value: string) => isNumber(value) || isDate(value)
+const isComparableType = (type: Class) => type === Date || type === Number
+
+function notFilter(i: VisitorInvocation) {
+    if (i.value === undefined || i.value === null) return true
+    if (!i.parent) return true
+    return !i.parent.decorators.find((x: EntityFilterDecorator) => x.kind === "plumier-meta:entity-filter")
+}
+
+function convert(decorators: any[], type: Class, value: string): [any, string?] {
+    if (isCustomClass(type)) {
+        if (decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation")) {
+            const idType = entityHelper.getIdType(type)!
+            const converter = defaultConverters.get(idType)!
+            return [converter(value)]
+        }
+        return [, "Nested type filters are not supported"]
+    }
+    const converter = defaultConverters.get(type)!
+    const result = converter(value)
+    if (result === undefined) return [, `Unable to convert "${value}" into ${type.name}`]
+    return [result]
+}
+
+// --------------------------------------------------------------------- //
+// ----------------------------- VALIDATOR ----------------------------- //
+// --------------------------------------------------------------------- //
+
+declare module "@plumier/validator" {
+    namespace val {
+        export function filter(): (...args: any[]) => void
+    }
+}
+
+val.filter = () => {
+    return val.custom((value, info) => {
+        const meta = reflect((info.metadata.current as any).type as Class)
+        const issues = []
+        for (const prop of meta.properties) {
+            const dec = prop.decorators.find(findAuthorizeFilter)
+            const propValue = value[prop.name]
+            if (!dec && propValue)
+                issues.push(prop.name)
+        }
+        if (issues.length > 0)
+            return `Query ${issues.map(x => `filter[${x}]`).join(", ")} ${issues.length > 1 ? "are" : "is"} not available`
+    })
+}
+
+// --------------------------------------------------------------------- //
+// ------------------------------- PARSER ------------------------------ //
+// --------------------------------------------------------------------- //
+
+function partialFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
+    if (notFilter(i)) return i.proceed()
+    const value = i.value.toString()
+    if (!value.startsWith("*") && !value.endsWith("*")) return i.proceed()
+    if (i.type !== String) return Result.error(i.value, i.path, "Partial filter only applicable on string field")
+    if (value.startsWith("*") && value.endsWith("*"))
+        return Result.create(<FilterQuery>{ type: "partial", partial: "both", value: value.substr(0, value.length - 1).substr(1) })
+    if (value.startsWith("*"))
+        return Result.create(<FilterQuery>{ type: "partial", partial: "start", value: value.substr(1) })
+    return Result.create(<FilterQuery>{ type: "partial", partial: "end", value: value.substr(0, value.length - 1) })
+}
+
+function rangeFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
+    if (notFilter(i)) return i.proceed()
+    const value = i.value.toString()
+    const tokens = value.split("...")
+    if (tokens.length !== 2) return i.proceed()
+    if (i.type === Date) {
+        if (!isDate(tokens[0])) return Result.error(i.value, i.path, `Unable to convert "${tokens[0]}" into date`)
+        if (!isDate(tokens[1])) return Result.error(i.value, i.path, `Unable to convert "${tokens[1]}" into date`)
+        return Result.create(<FilterQuery>{ type: "range", value: [new Date(tokens[0]), new Date(tokens[1])] })
+    }
+    if (i.type === Number) {
+        if (!isNumber(tokens[0])) return Result.error(i.value, i.path, `Unable to convert "${tokens[0]}" into number`)
+        if (!isNumber(tokens[1])) return Result.error(i.value, i.path, `Unable to convert "${tokens[1]}" into number`)
+        return Result.create(<FilterQuery>{ type: "range", value: [Number(tokens[0]), Number(tokens[1])] })
+    }
+    return Result.error(i.value, i.path, "Range filter only applicable on date and number filed")
+}
+
+function conditionalFilter(i: VisitorInvocation, ctx: ActionContext, sign: string, type: "gte" | "gt" | "lte" | "lt") {
+    if (notFilter(i)) return i.proceed()
+    const token = i.value.toString()
+    if (!token.startsWith(sign)) return i.proceed()
+    if (!isComparableType(i.type))
+        return Result.error(i.value, i.path, `${type.toUpperCase()} ${sign} filter only applicable on date and number filed`)
+    const value = token.substr(sign.length)
+    if (!isComparableValue(value))
+        return Result.error(i.value, i.path, `Unable to convert "${value}" into ${i.type.name}`)
+    return Result.create(<FilterQuery>{ type, value })
+}
+
+function greaterThanOrEqualConverter(i: VisitorInvocation, ctx: ActionContext) {
+    return conditionalFilter(i, ctx, ">=", "gte")
+}
+
+function lessThanOrEqualConverter(i: VisitorInvocation, ctx: ActionContext) {
+    return conditionalFilter(i, ctx, "<=", "lte")
+}
+
+function greaterThanConverter(i: VisitorInvocation, ctx: ActionContext) {
+    return conditionalFilter(i, ctx, ">", "gt")
+}
+
+function lessThanConverter(i: VisitorInvocation, ctx: ActionContext) {
+    return conditionalFilter(i, ctx, "<", "lt")
+}
+
+function notEqualConverter(i: VisitorInvocation, ctx: ActionContext) {
+    if (notFilter(i)) return i.proceed()
+    const token = i.value.toString()
+    if (!token.startsWith("!")) return i.proceed()
+    const raw = token.substring(1)
+    const [value, error] = convert(i.decorators, i.type, raw)
+    if (error) return Result.error(i.value, i.path, error)
+    return Result.create(<FilterQuery>{ type: "ne", value: value })
+}
+
+function exactFilterConverter(i: VisitorInvocation, ctx: ActionContext) {
+    if (notFilter(i)) return i.proceed()
+    const [value, error] = convert(i.decorators, i.type, i.value.toString())
+    if (error) return Result.error(i.value, i.path, error)
+    return Result.create(<FilterQuery>{ type: "equal", value: value })
+}
+
+// order of the converter from the most important
+export const filterConverters = [
+    greaterThanOrEqualConverter,
+    lessThanOrEqualConverter,
+    greaterThanConverter,
+    lessThanConverter,
+    notEqualConverter,
+    rangeFilterConverter,
+    partialFilterConverter,
+    exactFilterConverter
+].reverse()

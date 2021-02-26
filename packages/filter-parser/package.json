@@ -1,0 +1,42 @@
+{
+  "name": "@plumier/filter-parser",
+  "version": "1.0.0-rc.8",
+  "description": "Plumier testing modules",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "MVC",
+    "Koa",
+    "IoC",
+    "Dependency Injection",
+    "Web API",
+    "JSON Service",
+    "TDD"
+  ],
+  "scripts": {
+    "compile": "tsc -p tsconfig.build.json",
+    "copy-readme": "cpy ../../readme.md .",
+    "precompile": "nearleyc src/filter-grammar.ne -o src/filter-grammar.ts"
+  },
+  "author": "Ketut Sandiarsa",
+  "license": "MIT",
+  "dependencies": {
+    "@types/nearley": "^2.11.1",
+    "@plumier/core": "^1.0.0-rc.8",
+    "nearley": "^2.20.1"
+  },
+  "devDependencies": {
+    "cpy-cli": "^3.1.1"
+  },
+  "bugs": {
+    "url": "https://github.com/plumier/plumier/issues"
+  },
+  "repository": {
+    "url": "https://github.com/plumier/plumier"
+  },
+  "homepage": "https://plumierjs.com",
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "9d69b5621b7e2e777818e5e36c13ecba0c8d8204"
+}

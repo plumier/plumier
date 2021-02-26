@@ -1,0 +1,994 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Filter Parser And Parser Should able to group comparisons 1`] = `
+Object {
+  "left": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": 12345234554,
+  },
+  "name": "and",
+  "right": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": "lorem ipsum",
+  },
+  "type": "Binary",
+}
+`;
+
+exports[`Filter Parser And Parser Should able to pipe logical expression 1`] = `
+Object {
+  "left": Object {
+    "left": Object {
+      "name": "eq",
+      "prop": "column",
+      "type": "Comparison",
+      "value": 1,
+    },
+    "name": "and",
+    "right": Object {
+      "name": "eq",
+      "prop": "column",
+      "type": "Comparison",
+      "value": 2,
+    },
+    "type": "Binary",
+  },
+  "name": "and",
+  "right": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": 3,
+  },
+  "type": "Binary",
+}
+`;
+
+exports[`Filter Parser And Parser Should case insensitive 1`] = `
+Object {
+  "left": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": 12345234554,
+  },
+  "name": "and",
+  "right": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": "lorem ipsum",
+  },
+  "type": "Binary",
+}
+`;
+
+exports[`Filter Parser And Parser Should skip white space 1`] = `
+Object {
+  "left": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": 12345234554,
+  },
+  "name": "and",
+  "right": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": "lorem ipsum",
+  },
+  "type": "Binary",
+}
+`;
+
+exports[`Filter Parser Between Parser Should able to compare property with number 1`] = `
+Object {
+  "name": "between",
+  "prop": "column",
+  "type": "Comparison",
+  "value": Array [
+    100,
+    200,
+  ],
+}
+`;
+
+exports[`Filter Parser Between Parser Should able to compare property with number 2`] = `
+Object {
+  "name": "between",
+  "prop": "column",
+  "type": "Comparison",
+  "value": Array [
+    100.2,
+    200.2,
+  ],
+}
+`;
+
+exports[`Filter Parser Between Parser Should able to compare property with string 1`] = `
+Object {
+  "name": "between",
+  "prop": "column",
+  "type": "Comparison",
+  "value": Array [
+    "2000-1-1",
+    "2020-1-1",
+  ],
+}
+`;
+
+exports[`Filter Parser Between Parser Should able to compare property with string 2`] = `
+Object {
+  "name": "between",
+  "prop": "column",
+  "type": "Comparison",
+  "value": Array [
+    "2000-1-1",
+    "2020-1-1",
+  ],
+}
+`;
+
+exports[`Filter Parser Between Parser Should not confused when piped with AND operator 1`] = `
+Object {
+  "left": Object {
+    "name": "between",
+    "prop": "column",
+    "type": "Comparison",
+    "value": Array [
+      100.2,
+      200.2,
+    ],
+  },
+  "name": "and",
+  "right": Object {
+    "name": "eq",
+    "prop": "otherColumn",
+    "type": "Comparison",
+    "value": 300,
+  },
+  "type": "Binary",
+}
+`;
+
+exports[`Filter Parser Between Parser Should skip white space 1`] = `
+Object {
+  "name": "between",
+  "prop": "column",
+  "type": "Comparison",
+  "value": Array [
+    100.2,
+    200.2,
+  ],
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to compare property with boolean 1`] = `
+Object {
+  "name": "eq",
+  "prop": "column",
+  "type": "Comparison",
+  "value": true,
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to compare property with boolean 2`] = `
+Object {
+  "name": "eq",
+  "prop": "column",
+  "type": "Comparison",
+  "value": false,
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to compare property with number 1`] = `
+Object {
+  "name": "eq",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to compare property with number 2`] = `
+Object {
+  "name": "eq",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 123452.234,
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to compare property with string 1`] = `
+Object {
+  "name": "eq",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to compare property with string 2`] = `
+Object {
+  "name": "eq",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to use swap position of property and value 1`] = `
+Object {
+  "name": "eq",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 1234,
+}
+`;
+
+exports[`Filter Parser Equal Parser Should allow property name ends with number 1`] = `
+Object {
+  "name": "eq",
+  "prop": "column123",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Equal Parser Should allow property name with underscore 1`] = `
+Object {
+  "name": "eq",
+  "prop": "column_123",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Equal Parser Should skip white space 1`] = `
+Object {
+  "name": "eq",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 12345,
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to compare property with boolean 1`] = `
+Object {
+  "name": "gte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": true,
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to compare property with boolean 2`] = `
+Object {
+  "name": "gte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": false,
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to compare property with number 1`] = `
+Object {
+  "name": "gte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to compare property with number 2`] = `
+Object {
+  "name": "gte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 123452.234,
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to compare property with string 1`] = `
+Object {
+  "name": "gte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to compare property with string 2`] = `
+Object {
+  "name": "gte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to use swap position of property and value 1`] = `
+Object {
+  "name": "gte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 1234,
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should allow property name ends with number 1`] = `
+Object {
+  "name": "gte",
+  "prop": "column123",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should allow property name with underscore 1`] = `
+Object {
+  "name": "gte",
+  "prop": "column_123",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should skip white space 1`] = `
+Object {
+  "name": "gte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 12345,
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to compare property with boolean 1`] = `
+Object {
+  "name": "gt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": true,
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to compare property with boolean 2`] = `
+Object {
+  "name": "gt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": false,
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to compare property with number 1`] = `
+Object {
+  "name": "gt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to compare property with number 2`] = `
+Object {
+  "name": "gt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 123452.234,
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to compare property with string 1`] = `
+Object {
+  "name": "gt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to compare property with string 2`] = `
+Object {
+  "name": "gt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to use swap position of property and value 1`] = `
+Object {
+  "name": "gt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 1234,
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should allow property name ends with number 1`] = `
+Object {
+  "name": "gt",
+  "prop": "column123",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should allow property name with underscore 1`] = `
+Object {
+  "name": "gt",
+  "prop": "column_123",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should skip white space 1`] = `
+Object {
+  "name": "gt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 12345,
+}
+`;
+
+exports[`Filter Parser Group Parser Should able to group comparison 1`] = `
+Object {
+  "type": "Parenthesis",
+  "value": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Group Parser Should able to group logic 1`] = `
+Object {
+  "type": "Parenthesis",
+  "value": Object {
+    "left": Object {
+      "name": "eq",
+      "prop": "column",
+      "type": "Comparison",
+      "value": 12345234554,
+    },
+    "name": "and",
+    "right": Object {
+      "name": "eq",
+      "prop": "column",
+      "type": "Comparison",
+      "value": "lorem ipsum",
+    },
+    "type": "Binary",
+  },
+}
+`;
+
+exports[`Filter Parser Group Parser Should prioritized group 1`] = `
+Object {
+  "left": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": 1,
+  },
+  "name": "and",
+  "right": Object {
+    "type": "Parenthesis",
+    "value": Object {
+      "left": Object {
+        "name": "eq",
+        "prop": "column",
+        "type": "Comparison",
+        "value": 2,
+      },
+      "name": "and",
+      "right": Object {
+        "name": "eq",
+        "prop": "column",
+        "type": "Comparison",
+        "value": 3,
+      },
+      "type": "Binary",
+    },
+  },
+  "type": "Binary",
+}
+`;
+
+exports[`Filter Parser Group Parser Should prioritized group 2`] = `
+Object {
+  "left": Object {
+    "left": Object {
+      "name": "eq",
+      "prop": "column",
+      "type": "Comparison",
+      "value": 1,
+    },
+    "name": "and",
+    "right": Object {
+      "type": "Parenthesis",
+      "value": Object {
+        "left": Object {
+          "name": "eq",
+          "prop": "column",
+          "type": "Comparison",
+          "value": 2,
+        },
+        "name": "and",
+        "right": Object {
+          "name": "eq",
+          "prop": "column",
+          "type": "Comparison",
+          "value": 3,
+        },
+        "type": "Binary",
+      },
+    },
+    "type": "Binary",
+  },
+  "name": "and",
+  "right": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": 4,
+  },
+  "type": "Binary",
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should able to compare property with boolean 1`] = `
+Object {
+  "name": "lte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": true,
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should able to compare property with boolean 2`] = `
+Object {
+  "name": "lte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": false,
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should able to compare property with number 1`] = `
+Object {
+  "name": "lte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should able to compare property with number 2`] = `
+Object {
+  "name": "lte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 123452.234,
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should able to compare property with string 1`] = `
+Object {
+  "name": "lte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should able to compare property with string 2`] = `
+Object {
+  "name": "lte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should able to use swap position of property and value 1`] = `
+Object {
+  "name": "lte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 1234,
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should allow property name ends with number 1`] = `
+Object {
+  "name": "lte",
+  "prop": "column123",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should allow property name with underscore 1`] = `
+Object {
+  "name": "lte",
+  "prop": "column_123",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should skip white space 1`] = `
+Object {
+  "name": "lte",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 12345,
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to compare property with boolean 1`] = `
+Object {
+  "name": "lt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": true,
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to compare property with boolean 2`] = `
+Object {
+  "name": "lt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": false,
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to compare property with number 1`] = `
+Object {
+  "name": "lt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to compare property with number 2`] = `
+Object {
+  "name": "lt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 123452.234,
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to compare property with string 1`] = `
+Object {
+  "name": "lt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to compare property with string 2`] = `
+Object {
+  "name": "lt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to use swap position of property and value 1`] = `
+Object {
+  "name": "lt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 1234,
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should allow property name ends with number 1`] = `
+Object {
+  "name": "lt",
+  "prop": "column123",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should allow property name with underscore 1`] = `
+Object {
+  "name": "lt",
+  "prop": "column_123",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should skip white space 1`] = `
+Object {
+  "name": "lt",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 12345,
+}
+`;
+
+exports[`Filter Parser Like Parser Should able to compare property with string 1`] = `
+Object {
+  "name": "like",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Like Parser Should able to compare property with string 2`] = `
+Object {
+  "name": "like",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Like Parser Should allow property name ends with number 1`] = `
+Object {
+  "name": "like",
+  "prop": "column123",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Like Parser Should allow property name with underscore 1`] = `
+Object {
+  "name": "like",
+  "prop": "column_123",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Like Parser Should skip white space 1`] = `
+Object {
+  "name": "like",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should able to compare property with boolean 1`] = `
+Object {
+  "name": "ne",
+  "prop": "column",
+  "type": "Comparison",
+  "value": true,
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should able to compare property with boolean 2`] = `
+Object {
+  "name": "ne",
+  "prop": "column",
+  "type": "Comparison",
+  "value": false,
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should able to compare property with number 1`] = `
+Object {
+  "name": "ne",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should able to compare property with number 2`] = `
+Object {
+  "name": "ne",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 123452.234,
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should able to compare property with string 1`] = `
+Object {
+  "name": "ne",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should able to compare property with string 2`] = `
+Object {
+  "name": "ne",
+  "prop": "column",
+  "type": "Comparison",
+  "value": "lorem ipsum",
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should able to use swap position of property and value 1`] = `
+Object {
+  "name": "ne",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 1234,
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should allow property name ends with number 1`] = `
+Object {
+  "name": "ne",
+  "prop": "column123",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should allow property name with underscore 1`] = `
+Object {
+  "name": "ne",
+  "prop": "column_123",
+  "type": "Comparison",
+  "value": 12345234554,
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should skip white space 1`] = `
+Object {
+  "name": "ne",
+  "prop": "column",
+  "type": "Comparison",
+  "value": 12345,
+}
+`;
+
+exports[`Filter Parser Not Parser Should able to use not with column 1`] = `
+Object {
+  "expr": Object {
+    "prop": "column",
+  },
+  "name": "not",
+  "type": "Unary",
+}
+`;
+
+exports[`Filter Parser Not Parser Should able to use not with expression 1`] = `
+Object {
+  "expr": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": 12345234554,
+  },
+  "name": "not",
+  "type": "Unary",
+}
+`;
+
+exports[`Filter Parser Not Parser Should prioritized than binary expression 1`] = `
+Object {
+  "left": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": 123,
+  },
+  "name": "and",
+  "right": Object {
+    "expr": Object {
+      "name": "eq",
+      "prop": "column",
+      "type": "Comparison",
+      "value": 12345234554,
+    },
+    "name": "not",
+    "type": "Unary",
+  },
+  "type": "Binary",
+}
+`;
+
+exports[`Filter Parser Or Parser Should able to group comparisons 1`] = `
+Object {
+  "left": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": 12345234554,
+  },
+  "name": "or",
+  "right": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": "lorem ipsum",
+  },
+  "type": "Binary",
+}
+`;
+
+exports[`Filter Parser Or Parser Should able to pipe logical expression 1`] = `
+Object {
+  "left": Object {
+    "left": Object {
+      "name": "eq",
+      "prop": "column",
+      "type": "Comparison",
+      "value": 1,
+    },
+    "name": "or",
+    "right": Object {
+      "name": "eq",
+      "prop": "column",
+      "type": "Comparison",
+      "value": 2,
+    },
+    "type": "Binary",
+  },
+  "name": "or",
+  "right": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": 3,
+  },
+  "type": "Binary",
+}
+`;
+
+exports[`Filter Parser Or Parser Should case insensitive 1`] = `
+Object {
+  "left": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": 12345234554,
+  },
+  "name": "or",
+  "right": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": "lorem ipsum",
+  },
+  "type": "Binary",
+}
+`;
+
+exports[`Filter Parser Or Parser Should skip white space 1`] = `
+Object {
+  "left": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": 12345234554,
+  },
+  "name": "or",
+  "right": Object {
+    "name": "eq",
+    "prop": "column",
+    "type": "Comparison",
+    "value": "lorem ipsum",
+  },
+  "type": "Binary",
+}
+`;
