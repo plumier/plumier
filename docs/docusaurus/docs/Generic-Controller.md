@@ -202,6 +202,56 @@ class Email {
 The result will be the same as above
 :::
 
+## Inverse Property Population
+
+If you are defined your one to many relation ORM configuration with inverse property, Generic controller will taking care of populating its value automatically. For example if you have ORM configuration like below. 
+
+```typescript {7}
+@Entity()
+class User {
+    
+    /** other columns **/
+
+    @genericController()
+    @OneToMany(x => Email, x => x.user)
+    emails:Email[]
+}
+
+@Entity()
+class Email {
+    
+    /** other columns **/
+
+    @ManyToOne(x => User, x => x.emails)
+    user:User
+}
+```
+
+Or if you are using mongoose helper like below
+
+```typescript {7}
+@collection()
+class User {
+    
+    /** other columns **/
+
+    @genericController()
+    @collection.ref(x => [Email], "user")
+    emails:Email[]
+}
+
+@Entity()
+class Email {
+    
+    /** other columns **/
+
+    @collection.ref(x => User)
+    user:User
+}
+```
+
+You're defined inverse property `user` on the one to many relation, it help Plumier to understand which property will automatically populated. So adding new email using `POST /users/{pid}/emails` will make `user` automatically populated with `pid` value, without having to provided on request body.
+
 ## Apply Multiple Decorators 
 Its possible to apply multiple `@genericController()` decorator on entity or entity relation, but the generated route must be unique or the route generator static check will shows errors. 
 
