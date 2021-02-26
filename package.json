@@ -18,7 +18,8 @@
 		"typeorm:start": "ts-node-script -r tsconfig-paths/register tests/manual/typeorm/index.ts",
 		"swagger:start": "ts-node -r tsconfig-paths/register tests/manual/swagger/index.ts",
 		"mongoose:start": "ts-node-script -r tsconfig-paths/register tests/manual/mongoose/index.ts",
-		"copy-readme": "lerna run copy-readme"
+		"copy-readme": "lerna run copy-readme",
+		"compile-parser": "yarn workspace @plumier/filter-parser precompile"
 	},
 	"author": "Ketut Sandiarsa",
 	"devDependencies": {
