@@ -88,7 +88,7 @@ export function decorate(data: any | ((...args: any[]) => any), targetTypes: Dec
     }
 }
 
-export function mergeDecorator(...fn: (ClassDecorator | PropertyDecorator | NativeParameterDecorator | MethodDecorator)[]) {
+export function mergeDecorator(...fn: (ClassDecorator | PropertyDecorator | CustomPropertyDecorator | ParameterDecorator | MethodDecorator)[]) {
     return (...args: any[]) => {
         fn.forEach(x => (x as Function)(...args))
     }

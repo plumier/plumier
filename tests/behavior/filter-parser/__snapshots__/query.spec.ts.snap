@@ -1,0 +1,148 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Filter Should allow input array with simple query string notation 1`] = `
+Object {
+  "kind": "BinaryExpression",
+  "left": Object {
+    "kind": "BinaryExpression",
+    "left": Object {
+      "kind": "PorpertyLiteral",
+      "value": "lorem",
+    },
+    "operator": "eq",
+    "right": Object {
+      "kind": "StringLiteral",
+      "preference": "none",
+      "value": "ipsum",
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "kind": "BinaryExpression",
+    "left": Object {
+      "kind": "PorpertyLiteral",
+      "value": "lorem",
+    },
+    "operator": "eq",
+    "right": Object {
+      "kind": "StringLiteral",
+      "preference": "none",
+      "value": "ipsum",
+    },
+  },
+}
+`;
+
+exports[`Filter Should allow input array with simple query string notation without grouping 1`] = `
+Object {
+  "kind": "BinaryExpression",
+  "left": Object {
+    "kind": "BinaryExpression",
+    "left": Object {
+      "kind": "PorpertyLiteral",
+      "value": "lorem",
+    },
+    "operator": "eq",
+    "right": Object {
+      "kind": "StringLiteral",
+      "preference": "none",
+      "value": "ipsum",
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "kind": "BinaryExpression",
+    "left": Object {
+      "kind": "PorpertyLiteral",
+      "value": "lorem",
+    },
+    "operator": "eq",
+    "right": Object {
+      "kind": "StringLiteral",
+      "preference": "none",
+      "value": "ipsum",
+    },
+  },
+}
+`;
+
+exports[`Filter Should allow input string 1`] = `
+Object {
+  "kind": "BinaryExpression",
+  "left": Object {
+    "kind": "PorpertyLiteral",
+    "value": "lorem",
+  },
+  "operator": "eq",
+  "right": Object {
+    "kind": "StringLiteral",
+    "preference": "none",
+    "value": "ipsum",
+  },
+}
+`;
+
+exports[`Filter Should allow multiple expression 1`] = `
+Object {
+  "kind": "BinaryExpression",
+  "left": Object {
+    "kind": "BinaryExpression",
+    "left": Object {
+      "kind": "PorpertyLiteral",
+      "value": "lorem",
+    },
+    "operator": "eq",
+    "right": Object {
+      "kind": "StringLiteral",
+      "preference": "none",
+      "value": "ipsum",
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "kind": "BinaryExpression",
+    "left": Object {
+      "kind": "BinaryExpression",
+      "left": Object {
+        "kind": "PorpertyLiteral",
+        "value": "dolor",
+      },
+      "operator": "gte",
+      "right": Object {
+        "kind": "NumberLiteral",
+        "preference": "none",
+        "value": 123,
+      },
+    },
+    "operator": "or",
+    "right": Object {
+      "kind": "BinaryExpression",
+      "left": Object {
+        "kind": "PorpertyLiteral",
+        "value": "sit",
+      },
+      "operator": "eq",
+      "right": Object {
+        "kind": "BooleanLiteral",
+        "value": false,
+      },
+    },
+  },
+}
+`;
+
+exports[`Filter Should catch expression error by 422 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Syntax error at col 15: (lorem='ipsum' >MUL lorem=lorem)",
+      ],
+      "path": Array [
+        "filter",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;

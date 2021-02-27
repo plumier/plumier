@@ -4,13 +4,13 @@ import {
     Configuration,
     DefaultFacility,
     entity,
-    filterConverters,
     FilterEntity,
     OneToManyRepository,
     PlumierApplication,
     Repository,
     route,
 } from "@plumier/core"
+import { filterConverters } from "@plumier/filter-parser"
 import {
     genericController,
     RepoBaseControllerGeneric,
