@@ -40,27 +40,27 @@ describe(`Filter Parser`, () => {
 
     describe("Like Parser", () => {
         it("Should parse exact string", () => {
-            expect(parseFilter(`column like 'abcd'`)).toMatchSnapshot()
+            expect(parseFilter(`column *= 'abcd'`)).toMatchSnapshot()
         })
         it("Should parse string with starts preference", () => {
-            expect(parseFilter(`column like 'abcd*'`)).toMatchSnapshot()
+            expect(parseFilter(`column *= 'abcd*'`)).toMatchSnapshot()
         })
         it("Should parse string with ends preference", () => {
-            expect(parseFilter(`column like '*abcd'`)).toMatchSnapshot()
+            expect(parseFilter(`column *= '*abcd'`)).toMatchSnapshot()
         })
         it("Should parse string with contains preference", () => {
-            expect(parseFilter(`column like '*abcd*'`)).toMatchSnapshot()
+            expect(parseFilter(`column *= '*abcd*'`)).toMatchSnapshot()
         })
         it("Should not parse number", () => {
-            expect(() => parseFilter(`column like 123`)).toThrowErrorMatchingSnapshot()
+            expect(() => parseFilter(`column *= 123`)).toThrowErrorMatchingSnapshot()
         })
         it("Should not parse boolean", () => {
-            expect(() => parseFilter(`column like false`)).toThrowErrorMatchingSnapshot()
+            expect(() => parseFilter(`column *= false`)).toThrowErrorMatchingSnapshot()
         })
         it("Should not allow reverse side position", () => {
-            expect(() => parseFilter(`'abc*' like column`)).toThrowErrorMatchingSnapshot()
+            expect(() => parseFilter(`'abc*' *= column`)).toThrowErrorMatchingSnapshot()
         })
-    })
+    })    
 
     function logic(opr: string) {
         it(`Should able to group comparisons`, () => {

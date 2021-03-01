@@ -5,7 +5,7 @@
 main 
     -> _ or _ {% d => d[1] %}
 
-# -------------- LOGIC EXPRESSION (ORDERED BY PRIORITY)
+# -------------- LOGIC EXPRESSION 
 
 @{%
     function binary(operator:string) {
@@ -18,13 +18,13 @@ main
         const str:string = d[4].value
         let right: any
         if(str.startsWith("*") && str.endsWith("*"))
-            right = { kind: "StringLiteral", preference: "contains", value: str.slice(1, -1) }
+            right = { kind: "String", preference: "contains", value: str.slice(1, -1) }
         else if(str.startsWith("*"))
-            right = { kind: "StringLiteral", preference: "endsWith", value: str.substring(1) }
+            right = { kind: "String", preference: "endsWith", value: str.substring(1) }
         else if(str.endsWith("*"))
-            right = { kind: "StringLiteral", preference: "startsWith", value: str.slice(0, -1) }
+            right = { kind: "String", preference: "startsWith", value: str.slice(0, -1) }
         else
-            right = { kind: "StringLiteral", preference: "none", value: str }
+            right = { kind: "String", preference: "none", value: str }
         return { type: "BinaryExpression", operator: "like", left: d[0], right }
     }
 %}
@@ -39,7 +39,7 @@ comparison
     |  atom _ "<=" _ atom {% binary("lte") %}
     |  atom _ "!=" _ atom {% binary("ne") %}
     |  atom _  "=" _ atom {% binary("eq") %}
-    |  prop _ "like"i _ string {% like %}
+    |  prop _ "*="i _ string {% like %}
     |  range {% id %}
 
 group 
@@ -82,25 +82,28 @@ atom
     | group {% id %}
 
 boolean 
-    -> "true"i {% d => literal("BooleanLiteral", true) %} 
-    | "false"i {% d => literal("BooleanLiteral", false) %}
+    -> "true"i {% d => literal("Boolean", true) %} 
+    | "false"i {% d => literal("Boolean", false) %}
 
 prop  
-    -> [a-zA-Z_]:+ [0-9]:* {% d => literal("PorpertyLiteral", join(d))  %}  
+    -> [a-zA-Z_]:+ [0-9]:* {% d => literal("Property", join(d))  %}  
     | boolean {% id %}
 
 number
-    -> [0-9]:+ {% d => literal("NumberLiteral", parseInt(join(d))) %}
-    | [0-9]:+ "." [0-9]:+ {% d => literal("NumberLiteral", parseFloat(join(d))) %}
+    -> [0-9]:+ {% d => literal("Number", parseInt(join(d))) %}
+    | [0-9]:+ "." [0-9]:+ {% d => literal("Number", parseFloat(join(d))) %}
 
 string
-    -> sqstring {% d => literal("StringLiteral", d[0], "none") %}
-    | dqstring {% d => literal("StringLiteral", d[0], "none") %}
+    -> native_string {% d => literal("String", d[0], "none") %}
+
+native_string
+    -> sqstring {% id %}
+    |  dqstring {% id %}
 
 range_group 
     -> "(" _ range_value _ ")" {% d => d[2] %}
     
 range_value
-    -> string _ "to"i _ string {% d => literal("StringLiteral", [d[0].value, d[4].value])%}
-    | number _ "to"i _ number {% d => literal("NumberLiteral", [d[0].value, d[4].value])%}
+    -> string _ "to"i _ string {% d => literal("String", [d[0].value, d[4].value])%}
+    | number _ "to"i _ number {% d => literal("Number", [d[0].value, d[4].value])%}
     | range_group

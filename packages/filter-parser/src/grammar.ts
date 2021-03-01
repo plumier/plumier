@@ -14,13 +14,13 @@ function id(d: any[]): any { return d[0]; }
         const str:string = d[4].value
         let right: any
         if(str.startsWith("*") && str.endsWith("*"))
-            right = { kind: "StringLiteral", preference: "contains", value: str.slice(1, -1) }
+            right = { kind: "String", preference: "contains", value: str.slice(1, -1) }
         else if(str.startsWith("*"))
-            right = { kind: "StringLiteral", preference: "endsWith", value: str.substring(1) }
+            right = { kind: "String", preference: "endsWith", value: str.substring(1) }
         else if(str.endsWith("*"))
-            right = { kind: "StringLiteral", preference: "startsWith", value: str.slice(0, -1) }
+            right = { kind: "String", preference: "startsWith", value: str.slice(0, -1) }
         else
-            right = { kind: "StringLiteral", preference: "none", value: str }
+            right = { kind: "String", preference: "none", value: str }
         return { type: "BinaryExpression", operator: "like", left: d[0], right }
     }
 
@@ -106,7 +106,7 @@ const grammar: Grammar = {
     {"name": "comparison$string$3", "symbols": [{"literal":"!"}, {"literal":"="}], "postprocess": (d) => d.join('')},
     {"name": "comparison", "symbols": ["atom", "_", "comparison$string$3", "_", "atom"], "postprocess": binary("ne")},
     {"name": "comparison", "symbols": ["atom", "_", {"literal":"="}, "_", "atom"], "postprocess": binary("eq")},
-    {"name": "comparison$subexpression$1", "symbols": [/[lL]/, /[iI]/, /[kK]/, /[eE]/], "postprocess": function(d) {return d.join(""); }},
+    {"name": "comparison$subexpression$1", "symbols": [{"literal":"*"}, {"literal":"="}], "postprocess": function(d) {return d.join(""); }},
     {"name": "comparison", "symbols": ["prop", "_", "comparison$subexpression$1", "_", "string"], "postprocess": like},
     {"name": "comparison", "symbols": ["range"], "postprocess": id},
     {"name": "group", "symbols": [{"literal":"("}, "_", "group", "_", {"literal":")"}], "postprocess": d => d[2]},
@@ -131,30 +131,31 @@ const grammar: Grammar = {
     {"name": "atom", "symbols": ["prop"], "postprocess": id},
     {"name": "atom", "symbols": ["group"], "postprocess": id},
     {"name": "boolean$subexpression$1", "symbols": [/[tT]/, /[rR]/, /[uU]/, /[eE]/], "postprocess": function(d) {return d.join(""); }},
-    {"name": "boolean", "symbols": ["boolean$subexpression$1"], "postprocess": d => literal("BooleanLiteral", true)},
+    {"name": "boolean", "symbols": ["boolean$subexpression$1"], "postprocess": d => literal("Boolean", true)},
     {"name": "boolean$subexpression$2", "symbols": [/[fF]/, /[aA]/, /[lL]/, /[sS]/, /[eE]/], "postprocess": function(d) {return d.join(""); }},
-    {"name": "boolean", "symbols": ["boolean$subexpression$2"], "postprocess": d => literal("BooleanLiteral", false)},
+    {"name": "boolean", "symbols": ["boolean$subexpression$2"], "postprocess": d => literal("Boolean", false)},
     {"name": "prop$ebnf$1", "symbols": [/[a-zA-Z_]/]},
     {"name": "prop$ebnf$1", "symbols": ["prop$ebnf$1", /[a-zA-Z_]/], "postprocess": (d) => d[0].concat([d[1]])},
     {"name": "prop$ebnf$2", "symbols": []},
     {"name": "prop$ebnf$2", "symbols": ["prop$ebnf$2", /[0-9]/], "postprocess": (d) => d[0].concat([d[1]])},
-    {"name": "prop", "symbols": ["prop$ebnf$1", "prop$ebnf$2"], "postprocess": d => literal("PorpertyLiteral", join(d))},
+    {"name": "prop", "symbols": ["prop$ebnf$1", "prop$ebnf$2"], "postprocess": d => literal("Property", join(d))},
     {"name": "prop", "symbols": ["boolean"], "postprocess": id},
     {"name": "number$ebnf$1", "symbols": [/[0-9]/]},
     {"name": "number$ebnf$1", "symbols": ["number$ebnf$1", /[0-9]/], "postprocess": (d) => d[0].concat([d[1]])},
-    {"name": "number", "symbols": ["number$ebnf$1"], "postprocess": d => literal("NumberLiteral", parseInt(join(d)))},
+    {"name": "number", "symbols": ["number$ebnf$1"], "postprocess": d => literal("Number", parseInt(join(d)))},
     {"name": "number$ebnf$2", "symbols": [/[0-9]/]},
     {"name": "number$ebnf$2", "symbols": ["number$ebnf$2", /[0-9]/], "postprocess": (d) => d[0].concat([d[1]])},
     {"name": "number$ebnf$3", "symbols": [/[0-9]/]},
     {"name": "number$ebnf$3", "symbols": ["number$ebnf$3", /[0-9]/], "postprocess": (d) => d[0].concat([d[1]])},
-    {"name": "number", "symbols": ["number$ebnf$2", {"literal":"."}, "number$ebnf$3"], "postprocess": d => literal("NumberLiteral", parseFloat(join(d)))},
-    {"name": "string", "symbols": ["sqstring"], "postprocess": d => literal("StringLiteral", d[0], "none")},
-    {"name": "string", "symbols": ["dqstring"], "postprocess": d => literal("StringLiteral", d[0], "none")},
+    {"name": "number", "symbols": ["number$ebnf$2", {"literal":"."}, "number$ebnf$3"], "postprocess": d => literal("Number", parseFloat(join(d)))},
+    {"name": "string", "symbols": ["native_string"], "postprocess": d => literal("String", d[0], "none")},
+    {"name": "native_string", "symbols": ["sqstring"], "postprocess": id},
+    {"name": "native_string", "symbols": ["dqstring"], "postprocess": id},
     {"name": "range_group", "symbols": [{"literal":"("}, "_", "range_value", "_", {"literal":")"}], "postprocess": d => d[2]},
     {"name": "range_value$subexpression$1", "symbols": [/[tT]/, /[oO]/], "postprocess": function(d) {return d.join(""); }},
-    {"name": "range_value", "symbols": ["string", "_", "range_value$subexpression$1", "_", "string"], "postprocess": d => literal("StringLiteral", [d[0].value, d[4].value])},
+    {"name": "range_value", "symbols": ["string", "_", "range_value$subexpression$1", "_", "string"], "postprocess": d => literal("String", [d[0].value, d[4].value])},
     {"name": "range_value$subexpression$2", "symbols": [/[tT]/, /[oO]/], "postprocess": function(d) {return d.join(""); }},
-    {"name": "range_value", "symbols": ["number", "_", "range_value$subexpression$2", "_", "number"], "postprocess": d => literal("NumberLiteral", [d[0].value, d[4].value])},
+    {"name": "range_value", "symbols": ["number", "_", "range_value$subexpression$2", "_", "number"], "postprocess": d => literal("Number", [d[0].value, d[4].value])},
     {"name": "range_value", "symbols": ["range_group"]}
   ],
   ParserStart: "main",
