@@ -7,6 +7,9 @@ describe(`Filter Parser`, () => {
             expect(parseFilter(`column${opr}12345234554`)).toMatchSnapshot()
             expect(parseFilter(`column${opr}123452.234`)).toMatchSnapshot()
         })
+        it(`Should able to compare property in reverse side`, () => {
+            expect(parseFilter(`123${opr}column`)).toMatchSnapshot()
+        })
         it(`Should able to compare property with boolean`, () => {
             expect(parseFilter(`column${opr}true`)).toMatchSnapshot()
             expect(parseFilter(`column${opr}false`)).toMatchSnapshot()
@@ -68,6 +71,7 @@ describe(`Filter Parser`, () => {
         })
         it(`Should skip white space`, () => {
             expect(parseFilter(`column=12345234554    ${opr}   column='lorem ipsum'`)).toMatchSnapshot()
+            expect(parseFilter(`column=12345234554\t${opr}\ncolumn='lorem ipsum'`)).toMatchSnapshot()
         })
     }
 
@@ -113,18 +117,20 @@ describe(`Filter Parser`, () => {
             expect(parseFilter(`lorem='ips\\'um'`)).toMatchSnapshot()
             expect(parseFilter(`lorem="ips\\"um"`)).toMatchSnapshot()
         })
+        it(`Should able to escape special chars`, () => {
+            expect(parseFilter(`lorem='data\\ndata'`)).toMatchSnapshot()
+        })
+        it(`Should able to escape unicodes`, () => {
+            expect(parseFilter(`lorem='\ufaaa'`)).toMatchSnapshot()
+        })
     })
 
     describe(`Not Parser`, () => {
         it(`Should able to use not with expression`, () => {
             expect(parseFilter(`! column=12345234554`)).toMatchSnapshot()
         })
-        it(`Should able to use not with column`, () => {
-            expect(parseFilter(`! column`)).toMatchSnapshot()
-        })
-        it(`Should able to use without space`, () => {
-            expect(parseFilter(`!column=123`)).toMatchSnapshot()
-            expect(parseFilter(`!column`)).toMatchSnapshot()
+        it(`Should able to use not with expression without space`, () => {
+            expect(parseFilter(`!column=12345234554`)).toMatchSnapshot()
         })
         it(`Should prioritized than binary expression`, () => {
             expect(parseFilter(`column=123 and !(column=12345234554)`)).toMatchSnapshot()
@@ -149,6 +155,18 @@ describe(`Filter Parser`, () => {
         })
         it(`Should not parse boolean range`, () => {
             expect(() => parseFilter(`column=true to false`)).toThrowErrorMatchingSnapshot()
+        })
+    })
+
+    describe("Null Value", () => {
+        it(`Should able to compare column with null`, () => {
+            expect(parseFilter(`column=null`)).toMatchSnapshot()
+        })
+        it(`Should able to compare column with null with !=`, () => {
+            expect(parseFilter(`column!=null`)).toMatchSnapshot()
+        })
+        it(`Should able to compare column with null case insensitive`, () => {
+            expect(parseFilter(`column!=null`)).toMatchSnapshot()
         })
     })
 })

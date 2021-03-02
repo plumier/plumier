@@ -8,7 +8,7 @@ export {
     authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, Public, Authenticated,
     AuthPolicy, CustomAuthPolicy, EntityAuthPolicy, EntityProviderQuery, EntityPolicyProviderDecorator,
     globalPolicies, analyzeAuthPolicyNameConflict, PublicAuthPolicy, AuthenticatedAuthPolicy, createMistypeRouteAnalyzer,
-    ReadonlyAuthPolicy, WriteonlyAuthPolicy
+    ReadonlyAuthPolicy, WriteonlyAuthPolicy, executeAuthorizer, createAuthContext, throwAuthError
 } from "./authorization";
 export { HeaderPart, RequestPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction } from "./binder";
 export { invoke } from "./application-pipeline";

@@ -145,7 +145,7 @@ class AuthDecoratorImpl {
      * @param policies List of allowed policies
      */
     filter(...policies: string[]) {
-        return this.byPolicies(policies.length == 0 ? [Authenticated] : policies, "filter")
+        return this.byPolicies(policies, "filter")
     }
 
     /**

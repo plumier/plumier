@@ -2,30 +2,40 @@
 
 exports[`Filter Parser And Parser Should able to group comparisons 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
       "value": 12345234554,
     },
   },
   "operator": "and",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 23,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 23,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "String",
-      "preference": "none",
+      "annotation": "String",
+      "col": 30,
+      "kind": "Literal",
       "value": "lorem ipsum",
     },
   },
@@ -34,45 +44,62 @@ Object {
 
 exports[`Filter Parser And Parser Should able to pipe logical expression 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "LogicExpression",
     "left": Object {
-      "kind": "BinaryExpression",
+      "col": 0,
+      "kind": "ComparisonExpression",
       "left": Object {
-        "kind": "Property",
+        "annotation": "Property",
+        "col": 0,
+        "kind": "Literal",
         "value": "column",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "Number",
+        "annotation": "Number",
+        "col": 7,
+        "kind": "Literal",
         "value": 1,
       },
     },
     "operator": "and",
     "right": Object {
-      "kind": "BinaryExpression",
+      "col": 13,
+      "kind": "ComparisonExpression",
       "left": Object {
-        "kind": "Property",
+        "annotation": "Property",
+        "col": 13,
+        "kind": "Literal",
         "value": "column",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "Number",
+        "annotation": "Number",
+        "col": 20,
+        "kind": "Literal",
         "value": 2,
       },
     },
   },
   "operator": "and",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 26,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 26,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 33,
+      "kind": "Literal",
       "value": 3,
     },
   },
@@ -81,30 +108,40 @@ Object {
 
 exports[`Filter Parser And Parser Should case insensitive 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
       "value": 12345234554,
     },
   },
   "operator": "and",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 23,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 23,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "String",
-      "preference": "none",
+      "annotation": "String",
+      "col": 30,
+      "kind": "Literal",
       "value": "lorem ipsum",
     },
   },
@@ -113,46 +150,123 @@ Object {
 
 exports[`Filter Parser And Parser Should skip white space 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
       "value": 12345234554,
     },
   },
   "operator": "and",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 28,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 28,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "String",
-      "preference": "none",
+      "annotation": "String",
+      "col": 35,
+      "kind": "Literal",
       "value": "lorem ipsum",
     },
   },
 }
 `;
 
+exports[`Filter Parser And Parser Should skip white space 2`] = `
+Object {
+  "col": 0,
+  "kind": "LogicExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
+      "value": 12345234554,
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "col": 23,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 23,
+      "kind": "Literal",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 30,
+      "kind": "Literal",
+      "value": "lorem ipsum",
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to compare property in reverse side 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "value": 123,
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Property",
+    "col": 4,
+    "kind": "Literal",
+    "value": "column",
+  },
+}
+`;
+
 exports[`Filter Parser Equal Parser Should able to compare property with boolean 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "Boolean",
+    "annotation": "Boolean",
+    "col": 7,
+    "kind": "Literal",
     "value": true,
   },
 }
@@ -160,14 +274,19 @@ Object {
 
 exports[`Filter Parser Equal Parser Should able to compare property with boolean 2`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "Boolean",
+    "annotation": "Boolean",
+    "col": 7,
+    "kind": "Literal",
     "value": false,
   },
 }
@@ -175,14 +294,19 @@ Object {
 
 exports[`Filter Parser Equal Parser Should able to compare property with number 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -190,14 +314,19 @@ Object {
 
 exports[`Filter Parser Equal Parser Should able to compare property with number 2`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
     "value": 123452.234,
   },
 }
@@ -205,15 +334,19 @@ Object {
 
 exports[`Filter Parser Equal Parser Should able to compare property with string 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "String",
-    "preference": "none",
+    "annotation": "String",
+    "col": 7,
+    "kind": "Literal",
     "value": "lorem ipsum",
   },
 }
@@ -221,14 +354,19 @@ Object {
 
 exports[`Filter Parser Equal Parser Should able to use swap position of property and value 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
     "value": 1234,
   },
   "operator": "eq",
   "right": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 5,
+    "kind": "Literal",
     "value": "column",
   },
 }
@@ -236,14 +374,19 @@ Object {
 
 exports[`Filter Parser Equal Parser Should allow property name ends with number 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column123",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 10,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -251,14 +394,19 @@ Object {
 
 exports[`Filter Parser Equal Parser Should allow property name with underscore 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column_123",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 11,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -266,29 +414,59 @@ Object {
 
 exports[`Filter Parser Equal Parser Should skip white space 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 1,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 12,
+    "kind": "Literal",
     "value": 12345,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to compare property in reverse side 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "value": 123,
+  },
+  "operator": "gte",
+  "right": Object {
+    "annotation": "Property",
+    "col": 5,
+    "kind": "Literal",
+    "value": "column",
   },
 }
 `;
 
 exports[`Filter Parser Greater Than Equal Parser Should able to compare property with boolean 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "gte",
   "right": Object {
-    "kind": "Boolean",
+    "annotation": "Boolean",
+    "col": 8,
+    "kind": "Literal",
     "value": true,
   },
 }
@@ -296,14 +474,19 @@ Object {
 
 exports[`Filter Parser Greater Than Equal Parser Should able to compare property with boolean 2`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "gte",
   "right": Object {
-    "kind": "Boolean",
+    "annotation": "Boolean",
+    "col": 8,
+    "kind": "Literal",
     "value": false,
   },
 }
@@ -311,14 +494,19 @@ Object {
 
 exports[`Filter Parser Greater Than Equal Parser Should able to compare property with number 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "gte",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 8,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -326,14 +514,19 @@ Object {
 
 exports[`Filter Parser Greater Than Equal Parser Should able to compare property with number 2`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "gte",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 8,
+    "kind": "Literal",
     "value": 123452.234,
   },
 }
@@ -341,15 +534,19 @@ Object {
 
 exports[`Filter Parser Greater Than Equal Parser Should able to compare property with string 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "gte",
   "right": Object {
-    "kind": "String",
-    "preference": "none",
+    "annotation": "String",
+    "col": 8,
+    "kind": "Literal",
     "value": "lorem ipsum",
   },
 }
@@ -357,14 +554,19 @@ Object {
 
 exports[`Filter Parser Greater Than Equal Parser Should able to use swap position of property and value 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
     "value": 1234,
   },
   "operator": "gte",
   "right": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 6,
+    "kind": "Literal",
     "value": "column",
   },
 }
@@ -372,14 +574,19 @@ Object {
 
 exports[`Filter Parser Greater Than Equal Parser Should allow property name ends with number 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column123",
   },
   "operator": "gte",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 11,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -387,14 +594,19 @@ Object {
 
 exports[`Filter Parser Greater Than Equal Parser Should allow property name with underscore 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column_123",
   },
   "operator": "gte",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 12,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -402,29 +614,59 @@ Object {
 
 exports[`Filter Parser Greater Than Equal Parser Should skip white space 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 1,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "gte",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 13,
+    "kind": "Literal",
     "value": 12345,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to compare property in reverse side 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "value": 123,
+  },
+  "operator": "gt",
+  "right": Object {
+    "annotation": "Property",
+    "col": 4,
+    "kind": "Literal",
+    "value": "column",
   },
 }
 `;
 
 exports[`Filter Parser Greater Than Parser Should able to compare property with boolean 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "gt",
   "right": Object {
-    "kind": "Boolean",
+    "annotation": "Boolean",
+    "col": 7,
+    "kind": "Literal",
     "value": true,
   },
 }
@@ -432,14 +674,19 @@ Object {
 
 exports[`Filter Parser Greater Than Parser Should able to compare property with boolean 2`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "gt",
   "right": Object {
-    "kind": "Boolean",
+    "annotation": "Boolean",
+    "col": 7,
+    "kind": "Literal",
     "value": false,
   },
 }
@@ -447,14 +694,19 @@ Object {
 
 exports[`Filter Parser Greater Than Parser Should able to compare property with number 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "gt",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -462,14 +714,19 @@ Object {
 
 exports[`Filter Parser Greater Than Parser Should able to compare property with number 2`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "gt",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
     "value": 123452.234,
   },
 }
@@ -477,15 +734,19 @@ Object {
 
 exports[`Filter Parser Greater Than Parser Should able to compare property with string 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "gt",
   "right": Object {
-    "kind": "String",
-    "preference": "none",
+    "annotation": "String",
+    "col": 7,
+    "kind": "Literal",
     "value": "lorem ipsum",
   },
 }
@@ -493,14 +754,19 @@ Object {
 
 exports[`Filter Parser Greater Than Parser Should able to use swap position of property and value 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
     "value": 1234,
   },
   "operator": "gt",
   "right": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 5,
+    "kind": "Literal",
     "value": "column",
   },
 }
@@ -508,14 +774,19 @@ Object {
 
 exports[`Filter Parser Greater Than Parser Should allow property name ends with number 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column123",
   },
   "operator": "gt",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 10,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -523,14 +794,19 @@ Object {
 
 exports[`Filter Parser Greater Than Parser Should allow property name with underscore 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column_123",
   },
   "operator": "gt",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 11,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -538,14 +814,19 @@ Object {
 
 exports[`Filter Parser Greater Than Parser Should skip white space 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 1,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "gt",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 12,
+    "kind": "Literal",
     "value": 12345,
   },
 }
@@ -553,14 +834,19 @@ Object {
 
 exports[`Filter Parser Group Parser Should able to group comparison 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 1,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 8,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -568,30 +854,40 @@ Object {
 
 exports[`Filter Parser Group Parser Should able to group logic 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 1,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 1,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 1,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 8,
+      "kind": "Literal",
       "value": 12345234554,
     },
   },
   "operator": "and",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 24,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 24,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "String",
-      "preference": "none",
+      "annotation": "String",
+      "col": 31,
+      "kind": "Literal",
       "value": "lorem ipsum",
     },
   },
@@ -600,44 +896,61 @@ Object {
 
 exports[`Filter Parser Group Parser Should prioritized group 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
       "value": 1,
     },
   },
   "operator": "and",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 14,
+    "kind": "LogicExpression",
     "left": Object {
-      "kind": "BinaryExpression",
+      "col": 14,
+      "kind": "ComparisonExpression",
       "left": Object {
-        "kind": "Property",
+        "annotation": "Property",
+        "col": 14,
+        "kind": "Literal",
         "value": "column",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "Number",
+        "annotation": "Number",
+        "col": 21,
+        "kind": "Literal",
         "value": 2,
       },
     },
     "operator": "and",
     "right": Object {
-      "kind": "BinaryExpression",
+      "col": 27,
+      "kind": "ComparisonExpression",
       "left": Object {
-        "kind": "Property",
+        "annotation": "Property",
+        "col": 27,
+        "kind": "Literal",
         "value": "column",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "Number",
+        "annotation": "Number",
+        "col": 34,
+        "kind": "Literal",
         "value": 3,
       },
     },
@@ -647,46 +960,64 @@ Object {
 
 exports[`Filter Parser Group Parser Should prioritized group 2`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "LogicExpression",
     "left": Object {
-      "kind": "BinaryExpression",
+      "col": 0,
+      "kind": "ComparisonExpression",
       "left": Object {
-        "kind": "Property",
+        "annotation": "Property",
+        "col": 0,
+        "kind": "Literal",
         "value": "column",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "Number",
+        "annotation": "Number",
+        "col": 7,
+        "kind": "Literal",
         "value": 1,
       },
     },
     "operator": "and",
     "right": Object {
-      "kind": "BinaryExpression",
+      "col": 14,
+      "kind": "LogicExpression",
       "left": Object {
-        "kind": "BinaryExpression",
+        "col": 14,
+        "kind": "ComparisonExpression",
         "left": Object {
-          "kind": "Property",
+          "annotation": "Property",
+          "col": 14,
+          "kind": "Literal",
           "value": "column",
         },
         "operator": "eq",
         "right": Object {
-          "kind": "Number",
+          "annotation": "Number",
+          "col": 21,
+          "kind": "Literal",
           "value": 2,
         },
       },
       "operator": "and",
       "right": Object {
-        "kind": "BinaryExpression",
+        "col": 27,
+        "kind": "ComparisonExpression",
         "left": Object {
-          "kind": "Property",
+          "annotation": "Property",
+          "col": 27,
+          "kind": "Literal",
           "value": "column",
         },
         "operator": "eq",
         "right": Object {
-          "kind": "Number",
+          "annotation": "Number",
+          "col": 34,
+          "kind": "Literal",
           "value": 3,
         },
       },
@@ -694,30 +1025,60 @@ Object {
   },
   "operator": "and",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 41,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 41,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 48,
+      "kind": "Literal",
       "value": 4,
     },
   },
 }
 `;
 
+exports[`Filter Parser Less Than Equal Parser Should able to compare property in reverse side 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "value": 123,
+  },
+  "operator": "lte",
+  "right": Object {
+    "annotation": "Property",
+    "col": 5,
+    "kind": "Literal",
+    "value": "column",
+  },
+}
+`;
+
 exports[`Filter Parser Less Than Equal Parser Should able to compare property with boolean 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "lte",
   "right": Object {
-    "kind": "Boolean",
+    "annotation": "Boolean",
+    "col": 8,
+    "kind": "Literal",
     "value": true,
   },
 }
@@ -725,14 +1086,19 @@ Object {
 
 exports[`Filter Parser Less Than Equal Parser Should able to compare property with boolean 2`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "lte",
   "right": Object {
-    "kind": "Boolean",
+    "annotation": "Boolean",
+    "col": 8,
+    "kind": "Literal",
     "value": false,
   },
 }
@@ -740,14 +1106,19 @@ Object {
 
 exports[`Filter Parser Less Than Equal Parser Should able to compare property with number 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "lte",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 8,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -755,14 +1126,19 @@ Object {
 
 exports[`Filter Parser Less Than Equal Parser Should able to compare property with number 2`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "lte",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 8,
+    "kind": "Literal",
     "value": 123452.234,
   },
 }
@@ -770,15 +1146,19 @@ Object {
 
 exports[`Filter Parser Less Than Equal Parser Should able to compare property with string 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "lte",
   "right": Object {
-    "kind": "String",
-    "preference": "none",
+    "annotation": "String",
+    "col": 8,
+    "kind": "Literal",
     "value": "lorem ipsum",
   },
 }
@@ -786,14 +1166,19 @@ Object {
 
 exports[`Filter Parser Less Than Equal Parser Should able to use swap position of property and value 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
     "value": 1234,
   },
   "operator": "lte",
   "right": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 6,
+    "kind": "Literal",
     "value": "column",
   },
 }
@@ -801,14 +1186,19 @@ Object {
 
 exports[`Filter Parser Less Than Equal Parser Should allow property name ends with number 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column123",
   },
   "operator": "lte",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 11,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -816,14 +1206,19 @@ Object {
 
 exports[`Filter Parser Less Than Equal Parser Should allow property name with underscore 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column_123",
   },
   "operator": "lte",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 12,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -831,29 +1226,59 @@ Object {
 
 exports[`Filter Parser Less Than Equal Parser Should skip white space 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 1,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "lte",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 13,
+    "kind": "Literal",
     "value": 12345,
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to compare property in reverse side 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "value": 123,
+  },
+  "operator": "lt",
+  "right": Object {
+    "annotation": "Property",
+    "col": 4,
+    "kind": "Literal",
+    "value": "column",
   },
 }
 `;
 
 exports[`Filter Parser Less Than Parser Should able to compare property with boolean 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "lt",
   "right": Object {
-    "kind": "Boolean",
+    "annotation": "Boolean",
+    "col": 7,
+    "kind": "Literal",
     "value": true,
   },
 }
@@ -861,14 +1286,19 @@ Object {
 
 exports[`Filter Parser Less Than Parser Should able to compare property with boolean 2`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "lt",
   "right": Object {
-    "kind": "Boolean",
+    "annotation": "Boolean",
+    "col": 7,
+    "kind": "Literal",
     "value": false,
   },
 }
@@ -876,14 +1306,19 @@ Object {
 
 exports[`Filter Parser Less Than Parser Should able to compare property with number 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "lt",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -891,14 +1326,19 @@ Object {
 
 exports[`Filter Parser Less Than Parser Should able to compare property with number 2`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "lt",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
     "value": 123452.234,
   },
 }
@@ -906,15 +1346,19 @@ Object {
 
 exports[`Filter Parser Less Than Parser Should able to compare property with string 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "lt",
   "right": Object {
-    "kind": "String",
-    "preference": "none",
+    "annotation": "String",
+    "col": 7,
+    "kind": "Literal",
     "value": "lorem ipsum",
   },
 }
@@ -922,14 +1366,19 @@ Object {
 
 exports[`Filter Parser Less Than Parser Should able to use swap position of property and value 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
     "value": 1234,
   },
   "operator": "lt",
   "right": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 5,
+    "kind": "Literal",
     "value": "column",
   },
 }
@@ -937,14 +1386,19 @@ Object {
 
 exports[`Filter Parser Less Than Parser Should allow property name ends with number 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column123",
   },
   "operator": "lt",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 10,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -952,14 +1406,19 @@ Object {
 
 exports[`Filter Parser Less Than Parser Should allow property name with underscore 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column_123",
   },
   "operator": "lt",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 11,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -967,14 +1426,19 @@ Object {
 
 exports[`Filter Parser Less Than Parser Should skip white space 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 1,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "lt",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 12,
+    "kind": "Literal",
     "value": 12345,
   },
 }
@@ -984,15 +1448,19 @@ exports[`Filter Parser Like Parser Should not allow reverse side position 1`] = 
 
 exports[`Filter Parser Like Parser Should parse exact string 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "String",
-    "preference": "none",
+    "annotation": "String",
+    "col": 9,
+    "kind": "Literal",
     "value": "abcd",
   },
 }
@@ -1000,14 +1468,19 @@ Object {
 
 exports[`Filter Parser Like Parser Should parse string with contains preference 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "like",
   "right": Object {
-    "kind": "String",
+    "annotation": "String",
+    "col": 9,
+    "kind": "Literal",
     "preference": "contains",
     "value": "abcd",
   },
@@ -1016,14 +1489,19 @@ Object {
 
 exports[`Filter Parser Like Parser Should parse string with ends preference 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "like",
   "right": Object {
-    "kind": "String",
+    "annotation": "String",
+    "col": 9,
+    "kind": "Literal",
     "preference": "endsWith",
     "value": "abcd",
   },
@@ -1032,14 +1510,19 @@ Object {
 
 exports[`Filter Parser Like Parser Should parse string with starts preference 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "like",
   "right": Object {
-    "kind": "String",
+    "annotation": "String",
+    "col": 9,
+    "kind": "Literal",
     "preference": "startsWith",
     "value": "abcd",
   },
@@ -1048,44 +1531,61 @@ Object {
 
 exports[`Filter Parser Logical Order Should parse OR first 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
       "value": "col",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 4,
+      "kind": "Literal",
       "value": 1,
     },
   },
   "operator": "or",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 9,
+    "kind": "LogicExpression",
     "left": Object {
-      "kind": "BinaryExpression",
+      "col": 9,
+      "kind": "ComparisonExpression",
       "left": Object {
-        "kind": "Property",
+        "annotation": "Property",
+        "col": 9,
+        "kind": "Literal",
         "value": "col",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "Number",
+        "annotation": "Number",
+        "col": 13,
+        "kind": "Literal",
         "value": 2,
       },
     },
     "operator": "and",
     "right": Object {
-      "kind": "BinaryExpression",
+      "col": 19,
+      "kind": "ComparisonExpression",
       "left": Object {
-        "kind": "Property",
+        "annotation": "Property",
+        "col": 19,
+        "kind": "Literal",
         "value": "col",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "Number",
+        "annotation": "Number",
+        "col": 23,
+        "kind": "Literal",
         "value": 3,
       },
     },
@@ -1095,45 +1595,62 @@ Object {
 
 exports[`Filter Parser Logical Order Should parse from right 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "LogicExpression",
     "left": Object {
-      "kind": "BinaryExpression",
+      "col": 0,
+      "kind": "ComparisonExpression",
       "left": Object {
-        "kind": "Property",
+        "annotation": "Property",
+        "col": 0,
+        "kind": "Literal",
         "value": "col",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "Number",
+        "annotation": "Number",
+        "col": 4,
+        "kind": "Literal",
         "value": 1,
       },
     },
     "operator": "and",
     "right": Object {
-      "kind": "BinaryExpression",
+      "col": 10,
+      "kind": "ComparisonExpression",
       "left": Object {
-        "kind": "Property",
+        "annotation": "Property",
+        "col": 10,
+        "kind": "Literal",
         "value": "col",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "Number",
+        "annotation": "Number",
+        "col": 14,
+        "kind": "Literal",
         "value": 2,
       },
     },
   },
   "operator": "and",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 20,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 20,
+      "kind": "Literal",
       "value": "col",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 24,
+      "kind": "Literal",
       "value": 3,
     },
   },
@@ -1142,44 +1659,61 @@ Object {
 
 exports[`Filter Parser Logical Order Should prioritize group 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
       "value": "col",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 4,
+      "kind": "Literal",
       "value": 1,
     },
   },
   "operator": "and",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 11,
+    "kind": "LogicExpression",
     "left": Object {
-      "kind": "BinaryExpression",
+      "col": 11,
+      "kind": "ComparisonExpression",
       "left": Object {
-        "kind": "Property",
+        "annotation": "Property",
+        "col": 11,
+        "kind": "Literal",
         "value": "col",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "Number",
+        "annotation": "Number",
+        "col": 15,
+        "kind": "Literal",
         "value": 2,
       },
     },
     "operator": "and",
     "right": Object {
-      "kind": "BinaryExpression",
+      "col": 21,
+      "kind": "ComparisonExpression",
       "left": Object {
-        "kind": "Property",
+        "annotation": "Property",
+        "col": 21,
+        "kind": "Literal",
         "value": "col",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "Number",
+        "annotation": "Number",
+        "col": 25,
+        "kind": "Literal",
         "value": 3,
       },
     },
@@ -1187,16 +1721,41 @@ Object {
 }
 `;
 
+exports[`Filter Parser Not Equal Parser Should able to compare property in reverse side 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "value": 123,
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "Property",
+    "col": 5,
+    "kind": "Literal",
+    "value": "column",
+  },
+}
+`;
+
 exports[`Filter Parser Not Equal Parser Should able to compare property with boolean 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "ne",
   "right": Object {
-    "kind": "Boolean",
+    "annotation": "Boolean",
+    "col": 8,
+    "kind": "Literal",
     "value": true,
   },
 }
@@ -1204,14 +1763,19 @@ Object {
 
 exports[`Filter Parser Not Equal Parser Should able to compare property with boolean 2`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "ne",
   "right": Object {
-    "kind": "Boolean",
+    "annotation": "Boolean",
+    "col": 8,
+    "kind": "Literal",
     "value": false,
   },
 }
@@ -1219,14 +1783,19 @@ Object {
 
 exports[`Filter Parser Not Equal Parser Should able to compare property with number 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "ne",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 8,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -1234,14 +1803,19 @@ Object {
 
 exports[`Filter Parser Not Equal Parser Should able to compare property with number 2`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "ne",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 8,
+    "kind": "Literal",
     "value": 123452.234,
   },
 }
@@ -1249,15 +1823,19 @@ Object {
 
 exports[`Filter Parser Not Equal Parser Should able to compare property with string 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "ne",
   "right": Object {
-    "kind": "String",
-    "preference": "none",
+    "annotation": "String",
+    "col": 8,
+    "kind": "Literal",
     "value": "lorem ipsum",
   },
 }
@@ -1265,14 +1843,19 @@ Object {
 
 exports[`Filter Parser Not Equal Parser Should able to use swap position of property and value 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
     "value": 1234,
   },
   "operator": "ne",
   "right": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 6,
+    "kind": "Literal",
     "value": "column",
   },
 }
@@ -1280,14 +1863,19 @@ Object {
 
 exports[`Filter Parser Not Equal Parser Should allow property name ends with number 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column123",
   },
   "operator": "ne",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 11,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -1295,14 +1883,19 @@ Object {
 
 exports[`Filter Parser Not Equal Parser Should allow property name with underscore 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column_123",
   },
   "operator": "ne",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 12,
+    "kind": "Literal",
     "value": 12345234554,
   },
 }
@@ -1310,90 +1903,89 @@ Object {
 
 exports[`Filter Parser Not Equal Parser Should skip white space 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 1,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "ne",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 13,
+    "kind": "Literal",
     "value": 12345,
   },
-}
-`;
-
-exports[`Filter Parser Not Parser Should able to use not with column 1`] = `
-Object {
-  "argument": Object {
-    "kind": "Property",
-    "value": "column",
-  },
-  "operator": "not",
-  "type": "UnaryExpression",
 }
 `;
 
 exports[`Filter Parser Not Parser Should able to use not with expression 1`] = `
 Object {
   "argument": Object {
-    "kind": "BinaryExpression",
+    "col": 2,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 2,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 9,
+      "kind": "Literal",
       "value": 12345234554,
     },
   },
+  "col": 0,
+  "kind": "UnaryExpression",
   "operator": "not",
-  "type": "UnaryExpression",
 }
 `;
 
-exports[`Filter Parser Not Parser Should able to use without space 1`] = `
+exports[`Filter Parser Not Parser Should able to use not with expression without space 1`] = `
 Object {
   "argument": Object {
-    "kind": "BinaryExpression",
+    "col": 1,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 1,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
-      "value": 123,
+      "annotation": "Number",
+      "col": 8,
+      "kind": "Literal",
+      "value": 12345234554,
     },
   },
+  "col": 0,
+  "kind": "UnaryExpression",
   "operator": "not",
-  "type": "UnaryExpression",
-}
-`;
-
-exports[`Filter Parser Not Parser Should able to use without space 2`] = `
-Object {
-  "argument": Object {
-    "kind": "Property",
-    "value": "column",
-  },
-  "operator": "not",
-  "type": "UnaryExpression",
 }
 `;
 
 exports[`Filter Parser Not Parser Should not confused in string 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "String",
-    "preference": "none",
+    "annotation": "String",
+    "col": 7,
+    "kind": "Literal",
     "value": "!123",
   },
 }
@@ -1401,65 +1993,147 @@ Object {
 
 exports[`Filter Parser Not Parser Should prioritized than binary expression 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
       "value": 123,
     },
   },
   "operator": "and",
   "right": Object {
     "argument": Object {
-      "kind": "BinaryExpression",
+      "col": 17,
+      "kind": "ComparisonExpression",
       "left": Object {
-        "kind": "Property",
+        "annotation": "Property",
+        "col": 17,
+        "kind": "Literal",
         "value": "column",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "Number",
+        "annotation": "Number",
+        "col": 24,
+        "kind": "Literal",
         "value": 12345234554,
       },
     },
+    "col": 15,
+    "kind": "UnaryExpression",
     "operator": "not",
-    "type": "UnaryExpression",
+  },
+}
+`;
+
+exports[`Filter Parser Null Value Should able to compare column with null 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "value": "column",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Null",
+    "col": 7,
+    "kind": "Literal",
+    "value": undefined,
+  },
+}
+`;
+
+exports[`Filter Parser Null Value Should able to compare column with null case insensitive 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "value": "column",
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "Null",
+    "col": 8,
+    "kind": "Literal",
+    "value": undefined,
+  },
+}
+`;
+
+exports[`Filter Parser Null Value Should able to compare column with null with != 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "value": "column",
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "Null",
+    "col": 8,
+    "kind": "Literal",
+    "value": undefined,
   },
 }
 `;
 
 exports[`Filter Parser Or Parser Should able to group comparisons 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
       "value": 12345234554,
     },
   },
   "operator": "or",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 22,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 22,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "String",
-      "preference": "none",
+      "annotation": "String",
+      "col": 29,
+      "kind": "Literal",
       "value": "lorem ipsum",
     },
   },
@@ -1468,45 +2142,62 @@ Object {
 
 exports[`Filter Parser Or Parser Should able to pipe logical expression 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "LogicExpression",
     "left": Object {
-      "kind": "BinaryExpression",
+      "col": 0,
+      "kind": "ComparisonExpression",
       "left": Object {
-        "kind": "Property",
+        "annotation": "Property",
+        "col": 0,
+        "kind": "Literal",
         "value": "column",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "Number",
+        "annotation": "Number",
+        "col": 7,
+        "kind": "Literal",
         "value": 1,
       },
     },
     "operator": "or",
     "right": Object {
-      "kind": "BinaryExpression",
+      "col": 12,
+      "kind": "ComparisonExpression",
       "left": Object {
-        "kind": "Property",
+        "annotation": "Property",
+        "col": 12,
+        "kind": "Literal",
         "value": "column",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "Number",
+        "annotation": "Number",
+        "col": 19,
+        "kind": "Literal",
         "value": 2,
       },
     },
   },
   "operator": "or",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 24,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 24,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 31,
+      "kind": "Literal",
       "value": 3,
     },
   },
@@ -1515,30 +2206,40 @@ Object {
 
 exports[`Filter Parser Or Parser Should case insensitive 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
       "value": 12345234554,
     },
   },
   "operator": "or",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 22,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 22,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "String",
-      "preference": "none",
+      "annotation": "String",
+      "col": 29,
+      "kind": "Literal",
       "value": "lorem ipsum",
     },
   },
@@ -1547,30 +2248,82 @@ Object {
 
 exports[`Filter Parser Or Parser Should skip white space 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
       "value": 12345234554,
     },
   },
   "operator": "or",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 27,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 27,
+      "kind": "Literal",
       "value": "column",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "String",
-      "preference": "none",
+      "annotation": "String",
+      "col": 34,
+      "kind": "Literal",
+      "value": "lorem ipsum",
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Or Parser Should skip white space 2`] = `
+Object {
+  "col": 0,
+  "kind": "LogicExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
+      "value": 12345234554,
+    },
+  },
+  "operator": "or",
+  "right": Object {
+    "col": 22,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 22,
+      "kind": "Literal",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 29,
+      "kind": "Literal",
       "value": "lorem ipsum",
     },
   },
@@ -1581,14 +2334,19 @@ exports[`Filter Parser Range Value Should not parse boolean range 1`] = `"Syntax
 
 exports[`Filter Parser Range Value Should parse case insensitive 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "range",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
     "value": Array [
       1,
       2,
@@ -1599,14 +2357,19 @@ Object {
 
 exports[`Filter Parser Range Value Should parse correctly 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "range",
   "right": Object {
-    "kind": "Number",
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
     "value": Array [
       1,
       2,
@@ -1617,15 +2380,20 @@ Object {
 
 exports[`Filter Parser Range Value Should parse grouping 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "range",
   "right": Array [
     Object {
-      "kind": "Number",
+      "annotation": "Number",
+      "col": 8,
+      "kind": "Literal",
       "value": Array [
         1,
         2,
@@ -1637,14 +2405,19 @@ Object {
 
 exports[`Filter Parser Range Value Should parse string range 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "column",
   },
   "operator": "range",
   "right": Object {
-    "kind": "String",
+    "annotation": "String",
+    "col": 7,
+    "kind": "Literal",
     "value": Array [
       "2020-1-1",
       "2020-1-1",
@@ -1655,15 +2428,19 @@ Object {
 
 exports[`Filter Parser String Should able to escape quote 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "lorem",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "String",
-    "preference": "none",
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
     "value": "ips'um",
   },
 }
@@ -1671,31 +2448,80 @@ Object {
 
 exports[`Filter Parser String Should able to escape quote 2`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "lorem",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "String",
-    "preference": "none",
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
     "value": "ips\\"um",
+  },
+}
+`;
+
+exports[`Filter Parser String Should able to escape special chars 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "value": "lorem",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
+    "value": "data
+data",
+  },
+}
+`;
+
+exports[`Filter Parser String Should able to escape unicodes 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "value": "lorem",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
+    "value": "着",
   },
 }
 `;
 
 exports[`Filter Parser String Should allow double quote 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "lorem",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "String",
-    "preference": "none",
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
     "value": "ipsum",
   },
 }
@@ -1703,15 +2529,19 @@ Object {
 
 exports[`Filter Parser String Should allow single quote 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "ComparisonExpression",
   "left": Object {
-    "kind": "Property",
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
     "value": "lorem",
   },
   "operator": "eq",
   "right": Object {
-    "kind": "String",
-    "preference": "none",
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
     "value": "ipsum",
   },
 }
@@ -1719,31 +2549,40 @@ Object {
 
 exports[`Filter Parser String Should not greedy 1`] = `
 Object {
-  "kind": "BinaryExpression",
+  "col": 0,
+  "kind": "LogicExpression",
   "left": Object {
-    "kind": "BinaryExpression",
+    "col": 0,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
       "value": "lorem",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "String",
-      "preference": "none",
+      "annotation": "String",
+      "col": 6,
+      "kind": "Literal",
       "value": "ipsum",
     },
   },
   "operator": "and",
   "right": Object {
-    "kind": "BinaryExpression",
+    "col": 18,
+    "kind": "ComparisonExpression",
     "left": Object {
-      "kind": "Property",
+      "annotation": "Property",
+      "col": 18,
+      "kind": "Literal",
       "value": "lorem",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "String",
-      "preference": "none",
+      "annotation": "String",
+      "col": 24,
+      "kind": "Literal",
       "value": "ipsum",
     },
   },

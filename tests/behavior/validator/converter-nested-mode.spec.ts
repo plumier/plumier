@@ -1,6 +1,6 @@
 import reflect from "@plumier/reflect"
 
-import createConverter from "@plumier/validator"
+import factory from "@plumier/validator"
 
 
 describe("Nested Model", () => {
@@ -23,7 +23,7 @@ describe("Nested Model", () => {
             public owner: ClientClass
         ) { }
     }
-    const convert = createConverter({ type: AnimalClass })
+    const convert = factory({ type: AnimalClass })
 
     it("Should convert nested model", () => {
         const { value: result } = convert({
@@ -119,7 +119,7 @@ describe("Nested Model", () => {
                 public animal: any
             ) { }
         }
-        const convert = createConverter({ type: AnimalClass })
+        const convert = factory({ type: AnimalClass })
         const result = convert(<AnimalClass>{ name: "Mimi", client: { name: "Hola" } })
         expect(result.value).toBeInstanceOf(AnimalClass)
         expect(result.value).toMatchSnapshot()

@@ -61,7 +61,7 @@ function convert<T = any>(value: any, option: Option<T> | T): T extends Class<in
  * Create type converter with specific configuration
  * @param option 
  */
-export default function createConverter<T = any>(option: Option<T> | T) {
+export default function factory<T = any>(option: Option<T> | T) {
     return (value: any) => convert<T>(value, option)
 }
 
