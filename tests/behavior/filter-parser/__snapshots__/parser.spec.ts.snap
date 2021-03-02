@@ -980,30 +980,27 @@ Object {
 }
 `;
 
-exports[`Filter Parser Like Parser Should not allow reverse side position 1`] = `"Syntax error at col 7: 'abc*' >*= column"`;
-
-exports[`Filter Parser Like Parser Should not parse boolean 1`] = `"Syntax error at col 10: column *= >false"`;
-
-exports[`Filter Parser Like Parser Should not parse number 1`] = `"Syntax error at col 10: column *= >123"`;
+exports[`Filter Parser Like Parser Should not allow reverse side position 1`] = `"Syntax error at col 0: >*'abc' = column"`;
 
 exports[`Filter Parser Like Parser Should parse exact string 1`] = `
 Object {
+  "kind": "BinaryExpression",
   "left": Object {
     "kind": "Property",
     "value": "column",
   },
-  "operator": "like",
+  "operator": "eq",
   "right": Object {
     "kind": "String",
     "preference": "none",
     "value": "abcd",
   },
-  "type": "BinaryExpression",
 }
 `;
 
 exports[`Filter Parser Like Parser Should parse string with contains preference 1`] = `
 Object {
+  "kind": "BinaryExpression",
   "left": Object {
     "kind": "Property",
     "value": "column",
@@ -1014,12 +1011,12 @@ Object {
     "preference": "contains",
     "value": "abcd",
   },
-  "type": "BinaryExpression",
 }
 `;
 
 exports[`Filter Parser Like Parser Should parse string with ends preference 1`] = `
 Object {
+  "kind": "BinaryExpression",
   "left": Object {
     "kind": "Property",
     "value": "column",
@@ -1030,12 +1027,12 @@ Object {
     "preference": "endsWith",
     "value": "abcd",
   },
-  "type": "BinaryExpression",
 }
 `;
 
 exports[`Filter Parser Like Parser Should parse string with starts preference 1`] = `
 Object {
+  "kind": "BinaryExpression",
   "left": Object {
     "kind": "Property",
     "value": "column",
@@ -1046,7 +1043,6 @@ Object {
     "preference": "startsWith",
     "value": "abcd",
   },
-  "type": "BinaryExpression",
 }
 `;
 

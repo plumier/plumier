@@ -25,7 +25,14 @@ describe("Filter", () => {
             .set({ typeConverterVisitors: [stringFilterVisitor] })
             .initialize()
     }
-    it("Should allow input string", async () => {
+    it("Should allow simple expression", async () => {
+        const app = await createApp()
+        const { body } = await supertest(app.callback())
+            .get("/users?filter=lorem='ipsum'")
+            .expect(200)
+        expect(body).toMatchSnapshot()
+    })
+    it("Should allow grouped expression", async () => {
         const app = await createApp()
         const { body } = await supertest(app.callback())
             .get("/users?filter=(lorem='ipsum')")

@@ -1,17 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Filter Should allow grouped expression 1`] = `
+Object {
+  "kind": "BinaryExpression",
+  "left": Object {
+    "kind": "Property",
+    "value": "lorem",
+  },
+  "operator": "eq",
+  "right": Object {
+    "kind": "String",
+    "preference": "none",
+    "value": "ipsum",
+  },
+}
+`;
+
 exports[`Filter Should allow input array with simple query string notation 1`] = `
 Object {
   "kind": "BinaryExpression",
   "left": Object {
     "kind": "BinaryExpression",
     "left": Object {
-      "kind": "PorpertyLiteral",
+      "kind": "Property",
       "value": "lorem",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "StringLiteral",
+      "kind": "String",
       "preference": "none",
       "value": "ipsum",
     },
@@ -20,12 +36,12 @@ Object {
   "right": Object {
     "kind": "BinaryExpression",
     "left": Object {
-      "kind": "PorpertyLiteral",
+      "kind": "Property",
       "value": "lorem",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "StringLiteral",
+      "kind": "String",
       "preference": "none",
       "value": "ipsum",
     },
@@ -39,12 +55,12 @@ Object {
   "left": Object {
     "kind": "BinaryExpression",
     "left": Object {
-      "kind": "PorpertyLiteral",
+      "kind": "Property",
       "value": "lorem",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "StringLiteral",
+      "kind": "String",
       "preference": "none",
       "value": "ipsum",
     },
@@ -53,31 +69,15 @@ Object {
   "right": Object {
     "kind": "BinaryExpression",
     "left": Object {
-      "kind": "PorpertyLiteral",
+      "kind": "Property",
       "value": "lorem",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "StringLiteral",
+      "kind": "String",
       "preference": "none",
       "value": "ipsum",
     },
-  },
-}
-`;
-
-exports[`Filter Should allow input string 1`] = `
-Object {
-  "kind": "BinaryExpression",
-  "left": Object {
-    "kind": "PorpertyLiteral",
-    "value": "lorem",
-  },
-  "operator": "eq",
-  "right": Object {
-    "kind": "StringLiteral",
-    "preference": "none",
-    "value": "ipsum",
   },
 }
 `;
@@ -88,12 +88,12 @@ Object {
   "left": Object {
     "kind": "BinaryExpression",
     "left": Object {
-      "kind": "PorpertyLiteral",
+      "kind": "Property",
       "value": "lorem",
     },
     "operator": "eq",
     "right": Object {
-      "kind": "StringLiteral",
+      "kind": "String",
       "preference": "none",
       "value": "ipsum",
     },
@@ -104,13 +104,12 @@ Object {
     "left": Object {
       "kind": "BinaryExpression",
       "left": Object {
-        "kind": "PorpertyLiteral",
+        "kind": "Property",
         "value": "dolor",
       },
       "operator": "gte",
       "right": Object {
-        "kind": "NumberLiteral",
-        "preference": "none",
+        "kind": "Number",
         "value": 123,
       },
     },
@@ -118,15 +117,31 @@ Object {
     "right": Object {
       "kind": "BinaryExpression",
       "left": Object {
-        "kind": "PorpertyLiteral",
+        "kind": "Property",
         "value": "sit",
       },
       "operator": "eq",
       "right": Object {
-        "kind": "BooleanLiteral",
+        "kind": "Boolean",
         "value": false,
       },
     },
+  },
+}
+`;
+
+exports[`Filter Should allow simple expression 1`] = `
+Object {
+  "kind": "BinaryExpression",
+  "left": Object {
+    "kind": "Property",
+    "value": "lorem",
+  },
+  "operator": "eq",
+  "right": Object {
+    "kind": "String",
+    "preference": "none",
+    "value": "ipsum",
   },
 }
 `;

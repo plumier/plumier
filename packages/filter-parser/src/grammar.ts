@@ -10,19 +10,6 @@ function id(d: any[]): any { return d[0]; }
     function unary(operator:string) {
         return (d:any[]) => ({ type: "UnaryExpression", operator, argument: d[2] })
     }
-    function like(d:any[]) {
-        const str:string = d[4].value
-        let right: any
-        if(str.startsWith("*") && str.endsWith("*"))
-            right = { kind: "String", preference: "contains", value: str.slice(1, -1) }
-        else if(str.startsWith("*"))
-            right = { kind: "String", preference: "endsWith", value: str.substring(1) }
-        else if(str.endsWith("*"))
-            right = { kind: "String", preference: "startsWith", value: str.slice(0, -1) }
-        else
-            right = { kind: "String", preference: "none", value: str }
-        return { type: "BinaryExpression", operator: "like", left: d[0], right }
-    }
 
 
     function join(d:any[]) { 
@@ -96,7 +83,6 @@ const grammar: Grammar = {
         }
         },
     {"name": "main", "symbols": ["_", "or", "_"], "postprocess": d => d[1]},
-    {"name": "range", "symbols": ["prop", "_", {"literal":"="}, "_", "range_value"], "postprocess": binary("range")},
     {"name": "comparison", "symbols": ["atom", "_", {"literal":">"}, "_", "atom"], "postprocess": binary("gt")},
     {"name": "comparison", "symbols": ["atom", "_", {"literal":"<"}, "_", "atom"], "postprocess": binary("lt")},
     {"name": "comparison$string$1", "symbols": [{"literal":">"}, {"literal":"="}], "postprocess": (d) => d.join('')},
@@ -106,9 +92,8 @@ const grammar: Grammar = {
     {"name": "comparison$string$3", "symbols": [{"literal":"!"}, {"literal":"="}], "postprocess": (d) => d.join('')},
     {"name": "comparison", "symbols": ["atom", "_", "comparison$string$3", "_", "atom"], "postprocess": binary("ne")},
     {"name": "comparison", "symbols": ["atom", "_", {"literal":"="}, "_", "atom"], "postprocess": binary("eq")},
-    {"name": "comparison$subexpression$1", "symbols": [{"literal":"*"}, {"literal":"="}], "postprocess": function(d) {return d.join(""); }},
-    {"name": "comparison", "symbols": ["prop", "_", "comparison$subexpression$1", "_", "string"], "postprocess": like},
-    {"name": "comparison", "symbols": ["range"], "postprocess": id},
+    {"name": "comparison", "symbols": ["prop", "_", {"literal":"="}, "_", "string_like"], "postprocess": binary("like")},
+    {"name": "comparison", "symbols": ["prop", "_", {"literal":"="}, "_", "range_value"], "postprocess": binary("range")},
     {"name": "group", "symbols": [{"literal":"("}, "_", "group", "_", {"literal":")"}], "postprocess": d => d[2]},
     {"name": "group", "symbols": [{"literal":"("}, "_", "or", "_", {"literal":")"}], "postprocess": d => d[2]},
     {"name": "group", "symbols": [{"literal":"("}, "_", "atom", "_", {"literal":")"}], "postprocess": d => d[2]},
@@ -148,6 +133,10 @@ const grammar: Grammar = {
     {"name": "number$ebnf$3", "symbols": [/[0-9]/]},
     {"name": "number$ebnf$3", "symbols": ["number$ebnf$3", /[0-9]/], "postprocess": (d) => d[0].concat([d[1]])},
     {"name": "number", "symbols": ["number$ebnf$2", {"literal":"."}, "number$ebnf$3"], "postprocess": d => literal("Number", parseFloat(join(d)))},
+    {"name": "string_contains", "symbols": [{"literal":"*"}, "native_string", {"literal":"*"}], "postprocess": d => literal("String", d[1], "contains")},
+    {"name": "string_like", "symbols": [{"literal":"*"}, "native_string"], "postprocess": d => literal("String", d[1], "endsWith")},
+    {"name": "string_like", "symbols": ["native_string", {"literal":"*"}], "postprocess": d => literal("String", d[0], "startsWith")},
+    {"name": "string_like", "symbols": ["string_contains"], "postprocess": id},
     {"name": "string", "symbols": ["native_string"], "postprocess": d => literal("String", d[0], "none")},
     {"name": "native_string", "symbols": ["sqstring"], "postprocess": id},
     {"name": "native_string", "symbols": ["dqstring"], "postprocess": id},

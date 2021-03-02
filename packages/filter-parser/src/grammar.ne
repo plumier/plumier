@@ -14,23 +14,7 @@ main
     function unary(operator:string) {
         return (d:any[]) => ({ type: "UnaryExpression", operator, argument: d[2] })
     }
-    function like(d:any[]) {
-        const str:string = d[4].value
-        let right: any
-        if(str.startsWith("*") && str.endsWith("*"))
-            right = { kind: "String", preference: "contains", value: str.slice(1, -1) }
-        else if(str.startsWith("*"))
-            right = { kind: "String", preference: "endsWith", value: str.substring(1) }
-        else if(str.endsWith("*"))
-            right = { kind: "String", preference: "startsWith", value: str.slice(0, -1) }
-        else
-            right = { kind: "String", preference: "none", value: str }
-        return { type: "BinaryExpression", operator: "like", left: d[0], right }
-    }
 %}
-
-range 
-    -> prop _ "=" _ range_value {% binary("range") %}
 
 comparison 
     -> atom _  ">" _ atom {% binary("gt") %}
@@ -39,8 +23,8 @@ comparison
     |  atom _ "<=" _ atom {% binary("lte") %}
     |  atom _ "!=" _ atom {% binary("ne") %}
     |  atom _  "=" _ atom {% binary("eq") %}
-    |  prop _ "*="i _ string {% like %}
-    |  range {% id %}
+    |  prop _ "=" _ string_like {% binary("like") %}
+    |  prop _ "=" _ range_value {% binary("range") %}
 
 group 
     -> "(" _ group _ ")" {% d => d[2] %}
@@ -92,6 +76,14 @@ prop
 number
     -> [0-9]:+ {% d => literal("Number", parseInt(join(d))) %}
     | [0-9]:+ "." [0-9]:+ {% d => literal("Number", parseFloat(join(d))) %}
+
+string_contains
+    -> "*" native_string "*" {% d => literal("String", d[1], "contains") %}
+
+string_like 
+    -> "*" native_string {% d => literal("String", d[1], "endsWith") %}
+    | native_string "*" {% d => literal("String", d[0], "startsWith") %}
+    | string_contains {% id %}
 
 string
     -> native_string {% d => literal("String", d[0], "none") %}
