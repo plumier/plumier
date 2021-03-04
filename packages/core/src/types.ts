@@ -385,27 +385,23 @@ export type GenericController = [Class<ControllerGeneric>, Class<OneToManyContro
 
 export interface OrderQuery { column: string, order: 1 | -1 }
 
-export interface FilterQuery { type: FilterQueryType, partial?: "start" | "end" | "both", value: any }
-
-export type FilterEntity<T = any> = { [k in keyof T]?: FilterQuery }
-
 export interface Repository<T> {
-    find(offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<T[]>
+    find(offset: number, limit: number, query: any, select: string[], order: OrderQuery[]): Promise<T[]>
     insert(data: Partial<T>): Promise<T>
     findById(id: any, select: string[]): Promise<T | undefined>
     update(id: any, data: Partial<T>): Promise<T | undefined>
     delete(id: any): Promise<T | undefined>
-    count(query?: FilterEntity<T>): Promise<number>
+    count(query?: any): Promise<number>
 }
 
 export interface OneToManyRepository<P, T> {
-    find(pid: any, offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<T[]>
+    find(pid: any, offset: number, limit: number, query: any, select: string[], order: OrderQuery[]): Promise<T[]>
     insert(pid: any, data: Partial<T>): Promise<T>
     findParentById(id: any): Promise<P | undefined>
     findById(id: any, select: string[]): Promise<T | undefined>
     update(id: any, data: Partial<T>): Promise<T | undefined>
     delete(id: any): Promise<T | undefined>
-    count(pid: any, query?: FilterEntity<T>): Promise<number>
+    count(pid: any, query?: any): Promise<number>
 }
 
 export abstract class ControllerGeneric<T = any, TID = any> {

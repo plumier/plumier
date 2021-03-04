@@ -28,7 +28,7 @@ export {
 export { bind } from "./decorator/bind";
 export { domain, middleware, entityProvider, responseType, ResponseTypeDecorator } from "./decorator/common";
 export { route, RouteDecoratorImpl } from "./decorator/route";
-export { EntityIdDecorator, RelationDecorator, entity, EntityFilterDecorator, DeleteColumnDecorator } from "./decorator/entity";
+export { EntityIdDecorator, RelationDecorator, entity, DeleteColumnDecorator } from "./decorator/entity";
 export { preSave, postSave, RequestHookDecorator } from "./decorator/request-hook";
 export { HttpStatus } from "./http-status";
 export { validate, ValidatorMiddleware, CustomValidator, ValidatorDecorator, CustomValidatorFunction, AsyncValidatorResult, ValidatorContext, } from "./validator"
@@ -38,8 +38,8 @@ export {
     Middleware, MiddlewareFunction, MiddlewareDecorator, MiddlewareUtil, PlumierApplication, PlumierConfiguration, RedirectActionResult,
     ActionContext, RouteInfo, RouteAnalyzerFunction, RouteAnalyzerIssue,
     ValidationError, errorMessage, DefaultDependencyResolver, CustomConverter,
-    CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie, FilterEntity,
+    CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie,
     Metadata, GlobalMetadata, Omit, Optional, RouteMetadata, VirtualRoute,
     GenericController, ControllerGeneric, OneToManyControllerGeneric, Repository, OneToManyRepository, OrderQuery,
-    FilterQuery, FilterQueryType, RelationPropertyDecorator, MetadataImpl
+    FilterQueryType, RelationPropertyDecorator, MetadataImpl
 } from "./types";

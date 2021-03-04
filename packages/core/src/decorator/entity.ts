@@ -3,7 +3,6 @@ import { decorateParameter, decorateProperty } from "@plumier/reflect"
 interface EntityIdDecorator { kind: "plumier-meta:entity-id" }
 interface RelationDecorator { kind: "plumier-meta:relation", inverseProperty?:string }
 interface DeleteColumnDecorator { kind: "plumier-meta:delete-column" }
-interface EntityFilterDecorator { kind: "plumier-meta:entity-filter" }
 
 namespace entity {
     /**
@@ -26,13 +25,6 @@ namespace entity {
     export function deleteColumn() {
         return decorateProperty(<DeleteColumnDecorator>{ kind: "plumier-meta:delete-column" })
     }
-
-    /**
-     * Mark parameter as an entity filter
-     */
-    export function filter() {
-        return decorateParameter(<EntityFilterDecorator>{ kind: "plumier-meta:entity-filter" })
-    }
 }
 
-export { RelationDecorator, EntityIdDecorator, DeleteColumnDecorator, entity, EntityFilterDecorator }
+export { RelationDecorator, EntityIdDecorator, DeleteColumnDecorator, entity }

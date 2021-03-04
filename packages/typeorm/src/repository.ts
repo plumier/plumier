@@ -1,25 +1,7 @@
-import {
-    Class,
-    FilterEntity,
-    FilterQuery,
-    OneToManyRepository,
-    OrderQuery,
-    RelationDecorator,
-    Repository,
-} from "@plumier/core"
+import { Class, OneToManyRepository, OrderQuery, RelationDecorator, Repository } from "@plumier/core"
 import { getGenericControllerOneToOneRelations } from "@plumier/generic-controller"
 import reflect from "@plumier/reflect"
-import {
-    Between,
-    getManager,
-    LessThan,
-    LessThanOrEqual,
-    Like,
-    MoreThan,
-    MoreThanOrEqual,
-    Not,
-    Repository as NativeRepository,
-} from "typeorm"
+import { getManager, Repository as NativeRepository } from "typeorm"
 
 function normalizeSelect<T>(type: Class<T>, selections: string[]): { select: (keyof T)[], relations: string[] } {
     const meta = reflect(type)
@@ -43,32 +25,6 @@ function parseOrder<T>(order: OrderQuery[]): { [P in keyof T]?: 1 | -1 } {
     }, {} as any)
 }
 
-
-function transformFilter<T>(filters: FilterEntity<T>) {
-    type Transformer = (filter: FilterQuery) => any
-    const transformMap: { [key: string]: Transformer } = {
-        "range": (filter: FilterQuery) => (Between(filter.value[0], filter.value[1])),
-        "partial": (filter: FilterQuery) => {
-            const value = filter.partial === "end" ? `${filter.value}%` :
-                filter.partial === "start" ? `%${filter.value}` : `%${filter.value}%`
-            return Like(value)
-        },
-        "equal": (filter: FilterQuery) => filter.value,
-        "ne": (filter: FilterQuery) => (Not(filter.value)),
-        "gte": (filter: FilterQuery) => (MoreThanOrEqual(filter.value)),
-        "lte": (filter: FilterQuery) => (LessThanOrEqual(filter.value)),
-        "gt": (filter: FilterQuery) => (MoreThan(filter.value)),
-        "lt": (filter: FilterQuery) => (LessThan(filter.value)),
-    }
-    const result: any = {}
-    for (const key in filters) {
-        const filter = filters[key]!
-        const transform = transformMap[filter.type]
-        result[key] = transform(filter)
-    }
-    return result
-}
-
 class TypeORMRepository<T> implements Repository<T> {
     readonly nativeRepository: NativeRepository<T>
     protected readonly oneToOneRelations: string[]
@@ -77,18 +33,18 @@ class TypeORMRepository<T> implements Repository<T> {
         this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
-    count(query?: FilterEntity<T>): Promise<number> {
+    count(query?: any): Promise<number> {
         return this.nativeRepository.count({
-            where: transformFilter({ ...query }),
+            where: query,
         })
     }
 
-    find(offset: number, limit: number, query: FilterEntity<T>, selection: string[], order: OrderQuery[]): Promise<T[]> {
+    find(offset: number, limit: number, query: any, selection: string[], order: OrderQuery[]): Promise<T[]> {
         const { select, relations } = normalizeSelect(this.type, selection)
         return this.nativeRepository.find({
             skip: offset,
             take: limit,
-            where: transformFilter(query),
+            where: query,
             relations, select,
             order: parseOrder(order)
         })
@@ -127,17 +83,17 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
         this.inversePropertyName = join!.inverseSidePropertyPath;
         this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
-    count(pid: any, query?: FilterEntity<T>): Promise<number> {
+    count(pid: any, query?: any): Promise<number> {
         return this.nativeRepository.count({
-            where: { [this.inversePropertyName]: pid, ...transformFilter({ ...query }) },
+            where: { [this.inversePropertyName]: pid, ...query },
         })
     }
 
-    async find(pid: any, offset: number, limit: number, query: FilterEntity<T>, selection: string[], order: OrderQuery[]): Promise<T[]> {
+    async find(pid: any, offset: number, limit: number, query: any, selection: string[], order: OrderQuery[]): Promise<T[]> {
         const { select, relations } = normalizeSelect(this.type, selection)
         return this.nativeRepository.find({
             where:
-                { [this.inversePropertyName]: pid, ...transformFilter(query) },
+                { [this.inversePropertyName]: pid, ...query },
             skip: offset,
             take: limit,
             relations,
@@ -181,4 +137,4 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
 }
 
 
-export { TypeORMRepository, TypeORMOneToManyRepository, transformFilter }
+export { TypeORMRepository, TypeORMOneToManyRepository }

@@ -7,7 +7,7 @@ interface FilterParserDecorator {
 }
 
 
-function filterParser(type: Class) {
+function filterParser(type: Class | string) {
     return mergeDecorator(
         decType(x => String),
         decorateParameter(<FilterParserDecorator>{ kind: "plumier-meta:filter-parser-decorator", type })

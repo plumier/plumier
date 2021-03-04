@@ -5,6 +5,6 @@ export { model, proxy, MongooseHelper, getDefinition, getModels, models, globalH
 export { collection } from "./decorator"
 export { MongooseFacility } from "./facility"
 export { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
-export {  MongooseRepository, MongooseOneToManyRepository, transformFilter } from "./repository"
+export {  MongooseRepository, MongooseOneToManyRepository } from "./repository"
 export * from "./types"
 export default model;

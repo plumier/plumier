@@ -1,7 +1,5 @@
 import {
     Class,
-    FilterEntity,
-    FilterQuery,
     OneToManyRepository,
     OrderQuery,
     RelationDecorator,
@@ -37,31 +35,6 @@ function getPopulate(type: Class, parentProjections: any) {
     return populate
 }
 
-function transformFilter<T>(filters: FilterEntity<T>) {
-    type Transformer = (filter: FilterQuery) => any
-    const transformMap: { [key: string]: Transformer } = {
-        "range": (filter: FilterQuery) => ({ "$gte": filter.value[0], "$lte": filter.value[1] }),
-        "partial": (filter: FilterQuery) => {
-            const value = filter.partial === "end" ? `^${filter.value}` :
-                filter.partial === "start" ? `${filter.value}$` : filter.value
-            return { "$regex": value, "$options": "i" }
-        },
-        "equal": (filter: FilterQuery) => filter.value,
-        "ne": (filter: FilterQuery) => ({ "$ne": filter.value }),
-        "gte": (filter: FilterQuery) => ({ "$gte": filter.value }),
-        "lte": (filter: FilterQuery) => ({ "$lte": filter.value }),
-        "gt": (filter: FilterQuery) => ({ "$gt": filter.value }),
-        "lt": (filter: FilterQuery) => ({ "$lt": filter.value }),
-    }
-    const result: any = {}
-    for (const key in filters) {
-        const filter = filters[key]!
-        const transform = transformMap[filter.type]
-        result[key] = transform(filter)
-    }
-    return result
-}
-
 class MongooseRepository<T> implements Repository<T>{
     readonly Model: Model<T & Document>
     protected readonly oneToOneRelations: string[]
@@ -71,13 +44,13 @@ class MongooseRepository<T> implements Repository<T>{
         this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
-    async count(query?: FilterEntity<T>): Promise<number> {
-        return this.Model.find(transformFilter({ ...query })).count()
+    async count(query?: any): Promise<number> {
+        return this.Model.find(query).count()
     }
 
-    find(offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
+    find(offset: number, limit: number, query: any, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
         const projection = getProjection(select)
-        const q = this.Model.find(transformFilter(query) as any, projection)
+        const q = this.Model.find(query, projection)
         if (order.length > 0) {
             const sort = order.reduce((a, b) => {
                 a[b.column] = b.order
@@ -123,16 +96,16 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         this.inverseProperty = prop.decorators.find((x: RefDecorator): x is RefDecorator => x.name === "MongooseRef")!.inverseProperty
     }
 
-    async count(pid: string, query?: FilterEntity<T>): Promise<number> {
+    async count(pid: string, query?: any): Promise<number> {
         const data = await this.ParentModel.findById(pid)
             .populate({
                 path: this.relation,
-                match: transformFilter({ ...query }),
+                match: query,
             })
         return (data as any)[this.relation].length
     }
 
-    async find(pid: string, offset: number, limit: number, query: FilterEntity<T>, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
+    async find(pid: string, offset: number, limit: number, query: any, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
         const proj = getProjection(select)
         const sort = order.reduce((a, b) => {
             a[b.column] = b.order
@@ -141,7 +114,7 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         const parent = await this.ParentModel.findById(pid)
             .populate({
                 path: this.relation,
-                match: transformFilter(query),
+                match: query,
                 options: { skip: offset, limit, sort },
                 populate: getPopulate(this.type, proj),
                 select: proj,
@@ -182,4 +155,4 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
     }
 }
 
-export { MongooseRepository, MongooseOneToManyRepository, transformFilter }
+export { MongooseRepository, MongooseOneToManyRepository }
