@@ -403,3 +403,23 @@ Object {
   },
 }
 `;
+
+exports[`Filter Parser Should work with generic type controller 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "value": "name",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
+    "value": "ipsum",
+  },
+}
+`;

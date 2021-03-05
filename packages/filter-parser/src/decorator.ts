@@ -3,14 +3,14 @@ import { decorateParameter, mergeDecorator, type as decType } from "@plumier/ref
 
 interface FilterParserDecorator {
     kind: "plumier-meta:filter-parser-decorator"
-    type: Class
+    type: (() => Class | string)
 }
 
 
-function filterParser(type: Class | string) {
+function filterParser(type: ((x:any) => Class | string) ) {
     return mergeDecorator(
         decType(x => String),
-        decorateParameter(<FilterParserDecorator>{ kind: "plumier-meta:filter-parser-decorator", type })
+        decorateParameter(x => <FilterParserDecorator>{ kind: "plumier-meta:filter-parser-decorator", type })
     )
 }
 

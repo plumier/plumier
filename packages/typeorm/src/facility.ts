@@ -8,7 +8,6 @@ import {
     PlumierApplication,
     RelationDecorator,
 } from "@plumier/core"
-import { filterConverters } from "@plumier/filter-parser"
 import { RequestHookMiddleware } from "@plumier/generic-controller"
 import { Result, ResultMessages, VisitorInvocation } from "@plumier/validator"
 import { lstat } from "fs"
@@ -96,7 +95,7 @@ class TypeORMFacility extends DefaultFacility {
 
     async preInitialize(app: Readonly<PlumierApplication>) {
         // set type converter module to allow updating relation by id
-        app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter, ...filterConverters] })
+        app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter] })
         // load all entities to be able to take the metadata storage
         await loadEntities(this.option.connection)
         // assign tinspector decorators, so Plumier can understand the entity metadata

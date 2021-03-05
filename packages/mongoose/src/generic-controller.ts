@@ -1,4 +1,4 @@
-import { bind, Class, FilterEntity, OneToManyRepository, Repository, val } from "@plumier/core"
+import { bind, Class, OneToManyRepository, Repository, val } from "@plumier/core"
 import { RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric } from "@plumier/generic-controller"
 import { generic } from "@plumier/reflect"
 import { Context } from "koa"
@@ -36,7 +36,7 @@ class MongooseOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMa
         super(fac ?? ((p, t, rel) => new MongooseOneToManyRepository(p, t, rel)))
     }
 
-    list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, filter: FilterEntity<T>, select: string, order: string, ctx: Context) {
+    list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, filter: any, select: string, order: string, ctx: Context) {
         return super.list(pid, offset, limit, filter, select, order, ctx)
     }
 

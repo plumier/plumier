@@ -18,6 +18,7 @@ import {
     TypeDecorator,
     TypeOverride,
 } from "./types"
+import { GenericMap } from "./walker"
 
 
 export function decorateParameter(callback: ((target: Class, name: string, index: number) => any), option?: DecoratorOption): ParameterDecorator
@@ -28,7 +29,7 @@ export function decorateParameter(data: any, option?: DecoratorOption): Paramete
         const targetClass = isCtorParam ? target : target.constructor
         const methodName = isCtorParam ? "constructor" : name
         const meta = typeof data === "function" ? data(targetClass, methodName, index) : data
-        setMetadata({...meta, [DecoratorOptionId]: { ...meta[DecoratorOptionId], ...option }}, targetClass, methodName, index)
+        setMetadata({ ...meta, [DecoratorOptionId]: { ...meta[DecoratorOptionId], ...option } }, targetClass, methodName, index)
     }
 }
 
@@ -38,7 +39,7 @@ export function decorateMethod(data: any, option?: DecoratorOption) {
     return (target: any, name: string | symbol) => {
         const targetClass = target.constructor
         const meta = typeof data === "function" ? data(targetClass, name) : data
-        setMetadata({...meta, [DecoratorOptionId]: { ...meta[DecoratorOptionId], ...option }}, targetClass, name)
+        setMetadata({ ...meta, [DecoratorOptionId]: { ...meta[DecoratorOptionId], ...option } }, targetClass, name)
     }
 }
 
@@ -58,7 +59,7 @@ export function decorateClass(data: any, option?: DecoratorOption): ClassDecorat
 export function decorateClass(data: any, option?: DecoratorOption) {
     return (target: any) => {
         const meta = typeof data === "function" ? data(target) : data
-        setMetadata({...meta, [DecoratorOptionId]: { ...meta[DecoratorOptionId], ...option }}, target)
+        setMetadata({ ...meta, [DecoratorOptionId]: { ...meta[DecoratorOptionId], ...option } }, target)
     }
 }
 
@@ -134,5 +135,20 @@ export namespace generic {
         const opt = (typeof parent === "object") ? parent : { parent: parent, name: "DynamicType" }
         const Type = createClass({ ...opt, genericParams: params })
         return Type
+    }
+
+    /**
+     * Get generic type from template type, require the top most parent class does not inherited from non generic class
+     * @param type type
+     * @param template template type 
+     */
+    export function getGenericType(type: Class, template: string | string[]) {
+        const getParents = (typ: Class): Class[] => {
+            const parent: Class | undefined = Object.getPrototypeOf(typ)
+            return !!parent?.prototype ? [parent, ...getParents(parent)] : []
+        }
+        const types = [type, ...getParents(type)].slice(0, -1)
+        const map = new GenericMap(types)
+        return map.get(template)
     }
 }

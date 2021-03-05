@@ -1,5 +1,4 @@
 import { DefaultFacility, PlumierApplication, RelationDecorator } from "@plumier/core"
-import { filterConverters } from "@plumier/filter-parser"
 import { RequestHookMiddleware } from "@plumier/generic-controller"
 import { Result, ResultMessages, VisitorInvocation } from "@plumier/validator"
 import Mongoose from "mongoose"
@@ -61,7 +60,7 @@ export class MongooseFacility extends DefaultFacility {
             proxy: globalProxy,
             disconnect: Mongoose.disconnect,
         } as MongooseHelper
-        app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter, ...filterConverters] })
+        app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter] })
         app.set({
             responseTransformer: (p, v) => {
                 return (p.name === "id" && v && v.constructor === Buffer) ? undefined : v

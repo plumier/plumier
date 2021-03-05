@@ -1,6 +1,6 @@
-import { AuthorizeDecorator, Class, EntityFilterDecorator, FormFile, RouteInfo } from "@plumier/core"
-import { ParameterObject } from "openapi3-ts"
+import { Class, FormFile, RouteInfo } from "@plumier/core"
 import reflect from "@plumier/reflect"
+import { ParameterObject } from "openapi3-ts"
 
 import { analyzeParameters, ParameterNode } from "./parameter-analyzer"
 import { transformType, transformTypeAdvance, TransformTypeOption } from "./schema"
@@ -17,16 +17,6 @@ function createParameterObject(node: ParameterNode, ctx: TransformContext, opt?:
 }
 
 function transformNode(node: ParameterNode, ctx: TransformContext): ParameterObject[] {
-    // if its an entity filter
-    if (node.meta.decorators.find((x: EntityFilterDecorator) => x.kind === "plumier-meta:entity-filter")) {
-        const entityMeta = reflect(node.type as Class)
-        const filterProps = entityMeta.properties.filter(x => x.decorators
-            .some((y: AuthorizeDecorator) => y.type === "plumier-meta:authorize" && y.access === "filter"))
-        // if no properties contains @authorize.filter() then disable the filter completely
-        if (filterProps.length === 0) return []
-        const par = createParameterObject(node, ctx, { overrides: ["RelationAsId", "Filter"] })
-        return [{ ...par, style: "deepObject" }]
-    }
     // split decorator binding defined with class into flat properties
     if (node.typeName === "Class" && node.binding) {
         const meta = reflect(node.type as Class)

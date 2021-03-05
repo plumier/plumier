@@ -182,7 +182,7 @@ class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGene
     @decorateRoute("get", "")
     @api.hideRelations()
     @reflect.type(["T"])
-    async list(offset: number = 0, limit: number = 50, @filterParser() filter: any, select: string, order: string, @bind.ctx() ctx: Context): Promise<any> {
+    async list(offset: number = 0, limit: number = 50, @filterParser(() => "T") filter: any, select: string, order: string, @bind.ctx() ctx: Context): Promise<any> {
         const query = getManyCustomQuery(this.constructor as any)
         const pOrder = parseOrder(order)
         const pSelect = parseSelect(this.entityType, select)
@@ -269,7 +269,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     @decorateRoute("get", "")
     @api.hideRelations()
     @reflect.type(["T"])
-    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @entity.filter() @reflect.type("T") @val.partial("T") @val.filter() filter: FilterEntity<T>, select: string, order: string, @bind.ctx() ctx: Context): Promise<any> {
+    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @filterParser(() => "T") filter: any, select: string, order: string, @bind.ctx() ctx: Context): Promise<any> {
         await this.findParentByIdOrNotFound(pid)
         const query = getManyCustomQuery(this.constructor as any)
         const pOrder = parseOrder(order)

@@ -2,7 +2,7 @@ import { authorize, authPolicy, Class, route, val } from "@plumier/core"
 import { createFilterConverter, FilterNodeAuthorizeMiddleware, filterParser } from "@plumier/filter-parser"
 import { JwtAuthFacility } from "@plumier/jwt"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
-import { noop } from "@plumier/reflect"
+import { generic, noop } from "@plumier/reflect"
 import { sign } from "jsonwebtoken"
 import supertest from "supertest"
 
@@ -22,7 +22,7 @@ describe("Filter Parser", () => {
     }
     class UsersController {
         @route.get("")
-        get(@filterParser(User) filter: any, index:number) {
+        get(@filterParser(x => User) filter: any, index: number) {
             return filter
         }
     }
@@ -145,6 +145,41 @@ describe("Filter Parser", () => {
             .expect(200)
         expect(body).toMatchSnapshot()
     })
+    it("Should work with generic type controller", async () => {
+        @authorize.filter()
+        class User {
+            @val.email()
+            @noop()
+            email: string
+            @noop()
+            name: string
+            @noop()
+            deleted: boolean
+            @noop()
+            createdAt: Date
+        }
+        @generic.template("T")
+        class MyGeneric<T> {
+            @route.get("")
+            get(@filterParser(x => "T") filter: any, index: number) {
+                return filter
+            }
+        }
+        @generic.type(User)
+        class UsersController extends MyGeneric<User>{}
+        function createApp() {
+            return new Plumier()
+                .set({ mode: "production" })
+                .set(new WebApiFacility({ controller: UsersController }))
+                .set({ typeConverterVisitors: [createFilterConverter(x => x)] })
+                .initialize()
+        }
+        const app = await createApp()
+        const { body } = await supertest(app.callback())
+            .get("/users?filter=name='ipsum'")
+            .expect(200)
+        expect(body).toMatchSnapshot()
+    })
 })
 
 describe("Filter Parser Authorizer", () => {
@@ -181,7 +216,7 @@ describe("Filter Parser Authorizer", () => {
         }
         class UsersController {
             @route.get("")
-            get(@filterParser(User) filter: any) {
+            get(@filterParser(x => User) filter: any) {
                 return filter
             }
         }
@@ -205,7 +240,7 @@ describe("Filter Parser Authorizer", () => {
         }
         class UsersController {
             @route.get("")
-            get(@filterParser(User) filter: any) {
+            get(@filterParser(x => User) filter: any) {
                 return filter
             }
         }
@@ -230,7 +265,7 @@ describe("Filter Parser Authorizer", () => {
         }
         class UsersController {
             @route.get("")
-            get(@filterParser(User) filter: any) {
+            get(@filterParser(x => User) filter: any) {
                 return filter
             }
         }
@@ -256,7 +291,7 @@ describe("Filter Parser Authorizer", () => {
         class UsersController {
             @authorize.route("Public")
             @route.get("")
-            get(@filterParser(User) filter: any) {
+            get(@filterParser(x => User) filter: any) {
                 return filter
             }
         }
@@ -281,7 +316,7 @@ describe("Filter Parser Authorizer", () => {
         class UsersController {
             @authorize.route("Public")
             @route.get("")
-            get(@filterParser(User) filter: any) {
+            get(@filterParser(x => User) filter: any) {
                 return filter
             }
         }
@@ -304,7 +339,7 @@ describe("Filter Parser Authorizer", () => {
         }
         class UsersController {
             @route.get("")
-            get(@filterParser(User) filter: any) {
+            get(@filterParser(x => User) filter: any) {
                 return filter
             }
         }
@@ -332,7 +367,7 @@ describe("Filter Parser Authorizer", () => {
         }
         class UsersController {
             @route.get("")
-            get(@filterParser(User) filter: any) {
+            get(@filterParser(x => User) filter: any) {
                 return filter
             }
         }
@@ -361,7 +396,7 @@ describe("Filter Parser Authorizer", () => {
         }
         class UsersController {
             @route.get("")
-            get(@filterParser(User) filter: any) {
+            get(@filterParser(x => User) filter: any) {
                 return filter
             }
         }
@@ -395,7 +430,7 @@ describe("Filter Parser Authorizer", () => {
         }
         class UsersController {
             @route.get("")
-            get(@filterParser(User) filter: any) {
+            get(@filterParser(x => User) filter: any) {
                 return filter
             }
         }
@@ -429,7 +464,7 @@ describe("Filter Parser Authorizer", () => {
         }
         class UsersController {
             @route.get("")
-            get(@filterParser(User) filter: any, index:number) {
+            get(@filterParser(x => User) filter: any, index: number) {
                 return filter
             }
         }
@@ -442,7 +477,7 @@ describe("Filter Parser Authorizer", () => {
     it("Should not check when action doesn't have filterParser", async () => {
         class UsersController {
             @route.get("")
-            get(index:number) {
+            get(index: number) {
                 return index
             }
         }

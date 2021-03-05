@@ -1,7 +1,17 @@
-import { ActionContext, ActionResult, AuthorizeDecorator, createAuthContext, CustomMiddleware, executeAuthorizer, HttpStatusError, Invocation, Middleware, throwAuthError } from "@plumier/core"
+import {
+    ActionContext,
+    ActionResult,
+    AuthorizeDecorator,
+    createAuthContext,
+    executeAuthorizer,
+    Invocation,
+    Middleware,
+    throwAuthError,
+} from "@plumier/core"
 import reflect, { Class } from "@plumier/reflect"
-import { FilterParserDecorator } from "./decorator"
 
+import { getDecoratorType } from "./converter"
+import { FilterParserDecorator } from "./decorator"
 import { FilterNode, FilterNodeVisitor, filterNodeWalker } from "./parser"
 
 
@@ -53,7 +63,8 @@ class FilterNodeAuthorizeMiddleware implements Middleware<ActionContext> {
         const value = i.metadata!.actionParams.get(par.name)
         if (value === undefined) return i.proceed()
         const dec: FilterParserDecorator = par.decorators.find((d: FilterParserDecorator) => d.kind === "plumier-meta:filter-parser-decorator")!
-        await checkAuthorize(dec.type, value, i.ctx)
+        const type = getDecoratorType(i.metadata!.controller.type, dec)
+        await checkAuthorize(type, value, i.ctx)
         return i.proceed()
     }
 }
