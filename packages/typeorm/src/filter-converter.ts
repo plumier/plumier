@@ -44,10 +44,10 @@ function comparison(node: EquationExpression): {} {
         case "like":
             const str = value as StringLiteral
             if (str.preference === "startsWith")
-                return { [key.value]: { $regex: `^${value.value}`, $options: "i" } }
+                return { [key.value]: { $regex: `^${value.value}`, options: "i" } }
             if (str.preference === "endsWith")
-                return { [key.value]: { $regex: `${value.value}$`, $options: "i" } }
-            return { [key.value]: { $regex: `${value.value}`, $options: "i" } }
+                return { [key.value]: { $regex: `${value.value}$`, options: "i" } }
+            return { [key.value]: { $regex: `${value.value}`, options: "i" } }
         case "range":
             const range = value as StringRangeLiteral | NumberRangeLiteral
             return {

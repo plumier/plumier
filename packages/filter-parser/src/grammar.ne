@@ -93,8 +93,8 @@ range_group
     -> "(" _ string_range _ ")" {% (d, c) => d[2] %}
     
 string_range
-    -> string __ "to"i __ string {% (d, c) => literal("String", [d[0].value, d[4].value], c, "range")%}
-    | number __ "to"i __ number {% (d, c) => literal("Number", [d[0].value, d[4].value], c, "range")%}
+    -> string _ "..." _ string {% (d, c) => literal("String", [d[0].value, d[4].value], c, "range")%}
+    | number _ "..." _ number {% (d, c) => literal("Number", [d[0].value, d[4].value], c, "range")%}
     | range_group
 
 string

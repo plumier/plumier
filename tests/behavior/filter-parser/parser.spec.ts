@@ -142,22 +142,22 @@ describe(`Filter Parser`, () => {
 
     describe(`Range Value`, () => {
         it(`Should parse correctly`, () => {
-            expect(parseFilter(`column=1 to 2`)).toMatchSnapshot()
+            expect(parseFilter(`column=1 ... 2`)).toMatchSnapshot()
         })
         it(`Should parse number range correctly`, () => {
-            expect(parseFilter(`column=12345 to 2345678`)).toMatchSnapshot()
+            expect(parseFilter(`column=12345 ... 2345678`)).toMatchSnapshot()
         })
         it(`Should parse grouping`, () => {
-            expect(parseFilter(`column=(1 to 2)`)).toMatchSnapshot()
+            expect(parseFilter(`column=(1 ... 2)`)).toMatchSnapshot()
         })
-        it(`Should parse case insensitive`, () => {
-            expect(parseFilter(`column=1 TO 2`)).toMatchSnapshot()
+        it(`Should ignore space`, () => {
+            expect(parseFilter(`column=1...2`)).toMatchSnapshot()
         })
         it(`Should parse string range`, () => {
-            expect(parseFilter(`column='2020-1-1' to '2020-1-1'`)).toMatchSnapshot()
+            expect(parseFilter(`column='2020-1-1'...'2020-1-1'`)).toMatchSnapshot()
         })
         it(`Should not parse boolean range`, () => {
-            expect(() => parseFilter(`column=true to false`)).toThrowErrorMatchingSnapshot()
+            expect(() => parseFilter(`column=true ... false`)).toThrowErrorMatchingSnapshot()
         })
     })
 

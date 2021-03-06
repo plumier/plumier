@@ -315,6 +315,7 @@ Object {
         "Unable to convert \\"123\\" into Boolean",
       ],
       "path": Array [
+        "filter",
         "deleted",
       ],
     },
@@ -332,7 +333,6 @@ Object {
       ],
       "path": Array [
         "filter",
-        "delted",
       ],
     },
   ],
@@ -412,17 +412,26 @@ exports[`Filter Parser Should not error when provided undefined 1`] = `Object {}
 
 exports[`Filter Parser Should parse range number properly 1`] = `
 Object {
-  "message": Array [
-    Object {
-      "messages": Array [
-        "Unable to convert \\"17,20\\" into Number",
-      ],
-      "path": Array [
-        "age",
-      ],
-    },
-  ],
-  "status": 422,
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "age",
+  },
+  "operator": "range",
+  "right": Object {
+    "annotation": "Number",
+    "col": 5,
+    "kind": "Literal",
+    "preference": "range",
+    "value": Array [
+      17,
+      20,
+    ],
+  },
 }
 `;
 

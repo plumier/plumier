@@ -5,58 +5,69 @@ import { Class } from './types';
 
 type VisitorExtension = (next: VisitorInvocation) => Result
 
-
-interface VisitorInvocation {
-    value: {},
-    type: Class,
-    path: string,
+interface VisitorInit {
+    value: {}
+    ast: SuperNode
+    path: string
     decorators: any[]
     parent?: ParentInfo
+}
+
+interface VisitorInvocation extends VisitorInit {
+    readonly type:Class
     proceed(): Result
 }
 
 class ExtensionInvocationImpl implements VisitorInvocation {
     value: {}
-    type: Class
+    ast:SuperNode
     path: string
     decorators: any[]
-    parent?:ParentInfo
+    parent?: ParentInfo
+
+    get type(){ return this.ast.type }
 
     constructor(public ext: VisitorExtension, private next: VisitorInvocation) {
         this.value = next.value
-        this.type = next.type
+        this.ast = next.ast
         this.path = next.path
         this.decorators = next.decorators
         this.parent = next.parent
     }
 
     proceed() {
+        this.next.value = this.value
+        this.next.ast = this.ast
+        this.next.path = this.path
+        this.next.decorators = this.decorators
         return this.ext(this.next)
     }
 }
 
 class VisitorInvocationImpl implements VisitorInvocation {
     value: {}
-    type: Class
+    ast: SuperNode
     path: string
     decorators: any[]
-    parent?:ParentInfo
-    constructor(value: {}, path: string, private ast: SuperNode, decorators: any[], private visitor: () => Result, parent?:ParentInfo) {
-        this.value = value
-        this.type = ast.type
-        this.path = path
-        this.decorators = decorators
-        this.parent = parent
+    parent?: ParentInfo
+
+    get type(){ return this.ast.type }
+
+    constructor(private visitor: (i: VisitorInvocation) => Result, init: VisitorInit) {
+        this.value = init.value
+        this.ast = init.ast
+        this.path = init.path
+        this.decorators = init.decorators
+        this.parent = init.parent
     }
 
     proceed(): Result {
-        return this.visitor()
+        return this.visitor(this)
     }
 }
 
-function pipe(value: {}, strPath: string, ast: SuperNode, decorators: any[], extensions: VisitorExtension[], visitor: () => Result, parent?:ParentInfo) {
-    return extensions.reduce((prev, cur) => new ExtensionInvocationImpl(cur, prev),
-        <VisitorInvocation>new VisitorInvocationImpl(value, strPath, ast, decorators, visitor, parent))
+function pipe(extensions: VisitorExtension[], last:VisitorInvocation) {
+    return extensions.reduce((prev, cur) => new ExtensionInvocationImpl(cur, prev), last)
 }
 
-export { pipe, VisitorExtension, VisitorInvocation }
+export { pipe, VisitorExtension, VisitorInvocation, VisitorInvocationImpl }

@@ -1164,10 +1164,11 @@ Object {
   "message": Array [
     Object {
       "messages": Array [
-        "Configuration Error: ControllerGeneric uses string template type @reflect.type(<string>) but doesn't specify @generic.template()",
+        "Unable to convert \\"123456789\\" into Parent",
       ],
       "path": Array [
         "filter",
+        "parent",
       ],
     },
   ],
@@ -1180,10 +1181,11 @@ Object {
   "message": Array [
     Object {
       "messages": Array [
-        "Configuration Error: ControllerGeneric uses string template type @reflect.type(<string>) but doesn't specify @generic.template()",
+        "Unable to convert \\"1234567890\\" into Parent",
       ],
       "path": Array [
         "filter",
+        "parent",
       ],
     },
   ],

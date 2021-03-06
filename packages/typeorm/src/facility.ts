@@ -15,6 +15,7 @@ import pluralize from "pluralize"
 import { ConnectionOptions, createConnection, getConnectionOptions, getMetadataArgsStorage } from "typeorm"
 import { promisify } from "util"
 import validator from "validator"
+import { filterConverter } from "./filter-converter"
 
 import { normalizeEntity, TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
 
@@ -95,7 +96,7 @@ class TypeORMFacility extends DefaultFacility {
 
     async preInitialize(app: Readonly<PlumierApplication>) {
         // set type converter module to allow updating relation by id
-        app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter] })
+        app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter, filterConverter] })
         // load all entities to be able to take the metadata storage
         await loadEntities(this.option.connection)
         // assign tinspector decorators, so Plumier can understand the entity metadata

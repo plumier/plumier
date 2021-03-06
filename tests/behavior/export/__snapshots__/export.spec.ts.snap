@@ -316,6 +316,29 @@ Object {
 }
 `;
 
+exports[`Export Should export @plumier/generic-controller 1`] = `
+Object {
+  "ControllerBuilder": ControllerBuilder,
+  "IdentifierResult": IdentifierResult,
+  "RepoBaseControllerGeneric": RepoBaseControllerGeneric,
+  "RepoBaseOneToManyControllerGeneric": RepoBaseOneToManyControllerGeneric,
+  "RequestHookMiddleware": RequestHookMiddleware,
+  "createGenericControllers": createGenericControllers,
+  "decorateRoute": decorateRoute,
+  "generateGenericControllerRoutes": generateGenericControllerRoutes,
+  "genericController": genericController,
+  "genericControllerRegistry": Map {},
+  "getGenericControllerInverseProperty": getGenericControllerInverseProperty,
+  "getGenericControllerOneToOneRelations": getGenericControllerOneToOneRelations,
+  "getGenericControllerRelation": getGenericControllerRelation,
+  "getGenericTypeParameters": getGenericTypeParameters,
+  "parseSelect": parseSelect,
+  "postSaveValue": Symbol(plumier:postSaveEntity),
+  "responseTransformer": responseTransformer,
+  "updateGenericControllerRegistry": updateGenericControllerRegistry,
+}
+`;
+
 exports[`Export Should export @plumier/jwt 1`] = `
 Object {
   "JwtAuthFacility": JwtAuthFacility,
@@ -551,6 +574,7 @@ Object {
     Number => numberConverter,
     String => stringConverter,
   },
+  "getAst": getAst,
   "partial": partial,
   "val": Object {
     "UUID": UUID,

@@ -1,5 +1,5 @@
 import { authorize, authPolicy, Class, route, val } from "@plumier/core"
-import { createFilterConverter, FilterNodeAuthorizeMiddleware, filterParser } from "@plumier/filter-parser"
+import { createCustomConverter, FilterNodeAuthorizeMiddleware, filterParser } from "@plumier/filter-parser"
 import { JwtAuthFacility } from "@plumier/jwt"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { generic, noop } from "@plumier/reflect"
@@ -33,7 +33,7 @@ describe("Filter Parser", () => {
         return new Plumier()
             .set({ mode: "production" })
             .set(new WebApiFacility({ controller: UsersController }))
-            .set({ typeConverterVisitors: [createFilterConverter(x => x)] })
+            .set({ typeConverterVisitors: [createCustomConverter(x => x)] })
             .initialize()
     }
     it("Should allow simple expression", async () => {
@@ -102,7 +102,7 @@ describe("Filter Parser", () => {
     it("Should catch unknown column name", async () => {
         const app = await createApp()
         const { body } = await supertest(app.callback())
-            .get("/users?filter=name='ipsum'&filter=delted=false")
+            .get("/users?filter=delted=false")
             .expect(422)
         expect(body).toMatchSnapshot()
     })
@@ -174,7 +174,7 @@ describe("Filter Parser", () => {
             return new Plumier()
                 .set({ mode: "production" })
                 .set(new WebApiFacility({ controller: UsersController }))
-                .set({ typeConverterVisitors: [createFilterConverter(x => x)] })
+                .set({ typeConverterVisitors: [createCustomConverter(x => x)] })
                 .initialize()
         }
         const app = await createApp()
@@ -186,8 +186,8 @@ describe("Filter Parser", () => {
     it("Should parse range number properly", async () => {
         const app = await createApp()
         const { body } = await supertest(app.callback())
-            .get("/users?filter=age=17 to 20")
-            .expect(422)
+            .get("/users?filter=age=17...20")
+            .expect(200)
         expect(body).toMatchSnapshot()
     })
 })
@@ -207,7 +207,7 @@ describe("Filter Parser Authorizer", () => {
         return new Plumier()
             .set({ mode: "production" })
             .set(new WebApiFacility({ controller }))
-            .set({ typeConverterVisitors: [createFilterConverter(x => x)] })
+            .set({ typeConverterVisitors: [createCustomConverter(x => x)] })
             .use(new FilterNodeAuthorizeMiddleware(), "Action")
             .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
             .initialize()

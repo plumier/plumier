@@ -1,7 +1,7 @@
 import "reflect-metadata"
 
 import { createClass, reflection } from "./helpers"
-import { setMetadata } from "./metadata"
+import { getMetadata, setMetadata } from "./metadata"
 import {
     Class,
     CustomPropertyDecorator,
@@ -138,14 +138,22 @@ export namespace generic {
     }
 
     /**
-     * Get generic type from template type, require the top most parent class does not inherited from non generic class
+     * Get generic type from template type
      * @param type type
      * @param template template type 
      */
     export function getGenericType(type: Class, template: string | string[]) {
         const getParents = (typ: Class): Class[] => {
             const parent: Class | undefined = Object.getPrototypeOf(typ)
-            return !!parent?.prototype ? [parent, ...getParents(parent)] : []
+            // if no more parent then escape
+            if (!parent) return []
+            const template = getMetadata(parent)
+                .find((x: GenericTemplateDecorator): x is GenericTemplateDecorator => x.kind === "GenericTemplate")
+            const type = getMetadata(parent)
+                .find((x: GenericTypeDecorator): x is GenericTypeDecorator => x.kind === "GenericType")
+            // if no template or generic parameter then escape
+            if (!template && !type) return []
+            return [parent, ...getParents(parent)]
         }
         const types = [type, ...getParents(type)].slice(0, -1)
         const map = new GenericMap(types)

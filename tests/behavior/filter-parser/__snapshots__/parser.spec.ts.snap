@@ -2553,9 +2553,7 @@ Object {
 }
 `;
 
-exports[`Filter Parser Range Value Should not parse boolean range 1`] = `"Syntax error at col 12: column=true >to false"`;
-
-exports[`Filter Parser Range Value Should parse case insensitive 1`] = `
+exports[`Filter Parser Range Value Should ignore space 1`] = `
 Object {
   "col": 0,
   "kind": "ComparisonExpression",
@@ -2579,6 +2577,8 @@ Object {
   },
 }
 `;
+
+exports[`Filter Parser Range Value Should not parse boolean range 1`] = `"Syntax error at col 12: column=true >... false"`;
 
 exports[`Filter Parser Range Value Should parse correctly 1`] = `
 Object {

@@ -1,19 +1,21 @@
-import { CustomConverter } from "@plumier/core"
+import { ActionContext, CustomConverter } from "@plumier/core"
 import reflect, { Class, generic, type } from "@plumier/reflect"
-import converterFactory, { Result, ResultMessages } from "@plumier/validator"
+import converterFactory, { Result, ResultMessages, VisitorExtension } from "@plumier/validator"
 
 import { FilterParserDecorator } from "./decorator"
-import { EquationExpression, FilterNode, FilterNodeVisitor, filterNodeWalker, Literal, parseFilter, PropertyLiteral } from "./parser"
+import { EquationExpression, FilterNode, FilterNodeVisitor, filterNodeWalker, parseFilter } from "./parser"
 
 
-function createVisitor(type: Class, path: string, error: ResultMessages[]): FilterNodeVisitor {
+function createNodeWalkerVisitor(type: Class, path:string, globalConverterVisitors: VisitorExtension[], error: ResultMessages[]): FilterNodeVisitor {
     return (node, prop, value) => {
         // we don't check property = property expression
         if (value.annotation === "Property") return node
         const meta = reflect(type)
-        const propType = meta.properties.find(x => x.name === prop.value)!.type as Class
-        const expType = value.preference === "range" ? [propType] : propType
-        const converter = converterFactory({type: expType})
+        const metaProp = meta.properties.find(x => x.name === prop.value)
+        if (!metaProp) throw new Error(`Unknown property ${prop.value}`)
+        const expType = value.preference === "range" ? [metaProp.type] : metaProp.type
+        // use global converter visitor to get advantage of Plumier application setup such as: relation converter etc
+        const converter = converterFactory({ type: expType, path: `${path}.${prop.value}`, visitors: globalConverterVisitors, decorators: metaProp.decorators })
         const result = converter(value.value)
         if (result.issues)
             error.push(...result.issues)
@@ -31,28 +33,29 @@ function getDecoratorType(controller: Class, decorator: FilterParserDecorator) {
     return typeof expType === "string" ? generic.getGenericType(controller, expType) as Class : expType
 }
 
-function validateFilter(value: {}, path: string, type: Class): Result {
+function validateFilter(value: {}, path: string, type: Class, globalVisitors: VisitorExtension[]): Result {
     const rawValue = Array.isArray(value) ? value : [value]
     if (rawValue.some(x => typeof x !== "string"))
         return Result.error(value, path, "String or array string value expected")
     const combined = (rawValue as string[]).map(x => x.startsWith("(") ? x : `(${x})`).join(" AND ")
     const node = parseFilter(combined)
     const issues: ResultMessages[] = []
-    const visitor = createVisitor(type, path, issues)
+    const visitor = createNodeWalkerVisitor(type, path, globalVisitors, issues)
     const cleansedNode = filterNodeWalker(node, visitor)
     if (issues.length > 0)
         return { value, issues }
     return Result.create(cleansedNode)
 }
 
-function createFilterConverter(transformer: ((node: FilterNode) => any)): CustomConverter {
+function createCustomConverter(transformer: ((node: FilterNode) => any)): CustomConverter {
     return (i, ctx) => {
         if (i.value === undefined || i.value === null) return i.proceed()
         const decorator = i.decorators.find((x: FilterParserDecorator): x is FilterParserDecorator => x.kind === "plumier-meta:filter-parser-decorator")
         if (!decorator) return i.proceed()
         try {
             const type = getDecoratorType(ctx.route.controller.type, decorator)
-            const valResult = validateFilter(i.value, i.path, type)
+            const globalVisitors = ctx.config.typeConverterVisitors.map<VisitorExtension>(x => i => x(i, ctx))
+            const valResult = validateFilter(i.value, i.path, type, globalVisitors)
             if (!!valResult.issues) return valResult
             return Result.create(transformer(valResult.value))
         }
@@ -62,4 +65,4 @@ function createFilterConverter(transformer: ((node: FilterNode) => any)): Custom
     }
 }
 
-export { createFilterConverter, getDecoratorType }
+export { createCustomConverter, getDecoratorType }
