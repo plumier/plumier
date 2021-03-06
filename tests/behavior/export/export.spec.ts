@@ -2,6 +2,9 @@ describe("Export", () => {
     it("Should export @plumier/core", () => {
         expect(require("@plumier/core")).toMatchSnapshot()
     })
+    it("Should export @plumier/generic-controller", () => {
+        expect(require("@plumier/generic-controller")).toMatchSnapshot()
+    })
     it("Should export @plumier/jwt", () => {
         expect(require("@plumier/jwt")).toMatchSnapshot()
     })

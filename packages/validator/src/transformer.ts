@@ -43,7 +43,7 @@ function arrayNode(type: Class[]): ArrayNode {
     return {
         kind: "Array", type: type[0],
         get element() {
-            return defer || (defer = transform(type[0]))
+            return defer || (defer = getAst(type[0]))
         }
     }
 }
@@ -86,9 +86,9 @@ const arrayAstCache = new Map<Class, SuperNode>()
 const transformArray = useCache(arrayAstCache, transformer, (type: any) => type[0])
 const transformAll = useCache(astCache, transformer, (type) => type)
 
-function transform(type: Class | Class[]) {
+function getAst(type: Class | Class[]) {
     const cachedTransformer = Array.isArray(type) ? transformArray : transformAll
     return cachedTransformer(type)
 }
 
-export { transform }
+export { getAst }

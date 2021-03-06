@@ -170,6 +170,56 @@ Object {
 }
 `;
 
+exports[`Multiple Visitors Should able to mutate invocation ast 1`] = `
+Object {
+  "value": 2020-0-1,
+}
+`;
+
+exports[`Multiple Visitors Should able to mutate invocation ast 2`] = `
+Array [
+  Array [
+    VisitorInvocationImpl {
+      "ast": Object {
+        "converter": dateConverter,
+        "kind": "Primitive",
+        "type": Date,
+      },
+      "decorators": Array [],
+      "parent": undefined,
+      "path": "",
+      "value": "2020-1-1",
+      "visitor": mainVis,
+    },
+  ],
+]
+`;
+
+exports[`Multiple Visitors Should able to mutate invocation value 1`] = `
+Object {
+  "value": 456,
+}
+`;
+
+exports[`Multiple Visitors Should able to mutate invocation value 2`] = `
+Array [
+  Array [
+    VisitorInvocationImpl {
+      "ast": Object {
+        "converter": numberConverter,
+        "kind": "Primitive",
+        "type": Number,
+      },
+      "decorators": Array [],
+      "parent": undefined,
+      "path": "",
+      "value": "456",
+      "visitor": mainVis,
+    },
+  ],
+]
+`;
+
 exports[`Parent Distribution Should add parent information 1`] = `
 Object {
   "value": Object {

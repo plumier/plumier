@@ -1,6 +1,6 @@
 import { Opt, val } from "./decorators"
 import { VisitorExtension, VisitorInvocation } from "./invocation"
-import { transform } from "./transformer"
+import { getAst } from "./transformer"
 import { Class } from "./types"
 import {
     partial,
@@ -50,7 +50,7 @@ interface Option<T = any> {
  */
 function convert<T = any>(value: any, option: Option<T> | T): T extends Class<infer R>[] ? Result<R[]> : T extends Class<infer R> ? Result<R> : Result<any> {
     const opt = "type" in option ? option : { type: option }
-    return pipeline(value, transform(opt.type as any), {
+    return pipeline(value, getAst(opt.type as any), {
         path: opt.path || "", extension: opt.visitors || [],
         decorators: opt.decorators || [],
         guessArrayElement: opt.guessArrayElement || false
@@ -84,7 +84,7 @@ function validate<T>(value: any, option: Option<T> | T) {
 export {
     convert, Option, VisitorExtension,
     VisitorInvocation, Result, ResultMessages,
-    partial, validatorVisitor, Validator,
+    partial, validatorVisitor, Validator, getAst,
     PartialValidator, val, Opt, validate, createValidator, ValidatorDecorator,
     RequiredValidator, defaultConverters, createValidation
 }

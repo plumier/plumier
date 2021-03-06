@@ -1,7 +1,7 @@
 import reflect, { decorateProperty } from "@plumier/reflect"
 
 import { convert } from "@plumier/validator"
-import { Result, VisitorInvocation } from '@plumier/validator';
+import { Result, VisitorInvocation, getAst } from '@plumier/validator';
 
 describe("Visitor", () => {
 
@@ -112,6 +112,43 @@ describe("Multiple Visitors", () => {
             ]
         })
         expect(result.value).toBe(129)
+    })
+
+    it("Should able to mutate invocation value", () => {
+        const fn = jest.fn()
+        const result = convert("123", {
+            type: Number, visitors: [
+                i => {
+                    fn(i)
+                    return i.proceed()
+                },
+                (i) => {
+                    i.value = "456"
+                    return i.proceed()
+                }
+            ]
+        })
+        expect(result).toMatchSnapshot()
+        expect(fn.mock.calls).toMatchSnapshot()
+    })
+
+    it("Should able to mutate invocation ast", () => {
+        const fn = jest.fn()
+        const result = convert("123", {
+            type: Number, visitors: [
+                i => {
+                    fn(i)
+                    return i.proceed()
+                },
+                (i) => {
+                    i.value = "2020-1-1"
+                    i.ast = getAst(Date)
+                    return i.proceed()
+                }
+            ]
+        })
+        expect(result).toMatchSnapshot()
+        expect(fn.mock.calls).toMatchSnapshot()
     })
 })
 
