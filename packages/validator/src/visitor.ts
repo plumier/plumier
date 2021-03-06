@@ -1,7 +1,7 @@
 import reflect, { mergeDecorator } from "@plumier/reflect"
 
 import { safeToString } from "./converter"
-import { pipe, VisitorExtension } from "./invocation"
+import { pipe, VisitorExtension, VisitorInvocation, VisitorInvocationImpl } from "./invocation"
 import { ArrayNode, ObjectNode, PrimitiveNode, SuperNode } from "./transformer"
 import { Class } from './types';
 
@@ -126,7 +126,12 @@ function visitor(value: any, ast: SuperNode, opt: VisitorOption): Result {
 }
 
 function pipeline(value: any, ast: SuperNode, opt: VisitorOption): Result {
-    const visitors = pipe(value, opt.path, ast, opt.decorators, opt.extension, () => visitor(value, ast as any, opt), opt.parent)
+    const mainVis = (i: VisitorInvocation) => visitor(i.value, i.ast, opt)
+    const last = new VisitorInvocationImpl(mainVis, {
+        decorators: opt.decorators, path: opt.path,
+        ast: ast, value, parent: opt.parent
+    });
+    const visitors = pipe(opt.extension, last)
     return visitors.proceed()
 }
 
