@@ -1,22 +1,23 @@
 import { CustomConverter } from "@plumier/core"
-import { Class, generic, type } from "@plumier/reflect"
+import reflect, { Class, generic, type } from "@plumier/reflect"
 import converterFactory, { Result, ResultMessages } from "@plumier/validator"
 
 import { FilterParserDecorator } from "./decorator"
-import { EquationExpression, FilterNode, FilterNodeVisitor, filterNodeWalker, parseFilter } from "./parser"
+import { EquationExpression, FilterNode, FilterNodeVisitor, filterNodeWalker, Literal, parseFilter, PropertyLiteral } from "./parser"
 
 
 function createVisitor(type: Class, path: string, error: ResultMessages[]): FilterNodeVisitor {
-    const converter = converterFactory(type)
     return (node, prop, value) => {
         // we don't check property = property expression
         if (value.annotation === "Property") return node
-        const result = converter({ [prop.value]: value.value })
+        const meta = reflect(type)
+        const propType = meta.properties.find(x => x.name === prop.value)!.type as Class
+        const expType = value.preference === "range" ? [propType] : propType
+        const converter = converterFactory({type: expType})
+        const result = converter(value.value)
         if (result.issues)
             error.push(...result.issues)
-        const cleansed = result.value[prop.value]
-        if (!(prop.value in result.value))
-            error.push({ path: `${path}.${prop.value}`, messages: [`Unknown property ${prop.value}`] })
+        const cleansed = result.value
         if (node.right === prop)
             return <EquationExpression>{ ...node, left: { ...value, value: cleansed } }
         else

@@ -3,7 +3,7 @@ import { Grammar, Parser } from "nearley"
 import grammar from "./grammar"
 
 
-type FilterNode = LogicExpression | ComparisonExpression | UnaryExpression | PropertyLiteral | BooleanLiteral |
+type FilterNode = LogicalExpression | ComparisonExpression | UnaryExpression | PropertyLiteral | BooleanLiteral |
     NumberLiteral | StringLiteral | LikeExpression | RangeExpression
 
 type Literal = BooleanLiteral | NumberLiteral | PropertyLiteral | StringLiteral |
@@ -11,9 +11,11 @@ type Literal = BooleanLiteral | NumberLiteral | PropertyLiteral | StringLiteral 
 
 type EquationExpression = ComparisonExpression | LikeExpression | RangeExpression
 
+type EquationOperator = "gt" | "lt" | "gte" | "lte" | "ne" | "eq" | "like" | "range"
+type LogicalOperator = "and" | "or"
 
-interface LogicExpression {
-    kind: "LogicExpression"
+interface LogicalExpression {
+    kind: "LogicalExpression"
     operator: "and" | "or"
     left: FilterNode
     right: FilterNode
@@ -47,13 +49,14 @@ interface RangeExpression {
 interface UnaryExpression {
     kind: "UnaryExpression"
     operator: "not"
-    argument: FilterNode
+    argument: EquationExpression | LogicalExpression
     col: number
 }
 
 interface PropertyLiteral {
     kind: "Literal",
     annotation: "Property",
+    preference: "none"
     value: "string"
     col: number
 }
@@ -61,6 +64,7 @@ interface PropertyLiteral {
 interface BooleanLiteral {
     kind: "Literal",
     annotation: "Boolean"
+    preference: "none"
     value: boolean
     col: number
 }
@@ -68,6 +72,7 @@ interface BooleanLiteral {
 interface NumberLiteral {
     kind: "Literal",
     annotation: "Number"
+    preference: "none"
     value: number
     col: number
 }
@@ -83,6 +88,7 @@ interface StringLiteral {
 interface StringRangeLiteral {
     kind: "Literal",
     annotation: "String"
+    preference: "range"
     value: [string, string]
     col: number
 }
@@ -90,6 +96,7 @@ interface StringRangeLiteral {
 interface NumberRangeLiteral {
     kind: "Literal",
     annotation: "Number"
+    preference: "range"
     value: [number, number]
     col: number
 }
@@ -97,6 +104,7 @@ interface NumberRangeLiteral {
 interface NullLiteral {
     kind: "Literal",
     annotation: "Null"
+    preference: "none"
     value: undefined
     col: number
 }
@@ -117,6 +125,7 @@ function parseFilter(query: string) {
 
 type FilterNodeVisitor = (node: EquationExpression, prop: PropertyLiteral, value: Literal) => EquationExpression
 
+
 function filterNodeWalker(node: FilterNode, visitor: FilterNodeVisitor): FilterNode {
     switch (node.kind) {
         case "ComparisonExpression":
@@ -127,10 +136,10 @@ function filterNodeWalker(node: FilterNode, visitor: FilterNodeVisitor): FilterN
                 return visitor(node, left, right)
             return visitor(node, (right as PropertyLiteral), left)
         case "UnaryExpression":
-            return { ...node, argument: filterNodeWalker(node.argument, visitor) }
+            return { ...node, argument: filterNodeWalker(node.argument, visitor) as (EquationExpression | LogicalExpression) }
         default:
             // "LogicExpression"
-            const newNode = node as LogicExpression
+            const newNode = node as LogicalExpression
             return {
                 ...newNode,
                 left: filterNodeWalker(newNode.left, visitor),
@@ -139,8 +148,22 @@ function filterNodeWalker(node: FilterNode, visitor: FilterNodeVisitor): FilterN
     }
 }
 
+/**
+ * Get property - value order from equation expression node
+ * @param node node
+ */
+function getKeyValue<T extends EquationExpression>(node: T): [PropertyLiteral, Literal] {
+    const { left, right } = node
+    if (left.annotation === "Property" && right.annotation == "Property")
+        return [left, right]
+    if (left.annotation === "Property" && right.annotation !== "Property")
+        return [left, right]
+    return [right as PropertyLiteral, left]
+}
+
 export {
     parseFilter, filterNodeWalker, FilterNode, LikeExpression, Literal, RangeExpression, FilterNodeVisitor,
-    LogicExpression, ComparisonExpression, UnaryExpression, PropertyLiteral, BooleanLiteral, NullLiteral,
-    NumberLiteral, NumberRangeLiteral, StringLiteral, StringRangeLiteral, EquationExpression
+    LogicalExpression, ComparisonExpression, UnaryExpression, PropertyLiteral, BooleanLiteral, NullLiteral,
+    NumberLiteral, NumberRangeLiteral, StringLiteral, StringRangeLiteral, EquationExpression, getKeyValue,
+    EquationOperator, LogicalOperator
 }

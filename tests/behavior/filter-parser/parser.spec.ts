@@ -144,6 +144,9 @@ describe(`Filter Parser`, () => {
         it(`Should parse correctly`, () => {
             expect(parseFilter(`column=1 to 2`)).toMatchSnapshot()
         })
+        it(`Should parse number range correctly`, () => {
+            expect(parseFilter(`column=12345 to 2345678`)).toMatchSnapshot()
+        })
         it(`Should parse grouping`, () => {
             expect(parseFilter(`column=(1 to 2)`)).toMatchSnapshot()
         })

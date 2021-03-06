@@ -19,13 +19,16 @@ describe("Filter Parser", () => {
         deleted: boolean
         @noop()
         createdAt: Date
+        @noop()
+        age:number
     }
     class UsersController {
         @route.get("")
-        get(@filterParser(x => User) filter: any, index: number) {
+        get(@filterParser(x => User) filter: any) {
             return filter
         }
     }
+    
     function createApp() {
         return new Plumier()
             .set({ mode: "production" })
@@ -178,6 +181,13 @@ describe("Filter Parser", () => {
         const { body } = await supertest(app.callback())
             .get("/users?filter=name='ipsum'")
             .expect(200)
+        expect(body).toMatchSnapshot()
+    })
+    it("Should parse range number properly", async () => {
+        const app = await createApp()
+        const { body } = await supertest(app.callback())
+            .get("/users?filter=age=17 to 20")
+            .expect(422)
         expect(body).toMatchSnapshot()
     })
 })

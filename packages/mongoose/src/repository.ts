@@ -5,6 +5,7 @@ import {
     RelationDecorator,
     Repository,
 } from "@plumier/core"
+import { FilterNode } from "@plumier/filter-parser"
 import { getGenericControllerOneToOneRelations, parseSelect } from "@plumier/generic-controller"
 import reflect from "@plumier/reflect"
 import mongoose, { Document, Model } from "mongoose"

@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Mongoose Filter Parser Comparison Should parse contains string 1`] = `
+Object {
+  "name": Object {
+    "$regex": "ipsum",
+    "options": "i",
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse date range 1`] = `
+Object {
+  "$and": Array [
+    Object {
+      "createdAt": Object {
+        "$gte": "2019-12-31T16:00:00.000Z",
+      },
+    },
+    Object {
+      "createdAt": Object {
+        "$lte": "2020-12-31T16:00:00.000Z",
+      },
+    },
+  ],
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse ends with string 1`] = `
+Object {
+  "name": Object {
+    "$regex": "ipsum$",
+    "options": "i",
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse equal operator 1`] = `
+Object {
+  "name": "ipsum",
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse not equal operator 1`] = `
+Object {
+  "name": Object {
+    "$ne": "ipsum",
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse number range 1`] = `
+Object {
+  "$and": Array [
+    Object {
+      "name": Object {
+        "$gte": "17",
+      },
+    },
+    Object {
+      "name": Object {
+        "$lte": "30",
+      },
+    },
+  ],
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse starts with string 1`] = `
+Object {
+  "name": Object {
+    "$regex": "^ipsum",
+    "options": "i",
+  },
+}
+`;

@@ -1164,11 +1164,10 @@ Object {
   "message": Array [
     Object {
       "messages": Array [
-        "Nested type filters are not supported",
+        "Configuration Error: ControllerGeneric uses string template type @reflect.type(<string>) but doesn't specify @generic.template()",
       ],
       "path": Array [
         "filter",
-        "parent",
       ],
     },
   ],
@@ -1181,11 +1180,10 @@ Object {
   "message": Array [
     Object {
       "messages": Array [
-        "Nested type filters are not supported",
+        "Configuration Error: ControllerGeneric uses string template type @reflect.type(<string>) but doesn't specify @generic.template()",
       ],
       "path": Array [
         "filter",
-        "parent",
       ],
     },
   ],

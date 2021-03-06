@@ -7,4 +7,5 @@ export { MongooseFacility } from "./facility"
 export { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
 export {  MongooseRepository, MongooseOneToManyRepository } from "./repository"
 export * from "./types"
+export * from "./filter-converter"
 export default model;

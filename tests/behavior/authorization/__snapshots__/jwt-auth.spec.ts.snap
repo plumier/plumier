@@ -307,7 +307,6 @@ Array [
   ],
   Array [
     "11. MongooseControllerGeneric.list    -> Authenticated GET    /item
- - error Property name of Item class uses unknown authorization policy ResourceOwner
  - error Property name of Item class uses unknown authorization policy ResourceOwner",
   ],
   Array [

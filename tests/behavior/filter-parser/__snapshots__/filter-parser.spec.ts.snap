@@ -50,6 +50,7 @@ Object {
     "annotation": "Property",
     "col": 1,
     "kind": "Literal",
+    "preference": "none",
     "value": "name",
   },
   "operator": "eq",
@@ -57,6 +58,7 @@ Object {
     "annotation": "String",
     "col": 6,
     "kind": "Literal",
+    "preference": "none",
     "value": "ipsum",
   },
 }
@@ -65,7 +67,7 @@ Object {
 exports[`Filter Parser Should allow input array with simple query string notation 1`] = `
 Object {
   "col": 0,
-  "kind": "LogicExpression",
+  "kind": "LogicalExpression",
   "left": Object {
     "col": 1,
     "kind": "ComparisonExpression",
@@ -73,6 +75,7 @@ Object {
       "annotation": "Property",
       "col": 1,
       "kind": "Literal",
+      "preference": "none",
       "value": "name",
     },
     "operator": "eq",
@@ -80,6 +83,7 @@ Object {
       "annotation": "String",
       "col": 6,
       "kind": "Literal",
+      "preference": "none",
       "value": "ipsum",
     },
   },
@@ -91,6 +95,7 @@ Object {
       "annotation": "Property",
       "col": 20,
       "kind": "Literal",
+      "preference": "none",
       "value": "deleted",
     },
     "operator": "eq",
@@ -98,6 +103,7 @@ Object {
       "annotation": "Boolean",
       "col": 28,
       "kind": "Literal",
+      "preference": "none",
       "value": false,
     },
   },
@@ -107,7 +113,7 @@ Object {
 exports[`Filter Parser Should allow input array with simple query string notation without grouping 1`] = `
 Object {
   "col": 0,
-  "kind": "LogicExpression",
+  "kind": "LogicalExpression",
   "left": Object {
     "col": 1,
     "kind": "ComparisonExpression",
@@ -115,6 +121,7 @@ Object {
       "annotation": "Property",
       "col": 1,
       "kind": "Literal",
+      "preference": "none",
       "value": "name",
     },
     "operator": "eq",
@@ -122,6 +129,7 @@ Object {
       "annotation": "String",
       "col": 6,
       "kind": "Literal",
+      "preference": "none",
       "value": "ipsum",
     },
   },
@@ -133,6 +141,7 @@ Object {
       "annotation": "Property",
       "col": 20,
       "kind": "Literal",
+      "preference": "none",
       "value": "deleted",
     },
     "operator": "eq",
@@ -140,6 +149,7 @@ Object {
       "annotation": "Boolean",
       "col": 28,
       "kind": "Literal",
+      "preference": "none",
       "value": false,
     },
   },
@@ -149,10 +159,10 @@ Object {
 exports[`Filter Parser Should allow multiple expression 1`] = `
 Object {
   "col": 0,
-  "kind": "LogicExpression",
+  "kind": "LogicalExpression",
   "left": Object {
     "col": 0,
-    "kind": "LogicExpression",
+    "kind": "LogicalExpression",
     "left": Object {
       "col": 1,
       "kind": "ComparisonExpression",
@@ -160,6 +170,7 @@ Object {
         "annotation": "Property",
         "col": 1,
         "kind": "Literal",
+        "preference": "none",
         "value": "name",
       },
       "operator": "eq",
@@ -167,6 +178,7 @@ Object {
         "annotation": "String",
         "col": 6,
         "kind": "Literal",
+        "preference": "none",
         "value": "ipsum",
       },
     },
@@ -178,6 +190,7 @@ Object {
         "annotation": "Property",
         "col": 20,
         "kind": "Literal",
+        "preference": "none",
         "value": "deleted",
       },
       "operator": "eq",
@@ -185,6 +198,7 @@ Object {
         "annotation": "Property",
         "col": 30,
         "kind": "Literal",
+        "preference": "none",
         "value": "false",
       },
     },
@@ -197,6 +211,7 @@ Object {
       "annotation": "Property",
       "col": 40,
       "kind": "Literal",
+      "preference": "none",
       "value": "email",
     },
     "operator": "eq",
@@ -204,6 +219,7 @@ Object {
       "annotation": "String",
       "col": 48,
       "kind": "Literal",
+      "preference": "none",
       "value": "lorem@ipsum.com",
     },
   },
@@ -218,6 +234,7 @@ Object {
     "annotation": "Property",
     "col": 1,
     "kind": "Literal",
+    "preference": "none",
     "value": "name",
   },
   "operator": "eq",
@@ -225,6 +242,7 @@ Object {
     "annotation": "String",
     "col": 6,
     "kind": "Literal",
+    "preference": "none",
     "value": "ipsum",
   },
 }
@@ -239,6 +257,7 @@ Object {
       "annotation": "Property",
       "col": 2,
       "kind": "Literal",
+      "preference": "none",
       "value": "name",
     },
     "operator": "eq",
@@ -246,6 +265,7 @@ Object {
       "annotation": "String",
       "col": 7,
       "kind": "Literal",
+      "preference": "none",
       "value": "ipsum",
     },
   },
@@ -328,6 +348,7 @@ Object {
     "annotation": "String",
     "col": 1,
     "kind": "Literal",
+    "preference": "none",
     "value": true,
   },
   "operator": "eq",
@@ -335,6 +356,7 @@ Object {
     "annotation": "Property",
     "col": 8,
     "kind": "Literal",
+    "preference": "none",
     "value": "deleted",
   },
 }
@@ -348,6 +370,7 @@ Object {
     "annotation": "Property",
     "col": 1,
     "kind": "Literal",
+    "preference": "none",
     "value": "createdAt",
   },
   "operator": "eq",
@@ -355,6 +378,7 @@ Object {
     "annotation": "String",
     "col": 11,
     "kind": "Literal",
+    "preference": "none",
     "value": "2019-12-31T16:00:00.000Z",
   },
 }
@@ -370,6 +394,7 @@ Object {
     "annotation": "Property",
     "col": 1,
     "kind": "Literal",
+    "preference": "none",
     "value": "email",
   },
   "operator": "eq",
@@ -377,12 +402,29 @@ Object {
     "annotation": "Property",
     "col": 7,
     "kind": "Literal",
+    "preference": "none",
     "value": "name",
   },
 }
 `;
 
 exports[`Filter Parser Should not error when provided undefined 1`] = `Object {}`;
+
+exports[`Filter Parser Should parse range number properly 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Unable to convert \\"17,20\\" into Number",
+      ],
+      "path": Array [
+        "age",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
 
 exports[`Filter Parser Should skip validation 1`] = `
 Object {
@@ -392,6 +434,7 @@ Object {
     "annotation": "Property",
     "col": 1,
     "kind": "Literal",
+    "preference": "none",
     "value": "email",
   },
   "operator": "eq",
@@ -399,6 +442,7 @@ Object {
     "annotation": "String",
     "col": 7,
     "kind": "Literal",
+    "preference": "none",
     "value": "ipsum",
   },
 }
@@ -412,6 +456,7 @@ Object {
     "annotation": "Property",
     "col": 1,
     "kind": "Literal",
+    "preference": "none",
     "value": "name",
   },
   "operator": "eq",
@@ -419,6 +464,7 @@ Object {
     "annotation": "String",
     "col": 6,
     "kind": "Literal",
+    "preference": "none",
     "value": "ipsum",
   },
 }

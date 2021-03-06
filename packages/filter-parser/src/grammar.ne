@@ -11,7 +11,7 @@ main
         return (d:any[], col?:number) => ({ kind: "ComparisonExpression", operator, left: d[0], right: d[4], col })
     }
     function logic(operator:string) {
-        return (d:any[], col?:number) => ({ kind: "LogicExpression", operator, left: d[0], right: d[4], col })
+        return (d:any[], col?:number) => ({ kind: "LogicalExpression", operator, left: d[0], right: d[4], col })
     }
     function unary(operator:string) {
         return (d:any[], col?:number) => ({ kind: "UnaryExpression", operator, argument: d[2], col })
@@ -31,7 +31,6 @@ comparison
 group 
     -> "(" _ group _ ")" {% d => d[2] %}
     | "(" _ or _ ")" {% d => d[2] %}
-    | "(" _ atom _ ")" {% d => d[2] %}
     |  comparison {% id %}
 
 unary 
@@ -56,8 +55,7 @@ or
     }
 
     function literal(annotation:string, value: any, col?:number, preference?:string) {
-        return !!preference ? { kind: "Literal", annotation, value, preference, col } 
-            : { kind: "Literal", annotation, value, col }
+        return { kind: "Literal", annotation, value, preference: preference ?? "none", col } 
     }
 %}
 
@@ -95,8 +93,8 @@ range_group
     -> "(" _ string_range _ ")" {% (d, c) => d[2] %}
     
 string_range
-    -> string __ "to"i __ string {% (d, c) => literal("String", [d[0].value, d[4].value], c)%}
-    | number __ "to"i __ number {% (d, c) => literal("Number", [d[0].value, d[4].value], c)%}
+    -> string __ "to"i __ string {% (d, c) => literal("String", [d[0].value, d[4].value], c, "range")%}
+    | number __ "to"i __ number {% (d, c) => literal("Number", [d[0].value, d[4].value], c, "range")%}
     | range_group
 
 string
