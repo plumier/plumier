@@ -48,18 +48,17 @@ Object {
 
 exports[`Mongoose Filter Parser Comparison Should parse date range 1`] = `
 Object {
-  "$and": Array [
-    Object {
-      "createdAt": Object {
-        "$gte": "2019-12-31T16:00:00.000Z",
-      },
-    },
-    Object {
-      "createdAt": Object {
-        "$lte": "2020-12-31T16:00:00.000Z",
-      },
-    },
-  ],
+  "createdAt": Object {
+    "$gte": Any<String>,
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse date range 2`] = `
+Object {
+  "createdAt": Object {
+    "$lte": Any<String>,
+  },
 }
 `;
 

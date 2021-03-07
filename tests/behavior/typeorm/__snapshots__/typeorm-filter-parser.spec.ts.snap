@@ -58,10 +58,7 @@ Object {
     "_multipleParameters": true,
     "_type": "between",
     "_useParameter": true,
-    "_value": Array [
-      "2019-12-31T16:00:00.000Z",
-      "2020-12-31T16:00:00.000Z",
-    ],
+    "_value": Any<Array>,
   },
 }
 `;

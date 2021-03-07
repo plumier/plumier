@@ -92,7 +92,8 @@ describe("Mongoose Filter Parser", () => {
             const { body } = await supertest(app.callback())
                 .get("/users?filter=createdAt='2020-1-1'...'2021-1-1'")
                 .expect(200)
-            expect(body).toMatchSnapshot()
+            expect(body.$and[0]).toMatchSnapshot({ createdAt: { $gte: expect.any(String) } })
+            expect(body.$and[1]).toMatchSnapshot({ createdAt: { $lte: expect.any(String) } })
         })
         it("Should parse not equal operator", async () => {
             const app = await createApp()

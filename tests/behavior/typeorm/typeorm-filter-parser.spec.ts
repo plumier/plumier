@@ -49,7 +49,7 @@ describe("TypeORM Filter Parser", () => {
             .initialize()
     }
 
-    let app:Koa
+    let app: Koa
 
     beforeAll(async () => {
         app = await createApp()
@@ -97,7 +97,7 @@ describe("TypeORM Filter Parser", () => {
             const { body } = await supertest(app.callback())
                 .get("/users?filter=createdAt='2020-1-1'...'2021-1-1'")
                 .expect(200)
-            expect(body).toMatchSnapshot()
+            expect(body).toMatchSnapshot({ createdAt: { _value: expect.any(Array) } })
         })
         it("Should parse not equal operator", async () => {
             const { body } = await supertest(app.callback())

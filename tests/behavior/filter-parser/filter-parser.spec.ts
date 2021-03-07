@@ -20,7 +20,7 @@ describe("Filter Parser", () => {
         @noop()
         createdAt: Date
         @noop()
-        age:number
+        age: number
     }
     class UsersController {
         @route.get("")
@@ -28,7 +28,7 @@ describe("Filter Parser", () => {
             return filter
         }
     }
-    
+
     function createApp() {
         return new Plumier()
             .set({ mode: "production" })
@@ -62,7 +62,7 @@ describe("Filter Parser", () => {
         const { body } = await supertest(app.callback())
             .get("/users?filter=createdAt='2020-1-1'")
             .expect(200)
-        expect(body).toMatchSnapshot()
+        expect(body).toMatchSnapshot({ right: { value: expect.any(String) } })
     })
     it("Should allow grouped expression", async () => {
         const app = await createApp()
@@ -169,7 +169,7 @@ describe("Filter Parser", () => {
             }
         }
         @generic.type(User)
-        class UsersController extends MyGeneric<User>{}
+        class UsersController extends MyGeneric<User>{ }
         function createApp() {
             return new Plumier()
                 .set({ mode: "production" })
