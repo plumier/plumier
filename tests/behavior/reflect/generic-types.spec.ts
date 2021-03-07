@@ -378,7 +378,7 @@ describe("Create Generic", () => {
     })
 })
 
-describe.only("Get Generic Type", () => {
+describe("Get Generic Type", () => {
     it("Should able to get generic type", () => {
         @generic.template("A")
         class SuperClass<A> {

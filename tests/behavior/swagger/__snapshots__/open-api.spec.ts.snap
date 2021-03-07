@@ -2378,96 +2378,14 @@ Object {
 }
 `;
 
-exports[`Open API 3.0 Generation Schema Override Filter Should able to use all fields as filter 1`] = `
+exports[`Open API 3.0 Generation Schema Override Filter Should show filter as string 1`] = `
 Array [
   Object {
     "in": "query",
     "name": "filter",
     "schema": Object {
-      "$ref": "#/components/schemas/Item",
+      "type": "string",
     },
-    "style": "deepObject",
-  },
-]
-`;
-
-exports[`Open API 3.0 Generation Schema Override Filter Should hide filter filed when no filter authorization provided 1`] = `Array []`;
-
-exports[`Open API 3.0 Generation Schema Override Filter Should show field that is authorized for filter 1`] = `
-Array [
-  Object {
-    "in": "query",
-    "name": "filter",
-    "schema": Object {
-      "allOf": Array [
-        Object {
-          "$ref": "#/components/schemas/Item",
-        },
-        Object {
-          "properties": Object {
-            "basePrice": Object {
-              "readOnly": true,
-            },
-            "id": Object {
-              "readOnly": true,
-            },
-            "price": Object {
-              "readOnly": true,
-            },
-          },
-          "type": "object",
-        },
-      ],
-    },
-    "style": "deepObject",
-  },
-]
-`;
-
-exports[`Open API 3.0 Generation Schema Override Filter Should show relation property as ID 1`] = `
-Array [
-  Object {
-    "in": "query",
-    "name": "filter",
-    "schema": Object {
-      "allOf": Array [
-        Object {
-          "$ref": "#/components/schemas/Item",
-        },
-        Object {
-          "properties": Object {
-            "categories": Object {
-              "items": Object {
-                "type": "number",
-              },
-              "type": "array",
-            },
-            "createdBy": Object {
-              "type": "number",
-            },
-            "shop": Object {
-              "type": "number",
-            },
-          },
-          "type": "object",
-        },
-        Object {
-          "properties": Object {
-            "id": Object {
-              "readOnly": true,
-            },
-            "name": Object {
-              "readOnly": true,
-            },
-            "price": Object {
-              "readOnly": true,
-            },
-          },
-          "type": "object",
-        },
-      ],
-    },
-    "style": "deepObject",
   },
 ]
 `;

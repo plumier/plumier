@@ -25,6 +25,7 @@ import supertest from "supertest"
 import reflect, { decorateClass, generic, noop, type } from "@plumier/reflect"
 
 import { fixture } from "../helper"
+import { filterParser } from "@plumier/filter-parser"
 
 describe("getRef", () => {
     class User { }
@@ -57,7 +58,7 @@ describe("Open API 3.0 Generation", () => {
 
     describe("Schema Override", () => {
         describe("Filter", () => {
-            it("Should hide filter filed when no filter authorization provided", async () => {
+            it("Should show filter as string", async () => {
                 class Item {
                     @entity.primaryId()
                     id: number
@@ -73,115 +74,7 @@ describe("Open API 3.0 Generation", () => {
                 }
                 class ItemController {
                     @route.get("")
-                    list(@entity.filter() filter: Item) { }
-                }
-                const app = await createApp(ItemController)
-                const { body } = await supertest(app.callback())
-                    .get("/swagger/swagger.json")
-                    .expect(200)
-                expect(body.paths["/item"].get.parameters).toMatchSnapshot()
-            })
-            it("Should show field that is authorized for filter", async () => {
-                class Item {
-                    @entity.primaryId()
-                    id: number
-
-                    @authorize.filter()
-                    @noop()
-                    name: string
-
-                    @noop()
-                    price: number
-
-                    @noop()
-                    basePrice: number
-                }
-                class ItemController {
-                    @route.get("")
-                    list(@entity.filter() filter: Item) { }
-                }
-                const app = await createApp(ItemController)
-                const { body } = await supertest(app.callback())
-                    .get("/swagger/swagger.json")
-                    .expect(200)
-                expect(body.paths["/item"].get.parameters).toMatchSnapshot()
-            })
-            it("Should show relation property as ID", async () => {
-                class Shop {
-                    @entity.primaryId()
-                    id: number
-
-                    @noop()
-                    name: string
-
-                    @entity.relation()
-                    @type(x => [Item])
-                    items: Item[]
-                }
-                class User {
-                    @entity.primaryId()
-                    id: number
-
-                    @noop()
-                    name: string
-
-                    @entity.relation()
-                    @type(x => [Shop])
-                    shops: Shop[]
-                }
-                class Category {
-                    @entity.primaryId()
-                    id: number
-
-                    @noop()
-                    name: string
-                }
-                class Item {
-                    @entity.primaryId()
-                    id: number
-
-                    @noop()
-                    name: string
-
-                    @noop()
-                    price: number
-
-                    @authorize.filter()
-                    @entity.relation()
-                    shop: Shop
-
-                    @authorize.filter()
-                    @entity.relation()
-                    @type(x => [Category])
-                    categories: Category[]
-
-                    @authorize.filter()
-                    @entity.relation()
-                    createdBy: User
-                }
-                class ItemController {
-                    @route.get("")
-                    list(@entity.filter() filter: Item) { }
-                }
-                const app = await createApp(ItemController)
-                const { body } = await supertest(app.callback())
-                    .get("/swagger/swagger.json")
-                    .expect(200)
-                expect(body.paths["/item"].get.parameters).toMatchSnapshot()
-            })
-            it("Should able to use all fields as filter", async () => {
-                class Item {
-                    @authorize.filter()
-                    @entity.primaryId()
-                    id: number
-
-                    @authorize.filter()
-                    @noop()
-                    name: string
-                }
-                class ItemController {
-                    @route.get("")
-                    list(@entity.filter() filter: Item) { }
+                    list(@filterParser(x => Item) filter: any) { }
                 }
                 const app = await createApp(ItemController)
                 const { body } = await supertest(app.callback())

@@ -144,9 +144,8 @@ export namespace generic {
      */
     export function getGenericType(type: Class, template: string | string[]) {
         const getParents = (typ: Class): Class[] => {
-            const parent: Class | undefined = Object.getPrototypeOf(typ)
+            const parent: Class = Object.getPrototypeOf(typ)
             // if no more parent then escape
-            if (!parent) return []
             const template = getMetadata(parent)
                 .find((x: GenericTemplateDecorator): x is GenericTemplateDecorator => x.kind === "GenericTemplate")
             const type = getMetadata(parent)

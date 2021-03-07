@@ -48,6 +48,19 @@ class TypeORMRepository<T> implements Repository<T> {
             relations, select,
             order: parseOrder(order)
         })
+        // const q = this.nativeRepository.createQueryBuilder()
+        // q.skip(offset).take(limit)
+        // for (const relation of relations) {
+        //     q.relation(relation)
+        // }
+        // for (const ord of order) {
+        //     q.addOrderBy(ord.column, ord.order === -1 ? "DESC" : "ASC")
+        // }
+        // for (const sel of select) {
+        //     q.addSelect(sel as string)
+        // }
+        // q.where(query)
+        // return q.getMany()
     }
 
     async insert(doc: Partial<T>) {

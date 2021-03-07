@@ -40,8 +40,8 @@ Object {
 exports[`Mongoose Filter Parser Comparison Should parse contains string 1`] = `
 Object {
   "name": Object {
+    "$options": "i",
     "$regex": "ipsum",
-    "options": "i",
   },
 }
 `;
@@ -66,13 +66,19 @@ Object {
 exports[`Mongoose Filter Parser Comparison Should parse ends with string 1`] = `
 Object {
   "name": Object {
+    "$options": "i",
     "$regex": "ipsum$",
-    "options": "i",
   },
 }
 `;
 
 exports[`Mongoose Filter Parser Comparison Should parse equal operator 1`] = `
+Object {
+  "name": "ipsum",
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse equal operator with reverse 1`] = `
 Object {
   "name": "ipsum",
 }
@@ -179,8 +185,8 @@ Object {
 exports[`Mongoose Filter Parser Comparison Should parse starts with string 1`] = `
 Object {
   "name": Object {
+    "$options": "i",
     "$regex": "^ipsum",
-    "options": "i",
   },
 }
 `;
