@@ -325,31 +325,23 @@ class User {
 }
 ``` 
 
-Using above code enabled us to query the response result like below 
+Using above code enabled us to query the response result using syntax string like below
 
 ```
 # filter by email
-GET /users?filter[email]=john.doe@gmail.com
+GET /users?filter=email=john.doe@gmail.com
+
+# or more readable using group
+GET /users?filter=(email=john.doe@gmail.com)
 
 # filter by name, will return all users name start with john
-GET /users?filter[name]=john*
+GET /users?filter=(name='john'*)
 
 # combine both filter, will return with AND operator
-GET /users?filter[email]=john.doe@gmail.com&filter[name]=john
+GET /users?filter=(email=john.doe@gmail.com and name=john)
 ```
 
-Several filter supported based on property data type 
-
-| Filter    | Description                                          | Data Type    | Example                     |
-| --------- | ---------------------------------------------------- | ------------ | --------------------------- |
-| Equal     | Filter by exact value                                | All          | `/users?filter[age]=3`      |
-| Partial   | Filter by partial value using `*` (at beginning/end) | String       | `/users?filter[name]=john*` |
-| Range     | Filter by range with pattern `start...end`           | Date, Number | `/users?filter[age]=1...18` |
-| GTE       | Filter by greater than or equal using `>=`           | Date, Number | `/users?filter[age]=>=20`   |
-| LTE       | Filter by less than or equal using `<=`              | Date, Number | `/users?filter[age]=<=20`   |
-| GT        | Filter by greater than using `>`                     | Date, Number | `/users?filter[age]=>20`    |
-| LT        | Filter by less than using `<`                        | Date, Number | `/users?filter[age]=<20`    |
-| Not Equal | Filter by not equal using `!`                        | All          | `/users?filter[age]=!20`    |
+Several filter supported based on property data type, for more information see the [Query Language Specification](Filter-Parser.md#query-language-specification)
 
 ## Delete Column 
 By default when you perform `DELETE /users/{id}` it will delete the user record permanently from the database, You can specify the delete flag by providing `@entity.deleteColumn()` decorator above the flag property with `boolean` datatype like below.
