@@ -8,6 +8,7 @@ import {
     PlumierApplication,
     RelationDecorator,
 } from "@plumier/core"
+import { FilterNodeAuthorizeMiddleware } from "@plumier/filter-parser"
 import { RequestHookMiddleware } from "@plumier/generic-controller"
 import { Result, ResultMessages, VisitorInvocation } from "@plumier/validator"
 import { lstat } from "fs"
@@ -113,6 +114,7 @@ class TypeORMFacility extends DefaultFacility {
         app.set({ genericController: [TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric] })
         app.set({ genericControllerNameConversion: (x: string) => pluralize(x) })
         app.use(new RequestHookMiddleware(), "Action")
+        app.use(new FilterNodeAuthorizeMiddleware(), "Action")
     }
 
     async initialize(app: Readonly<PlumierApplication>) {

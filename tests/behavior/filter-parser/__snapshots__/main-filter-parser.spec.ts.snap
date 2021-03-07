@@ -42,6 +42,13 @@ Object {
 }
 `;
 
+exports[`Filter Parser Authorizer Should not conflict with @authorize.write() 1`] = `
+Object {
+  "message": "Unauthorized to access filter properties email",
+  "status": 401,
+}
+`;
+
 exports[`Filter Parser Should allow grouped expression 1`] = `
 Object {
   "col": 1,

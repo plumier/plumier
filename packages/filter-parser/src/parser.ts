@@ -1,8 +1,9 @@
+import { AuthorizeDecorator } from "@plumier/core"
 import { Grammar, Parser } from "nearley"
 
 import grammar from "./grammar"
 
-
+const FilterParserAst = Symbol()
 type FilterNode = LogicalExpression | ComparisonExpression | UnaryExpression | PropertyLiteral | BooleanLiteral |
     NumberLiteral | StringLiteral | LikeExpression | RangeExpression
 
@@ -161,9 +162,14 @@ function getKeyValue<T extends EquationExpression>(node: T): [PropertyLiteral, L
     return [right as PropertyLiteral, left]
 }
 
+
+function getFilterDecorators(decorators:any[]) {
+    return decorators.filter((x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize" && x.access === "filter")
+}
+
 export {
     parseFilter, filterNodeWalker, FilterNode, LikeExpression, Literal, RangeExpression, FilterNodeVisitor,
     LogicalExpression, ComparisonExpression, UnaryExpression, PropertyLiteral, BooleanLiteral, NullLiteral,
     NumberLiteral, NumberRangeLiteral, StringLiteral, StringRangeLiteral, EquationExpression, getKeyValue,
-    EquationOperator, LogicalOperator
+    EquationOperator, LogicalOperator, getFilterDecorators, FilterParserAst
 }

@@ -392,6 +392,31 @@ describe("Filter Parser Authorizer", () => {
             .expect(401)
         expect(body).toMatchSnapshot()
     })
+    it("Should not conflict with @authorize.write()", async () => {
+        class User {
+            @authorize.write("user")
+            @noop()
+            email: string
+            @noop()
+            name: string
+            @noop()
+            deleted: boolean
+            @noop()
+            createdAt: Date
+        }
+        class UsersController {
+            @route.get("")
+            get(@filterParser(x => User) filter: any) {
+                return filter
+            }
+        }
+        const app = await createApp(UsersController)
+        const { body } = await supertest(app.callback())
+            .get("/users?filter=email='lorem@ipsum.com'")
+            .set("Authorization", `Bearer ${USER_TOKEN}`)
+            .expect(401)
+        expect(body).toMatchSnapshot()
+    })
     it("Should able to specify multiple policy by single decorator", async () => {
         class User {
             @authorize.filter("user", "admin")

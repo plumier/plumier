@@ -1,4 +1,4 @@
-import { authorize, Class, route } from "@plumier/core"
+import { authorize, authPolicy, Class, route } from "@plumier/core"
 import { filterParser } from "@plumier/filter-parser"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { noop } from "@plumier/reflect"
@@ -8,6 +8,8 @@ import supertest from "supertest"
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm"
 import { cleanup, getConn } from "./helper"
 import Koa from "koa"
+import { sign } from "jsonwebtoken"
+import { JwtAuthFacility } from "@plumier/jwt"
 
 describe("TypeORM Filter Parser", () => {
 
@@ -186,6 +188,56 @@ describe("TypeORM Filter Parser", () => {
             const { body } = await supertest(app.callback())
                 .get("/parents?filter=child='123'")
                 .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+    })
+    describe("Filter Parser Authorizer", () => {
+        it("Should able to secure filter by policy", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @authorize.filter("user")
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @Column()
+                deleted: boolean
+                @Column()
+                createdAt: Date
+            }
+            class UsersController {
+                @route.get("")
+                get(@filterParser(x => User) filter: any) {
+                    return filter
+                }
+            }
+            const SECRET = "super secret"
+            const USER_TOKEN = sign({ email: "ketut@gmail.com", role: "user" }, SECRET)
+            const ADMIN_TOKEN = sign({ email: "ketut@gmail.com", role: "admin" }, SECRET)
+            function createApp() {
+                const authPolicies = [
+                    authPolicy().define("user", i => i.user?.role === "user"),
+                    authPolicy().define("admin", i => i.user?.role === "admin"),
+                    authPolicy().define("superadmin", i => i.user?.role === "superadmin"),
+                ]
+                return new Plumier()
+                    .set({ mode: "production" })
+                    .set(new WebApiFacility({ controller: UsersController }))
+                    .set(new TypeORMFacility({ connection: getConn([User]) }))
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                    .initialize()
+            }
+            const app = await createApp()
+            await supertest(app.callback())
+                .get("/users?filter=email='lorem@ipsum.com'")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+            const { body } = await supertest(app.callback())
+                .get("/users?filter=email='lorem@ipsum.com'")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(401)
             expect(body).toMatchSnapshot()
         })
     })

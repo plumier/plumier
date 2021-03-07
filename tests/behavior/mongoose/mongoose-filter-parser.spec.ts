@@ -1,9 +1,11 @@
-import { authorize, Class, route } from "@plumier/core"
+import { authorize, authPolicy, Class, route } from "@plumier/core"
 import { createCustomConverter, filterParser } from "@plumier/filter-parser"
+import { JwtAuthFacility } from "@plumier/jwt"
 import { collection, filterConverter, MongooseFacility } from "@plumier/mongoose"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { noop } from "@plumier/reflect"
 import { val } from "@plumier/validator"
+import { sign } from "jsonwebtoken"
 import supertest from "supertest"
 
 
@@ -195,4 +197,54 @@ describe("Mongoose Filter Parser", () => {
             expect(body).toMatchSnapshot()
         })
     })
+    describe("Filter Parser Authorizer", () => {
+        const SECRET = "super secret"
+        const USER_TOKEN = sign({ email: "ketut@gmail.com", role: "user" }, SECRET)
+        const ADMIN_TOKEN = sign({ email: "ketut@gmail.com", role: "admin" }, SECRET)
+
+        function createApp(controller: Class) {
+            const authPolicies = [
+                authPolicy().define("user", i => i.user?.role === "user"),
+                authPolicy().define("admin", i => i.user?.role === "admin"),
+                authPolicy().define("superadmin", i => i.user?.role === "superadmin"),
+            ]
+            return new Plumier()
+                .set({ mode: "production" })
+                .set(new WebApiFacility({ controller }))
+                .set(new MongooseFacility())
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                .initialize()
+        }
+
+        it("Should able to secure filter by policy", async () => {
+            class User {
+                @authorize.filter("user")
+                @noop()
+                email: string
+                @noop()
+                name: string
+                @noop()
+                deleted: boolean
+                @noop()
+                createdAt: Date
+            }
+            class UsersController {
+                @route.get("")
+                get(@filterParser(x => User) filter: any) {
+                    return filter
+                }
+            }
+            const app = await createApp(UsersController)
+            await supertest(app.callback())
+                .get("/users?filter=email='lorem@ipsum.com'")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+            const { body } = await supertest(app.callback())
+                .get("/users?filter=email='lorem@ipsum.com'")
+                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                .expect(401)
+            expect(body).toMatchSnapshot()
+        })
+    })
 })
+

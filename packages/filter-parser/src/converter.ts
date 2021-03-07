@@ -3,7 +3,7 @@ import reflect, { Class, generic, type } from "@plumier/reflect"
 import converterFactory, { Result, ResultMessages, VisitorExtension } from "@plumier/validator"
 
 import { FilterParserDecorator } from "./decorator"
-import { EquationExpression, FilterNode, FilterNodeVisitor, filterNodeWalker, parseFilter } from "./parser"
+import { EquationExpression, FilterNode, FilterNodeVisitor, filterNodeWalker, FilterParserAst, parseFilter } from "./parser"
 
 
 function createNodeWalkerVisitor(type: Class, path:string, globalConverterVisitors: VisitorExtension[], error: ResultMessages[]): FilterNodeVisitor {
@@ -57,7 +57,9 @@ function createCustomConverter(transformer: ((node: FilterNode) => any)): Custom
             const globalVisitors = ctx.config.typeConverterVisitors.map<VisitorExtension>(x => i => x(i, ctx))
             const valResult = validateFilter(i.value, i.path, type, globalVisitors)
             if (!!valResult.issues) return valResult
-            return Result.create(transformer(valResult.value))
+            const transformed:any = transformer(valResult.value)
+            transformed[FilterParserAst] = valResult.value
+            return Result.create(transformed)
         }
         catch (e) {
             return Result.error(i.value, i.path, e.message)

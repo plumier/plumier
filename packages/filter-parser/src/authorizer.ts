@@ -1,7 +1,6 @@
 import {
     ActionContext,
     ActionResult,
-    AuthorizeDecorator,
     createAuthContext,
     executeAuthorizer,
     Invocation,
@@ -12,7 +11,7 @@ import reflect, { Class } from "@plumier/reflect"
 
 import { getDecoratorType } from "./converter"
 import { FilterParserDecorator } from "./decorator"
-import { FilterNode, FilterNodeVisitor, filterNodeWalker } from "./parser"
+import { FilterNode, FilterNodeVisitor, filterNodeWalker, FilterParserAst, getFilterDecorators } from "./parser"
 
 
 function createVisitor(columns: string[]): FilterNodeVisitor {
@@ -24,9 +23,10 @@ function createVisitor(columns: string[]): FilterNodeVisitor {
     }
 }
 
+
 async function checkAuthorize(type: Class, value: FilterNode, ctx: ActionContext) {
     const meta = reflect(type)
-    const classDec = meta.decorators.filter((x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize")
+    const classDec = getFilterDecorators(meta.decorators)
     const auth = createAuthContext(ctx, "write")
     // get list of columns used by end user
     const columns: string[] = []
@@ -37,7 +37,7 @@ async function checkAuthorize(type: Class, value: FilterNode, ctx: ActionContext
     const accessedColumns = Array.from(new Set(columns))
     for (const col of accessedColumns) {
         const prop = meta.properties.find(x => x.name === col)!
-        const dec = prop.decorators.filter((x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize")
+        const dec = getFilterDecorators(prop.decorators)
         const decorators = dec.length > 0 ? dec : classDec
         // if no decorator provided (class/property) then just don't allow
         if (decorators.length === 0) {
@@ -60,8 +60,9 @@ class FilterNodeAuthorizeMiddleware implements Middleware<ActionContext> {
         const par = i.metadata!.action.parameters
             .find(x => x.decorators.some((d: FilterParserDecorator) => d.kind === "plumier-meta:filter-parser-decorator"))
         if (!par) return i.proceed()
-        const value = i.metadata!.actionParams.get(par.name)
-        if (value === undefined) return i.proceed()
+        const raw = i.metadata!.actionParams.get(par.name)
+        if (raw === undefined) return i.proceed()
+        const value:FilterNode = raw[FilterParserAst]
         const dec: FilterParserDecorator = par.decorators.find((d: FilterParserDecorator) => d.kind === "plumier-meta:filter-parser-decorator")!
         const type = getDecoratorType(i.metadata!.controller.type, dec)
         await checkAuthorize(type, value, i.ctx)

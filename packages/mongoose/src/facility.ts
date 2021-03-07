@@ -1,4 +1,5 @@
 import { DefaultFacility, PlumierApplication, RelationDecorator } from "@plumier/core"
+import { FilterNodeAuthorizeMiddleware } from "@plumier/filter-parser"
 import { RequestHookMiddleware } from "@plumier/generic-controller"
 import { Result, ResultMessages, VisitorInvocation } from "@plumier/validator"
 import Mongoose from "mongoose"
@@ -51,6 +52,7 @@ export class MongooseFacility extends DefaultFacility {
             genericControllerNameConversion: (x: string) => pluralize(x)
         })
         app.use(new RequestHookMiddleware(), "Action")
+        app.use(new FilterNodeAuthorizeMiddleware(), "Action")
     }
 
     async initialize(app: Readonly<PlumierApplication>) {

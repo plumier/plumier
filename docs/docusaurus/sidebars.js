@@ -12,6 +12,7 @@ module.exports = {
         "mongoose-helper"
       ]
     },
+    "filter-parser",
     "swagger",
     "social-login",
     "serve-static",
