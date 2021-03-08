@@ -8,12 +8,15 @@ main
 
 @{%
     function comparison(operator:string) {
+        //console.log("ComparisonExpression", operator)
         return (d:any[], col?:number) => ({ kind: "ComparisonExpression", operator, left: d[0], right: d[4], col })
     }
     function logic(operator:string) {
+        //console.log("LogicalExpression", operator)
         return (d:any[], col?:number) => ({ kind: "LogicalExpression", operator, left: d[0], right: d[4], col })
     }
     function unary(operator:string) {
+        //console.log("UnaryExpression", operator)
         return (d:any[], col?:number) => ({ kind: "UnaryExpression", operator, argument: d[2], col })
     }
 %}
@@ -55,17 +58,29 @@ or
     }
 
     function literal(annotation:string, value: any, col?:number, preference?:string) {
+        //console.log("Literal", annotation, value)
         return { kind: "Literal", annotation, value, preference: preference ?? "none", col } 
+    }
+
+    function property(d:any[], loc?:number, reject?:any) {
+        const value = join(d)
+        // check if property but not (false, true, null)
+        if(/^(?!(false|true|null)$)[a-zA-Z_]+[a-zA-Z0-9_]*$/i.test(value)) {
+            return literal("Property", value, loc)
+        }
+        else 
+            return reject
     }
 %}
 
 atom 
     -> string {% id %} 
     | number {% id %}
-    | prop {% id %}
     | group {% id %}
+    | prop {% id %}
     | boolean {% id %}
     | nullish {% id %}
+
 
 nullish
     -> "null"i {% (d, c) => literal("Null", undefined, c) %}
@@ -75,7 +90,8 @@ boolean
     | "false"i {% (d, c) => literal("Boolean", false, c) %}
 
 prop  
-    -> [a-zA-Z_]:+ [0-9]:* {% (d, c) => literal("Property", join(d), c)  %}  
+    -> [a-zA-Z_]:+ [a-zA-Z0-9_]:* {% property  %}  
+    
     
 number
     -> [0-9]:+ {% (d, c) => literal("Number", parseInt(join(d)), c) %}

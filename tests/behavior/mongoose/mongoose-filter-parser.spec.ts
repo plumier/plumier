@@ -97,6 +97,13 @@ describe("Mongoose Filter Parser", () => {
             expect(body.$and[0]).toMatchSnapshot({ createdAt: { $gte: expect.any(String) } })
             expect(body.$and[1]).toMatchSnapshot({ createdAt: { $lte: expect.any(String) } })
         })
+        it("Should parse property vs property", async () => {
+            const app = await createApp()
+            const { body } = await supertest(app.callback())
+                .get("/users?filter=createdAt=name")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
         it("Should parse not equal operator", async () => {
             const app = await createApp()
             const { body } = await supertest(app.callback())

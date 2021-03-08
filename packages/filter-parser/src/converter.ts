@@ -6,16 +6,21 @@ import { FilterParserDecorator } from "./decorator"
 import { EquationExpression, FilterNode, FilterNodeVisitor, filterNodeWalker, FilterParserAst, parseFilter } from "./parser"
 
 
-function createNodeWalkerVisitor(type: Class, path:string, globalConverterVisitors: VisitorExtension[], error: ResultMessages[]): FilterNodeVisitor {
+function createNodeWalkerVisitor(type: Class, path: string, globalConverterVisitors: VisitorExtension[], error: ResultMessages[]): FilterNodeVisitor {
     return (node, prop, value) => {
-        // we don't check property = property expression
-        if (value.annotation === "Property") return node
+
         const meta = reflect(type)
-        const metaProp = meta.properties.find(x => x.name === prop.value)
-        if (!metaProp) throw new Error(`Unknown property ${prop.value}`)
-        const expType = value.preference === "range" ? [metaProp.type] : metaProp.type
+        const leftProp = meta.properties.find(x => x.name === prop.value)
+        if (!leftProp) throw new Error(`Unknown property ${prop.value}`)
+        if (value.annotation === "Property") {
+            if (!meta.properties.some(x => x.name === value.value))
+                throw new Error(`Unknown property ${value.value}`)
+            // we don't check further property = property expression
+            return node
+        }
+        const expType = value.preference === "range" ? [leftProp.type] : leftProp.type
         // use global converter visitor to get advantage of Plumier application setup such as: relation converter etc
-        const converter = converterFactory({ type: expType, path: `${path}.${prop.value}`, visitors: globalConverterVisitors, decorators: metaProp.decorators })
+        const converter = converterFactory({ type: expType, path: `${path}.${prop.value}`, visitors: globalConverterVisitors, decorators: leftProp.decorators })
         const result = converter(value.value)
         if (result.issues)
             error.push(...result.issues)
@@ -57,7 +62,7 @@ function createCustomConverter(transformer: ((node: FilterNode) => any)): Custom
             const globalVisitors = ctx.config.typeConverterVisitors.map<VisitorExtension>(x => i => x(i, ctx))
             const valResult = validateFilter(i.value, i.path, type, globalVisitors)
             if (!!valResult.issues) return valResult
-            const transformed:any = transformer(valResult.value)
+            const transformed: any = transformer(valResult.value)
             transformed[FilterParserAst] = valResult.value
             return Result.create(transformed)
         }

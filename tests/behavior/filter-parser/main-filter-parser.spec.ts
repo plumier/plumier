@@ -106,6 +106,13 @@ describe("Filter Parser", () => {
             .expect(422)
         expect(body).toMatchSnapshot()
     })
+    it("Should catch unknown column name on property vs property", async () => {
+        const app = await createApp()
+        const { body } = await supertest(app.callback())
+            .get("/users?filter=name=delted")
+            .expect(422)
+        expect(body).toMatchSnapshot()
+    })
     it("Should catch invalid value type", async () => {
         const app = await createApp()
         const { body } = await supertest(app.callback())

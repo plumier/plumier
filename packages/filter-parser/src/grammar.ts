@@ -5,12 +5,15 @@
 function id(d: any[]): any { return d[0]; }
 
     function comparison(operator:string) {
+        //console.log("ComparisonExpression", operator)
         return (d:any[], col?:number) => ({ kind: "ComparisonExpression", operator, left: d[0], right: d[4], col })
     }
     function logic(operator:string) {
+        //console.log("LogicalExpression", operator)
         return (d:any[], col?:number) => ({ kind: "LogicalExpression", operator, left: d[0], right: d[4], col })
     }
     function unary(operator:string) {
+        //console.log("UnaryExpression", operator)
         return (d:any[], col?:number) => ({ kind: "UnaryExpression", operator, argument: d[2], col })
     }
 
@@ -20,7 +23,17 @@ function id(d: any[]): any { return d[0]; }
     }
 
     function literal(annotation:string, value: any, col?:number, preference?:string) {
+        //console.log("Literal", annotation, value)
         return { kind: "Literal", annotation, value, preference: preference ?? "none", col } 
+    }
+
+    function property(d:any[], loc?:number, reject?:any) {
+        const value = join(d)
+        if(/^(?!(false|true|null)$)[a-zA-Z_]+[a-zA-Z0-9_]*$/i.test(value)) {
+            return literal("Property", value, loc)
+        }
+        else 
+            return reject
     }
 
 interface NearleyToken {
@@ -86,8 +99,8 @@ const grammar: Grammar = {
     {"name": "or", "symbols": ["and"], "postprocess": id},
     {"name": "atom", "symbols": ["string"], "postprocess": id},
     {"name": "atom", "symbols": ["number"], "postprocess": id},
-    {"name": "atom", "symbols": ["prop"], "postprocess": id},
     {"name": "atom", "symbols": ["group"], "postprocess": id},
+    {"name": "atom", "symbols": ["prop"], "postprocess": id},
     {"name": "atom", "symbols": ["boolean"], "postprocess": id},
     {"name": "atom", "symbols": ["nullish"], "postprocess": id},
     {"name": "nullish$subexpression$1", "symbols": [/[nN]/, /[uU]/, /[lL]/, /[lL]/], "postprocess": function(d) {return d.join(""); }},
@@ -99,8 +112,8 @@ const grammar: Grammar = {
     {"name": "prop$ebnf$1", "symbols": [/[a-zA-Z_]/]},
     {"name": "prop$ebnf$1", "symbols": ["prop$ebnf$1", /[a-zA-Z_]/], "postprocess": (d) => d[0].concat([d[1]])},
     {"name": "prop$ebnf$2", "symbols": []},
-    {"name": "prop$ebnf$2", "symbols": ["prop$ebnf$2", /[0-9]/], "postprocess": (d) => d[0].concat([d[1]])},
-    {"name": "prop", "symbols": ["prop$ebnf$1", "prop$ebnf$2"], "postprocess": (d, c) => literal("Property", join(d), c)},
+    {"name": "prop$ebnf$2", "symbols": ["prop$ebnf$2", /[a-zA-Z0-9_]/], "postprocess": (d) => d[0].concat([d[1]])},
+    {"name": "prop", "symbols": ["prop$ebnf$1", "prop$ebnf$2"], "postprocess": property},
     {"name": "number$ebnf$1", "symbols": [/[0-9]/]},
     {"name": "number$ebnf$1", "symbols": ["number$ebnf$1", /[0-9]/], "postprocess": (d) => d[0].concat([d[1]])},
     {"name": "number", "symbols": ["number$ebnf$1"], "postprocess": (d, c) => literal("Number", parseInt(join(d)), c)},

@@ -181,6 +181,12 @@ Object {
 }
 `;
 
+exports[`Mongoose Filter Parser Comparison Should parse property vs property 1`] = `
+Object {
+  "createdAt": "name",
+}
+`;
+
 exports[`Mongoose Filter Parser Comparison Should parse starts with string 1`] = `
 Object {
   "name": Object {

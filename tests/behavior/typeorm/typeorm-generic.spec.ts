@@ -112,7 +112,7 @@ describe("Filter", () => {
     describe("Generic Controller", () => {
         it("Should able to filter with exact value", async () => {
             const { body } = await supertest(app.callback())
-                .get("/parents?filter=string=lorem")
+                .get("/parents?filter=string='lorem'")
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
@@ -168,7 +168,7 @@ describe("Filter", () => {
     describe("One To Many Generic Controller", () => {
         it("Should able to filter with exact value", async () => {
             const { body } = await supertest(app.callback())
-                .get(`/parents/${parent.id}/children?filter=string=lorem`)
+                .get(`/parents/${parent.id}/children?filter=string='lorem'`)
                 .expect(200)
             expect(body).toMatchSnapshot()
         })

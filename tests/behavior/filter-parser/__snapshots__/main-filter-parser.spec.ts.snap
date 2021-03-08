@@ -202,11 +202,11 @@ Object {
       },
       "operator": "eq",
       "right": Object {
-        "annotation": "Property",
+        "annotation": "Boolean",
         "col": 30,
         "kind": "Literal",
         "preference": "none",
-        "value": "false",
+        "value": false,
       },
     },
   },
@@ -332,6 +332,22 @@ Object {
 `;
 
 exports[`Filter Parser Should catch unknown column name 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Unknown property delted",
+      ],
+      "path": Array [
+        "filter",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Should catch unknown column name on property vs property 1`] = `
 Object {
   "message": Array [
     Object {
