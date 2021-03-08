@@ -29,6 +29,7 @@ function id(d: any[]): any { return d[0]; }
 
     function property(d:any[], loc?:number, reject?:any) {
         const value = join(d)
+        // check if property but not (false, true, null)
         if(/^(?!(false|true|null)$)[a-zA-Z_]+[a-zA-Z0-9_]*$/i.test(value)) {
             return literal("Property", value, loc)
         }
