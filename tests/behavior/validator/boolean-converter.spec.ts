@@ -1,6 +1,6 @@
-import createConverter from "@plumier/validator"
+import factory from "@plumier/validator"
 
-const convert = createConverter({ type: Boolean })
+const convert = factory({ type: Boolean })
 
 describe("Boolean Converter", () => {
     it("Should convert Trusty string to true", () => {

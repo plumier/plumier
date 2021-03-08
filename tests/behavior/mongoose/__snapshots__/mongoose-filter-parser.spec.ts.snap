@@ -1,0 +1,204 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Mongoose Filter Parser Comparison Should able to query relation 1`] = `
+Object {
+  "child": "5099803df3f4948bd2f98391",
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should invalid when provided not operator on logical operator 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Global Not operator doesn't supported in MongoDB at col 1",
+      ],
+      "path": Array [
+        "filter",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse and operator 1`] = `
+Object {
+  "$and": Array [
+    Object {
+      "age": Object {
+        "$lte": 20,
+      },
+    },
+    Object {
+      "name": "john",
+    },
+  ],
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse contains string 1`] = `
+Object {
+  "name": Object {
+    "$options": "i",
+    "$regex": "ipsum",
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse date range 1`] = `
+Object {
+  "createdAt": Object {
+    "$gte": Any<String>,
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse date range 2`] = `
+Object {
+  "createdAt": Object {
+    "$lte": Any<String>,
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse ends with string 1`] = `
+Object {
+  "name": Object {
+    "$options": "i",
+    "$regex": "ipsum$",
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse equal operator 1`] = `
+Object {
+  "name": "ipsum",
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse equal operator with reverse 1`] = `
+Object {
+  "name": "ipsum",
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse equals operator with null 1`] = `
+Object {
+  "name": Object {
+    "$exists": true,
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse greater operator 1`] = `
+Object {
+  "age": Object {
+    "$gt": 20,
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse greater or equals operator 1`] = `
+Object {
+  "age": Object {
+    "$gte": 20,
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse less operator 1`] = `
+Object {
+  "age": Object {
+    "$lt": 20,
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse less or equals operator 1`] = `
+Object {
+  "age": Object {
+    "$lte": 20,
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse not equal operator 1`] = `
+Object {
+  "name": Object {
+    "$ne": "ipsum",
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse not equal with null 1`] = `
+Object {
+  "name": Object {
+    "$exists": false,
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse not operator 1`] = `
+Object {
+  "age": Object {
+    "$not": Object {
+      "$lte": 20,
+    },
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse number range 1`] = `
+Object {
+  "$and": Array [
+    Object {
+      "name": Object {
+        "$gte": "17",
+      },
+    },
+    Object {
+      "name": Object {
+        "$lte": "30",
+      },
+    },
+  ],
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse or operator 1`] = `
+Object {
+  "$or": Array [
+    Object {
+      "age": Object {
+        "$lte": 20,
+      },
+    },
+    Object {
+      "name": "john",
+    },
+  ],
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse property vs property 1`] = `
+Object {
+  "createdAt": "name",
+}
+`;
+
+exports[`Mongoose Filter Parser Comparison Should parse starts with string 1`] = `
+Object {
+  "name": Object {
+    "$options": "i",
+    "$regex": "^ipsum",
+  },
+}
+`;
+
+exports[`Mongoose Filter Parser Filter Parser Authorizer Should able to secure filter by policy 1`] = `
+Object {
+  "message": "Unauthorized to access filter properties email",
+  "status": 401,
+}
+`;

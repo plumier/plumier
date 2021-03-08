@@ -213,18 +213,18 @@ export class Post {
 
 Above code enabled filters for `slug`, `title` and `createdAt` fields. Using above generated API you may request like below.
 
-```bash
+```
 # Filter response based on slug property using equals comparison
-GET /posts?filter[slug]=my_cool_post
+GET /posts?filter=(slug = 'my_cool_post')
 
 # Perform range filter between dates using triple dots
-GET /posts?filter[createdAt]=2020-9-1...2020-10-1
+GET /posts?filter=(createdAt = '2020-9-1'...'2020-10-1')
 
-# Perform conditional filter (greater or equal than 9/1/2020)
-GET /posts?filter[createdAt]=>=2020-9-1
+# Perform conditional filter 
+GET /posts?filter=(createdAt >= '2020-9-1' and deleted = false)
 
 # Perform search on title that starts with word programming using asterisk
-GET /posts?filter[title]=programming*
+GET /posts?filter=(title = 'programming'*)
 ```
 
 Filter can be authorized to specific role or policy by providing list of allowed roles or policies on the decorator such as `@authorize.filter("Supervisor", "Staff")`

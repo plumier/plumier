@@ -1,7 +1,6 @@
 import { Result, ParentInfo } from "./visitor";
 import { SuperNode } from './transformer';
 import { Class } from './types';
-import { type } from "reflect/src/decorators";
 
 
 type VisitorExtension = (next: VisitorInvocation) => Result

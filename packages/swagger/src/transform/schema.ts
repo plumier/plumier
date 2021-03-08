@@ -98,18 +98,6 @@ function addRequiredOverride(modelType: (Class | Class[]), ctx: TransformContext
     return result.required!.length === 0 ? undefined : result
 }
 
-function addFilterOverride(modelType: (Class | Class[]), ctx: TransformContext) {
-    const meta = getMetadata(modelType)
-    const result: SchemaObject = { type: "object", properties: {} }
-    for (const property of meta.properties) {
-        const isFilter = !!property.decorators.find((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize" && x.access === "filter")
-        if (!isFilter) {
-            result.properties![property.name] = { readOnly: true }
-        }
-    }
-    return Object.keys(result.properties!).length === 0 ? undefined : result
-}
-
 function removeArrayRelationsOverride(modelType: (Class | Class[]), ctx: TransformContext) {
     const meta = getMetadata(modelType)
     const result: SchemaObject = { type: "object", properties: {} }
@@ -217,7 +205,6 @@ function transformTypeAdvance(type: Class | Class[] | undefined, ctx: TransformC
     const extensions = new Map(<([SchemaOverrideType, SchemaOverride])[]>[
         ["RelationAsId", addRelationAsIdOverride],
         ["Required", addRequiredOverride],
-        ["Filter", addFilterOverride],
         ["RemoveArrayRelation", removeArrayRelationsOverride],
         ["RemoveChildRelations", removeChildRelationsOverride],
         ["RemoveInverseProperty", removeInversePropertyOverride],

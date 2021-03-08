@@ -1,0 +1,2862 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Filter Parser And Parser Should able to group comparisons 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 12345234554,
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "col": 23,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 23,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 30,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "lorem ipsum",
+    },
+  },
+}
+`;
+
+exports[`Filter Parser And Parser Should able to pipe logical expression 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "LogicalExpression",
+    "left": Object {
+      "col": 0,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 0,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "column",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Number",
+        "col": 7,
+        "kind": "Literal",
+        "preference": "none",
+        "value": 1,
+      },
+    },
+    "operator": "and",
+    "right": Object {
+      "col": 13,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 13,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "column",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Number",
+        "col": 20,
+        "kind": "Literal",
+        "preference": "none",
+        "value": 2,
+      },
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "col": 26,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 26,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 33,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 3,
+    },
+  },
+}
+`;
+
+exports[`Filter Parser And Parser Should case insensitive 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 12345234554,
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "col": 23,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 23,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 30,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "lorem ipsum",
+    },
+  },
+}
+`;
+
+exports[`Filter Parser And Parser Should skip white space 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 12345234554,
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "col": 28,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 28,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 35,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "lorem ipsum",
+    },
+  },
+}
+`;
+
+exports[`Filter Parser And Parser Should skip white space 2`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 12345234554,
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "col": 23,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 23,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 30,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "lorem ipsum",
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to compare property in reverse side 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 123,
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Property",
+    "col": 4,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to compare property with boolean 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Boolean",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": true,
+  },
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to compare property with boolean 2`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Boolean",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": false,
+  },
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to compare property with number 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to compare property with number 2`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 123452.234,
+  },
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to compare property with string 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "lorem ipsum",
+  },
+}
+`;
+
+exports[`Filter Parser Equal Parser Should able to use swap position of property and value 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 1234,
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Property",
+    "col": 5,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+}
+`;
+
+exports[`Filter Parser Equal Parser Should allow property name ends with number 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column123",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Number",
+    "col": 10,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Equal Parser Should allow property name with underscore 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column_123",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Number",
+    "col": 11,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Equal Parser Should skip white space 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Number",
+    "col": 12,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to compare property in reverse side 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 123,
+  },
+  "operator": "gte",
+  "right": Object {
+    "annotation": "Property",
+    "col": 5,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to compare property with boolean 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "gte",
+  "right": Object {
+    "annotation": "Boolean",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": true,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to compare property with boolean 2`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "gte",
+  "right": Object {
+    "annotation": "Boolean",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": false,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to compare property with number 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "gte",
+  "right": Object {
+    "annotation": "Number",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to compare property with number 2`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "gte",
+  "right": Object {
+    "annotation": "Number",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 123452.234,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to compare property with string 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "gte",
+  "right": Object {
+    "annotation": "String",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "lorem ipsum",
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should able to use swap position of property and value 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 1234,
+  },
+  "operator": "gte",
+  "right": Object {
+    "annotation": "Property",
+    "col": 6,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should allow property name ends with number 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column123",
+  },
+  "operator": "gte",
+  "right": Object {
+    "annotation": "Number",
+    "col": 11,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should allow property name with underscore 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column_123",
+  },
+  "operator": "gte",
+  "right": Object {
+    "annotation": "Number",
+    "col": 12,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Equal Parser Should skip white space 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "gte",
+  "right": Object {
+    "annotation": "Number",
+    "col": 13,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to compare property in reverse side 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 123,
+  },
+  "operator": "gt",
+  "right": Object {
+    "annotation": "Property",
+    "col": 4,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to compare property with boolean 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "gt",
+  "right": Object {
+    "annotation": "Boolean",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": true,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to compare property with boolean 2`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "gt",
+  "right": Object {
+    "annotation": "Boolean",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": false,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to compare property with number 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "gt",
+  "right": Object {
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to compare property with number 2`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "gt",
+  "right": Object {
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 123452.234,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to compare property with string 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "gt",
+  "right": Object {
+    "annotation": "String",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "lorem ipsum",
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should able to use swap position of property and value 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 1234,
+  },
+  "operator": "gt",
+  "right": Object {
+    "annotation": "Property",
+    "col": 5,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should allow property name ends with number 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column123",
+  },
+  "operator": "gt",
+  "right": Object {
+    "annotation": "Number",
+    "col": 10,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should allow property name with underscore 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column_123",
+  },
+  "operator": "gt",
+  "right": Object {
+    "annotation": "Number",
+    "col": 11,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Greater Than Parser Should skip white space 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "gt",
+  "right": Object {
+    "annotation": "Number",
+    "col": 12,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345,
+  },
+}
+`;
+
+exports[`Filter Parser Group Parser Should able to group comparison 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Number",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Group Parser Should able to group logic 1`] = `
+Object {
+  "col": 1,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 1,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 1,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 8,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 12345234554,
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "col": 24,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 24,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 31,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "lorem ipsum",
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Group Parser Should prioritized group 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 1,
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "col": 14,
+    "kind": "LogicalExpression",
+    "left": Object {
+      "col": 14,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 14,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "column",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Number",
+        "col": 21,
+        "kind": "Literal",
+        "preference": "none",
+        "value": 2,
+      },
+    },
+    "operator": "and",
+    "right": Object {
+      "col": 27,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 27,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "column",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Number",
+        "col": 34,
+        "kind": "Literal",
+        "preference": "none",
+        "value": 3,
+      },
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Group Parser Should prioritized group 2`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "LogicalExpression",
+    "left": Object {
+      "col": 0,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 0,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "column",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Number",
+        "col": 7,
+        "kind": "Literal",
+        "preference": "none",
+        "value": 1,
+      },
+    },
+    "operator": "and",
+    "right": Object {
+      "col": 14,
+      "kind": "LogicalExpression",
+      "left": Object {
+        "col": 14,
+        "kind": "ComparisonExpression",
+        "left": Object {
+          "annotation": "Property",
+          "col": 14,
+          "kind": "Literal",
+          "preference": "none",
+          "value": "column",
+        },
+        "operator": "eq",
+        "right": Object {
+          "annotation": "Number",
+          "col": 21,
+          "kind": "Literal",
+          "preference": "none",
+          "value": 2,
+        },
+      },
+      "operator": "and",
+      "right": Object {
+        "col": 27,
+        "kind": "ComparisonExpression",
+        "left": Object {
+          "annotation": "Property",
+          "col": 27,
+          "kind": "Literal",
+          "preference": "none",
+          "value": "column",
+        },
+        "operator": "eq",
+        "right": Object {
+          "annotation": "Number",
+          "col": 34,
+          "kind": "Literal",
+          "preference": "none",
+          "value": 3,
+        },
+      },
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "col": 41,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 41,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 48,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 4,
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should able to compare property in reverse side 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 123,
+  },
+  "operator": "lte",
+  "right": Object {
+    "annotation": "Property",
+    "col": 5,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should able to compare property with boolean 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "lte",
+  "right": Object {
+    "annotation": "Boolean",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": true,
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should able to compare property with boolean 2`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "lte",
+  "right": Object {
+    "annotation": "Boolean",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": false,
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should able to compare property with number 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "lte",
+  "right": Object {
+    "annotation": "Number",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should able to compare property with number 2`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "lte",
+  "right": Object {
+    "annotation": "Number",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 123452.234,
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should able to compare property with string 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "lte",
+  "right": Object {
+    "annotation": "String",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "lorem ipsum",
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should able to use swap position of property and value 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 1234,
+  },
+  "operator": "lte",
+  "right": Object {
+    "annotation": "Property",
+    "col": 6,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should allow property name ends with number 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column123",
+  },
+  "operator": "lte",
+  "right": Object {
+    "annotation": "Number",
+    "col": 11,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should allow property name with underscore 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column_123",
+  },
+  "operator": "lte",
+  "right": Object {
+    "annotation": "Number",
+    "col": 12,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Equal Parser Should skip white space 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "lte",
+  "right": Object {
+    "annotation": "Number",
+    "col": 13,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345,
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to compare property in reverse side 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 123,
+  },
+  "operator": "lt",
+  "right": Object {
+    "annotation": "Property",
+    "col": 4,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to compare property with boolean 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "lt",
+  "right": Object {
+    "annotation": "Boolean",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": true,
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to compare property with boolean 2`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "lt",
+  "right": Object {
+    "annotation": "Boolean",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": false,
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to compare property with number 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "lt",
+  "right": Object {
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to compare property with number 2`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "lt",
+  "right": Object {
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 123452.234,
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to compare property with string 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "lt",
+  "right": Object {
+    "annotation": "String",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "lorem ipsum",
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should able to use swap position of property and value 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 1234,
+  },
+  "operator": "lt",
+  "right": Object {
+    "annotation": "Property",
+    "col": 5,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should allow property name ends with number 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column123",
+  },
+  "operator": "lt",
+  "right": Object {
+    "annotation": "Number",
+    "col": 10,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should allow property name with underscore 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column_123",
+  },
+  "operator": "lt",
+  "right": Object {
+    "annotation": "Number",
+    "col": 11,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Less Than Parser Should skip white space 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "lt",
+  "right": Object {
+    "annotation": "Number",
+    "col": 12,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345,
+  },
+}
+`;
+
+exports[`Filter Parser Like Parser Should not allow reverse side position 1`] = `"Syntax error at col 0: >*'abc' = column"`;
+
+exports[`Filter Parser Like Parser Should parse exact string 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 9,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "abcd",
+  },
+}
+`;
+
+exports[`Filter Parser Like Parser Should parse string with contains preference 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "like",
+  "right": Object {
+    "annotation": "String",
+    "col": 9,
+    "kind": "Literal",
+    "preference": "contains",
+    "value": "abcd",
+  },
+}
+`;
+
+exports[`Filter Parser Like Parser Should parse string with ends preference 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "like",
+  "right": Object {
+    "annotation": "String",
+    "col": 9,
+    "kind": "Literal",
+    "preference": "endsWith",
+    "value": "abcd",
+  },
+}
+`;
+
+exports[`Filter Parser Like Parser Should parse string with starts preference 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "like",
+  "right": Object {
+    "annotation": "String",
+    "col": 9,
+    "kind": "Literal",
+    "preference": "startsWith",
+    "value": "abcd",
+  },
+}
+`;
+
+exports[`Filter Parser Logical Order Should parse OR first 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "col",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 4,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 1,
+    },
+  },
+  "operator": "or",
+  "right": Object {
+    "col": 9,
+    "kind": "LogicalExpression",
+    "left": Object {
+      "col": 9,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 9,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "col",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Number",
+        "col": 13,
+        "kind": "Literal",
+        "preference": "none",
+        "value": 2,
+      },
+    },
+    "operator": "and",
+    "right": Object {
+      "col": 19,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 19,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "col",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Number",
+        "col": 23,
+        "kind": "Literal",
+        "preference": "none",
+        "value": 3,
+      },
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Logical Order Should parse from right 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "LogicalExpression",
+    "left": Object {
+      "col": 0,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 0,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "col",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Number",
+        "col": 4,
+        "kind": "Literal",
+        "preference": "none",
+        "value": 1,
+      },
+    },
+    "operator": "and",
+    "right": Object {
+      "col": 10,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 10,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "col",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Number",
+        "col": 14,
+        "kind": "Literal",
+        "preference": "none",
+        "value": 2,
+      },
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "col": 20,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 20,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "col",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 24,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 3,
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Logical Order Should prioritize group 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "col",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 4,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 1,
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "col": 11,
+    "kind": "LogicalExpression",
+    "left": Object {
+      "col": 11,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 11,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "col",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Number",
+        "col": 15,
+        "kind": "Literal",
+        "preference": "none",
+        "value": 2,
+      },
+    },
+    "operator": "and",
+    "right": Object {
+      "col": 21,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 21,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "col",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Number",
+        "col": 25,
+        "kind": "Literal",
+        "preference": "none",
+        "value": 3,
+      },
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should able to compare property in reverse side 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 123,
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "Property",
+    "col": 5,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should able to compare property with boolean 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "Boolean",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": true,
+  },
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should able to compare property with boolean 2`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "Boolean",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": false,
+  },
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should able to compare property with number 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "Number",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should able to compare property with number 2`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "Number",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 123452.234,
+  },
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should able to compare property with string 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "String",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "lorem ipsum",
+  },
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should able to use swap position of property and value 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Number",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 1234,
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "Property",
+    "col": 6,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should allow property name ends with number 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column123",
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "Number",
+    "col": 11,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should allow property name with underscore 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column_123",
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "Number",
+    "col": 12,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345234554,
+  },
+}
+`;
+
+exports[`Filter Parser Not Equal Parser Should skip white space 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "Number",
+    "col": 13,
+    "kind": "Literal",
+    "preference": "none",
+    "value": 12345,
+  },
+}
+`;
+
+exports[`Filter Parser Not Parser Should able to use not with expression 1`] = `
+Object {
+  "argument": Object {
+    "col": 2,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 2,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 9,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 12345234554,
+    },
+  },
+  "col": 0,
+  "kind": "UnaryExpression",
+  "operator": "not",
+}
+`;
+
+exports[`Filter Parser Not Parser Should able to use not with expression without space 1`] = `
+Object {
+  "argument": Object {
+    "col": 1,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 1,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 8,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 12345234554,
+    },
+  },
+  "col": 0,
+  "kind": "UnaryExpression",
+  "operator": "not",
+}
+`;
+
+exports[`Filter Parser Not Parser Should not confused in string 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "!123",
+  },
+}
+`;
+
+exports[`Filter Parser Not Parser Should prioritized than binary expression 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 123,
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "argument": Object {
+      "col": 17,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 17,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "column",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Number",
+        "col": 24,
+        "kind": "Literal",
+        "preference": "none",
+        "value": 12345234554,
+      },
+    },
+    "col": 15,
+    "kind": "UnaryExpression",
+    "operator": "not",
+  },
+}
+`;
+
+exports[`Filter Parser Null Value Should able to compare column with null 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Null",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": undefined,
+  },
+}
+`;
+
+exports[`Filter Parser Null Value Should able to compare column with null case insensitive 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "Null",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": undefined,
+  },
+}
+`;
+
+exports[`Filter Parser Null Value Should able to compare column with null with != 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "ne",
+  "right": Object {
+    "annotation": "Null",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": undefined,
+  },
+}
+`;
+
+exports[`Filter Parser Or Parser Should able to group comparisons 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 12345234554,
+    },
+  },
+  "operator": "or",
+  "right": Object {
+    "col": 22,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 22,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 29,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "lorem ipsum",
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Or Parser Should able to pipe logical expression 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "LogicalExpression",
+    "left": Object {
+      "col": 0,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 0,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "column",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Number",
+        "col": 7,
+        "kind": "Literal",
+        "preference": "none",
+        "value": 1,
+      },
+    },
+    "operator": "or",
+    "right": Object {
+      "col": 12,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 12,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "column",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Number",
+        "col": 19,
+        "kind": "Literal",
+        "preference": "none",
+        "value": 2,
+      },
+    },
+  },
+  "operator": "or",
+  "right": Object {
+    "col": 24,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 24,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 31,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 3,
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Or Parser Should case insensitive 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 12345234554,
+    },
+  },
+  "operator": "or",
+  "right": Object {
+    "col": 22,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 22,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 29,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "lorem ipsum",
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Or Parser Should skip white space 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 12345234554,
+    },
+  },
+  "operator": "or",
+  "right": Object {
+    "col": 27,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 27,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 34,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "lorem ipsum",
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Or Parser Should skip white space 2`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Number",
+      "col": 7,
+      "kind": "Literal",
+      "preference": "none",
+      "value": 12345234554,
+    },
+  },
+  "operator": "or",
+  "right": Object {
+    "col": 22,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 22,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "column",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 29,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "lorem ipsum",
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Range Value Should ignore space 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "range",
+  "right": Object {
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "range",
+    "value": Array [
+      1,
+      2,
+    ],
+  },
+}
+`;
+
+exports[`Filter Parser Range Value Should not parse boolean range 1`] = `"Syntax error at col 12: column=true >... false"`;
+
+exports[`Filter Parser Range Value Should parse correctly 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "range",
+  "right": Object {
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "range",
+    "value": Array [
+      1,
+      2,
+    ],
+  },
+}
+`;
+
+exports[`Filter Parser Range Value Should parse grouping 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "range",
+  "right": Array [
+    Object {
+      "annotation": "Number",
+      "col": 8,
+      "kind": "Literal",
+      "preference": "range",
+      "value": Array [
+        1,
+        2,
+      ],
+    },
+  ],
+}
+`;
+
+exports[`Filter Parser Range Value Should parse number range correctly 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "range",
+  "right": Object {
+    "annotation": "Number",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "range",
+    "value": Array [
+      12345,
+      2345678,
+    ],
+  },
+}
+`;
+
+exports[`Filter Parser Range Value Should parse string range 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "column",
+  },
+  "operator": "range",
+  "right": Object {
+    "annotation": "String",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "range",
+    "value": Array [
+      "2020-1-1",
+      "2020-1-1",
+    ],
+  },
+}
+`;
+
+exports[`Filter Parser String Should able to escape quote 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "lorem",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "ips'um",
+  },
+}
+`;
+
+exports[`Filter Parser String Should able to escape quote 2`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "lorem",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "ips\\"um",
+  },
+}
+`;
+
+exports[`Filter Parser String Should able to escape special chars 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "lorem",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "data
+data",
+  },
+}
+`;
+
+exports[`Filter Parser String Should able to escape unicodes 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "lorem",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "着",
+  },
+}
+`;
+
+exports[`Filter Parser String Should allow double quote 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "lorem",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "ipsum",
+  },
+}
+`;
+
+exports[`Filter Parser String Should allow single quote 1`] = `
+Object {
+  "col": 0,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 0,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "lorem",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "ipsum",
+  },
+}
+`;
+
+exports[`Filter Parser String Should not greedy 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 0,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "lorem",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 6,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "ipsum",
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "col": 18,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 18,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "lorem",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 24,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "ipsum",
+    },
+  },
+}
+`;

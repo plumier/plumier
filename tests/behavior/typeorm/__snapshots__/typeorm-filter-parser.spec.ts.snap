@@ -1,0 +1,225 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TypeORM Filter Parser Comparison Should able to query relation 1`] = `
+Object {
+  "child": Object {
+    "id": "123",
+  },
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should invalid when provided not operator on logical operator 1`] = `
+Object {
+  "_multipleParameters": false,
+  "_type": "not",
+  "_useParameter": true,
+  "_value": Array [
+    Object {
+      "age": Object {
+        "_multipleParameters": false,
+        "_type": "lessThanOrEqual",
+        "_useParameter": true,
+        "_value": 20,
+      },
+    },
+    Object {
+      "name": "john",
+    },
+  ],
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse and operator 1`] = `
+Object {
+  "age": Object {
+    "_multipleParameters": false,
+    "_type": "lessThanOrEqual",
+    "_useParameter": true,
+    "_value": 20,
+  },
+  "name": "john",
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse contains string 1`] = `
+Object {
+  "name": Object {
+    "_multipleParameters": false,
+    "_type": "like",
+    "_useParameter": true,
+    "_value": "%ipsum%",
+  },
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse date range 1`] = `
+Object {
+  "createdAt": Object {
+    "_multipleParameters": true,
+    "_type": "between",
+    "_useParameter": true,
+    "_value": Any<Array>,
+  },
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse ends with string 1`] = `
+Object {
+  "name": Object {
+    "_multipleParameters": false,
+    "_type": "like",
+    "_useParameter": true,
+    "_value": "%ipsum",
+  },
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse equal operator 1`] = `
+Object {
+  "name": "ipsum",
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse equals operator with null 1`] = `
+Object {
+  "name": Object {
+    "_multipleParameters": false,
+    "_type": "isNull",
+    "_useParameter": false,
+  },
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse greater operator 1`] = `
+Object {
+  "age": Object {
+    "_multipleParameters": false,
+    "_type": "moreThan",
+    "_useParameter": true,
+    "_value": 20,
+  },
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse greater or equals operator 1`] = `
+Object {
+  "age": Object {
+    "_multipleParameters": false,
+    "_type": "moreThanOrEqual",
+    "_useParameter": true,
+    "_value": 20,
+  },
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse less operator 1`] = `
+Object {
+  "age": Object {
+    "_multipleParameters": false,
+    "_type": "lessThan",
+    "_useParameter": true,
+    "_value": 20,
+  },
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse less or equals operator 1`] = `
+Object {
+  "age": Object {
+    "_multipleParameters": false,
+    "_type": "lessThanOrEqual",
+    "_useParameter": true,
+    "_value": 20,
+  },
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse not equal operator 1`] = `
+Object {
+  "name": Object {
+    "_multipleParameters": false,
+    "_type": "not",
+    "_useParameter": true,
+    "_value": "ipsum",
+  },
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse not equal with null 1`] = `
+Object {
+  "name": Object {
+    "_multipleParameters": false,
+    "_type": "not",
+    "_useParameter": true,
+    "_value": Object {
+      "_multipleParameters": false,
+      "_type": "isNull",
+      "_useParameter": false,
+    },
+  },
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse not operator 1`] = `
+Object {
+  "_multipleParameters": false,
+  "_type": "not",
+  "_useParameter": true,
+  "_value": Object {
+    "age": Object {
+      "_multipleParameters": false,
+      "_type": "lessThanOrEqual",
+      "_useParameter": true,
+      "_value": 20,
+    },
+  },
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse number range 1`] = `
+Object {
+  "name": Object {
+    "_multipleParameters": true,
+    "_type": "between",
+    "_useParameter": true,
+    "_value": Array [
+      "17",
+      "30",
+    ],
+  },
+}
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse or operator 1`] = `
+Array [
+  Object {
+    "age": Object {
+      "_multipleParameters": false,
+      "_type": "lessThanOrEqual",
+      "_useParameter": true,
+      "_value": 20,
+    },
+  },
+  Object {
+    "name": "john",
+  },
+]
+`;
+
+exports[`TypeORM Filter Parser Comparison Should parse starts with string 1`] = `
+Object {
+  "name": Object {
+    "_multipleParameters": false,
+    "_type": "like",
+    "_useParameter": true,
+    "_value": "ipsum%",
+  },
+}
+`;
+
+exports[`TypeORM Filter Parser Filter Parser Authorizer Should able to secure filter by policy 1`] = `
+Object {
+  "message": "Unauthorized to access filter properties email",
+  "status": 401,
+}
+`;

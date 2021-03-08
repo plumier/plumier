@@ -73,7 +73,7 @@ function getRouteAuthorizeDecorators(info: RouteInfo, globalDecorator: string | 
     return getGlobalDecorators(globalDecorator)
 }
 
-async function createAuthContext(ctx: ActionContext, access: AccessModifier): Promise<AuthorizationContext> {
+function createAuthContext(ctx: ActionContext, access: AccessModifier): AuthorizationContext{
     const { route, state } = ctx
     return <AuthorizationContext>{
         user: state.user, route, ctx, access, policyIds: [],
@@ -502,7 +502,7 @@ async function responseAuthorize(raw: ActionResult, ctx: ActionContext): Promise
     const responseType = ctx.route.action.decorators.find((x: ResponseTypeDecorator): x is ResponseTypeDecorator => x.kind === "plumier-meta:response-type")
     const type = getType(responseType) ?? ctx.route.action.returnType
     if (type !== Promise && type && raw.status === 200 && raw.body) {
-        const info = await createAuthContext(ctx, "read")
+        const info = createAuthContext(ctx, "read")
         const node = await compileType(type, info, [])
         raw.body = Array.isArray(raw.body) && raw.body.length === 0 ? [] : await filterType(raw.body, node, info)
         return raw
@@ -521,7 +521,7 @@ async function responseAuthorize(raw: ActionResult, ctx: ActionContext): Promise
 async function checkAuthorize(ctx: ActionContext) {
     if (ctx.config.enableAuthorization) {
         const { route, parameters, config } = ctx
-        const info = await createAuthContext(ctx, "route")
+        const info = createAuthContext(ctx, "route")
         const decorator = getRouteAuthorizeDecorators(route, config.globalAuthorizations)
         //check user access
         await checkUserAccessToRoute(decorator, info)
@@ -669,5 +669,6 @@ export {
     AccessModifier, EntityPolicyProviderDecorator, EntityProviderQuery, PublicAuthPolicy, AuthenticatedAuthPolicy,
     authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, Public, Authenticated,
     AuthPolicy, CustomAuthPolicy, EntityAuthPolicy, globalPolicies, analyzeAuthPolicyNameConflict,
-    createMistypeRouteAnalyzer, AuthorizeReadonly, AuthorizeWriteonly, ReadonlyAuthPolicy, WriteonlyAuthPolicy
+    createMistypeRouteAnalyzer, AuthorizeReadonly, AuthorizeWriteonly, ReadonlyAuthPolicy, WriteonlyAuthPolicy,
+    createAuthContext, executeAuthorizer, throwAuthError
 }

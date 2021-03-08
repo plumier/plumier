@@ -1,4 +1,4 @@
-import reflect, { generic, type, parameterProperties, reflection, DecoratorOptionId, DecoratorId } from "@plumier/reflect"
+import reflect, { generic, type, parameterProperties, reflection, DecoratorOptionId, DecoratorId, noop } from "@plumier/reflect"
 
 
 
@@ -122,7 +122,7 @@ describe("Generic", () => {
         @generic.template("T", "U")
         @generic.type("T", "U")
         class SuperClass<A, B> extends GrandSuperClass<A, B>{
-            grandSuper(pur:B):A { return {} as any }
+            grandSuper(pur: B): A { return {} as any }
         }
         @generic.type(Number, Date)
         class MyClass extends SuperClass<number, Date>{ }
@@ -375,5 +375,49 @@ describe("Create Generic", () => {
         const ChildClass = generic.create(SuperClass, Number)
         const instance = new ChildClass()
         expect(fn).toBeCalledTimes(1)
+    })
+})
+
+describe("Get Generic Type", () => {
+    it("Should able to get generic type", () => {
+        @generic.template("A")
+        class SuperClass<A> {
+            @type("A")
+            myProp: A
+        }
+        @generic.type(Number)
+        class MyClass extends SuperClass<number>{ }
+        expect(generic.getGenericType(MyClass, "A")).toBe(Number)
+    })
+    it("Should able to get generic type with multiple templates", () => {
+        @generic.template("A", "B")
+        class SuperClass<A, B> {
+            @type("A")
+            myProp: A
+            @type("B")
+            myOther: B
+        }
+        @generic.type(Number, String)
+        class MyClass extends SuperClass<number, string>{ }
+        const c = reflect(MyClass)
+        expect(generic.getGenericType(MyClass, "A")).toBe(Number)
+        expect(generic.getGenericType(MyClass, "B")).toBe(String)
+    })
+    it("Should able to work with more complex generic type", () => {
+        @generic.template("T", "U")
+        class GrandSuperClass<T, U>{
+            @type("T")
+            grandSuper(@type("U") par: U): T { return {} as any }
+        }
+        @generic.template("A", "B")
+        @generic.type("A", "B")
+        class SuperClass<A, B> extends GrandSuperClass<A, B>{
+            @type("B")
+            super(@type("A") par: A): B { return {} as any }
+        }
+        @generic.type(Number, Date)
+        class MyClass extends SuperClass<number, Date>{ }
+        expect(generic.getGenericType(MyClass, "T")).toBe(Number)
+        expect(generic.getGenericType(MyClass, "U")).toBe(Date)
     })
 })

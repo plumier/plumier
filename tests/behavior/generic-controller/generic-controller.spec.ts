@@ -9,7 +9,6 @@ import {
     DefaultFacility,
     entity,
     entityPolicy,
-    FilterEntity,
     Invocation,
     Middleware,
     OneToManyRepository,
@@ -30,7 +29,7 @@ import { cleanupConsole } from "@plumier/testing"
 import { sign } from "jsonwebtoken"
 import { Context } from "koa"
 import { join } from "path"
-import Plumier, { ControllerFacility, ControllerFacilityOption, domain, WebApiFacility, genericController } from "plumier"
+import Plumier, { ControllerFacility, ControllerFacilityOption, domain, genericController, WebApiFacility } from "plumier"
 import supertest from "supertest"
 import { expectError } from "../helper"
 
@@ -57,10 +56,10 @@ class ErrorHandlerMiddleware implements Middleware {
 
 class MockRepo<T> implements Repository<T>{
     constructor(private fn: jest.Mock) { }
-    count(query?: FilterEntity<T>): Promise<number> {
+    count(query?: any): Promise<number> {
         throw new Error('Method not implemented.')
     }
-    async find(offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
+    async find(offset: number, limit: number, query: any): Promise<T[]> {
         this.fn(offset, limit, query)
         return []
     }
@@ -84,10 +83,10 @@ class MockRepo<T> implements Repository<T>{
 
 class MockOneToManyRepo<P, T> implements OneToManyRepository<P, T>{
     constructor(private fn: jest.Mock) { }
-    count(pid: any, query?: FilterEntity<T>): Promise<number> {
+    count(pid: any, query?: any): Promise<number> {
         throw new Error('Method not implemented.')
     }
-    async find(pid: any, offset: number, limit: number, query: FilterEntity<T>): Promise<T[]> {
+    async find(pid: any, offset: number, limit: number, query: any): Promise<T[]> {
         this.fn(pid, offset, limit, query)
         return []
     }
@@ -2715,7 +2714,7 @@ describe("Entity Policy", () => {
     ]
     class UserRepo extends MockRepo<User>{
         constructor(fn: jest.Mock) { super(fn) }
-        async find(offset: number, limit: number, query: FilterEntity<User>): Promise<User[]> {
+        async find(offset: number, limit: number, query: any): Promise<User[]> {
             return users
         }
         async findById(id: any) {
@@ -2724,7 +2723,7 @@ describe("Entity Policy", () => {
     }
     class TodoRepo extends MockOneToManyRepo<User, Todo>{
         constructor(fn: jest.Mock) { super(fn) }
-        async find(pid: number, offset: number, limit: number, query: FilterEntity<Todo>): Promise<Todo[]> {
+        async find(pid: number, offset: number, limit: number, query: any): Promise<Todo[]> {
             return todos.filter(x => x.user.id === pid)
         }
         async findById(id: any) {
@@ -2935,7 +2934,7 @@ describe("Response Transformer", () => {
     ]
     class UserRepo extends MockRepo<User>{
         constructor(fn: jest.Mock) { super(fn) }
-        async find(offset: number, limit: number, query: FilterEntity<User>): Promise<User[]> {
+        async find(offset: number, limit: number, query: any): Promise<User[]> {
             return users
         }
         async findById(id: any) {
@@ -2944,7 +2943,7 @@ describe("Response Transformer", () => {
     }
     class TodoRepo extends MockOneToManyRepo<User, Todo>{
         constructor(fn: jest.Mock) { super(fn) }
-        async find(pid: number, offset: number, limit: number, query: FilterEntity<Todo>): Promise<Todo[]> {
+        async find(pid: number, offset: number, limit: number, query: any): Promise<Todo[]> {
             return todos.filter(x => x.user.id === pid)
         }
         async findById(id: any) {

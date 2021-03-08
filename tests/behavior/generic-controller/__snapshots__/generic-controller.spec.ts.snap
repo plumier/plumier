@@ -759,21 +759,8 @@ Array [
     "in": "query",
     "name": "filter",
     "schema": Object {
-      "allOf": Array [
-        Object {
-          "$ref": "#/components/schemas/Animal",
-        },
-        Object {
-          "properties": Object {
-            "id": Object {
-              "readOnly": true,
-            },
-          },
-          "type": "object",
-        },
-      ],
+      "type": "string",
     },
-    "style": "deepObject",
   },
   Object {
     "in": "query",
@@ -1057,35 +1044,8 @@ Array [
     "in": "query",
     "name": "filter",
     "schema": Object {
-      "allOf": Array [
-        Object {
-          "$ref": "#/components/schemas/Animal",
-        },
-        Object {
-          "properties": Object {
-            "tags": Object {
-              "items": Object {
-                "type": "number",
-              },
-              "type": "array",
-            },
-          },
-          "type": "object",
-        },
-        Object {
-          "properties": Object {
-            "id": Object {
-              "readOnly": true,
-            },
-            "tags": Object {
-              "readOnly": true,
-            },
-          },
-          "type": "object",
-        },
-      ],
+      "type": "string",
     },
-    "style": "deepObject",
   },
   Object {
     "in": "query",
@@ -1164,21 +1124,8 @@ Array [
     "in": "query",
     "name": "filter",
     "schema": Object {
-      "allOf": Array [
-        Object {
-          "$ref": "#/components/schemas/Tag",
-        },
-        Object {
-          "properties": Object {
-            "id": Object {
-              "readOnly": true,
-            },
-          },
-          "type": "object",
-        },
-      ],
+      "type": "string",
     },
-    "style": "deepObject",
   },
   Object {
     "in": "query",
@@ -1982,7 +1929,7 @@ Array [
       },
       Object {
         "name": "filter",
-        "type": User,
+        "type": String,
       },
       Object {
         "name": "select",
@@ -2093,7 +2040,7 @@ Array [
       },
       Object {
         "name": "filter",
-        "type": User,
+        "type": String,
       },
       Object {
         "name": "select",
@@ -2612,7 +2559,7 @@ Array [
       },
       Object {
         "name": "filter",
-        "type": Animal,
+        "type": String,
       },
       Object {
         "name": "select",

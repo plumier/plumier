@@ -144,8 +144,8 @@ class AuthDecoratorImpl {
      * Authorize a domain property to be used as query string filter
      * @param policies List of allowed policies
      */
-    filter(...policies: string[]): CustomPropertyDecorator {
-        return this.byPolicies(policies.length == 0 ? [Authenticated] : policies, "filter")
+    filter(...policies: string[]) {
+        return this.byPolicies(policies, "filter")
     }
 
     /**

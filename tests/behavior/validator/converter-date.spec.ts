@@ -1,6 +1,6 @@
-import createConverter from "@plumier/validator"
+import factory from "@plumier/validator"
 
-const convert = createConverter({ type: Date })
+const convert = factory({ type: Date })
 
 describe("Date Converter", () => {
     it("Should convert date", () => {

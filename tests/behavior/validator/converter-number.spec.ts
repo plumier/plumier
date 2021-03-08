@@ -1,6 +1,6 @@
-import createConverter from "@plumier/validator"
+import factory from "@plumier/validator"
 
-const convert = createConverter({ type: Number })
+const convert = factory({ type: Number })
 
 describe("Number Converter", () => {
 

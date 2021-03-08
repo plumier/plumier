@@ -1,6 +1,6 @@
 import reflect from "@plumier/reflect"
 
-import createConverter, { createValidator, val, validate, convert } from "@plumier/validator"
+import factory, { createValidator, val, validate, convert } from "@plumier/validator"
 
 
 describe("Generic Type Inference", () => {
@@ -34,7 +34,7 @@ describe("Generic Type Inference", () => {
                     public property: string
                 ) { }
             }
-            const valid = createConverter({ type: Dummy })
+            const valid = factory({ type: Dummy })
             const result = valid({ property: "lorem.ipsum@gmail.com" })
             expect(result).toMatchObject({ value: { property: "lorem.ipsum@gmail.com" } })
         })
@@ -46,7 +46,7 @@ describe("Generic Type Inference", () => {
                     public property: string
                 ) { }
             }
-            const valid = createConverter({ type: [Dummy] })
+            const valid = factory({ type: [Dummy] })
             const result = valid([{ property: "lorem.ipsum@gmail.com" }])
             expect(result).toMatchObject({ value: [{ property: "lorem.ipsum@gmail.com" }] })
         })
@@ -58,7 +58,7 @@ describe("Generic Type Inference", () => {
                     public property: string
                 ) { }
             }
-            const valid = createConverter(Dummy)
+            const valid = factory(Dummy)
             const result = valid({ property: "lorem.ipsum@gmail.com" })
             expect(result).toMatchObject({ value: { property: "lorem.ipsum@gmail.com" } })
         })
@@ -70,7 +70,7 @@ describe("Generic Type Inference", () => {
                     public property: string
                 ) { }
             }
-            const valid = createConverter([Dummy])
+            const valid = factory([Dummy])
             const result = valid([{ property: "lorem.ipsum@gmail.com" }])
             expect(result).toMatchObject({ value: [{ property: "lorem.ipsum@gmail.com" }] })
         })

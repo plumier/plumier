@@ -1,0 +1,503 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Filter Parser Authorizer Should able to secure filter by policy 1`] = `
+Object {
+  "message": "Unauthorized to access filter properties email",
+  "status": 401,
+}
+`;
+
+exports[`Filter Parser Authorizer Should able to specify multiple policy by multiple decorators 1`] = `
+Object {
+  "message": "Unauthorized to access filter properties email",
+  "status": 401,
+}
+`;
+
+exports[`Filter Parser Authorizer Should able to specify multiple policy by single decorator 1`] = `
+Object {
+  "message": "Unauthorized to access filter properties email",
+  "status": 401,
+}
+`;
+
+exports[`Filter Parser Authorizer Should check unauthorized column 1`] = `
+Object {
+  "message": "Unauthorized to access filter properties name, deleted, createdAt",
+  "status": 401,
+}
+`;
+
+exports[`Filter Parser Authorizer Should check unauthorized column if compared as column vs column 1`] = `
+Object {
+  "message": "Unauthorized to access filter properties name",
+  "status": 401,
+}
+`;
+
+exports[`Filter Parser Authorizer Should check unauthorized column on public route 1`] = `
+Object {
+  "message": "Unauthorized to access filter properties name, deleted, createdAt",
+  "status": 403,
+}
+`;
+
+exports[`Filter Parser Authorizer Should not conflict with @authorize.write() 1`] = `
+Object {
+  "message": "Unauthorized to access filter properties email",
+  "status": 401,
+}
+`;
+
+exports[`Filter Parser Should allow grouped expression 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "name",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "ipsum",
+  },
+}
+`;
+
+exports[`Filter Parser Should allow input array with simple query string notation 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 1,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 1,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "name",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 6,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "ipsum",
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "col": 20,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 20,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "deleted",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Boolean",
+      "col": 28,
+      "kind": "Literal",
+      "preference": "none",
+      "value": false,
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Should allow input array with simple query string notation without grouping 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 1,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 1,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "name",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 6,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "ipsum",
+    },
+  },
+  "operator": "and",
+  "right": Object {
+    "col": 20,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 20,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "deleted",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "Boolean",
+      "col": 28,
+      "kind": "Literal",
+      "preference": "none",
+      "value": false,
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Should allow multiple expression 1`] = `
+Object {
+  "col": 0,
+  "kind": "LogicalExpression",
+  "left": Object {
+    "col": 0,
+    "kind": "LogicalExpression",
+    "left": Object {
+      "col": 1,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 1,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "name",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "String",
+        "col": 6,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "ipsum",
+      },
+    },
+    "operator": "and",
+    "right": Object {
+      "col": 20,
+      "kind": "ComparisonExpression",
+      "left": Object {
+        "annotation": "Property",
+        "col": 20,
+        "kind": "Literal",
+        "preference": "none",
+        "value": "deleted",
+      },
+      "operator": "eq",
+      "right": Object {
+        "annotation": "Boolean",
+        "col": 30,
+        "kind": "Literal",
+        "preference": "none",
+        "value": false,
+      },
+    },
+  },
+  "operator": "or",
+  "right": Object {
+    "col": 40,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 40,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "email",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 48,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "lorem@ipsum.com",
+    },
+  },
+}
+`;
+
+exports[`Filter Parser Should allow simple expression 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "name",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "ipsum",
+  },
+}
+`;
+
+exports[`Filter Parser Should allow simple expression with NOT expression 1`] = `
+Object {
+  "argument": Object {
+    "col": 2,
+    "kind": "ComparisonExpression",
+    "left": Object {
+      "annotation": "Property",
+      "col": 2,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "name",
+    },
+    "operator": "eq",
+    "right": Object {
+      "annotation": "String",
+      "col": 7,
+      "kind": "Literal",
+      "preference": "none",
+      "value": "ipsum",
+    },
+  },
+  "col": 1,
+  "kind": "UnaryExpression",
+  "operator": "not",
+}
+`;
+
+exports[`Filter Parser Should catch expression error by 422 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Syntax error at col 14: (name='ipsum' >MUL deleted=false)",
+      ],
+      "path": Array [
+        "filter",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Should catch if provided object value 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "String or array string value expected",
+      ],
+      "path": Array [
+        "filter",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Should catch invalid value type 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Unable to convert \\"123\\" into Boolean",
+      ],
+      "path": Array [
+        "filter",
+        "deleted",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Should catch unknown column name 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Unknown property delted",
+      ],
+      "path": Array [
+        "filter",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Should catch unknown column name on property vs property 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Unknown property delted",
+      ],
+      "path": Array [
+        "filter",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Filter Parser Should convert value correctly on reverse equation 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "String",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": true,
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Property",
+    "col": 8,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "deleted",
+  },
+}
+`;
+
+exports[`Filter Parser Should convert value properly 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "createdAt",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 11,
+    "kind": "Literal",
+    "preference": "none",
+    "value": Any<String>,
+  },
+}
+`;
+
+exports[`Filter Parser Should not affecting other parameter 1`] = `Object {}`;
+
+exports[`Filter Parser Should not check property vs property 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "email",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "Property",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "name",
+  },
+}
+`;
+
+exports[`Filter Parser Should not error when provided undefined 1`] = `Object {}`;
+
+exports[`Filter Parser Should parse range number properly 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "age",
+  },
+  "operator": "range",
+  "right": Object {
+    "annotation": "Number",
+    "col": 5,
+    "kind": "Literal",
+    "preference": "range",
+    "value": Array [
+      17,
+      20,
+    ],
+  },
+}
+`;
+
+exports[`Filter Parser Should skip validation 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "email",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 7,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "ipsum",
+  },
+}
+`;
+
+exports[`Filter Parser Should work with generic type controller 1`] = `
+Object {
+  "col": 1,
+  "kind": "ComparisonExpression",
+  "left": Object {
+    "annotation": "Property",
+    "col": 1,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "name",
+  },
+  "operator": "eq",
+  "right": Object {
+    "annotation": "String",
+    "col": 6,
+    "kind": "Literal",
+    "preference": "none",
+    "value": "ipsum",
+  },
+}
+`;

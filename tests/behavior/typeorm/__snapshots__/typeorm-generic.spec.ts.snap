@@ -991,6 +991,17 @@ Array [
 ]
 `;
 
+exports[`Filter Generic Controller Should able to filter with and 1`] = `
+Array [
+  Object {
+    "boolean": false,
+    "id": 3,
+    "number": 3,
+    "string": "dolor",
+  },
+]
+`;
+
 exports[`Filter Generic Controller Should able to filter with exact value 1`] = `
 Array [
   Object {
@@ -1071,6 +1082,23 @@ Array [
     "id": 3,
     "number": 3,
     "string": "dolor",
+  },
+]
+`;
+
+exports[`Filter Generic Controller Should able to filter with or 1`] = `
+Array [
+  Object {
+    "boolean": true,
+    "id": 1,
+    "number": 1,
+    "string": "lorem",
+  },
+  Object {
+    "boolean": false,
+    "id": 2,
+    "number": 2,
+    "string": "ipsum",
   },
 ]
 `;

@@ -183,12 +183,12 @@ Object {
   },
   "binder": binder,
   "checkAuthorize": checkAuthorize,
+  "createAuthContext": createAuthContext,
   "createMistypeRouteAnalyzer": createMistypeRouteAnalyzer,
   "domain": domain,
   "ellipsis": ellipsis,
   "entity": Object {
     "deleteColumn": deleteColumn,
-    "filter": filter,
     "primaryId": primaryId,
     "relation": relation,
   },
@@ -219,16 +219,7 @@ Object {
     "UnableToConvertValue": "Unable to convert \\"{0}\\" into {1}",
     "UnableToInstantiateModel": "Unable to instantiate {0}. Domain model should not throw error inside constructor",
   },
-  "filterConverters": Array [
-    exactFilterConverter,
-    partialFilterConverter,
-    rangeFilterConverter,
-    notEqualConverter,
-    lessThanConverter,
-    greaterThanConverter,
-    lessThanOrEqualConverter,
-    greaterThanOrEqualConverter,
-  ],
+  "executeAuthorizer": executeAuthorizer,
   "findClassRecursive": findClassRecursive,
   "findFilesRecursive": findFilesRecursive,
   "generateRoutes": generateRoutes,
@@ -252,6 +243,7 @@ Object {
   "responseType": responseType,
   "route": RouteDecoratorImpl {},
   "router": router,
+  "throwAuthError": throwAuthError,
   "toBoolean": toBoolean,
   "transformController": transformController,
   "updateRouteAuthorizationAccess": updateRouteAuthorizationAccess,
@@ -272,7 +264,6 @@ Object {
     "divisibleBy": divisibleBy,
     "email": email,
     "enums": ,
-    "filter": ,
     "float": float,
     "fqdn": fqdn,
     "fullWidth": fullWidth,
@@ -357,6 +348,7 @@ Object {
   "ReferenceTypeNotRegistered": "MONG1000: Type {0} required type {1} which is not registered as Mongoose model",
   "collection": collection,
   "default": bound model,
+  "filterConverter": ,
   "getDefinition": getDefinition,
   "getModels": bound getModels,
   "globalHelper": MongooseHelper {
@@ -445,7 +437,6 @@ Object {
   "model": bound model,
   "models": Map {},
   "proxy": bound proxy,
-  "transformFilter": transformFilter,
 }
 `;
 
@@ -466,6 +457,7 @@ Object {
   "default": reflect,
   "generic": Object {
     "create": create,
+    "getGenericType": getGenericType,
     "template": template,
     "type": type,
   },
@@ -551,8 +543,8 @@ Object {
   "TypeORMOneToManyControllerGeneric": TypeORMOneToManyControllerGeneric,
   "TypeORMOneToManyRepository": TypeORMOneToManyRepository,
   "TypeORMRepository": TypeORMRepository,
+  "filterConverter": ,
   "normalizeEntity": ,
-  "transformFilter": transformFilter,
 }
 `;
 
@@ -567,7 +559,7 @@ Object {
   "convert": convert,
   "createValidation": createValidation,
   "createValidator": createValidator,
-  "default": createConverter,
+  "default": factory,
   "defaultConverters": Map {
     Boolean => booleanConverter,
     Date => dateConverter,
@@ -594,7 +586,6 @@ Object {
     "email": email,
     "enums": ,
     "file": ,
-    "filter": ,
     "float": float,
     "fqdn": fqdn,
     "fullWidth": fullWidth,
@@ -817,7 +808,6 @@ Object {
   "domain": domain,
   "entity": Object {
     "deleteColumn": deleteColumn,
-    "filter": filter,
     "primaryId": primaryId,
     "relation": relation,
   },
@@ -852,7 +842,6 @@ Object {
     "email": email,
     "enums": ,
     "file": ,
-    "filter": ,
     "float": float,
     "fqdn": fqdn,
     "fullWidth": fullWidth,

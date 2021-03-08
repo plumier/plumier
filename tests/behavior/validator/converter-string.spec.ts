@@ -1,6 +1,6 @@
-import createConverter from "@plumier/validator"
+import factory from "@plumier/validator"
 
-const convert = createConverter({ type: String })
+const convert = factory({ type: String })
 
 describe("String Converter", () => {
 
