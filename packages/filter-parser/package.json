@@ -17,6 +17,7 @@
     "compile": "tsc -p tsconfig.build.json",
     "copy-readme": "cpy ../../readme.md .",
     "precompile": "nearleyc src/grammar.ne -o src/grammar.ts",
+    "postinstall": "npm precompile",
     "rail-road": "nearley-railroad src/grammar.ne -o src/railroad.html"
   },
   "author": "Ketut Sandiarsa",
