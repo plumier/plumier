@@ -41,5 +41,5 @@ export {
     CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie,
     Metadata, GlobalMetadata, Omit, Optional, RouteMetadata, VirtualRoute,
     GenericController, ControllerGeneric, OneToManyControllerGeneric, Repository, OneToManyRepository, OrderQuery,
-    FilterQueryType, RelationPropertyDecorator, MetadataImpl
+    FilterQueryType, RelationPropertyDecorator, MetadataImpl, JwtClaims
 } from "./types";

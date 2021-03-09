@@ -22,7 +22,7 @@ jobs:
     - name: Install yarn
       run: curl -o- -L https://yarnpkg.com/install.sh | bash
     - name: Install dependencies
-      run: yarn install
+      run: yarn install --ignore-engines
     - name: Run tests 
       run: yarn test
     - name: Publish

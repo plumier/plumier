@@ -57,10 +57,11 @@ Context can be accessed from inside controller using parameter binding `@bind.ct
 3. `ctx.header` or `ctx.request.header` the request header.
 4. `ctx.cookies` the cookie
 5. `ctx.state.user` the current login user (JWT claim)
-6. `ctx.config` the Plumier application configuration
-7. `ctx.routes` array of all route information used by the route generator. 
-8. `ctx.route` the current route information, contains metadata information of current controller or action handles the request. For request doesn't associated with controller the value will be `undefined`.
-9. `ctx.parameters` array of value that will be bound to controller's method. The value arranged in a correct order match with methods parameter. This property only available on controller/method middleware
+6. `ctx.user` the current login user (same as `ctx.state.user`)
+7. `ctx.config` the Plumier application configuration
+8. `ctx.routes` array of all route information used by the route generator. 
+9. `ctx.route` the current route information, contains metadata information of current controller or action handles the request. For request doesn't associated with controller the value will be `undefined`.
+10. `ctx.parameters` array of value that will be bound to controller's method. The value arranged in a correct order match with methods parameter. This property only available on controller/method middleware
 
 For a complete reference about Context and its properties can be found in [Koa documentation](https://github.com/koajs/koa/blob/master/docs/api/context.md). 
 
