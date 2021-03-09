@@ -9,6 +9,7 @@ import {
     entity,
     entityPolicy,
     entityProvider,
+    middleware,
     PlumierApplication,
     Public,
     responseType,
@@ -535,6 +536,26 @@ describe("JwtAuth", () => {
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
                 .expect(200)
             console.mockClear()
+        })
+
+        it("Should able to access user from middleware", async () => {
+            const fn = jest.fn()
+            @middleware.use(i => {
+                fn(i.ctx.user)
+                return i.proceed()
+            })
+            class AnimalController {
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                .initialize()
+
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(200)
+            expect(fn.mock.calls[0][0]).toMatchSnapshot({ iat: expect.any(Number)})
         })
     })
 

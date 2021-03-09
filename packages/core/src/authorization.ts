@@ -73,7 +73,7 @@ function getRouteAuthorizeDecorators(info: RouteInfo, globalDecorator: string | 
     return getGlobalDecorators(globalDecorator)
 }
 
-function createAuthContext(ctx: ActionContext, access: AccessModifier): AuthorizationContext{
+function createAuthContext(ctx: ActionContext, access: AccessModifier): AuthorizationContext {
     const { route, state } = ctx
     return <AuthorizationContext>{
         user: state.user, route, ctx, access, policyIds: [],
@@ -533,6 +533,7 @@ async function checkAuthorize(ctx: ActionContext) {
 class AuthorizerMiddleware implements Middleware {
     constructor() { }
     async execute(invocation: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
+        Object.assign(invocation.ctx, { user: invocation.ctx.state.user})
         await checkAuthorize(invocation.ctx)
         const result = await invocation.proceed()
         return responseAuthorize(result, invocation.ctx)
@@ -587,7 +588,7 @@ function mistypedPolicies(decorators: any[], registeredPolicy: AuthPolicy[]) {
                 if (policy.entity === typed.entity)
                     match = true
                 // if action is entity provider 
-                const dec = decorators.find((x:EntityPolicyProviderDecorator): x is EntityPolicyProviderDecorator => x.kind === "plumier-meta:entity-policy-provider")
+                const dec = decorators.find((x: EntityPolicyProviderDecorator): x is EntityPolicyProviderDecorator => x.kind === "plumier-meta:entity-policy-provider")
                 if (dec?.entity === policy.entity)
                     match = true
                 continue;

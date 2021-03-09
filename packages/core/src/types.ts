@@ -31,6 +31,10 @@ export interface ApplyToOption {
     applyTo?: string | string[]
 }
 
+export interface JwtClaims {
+    [key:string]: any
+}
+
 // --------------------------------------------------------------------- //
 // --------------------------- ACTION RESULT --------------------------- //
 // --------------------------------------------------------------------- //
@@ -157,6 +161,7 @@ declare module "koa" {
         route?: Readonly<RouteInfo>
         routes: RouteInfo[]
         config: Readonly<Configuration>
+        user?: JwtClaims
     }
 
     interface Request {
@@ -165,8 +170,10 @@ declare module "koa" {
 
     interface DefaultState {
         caller: "system" | "invoke"
+        user?: JwtClaims
     }
 }
+
 
 export interface ActionContext extends Context {
     route: Readonly<RouteInfo>,
@@ -434,7 +441,7 @@ export interface AuthorizationContext {
     /**
      * Current login user JWT claim
      */
-    user: { [key: string]: any } | undefined
+    user: JwtClaims | undefined
 
     /**
      * Current request context

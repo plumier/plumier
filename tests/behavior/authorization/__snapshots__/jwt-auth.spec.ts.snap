@@ -200,6 +200,14 @@ Array [
 ]
 `;
 
+exports[`JwtAuth Basic Authorization Should able to access user from middleware 1`] = `
+Object {
+  "email": "ketut@gmail.com",
+  "iat": Any<Number>,
+  "role": "user",
+}
+`;
+
 exports[`JwtAuth Basic Authorization Should able to mix controller scope authorizer with other decorators 1`] = `
 Array [
   Array [],
