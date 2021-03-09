@@ -53,7 +53,7 @@ const normalizeEntity = useCache(normalizeEntityCache, normalizeEntityNoCache, x
 
 function inverseSideParser(expr: string | ((t: any) => any)|undefined) {
     if (!expr || typeof expr === "string") return expr
-    const node = parse(expr.toString())
+    const node = parse(expr.toString(), { ecmaVersion: 2020 })
     return getMemberExpression(node)
 }
 
