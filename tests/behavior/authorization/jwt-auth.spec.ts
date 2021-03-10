@@ -3793,14 +3793,14 @@ describe("JwtAuth", () => {
         })
         it("Should detect mistyped policy name on route distinguished by entity type", async () => {
             @genericController(c => {
-                c.actions("GetOne").authorize("ResourceOwner")
+                c.methods("GetOne").authorize("ResourceOwner")
             })
             class User {
                 @entity.primaryId()
                 id: number
             }
             @genericController(c => {
-                c.actions("GetOne").authorize("ResourceOwner")
+                c.methods("GetOne").authorize("ResourceOwner")
             })
             class Item {
                 @entity.primaryId()

@@ -66,7 +66,7 @@ class ControllerBuilder {
     /**
      * Configure multiple generic controller actions based on their http method
      */
-    actions(...notations: ActionNotation[]) {
+    methods(...notations: ActionNotation[]) {
         return new ActionsBuilder(this.map, notations.map(x => getActionName(x)))
     }
 
