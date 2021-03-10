@@ -203,12 +203,19 @@ function transformType(type: Class | Class[] | undefined, ctx: BaseTransformCont
 
 function transformTypeAdvance(type: Class | Class[] | undefined, ctx: TransformContext, opt: Partial<TransformTypeOption>): SchemaObject {
     const extensions = new Map(<([SchemaOverrideType, SchemaOverride])[]>[
+        // transform relation data type as primitive type
         ["RelationAsId", addRelationAsIdOverride],
+        // add required annotation
         ["Required", addRequiredOverride],
+        // remove array relations
         ["RemoveArrayRelation", removeArrayRelationsOverride],
+        // remove deep nested child relation
         ["RemoveChildRelations", removeChildRelationsOverride],
+        // remove inverse property
         ["RemoveInverseProperty", removeInversePropertyOverride],
+        // apply all readonly fields
         ["ReadonlyFields", addReadonlyFieldOverride],
+        // apply all writeonly fields
         ["WriteonlyFields", addWriteonlyFieldOverride],
     ])
     const rootSchema = transformType(type, ctx, opt)

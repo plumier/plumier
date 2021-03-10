@@ -77,8 +77,11 @@ namespace api {
     }
 
     /**
-     * Specify enumeration value
-     * @param enums list of enumeration values
+     * Hide entity relation from open api generation
+     * 
+     * Applied on request body will hide inverse relation property and all one to many relations
+     * 
+     * Applied on response body will hide 
      */
     export function hideRelations() {
         return decorate(<ApiHideRelationDecorator>{ kind: "ApiNoRelation" }, ["Method", "Parameter", "Property"])
