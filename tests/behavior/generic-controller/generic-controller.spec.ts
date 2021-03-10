@@ -2315,7 +2315,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to ignore specific routes using action notations", async () => {
-            @genericController(c => c.actions("Post", "Patch").ignore())
+            @genericController(c => c.methods("Post", "Patch").ignore())
             @domain()
             class User {
                 constructor(
@@ -2380,7 +2380,7 @@ describe("Controller Builder", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should able to ignore all routes using action notations", async () => {
-            @genericController(c => c.actions("Delete", "GetMany", "GetOne", "Patch", "Post", "Put").ignore())
+            @genericController(c => c.methods("Delete", "GetMany", "GetOne", "Patch", "Post", "Put").ignore())
             @domain()
             class User {
                 constructor(
