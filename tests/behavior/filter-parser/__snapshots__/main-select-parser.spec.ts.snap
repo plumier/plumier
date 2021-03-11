@@ -1,0 +1,211 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Select Parser Authorization Should able to authorize column when selected 1`] = `
+Object {
+  "message": "Unauthorized to access filter properties email",
+  "status": 401,
+}
+`;
+
+exports[`Select Parser Authorization Should select all columns by default, including secured column, but skip auth check 1`] = `
+Array [
+  Object {
+    "authDecorators": Array [
+      Object {
+        "access": "read",
+        "evaluation": "Dynamic",
+        "location": "Method",
+        "policies": Array [
+          "Admin",
+        ],
+        "tag": "Admin",
+        "type": "plumier-meta:authorize",
+      },
+    ],
+    "kind": "Column",
+    "name": "email",
+    "skipAuthCheck": true,
+  },
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "name",
+    "skipAuthCheck": true,
+  },
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "deleted",
+    "skipAuthCheck": true,
+  },
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "createdAt",
+    "skipAuthCheck": true,
+  },
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "age",
+    "skipAuthCheck": true,
+  },
+]
+`;
+
+exports[`Select Parser Should able to select inverse property if specified 1`] = `
+Array [
+  Object {
+    "authDecorators": Array [],
+    "kind": "InverseProperty",
+    "name": "user",
+  },
+]
+`;
+
+exports[`Select Parser Should able to select some properties 1`] = `
+Array [
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "email",
+  },
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "name",
+  },
+]
+`;
+
+exports[`Select Parser Should ignore white space 1`] = `
+Array [
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "email",
+  },
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "name",
+  },
+]
+`;
+
+exports[`Select Parser Should not confused with other parameter 1`] = `
+Array [
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "email",
+  },
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "name",
+  },
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "deleted",
+  },
+]
+`;
+
+exports[`Select Parser Should not select array relation by default 1`] = `
+Array [
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "email",
+    "skipAuthCheck": true,
+  },
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "name",
+    "skipAuthCheck": true,
+  },
+]
+`;
+
+exports[`Select Parser Should not select inverse property by default 1`] = `
+Array [
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "message",
+    "skipAuthCheck": true,
+  },
+]
+`;
+
+exports[`Select Parser Should select all fields by default 1`] = `
+Array [
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "email",
+    "skipAuthCheck": true,
+  },
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "name",
+    "skipAuthCheck": true,
+  },
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "deleted",
+    "skipAuthCheck": true,
+  },
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "createdAt",
+    "skipAuthCheck": true,
+  },
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "age",
+    "skipAuthCheck": true,
+  },
+]
+`;
+
+exports[`Select Parser Should select single relation property by default 1`] = `
+Array [
+  Object {
+    "authDecorators": Array [],
+    "kind": "Column",
+    "name": "message",
+    "skipAuthCheck": true,
+  },
+  Object {
+    "authDecorators": Array [],
+    "kind": "RelationSingle",
+    "name": "user",
+    "skipAuthCheck": true,
+  },
+]
+`;
+
+exports[`Select Parser Should throw invalid column name 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Invalid property elmail",
+        "Invalid property names",
+      ],
+      "path": Array [
+        "filter",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;

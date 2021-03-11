@@ -1,5 +1,8 @@
+import { SelectQuery } from "@plumier/core"
 import {
-    createCustomConverter,
+    ColumnNode,
+    createCustomFilterConverter,
+    createCustomSelectConverter,
     EquationExpression,
     FilterNode,
     getKeyValue,
@@ -11,6 +14,10 @@ import {
 } from "@plumier/filter-parser"
 import { Between, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not } from "typeorm"
 
+
+// --------------------------------------------------------------------- //
+// -------------------------- FILTER CONVERTER ------------------------- //
+// --------------------------------------------------------------------- //
 
 function logic(node: LogicalExpression) {
     const left = transform(node.left)
@@ -71,6 +78,27 @@ function transform(node: FilterNode): any {
     }
 }
 
-const filterConverter = createCustomConverter(transform)
+const filterConverter = createCustomFilterConverter(transform)
 
-export { filterConverter }
+
+
+// --------------------------------------------------------------------- //
+// -------------------------- SELECT CONVERTER ------------------------- //
+// --------------------------------------------------------------------- //
+
+function selectTransformer(nodes: ColumnNode[]): SelectQuery {
+    const columns: string[] = []
+    const relations: string[] = []
+    for (const node of nodes) {
+        if (node.kind === "Column")
+            columns.push(node.name)
+        else
+            relations.push(node.name)
+    }
+    return { columns, relations }
+}
+
+const selectConverter = createCustomSelectConverter(selectTransformer)
+
+
+export { filterConverter, selectConverter }

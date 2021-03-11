@@ -1,22 +1,6 @@
-import { Class, OneToManyRepository, OrderQuery, RelationDecorator, Repository } from "@plumier/core"
+import { Class, OneToManyRepository, OrderQuery, Repository, SelectQuery } from "@plumier/core"
 import { getGenericControllerOneToOneRelations } from "@plumier/generic-controller"
-import reflect from "@plumier/reflect"
 import { getManager, Repository as NativeRepository } from "typeorm"
-
-function normalizeSelect<T>(type: Class<T>, selections: string[]): { select: (keyof T)[], relations: string[] } {
-    const meta = reflect(type)
-    const select: (keyof T)[] = []
-    const relations: string[] = []
-    for (const sel of selections) {
-        const prop = meta.properties.find(x => x.name === sel)
-        if (!prop) continue
-        if (prop.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation"))
-            relations.push(sel as any)
-        else
-            select.push(sel as any)
-    }
-    return { select, relations }
-}
 
 function parseOrder<T>(order: OrderQuery[]): { [P in keyof T]?: 1 | -1 } {
     return order.reduce((a, b) => {
@@ -39,37 +23,23 @@ class TypeORMRepository<T> implements Repository<T> {
         })
     }
 
-    find(offset: number, limit: number, query: any, selection: string[], order: OrderQuery[]): Promise<T[]> {
-        const { select, relations } = normalizeSelect(this.type, selection)
+    find(offset: number, limit: number, query: any, selection: SelectQuery, order: OrderQuery[]): Promise<T[]> {
         return this.nativeRepository.find({
             skip: offset,
             take: limit,
             where: query,
-            relations, select,
+            relations: selection.relations, 
+            select:selection.columns,
             order: parseOrder(order)
         })
-        // const q = this.nativeRepository.createQueryBuilder()
-        // q.skip(offset).take(limit)
-        // for (const relation of relations) {
-        //     q.relation(relation)
-        // }
-        // for (const ord of order) {
-        //     q.addOrderBy(ord.column, ord.order === -1 ? "DESC" : "ASC")
-        // }
-        // for (const sel of select) {
-        //     q.addSelect(sel as string)
-        // }
-        // q.where(query)
-        // return q.getMany()
     }
 
     async insert(doc: Partial<T>) {
         return this.nativeRepository.save(doc as any)
     }
 
-    findById(id: any, selection: string[]): Promise<T | undefined> {
-        const { select, relations } = normalizeSelect(this.type, selection)
-        return this.nativeRepository.findOne(id, { relations, select })
+    findById(id: any, selection: SelectQuery = {}): Promise<T | undefined> {
+        return this.nativeRepository.findOne(id, { relations:selection.relations, select:selection.columns })
     }
 
     async update(id: any, data: T) {
@@ -102,15 +72,14 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
         })
     }
 
-    async find(pid: any, offset: number, limit: number, query: any, selection: string[], order: OrderQuery[]): Promise<T[]> {
-        const { select, relations } = normalizeSelect(this.type, selection)
+    async find(pid: any, offset: number, limit: number, query: any, selection: SelectQuery, order: OrderQuery[]): Promise<T[]> {
         return this.nativeRepository.find({
             where:
                 { [this.inversePropertyName]: pid, ...query },
             skip: offset,
             take: limit,
-            relations,
-            select,
+            relations: selection.relations,
+            select:selection.columns,
             order: parseOrder(order)
         })
     }
@@ -132,9 +101,8 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
         return this.nativeParentRepository.findOne(id)
     }
 
-    findById(id: any, selection: string[]): Promise<T | undefined> {
-        const { select, relations } = normalizeSelect(this.type, selection)
-        return this.nativeRepository.findOne(id, { relations, select })
+    findById(id: any, selection: SelectQuery): Promise<T | undefined> {
+        return this.nativeRepository.findOne(id, { relations: selection.relations, select:selection.columns })
     }
 
     async update(id: any, data: T) {

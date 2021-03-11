@@ -307,6 +307,21 @@ Object {
 }
 `;
 
+exports[`Export Should export @plumier/filter-parser 1`] = `
+Object {
+  "FilterQueryAuthorizeMiddleware": FilterQueryAuthorizeMiddleware,
+  "SelectQueryAuthorizeMiddleware": SelectQueryAuthorizeMiddleware,
+  "createCustomFilterConverter": createCustomFilterConverter,
+  "createCustomSelectConverter": createCustomSelectConverter,
+  "filterNodeWalker": filterNodeWalker,
+  "filterParser": filterParser,
+  "getFilterDecorators": getFilterDecorators,
+  "getKeyValue": getKeyValue,
+  "parseFilter": parseFilter,
+  "selectParser": selectParser,
+}
+`;
+
 exports[`Export Should export @plumier/generic-controller 1`] = `
 Object {
   "ControllerBuilder": ControllerBuilder,
@@ -323,7 +338,6 @@ Object {
   "getGenericControllerOneToOneRelations": getGenericControllerOneToOneRelations,
   "getGenericControllerRelation": getGenericControllerRelation,
   "getGenericTypeParameters": getGenericTypeParameters,
-  "parseSelect": parseSelect,
   "postSaveValue": Symbol(plumier:postSaveEntity),
   "responseTransformer": responseTransformer,
   "updateGenericControllerRegistry": updateGenericControllerRegistry,
@@ -437,6 +451,7 @@ Object {
   "model": bound model,
   "models": Map {},
   "proxy": bound proxy,
+  "selectConverter": ,
 }
 `;
 
@@ -545,6 +560,7 @@ Object {
   "TypeORMRepository": TypeORMRepository,
   "filterConverter": ,
   "normalizeEntity": ,
+  "selectConverter": ,
 }
 `;
 
@@ -804,6 +820,8 @@ Object {
     "user": user,
   },
   "binder": binder,
+  "createCustomFilterConverter": createCustomFilterConverter,
+  "createCustomSelectConverter": createCustomSelectConverter,
   "default": Plumier,
   "domain": domain,
   "entity": Object {
@@ -813,6 +831,7 @@ Object {
   },
   "entityPolicy": entityPolicy,
   "entityProvider": entityProvider,
+  "filterParser": filterParser,
   "genericController": genericController,
   "middleware": Object {
     "use": use,
@@ -824,6 +843,7 @@ Object {
     "redirect": redirect,
   },
   "route": RouteDecoratorImpl {},
+  "selectParser": selectParser,
   "val": Object {
     "UUID": UUID,
     "after": after,

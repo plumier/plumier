@@ -5,27 +5,25 @@ import {
     ControllerGeneric,
     DeleteColumnDecorator,
     domain,
-    entity,
     EntityIdDecorator,
     HttpMethod,
     HttpStatusError,
     OneToManyControllerGeneric,
     OneToManyRepository,
     OrderQuery,
-    RelationDecorator,
     Repository,
     responseType,
     route,
     RouteDecorator,
+    SelectQuery
 } from "@plumier/core"
-import reflect, { decorate, DecoratorId, generic, mergeDecorator, PropertyReflection } from "@plumier/reflect"
+import { filterParser, selectParser } from "@plumier/filter-parser"
+import reflect, { decorate, DecoratorId, generic, mergeDecorator } from "@plumier/reflect"
 import { val } from "@plumier/validator"
 import { Context } from "koa"
 
 import { getGenericControllerInverseProperty, getGenericControllerRelation, getGenericTypeParameters } from "./helper"
 import { postSaveValue } from "./request-hook"
-
-import {filterParser} from "@plumier/filter-parser"
 
 
 
@@ -49,7 +47,7 @@ function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: st
 }
 
 // get one custom query
-interface GetOneParams { pid?: any, id: any, select: string[] }
+interface GetOneParams { pid?: any, id: any, select: SelectQuery }
 type GetOneCustomQueryFunction<T = any> = (params: GetOneParams, ctx: Context) => Promise<T>
 interface GetOneCustomQueryDecorator {
     kind: "plumier-meta:get-one-query",
@@ -57,7 +55,7 @@ interface GetOneCustomQueryDecorator {
 }
 
 // get many custom query
-interface GetManyParams<T> { pid?: any, limit: number, offset: number, select: string[], filter: any, order: OrderQuery[] }
+interface GetManyParams<T> { pid?: any, limit: number, offset: number, select: SelectQuery, filter: any, order: OrderQuery[] }
 type GetManyCustomQueryFunction<T = any> = (params: GetManyParams<T>, ctx: Context) => Promise<T[]>
 interface GetManyCustomQueryDecorator {
     kind: "plumier-meta:get-many-query",
@@ -116,24 +114,6 @@ function parseOrder(order?: string) {
     return result
 }
 
-function normalizeSelect(type: Class, dSelect: string[], reverseProperty?: string) {
-    const isArrayRelation = (prop: PropertyReflection) => Array.isArray(prop.type) && !!prop.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation");
-    const defaultSelection = []
-    const meta = reflect(type)
-    for (const prop of meta.properties) {
-        // do not include reverseProperty on default select
-        if (reverseProperty && prop.name === reverseProperty) continue
-        if (prop.name && !isArrayRelation(prop))
-            defaultSelection.push(prop.name)
-    }
-    return dSelect.length === 0 ? defaultSelection : dSelect
-}
-
-function parseSelect(type: Class, select?: string, reverseProperty?: string) {
-    const dSelect = select?.split(",").map(x => x.trim()) ?? []
-    return normalizeSelect(type, dSelect, reverseProperty)
-}
-
 function getDeletedProperty(type: Class) {
     const meta = reflect(type)
     return meta.properties.find(x => x.decorators.some((d: DeleteColumnDecorator) => d.kind === "plumier-meta:delete-column"))
@@ -173,8 +153,8 @@ class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGene
     }
 
     @route.ignore()
-    protected async findByIdOrNotFound(id: TID, select: string[] = []): Promise<T> {
-        const saved = await this.repo.findById(id, normalizeSelect(this.entityType, select))
+    protected async findByIdOrNotFound(id: TID, select: SelectQuery = {}): Promise<T> {
+        const saved = await this.repo.findById(id, select)
         if (!saved) throw new HttpStatusError(404, `Record with ID ${id} not found`)
         return saved
     }
@@ -182,11 +162,10 @@ class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGene
     @decorateRoute("get", "")
     @api.hideRelations()
     @reflect.type(["T"])
-    async list(offset: number = 0, limit: number = 50, @filterParser(() => "T") filter: any, select: string, order: string, @bind.ctx() ctx: Context): Promise<any> {
+    async list(offset: number = 0, limit: number = 50, @filterParser(() => "T") filter: any, @selectParser(x => "T") select: SelectQuery, order: string, @bind.ctx() ctx: Context): Promise<any> {
         const query = getManyCustomQuery(this.constructor as any)
         const pOrder = parseOrder(order)
-        const pSelect = parseSelect(this.entityType, select)
-        const result = query ? await query({ offset, limit, filter, order: pOrder, select: pSelect }, ctx) : await this.repo.find(offset, limit, filter, pSelect, pOrder)
+        const result = query ? await query({ offset, limit, filter, order: pOrder, select }, ctx) : await this.repo.find(offset, limit, filter, select, pOrder)
         const transformer = getTransformer(this.constructor as Class, "list")
         if (transformer)
             return result.map(x => transformer(x))
@@ -202,10 +181,9 @@ class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGene
     @decorateRoute("get", ":id")
     @api.hideRelations()
     @reflect.type("T")
-    async get(@val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
+    async get(@val.required() @reflect.type("TID") id: TID, @selectParser(x => "T") select: SelectQuery, @bind.ctx() ctx: Context): Promise<T> {
         const query = getOneCustomQuery(this.constructor as any)
-        const pSelect = parseSelect(this.entityType, select)
-        const result = query ? await query({ id, select: pSelect }, ctx) : await this.findByIdOrNotFound(id, pSelect)
+        const result = query ? await query({ id, select }, ctx) : await this.findByIdOrNotFound(id, select)
         const transformer = getTransformer(this.constructor as Class, "get")
         if (transformer)
             return transformer(result)
@@ -253,8 +231,8 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     }
 
     @route.ignore()
-    protected async findByIdOrNotFound(id: TID, select: string[] = []): Promise<T> {
-        const saved = await this.repo.findById(id, normalizeSelect(this.entityType, select))
+    protected async findByIdOrNotFound(id: TID, select: SelectQuery = {}): Promise<T> {
+        const saved = await this.repo.findById(id, select)
         if (!saved) throw new HttpStatusError(404, `Record with ID ${id} not found`)
         return saved
     }
@@ -269,13 +247,12 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     @decorateRoute("get", "")
     @api.hideRelations()
     @reflect.type(["T"])
-    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @filterParser(() => "T") filter: any, select: string, order: string, @bind.ctx() ctx: Context): Promise<any> {
+    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @filterParser(() => "T") filter: any, @selectParser(x => "T") select: SelectQuery, order: string, @bind.ctx() ctx: Context): Promise<any> {
         await this.findParentByIdOrNotFound(pid)
         const query = getManyCustomQuery(this.constructor as any)
         const pOrder = parseOrder(order)
         const reverseProperty = getGenericControllerInverseProperty(this.constructor as Class)
-        const pSelect = parseSelect(this.entityType, select, reverseProperty)
-        const result = query ? await query({ pid, offset, limit, filter, order: pOrder, select: pSelect }, ctx) : await this.repo.find(pid, offset, limit, filter, pSelect, pOrder)
+        const result = query ? await query({ pid, offset, limit, filter, order: pOrder, select }, ctx) : await this.repo.find(pid, offset, limit, filter, select, pOrder)
         const transformer = getTransformer(this.constructor as Class, "list")
         if (transformer)
             return result.map(x => transformer(x))
@@ -292,12 +269,11 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     @decorateRoute("get", ":id")
     @api.hideRelations()
     @reflect.type("T")
-    async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, select: string, @bind.ctx() ctx: Context): Promise<T> {
+    async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @selectParser(x => "T") select: SelectQuery, @bind.ctx() ctx: Context): Promise<T> {
         await this.findParentByIdOrNotFound(pid)
         const query = getOneCustomQuery(this.constructor as any)
         const reverseProperty = getGenericControllerInverseProperty(this.constructor as Class)
-        const pSelect = parseSelect(this.entityType, select, reverseProperty)
-        const result = query ? await query({ id, select: pSelect }, ctx) : await this.findByIdOrNotFound(id, pSelect)
+        const result = query ? await query({ id, select }, ctx) : await this.findByIdOrNotFound(id, select)
         const transformer = getTransformer(this.constructor as Class, "get")
         if (transformer)
             return transformer(result)
@@ -335,8 +311,7 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
 
 export {
     RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
-    parseSelect, decorateRoute, IdentifierResult,
-    getGenericControllerInverseProperty, ResponseTransformer, responseTransformer,
+    decorateRoute, IdentifierResult, getGenericControllerInverseProperty, ResponseTransformer, responseTransformer,
     GetOneCustomQueryFunction, GetOneCustomQueryDecorator, GetOneParams,
     GetManyCustomQueryFunction, GetManyCustomQueryDecorator, GetManyParams,
 }

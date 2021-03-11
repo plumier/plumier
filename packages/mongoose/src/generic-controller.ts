@@ -1,4 +1,4 @@
-import { bind, Class, OneToManyRepository, Repository, val } from "@plumier/core"
+import { bind, Class, OneToManyRepository, Repository, val, SelectQuery } from "@plumier/core"
 import { RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric } from "@plumier/generic-controller"
 import { generic } from "@plumier/reflect"
 import { Context } from "koa"
@@ -12,7 +12,7 @@ class MongooseControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID
         super(fac ?? (x => new MongooseRepository(x)))
     }
 
-    get(@val.mongoId() id: TID, select: string, ctx: Context): Promise<T> {
+    get(@val.mongoId() id: TID, select: SelectQuery, ctx: Context): Promise<T> {
         return super.get(id, select, ctx)
     }
 
@@ -36,7 +36,7 @@ class MongooseOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMa
         super(fac ?? ((p, t, rel) => new MongooseOneToManyRepository(p, t, rel)))
     }
 
-    list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, filter: any, select: string, order: string, ctx: Context) {
+    list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, filter: any, select: SelectQuery, order: string, ctx: Context) {
         return super.list(pid, offset, limit, filter, select, order, ctx)
     }
 
@@ -44,7 +44,7 @@ class MongooseOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMa
         return super.save(pid, data, ctx)
     }
 
-    get(@val.mongoId() pid: PID, @val.mongoId() id: TID, select: string, ctx: Context) {
+    get(@val.mongoId() pid: PID, @val.mongoId() id: TID, select: SelectQuery, ctx: Context) {
         return super.get(pid, id, select, ctx)
     }
 

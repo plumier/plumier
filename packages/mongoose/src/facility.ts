@@ -1,10 +1,10 @@
 import { DefaultFacility, PlumierApplication, RelationDecorator } from "@plumier/core"
-import { FilterNodeAuthorizeMiddleware } from "@plumier/filter-parser"
+import { FilterQueryAuthorizeMiddleware, SelectQueryAuthorizeMiddleware } from "@plumier/filter-parser"
 import { RequestHookMiddleware } from "@plumier/generic-controller"
 import { Result, ResultMessages, VisitorInvocation } from "@plumier/validator"
 import Mongoose from "mongoose"
 import pluralize from "pluralize"
-import { filterConverter } from "./filter-converter"
+import { filterConverter, selectConverter } from "./converters"
 
 import { getModels, model as globalModel, MongooseHelper, proxy as globalProxy } from "./generator"
 import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
@@ -52,18 +52,26 @@ export class MongooseFacility extends DefaultFacility {
             genericControllerNameConversion: (x: string) => pluralize(x)
         })
         app.use(new RequestHookMiddleware(), "Action")
-        app.use(new FilterNodeAuthorizeMiddleware(), "Action")
+        app.use(new FilterQueryAuthorizeMiddleware(), "Action")
+        app.use(new SelectQueryAuthorizeMiddleware(), "Action")
     }
 
     async initialize(app: Readonly<PlumierApplication>) {
         const uri = this.option.uri ?? process.env.PLUM_MONGODB_URI
         const helper = this.option.helper ?? {
-            connect:(uri, option) =>  Mongoose.connect(uri, option), 
+            connect: (uri, option) => Mongoose.connect(uri, option),
             getModels, model: globalModel,
             proxy: globalProxy,
             disconnect: Mongoose.disconnect,
         } as MongooseHelper
-        app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter, filterConverter] })
+        app.set({
+            typeConverterVisitors: [
+                ...app.config.typeConverterVisitors,
+                relationConverter,
+                filterConverter,
+                selectConverter
+            ]
+        })
         app.set({
             responseTransformer: (p, v) => {
                 return (p.name === "id" && v && v.constructor === Buffer) ? undefined : v
