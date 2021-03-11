@@ -1,40 +1,10 @@
-import {
-    Class,
-    OneToManyRepository,
-    OrderQuery,
-    RelationDecorator,
-    Repository,
-} from "@plumier/core"
-import { FilterNode } from "@plumier/filter-parser"
-import { getGenericControllerOneToOneRelations, parseSelect } from "@plumier/generic-controller"
+import { Class, OneToManyRepository, OrderQuery, Repository, SelectQuery } from "@plumier/core"
+import { getGenericControllerOneToOneRelations } from "@plumier/generic-controller"
 import reflect from "@plumier/reflect"
 import mongoose, { Document, Model } from "mongoose"
 
 import { globalHelper, MongooseHelper } from "./generator"
 import { RefDecorator } from "./types"
-
-function getProjection(select: string[]) {
-    return select.reduce((a, x) => {
-        a[x] = 1
-        return a
-    }, {} as any)
-}
-
-function getPopulate(type: Class, parentProjections: any) {
-    const meta = reflect(type)
-    const getProp = (prop: string) => meta.properties.find(x => x.name === prop)
-    const populate = []
-    for (const proj in parentProjections) {
-        const prop = getProp(proj)
-        if (!prop || prop.typeClassification === "Primitive") continue;
-        if (!prop.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation")) continue;
-        populate.push({
-            path: proj,
-            select: parseSelect(Array.isArray(prop.type) ? prop.type[0] : prop.type)
-        })
-    }
-    return populate
-}
 
 class MongooseRepository<T> implements Repository<T>{
     readonly Model: Model<T & Document>
@@ -49,9 +19,8 @@ class MongooseRepository<T> implements Repository<T>{
         return this.Model.find(query).count()
     }
 
-    find(offset: number, limit: number, query: any, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
-        const projection = getProjection(select)
-        const q = this.Model.find(query, projection)
+    find(offset: number, limit: number, query: any, select: SelectQuery, order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
+        const q = this.Model.find(query, select.columns)
         if (order.length > 0) {
             const sort = order.reduce((a, b) => {
                 a[b.column] = b.order
@@ -59,7 +28,7 @@ class MongooseRepository<T> implements Repository<T>{
             }, {} as any)
             q.sort(sort)
         }
-        q.populate(getPopulate(this.type, projection))
+        q.populate(select.relations)
         return q.skip(offset).limit(limit) as any
     }
 
@@ -67,12 +36,9 @@ class MongooseRepository<T> implements Repository<T>{
         return new this.Model(doc).save()
     }
 
-    findById(id: any, select: string[] = []): Promise<(T & mongoose.Document) | undefined> {
-        const projection = getProjection(select)
-        const populate = getPopulate(this.type, projection)
-        const q = this.Model.findById(id, projection)
-            .populate(populate)
-        return q as any
+    findById(id: any, select: SelectQuery = {}): Promise<(T & mongoose.Document) | undefined> {
+        return this.Model.findById(id, select.columns)
+            .populate(select.relations) as any
     }
 
     async update(id: any, data: Partial<T>) {
@@ -106,8 +72,7 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         return (data as any)[this.relation].length
     }
 
-    async find(pid: string, offset: number, limit: number, query: any, select: string[], order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
-        const proj = getProjection(select)
+    async find(pid: string, offset: number, limit: number, query: any, select: SelectQuery, order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
         const sort = order.reduce((a, b) => {
             a[b.column] = b.order
             return a
@@ -117,8 +82,8 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
                 path: this.relation,
                 match: query,
                 options: { skip: offset, limit, sort },
-                populate: getPopulate(this.type, proj),
-                select: proj,
+                populate: select.relations,
+                select: select.columns,
             })
         return (parent as any)[this.relation]
     }
@@ -140,11 +105,9 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         return this.ParentModel.findById(id) as any
     }
 
-    findById(id: any, select: string[] = []): Promise<(T & mongoose.Document) | undefined> {
-        const proj = getProjection(select)
-        const q = this.Model.findById(id, proj)
-            .populate(getPopulate(this.type, proj))
-        return q as any
+    findById(id: any, select: SelectQuery = {}): Promise<(T & mongoose.Document) | undefined> {
+        return this.Model.findById(id, select.columns)
+            .populate(select.relations) as any
     }
 
     async update(id: any, data: Partial<T>) {

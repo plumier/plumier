@@ -296,8 +296,9 @@ function entityPolicy<T>(entity: Class<T>) {
 // ---------------------- MAIN AUTHORIZER FUNCTION --------------------- //
 // --------------------------------------------------------------------- //
 
-function executeAuthorizer(decorator: AuthorizeDecorator, info: AuthorizationContext) {
-    const instance = new PolicyAuthorizer(info.ctx.config.authPolicies, decorator.policies)
+function executeAuthorizer(decorator: AuthorizeDecorator | AuthorizeDecorator[], info: AuthorizationContext) {
+    const policies = Array.isArray(decorator) ? decorator.map(x => x.policies).flatten() : decorator.policies
+    const instance = new PolicyAuthorizer(info.ctx.config.authPolicies, policies)
     return instance.authorize(info)
 }
 
@@ -334,16 +335,6 @@ interface ParamCheckContext {
     parentValue?: any
 }
 
-async function executeAuthorizers(decorators: AuthorizeDecorator[], info: AuthorizationContext, path: string) {
-    const result: string[] = []
-    for (const dec of decorators) {
-        const allowed = await executeAuthorizer(dec, info)
-        if (!allowed)
-            result.push(path)
-    }
-    return result
-}
-
 function createContext(ctx: ParamCheckContext, value: any, meta: ClassReflection | PropertyReflection | ParameterReflection) {
     const info = { ...ctx.info }
     const metadata = { ...info.metadata }
@@ -373,8 +364,11 @@ async function checkParameter(meta: PropertyReflection | ParameterReflection, va
     else {
         const decorators = ctx.info.ctx.method === "GET" ? meta.decorators.filter(createDecoratorFilter(x => x.access === "filter")) :
             meta.decorators.filter(createDecoratorFilter(x => x.access === "write"))
+        // if no decorator then just allow, follow route authorization
+        if(decorators.length === 0) return []
         const info = createContext(ctx, value, meta)
-        return executeAuthorizers(decorators, info, ctx.path.join("."))
+        const allowed = await executeAuthorizer(decorators, info)
+        return allowed ? [] : [ctx.path.join(".")]
     }
 }
 
@@ -533,7 +527,7 @@ async function checkAuthorize(ctx: ActionContext) {
 class AuthorizerMiddleware implements Middleware {
     constructor() { }
     async execute(invocation: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
-        Object.assign(invocation.ctx, { user: invocation.ctx.state.user})
+        Object.assign(invocation.ctx, { user: invocation.ctx.state.user })
         await checkAuthorize(invocation.ctx)
         const result = await invocation.proceed()
         return responseAuthorize(result, invocation.ctx)

@@ -14,10 +14,10 @@ import {
     route,
     RouteMetadata,
     val,
+    RelationPropertyDecorator
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { refFactory, SwaggerFacility } from "@plumier/swagger"
-import { RelationPropertyDecorator } from "core/src/types"
 import { IncomingMessage } from "http"
 import { Context } from "koa"
 import Plumier, { ControllerFacility, WebApiFacility } from "plumier"

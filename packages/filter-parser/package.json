@@ -16,8 +16,7 @@
   "scripts": {
     "compile": "tsc -p tsconfig.build.json",
     "copy-readme": "cpy ../../readme.md .",
-    "precompile": "nearleyc src/grammar.ne -o src/grammar.ts",
-    "rail-road": "nearley-railroad src/grammar.ne -o src/railroad.html"
+    "precompile": "nearleyc src/filter/grammar.ne -o src/filter/grammar.ts"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",

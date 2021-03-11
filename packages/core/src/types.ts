@@ -32,7 +32,7 @@ export interface ApplyToOption {
 }
 
 export interface JwtClaims {
-    [key:string]: any
+    [key: string]: any
 }
 
 // --------------------------------------------------------------------- //
@@ -392,20 +392,22 @@ export type GenericController = [Class<ControllerGeneric>, Class<OneToManyContro
 
 export interface OrderQuery { column: string, order: 1 | -1 }
 
+export interface SelectQuery { columns?: any, relations?: any }
+
 export interface Repository<T> {
-    find(offset: number, limit: number, query: any, select: string[], order: OrderQuery[]): Promise<T[]>
+    find(offset: number, limit: number, query: any, select: SelectQuery, order: OrderQuery[]): Promise<T[]>
     insert(data: Partial<T>): Promise<T>
-    findById(id: any, select: string[]): Promise<T | undefined>
+    findById(id: any, select: SelectQuery): Promise<T | undefined>
     update(id: any, data: Partial<T>): Promise<T | undefined>
     delete(id: any): Promise<T | undefined>
     count(query?: any): Promise<number>
 }
 
 export interface OneToManyRepository<P, T> {
-    find(pid: any, offset: number, limit: number, query: any, select: string[], order: OrderQuery[]): Promise<T[]>
+    find(pid: any, offset: number, limit: number, query: any, select: SelectQuery, order: OrderQuery[]): Promise<T[]>
     insert(pid: any, data: Partial<T>): Promise<T>
     findParentById(id: any): Promise<P | undefined>
-    findById(id: any, select: string[]): Promise<T | undefined>
+    findById(id: any, select: SelectQuery): Promise<T | undefined>
     update(id: any, data: Partial<T>): Promise<T | undefined>
     delete(id: any): Promise<T | undefined>
     count(pid: any, query?: any): Promise<number>
@@ -464,10 +466,10 @@ export interface Authorizer {
 }
 
 export interface AuthPolicy {
-    name:string
+    name: string
     equals(id: string, ctx: AuthorizationContext): boolean
     authorize(ctx: AuthorizationContext): Promise<boolean>
-    conflict(other:AuthPolicy):boolean
+    conflict(other: AuthPolicy): boolean
 }
 
 // --------------------------------------------------------------------- //

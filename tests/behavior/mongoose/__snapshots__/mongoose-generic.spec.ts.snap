@@ -162,14 +162,6 @@ Object {
 }
 `;
 
-exports[`CRUD CRUD Function Should ignore wrong property name on select GET /users/:id 1`] = `
-Object {
-  "age": 21,
-  "id": "MONGODB UNIQUE ID",
-  "name": "John Doe",
-}
-`;
-
 exports[`CRUD CRUD Function Should return empty array when no filter match GET /users?offset&limit&name 1`] = `Array []`;
 
 exports[`CRUD CRUD Function Should select by property GET /users/:id 1`] = `
@@ -211,6 +203,22 @@ Array [
     "name": "Juan Doe",
   },
 ]
+`;
+
+exports[`CRUD CRUD Function Should throw error wrong property name on select GET /users/:id 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Invalid property otherProp",
+      ],
+      "path": Array [
+        "select",
+      ],
+    },
+  ],
+  "status": 422,
+}
 `;
 
 exports[`CRUD CRUD with versioning Should able to load entity with versioning 1`] = `

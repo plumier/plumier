@@ -1,5 +1,6 @@
+import { SelectQuery } from "@plumier/core"
 import {
-    createCustomConverter,
+    createCustomFilterConverter,
     EquationExpression,
     FilterNode,
     getKeyValue,
@@ -8,12 +9,19 @@ import {
     StringLiteral,
     StringRangeLiteral,
     UnaryExpression,
+    createCustomSelectConverter,
+    ColumnNode, 
 } from "@plumier/filter-parser"
 
 
+// --------------------------------------------------------------------- //
+// -------------------------- FILTER CONVERTER ------------------------- //
+// --------------------------------------------------------------------- //
+
+
 function logic(node: LogicalExpression) {
-    const left = transform(node.left)
-    const right = transform(node.right)
+    const left = filterTransformer(node.left)
+    const right = filterTransformer(node.right)
     switch (node.operator) {
         case "and":
             return { $and: [left, right] }
@@ -62,13 +70,13 @@ function comparison(node: EquationExpression): {} {
 function unary(node: UnaryExpression) {
     if (node.argument.operator === "or" || node.argument.operator === "and")
         throw new Error(`Global Not operator doesn't supported in MongoDB at col ${node.col}`)
-    const arg = transform(node.argument)
+    const arg = filterTransformer(node.argument)
     const key = Object.keys(arg)[0]
     const value = arg[key]
     return { [key]: { $not: value } }
 }
 
-function transform(node: FilterNode): any {
+function filterTransformer(node: FilterNode): any {
     switch (node.kind) {
         case "ComparisonExpression":
             return comparison(node)
@@ -79,6 +87,25 @@ function transform(node: FilterNode): any {
     }
 }
 
-const filterConverter = createCustomConverter(transform)
+const filterConverter = createCustomFilterConverter(filterTransformer)
 
-export { filterConverter }
+
+// --------------------------------------------------------------------- //
+// -------------------------- SELECT CONVERTER ------------------------- //
+// --------------------------------------------------------------------- //
+
+function selectTransformer(nodes: ColumnNode[]): SelectQuery {
+    const columns: string[] = []
+    const relations: string[] = []
+    for (const node of nodes) {
+        if (node.kind === "Column")
+            columns.push(node.name)
+        else
+            relations.push(node.name)
+    }
+    return { columns, relations }
+}
+
+const selectConverter = createCustomSelectConverter(selectTransformer)
+
+export { filterConverter, selectConverter }

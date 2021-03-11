@@ -507,7 +507,7 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
-        it("Should ignore wrong property name on select GET /users/:id", async () => {
+        it("Should throw error on wrong property name on select GET /users/:id", async () => {
             @Entity()
             @genericController()
             class User {
@@ -525,7 +525,7 @@ describe("CRUD", () => {
             const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe", age: 21 })
             const { body } = await supertest(app.callback())
                 .get(`/users/${data.raw}?select=age,name,otherProp`)
-                .expect(200)
+                .expect(422)
             expect(body).toMatchSnapshot()
         })
         it("Should throw 404 if not found GET /users/:id", async () => {
@@ -2263,6 +2263,23 @@ describe("Repository", () => {
             ])
             const count = await repo.count({ email })
             expect(count).toBe(3)
+        })
+        it("Should able to get one", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            await createConnection(getConn([User]))
+            const repo = new TypeORMRepository(User)
+            const email = `john.doe@gmail.com`
+            const ids = await repo.insert({ email, name: "John Doe" })
+            const result = await repo.findById(ids.id)
+            expect(result).toMatchSnapshot()
         })
     })
 

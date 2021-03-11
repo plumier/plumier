@@ -325,13 +325,6 @@ Array [
 ]
 `;
 
-exports[`CRUD CRUD Function Should ignore wrong property name on select GET /users/:id 1`] = `
-Object {
-  "age": 21,
-  "name": "John Doe",
-}
-`;
-
 exports[`CRUD CRUD Function Should serve delete with deleteColumn DELETE /users/:id 1`] = `
 User {
   "deleted": true,
@@ -349,6 +342,22 @@ Array [
     "name": "John Doe",
   },
 ]
+`;
+
+exports[`CRUD CRUD Function Should throw error on wrong property name on select GET /users/:id 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Invalid property otherProp",
+      ],
+      "path": Array [
+        "select",
+      ],
+    },
+  ],
+  "status": 422,
+}
 `;
 
 exports[`CRUD Nested CRUD One to Many Function Should able to order by property GET /users/:parentId/animals?offset&limit 1`] = `
@@ -1254,5 +1263,13 @@ Object {
     },
   },
   "type": "object",
+}
+`;
+
+exports[`Repository Repository Should able to get one 1`] = `
+User {
+  "email": "john.doe@gmail.com",
+  "id": 1,
+  "name": "John Doe",
 }
 `;
