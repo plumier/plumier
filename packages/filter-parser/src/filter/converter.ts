@@ -2,8 +2,9 @@ import { ActionContext, CustomConverter } from "@plumier/core"
 import reflect, { Class, generic, type } from "@plumier/reflect"
 import converterFactory, { Result, ResultMessages, VisitorExtension } from "@plumier/validator"
 
-import { FilterParserDecorator } from "./decorator"
-import { EquationExpression, FilterNode, FilterNodeVisitor, filterNodeWalker, FilterParserAst, parseFilter } from "./parser"
+import { FilterParserDecorator } from "../decorator"
+import { getDecoratorType, ParserAst } from "../helper"
+import { EquationExpression, FilterNode, FilterNodeVisitor, filterNodeWalker, parseFilter } from "./parser"
 
 
 function createNodeWalkerVisitor(type: Class, path: string, globalConverterVisitors: VisitorExtension[], error: ResultMessages[]): FilterNodeVisitor {
@@ -32,12 +33,6 @@ function createNodeWalkerVisitor(type: Class, path: string, globalConverterVisit
     }
 }
 
-function getDecoratorType(controller: Class, decorator: FilterParserDecorator) {
-    // extract generic type from controller if string type provided
-    const expType = decorator.type()
-    return typeof expType === "string" ? generic.getGenericType(controller, expType) as Class : expType
-}
-
 function validateFilter(value: {}, path: string, type: Class, globalVisitors: VisitorExtension[]): Result {
     const rawValue = Array.isArray(value) ? value : [value]
     if (rawValue.some(x => typeof x !== "string"))
@@ -52,18 +47,18 @@ function validateFilter(value: {}, path: string, type: Class, globalVisitors: Vi
     return Result.create(cleansedNode)
 }
 
-function createCustomConverter(transformer: ((node: FilterNode) => any)): CustomConverter {
+function createCustomFilterConverter(transformer: ((node: FilterNode) => any)): CustomConverter {
     return (i, ctx) => {
         if (i.value === undefined || i.value === null) return i.proceed()
         const decorator = i.decorators.find((x: FilterParserDecorator): x is FilterParserDecorator => x.kind === "plumier-meta:filter-parser-decorator")
         if (!decorator) return i.proceed()
         try {
-            const type = getDecoratorType(ctx.route.controller.type, decorator)
+            const type = getDecoratorType(ctx.route.controller.type, decorator.type())
             const globalVisitors = ctx.config.typeConverterVisitors.map<VisitorExtension>(x => i => x(i, ctx))
             const valResult = validateFilter(i.value, i.path, type, globalVisitors)
             if (!!valResult.issues) return valResult
             const transformed: any = transformer(valResult.value)
-            transformed[FilterParserAst] = valResult.value
+            transformed[ParserAst] = valResult.value
             return Result.create(transformed)
         }
         catch (e) {
@@ -72,4 +67,4 @@ function createCustomConverter(transformer: ((node: FilterNode) => any)): Custom
     }
 }
 
-export { createCustomConverter, getDecoratorType }
+export { createCustomFilterConverter }

@@ -555,7 +555,7 @@ describe("JwtAuth", () => {
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
                 .expect(200)
-            expect(fn.mock.calls[0][0]).toMatchSnapshot({ iat: expect.any(Number)})
+            expect(fn.mock.calls[0][0]).toMatchSnapshot({ iat: expect.any(Number) })
         })
     })
 
@@ -1550,10 +1550,15 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
                         .send({ id: "123" })
-                        .expect(401)
+                        .expect(200)
                     await Supertest(app.callback())
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
+                        .send({ id: "123" })
+                        .expect(200)
+                    await Supertest(app.callback())
+                        .post("/animal/save")
+                        .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
                         .send({ id: "123" })
                         .expect(401)
                 })
@@ -1687,10 +1692,15 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
                         .send({ id: "123" })
-                        .expect(401)
+                        .expect(200)
                     await Supertest(app.callback())
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
+                        .send({ id: "123" })
+                        .expect(200)
+                    await Supertest(app.callback())
+                        .post("/animal/save")
+                        .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
                         .send({ id: "123" })
                         .expect(401)
                 })
@@ -1854,10 +1864,15 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
                         .send({ entity: { id: "123" } })
-                        .expect(401)
+                        .expect(200)
                     await Supertest(app.callback())
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
+                        .send({ entity: { id: "123" } })
+                        .expect(200)
+                    await Supertest(app.callback())
+                        .post("/animal/save")
+                        .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
                         .send({ entity: { id: "123" } })
                         .expect(401)
                 })
@@ -1991,10 +2006,15 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
                         .send([{ id: "123" }])
-                        .expect(401)
+                        .expect(200)
                     await Supertest(app.callback())
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
+                        .send([{ id: "123" }])
+                        .expect(200)
+                    await Supertest(app.callback())
+                        .post("/animal/save")
+                        .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
                         .send([{ id: "123" }])
                         .expect(401)
                 })
@@ -3825,7 +3845,7 @@ describe("JwtAuth", () => {
                 id: number
 
                 @authorize.write("ResourceOwner")
-                name:string
+                name: string
             }
             @genericController()
             class Item {
@@ -3833,7 +3853,7 @@ describe("JwtAuth", () => {
                 id: number
 
                 @authorize.write("ResourceOwner")
-                name:string
+                name: string
             }
             const authPolicies = [
                 entityPolicy(User).define("ResourceOwner", (ctx, x) => !!x.id),

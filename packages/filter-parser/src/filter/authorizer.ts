@@ -9,9 +9,9 @@ import {
 } from "@plumier/core"
 import reflect, { Class } from "@plumier/reflect"
 
-import { getDecoratorType } from "./converter"
-import { FilterParserDecorator } from "./decorator"
-import { FilterNode, FilterNodeVisitor, filterNodeWalker, FilterParserAst, getFilterDecorators } from "./parser"
+import { getDecoratorType, ParserAst } from "../helper"
+import { FilterParserDecorator } from "../decorator"
+import { FilterNode, FilterNodeVisitor, filterNodeWalker, getFilterDecorators } from "./parser"
 
 
 function createVisitor(columns: string[]): FilterNodeVisitor {
@@ -46,28 +46,28 @@ async function checkAuthorize(type: Class, value: FilterNode, ctx: ActionContext
         }
         // if all decorators doesn't specify policy name then just allow (follow route authorization)
         if (decorators.every(x => x.policies.length === 0)) continue
-        const result = await Promise.all(decorators.map(x => executeAuthorizer(x, auth)))
+        const authorized = await executeAuthorizer(decorators, auth)
         // if any of the policy allowed then authorize
-        if (result.some(x => x)) continue
+        if (authorized) continue
         unauthorized.push(col)
     }
     if (unauthorized.length > 0)
         throwAuthError(auth, `Unauthorized to access filter properties ${unauthorized.join(", ")}`)
 }
 
-class FilterNodeAuthorizeMiddleware implements Middleware<ActionContext> {
+class FilterQueryAuthorizeMiddleware implements Middleware<ActionContext> {
     async execute(i: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
         const par = i.metadata!.action.parameters
             .find(x => x.decorators.some((d: FilterParserDecorator) => d.kind === "plumier-meta:filter-parser-decorator"))
         if (!par) return i.proceed()
         const raw = i.metadata!.actionParams.get(par.name)
         if (raw === undefined) return i.proceed()
-        const value:FilterNode = raw[FilterParserAst]
+        const value:FilterNode = raw[ParserAst]
         const dec: FilterParserDecorator = par.decorators.find((d: FilterParserDecorator) => d.kind === "plumier-meta:filter-parser-decorator")!
-        const type = getDecoratorType(i.metadata!.controller.type, dec)
+        const type = getDecoratorType(i.metadata!.controller.type, dec.type())
         await checkAuthorize(type, value, i.ctx)
         return i.proceed()
     }
 }
 
-export { FilterNodeAuthorizeMiddleware }
+export { FilterQueryAuthorizeMiddleware }

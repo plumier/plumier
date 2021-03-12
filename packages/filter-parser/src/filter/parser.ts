@@ -3,7 +3,6 @@ import { Grammar, Parser } from "nearley"
 
 import grammar from "./grammar"
 
-const FilterParserAst = Symbol()
 type FilterNode = LogicalExpression | ComparisonExpression | UnaryExpression | PropertyLiteral | BooleanLiteral |
     NumberLiteral | StringLiteral | LikeExpression | RangeExpression
 
@@ -171,5 +170,5 @@ export {
     parseFilter, filterNodeWalker, FilterNode, LikeExpression, Literal, RangeExpression, FilterNodeVisitor,
     LogicalExpression, ComparisonExpression, UnaryExpression, PropertyLiteral, BooleanLiteral, NullLiteral,
     NumberLiteral, NumberRangeLiteral, StringLiteral, StringRangeLiteral, EquationExpression, getKeyValue,
-    EquationOperator, LogicalOperator, getFilterDecorators, FilterParserAst
+    EquationOperator, LogicalOperator, getFilterDecorators
 }

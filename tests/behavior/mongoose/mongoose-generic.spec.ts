@@ -405,7 +405,7 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
-        it("Should ignore wrong property name on select GET /users/:id", async () => {
+        it("Should throw error wrong property name on select GET /users/:id", async () => {
             @collection()
             @genericController()
             class User {
@@ -424,7 +424,7 @@ describe("CRUD", () => {
             const data = await repo.insert({ email: "john.doe@gmail.com", name: "John Doe", age: 21 })
             const { body } = await supertest(app.callback())
                 .get(`/users/${data.id}?select=name,age,otherProp`)
-                .expect(200)
+                .expect(422)
             expect(body).toMatchSnapshot()
         })
         it("Should check prover mongodb id on GET /users/:id", async () => {
@@ -850,7 +850,7 @@ describe("CRUD", () => {
         async function createUser<T>(type: Class<T>, user?: Partial<T>) {
             const userRepo = new MongooseRepository(type)
             const inserted = await userRepo.insert({ email: "john.doe@gmail.com", name: "John Doe", ...user } as any)
-            const saved = await userRepo.findById(inserted.id, [])
+            const saved = await userRepo.findById(inserted.id)
             return saved!
         }
         it("Should serve GET /users/:parentId/animals?offset&limit", async () => {

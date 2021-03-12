@@ -8,7 +8,7 @@ import {
     PlumierApplication,
     RelationDecorator,
 } from "@plumier/core"
-import { FilterNodeAuthorizeMiddleware } from "@plumier/filter-parser"
+import { FilterQueryAuthorizeMiddleware, SelectQueryAuthorizeMiddleware } from "@plumier/filter-parser"
 import { RequestHookMiddleware } from "@plumier/generic-controller"
 import { Result, ResultMessages, VisitorInvocation } from "@plumier/validator"
 import { lstat } from "fs"
@@ -16,7 +16,7 @@ import pluralize from "pluralize"
 import { ConnectionOptions, createConnection, getConnectionOptions, getMetadataArgsStorage } from "typeorm"
 import { promisify } from "util"
 import validator from "validator"
-import { filterConverter } from "./filter-converter"
+import { filterConverter, selectConverter } from "./converters"
 
 import { normalizeEntity, TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
 
@@ -97,7 +97,14 @@ class TypeORMFacility extends DefaultFacility {
 
     async preInitialize(app: Readonly<PlumierApplication>) {
         // set type converter module to allow updating relation by id
-        app.set({ typeConverterVisitors: [...app.config.typeConverterVisitors, relationConverter, filterConverter] })
+        app.set({
+            typeConverterVisitors: [
+                ...app.config.typeConverterVisitors,
+                relationConverter,
+                filterConverter,
+                selectConverter
+            ]
+        })
         // load all entities to be able to take the metadata storage
         await loadEntities(this.option.connection)
         // assign tinspector decorators, so Plumier can understand the entity metadata
@@ -114,7 +121,8 @@ class TypeORMFacility extends DefaultFacility {
         app.set({ genericController: [TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric] })
         app.set({ genericControllerNameConversion: (x: string) => pluralize(x) })
         app.use(new RequestHookMiddleware(), "Action")
-        app.use(new FilterNodeAuthorizeMiddleware(), "Action")
+        app.use(new FilterQueryAuthorizeMiddleware(), "Action")
+        app.use(new SelectQueryAuthorizeMiddleware(), "Action")
     }
 
     async initialize(app: Readonly<PlumierApplication>) {
