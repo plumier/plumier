@@ -181,7 +181,6 @@ describe("CRUD", () => {
                 @collection.id()
                 id: string
                 @reflect.noop()
-                @authorize.filter()
                 email: string
                 @reflect.noop()
                 name: string
@@ -203,7 +202,6 @@ describe("CRUD", () => {
                 @collection.id()
                 id: string
                 @reflect.noop()
-                @authorize.filter()
                 email: string
                 @reflect.noop()
                 name: string
@@ -225,7 +223,6 @@ describe("CRUD", () => {
                 @collection.id()
                 id: string
                 @reflect.noop()
-                @authorize.filter()
                 email: string
                 @reflect.noop()
                 name: string
@@ -249,7 +246,6 @@ describe("CRUD", () => {
                 @val.required()
                 @reflect.noop()
                 email: string
-                @authorize.filter()
                 @reflect.noop()
                 name: string
             }
@@ -272,7 +268,6 @@ describe("CRUD", () => {
                 @val.required()
                 @reflect.noop()
                 email: string
-                @authorize.filter()
                 @reflect.noop()
                 name: string
             }
@@ -298,7 +293,7 @@ describe("CRUD", () => {
                 name: string
                 @reflect.noop()
                 age: number
-                @authorize.filter()
+                @noop()
                 random: string
             }
             model(User)
@@ -323,7 +318,7 @@ describe("CRUD", () => {
                 name: string
                 @reflect.noop()
                 age: number
-                @authorize.filter()
+                @noop()
                 random: string
             }
             model(User)
@@ -969,7 +964,6 @@ describe("CRUD", () => {
                 @collection.id()
                 id: string
                 @reflect.noop()
-                @authorize.filter()
                 name: string
             }
             model(Animal)
@@ -1004,7 +998,6 @@ describe("CRUD", () => {
                 @collection.id()
                 id: string
                 @reflect.noop()
-                @authorize.filter()
                 name: string
             }
             model(Animal)
@@ -1040,7 +1033,6 @@ describe("CRUD", () => {
                 id: string
                 @reflect.noop()
                 name: string
-                @authorize.filter()
                 @collection.ref(x => User)
                 user: User
             }
@@ -1076,7 +1068,6 @@ describe("CRUD", () => {
                 @collection.id()
                 id: string
                 @reflect.noop()
-                @authorize.filter()
                 name: string
             }
             model(Animal)
@@ -1114,7 +1105,6 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
                 @reflect.noop()
-                @authorize.filter()
                 age: number
             }
             model(Animal)
@@ -2819,11 +2809,11 @@ describe("Filter", () => {
     class Parent {
         @collection.id()
         id: string
-        @authorize.filter()
+        @noop()
         string: string
-        @authorize.filter()
+        @noop()
         number: number
-        @authorize.filter()
+        @noop()
         boolean: boolean
         @genericController()
         @collection.ref(x => [Child])
@@ -2832,13 +2822,12 @@ describe("Filter", () => {
     class Child {
         @collection.id()
         id: string
-        @authorize.filter()
+        @noop()
         string: string
-        @authorize.filter()
+        @noop()
         number: number
-        @authorize.filter()
+        @noop()
         boolean: boolean
-        @authorize.filter()
         @collection.ref(x => Parent)
         parent: Parent
     }
@@ -2932,13 +2921,13 @@ describe("Filter", () => {
             class Child {
                 @collection.id()
                 id: string
-                @authorize.filter()
+                @noop()
                 string: string
-                @authorize.filter()
+                @noop()
                 number: number
-                @authorize.filter()
+                @noop()
                 boolean: boolean
-                @authorize.filter()
+                @noop()
                 parent: Parent
             }
             const app = await createApp(Child)
@@ -2973,13 +2962,13 @@ describe("Filter", () => {
             class Child {
                 @collection.id()
                 id: string
-                @authorize.filter()
+                @noop()
                 string: string
-                @authorize.filter()
+                @noop()
                 number: number
-                @authorize.filter()
+                @noop()
                 boolean: boolean
-                @authorize.filter()
+                @noop()
                 parent: Parent
             }
             const app = await createApp(Child)

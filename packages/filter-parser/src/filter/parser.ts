@@ -163,7 +163,7 @@ function getKeyValue<T extends EquationExpression>(node: T): [PropertyLiteral, L
 
 
 function getFilterDecorators(decorators:any[]) {
-    return decorators.filter((x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize" && x.access === "filter")
+    return decorators.filter((x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize" && x.access === "read")
 }
 
 export {

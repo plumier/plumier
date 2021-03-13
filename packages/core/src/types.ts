@@ -427,7 +427,7 @@ export abstract class OneToManyControllerGeneric<P = any, T = any, PID = any, TI
 // --------------------------- AUTHORIZATION --------------------------- //
 // --------------------------------------------------------------------- // 
 
-export type AccessModifier = "read" | "write" | "route" | "filter"
+export type AccessModifier = "read" | "write" | "route" 
 
 export interface AuthorizationContext {
     /**

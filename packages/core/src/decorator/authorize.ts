@@ -141,14 +141,6 @@ class AuthDecoratorImpl {
     }
 
     /**
-     * Authorize a domain property to be used as query string filter
-     * @param policies List of allowed policies
-     */
-    filter(...policies: string[]) {
-        return this.byPolicies(policies, "filter")
-    }
-
-    /**
      * Mark parameter or property as readonly, no Role can set its value
      */
     readonly(): CustomPropertyDecorator {

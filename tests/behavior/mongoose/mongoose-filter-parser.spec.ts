@@ -11,7 +11,6 @@ import supertest from "supertest"
 
 
 describe("Mongoose Filter Parser", () => {
-    @authorize.filter()
     class User {
         @val.email()
         @noop()
@@ -187,7 +186,6 @@ describe("Mongoose Filter Parser", () => {
                 @collection.id()
                 id: string
 
-                @authorize.filter()
                 @collection.ref(x => Child)
                 child: Child
             }
@@ -225,7 +223,7 @@ describe("Mongoose Filter Parser", () => {
 
         it("Should able to secure filter by policy", async () => {
             class User {
-                @authorize.filter("user")
+                @authorize.read("user")
                 @noop()
                 email: string
                 @noop()

@@ -26,7 +26,6 @@ function createVisitor(columns: string[]): FilterNodeVisitor {
 
 async function checkAuthorize(type: Class, value: FilterNode, ctx: ActionContext) {
     const meta = reflect(type)
-    const classDec = getFilterDecorators(meta.decorators)
     const auth = createAuthContext(ctx, "write")
     // get list of columns used by end user
     const columns: string[] = []
@@ -37,15 +36,9 @@ async function checkAuthorize(type: Class, value: FilterNode, ctx: ActionContext
     const accessedColumns = Array.from(new Set(columns))
     for (const col of accessedColumns) {
         const prop = meta.properties.find(x => x.name === col)!
-        const dec = getFilterDecorators(prop.decorators)
-        const decorators = dec.length > 0 ? dec : classDec
-        // if no decorator provided (class/property) then just don't allow
-        if (decorators.length === 0) {
-            unauthorized.push(col)
-            continue;
-        }
-        // if all decorators doesn't specify policy name then just allow (follow route authorization)
-        if (decorators.every(x => x.policies.length === 0)) continue
+        const decorators = getFilterDecorators(prop.decorators)
+        // if no decorator provided (then just allow
+        if (decorators.length === 0) continue
         const authorized = await executeAuthorizer(decorators, auth)
         // if any of the policy allowed then authorize
         if (authorized) continue
