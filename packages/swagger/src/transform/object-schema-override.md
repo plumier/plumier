@@ -3,7 +3,6 @@
 | --------------------- | ---------------------------------------------------- |
 | RelationAsId          | Change property types match ID type                  |
 | Required              | Add required fields on properties                    |
-| Filter                | Set readonly on property without @authorize.filter() |
 | RemoveArrayRelation   | Remove array relations (one to many)                 |
 | RemoveChildRelations  | Remove relation of the child property                |
 | RemoveInverseProperty | Remove reverse relation                              |

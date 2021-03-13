@@ -182,7 +182,7 @@ export class Item {
 Code above showing that we use the request hook `@preSave()` to make the `assignUser` method executed before the entity being saved to the database. 
 
 #### Define Filterable Fields
-Generic controller provided functionalities to refine the API response, such as filter, paging, order and projection. For security reason, filtering is not enabled by default, you need to specify which field is filterable by using `@authorize.filter(AUTH_POLICY)` decorator. 
+Generic controller provided functionalities to refine the API response, such as filter, paging, order and projection. 
 
 ```typescript {10,14,21}
 import { route, authorize } from "plumier"
@@ -194,18 +194,15 @@ export class Post {
     @PrimaryGeneratedColumn()
     id: number
 
-    @authorize.filter()
     @Column()
     slug:string
 
-    @authorize.filter()
     @Column()
     title:string
 
     @Column()
     content:string
 
-    @authorize.filter()
     @CreateDateColumn()
     createdAt:Date
 }
@@ -227,7 +224,7 @@ GET /posts?filter=(createdAt >= '2020-9-1' and deleted = false)
 GET /posts?filter=(title = 'programming'*)
 ```
 
-Filter can be authorized to specific role or policy by providing list of allowed roles or policies on the decorator such as `@authorize.filter("Supervisor", "Staff")`
+Filter follows the `@authorize.read()` and `@authorize.writeonly()` respectively.
 
 :::info documentation
 For more information about first class entity and generic controller can be found [here](Generic-Controller.md)

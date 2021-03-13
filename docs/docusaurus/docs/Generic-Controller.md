@@ -301,7 +301,7 @@ Above will generates 7 routes like below
 | GET    | `/emails`                       | Get list of all emails                                              |
 
 ## Filters 
-Generic controller provided filter query string to narrow API response. To be able to filter specific field, the appropriate property needs to be authorized. 
+Generic controller provided filter query string to narrow API response. The query respects the `@authorize.read()` and `@authorize.writeonly()`. Its mean you will not able to query  
 
 ```typescript {11,16}
 import { Entity, PrimaryGeneratedColumn } from "typeorm"
@@ -313,13 +313,12 @@ class User {
     @PrimaryGeneratedColumn()
     id: number
 
-    // authorize name field to be search able by everyone
-    @authorize.filter()
+    // name will be searchable by anyone (respect route authorization)
     @Column()
     name: string
 
     // authorize email field to be search able by admin
-    @authorize.filter("Admin")
+    @authorize.read("Admin")
     @Column()
     email: string
 }

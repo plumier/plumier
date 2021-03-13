@@ -35,18 +35,27 @@ And if `TypeORMFacility` installed it will parsed into TypeORM find option like 
 
 ## Usage 
 
-Filter parser provided a decorator that can be applied on action parameter used to receive the query. Filter parser required a model to define the data structure and data type of the query.
+Filter parser respects `@authorize.read()` and `@authorize.writeonly()`, its means you will need proper policy to query property secured with `@authorize.read()` and will not able to query property with `@authorize.writeonly()`. 
+
+Filter parser required a model to define the data structure and data type of the query.
 
 ```typescript
+@Entity()
 class UserFilter {
-    @authorize.filter()
+    @Column()
     name:string
 
-    @authorize.filter()
+    // password will not filterable by anyone
+    @authorize.readonly()
+    @Column()
+    password:string
+
+    @Column()
     deleted:boolean
 
     // authorize email filter only accessible by Admin
-    @authorize.filter("Admin")
+    @authorize.read("Admin")
+    @Column()
     email:string
 }
 
