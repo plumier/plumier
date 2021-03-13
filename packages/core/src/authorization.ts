@@ -362,10 +362,11 @@ async function checkParameter(meta: PropertyReflection | ParameterReflection, va
         return checkParameters(classMeta.properties, values, { ...ctx, parent: meta.type, parentValue: value })
     }
     else {
-        const decorators = ctx.info.ctx.method === "GET" ? meta.decorators.filter(createDecoratorFilter(x => x.access === "filter")) :
-            meta.decorators.filter(createDecoratorFilter(x => x.access === "write"))
+        // skip check on GET method
+        if (ctx.info.ctx.method === "GET") return []
+        const decorators = meta.decorators.filter(createDecoratorFilter(x => x.access === "write"))
         // if no decorator then just allow, follow route authorization
-        if(decorators.length === 0) return []
+        if (decorators.length === 0) return []
         const info = createContext(ctx, value, meta)
         const allowed = await executeAuthorizer(decorators, info)
         return allowed ? [] : [ctx.path.join(".")]

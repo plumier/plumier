@@ -42,7 +42,7 @@ export class Shop {
 //     @Column()
 //     name: string
 
-//     @authorize.filter()
+//     @authorize.read()
 //     @Column()
 //     price: number
 
@@ -71,23 +71,23 @@ export class Shop {
 // @genericController()
 // @Entity()
 // export class Primitive {
-//     @authorize.filter()
+//     @authorize.read()
 //     @PrimaryGeneratedColumn()
 //     id: number
 
-//     @authorize.filter()
+//     @authorize.read()
 //     @Column()
 //     string: string
 
-//     @authorize.filter()
+//     @authorize.read()
 //     @Column()
 //     date: Date
 
-//     @authorize.filter()
+//     @authorize.read()
 //     @Column()
 //     number: number
 
-//     @authorize.filter()
+//     @authorize.read()
 //     @Column()
 //     boolean: boolean
 // }

@@ -42,7 +42,7 @@ Object {
 }
 `;
 
-exports[`Filter Parser Authorizer Should not conflict with @authorize.write() 1`] = `
+exports[`Filter Parser Authorizer Should not filter writeonly property 1`] = `
 Object {
   "message": "Unauthorized to access filter properties email",
   "status": 401,

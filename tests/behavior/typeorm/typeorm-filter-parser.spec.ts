@@ -13,8 +13,6 @@ import { JwtAuthFacility } from "@plumier/jwt"
 
 describe("TypeORM Filter Parser", () => {
 
-
-    @authorize.filter()
     @Entity()
     class User {
         @PrimaryGeneratedColumn()
@@ -174,7 +172,6 @@ describe("TypeORM Filter Parser", () => {
                 @PrimaryGeneratedColumn()
                 id: number
 
-                @authorize.filter()
                 @ManyToOne(x => Child)
                 child: Child
             }
@@ -197,7 +194,7 @@ describe("TypeORM Filter Parser", () => {
             class User {
                 @PrimaryGeneratedColumn()
                 id: number
-                @authorize.filter("user")
+                @authorize.read("user")
                 @Column()
                 email: string
                 @Column()

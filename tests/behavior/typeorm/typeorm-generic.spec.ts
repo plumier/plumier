@@ -51,15 +51,12 @@ describe("Filter", () => {
         id: number
 
         @Column()
-        @authorize.filter()
         string: string
 
         @Column()
-        @authorize.filter()
         number: number
 
         @Column()
-        @authorize.filter()
         boolean: boolean
 
         @genericController()
@@ -72,15 +69,12 @@ describe("Filter", () => {
         id: number
 
         @Column()
-        @authorize.filter()
         string: string
 
         @Column()
-        @authorize.filter()
         number: number
 
         @Column()
-        @authorize.filter()
         boolean: boolean
 
         @ManyToOne(x => Parent, x => x.children)
@@ -341,7 +335,6 @@ describe("CRUD", () => {
                 @PrimaryGeneratedColumn()
                 id: number
                 @Column()
-                @authorize.filter()
                 email: string
                 @Column()
                 name: string
@@ -362,7 +355,6 @@ describe("CRUD", () => {
                 @PrimaryGeneratedColumn()
                 id: number
                 @Column()
-                @authorize.filter()
                 email: string
                 @Column()
                 name: string
@@ -384,7 +376,6 @@ describe("CRUD", () => {
                 @PrimaryGeneratedColumn()
                 id: number
                 @Column()
-                @authorize.filter()
                 @val.required()
                 email: string
                 @Column()
@@ -978,7 +969,6 @@ describe("CRUD", () => {
                 @PrimaryGeneratedColumn()
                 id: number
                 @Column()
-                @authorize.filter()
                 name: string
                 @ManyToOne(x => User, x => x.animals)
                 user: User
@@ -1013,7 +1003,6 @@ describe("CRUD", () => {
                 @PrimaryGeneratedColumn()
                 id: number
                 @Column()
-                @authorize.filter()
                 name: string
                 @ManyToOne(x => User, x => x.animals)
                 user: User
@@ -1049,7 +1038,6 @@ describe("CRUD", () => {
                 @val.required()
                 id: number
                 @Column()
-                @authorize.filter()
                 name: string
                 @ManyToOne(x => User, x => x.animals)
                 user: User

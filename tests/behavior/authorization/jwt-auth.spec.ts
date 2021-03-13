@@ -2824,56 +2824,6 @@ describe("JwtAuth", () => {
         })
     })
 
-    describe("Filter Authorization", () => {
-        it("Should able to authorize filter on parameter", async () => {
-            class UsersController {
-                get(@authorize.filter("admin") filter: string) { }
-            }
-            const app = await fixture(UsersController)
-                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
-                .initialize()
-            await Supertest(app.callback())
-                .get("/users/get?filter=abcd")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(200)
-            await Supertest(app.callback())
-                .get("/users/get?filter=abcd")
-                .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(401, { status: 401, message: 'Unauthorized to populate parameter paths (filter)' })
-        })
-        it("Should able to authorize filter on model", async () => {
-            @domain()
-            class User {
-                constructor(
-                    public name: string,
-                    @authorize.filter("admin")
-                    public password: string,
-                    @authorize.filter("admin")
-                    public email: string
-                ) { }
-            }
-            class UsersController {
-                @reflect.type(User)
-                get(filter: User) { }
-            }
-            const app = await fixture(UsersController)
-                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
-                .initialize()
-            await Supertest(app.callback())
-                .get("/users/get?filter[password]=lorem&filter[email]=abcd&filter[name]=abcd")
-                .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(200)
-            await Supertest(app.callback())
-                .get("/users/get?filter[name]=abcd")
-                .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(200)
-            await Supertest(app.callback())
-                .get("/users/get?filter[password]=lorem&filter[email]=abcd&filter[name]=abcd")
-                .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(401, { status: 401, message: 'Unauthorized to populate parameter paths (filter.password, filter.email)' })
-        })
-    })
-
     describe("Authorization Policy", () => {
         it("Should able to use Public", async () => {
             class AnimalController {

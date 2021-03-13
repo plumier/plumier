@@ -1,7 +1,7 @@
 import { authorize, OneToManyControllerGeneric, route } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { SwaggerFacility } from "@plumier/swagger"
-import Plumier, { LoggerFacility, WebApiFacility } from "plumier"
+import Plumier, { genericController, LoggerFacility, WebApiFacility } from "plumier"
 import { collection, MongooseFacility } from "@plumier/mongoose"
 import { noop, type } from "@plumier/reflect"
 
@@ -34,7 +34,7 @@ export class Shop {
 }
 
 @genericController(c => {
-    c.actions("Delete", "GetMany", "GetOne", "Patch", "Put").ignore()
+    c.methods("Delete", "GetMany", "GetOne", "Patch", "Put").ignore()
 })
 @collection()
 export class Item {
@@ -44,7 +44,7 @@ export class Item {
     @noop()
     name: string
 
-    @authorize.filter()
+    @noop()
     price: number
 
 

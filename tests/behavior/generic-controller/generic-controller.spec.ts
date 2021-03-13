@@ -1163,7 +1163,7 @@ describe("Open Api", () => {
             class Animal {
                 @entity.primaryId()
                 id: number
-                @authorize.filter()
+                @noop()
                 name: string
             }
             const koa = await createApp({ controller: Animal }, { mode: "production" })
@@ -1316,11 +1316,11 @@ describe("Open Api", () => {
             class Animal {
                 @entity.primaryId()
                 id: number
-                @authorize.filter()
+                @noop()
                 name: string
             }
             class AnimalDTO {
-                @authorize.filter()
+                @noop()
                 name: string
             }
             const koa = await createApp({ controller: Animal }, { mode: "production" })
@@ -1342,7 +1342,7 @@ describe("Open Api", () => {
                 name: string
             }
             class AnimalDTO {
-                @authorize.filter()
+                @noop()
                 name: string
             }
             const koa = await createApp({ controller: Animal }, { mode: "production" })
@@ -1388,7 +1388,7 @@ describe("Open Api", () => {
             class Animal {
                 @entity.primaryId()
                 id: number
-                @authorize.filter()
+                @noop()
                 name: string
                 @reflect.type(x => [Tag])
                 @entity.relation()
@@ -1560,7 +1560,7 @@ describe("Open Api", () => {
             class Tag {
                 @entity.primaryId()
                 id: number
-                @authorize.filter()
+                @noop()
                 tag: string
             }
             const koa = await createApp({ controller: Animal }, { mode: "production" })
@@ -1832,7 +1832,7 @@ describe("Open Api", () => {
             class Tag {
                 @entity.primaryId()
                 id: number
-                @authorize.filter()
+                @noop()
                 tag: string
             }
             class TagDTO {

@@ -8,7 +8,6 @@ import supertest from "supertest"
 
 
 describe("Filter Parser", () => {
-    @authorize.filter()
     class User {
         @val.email()
         @noop()
@@ -156,7 +155,6 @@ describe("Filter Parser", () => {
         expect(body).toMatchSnapshot()
     })
     it("Should work with generic type controller", async () => {
-        @authorize.filter()
         class User {
             @val.email()
             @noop()
@@ -219,40 +217,15 @@ describe("Filter Parser Authorizer", () => {
             .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
             .initialize()
     }
-    it("Should allow authorize from class scope", async () => {
-        @authorize.filter()
-        class User {
-            @noop()
-            email: string
-            @noop()
-            name: string
-            @noop()
-            deleted: boolean
-            @noop()
-            createdAt: Date
-        }
-        class UsersController {
-            @route.get("")
-            get(@filterParser(x => User) filter: any) {
-                return filter
-            }
-        }
-        const app = await createApp(UsersController)
-        await supertest(app.callback())
-            .get("/users?filter=email='lorem@ipsum.com' and name='john' and deleted=false and createdAt='2020-1-1'")
-            .set("Authorization", `Bearer ${USER_TOKEN}`)
-            .expect(200)
-    })
     it("Should check unauthorized column", async () => {
         class User {
-            @authorize.filter()
             @noop()
             email: string
-            @noop()
+            @authorize.read("admin")
             name: string
-            @noop()
+            @authorize.read("admin")
             deleted: boolean
-            @noop()
+            @authorize.read("admin")
             createdAt: Date
         }
         class UsersController {
@@ -270,10 +243,9 @@ describe("Filter Parser Authorizer", () => {
     })
     it("Should check unauthorized column if compared as column vs column", async () => {
         class User {
-            @authorize.filter()
             @noop()
             email: string
-            @noop()
+            @authorize.read("admin")
             name: string
             @noop()
             deleted: boolean
@@ -295,14 +267,13 @@ describe("Filter Parser Authorizer", () => {
     })
     it("Should check unauthorized column on public route", async () => {
         class User {
-            @authorize.filter()
             @noop()
             email: string
-            @noop()
+            @authorize.read("admin")
             name: string
-            @noop()
+            @authorize.read("admin")
             deleted: boolean
-            @noop()
+            @authorize.read("admin")
             createdAt: Date
         }
         class UsersController {
@@ -320,7 +291,6 @@ describe("Filter Parser Authorizer", () => {
     })
     it("Should respect route authorization", async () => {
         class User {
-            @authorize.filter()
             @noop()
             email: string
             @noop()
@@ -344,7 +314,6 @@ describe("Filter Parser Authorizer", () => {
     })
     it("Should respect route authorization on protected route", async () => {
         class User {
-            @authorize.filter()
             @noop()
             email: string
             @noop()
@@ -372,7 +341,7 @@ describe("Filter Parser Authorizer", () => {
     })
     it("Should able to secure filter by policy", async () => {
         class User {
-            @authorize.filter("user")
+            @authorize.read("user")
             @noop()
             email: string
             @noop()
@@ -399,9 +368,9 @@ describe("Filter Parser Authorizer", () => {
             .expect(401)
         expect(body).toMatchSnapshot()
     })
-    it("Should not conflict with @authorize.write()", async () => {
+    it("Should not filter writeonly property", async () => {
         class User {
-            @authorize.write("user")
+            @authorize.writeonly()
             @noop()
             email: string
             @noop()
@@ -420,13 +389,42 @@ describe("Filter Parser Authorizer", () => {
         const app = await createApp(UsersController)
         const { body } = await supertest(app.callback())
             .get("/users?filter=email='lorem@ipsum.com'")
-            .set("Authorization", `Bearer ${USER_TOKEN}`)
+            .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
             .expect(401)
         expect(body).toMatchSnapshot()
     })
+    it("Should able to specify multiple decorators", async () => {
+        class User {
+            @authorize.read("user")
+            @authorize.read("admin")
+            @noop()
+            email: string
+            @noop()
+            name: string
+            @noop()
+            deleted: boolean
+            @noop()
+            createdAt: Date
+        }
+        class UsersController {
+            @route.get("")
+            get(@filterParser(x => User) filter: any) {
+                return filter
+            }
+        }
+        const app = await createApp(UsersController)
+        await supertest(app.callback())
+            .get("/users?filter=email='lorem@ipsum.com'")
+            .set("Authorization", `Bearer ${USER_TOKEN}`)
+            .expect(200)
+        await supertest(app.callback())
+            .get("/users?filter=email='lorem@ipsum.com'")
+            .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+            .expect(200)
+    })
     it("Should able to specify multiple policy by single decorator", async () => {
         class User {
-            @authorize.filter("user", "admin")
+            @authorize.read("user", "admin")
             @noop()
             email: string
             @noop()
@@ -459,8 +457,8 @@ describe("Filter Parser Authorizer", () => {
     })
     it("Should able to specify multiple policy by multiple decorators", async () => {
         class User {
-            @authorize.filter("user")
-            @authorize.filter("admin")
+            @authorize.read("user")
+            @authorize.read("admin")
             @noop()
             email: string
             @noop()
@@ -493,8 +491,8 @@ describe("Filter Parser Authorizer", () => {
     })
     it("Should not affected non filterParser parameter", async () => {
         class User {
-            @authorize.filter("user")
-            @authorize.filter("admin")
+            @authorize.read("user")
+            @authorize.read("admin")
             @noop()
             email: string
             @noop()
