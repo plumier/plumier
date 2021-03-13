@@ -10,14 +10,13 @@ import {
     HttpStatusError,
     OneToManyControllerGeneric,
     OneToManyRepository,
-    OrderQuery,
     Repository,
     responseType,
     route,
     RouteDecorator,
     SelectQuery
 } from "@plumier/core"
-import { filterParser, selectParser } from "@plumier/filter-parser"
+import { filterParser, orderParser, selectParser } from "@plumier/query-parser"
 import reflect, { decorate, DecoratorId, generic, mergeDecorator } from "@plumier/reflect"
 import { val } from "@plumier/validator"
 import { Context } from "koa"
@@ -55,7 +54,7 @@ interface GetOneCustomQueryDecorator {
 }
 
 // get many custom query
-interface GetManyParams<T> { pid?: any, limit: number, offset: number, select: SelectQuery, filter: any, order: OrderQuery[] }
+interface GetManyParams<T> { pid?: any, limit: number, offset: number, select: SelectQuery, filter: any, order: any }
 type GetManyCustomQueryFunction<T = any> = (params: GetManyParams<T>, ctx: Context) => Promise<T[]>
 interface GetManyCustomQueryDecorator {
     kind: "plumier-meta:get-many-query",
@@ -97,22 +96,6 @@ function getManyCustomQuery(type: Class): GetManyCustomQueryFunction | undefined
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
 // --------------------------------------------------------------------- //
-
-function parseOrder(order?: string) {
-    const tokens = order?.split(",").map(x => x.trim()) ?? []
-    const result: OrderQuery[] = []
-    for (const token of tokens) {
-        if (token.match(/^\-.*/)) {
-            const column = token.replace(/^\-/, "")
-            result.push({ column, order: -1 })
-        }
-        else {
-            const column = token.replace(/^\+/, "")
-            result.push({ column, order: 1 })
-        }
-    }
-    return result
-}
 
 function getDeletedProperty(type: Class) {
     const meta = reflect(type)
@@ -162,10 +145,9 @@ class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGene
     @decorateRoute("get", "")
     @api.hideRelations()
     @reflect.type(["T"])
-    async list(offset: number = 0, limit: number = 50, @filterParser(() => "T") filter: any, @selectParser(x => "T") select: SelectQuery, order: string, @bind.ctx() ctx: Context): Promise<any> {
+    async list(offset: number = 0, limit: number = 50, @filterParser(() => "T") filter: any, @selectParser(x => "T") select: SelectQuery, @orderParser(x => "T") order: string, @bind.ctx() ctx: Context): Promise<any> {
         const query = getManyCustomQuery(this.constructor as any)
-        const pOrder = parseOrder(order)
-        const result = query ? await query({ offset, limit, filter, order: pOrder, select }, ctx) : await this.repo.find(offset, limit, filter, select, pOrder)
+        const result = query ? await query({ offset, limit, filter, order, select }, ctx) : await this.repo.find(offset, limit, filter, select, order)
         const transformer = getTransformer(this.constructor as Class, "list")
         if (transformer)
             return result.map(x => transformer(x))
@@ -247,12 +229,11 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     @decorateRoute("get", "")
     @api.hideRelations()
     @reflect.type(["T"])
-    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @filterParser(() => "T") filter: any, @selectParser(x => "T") select: SelectQuery, order: string, @bind.ctx() ctx: Context): Promise<any> {
+    async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @filterParser(() => "T") filter: any, @selectParser(x => "T") select: SelectQuery, @orderParser(x => "T") order: string, @bind.ctx() ctx: Context): Promise<any> {
         await this.findParentByIdOrNotFound(pid)
         const query = getManyCustomQuery(this.constructor as any)
-        const pOrder = parseOrder(order)
         const reverseProperty = getGenericControllerInverseProperty(this.constructor as Class)
-        const result = query ? await query({ pid, offset, limit, filter, order: pOrder, select }, ctx) : await this.repo.find(pid, offset, limit, filter, select, pOrder)
+        const result = query ? await query({ pid, offset, limit, filter, order, select }, ctx) : await this.repo.find(pid, offset, limit, filter, select, order)
         const transformer = getTransformer(this.constructor as Class, "list")
         if (transformer)
             return result.map(x => transformer(x))

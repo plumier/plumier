@@ -9,8 +9,8 @@ import {
 } from "@plumier/core"
 
 import { SelectParserDecorator } from "../decorator"
-import { getDecoratorType, ParserAst } from "../helper"
-import { ColumnNode } from "./converter"
+import { ParserAst } from "../helper"
+import { SelectColumnNode } from "./converter"
 
 
 class SelectQueryAuthorizeMiddleware implements Middleware<ActionContext> {
@@ -19,7 +19,7 @@ class SelectQueryAuthorizeMiddleware implements Middleware<ActionContext> {
             .find(x => x.decorators.some((d: SelectParserDecorator) => d.kind === "plumier-meta:select-parser-decorator"))
         if (!par) return i.proceed()
         const raw = i.metadata!.actionParams.get(par.name)
-        const value: ColumnNode[] = raw[ParserAst]
+        const value: SelectColumnNode[] = raw[ParserAst]
         const unauthorized = []
         const auth = createAuthContext(i.ctx, "read")
         for (const val of value) {

@@ -1,0 +1,137 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Oder Parser Should detect invalid property name 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Invalid property emails",
+        "Invalid property names",
+        "Invalid property createdAts",
+      ],
+      "path": Array [
+        "order",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Oder Parser Should detect invalid syntax 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Invalid property *emails",
+        "Invalid property %names",
+        "Invalid property -(createdAts",
+      ],
+      "path": Array [
+        "order",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Oder Parser Should parse order syntax properly 1`] = `
+Array [
+  Object {
+    "authDecorators": Array [],
+    "name": "email",
+    "order": "Asc",
+  },
+  Object {
+    "authDecorators": Array [],
+    "name": "name",
+    "order": "Asc",
+  },
+  Object {
+    "authDecorators": Array [],
+    "name": "createdAt",
+    "order": "Desc",
+  },
+]
+`;
+
+exports[`Oder Parser Should skip + sign 1`] = `
+Array [
+  Object {
+    "authDecorators": Array [],
+    "name": "email",
+    "order": "Asc",
+  },
+  Object {
+    "authDecorators": Array [],
+    "name": "name",
+    "order": "Asc",
+  },
+  Object {
+    "authDecorators": Array [],
+    "name": "createdAt",
+    "order": "Desc",
+  },
+]
+`;
+
+exports[`Oder Parser Should skip whitespace 1`] = `
+Array [
+  Object {
+    "authDecorators": Array [],
+    "name": "email",
+    "order": "Asc",
+  },
+  Object {
+    "authDecorators": Array [],
+    "name": "name",
+    "order": "Asc",
+  },
+  Object {
+    "authDecorators": Array [],
+    "name": "createdAt",
+    "order": "Desc",
+  },
+]
+`;
+
+exports[`Select Order Authorization Should allow access if match policy 1`] = `
+Array [
+  Object {
+    "authDecorators": Array [
+      Object {
+        "access": "read",
+        "evaluation": "Dynamic",
+        "location": "Method",
+        "policies": Array [
+          "Admin",
+        ],
+        "tag": "Admin",
+        "type": "plumier-meta:authorize",
+      },
+    ],
+    "name": "email",
+    "order": "Asc",
+  },
+  Object {
+    "authDecorators": Array [],
+    "name": "name",
+    "order": "Asc",
+  },
+]
+`;
+
+exports[`Select Order Authorization Should authorize column properly 1`] = `
+Object {
+  "message": "Unauthorized to order properties email",
+  "status": 401,
+}
+`;
+
+exports[`Select Order Authorization Should authorize column with public route 1`] = `
+Object {
+  "message": "Unauthorized to order properties email",
+  "status": 403,
+}
+`;

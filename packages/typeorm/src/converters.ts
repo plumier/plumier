@@ -1,6 +1,6 @@
 import { SelectQuery } from "@plumier/core"
 import {
-    ColumnNode,
+    SelectColumnNode,
     createCustomFilterConverter,
     createCustomSelectConverter,
     EquationExpression,
@@ -11,7 +11,9 @@ import {
     StringLiteral,
     StringRangeLiteral,
     UnaryExpression,
-} from "@plumier/filter-parser"
+    OrderColumnNode,
+    createCustomOrderConverter,
+} from "@plumier/query-parser"
 import { Between, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not } from "typeorm"
 
 
@@ -86,7 +88,7 @@ const filterConverter = createCustomFilterConverter(transform)
 // -------------------------- SELECT CONVERTER ------------------------- //
 // --------------------------------------------------------------------- //
 
-function selectTransformer(nodes: ColumnNode[]): SelectQuery {
+function selectTransformer(nodes: SelectColumnNode[]): SelectQuery {
     const columns: string[] = []
     const relations: string[] = []
     for (const node of nodes) {
@@ -100,5 +102,20 @@ function selectTransformer(nodes: ColumnNode[]): SelectQuery {
 
 const selectConverter = createCustomSelectConverter(selectTransformer)
 
+// --------------------------------------------------------------------- //
+// -------------------------- ORDER CONVERTER -------------------------- //
+// --------------------------------------------------------------------- //
 
-export { filterConverter, selectConverter }
+function orderTransformer(nodes: OrderColumnNode[]) {
+    const result:any = {}
+    for (const node of nodes) {
+        result[node.name] = node.order.toUpperCase()
+    }
+    return result
+}
+
+const orderConverter = createCustomOrderConverter(orderTransformer)
+
+
+
+export { filterConverter, selectConverter, orderConverter }

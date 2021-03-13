@@ -1,13 +1,6 @@
-import { Class, OneToManyRepository, OrderQuery, Repository, SelectQuery } from "@plumier/core"
+import { Class, OneToManyRepository, Repository, SelectQuery } from "@plumier/core"
 import { getGenericControllerOneToOneRelations } from "@plumier/generic-controller"
 import { getManager, Repository as NativeRepository } from "typeorm"
-
-function parseOrder<T>(order: OrderQuery[]): { [P in keyof T]?: 1 | -1 } {
-    return order.reduce((a, b) => {
-        a[b.column] = b.order
-        return a
-    }, {} as any)
-}
 
 class TypeORMRepository<T> implements Repository<T> {
     readonly nativeRepository: NativeRepository<T>
@@ -23,14 +16,14 @@ class TypeORMRepository<T> implements Repository<T> {
         })
     }
 
-    find(offset: number, limit: number, query: any, selection: SelectQuery, order: OrderQuery[]): Promise<T[]> {
+    find(offset: number, limit: number, query: any, selection: SelectQuery, order: any): Promise<T[]> {
         return this.nativeRepository.find({
             skip: offset,
             take: limit,
             where: query,
             relations: selection.relations, 
             select:selection.columns,
-            order: parseOrder(order)
+            order
         })
     }
 
@@ -72,7 +65,7 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
         })
     }
 
-    async find(pid: any, offset: number, limit: number, query: any, selection: SelectQuery, order: OrderQuery[]): Promise<T[]> {
+    async find(pid: any, offset: number, limit: number, query: any, selection: SelectQuery, order: any): Promise<T[]> {
         return this.nativeRepository.find({
             where:
                 { [this.inversePropertyName]: pid, ...query },
@@ -80,7 +73,7 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
             take: limit,
             relations: selection.relations,
             select:selection.columns,
-            order: parseOrder(order)
+            order
         })
     }
 

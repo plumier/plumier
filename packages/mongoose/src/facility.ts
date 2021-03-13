@@ -1,10 +1,10 @@
 import { DefaultFacility, PlumierApplication, RelationDecorator } from "@plumier/core"
-import { FilterQueryAuthorizeMiddleware, SelectQueryAuthorizeMiddleware } from "@plumier/filter-parser"
+import { FilterQueryAuthorizeMiddleware, OrderQueryAuthorizeMiddleware, SelectQueryAuthorizeMiddleware } from "@plumier/query-parser"
 import { RequestHookMiddleware } from "@plumier/generic-controller"
 import { Result, ResultMessages, VisitorInvocation } from "@plumier/validator"
 import Mongoose from "mongoose"
 import pluralize from "pluralize"
-import { filterConverter, selectConverter } from "./converters"
+import { filterConverter, orderConverter, selectConverter } from "./converters"
 
 import { getModels, model as globalModel, MongooseHelper, proxy as globalProxy } from "./generator"
 import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
@@ -54,6 +54,7 @@ export class MongooseFacility extends DefaultFacility {
         app.use(new RequestHookMiddleware(), "Action")
         app.use(new FilterQueryAuthorizeMiddleware(), "Action")
         app.use(new SelectQueryAuthorizeMiddleware(), "Action")
+        app.use(new OrderQueryAuthorizeMiddleware(), "Action")
     }
 
     async initialize(app: Readonly<PlumierApplication>) {
@@ -69,7 +70,8 @@ export class MongooseFacility extends DefaultFacility {
                 ...app.config.typeConverterVisitors,
                 relationConverter,
                 filterConverter,
-                selectConverter
+                selectConverter,
+                orderConverter
             ]
         })
         app.set({

@@ -19,7 +19,7 @@
 		"swagger:start": "ts-node -r tsconfig-paths/register tests/manual/swagger/index.ts",
 		"mongoose:start": "ts-node-script -r tsconfig-paths/register tests/manual/mongoose/index.ts",
 		"copy-readme": "lerna run copy-readme",
-		"compile-parser": "yarn workspace @plumier/filter-parser precompile",
+		"compile-parser": "yarn workspace @plumier/query-parser precompile",
 		"postinstall": "yarn run compile-parser"
 	},
 	"author": "Ketut Sandiarsa",

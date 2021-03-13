@@ -1,5 +1,5 @@
 {
-  "name": "@plumier/filter-parser",
+  "name": "@plumier/query-parser",
   "version": "1.0.0-rc.8",
   "description": "Plumier testing modules",
   "main": "lib/index.js",

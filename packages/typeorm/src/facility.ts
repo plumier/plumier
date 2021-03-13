@@ -8,7 +8,7 @@ import {
     PlumierApplication,
     RelationDecorator,
 } from "@plumier/core"
-import { FilterQueryAuthorizeMiddleware, SelectQueryAuthorizeMiddleware } from "@plumier/filter-parser"
+import { FilterQueryAuthorizeMiddleware, OrderQueryAuthorizeMiddleware, SelectQueryAuthorizeMiddleware } from "@plumier/query-parser"
 import { RequestHookMiddleware } from "@plumier/generic-controller"
 import { Result, ResultMessages, VisitorInvocation } from "@plumier/validator"
 import { lstat } from "fs"
@@ -16,7 +16,7 @@ import pluralize from "pluralize"
 import { ConnectionOptions, createConnection, getConnectionOptions, getMetadataArgsStorage } from "typeorm"
 import { promisify } from "util"
 import validator from "validator"
-import { filterConverter, selectConverter } from "./converters"
+import { filterConverter, orderConverter, selectConverter } from "./converters"
 
 import { normalizeEntity, TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
 
@@ -102,7 +102,8 @@ class TypeORMFacility extends DefaultFacility {
                 ...app.config.typeConverterVisitors,
                 relationConverter,
                 filterConverter,
-                selectConverter
+                selectConverter,
+                orderConverter,
             ]
         })
         // load all entities to be able to take the metadata storage
@@ -123,6 +124,7 @@ class TypeORMFacility extends DefaultFacility {
         app.use(new RequestHookMiddleware(), "Action")
         app.use(new FilterQueryAuthorizeMiddleware(), "Action")
         app.use(new SelectQueryAuthorizeMiddleware(), "Action")
+        app.use(new OrderQueryAuthorizeMiddleware(), "Action")
     }
 
     async initialize(app: Readonly<PlumierApplication>) {

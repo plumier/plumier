@@ -307,21 +307,6 @@ Object {
 }
 `;
 
-exports[`Export Should export @plumier/filter-parser 1`] = `
-Object {
-  "FilterQueryAuthorizeMiddleware": FilterQueryAuthorizeMiddleware,
-  "SelectQueryAuthorizeMiddleware": SelectQueryAuthorizeMiddleware,
-  "createCustomFilterConverter": createCustomFilterConverter,
-  "createCustomSelectConverter": createCustomSelectConverter,
-  "filterNodeWalker": filterNodeWalker,
-  "filterParser": filterParser,
-  "getFilterDecorators": getFilterDecorators,
-  "getKeyValue": getKeyValue,
-  "parseFilter": parseFilter,
-  "selectParser": selectParser,
-}
-`;
-
 exports[`Export Should export @plumier/generic-controller 1`] = `
 Object {
   "ControllerBuilder": ControllerBuilder,
@@ -367,8 +352,27 @@ Object {
   "getModels": bound getModels,
   "model": bound model,
   "models": Map {},
+  "orderConverter": ,
   "proxy": bound proxy,
   "selectConverter": ,
+}
+`;
+
+exports[`Export Should export @plumier/query-parser 1`] = `
+Object {
+  "FilterQueryAuthorizeMiddleware": FilterQueryAuthorizeMiddleware,
+  "OrderQueryAuthorizeMiddleware": OrderQueryAuthorizeMiddleware,
+  "SelectQueryAuthorizeMiddleware": SelectQueryAuthorizeMiddleware,
+  "createCustomFilterConverter": createCustomFilterConverter,
+  "createCustomOrderConverter": createCustomOrderConverter,
+  "createCustomSelectConverter": createCustomSelectConverter,
+  "filterNodeWalker": filterNodeWalker,
+  "filterParser": filterParser,
+  "getFilterDecorators": getFilterDecorators,
+  "getKeyValue": getKeyValue,
+  "orderParser": orderParser,
+  "parseFilter": parseFilter,
+  "selectParser": selectParser,
 }
 `;
 
@@ -477,6 +481,7 @@ Object {
   "TypeORMRepository": TypeORMRepository,
   "filterConverter": ,
   "normalizeEntity": ,
+  "orderConverter": ,
   "selectConverter": ,
 }
 `;

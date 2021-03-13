@@ -1,5 +1,5 @@
 import { authorize, authPolicy, Class, entity, RelationDecorator, RelationPropertyDecorator, route } from "@plumier/core"
-import { createCustomSelectConverter, selectParser, SelectQueryAuthorizeMiddleware } from "@plumier/filter-parser"
+import { createCustomSelectConverter, selectParser, SelectQueryAuthorizeMiddleware } from "@plumier/query-parser"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { decorateClass, noop, type } from "@plumier/reflect"
 import { sign } from "jsonwebtoken"

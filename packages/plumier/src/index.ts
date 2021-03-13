@@ -16,7 +16,7 @@ export {
 
 export { genericController } from "@plumier/generic-controller"
 export * from "./facility"
-export { filterParser, selectParser, createCustomFilterConverter, createCustomSelectConverter } from "@plumier/filter-parser"
+export { filterParser, selectParser, createCustomFilterConverter, createCustomSelectConverter } from "@plumier/query-parser"
 
 import "./validator"
 import "./binder"

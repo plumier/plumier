@@ -1,4 +1,4 @@
-import { Class, OneToManyRepository, OrderQuery, Repository, SelectQuery } from "@plumier/core"
+import { Class, OneToManyRepository, Repository, SelectQuery } from "@plumier/core"
 import { getGenericControllerOneToOneRelations } from "@plumier/generic-controller"
 import reflect from "@plumier/reflect"
 import mongoose, { Document, Model } from "mongoose"
@@ -19,14 +19,10 @@ class MongooseRepository<T> implements Repository<T>{
         return this.Model.find(query).count()
     }
 
-    find(offset: number, limit: number, query: any, select: SelectQuery, order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
+    find(offset: number, limit: number, query: any, select: SelectQuery, order: any): Promise<(T & mongoose.Document)[]> {
         const q = this.Model.find(query, select.columns)
-        if (order.length > 0) {
-            const sort = order.reduce((a, b) => {
-                a[b.column] = b.order
-                return a
-            }, {} as any)
-            q.sort(sort)
+        if (order) {
+            q.sort(order)
         }
         q.populate(select.relations)
         return q.skip(offset).limit(limit) as any
@@ -72,16 +68,12 @@ class MongooseOneToManyRepository<P, T> implements OneToManyRepository<P, T>  {
         return (data as any)[this.relation].length
     }
 
-    async find(pid: string, offset: number, limit: number, query: any, select: SelectQuery, order: OrderQuery[]): Promise<(T & mongoose.Document)[]> {
-        const sort = order.reduce((a, b) => {
-            a[b.column] = b.order
-            return a
-        }, {} as any)
+    async find(pid: string, offset: number, limit: number, query: any, select: SelectQuery, order: any): Promise<(T & mongoose.Document)[]> {
         const parent = await this.ParentModel.findById(pid)
             .populate({
                 path: this.relation,
                 match: query,
-                options: { skip: offset, limit, sort },
+                options: { skip: offset, limit, sort:order },
                 populate: select.relations,
                 select: select.columns,
             })
