@@ -1,5 +1,5 @@
 import { authorize, authPolicy, Class, route } from "@plumier/core"
-import { filterParser } from "@plumier/filter-parser"
+import { filterParser } from "@plumier/query-parser"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { noop } from "@plumier/reflect"
 import { TypeORMFacility } from "@plumier/typeorm"

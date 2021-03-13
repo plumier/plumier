@@ -5,10 +5,10 @@ import { Result } from "@plumier/validator"
 import { SelectParserDecorator } from "../decorator"
 import { getDecoratorType, ParserAst } from "../helper"
 
-type ColumnKind = "Column" | "RelationSingle" | "RelationArray" | "InverseProperty"
+type SelectColumnKind = "Column" | "RelationSingle" | "RelationArray" | "InverseProperty"
 
-interface ColumnNode {
-    kind: ColumnKind
+interface SelectColumnNode {
+    kind: SelectColumnKind
     name: string
     invalidProperty?: true
     skipAuthCheck?: true
@@ -16,20 +16,20 @@ interface ColumnNode {
 }
 
 interface SelectionOption {
-    exclude: ColumnKind[],
+    exclude: SelectColumnKind[],
     skipAuthCheck?: true
 }
 
 function getDefaultSelection(controller: Class, type: Class, opt?: Partial<SelectionOption>) {
     const option: SelectionOption = { exclude: [], ...opt }
     const meta = reflect(type)
-    const result: ColumnNode[] = []
+    const result: SelectColumnNode[] = []
     const ctlMeta = reflect(controller)
     const ctlRelation = ctlMeta.decorators.find((x: RelationPropertyDecorator): x is RelationPropertyDecorator => x.kind === "plumier-meta:relation-prop-name")
     for (const prop of meta.properties) {
         const isInverseProperty = prop.name === ctlRelation?.inverseProperty
         const relation = prop.decorators.find((x: RelationDecorator): x is RelationDecorator => x.kind === "plumier-meta:relation")
-        const kind: ColumnKind =
+        const kind: SelectColumnKind =
             isInverseProperty ? "InverseProperty" :
                 !relation ? "Column" :
                     Array.isArray(prop.type) ? "RelationArray" : "RelationSingle"
@@ -40,10 +40,10 @@ function getDefaultSelection(controller: Class, type: Class, opt?: Partial<Selec
     return result
 }
 
-function parseQueryString(controller: Class, type: Class, query: string): ColumnNode[] {
+function parseQueryString(controller: Class, type: Class, query: string): SelectColumnNode[] {
     const tokens = query.split(",").map(x => x.trim())
     const defaultNodes = getDefaultSelection(controller, type)
-    const result: ColumnNode[] = []
+    const result: SelectColumnNode[] = []
     for (const token of tokens) {
         const exists = defaultNodes.find(x => x.name === token)
         if (exists)
@@ -54,7 +54,7 @@ function parseQueryString(controller: Class, type: Class, query: string): Column
     return result
 }
 
-function createCustomSelectConverter(transformer: (nodes: ColumnNode[]) => any): CustomConverter {
+function createCustomSelectConverter(transformer: (nodes: SelectColumnNode[]) => any): CustomConverter {
     return (i, ctx) => {
         const decorator = i.decorators.find((x: SelectParserDecorator): x is SelectParserDecorator => x.kind === "plumier-meta:select-parser-decorator")
         if (!decorator) return i.proceed()
@@ -62,7 +62,7 @@ function createCustomSelectConverter(transformer: (nodes: ColumnNode[]) => any):
         const type = getDecoratorType(controller, decorator.type())
         // default selection: all column except RelationArray and InverseProperty
         // skip auth check, let response authorizer does its job
-        let nodes: ColumnNode[]
+        let nodes: SelectColumnNode[]
         if (i.value === undefined || i.value === null) {
             nodes = getDefaultSelection(controller, type, { exclude: ["InverseProperty", "RelationArray"], skipAuthCheck: true })
         }
@@ -77,4 +77,4 @@ function createCustomSelectConverter(transformer: (nodes: ColumnNode[]) => any):
     }
 }
 
-export { createCustomSelectConverter, ColumnNode }
+export { createCustomSelectConverter, SelectColumnNode }

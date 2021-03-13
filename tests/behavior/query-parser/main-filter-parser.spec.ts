@@ -1,5 +1,5 @@
 import { authorize, authPolicy, Class, route, val } from "@plumier/core"
-import { createCustomFilterConverter, FilterQueryAuthorizeMiddleware, filterParser } from "@plumier/filter-parser"
+import { createCustomFilterConverter, FilterQueryAuthorizeMiddleware, filterParser } from "@plumier/query-parser"
 import { JwtAuthFacility } from "@plumier/jwt"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
 import { generic, noop } from "@plumier/reflect"

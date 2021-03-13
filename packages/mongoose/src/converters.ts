@@ -10,8 +10,10 @@ import {
     StringRangeLiteral,
     UnaryExpression,
     createCustomSelectConverter,
-    ColumnNode, 
-} from "@plumier/filter-parser"
+    SelectColumnNode,
+    OrderColumnNode,
+    createCustomOrderConverter,
+} from "@plumier/query-parser"
 
 
 // --------------------------------------------------------------------- //
@@ -94,7 +96,7 @@ const filterConverter = createCustomFilterConverter(filterTransformer)
 // -------------------------- SELECT CONVERTER ------------------------- //
 // --------------------------------------------------------------------- //
 
-function selectTransformer(nodes: ColumnNode[]): SelectQuery {
+function selectTransformer(nodes: SelectColumnNode[]): SelectQuery {
     const columns: string[] = []
     const relations: string[] = []
     for (const node of nodes) {
@@ -108,4 +110,19 @@ function selectTransformer(nodes: ColumnNode[]): SelectQuery {
 
 const selectConverter = createCustomSelectConverter(selectTransformer)
 
-export { filterConverter, selectConverter }
+
+// --------------------------------------------------------------------- //
+// -------------------------- ORDER CONVERTER -------------------------- //
+// --------------------------------------------------------------------- //
+
+function orderTransformer(nodes: OrderColumnNode[]) {
+    const result:any = {}
+    for (const node of nodes) {
+        result[node.name] = node.order === "Asc" ? 1 : -1
+    }
+    return result
+}
+
+const orderConverter = createCustomOrderConverter(orderTransformer)
+
+export { filterConverter, selectConverter, orderConverter }

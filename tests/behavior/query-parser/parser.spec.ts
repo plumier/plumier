@@ -1,4 +1,4 @@
-import { parseFilter } from "@plumier/filter-parser"
+import { parseFilter } from "@plumier/query-parser"
 
 
 describe(`Filter Parser`, () => {

@@ -390,12 +390,10 @@ export interface RelationPropertyDecorator { kind: "plumier-meta:relation-prop-n
 
 export type GenericController = [Class<ControllerGeneric>, Class<OneToManyControllerGeneric>]
 
-export interface OrderQuery { column: string, order: 1 | -1 }
-
 export interface SelectQuery { columns?: any, relations?: any }
 
 export interface Repository<T> {
-    find(offset: number, limit: number, query: any, select: SelectQuery, order: OrderQuery[]): Promise<T[]>
+    find(offset: number, limit: number, query: any, select: SelectQuery, order:any): Promise<T[]>
     insert(data: Partial<T>): Promise<T>
     findById(id: any, select: SelectQuery): Promise<T | undefined>
     update(id: any, data: Partial<T>): Promise<T | undefined>
@@ -404,7 +402,7 @@ export interface Repository<T> {
 }
 
 export interface OneToManyRepository<P, T> {
-    find(pid: any, offset: number, limit: number, query: any, select: SelectQuery, order: OrderQuery[]): Promise<T[]>
+    find(pid: any, offset: number, limit: number, query: any, select: SelectQuery, order:any): Promise<T[]>
     insert(pid: any, data: Partial<T>): Promise<T>
     findParentById(id: any): Promise<P | undefined>
     findById(id: any, select: SelectQuery): Promise<T | undefined>

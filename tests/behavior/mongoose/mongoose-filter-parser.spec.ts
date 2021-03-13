@@ -1,5 +1,5 @@
 import { authorize, authPolicy, Class, route } from "@plumier/core"
-import { filterParser, selectParser } from "@plumier/filter-parser"
+import { filterParser, selectParser } from "@plumier/query-parser"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { collection, filterConverter, MongooseFacility } from "@plumier/mongoose"
 import Plumier, { WebApiFacility } from "@plumier/plumier"

@@ -25,7 +25,7 @@ import supertest from "supertest"
 import reflect, { decorateClass, generic, noop, type } from "@plumier/reflect"
 
 import { fixture } from "../helper"
-import { filterParser } from "@plumier/filter-parser"
+import { filterParser } from "@plumier/query-parser"
 
 describe("getRef", () => {
     class User { }
