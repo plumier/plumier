@@ -186,7 +186,7 @@ import { LoginUser } from "../_shared/login-user"
 import { User } from "../user/user-entity"
 
 @genericController(c => {
-    c.actions("Put", "Patch", "Delete").authorize("ResourceOwner", "Admin")
+    c.methods("Put", "Patch", "Delete").authorize("ResourceOwner", "Admin")
 })
 @Entity()
 export class Todo extends BaseEntity {
@@ -332,7 +332,7 @@ export class Todo extends EntityBase {
     /** other properties **/
 
     @genericController(c => {
-        c.actions("Put", "Patch", "Delete").authorize("ResourceOwner", "Admin")
+        c.methods("Put", "Patch", "Delete").authorize("ResourceOwner", "Admin")
     })
     @OneToMany(x => Comment, x => x.todo)
     comments: Comment[]
@@ -347,7 +347,7 @@ Decorating property with `@genericController()` may make the code less cleaner, 
 ```typescript {2}
 @genericController(c => {
     c.useNested(Todo, "comments")
-    c.actions("Put", "Patch", "Delete").authorize("ResourceOwner", "Admin")
+    c.methods("Put", "Patch", "Delete").authorize("ResourceOwner", "Admin")
 })
 @Entity()
 export class Comment extends EntityBase { }

@@ -271,7 +271,7 @@ class User {
 }
 
 @genericController(c => c.useNested(User, "emails"))
-@genericController(c => c.actions("Delete", "GetOne", "Patch", "Post", "Put").ignore())
+@genericController(c => c.methods("Delete", "GetOne", "Patch", "Post", "Put").ignore())
 @Entity()
 class Email {
     
