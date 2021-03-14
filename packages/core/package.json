@@ -1,6 +1,6 @@
 {
   "name": "@plumier/core",
-  "version": "1.0.0-rc.8",
+  "version": "1.0.0-rc.9",
   "description": "Delightful Node.js Rest Framework",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,8 +20,8 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumier/reflect": "1.0.0-rc.8",
-    "@plumier/validator": "1.0.0-rc.8",
+    "@plumier/reflect": "1.0.0-rc.9",
+    "@plumier/validator": "1.0.0-rc.9",
     "@types/glob": "^7.1.3",
     "chalk": "^4.1.0",
     "glob": "^7.1.6",
