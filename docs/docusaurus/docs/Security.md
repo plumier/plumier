@@ -75,28 +75,43 @@ By defining a custom cookie name you should set the cookie appropriately `.setCo
 
 ## Accessing Current Login User 
 
-After user authenticated either by using bearer token on `Authorization` header or using cookie, the current login user (the JWT claim) can be accessed from the request context `ctx.state.user` anywhere on the system.
+After user authenticated either by using bearer token on `Authorization` header or using cookie, the current login user (the JWT claim) can be accessed from the request context `ctx.user` anywhere on the system.
 
 To access current login user from the controller you can use `@bind.user()` like below. 
 
 ```typescript 
+import { bind, route, JwtClaims } from "plumier"
+
 export class UsersController {
 
     // GET /users/me
     @route.get()
-    me(@bind.user() user:LoginUser) {
+    me(@bind.user() user:JwtClaims) {
         return repo.findById(user.userId)
     }
 }
 ```
 
-Note that `LoginUser` can be an interface or a class that the structure match with JWT claims. 
+Note that `JwtClaims` is a specialized interface represent the user JWT claims, you can augment the interface to add more properties for intellisense like below.
+
+```typescript
+import  "plumier"
+
+declare module "plumier" {
+    // augment the JWT Claims object (represent the current login user)
+    interface JwtClaims {
+        userId: number,
+        role: "User" | "Admin"
+        refresh?: true
+    }
+}
+```
 
 When accessing current login user from other framework components other than controller which parameter binding doesn't exists, you can access it from the request context like below. 
 
 ```typescript
 const get:CustomMiddleware = ({ctx, proceed}) => {
-    ctx.state.user // this way you can access user
+    ctx.user // this way you can access user
     return proceed()
 }
 ```
@@ -113,9 +128,9 @@ To create an authorization policy start by using `AuthorizationPolicyBuilder` or
 import { authPolicy } from "plumier";
 
 authPolicy()
-    .register("User", ({ ctx }) => ctx.state.user?.role === "User")
-    .register("Admin", ({ ctx }) => ctx.state.user?.role === "Admin")
-    .register("SuperAdmin", ({ ctx }) => ctx.state.user?.role === "SuperAdmin")
+    .register("User", ({ user }) => user?.role === "User")
+    .register("Admin", ({ user }) => user?.role === "Admin")
+    .register("SuperAdmin", ({ user }) => user?.role === "SuperAdmin")
 ```
 
 Above example created several authorization policies named `User`, `Admin`, `SuperAdmin` by checking the `role` claim. Authorization policy allowed to returned `boolean` or `Promise<boolean>` for asynchronous authorization logic.
