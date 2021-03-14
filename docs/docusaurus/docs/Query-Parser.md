@@ -1,7 +1,17 @@
 ---
-id: filter-parser
-title: Filter Parser
+id: query-parser
+title: Query Parser
 ---
+
+Plumier provided tools to parse query string for select, order and filter functionality and transform them into native TypeORM or Mongoose query. If you are using generic controller you may familiar with its query string below.
+
+```
+/users?select=name,dob&order=-dob,name&filter=(name='john'* and active = true)
+```
+
+Above features uses query parser to parse `select`, `order` and `filter` query string into native query. By using query parser all query translated and checked for validation and authorization. 
+
+## Filter Parser
 
 Filter parser is a custom type converter specifically used to parse query syntax and transform it into native ORM query based on installed facility `MongooseFacility` or `TypeORMFacility`. This tools possible API client to use syntax expression on query string like below.
 
@@ -33,7 +43,7 @@ And if `TypeORMFacility` installed it will parsed into TypeORM find option like 
 }
 ```
 
-## Usage 
+#### Usage 
 
 Filter parser respects `@authorize.read()` and `@authorize.writeonly()`, its means you will need proper policy to query property secured with `@authorize.read()` and will not able to query property with `@authorize.writeonly()`. 
 
@@ -80,9 +90,9 @@ find user email (only accessible by Admin)
 /users?filter=(email = "john.doe@gmail.com")
 ```
 
-## Query Language Specification
+#### Language Specification
 
-The query language supports some simple logical expression with some native data type. The logic expression supported are: 
+The language supports some simple logical expression with some native data type. The logic expression supported are: 
 
 | Operator       | Name              | Example                                                        |
 | -------------- | ----------------- | -------------------------------------------------------------- |
@@ -111,3 +121,112 @@ The query language also supports literals and identifier
 | Start With | Specify string start with string      | `"john"*`, `'john'*` note that `*` is outside the quote |
 | End With   | Specify string ends with string       | `*"john"`, `*'john'`                                    |
 | Contains   | Specify string contains string        | `*"john"*`, `*'john'*`                                  |
+
+Example of valid filter 
+
+```
+deleted=false
+
+name = "john"* and deleted = false
+
+createdAt = '2020-1-1'...'2020-2-1' and (active = true or deleted = false)
+```
+
+## Select Parser 
+
+Select parser used to parse select query string, it receives comma delimited string of list of columns to be selected. Relation columns automatically detected and returned separately. 
+
+#### Usage
+
+To use the select parser you need to use a model for the parser, for example for model below.
+
+```typescript
+@Entity()
+class Log {
+    @PrimaryGeneratedColumn()
+    id:number
+
+    @Column()
+    message:string
+
+    @ManyToOne(x => User)
+    createdBy:User
+
+    @CreateDateColumn()
+    createdAt:Date
+}
+```
+
+You can use above entity as the model of select parser like code below 
+
+```typescript 
+import { route, selectParser, SelectQuery } from "plumier"
+
+class LogsController {
+    @route.get("")
+    list(@selectParser(x => Log) select: SelectQuery) {
+        const repo = getRepository(Log)
+        return repo.find({ relations: select.relations, select: select.columns })
+        // when using mongoose 
+        // return LogModel.find({}, select.columns).populate(select.relations)
+    }
+}
+```
+
+When provided select query like below
+
+```
+/logs?select=id,message,createdBy,createdAt
+```
+
+The `select` parameter of `list` action will populated with parsed select query that can be used directly with TypeORM or Mongoose. Note that the `createdBy` column will be returned in `relations` property since it is a relation property, while the other columns will be returned in `columns` property. 
+
+
+## Order Parser
+
+Order parser used to parse order query string, its mostly the same as select parser, receives comma delimited string to specify the order priority. By default order direction is `ASC`, for `DESC` direction can be specified by `-`.
+
+#### Usage
+
+To use the order parser you need to use a model for the parser like below
+
+```typescript
+@Entity()
+class Log {
+    @PrimaryGeneratedColumn()
+    id:number
+
+    @Column()
+    message:string
+
+    @ManyToOne(x => User)
+    createdBy:User
+
+    @CreateDateColumn()
+    createdAt:Date
+}
+```
+
+You can use above entity as the model of select parser like code below 
+
+```typescript 
+import { route, orderParser } from "plumier"
+
+class LogsController {
+    @route.get("")
+    list(@orderParser(x => Log) order:any) {
+        const repo = getRepository(Log)
+        return repo.find({ order })
+        // when using mongoose 
+        // return LogModel.find({}).sort(order)
+    }
+}
+```
+
+Example valid order is like below
+
+```
+/logs?select=-createdAt,createdBy
+```
+
+Above query will order Log by createdAt desc and createdBy asc.

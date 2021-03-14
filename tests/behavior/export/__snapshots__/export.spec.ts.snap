@@ -743,6 +743,7 @@ Object {
   },
   "binder": binder,
   "createCustomFilterConverter": createCustomFilterConverter,
+  "createCustomOrderConverter": createCustomOrderConverter,
   "createCustomSelectConverter": createCustomSelectConverter,
   "default": Plumier,
   "domain": domain,
@@ -758,6 +759,7 @@ Object {
   "middleware": Object {
     "use": use,
   },
+  "orderParser": orderParser,
   "postSave": postSave,
   "preSave": preSave,
   "response": Object {

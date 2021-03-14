@@ -11,12 +11,15 @@ export {
     AuthorizerContext, CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie,
     api, preSave, postSave, entity, Public, Authenticated,
     authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, entityProvider,
-    AuthPolicy, JwtClaims,
+    AuthPolicy, JwtClaims, SelectQuery
 } from "@plumier/core"
 
 export { genericController } from "@plumier/generic-controller"
 export * from "./facility"
-export { filterParser, selectParser, createCustomFilterConverter, createCustomSelectConverter } from "@plumier/query-parser"
+export {
+    filterParser, selectParser, orderParser,
+    createCustomFilterConverter, createCustomSelectConverter, createCustomOrderConverter,
+} from "@plumier/query-parser"
 
 import "./validator"
 import "./binder"
