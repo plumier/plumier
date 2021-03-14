@@ -184,7 +184,7 @@ Code above showing that we use the request hook `@preSave()` to make the `assign
 #### Define Filterable Fields
 Generic controller provided functionalities to refine the API response, such as filter, paging, order and projection. 
 
-```typescript {10,14,21}
+```typescript 
 import { route, authorize } from "plumier"
 import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn } from "typeorm"
 
@@ -208,7 +208,7 @@ export class Post {
 }
 ```
 
-Above code enabled filters for `slug`, `title` and `createdAt` fields. Using above generated API you may request like below.
+Using above code we can query filter for all Post fields. Using above generated API you may request like below.
 
 ```
 # Filter response based on slug property using equals comparison
@@ -224,7 +224,7 @@ GET /posts?filter=(createdAt >= '2020-9-1' and deleted = false)
 GET /posts?filter=(title = 'programming'*)
 ```
 
-Filter follows the `@authorize.read()` and `@authorize.writeonly()` respectively.
+Filter will follows the `@authorize.read()` and `@authorize.writeonly()` respectively. Its mean when user doesn't have proper read access the query will returned 401.
 
 :::info documentation
 For more information about first class entity and generic controller can be found [here](Generic-Controller.md)
