@@ -340,7 +340,7 @@ GET /users?filter=(name='john'*)
 GET /users?filter=(email=john.doe@gmail.com and name=john)
 ```
 
-Several filter supported based on property data type, for more information see the [Query Language Specification](Filter-Parser.md#query-language-specification)
+Several filter supported based on property data type, for more information see the [Query Language Specification](Query-Parser.md#query-language-specification)
 
 ## Delete Column 
 By default when you perform `DELETE /users/{id}` it will delete the user record permanently from the database, You can specify the delete flag by providing `@entity.deleteColumn()` decorator above the flag property with `boolean` datatype like below.
