@@ -7,6 +7,8 @@
 import { Class, ParameterPropertyReflection, ClassReflection, TypeOverride } from "./types"
 import * as decorate from "./decorators"
 
+const IsDynamicType = Symbol()
+
 function useCache<K, P extends any[], R>(cache: Map<K, R>, fn: (...args: P) => R, getKey: (...args: P) => K) {
     return (...args: P) => {
         const key = getKey(...args)
@@ -81,6 +83,7 @@ interface CreateClassOption {
 function createClass(opt?: Partial<CreateClassOption>): Class {
     const option: CreateClassOption = { parent: Object, name: "DynamicType", definition: {}, genericParams: [], ...opt }
     const type = { [option.name]: class extends option.parent { } }[option.name];
+    (type as any)[IsDynamicType] = true
     for (const key in option.definition) {
         Reflect.decorate([decorate.type(option.definition[key])], type.prototype, key)
     }
@@ -91,4 +94,4 @@ function createClass(opt?: Partial<CreateClassOption>): Class {
 
 
 
-export { useCache, reflection, createClass, CustomTypeDefinition, CreateClassOption }
+export { useCache, reflection, createClass, CustomTypeDefinition, CreateClassOption, IsDynamicType }
