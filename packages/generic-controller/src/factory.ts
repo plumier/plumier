@@ -143,8 +143,7 @@ function createGenericController(entity: Class, builder: ControllerBuilder, cont
         ...decorateCustomQuery(config)
     ], Controller)
     if (!meta.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag"))
-        Reflect.decorate([api.tag(entity.name)], Controller)
-
+        Reflect.decorate([api.tag(nameConversion(entity.name))], Controller)
     return Controller
 }
 
@@ -190,8 +189,11 @@ function createOneToManyGenericController(parentType: Class, builder: Controller
         ...decorateTransformers(config),
         ...decorateCustomQuery(config)
     ], Controller)
-    if (!relProp.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag"))
-        Reflect.decorate([api.tag(parentType.name)], Controller)
+    if (!relProp.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag")){
+        const parent = nameConversion(parentType.name)
+        const child = nameConversion(entity.name)
+        Reflect.decorate([api.tag(`${parent} ${child}`)], Controller)
+    }
     return Controller
 }
 
