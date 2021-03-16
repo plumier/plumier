@@ -385,6 +385,7 @@ Object {
   "DESIGN_TYPE": "design:type",
   "DecoratorId": Symbol(tinspector:decoratorId),
   "DecoratorOptionId": Symbol(tinspector:decoratorOption),
+  "IsDynamicType": Symbol(),
   "createClass": createClass,
   "decorate": decorate,
   "decorateClass": decorateClass,

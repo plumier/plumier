@@ -6,7 +6,7 @@ import {
     RelationDecorator,
     RelationPropertyDecorator,
 } from "@plumier/core"
-import reflect from "@plumier/reflect"
+import reflect, { IsDynamicType } from "@plumier/reflect"
 import { ReferenceObject, SchemaObject } from "openapi3-ts"
 
 import {
@@ -28,23 +28,47 @@ interface TransformTypeOption {
     overrides?: SchemaOverrideType[]
 }
 
+class ClassNameStorage {
+    constructor(private map: Map<Class, string>) { }
+
+    getTypeByStructure(type: Class) {
+        const getProperties = (source: Class) => {
+            const meta = reflect(source)
+            return meta.properties.map(x => `${x.name}:${x.type.name}`).sort().join("|")
+        }
+        const similar = Array.from(this.map.keys()).find(x => getProperties(x) === getProperties(type))
+        return similar ?? type
+    }
+
+    getSimilarity(type: Class) {
+        const name = type.name
+        return Array.from(this.map.values()).filter(x => x.match(`^${name}\\d*$`)).length
+    }
+
+    get(type: Class): string {
+        // if the class is a DynamicType then find the saved type with the same properties
+        const obj = (type as any)[IsDynamicType] ? this.getTypeByStructure(type) : type
+        const name = this.map.get(obj)
+        if (!name) {
+            const similar = this.getSimilarity(obj)
+            if (similar === 0) {
+                this.map.set(obj, obj.name)
+                return obj.name
+            }
+            else {
+                const newName = obj.name + similar
+                this.map.set(obj, newName)
+                return newName
+            }
+        }
+        return name
+    }
+}
+
 function refFactory(map: Map<Class, string>) {
+    const storage = new ClassNameStorage(map)
     return (obj: Class) => {
-        const objName = obj.name;
-        const typeName = map.get(obj)
-        const names = Array.from(map.values()).filter(x => x.match(`^${objName}\\d*$`))
-        // if type is not exits and no other type with the same name
-        if (!typeName && names.length === 0) {
-            map.set(obj, objName)
-            return objName
-        }
-        // if type is not exists but there is other type with the same name
-        if (!typeName && names.length > 0) {
-            const name = objName + names.length
-            map.set(obj, name)
-            return name
-        }
-        return typeName
+        return storage.get(obj)
     }
 }
 

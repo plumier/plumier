@@ -48,6 +48,15 @@ describe("getRef", () => {
         expect(getRef(OtherUser)).toBe("User1")
         expect(getRef(OtherUser)).toBe("User1")
     })
+
+    it("Should get dynamic class properly", () => {
+        const getRef = refFactory(new Map())
+        expect(getRef(reflect.create({ definition: { id: String } }))).toBe("DynamicType")
+        // Dynamic Type with the same structure should have the same name
+        expect(getRef(reflect.create({ definition: { id: String } }))).toBe("DynamicType")
+        // different structure should have new name with number
+        expect(getRef(reflect.create({ definition: { id: String, name:String } }))).toBe("DynamicType1")
+    })
 })
 
 describe("Open API 3.0 Generation", () => {
@@ -1281,6 +1290,34 @@ describe("Open API 3.0 Generation", () => {
                 two() { }
                 @type({ three: String })
                 three() { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas).toMatchSnapshot()
+        })
+        it("Should give the same name for dynamic type with the same structure", async () => {
+            class UsersController {
+                @type({ one: String, two: Number })
+                one() { }
+                @type({ one: String, two: Number })
+                two() { }
+                @type({ three: String, five: Number })
+                three() { }
+            }
+            const app = await createApp(UsersController)
+            const { body } = await supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.schemas).toMatchSnapshot()
+        })
+        it("Should distinguish name when property type is different", async () => {
+            class UsersController {
+                @type({ one: String, two: Number })
+                one() { }
+                @type({ one: String, two: String })
+                two() { }
             }
             const app = await createApp(UsersController)
             const { body } = await supertest(app.callback())

@@ -248,6 +248,60 @@ Object {
 }
 `;
 
+exports[`Open API 3.0 Generation Component Schema Should distinguish name when property type is different 1`] = `
+Object {
+  "DynamicType": Object {
+    "properties": Object {
+      "one": Object {
+        "type": "string",
+      },
+      "two": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "DynamicType1": Object {
+    "properties": Object {
+      "one": Object {
+        "type": "string",
+      },
+      "two": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
+exports[`Open API 3.0 Generation Component Schema Should give the same name for dynamic type with the same structure 1`] = `
+Object {
+  "DynamicType": Object {
+    "properties": Object {
+      "one": Object {
+        "type": "string",
+      },
+      "two": Object {
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+  "DynamicType1": Object {
+    "properties": Object {
+      "five": Object {
+        "type": "number",
+      },
+      "three": Object {
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
 exports[`Open API 3.0 Generation Component Schema Should use reference on nested array object if array element already registered 1`] = `
 Object {
   "properties": Object {
