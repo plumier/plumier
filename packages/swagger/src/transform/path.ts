@@ -1,4 +1,4 @@
-import { HttpMethod, RouteInfo, RouteMetadata, VirtualRoute } from "@plumier/core"
+import { getRouteAuthorizeDecorators, HttpMethod, RouteInfo, RouteMetadata, VirtualRoute } from "@plumier/core"
 import { OperationObject, PathItemObject, PathObject } from "openapi3-ts"
 
 import { transformBody } from "./body"
@@ -21,6 +21,13 @@ function groupRoutes(routes: RouteInfo[]): RouteGroup {
 
 function transformUrl(url: string) {
     return url.replace(/(:(\w*\d*)(\/|-{0,1}))/g, (a, b, par, slash) => `{${par}}${slash}`)
+}
+
+function getSummary(route: RouteInfo, global: string | string[]): { summary?: string } {
+    const decorators = getRouteAuthorizeDecorators(route, global)
+        .map(x => x.policies).flatten()
+    const summary = `${decorators.join(", ")}`
+    return decorators.length === 0 ? {} : { summary }
 }
 
 // --------------------------------------------------------------------- //
@@ -67,7 +74,6 @@ function transformPath(path: string, route: RouteInfo[], ctx: BaseTransformConte
 
 function transformOperation(route: RouteInfo, ctx: BaseTransformContext): [HttpMethod, OperationObject] {
     const isPublic = route.access === "Public"
-    const desc = route.action.decorators.find(isDescription)
     const tags = route.controller.decorators.filter(isTag).map(x => x.tag)
     if (tags.length === 0) tags.push(route.controller.name.replace(/controller$/i, ""))
     const secured = ctx.config.enableAuthorization && !isPublic
@@ -76,7 +82,8 @@ function transformOperation(route: RouteInfo, ctx: BaseTransformContext): [HttpM
     const requestBody = transformBody(route, { ...ctx, route })
     const operation: OperationObject = {
         responses: transformResponses(route, { ...ctx, route }, isPublic),
-        tags, parameters, requestBody, description: desc?.desc
+        tags, parameters, requestBody,
+        ...getSummary(route, ctx.config.globalAuthorizations)
     }
     if (secured) operation.security = [{ bearer }]
     return [route.method, operation]

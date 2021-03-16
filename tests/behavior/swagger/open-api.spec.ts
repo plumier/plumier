@@ -14,9 +14,10 @@ import {
     route,
     RouteMetadata,
     val,
-    RelationPropertyDecorator
+    RelationPropertyDecorator,
+    authPolicy
 } from "@plumier/core"
-import { JwtAuthFacility } from "@plumier/jwt"
+import { JwtAuthFacility, JwtAuthFacilityOption } from "@plumier/jwt"
 import { refFactory, SwaggerFacility } from "@plumier/swagger"
 import { IncomingMessage } from "http"
 import { Context } from "koa"
@@ -1722,9 +1723,9 @@ describe("Open API 3.0 Generation", () => {
     })
 
     describe("Security", () => {
-        function createSecureApp(ctl: Class | Class[]) {
+        function createSecureApp(ctl: Class | Class[], opt?: Partial<JwtAuthFacilityOption>) {
             return fixture(ctl)
-                .set(new JwtAuthFacility({ secret: "lorem" }))
+                .set(new JwtAuthFacility({ ...opt, secret: "lorem" }))
                 .set(new SwaggerFacility())
                 .initialize()
         }
@@ -1836,6 +1837,84 @@ describe("Open API 3.0 Generation", () => {
                 .post("/swagger/swagger.json")
                 .expect(200)
             expect(body.paths["/users"].get.responses).toMatchSnapshot()
+        })
+        describe("Open API Description", () => {
+            it("Should add authorize on operation description properly", async () => {
+                class UsersController {
+                    @authorize.route("Public")
+                    @route.get("")
+                    get(id: string) {
+                        return {} as any
+                    }
+                }
+                const app = await createSecureApp(UsersController)
+                const { body } = await supertest(app.callback())
+                    .post("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/users"].get.summary).toMatchSnapshot()
+            })
+            it("Should add multiple authorize properly", async () => {
+                class UsersController {
+                    @authorize.route("Public", "Admin")
+                    @route.get("")
+                    get(id: string) {
+                        return {} as any
+                    }
+                }
+                const admin = authPolicy().define("Admin", ({ user }) => user?.role === "Admin")
+                const app = await createSecureApp(UsersController, { authPolicies: [admin] })
+                const { body } = await supertest(app.callback())
+                    .post("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/users"].get.summary).toMatchSnapshot()
+            })
+            it("Should add multiple authorize with multiple decorators", async () => {
+                class UsersController {
+                    @authorize.route("Public")
+                    @authorize.route("Admin")
+                    @route.get("")
+                    get(id: string) {
+                        return {} as any
+                    }
+                }
+                const admin = authPolicy().define("Admin", ({ user }) => user?.role === "Admin")
+                const app = await createSecureApp(UsersController, { authPolicies: [admin] })
+                const { body } = await supertest(app.callback())
+                    .post("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/users"].get.summary).toMatchSnapshot()
+            })
+            it("Should prioritize action decorator vs class decorator", async () => {
+                @authorize.route("Public")
+                class UsersController {
+                    @authorize.route("Admin")
+                    @route.get("")
+                    get(id: string) {
+                        return {} as any
+                    }
+                }
+                const admin = authPolicy().define("Admin", ({ user }) => user?.role === "Admin")
+                const app = await createSecureApp(UsersController, { authPolicies: [admin] })
+                const { body } = await supertest(app.callback())
+                    .post("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/users"].get.summary).toMatchSnapshot()
+            })
+            it("Should prioritize action decorator vs global decorator", async () => {
+                class UsersController {
+                    @authorize.route("Admin")
+                    @route.get("")
+                    get(id: string) {
+                        return {} as any
+                    }
+                }
+                const admin = authPolicy().define("Admin", ({ user }) => user?.role === "Admin")
+                const app = await createSecureApp(UsersController, { authPolicies: [admin], global: "Public" })
+                const { body } = await supertest(app.callback())
+                    .post("/swagger/swagger.json")
+                    .expect(200)
+                expect(body.paths["/users"].get.summary).toMatchSnapshot()
+            })
         })
     })
 
