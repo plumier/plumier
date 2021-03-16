@@ -224,6 +224,7 @@ Object {
   "findFilesRecursive": findFilesRecursive,
   "generateRoutes": generateRoutes,
   "getChildValue": getChildValue,
+  "getRouteAuthorizeDecorators": getRouteAuthorizeDecorators,
   "globAsync": globAsync,
   "globalPolicies": Array [],
   "hasKeyOf": hasKeyOf,
