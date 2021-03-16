@@ -3170,6 +3170,27 @@ describe("JwtAuth", () => {
             expect(message).toContain("Error occur inside authorization policy HasUser on class AnimalController")
             expect(message).toContain("ERROR")
         })
+        it("Should provide error info on async method", async () => {
+            const fn = jest.fn()
+            class AnimalController {
+                @authorize.route("HasUser")
+                get() { return "Hello" }
+            }
+            const app = await fixture(AnimalController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [authPolicy().define("HasUser", async i => { throw new Error("Error occur inside policy") })]
+                }))
+                .initialize()
+            app.on("error", e => fn(e))
+            await Supertest(app.callback())
+                .get("/animal/get")
+                .set("Authorization", `Bearer ${USER_TOKEN}`)
+                .expect(500)
+            const message = fn.mock.calls[0][0].message
+            expect(message).toContain("Error occur inside authorization policy HasUser on method AnimalController.get")
+            expect(message).toContain("Error occur inside policy")
+        })
         it("Should able to register to global auth policies", async () => {
             class AnimalController {
                 @authorize.route("UseUser")
@@ -3412,6 +3433,34 @@ describe("JwtAuth", () => {
             }
             const AdminPolicy = entityPolicy(Shop)
                 .define("ShopAdmin", (i, e) => { throw "ERROR" })
+            const app = await fixture(ShopsController)
+                .set(new JwtAuthFacility({
+                    secret: SECRET,
+                    authPolicies: [AdminPolicy]
+                }))
+                .initialize()
+            app.on("error", e => fn(e))
+            await Supertest(app.callback())
+                .get("/shops/1")
+                .set("Authorization", `Bearer ${USER_ONE}`)
+                .expect(500)
+            const message = fn.mock.calls[0][0].message
+            expect(message).toContain("Error occur inside authorization policy ShopAdmin for entity Shop on method ShopsController.get")
+            expect(message).toContain("ERROR")
+        })
+        it("Should throw proper error when on async method", async () => {
+            const fn = jest.fn()
+            class ShopsController {
+                @route.get(":id")
+                @type(Shop)
+                @entityProvider(Shop, "id")
+                @authorize.route("ShopAdmin")
+                get(id: number) {
+                    return shops.find(x => x.id === id)
+                }
+            }
+            const AdminPolicy = entityPolicy(Shop)
+                .define("ShopAdmin", async (i, e) => { throw new Error("ERROR") })
             const app = await fixture(ShopsController)
                 .set(new JwtAuthFacility({
                     secret: SECRET,

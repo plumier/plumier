@@ -129,9 +129,9 @@ class CustomAuthPolicy implements AuthPolicy {
     async authorize(ctx: AuthorizationContext): Promise<boolean> {
         try {
             if (typeof this.authorizer === "function")
-                return this.authorizer(ctx)
+                return await this.authorizer(ctx)
             else
-                return this.authorizer.authorize(ctx)
+                return await this.authorizer.authorize(ctx)
         }
         catch (e) {
             const message = e instanceof Error ? e.stack : e
@@ -211,7 +211,7 @@ class EntityAuthPolicy<T> implements AuthPolicy {
     async authorize(ctx: AuthorizationContext): Promise<boolean> {
         const provider = this.getEntity(ctx)
         try {
-            return this.authorizer(ctx, provider.id)
+            return await this.authorizer(ctx, provider.id)
         }
         catch (e) {
             const message = e instanceof Error ? e.stack : e
