@@ -11,6 +11,31 @@ Plumier provided tools to parse query string for select, order and filter functi
 
 Above features uses query parser to parse `select`, `order` and `filter` query string into native query. By using query parser all query translated and checked for validation and authorization. 
 
+:::caution
+Query parser (select parser, order parser, filter parser) will not able to evaluate auth policy created using [Entity Policy](Generic-Controller.md#entity-authorization-policy) since the authorization logic may calculated dynamically based on the data. 
+
+By default query parser will forbid access to the property secured with entity policy. To fix this issue, add more `@authorize.read()` access that defined with `entityPolicy` to allow query access.
+
+```typescript
+@Entity()
+class FilterModel {
+    // this column will not accessible by filter/select/order
+    @authorize.read("Owner")
+    @Column()
+    columnOne:string
+
+    // this column allowed queried (filter/select/order) by Admin
+    @authorize.read("Owner", "Admin")
+    @Column()
+    columnTwo:string
+}
+
+entityPolicy(FilterModel).register("Owner", ({user}, id) => { /** the logic **/ })
+authPolicy().register("Admin", ({user}) => { /** the logic **/ })
+
+```
+:::
+
 ## Filter Parser
 
 Filter parser is a custom type converter specifically used to parse query syntax and transform it into native ORM query based on installed facility `MongooseFacility` or `TypeORMFacility`. This tools possible API client to use syntax expression on query string like below.

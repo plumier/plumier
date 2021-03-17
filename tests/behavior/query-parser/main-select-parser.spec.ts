@@ -1,10 +1,21 @@
-import { authorize, authPolicy, Class, entity, RelationDecorator, RelationPropertyDecorator, route } from "@plumier/core"
-import { createCustomSelectConverter, selectParser, SelectQueryAuthorizeMiddleware } from "@plumier/query-parser"
+import {
+    authorize,
+    AuthPolicy,
+    authPolicy,
+    Class,
+    entity,
+    entityPolicy,
+    RelationPropertyDecorator,
+    route,
+} from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
+import { createCustomSelectConverter, selectParser, SelectQueryAuthorizeMiddleware } from "@plumier/query-parser"
 import { decorateClass, noop, type } from "@plumier/reflect"
 import { sign } from "jsonwebtoken"
-import Plumier, { WebApiFacility } from "plumier"
+import Plumier, { genericController, WebApiFacility } from "plumier"
 import supertest from "supertest"
+
+import { DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from "../helper"
 
 describe("Select Parser", () => {
     function createApp(controller?: Class) {
@@ -256,12 +267,13 @@ describe("Select Parser Authorization", () => {
     const userToken = sign({ id: 123, role: "User" }, secret)
     const adminToken = sign({ id: 234, role: "Admin" }, secret)
     const superAdminToken = sign({ id: 234, role: "SuperAdmin" }, secret)
-    function createApp(controller?: Class) {
+    function createApp(controller?: Class, policies: Class<AuthPolicy>[] = []) {
         return new Plumier()
             .set({ mode: "production" })
             .set(new WebApiFacility({ controller }))
             .set(new JwtAuthFacility({
                 secret, authPolicies: [
+                    ...policies,
                     authPolicy().define("User", ({ user }) => user?.role === "User"),
                     authPolicy().define("Admin", ({ user }) => user?.role === "Admin"),
                     authPolicy().define("SuperAdmin", ({ user }) => user?.role === "SuperAdmin")
@@ -269,6 +281,7 @@ describe("Select Parser Authorization", () => {
             }))
             .use(new SelectQueryAuthorizeMiddleware(), "Action")
             .set({ typeConverterVisitors: [createCustomSelectConverter(x => x)] })
+            .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
     }
     it("Should select all columns by default, including secured column, but skip auth check", async () => {
         class User {
@@ -373,6 +386,54 @@ describe("Select Parser Authorization", () => {
         await supertest(app.callback())
             .get("/users?select=email,name")
             .set("Authorization", `Bearer ${superAdminToken}`)
+            .expect(200)
+    })
+    it("Should unauthorize property marked with entity policy", async () => {
+        @genericController(c => c.all().authorize("Public"))
+        class MyFilter {
+            @entity.primaryId()
+            id: number
+            @authorize.read("Owner")
+            property: string
+        }
+        const policy = [entityPolicy(MyFilter).define("Owner", ({ user }, id) => user?.userId === id)]
+        const app = await createApp(MyFilter, policy).initialize()
+        await supertest(app.callback())
+            .get("/myfilter?select=property")
+            .set("Authorization", `Bearer ${userToken}`)
+            .expect(401)
+    })
+    it("Should unauthorize property marked with all entity policies", async () => {
+        @genericController(c => c.all().authorize("Public"))
+        class MyFilter {
+            @entity.primaryId()
+            id: number
+            @authorize.read("Owner", "OtherOwner")
+            property: string
+        }
+        const policy = [
+            entityPolicy(MyFilter).define("Owner", ({ user }, id) => user?.userId === id),
+            entityPolicy(MyFilter).define("OtherOwner", ({ user }, id) => user?.userId === id),
+        ]
+        const app = await createApp(MyFilter, policy).initialize()
+        await supertest(app.callback())
+            .get("/myfilter?select=property")
+            .set("Authorization", `Bearer ${userToken}`)
+            .expect(401)
+    })
+    it("Should authorize property marked with entity policy combined with static auth policy", async () => {
+        @genericController(c => c.all().authorize("Public"))
+        class MyFilter {
+            @entity.primaryId()
+            id: number
+            @authorize.read("Owner", "User")
+            property: string
+        }
+        const policy = [entityPolicy(MyFilter).define("Owner", ({ user }, id) => user?.userId === id)]
+        const app = await createApp(MyFilter, policy).initialize()
+        await supertest(app.callback())
+            .get("/myfilter?select=property")
+            .set("Authorization", `Bearer ${userToken}`)
             .expect(200)
     })
 })
