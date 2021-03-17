@@ -9,11 +9,11 @@ import reflect, {
     MethodReflection,
     ParameterReflection,
     PropertyReflection,
+    Class
 } from "@plumier/reflect"
 import { Result, VisitorInvocation } from "@plumier/validator"
 import { promisify } from "util"
 
-import { Class } from "./common"
 import { HttpStatus } from "./http-status"
 
 const copyFileAsync = promisify(copyFile)

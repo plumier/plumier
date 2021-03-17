@@ -843,6 +843,18 @@ describe("JwtAuth", () => {
             console.mockClear()
         })
 
+        it("Should detect mistyped auth name on global authorize", async () => {
+            class AnimalController {
+                authenticated() { }
+            }
+            const mock = console.mock()
+            await fixture(AnimalController, { mode: "debug" })
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies, global: "lorem" }))
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
+
         it("Should detect mistyped auth name on controller", async () => {
             @authorize.route("lorem")
             class AnimalController {

@@ -323,7 +323,6 @@ Object {
   "getGenericControllerInverseProperty": getGenericControllerInverseProperty,
   "getGenericControllerOneToOneRelations": getGenericControllerOneToOneRelations,
   "getGenericControllerRelation": getGenericControllerRelation,
-  "getGenericTypeParameters": getGenericTypeParameters,
   "postSaveValue": Symbol(plumier:postSaveEntity),
   "responseTransformer": responseTransformer,
   "updateGenericControllerRegistry": updateGenericControllerRegistry,
@@ -396,6 +395,7 @@ Object {
   "generic": Object {
     "create": create,
     "getGenericType": getGenericType,
+    "getGenericTypeParameters": getGenericTypeParameters,
     "template": template,
     "type": type,
   },

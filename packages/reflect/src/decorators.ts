@@ -138,7 +138,7 @@ export namespace generic {
     }
 
     /**
-     * Get generic type from template type
+     * Get generic type parameter by template type name
      * @param type type
      * @param template template type 
      */
@@ -157,5 +157,17 @@ export namespace generic {
         const types = [type, ...getParents(type)].slice(0, -1)
         const map = new GenericMap(types)
         return map.get(template)
+    }
+
+    /**
+     * Get generic type parameter list by generic type
+     * @param type the class
+     * @returns List of generic type parameters
+     */
+    export function getGenericTypeParameters(type: Class) {
+        const genericDecorator = getMetadata(type)
+            .find((x: GenericTypeDecorator): x is GenericTypeDecorator => x.kind == "GenericType" && x.target === type)
+        if(!genericDecorator) throw new Error(`${type.name} is not a generic type`)
+        return genericDecorator.types.map(x => x as Class)
     }
 }

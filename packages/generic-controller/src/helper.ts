@@ -1,24 +1,14 @@
 import { RelationDecorator, RelationPropertyDecorator } from "@plumier/core"
-import reflect, { Class, GenericTypeDecorator } from "@plumier/reflect"
+import reflect, { Class, generic, GenericTypeDecorator } from "@plumier/reflect"
 
 
 // --------------------------------------------------------------------- //
 // ----------------------- ENTITY RELATION HELPER ---------------------- //
 // --------------------------------------------------------------------- //
 
-
-function getGenericTypeParameters(controller: Class) {
-    const meta = reflect(controller)
-    const genericDecorator = meta.decorators
-        .find((x: GenericTypeDecorator): x is GenericTypeDecorator => x.kind == "GenericType" && x.target === controller)
-    return {
-        types: genericDecorator!.types.map(x => x as Class),
-        meta
-    }
-}
-
 function getGenericControllerRelation(controller: Class) {
-    const { types, meta } = getGenericTypeParameters(controller)
+    const meta = reflect(controller)
+    const types = generic.getGenericTypeParameters(controller)
     const parentEntityType = types[0]
     const entityType = types[1]
     const oneToMany = meta.decorators.find((x: RelationPropertyDecorator): x is RelationPropertyDecorator => x.kind === "plumier-meta:relation-prop-name")
@@ -45,5 +35,5 @@ function getGenericControllerOneToOneRelations(type: Class) {
 
 export {
     getGenericControllerOneToOneRelations, getGenericControllerInverseProperty,
-    getGenericControllerRelation, getGenericTypeParameters
+    getGenericControllerRelation
 }

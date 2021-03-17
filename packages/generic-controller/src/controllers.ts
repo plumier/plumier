@@ -21,7 +21,7 @@ import reflect, { decorate, DecoratorId, generic, mergeDecorator } from "@plumie
 import { val } from "@plumier/validator"
 import { Context } from "koa"
 
-import { getGenericControllerInverseProperty, getGenericControllerRelation, getGenericTypeParameters } from "./helper"
+import { getGenericControllerInverseProperty, getGenericControllerRelation } from "./helper"
 import { postSaveValue } from "./request-hook"
 
 
@@ -130,7 +130,7 @@ class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGene
 
     constructor(fac: ((x: Class<T>) => Repository<T>)) {
         super()
-        const { types } = getGenericTypeParameters(this.constructor as Class)
+        const types = generic.getGenericTypeParameters(this.constructor as Class)
         this.entityType = types[0]
         this.repo = fac(this.entityType)
     }
