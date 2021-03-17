@@ -72,6 +72,6 @@ const admin = authPolicy().define("Admin", ({ user }) => user?.role === "Admin")
 
 new Plumier()
     .set(new WebApiFacility({ controller: __dirname }))
-    .set(new JwtAuthFacility({ secret: "lorem", authPolicies: [admin], global: "Admin" }))
+    .set(new JwtAuthFacility({ secret: "lorem", authPolicies: [admin], globalAuthorize: "Admin" }))
     .set(new SwaggerFacility())
     .listen(8000)
