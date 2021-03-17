@@ -1946,7 +1946,7 @@ describe("Open API 3.0 Generation", () => {
                     }
                 }
                 const admin = authPolicy().define("Admin", ({ user }) => user?.role === "Admin")
-                const app = await createSecureApp(UsersController, { authPolicies: [admin], global: "Public" })
+                const app = await createSecureApp(UsersController, { authPolicies: [admin], globalAuthorize: "Public" })
                 const { body } = await supertest(app.callback())
                     .post("/swagger/swagger.json")
                     .expect(200)

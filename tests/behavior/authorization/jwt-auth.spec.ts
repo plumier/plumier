@@ -567,7 +567,7 @@ describe("JwtAuth", () => {
                 save() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, global: "Public" }))
+                .set(new JwtAuthFacility({ secret: SECRET, globalAuthorize: "Public" }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -585,7 +585,7 @@ describe("JwtAuth", () => {
                 save() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, global: "superadmin", authPolicies }))
+                .set(new JwtAuthFacility({ secret: SECRET, globalAuthorize: "superadmin", authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -605,7 +605,7 @@ describe("JwtAuth", () => {
                 save() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, global: ["superadmin", "user"], authPolicies }))
+                .set(new JwtAuthFacility({ secret: SECRET, globalAuthorize: ["superadmin", "user"], authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -630,7 +630,7 @@ describe("JwtAuth", () => {
                 save() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, global: "Public", authPolicies }))
+                .set(new JwtAuthFacility({ secret: SECRET, globalAuthorize: "Public", authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -650,7 +650,7 @@ describe("JwtAuth", () => {
                 save() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, global: "Public", authPolicies }))
+                .set(new JwtAuthFacility({ secret: SECRET, globalAuthorize: "Public", authPolicies }))
                 .initialize()
 
             await Supertest(app.callback())
@@ -712,7 +712,7 @@ describe("JwtAuth", () => {
             }
             console.mock()
             await fixture(AnimalController, { mode: "debug" })
-                .set(new JwtAuthFacility({ secret: SECRET, global: "Public" }))
+                .set(new JwtAuthFacility({ secret: SECRET, globalAuthorize: "Public" }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("Public")
@@ -726,7 +726,7 @@ describe("JwtAuth", () => {
             }
             console.mock()
             await fixture(AnimalController, { mode: "debug" })
-                .set(new JwtAuthFacility({ secret: SECRET, global: "Public" }))
+                .set(new JwtAuthFacility({ secret: SECRET, globalAuthorize: "Public" }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("Admin")
@@ -741,7 +741,7 @@ describe("JwtAuth", () => {
             }
             console.mock()
             await fixture(AnimalController, { mode: "debug" })
-                .set(new JwtAuthFacility({ secret: SECRET, global: "Public" }))
+                .set(new JwtAuthFacility({ secret: SECRET, globalAuthorize: "Public" }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("User|Admin")
@@ -755,7 +755,7 @@ describe("JwtAuth", () => {
             }
             console.mock()
             await fixture(AnimalController, { mode: "debug" })
-                .set(new JwtAuthFacility({ secret: SECRET, global: "Public" }))
+                .set(new JwtAuthFacility({ secret: SECRET, globalAuthorize: "Public" }))
                 .initialize()
             const mock = (console.log as jest.Mock)
             expect(mock.mock.calls[2][0]).toContain("Admin|User")
@@ -1323,7 +1323,7 @@ describe("JwtAuth", () => {
                 }
 
                 const app = await fixture(AnimalController)
-                    .set(new JwtAuthFacility({ secret: SECRET, global: "Public" }))
+                    .set(new JwtAuthFacility({ secret: SECRET, globalAuthorize: "Public" }))
                     .initialize()
 
                 await Supertest(app.callback())
@@ -2843,7 +2843,7 @@ describe("JwtAuth", () => {
                 get() { return "Hello" }
             }
             const app = await fixture(AnimalController)
-                .set(new JwtAuthFacility({ secret: SECRET, global: "Public" }))
+                .set(new JwtAuthFacility({ secret: SECRET, globalAuthorize: "Public" }))
                 .initialize()
             await Supertest(app.callback())
                 .get("/animal/get")

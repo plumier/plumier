@@ -74,7 +74,7 @@ export class Variants {
 new Plumier()
     .set(new WebApiFacility())
     .set(new LoggerFacility())
-    .set(new JwtAuthFacility({ secret: "lorem", global: "Public" }))
+    .set(new JwtAuthFacility({ secret: "lorem", globalAuthorize: "Public" }))
     .set(new MongooseFacility({ uri: "mongodb://localhost:27017/lorem" }))
     .set(new SwaggerFacility())
     .listen(8000)
