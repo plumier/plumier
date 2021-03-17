@@ -421,3 +421,32 @@ describe("Get Generic Type", () => {
         expect(generic.getGenericType(MyClass, "U")).toBe(Date)
     })
 })
+
+describe("Get Generic Type Parameters", () => {
+    it("Should able to get generic type parameter", () => {
+        @generic.template("A")
+        class SuperClass<A> {
+            @type("A")
+            myProp: A
+        }
+        @generic.type(Number)
+        class MyClass extends SuperClass<number>{ }
+        expect(generic.getGenericTypeParameters(MyClass)).toStrictEqual([Number])
+    })
+    it("Should able to get generic type parameters", () => {
+        @generic.template("A", "B")
+        class SuperClass<A,B> {
+            @type("A")
+            myProp: A
+            @type("B")
+            bProp:B
+        }
+        @generic.type(Number, String)
+        class MyClass extends SuperClass<number, string>{ }
+        expect(generic.getGenericTypeParameters(MyClass)).toStrictEqual([Number, String])
+    })
+    it("Should throw error when non generic type provided", () => {
+        class MyClass{ }
+        expect(() => generic.getGenericTypeParameters(MyClass)).toThrow("MyClass is not a generic type")
+    })
+})

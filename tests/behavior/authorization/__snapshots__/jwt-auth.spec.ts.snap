@@ -8,7 +8,7 @@ Array [
   ],
   Array [
     "1. AnimalController.authenticated() -> lorem GET /animal/authenticated
- - error AnimalController.authenticated uses unknown authorization policy lorem",
+ - error Route uses unknown authorization policy lorem",
   ],
   Array [],
 ]
@@ -78,7 +78,7 @@ Array [
   ],
   Array [
     "1. AnimalController.authenticated() -> lorem GET /animal/authenticated
- - error AnimalController uses unknown authorization policy lorem",
+ - error Route uses unknown authorization policy lorem",
   ],
   Array [],
 ]
@@ -92,7 +92,7 @@ Array [
   ],
   Array [
     "1. AnimalController.authenticated() -> lorem|ipsum|dolor GET /animal/authenticated
- - error AnimalController uses unknown authorization policy lorem, ipsum, dolor",
+ - error Route uses unknown authorization policy lorem, ipsum, dolor",
   ],
   Array [],
 ]
@@ -106,7 +106,21 @@ Array [
   ],
   Array [
     "1. AnimalController.authenticated() -> sit|amet|admin|ipsum|dolor GET /animal/authenticated
- - error AnimalController uses unknown authorization policy sit, amet, ipsum, dolor",
+ - error Route uses unknown authorization policy sit, amet, ipsum, dolor",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect mistyped auth name on global authorize 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. AnimalController.authenticated() -> lorem GET /animal/authenticated
+ - error Route uses unknown authorization policy lorem",
   ],
   Array [],
 ]
@@ -351,7 +365,7 @@ Array [
   ],
   Array [
     " 7. MongooseControllerGeneric.get     -> ResourceOwner GET    /item/:id
- - error MongooseControllerGeneric.get uses unknown authorization policy ResourceOwner",
+ - error Route uses unknown authorization policy ResourceOwner",
   ],
   Array [
     " 8. MongooseControllerGeneric.modify  -> Authenticated PATCH  /item/:id",

@@ -1,15 +1,15 @@
 import { authorize, authPolicy, Class, route } from "@plumier/core"
-import { filterParser } from "@plumier/query-parser"
+import { JwtAuthFacility } from "@plumier/jwt"
 import Plumier, { WebApiFacility } from "@plumier/plumier"
+import { filterParser } from "@plumier/query-parser"
 import { noop } from "@plumier/reflect"
 import { TypeORMFacility } from "@plumier/typeorm"
-import { val } from "@plumier/validator"
-import supertest from "supertest"
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Any } from "typeorm"
-import { cleanup, getConn } from "./helper"
-import Koa from "koa"
 import { sign } from "jsonwebtoken"
-import { JwtAuthFacility } from "@plumier/jwt"
+import Koa from "koa"
+import supertest from "supertest"
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { cleanup, getConn } from "./helper"
+
 
 describe("TypeORM Filter Parser", () => {
 

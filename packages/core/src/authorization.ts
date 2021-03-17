@@ -1,4 +1,4 @@
-import { ClassReflection, ParameterReflection, PropertyReflection, reflect, reflection } from "@plumier/reflect"
+import { ClassReflection, generic, ParameterReflection, PropertyReflection, reflect, reflection } from "@plumier/reflect"
 
 import { Class, isCustomClass } from "./common"
 import { ResponseTypeDecorator } from "./decorator/common"
@@ -12,11 +12,13 @@ import {
     Authorizer,
     AuthPolicy,
     Configuration,
+    ControllerGeneric,
     HttpStatusError,
     Invocation,
     Metadata,
     MetadataImpl,
     Middleware,
+    OneToManyControllerGeneric,
     RouteAnalyzerFunction,
     RouteAnalyzerIssue,
     RouteInfo,
@@ -59,17 +61,19 @@ function getGlobalDecorators(globalDecorator: string | string[]) {
         tag: policies.join("|"),
         access: "route",
         evaluation: "Dynamic",
-        location: "Method"
+        location: "Method",
+        appliedClass: Object
     }]
 }
 
-function getRouteAuthorizeDecorators(info: RouteInfo, globalDecorator: string | string[]) {
+function getRouteAuthorizeDecorators(info: RouteInfo, globalDecorator?: string | string[]) {
     // if action has decorators then return immediately to prioritize the action decorator
     const actionDecs = info.action.decorators.filter(createDecoratorFilter(x => x.access === "route"))
     if (actionDecs.length > 0) return actionDecs
     // if controller has decorators then return immediately
     const controllerDecs = info.controller.decorators.filter(createDecoratorFilter(x => x.access === "route"))
     if (controllerDecs.length > 0) return controllerDecs
+    if (!globalDecorator) return []
     return getGlobalDecorators(globalDecorator)
 }
 
@@ -566,7 +570,10 @@ function getPolicyFromDecorators(decorators: any[]): AuthDecorator[] {
     const ctlAuth = decorators.filter((x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize")
     const result = []
     for (const item of ctlAuth) {
-        result.push(...item.policies.map(x => ({ policy: x, entity: item.appliedClass })))
+        result.push(...item.policies.map(x => ({
+            policy: x,
+            entity: item.appliedClass
+        })))
     }
     return result
 }
@@ -614,19 +621,15 @@ function checkMistypedPolicyNameOnType(typeDef: Class | Class[], policies: AuthP
     return issue
 }
 
-function checkMistypedOnController(route: RouteInfo, policies: AuthPolicy[]): RouteAnalyzerIssue[] {
+function checkMistypedOnRoute(route: RouteInfo, policies: AuthPolicy[], globalAuthorize?: string | string[]) {
+    const decorators = getRouteAuthorizeDecorators(route, globalAuthorize)
+    const entityProvider = route.action.decorators.find((x: EntityPolicyProviderDecorator) => x.kind === "plumier-meta:entity-policy-provider")
+    if(entityProvider)
+        decorators.push(entityProvider)
     const issue: RouteAnalyzerIssue[] = []
-    const ctl = mistypedPolicies(route.controller.decorators, policies)
+    const ctl = mistypedPolicies(decorators, policies)
     if (ctl.length > 0)
-        issue.push(errorMessage(route.controller.name, ctl))
-    return issue
-}
-
-function checkMistypedOnAction(route: RouteInfo, policies: AuthPolicy[]): RouteAnalyzerIssue[] {
-    const issue: RouteAnalyzerIssue[] = []
-    const actions = mistypedPolicies(route.action.decorators, policies)
-    if (actions.length > 0)
-        issue.push(errorMessage(`${route.controller.name}.${route.action.name}`, actions))
+        issue.push(errorMessage("Route", ctl))
     return issue
 }
 
@@ -647,15 +650,14 @@ function checkMistypedOnActionReturnType(route: RouteInfo, policies: AuthPolicy[
     return checkMistypedPolicyNameOnType(route.action.returnType, policies)
 }
 
-function createMistypeRouteAnalyzer(policyClasses: Class<AuthPolicy>[]): RouteAnalyzerFunction[] {
+function createMistypeRouteAnalyzer(policyClasses: Class<AuthPolicy>[], globalAuthorize?: string | string[]): RouteAnalyzerFunction[] {
     const analyzers = [
-        checkMistypedOnController,
-        checkMistypedOnAction,
+        checkMistypedOnRoute,
         checkMistypedOnActionParameters,
         checkMistypedOnActionReturnType
     ]
     const policies = policyClasses.map(x => new x())
-    return analyzers.map(analyser => (info: RouteMetadata) => info.kind === "VirtualRoute" ? [] : analyser(info, policies));
+    return analyzers.map(analyser => (info: RouteMetadata) => info.kind === "VirtualRoute" ? [] : analyser(info, policies, globalAuthorize));
 }
 
 export {

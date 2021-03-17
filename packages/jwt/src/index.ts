@@ -94,7 +94,7 @@ export class JwtAuthFacility extends DefaultFacility {
         analyzeAuthPolicyNameConflict(authPolicies)
         // set auth policies analyzers
         const defaultAnalyzers = app.config.analyzers ?? []
-        const analyzers = createMistypeRouteAnalyzer(authPolicies)
+        const analyzers = createMistypeRouteAnalyzer(authPolicies, this.option?.globalAuthorize)
         app.set({ analyzers: [...defaultAnalyzers, ...analyzers] })
     }
 
