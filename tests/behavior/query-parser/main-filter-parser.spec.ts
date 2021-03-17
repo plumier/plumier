@@ -1,10 +1,11 @@
-import { authorize, authPolicy, Class, route, val } from "@plumier/core"
+import { authorize, AuthPolicy, authPolicy, Class, entity, entityPolicy, entityProvider, route, val } from "@plumier/core"
 import { createCustomFilterConverter, FilterQueryAuthorizeMiddleware, filterParser } from "@plumier/query-parser"
 import { JwtAuthFacility } from "@plumier/jwt"
-import Plumier, { WebApiFacility } from "@plumier/plumier"
+import Plumier, { genericController, WebApiFacility } from "plumier"
 import { generic, noop } from "@plumier/reflect"
 import { sign } from "jsonwebtoken"
 import supertest from "supertest"
+import { DefaultOneToManyControllerGeneric, DefaultControllerGeneric } from "../helper"
 
 
 describe("Filter Parser", () => {
@@ -203,8 +204,9 @@ describe("Filter Parser Authorizer", () => {
     const ADMIN_TOKEN = sign({ email: "ketut@gmail.com", role: "admin" }, SECRET)
     const SUPER_ADMIN_TOKEN = sign({ email: "ketut@gmail.com", role: "superadmin" }, SECRET)
 
-    function createApp(controller: Class) {
+    function createApp(controller: Class, policies:Class<AuthPolicy>[] = []) {
         const authPolicies = [
+            ...policies,
             authPolicy().define("user", i => i.user?.role === "user"),
             authPolicy().define("admin", i => i.user?.role === "admin"),
             authPolicy().define("superadmin", i => i.user?.role === "superadmin"),
@@ -215,6 +217,7 @@ describe("Filter Parser Authorizer", () => {
             .set({ typeConverterVisitors: [createCustomFilterConverter(x => x)] })
             .use(new FilterQueryAuthorizeMiddleware(), "Action")
             .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+            .set({ genericController:[DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
             .initialize()
     }
     it("Should check unauthorized column", async () => {
@@ -524,6 +527,54 @@ describe("Filter Parser Authorizer", () => {
         const app = await createApp(UsersController)
         await supertest(app.callback())
             .get("/users?index=100")
+            .set("Authorization", `Bearer ${USER_TOKEN}`)
+            .expect(200)
+    })
+    it("Should unauthorize property marked with entity policy", async () => {
+        @genericController(c => c.all().authorize("Public"))
+        class MyFilter {
+            @entity.primaryId()
+            id:number
+            @authorize.read("Owner")
+            property:string
+        }
+        const policy = [entityPolicy(MyFilter).define("Owner", ({user}, id) => user?.userId === id)]
+        const app = await createApp(MyFilter, policy)
+        await supertest(app.callback())
+            .get("/myfilter?filter=property='lorem'")
+            .set("Authorization", `Bearer ${USER_TOKEN}`)
+            .expect(401)
+    })
+    it("Should unauthorize property marked with all entity policies", async () => {
+        @genericController(c => c.all().authorize("Public"))
+        class MyFilter {
+            @entity.primaryId()
+            id:number
+            @authorize.read("Owner", "OtherOwner")
+            property:string
+        }
+        const policy = [
+            entityPolicy(MyFilter).define("Owner", ({user}, id) => user?.userId === id),
+            entityPolicy(MyFilter).define("OtherOwner", ({user}, id) => user?.userId === id),
+        ]
+        const app = await createApp(MyFilter, policy)
+        await supertest(app.callback())
+            .get("/myfilter?filter=property='lorem'")
+            .set("Authorization", `Bearer ${USER_TOKEN}`)
+            .expect(401)
+    })
+    it("Should authorize property marked with entity policy combined with static auth policy", async () => {
+        @genericController(c => c.all().authorize("Public"))
+        class MyFilter {
+            @entity.primaryId()
+            id:number
+            @authorize.read("Owner", "user")
+            property:string
+        }
+        const policy = [entityPolicy(MyFilter).define("Owner", ({user}, id) => user?.userId === id)]
+        const app = await createApp(MyFilter, policy)
+        await supertest(app.callback())
+            .get("/myfilter?filter=property='lorem'")
             .set("Authorization", `Bearer ${USER_TOKEN}`)
             .expect(200)
     })

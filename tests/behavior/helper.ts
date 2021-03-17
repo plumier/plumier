@@ -1,5 +1,7 @@
 import Plumier, { Class, Configuration, WebApiFacility } from "plumier"
-import reflect from "@plumier/reflect"
+import reflect, { generic } from "@plumier/reflect"
+import { Repository, OneToManyRepository, GenericController } from "@plumier/core";
+import { RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric } from "@plumier/generic-controller";
 
 export function fixture(controller: Class | Class[] | string | string[], config?: Partial<Configuration>) {
     const mergedConfig = <Configuration>{ mode: "production", ...config }
@@ -42,4 +44,74 @@ export async function expectError(operation:Promise<any>) {
         fn(e)
         return fn
     }
+}
+
+
+export class MockRepo<T> implements Repository<T>{
+    constructor(private fn: jest.Mock) { }
+    count(query?: any): Promise<number> {
+        throw new Error('Method not implemented.')
+    }
+    async find(offset: number, limit: number, query: any): Promise<T[]> {
+        this.fn(offset, limit, query)
+        return []
+    }
+    async insert(data: Partial<T>) {
+        this.fn(data)
+        return data as T
+    }
+    async findById(id: any): Promise<T | undefined> {
+        this.fn(id)
+        return {} as any
+    }
+    async update(id: any, data: Partial<T>) {
+        this.fn(id, data)
+        return data as T
+    }
+    async delete(id: any) {
+        this.fn(id)
+        return { id } as any
+    }
+}
+
+export class MockOneToManyRepo<P, T> implements OneToManyRepository<P, T>{
+    constructor(private fn: jest.Mock) { }
+    count(pid: any, query?: any): Promise<number> {
+        throw new Error('Method not implemented.')
+    }
+    async find(pid: any, offset: number, limit: number, query: any): Promise<T[]> {
+        this.fn(pid, offset, limit, query)
+        return []
+    }
+    async findParentById(id: any): Promise<P | undefined> {
+        return {} as any
+    }
+    async insert(pid: any, data: Partial<T>) {
+        this.fn(data)
+        return { id: 123, ...data } as any
+    }
+    async findById(id: any): Promise<T | undefined> {
+        this.fn(id)
+        return {} as any
+    }
+    async update(id: any, data: Partial<T>) {
+        this.fn(id, data)
+        return { id: 123, ...data } as any
+    }
+    async delete(id: any) {
+        this.fn(id)
+        return { id } as any
+    }
+}
+
+@generic.template("T", "TID")
+@generic.type("T", "TID")
+export class DefaultControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
+    constructor() { super(fac => new MockRepo<T>(jest.fn())) }
+}
+
+@generic.template("P", "T", "PID", "TID")
+@generic.type("P", "T", "PID", "TID")
+export class DefaultOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{
+    constructor() { super(fac => new MockOneToManyRepo<P, T>(jest.fn())) }
 }

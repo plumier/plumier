@@ -1,18 +1,9 @@
-import {
-    ActionContext,
-    ActionResult,
-    createAuthContext,
-    executeAuthorizer,
-    Invocation,
-    Middleware,
-    throwAuthError,
-} from "@plumier/core"
+import { ActionContext, ActionResult, createAuthContext, Invocation, Middleware, throwAuthError } from "@plumier/core"
 import reflect, { Class } from "@plumier/reflect"
 
-import { getDecoratorType, ParserAst } from "../helper"
 import { FilterParserDecorator } from "../decorator"
+import { getDecoratorType, isAuthorized, ParserAst } from "../helper"
 import { FilterNode, FilterNodeVisitor, filterNodeWalker, getFilterDecorators } from "./parser"
-
 
 function createVisitor(columns: string[]): FilterNodeVisitor {
     return (node, prop, value) => {
@@ -22,7 +13,6 @@ function createVisitor(columns: string[]): FilterNodeVisitor {
         return node
     }
 }
-
 
 async function checkAuthorize(type: Class, value: FilterNode, ctx: ActionContext) {
     const meta = reflect(type)
@@ -39,7 +29,7 @@ async function checkAuthorize(type: Class, value: FilterNode, ctx: ActionContext
         const decorators = getFilterDecorators(prop.decorators)
         // if no decorator provided (then just allow
         if (decorators.length === 0) continue
-        const authorized = await executeAuthorizer(decorators, auth)
+        const authorized = await isAuthorized(decorators, auth)
         // if any of the policy allowed then authorize
         if (authorized) continue
         unauthorized.push(col)

@@ -1,15 +1,7 @@
-import {
-    ActionContext,
-    ActionResult,
-    createAuthContext,
-    executeAuthorizer,
-    Invocation,
-    Middleware,
-    throwAuthError,
-} from "@plumier/core"
+import { ActionContext, ActionResult, createAuthContext, Invocation, Middleware, throwAuthError } from "@plumier/core"
 
 import { SelectParserDecorator } from "../decorator"
-import { ParserAst } from "../helper"
+import { isAuthorized, ParserAst } from "../helper"
 import { SelectColumnNode } from "./converter"
 
 
@@ -25,7 +17,7 @@ class SelectQueryAuthorizeMiddleware implements Middleware<ActionContext> {
         for (const val of value) {
             if (val.skipAuthCheck) continue
             if (val.authDecorators.length === 0) continue
-            const authorized = await executeAuthorizer(val.authDecorators, auth)
+            const authorized = await isAuthorized(val.authDecorators, auth)
             if (authorized) continue
             unauthorized.push(val.name)
         }
