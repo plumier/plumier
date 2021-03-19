@@ -39,8 +39,6 @@ function getActionName(method: ActionNotation) {
 }
 
 class ControllerBuilder {
-    public parent?: Class
-    public relation?: string
     private path?: string
     private map: ActionConfigMap = new Map()
 
@@ -49,17 +47,6 @@ class ControllerBuilder {
      */
     setPath(path: string): ControllerBuilder {
         this.path = path
-        return this
-    }
-
-    /**
-     * Use nested generic controller. Use this configuration when @genericController() applied on class decorator instead of on one to many relation
-     * @param parent The parent entity class
-     * @param relation Relation name of the parent entity
-     */
-    useNested<T>(parent: Class<T>, relation: keyof T) {
-        this.parent = parent
-        this.relation = relation as string
         return this
     }
 

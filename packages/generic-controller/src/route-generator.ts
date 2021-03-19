@@ -1,26 +1,75 @@
-import { findClassRecursive, errorMessage, RouteMetadata, RouteInfo, appendRoute, transformController, GenericController } from "@plumier/core"
+import {
+    appendRoute,
+    ControllerTransformOption,
+    errorMessage,
+    findClassRecursive,
+    GenericController,
+    RouteInfo,
+    RouteMetadata,
+    transformController,
+} from "@plumier/core"
 import reflect, { Class } from "@plumier/reflect"
-import { createGenericControllers, genericControllerRegistry } from "./factory"
 import { isAbsolute, join } from "path"
 
-interface TransformOption {
-    rootDir?: string
-    rootPath?: string,
-    group?: string,
-    directoryAsPath?: boolean,
-    genericController?: GenericController
-    genericControllerNameConversion?: (x: string) => string
+import { ControllerBuilder } from "./configuration"
+import { GenericControllerDecorator } from "./decorator"
+import { configureBasicGenericController, configureOneToManyGenericController, genericControllerRegistry } from "./factory"
+
+// --------------------------------------------------------------------- //
+// ------------------------------- HELPER ------------------------------ //
+// --------------------------------------------------------------------- //
+
+function getControllerBuilderFromConfig(callback?: (builder: ControllerBuilder) => void) {
+    const c = new ControllerBuilder();
+    if (callback)
+        callback(c);
+    return c
 }
 
-type TransformControllerOption = Required<Omit<TransformOption, "genericController">> & { genericController?: GenericController }
+function createBasicGenericControllerByDecorators(type: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
+    const meta = reflect(type)
+    const controllers = []
+    // basic generic controller
+    const decorators = meta.decorators.filter((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
+    for (const decorator of decorators) {
+        const config = getControllerBuilderFromConfig(decorator.config)
+        const ctl = configureBasicGenericController(type, config, genericControllers[0], nameConversion)
+        controllers.push(ctl)
+    }
+    return controllers
+}
+
+function createNestedGenericControllerByDecorators(entity: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
+    const meta = reflect(entity)
+    const controllers = []
+    // one to many controller on each relation property
+    for (const prop of meta.properties) {
+        const decorators = prop.decorators.filter((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
+        for (const decorator of decorators) {
+            const ctl = configureOneToManyGenericController(entity, getControllerBuilderFromConfig(decorator.config), prop.type[0], prop.name, genericControllers[1], nameConversion)
+            controllers.push(ctl)
+        }
+    }
+    return controllers
+}
+
+function createGenericControllersByDecorators(controller: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
+    return [
+        ...createBasicGenericControllerByDecorators(controller, genericControllers, nameConversion),
+        ...createNestedGenericControllerByDecorators(controller, genericControllers, nameConversion)
+    ]
+}
+
+// --------------------------------------------------------------------- //
+// -------------------------- ROUTE GENERATOR -------------------------- //
+// --------------------------------------------------------------------- //
 
 interface ClassWithRoot {
     root: string,
     type: Class
 }
 
-
-async function extractController(controller: string | string[] | Class[] | Class, option: TransformControllerOption): Promise<ClassWithRoot[]> {
+async function extractController(controller: string | string[] | Class[] | Class, option: ControllerTransformOption): Promise<ClassWithRoot[]> {
     if (typeof controller === "string") {
         const ctl = isAbsolute(controller) ? controller : join(option.rootDir, controller)
         const types = await findClassRecursive(ctl)
@@ -44,13 +93,13 @@ async function extractController(controller: string | string[] | Class[] | Class
     if (!!genericControllerRegistry.get(meta.type)) {
         if (!option.genericController)
             throw new Error(errorMessage.GenericControllerRequired)
-        return createGenericControllers(controller, option.genericController, option.genericControllerNameConversion)
+        return createGenericControllersByDecorators(controller, option.genericController, option.genericControllerNameConversion)
             .map(type => ({ root: "", type }))
     }
     return []
 }
 
-async function generateGenericControllerRoutes(controller: string | string[] | Class[] | Class, option?: TransformOption): Promise<RouteMetadata[]> {
+async function generateGenericControllerRoutes(controller: string | string[] | Class[] | Class, option?: Partial<ControllerTransformOption>): Promise<RouteMetadata[]> {
     const opt = {
         genericControllerNameConversion: (x: string) => x,
         group: undefined as any, rootPath: "", rootDir: "",

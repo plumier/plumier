@@ -1,7 +1,7 @@
 import "@plumier/core"
 import {
-    api, ApiTagDecorator, authorize, AuthorizeDecorator, Class, ControllerGeneric, entityHelper, entityProvider, errorMessage,
-    GenericController, IgnoreDecorator, OneToManyControllerGeneric, RelationDecorator, RelationPropertyDecorator, responseType, route
+    api, ApiTagDecorator, authorize, AuthorizeDecorator, Class, ControllerFactory, ControllerGeneric, ControllerTransformOption, entityHelper, entityProvider, errorMessage,
+    IgnoreDecorator, OneToManyControllerGeneric, RelationDecorator, RelationPropertyDecorator, responseType, route
 } from "@plumier/core"
 import reflect, { decorateClass, DecoratorOptionId, generic } from "@plumier/reflect"
 import { Key, pathToRegexp } from "path-to-regexp"
@@ -12,7 +12,6 @@ import {
     GetOneCustomQueryDecorator,
     responseTransformer
 } from "./controllers"
-import { GenericControllerDecorator } from "./decorator"
 
 const genericControllerRegistry = new Map<Class, boolean>()
 
@@ -111,7 +110,7 @@ function decorateCustomQuery(config: GenericControllerConfig) {
     return result
 }
 
-function createGenericController(entity: Class, builder: ControllerBuilder, controller: Class<ControllerGeneric>, nameConversion: (x: string) => string) {
+function configureBasicGenericController(entity: Class, builder: ControllerBuilder, controller: Class<ControllerGeneric>, nameConversion: (x: string) => string) {
     const config = builder.toObject()
     // get type of ID column on entity
     const idType = entityHelper.getIdType(entity)
@@ -147,8 +146,13 @@ function createGenericController(entity: Class, builder: ControllerBuilder, cont
     return Controller
 }
 
-
-function createOneToManyGenericController(parentType: Class, builder: ControllerBuilder, entity: Class, relationProperty: string, controller: Class<OneToManyControllerGeneric>, nameConversion: (x: string) => string) {
+function configureOneToManyGenericController(parentType: Class, builder: ControllerBuilder, entity: Class, relationProperty: string, controller: Class<OneToManyControllerGeneric>, nameConversion: (x: string) => string) {
+    const meta = reflect(parentType)
+    const relProp = meta.properties.find(x => x.name === relationProperty)!
+    if (relProp.type === Array && !relProp.type[0])
+        throw new Error(errorMessage.GenericControllerMissingTypeInfo.format(`${parentType.name}.${relationProperty}`))
+    if (!Array.isArray(relProp.type))
+        throw new Error(errorMessage.GenericControllerInNonArrayProperty.format(parentType.name, relationProperty))
     const config = builder.toObject()
     // get type of ID column on parent entity
     const parentIdType = entityHelper.getIdType(parentType)
@@ -171,8 +175,6 @@ function createOneToManyGenericController(parentType: Class, builder: Controller
         routes.push(...createRouteDecorators(keys[1].name.toString()))
     }
     // copy @route.ignore() on entity to the controller to control route generation
-    const meta = reflect(parentType)
-    const relProp = meta.properties.find(x => x.name === relationProperty)!
     const entityDecorators = relProp.decorators
     const decorators = copyDecorators(entityDecorators, controller)
     const inverseProperty = entityDecorators.find((x: RelationDecorator): x is RelationDecorator => x.kind === "plumier-meta:relation")?.inverseProperty!
@@ -189,7 +191,7 @@ function createOneToManyGenericController(parentType: Class, builder: Controller
         ...decorateTransformers(config),
         ...decorateCustomQuery(config)
     ], Controller)
-    if (!relProp.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag")){
+    if (!relProp.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag")) {
         const parent = nameConversion(parentType.name)
         const child = nameConversion(entity.name)
         Reflect.decorate([api.tag(`${parent} ${child}`)], Controller)
@@ -197,56 +199,46 @@ function createOneToManyGenericController(parentType: Class, builder: Controller
     return Controller
 }
 
+class GenericControllerFactory extends ControllerFactory {
+    constructor(private entity: Class, private config?: ((x: ControllerBuilder) => void)) { super() }
 
-function getControllerBuilderFromConfig(callback?: (builder: ControllerBuilder) => void) {
-    const c = new ControllerBuilder();
-    if (callback)
-        callback(c);
-    return c
-}
-
-function createBasicGenericController(type: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
-    const meta = reflect(type)
-    const controllers = []
-    // basic generic controller
-    const decorators = meta.decorators.filter((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
-    for (const decorator of decorators) {
-        const config = getControllerBuilderFromConfig(decorator.config)
-        if (!!config.parent) {
-            const ctl = createOneToManyGenericController(config.parent, config, type, config.relation!, genericControllers[1], nameConversion)
-            controllers.push(ctl)
-        }
-        else {
-            const ctl = createGenericController(type, config, genericControllers[0], nameConversion)
-            controllers.push(ctl)
-        }
+    get(app: ControllerTransformOption): Class<any> {
+        const builder = new ControllerBuilder()
+        if (this.config)
+            this.config(builder)
+        return configureBasicGenericController(this.entity, builder, app.genericController![0], app.genericControllerNameConversion!)
     }
-    return controllers
 }
 
-function createNestedGenericController(entity: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
-    const meta = reflect(entity)
-    const controllers = []
-    // one to many controller on each relation property
-    for (const prop of meta.properties) {
-        const decorators = prop.decorators.filter((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
-        for (const decorator of decorators) {
-            if (!prop.type[0])
-                throw new Error(errorMessage.GenericControllerMissingTypeInfo.format(`${meta.name}.${prop.name}`))
-            const ctl = createOneToManyGenericController(entity, getControllerBuilderFromConfig(decorator.config), prop.type[0], prop.name, genericControllers[1], nameConversion)
-            controllers.push(ctl)
-        }
+class GenericControllerNestedFactory extends ControllerFactory {
+    constructor(private entity: Class, private relation: string, private config?: ((x: ControllerBuilder) => void)) { super() }
+
+    get(app: ControllerTransformOption): Class<any> {
+        const builder = new ControllerBuilder()
+        if (this.config)
+            this.config(builder)
+        return configureOneToManyGenericController(this.entity, builder, this.entity, this.relation, app.genericController![1], app.genericControllerNameConversion!)
     }
-    return controllers
 }
 
-function createGenericControllers(controller: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
-    return [
-        ...createBasicGenericController(controller, genericControllers, nameConversion),
-        ...createNestedGenericController(controller, genericControllers, nameConversion)
-    ]
+function createGenericController(entity: Class, config?: ((x: ControllerBuilder) => void)): typeof GenericControllerFactory {
+    class GenericControllerFactoryImpl extends GenericControllerFactory {
+        constructor() { super(entity, config) }
+    }
+    return GenericControllerFactoryImpl
+}
+
+function createGenericControllerNested<T>(entity: Class<T>, relation: keyof T, config?: ((x: ControllerBuilder) => void)): typeof GenericControllerNestedFactory {
+    class GenericControllerFactoryImpl extends GenericControllerNestedFactory {
+        constructor() { super(entity, relation as string, config) }
+    }
+    return GenericControllerFactoryImpl
 }
 
 export {
-    createGenericControllers, genericControllerRegistry, updateGenericControllerRegistry,
+    genericControllerRegistry, updateGenericControllerRegistry,
+    configureBasicGenericController, configureOneToManyGenericController,
+    GenericControllerFactory, createGenericController,
+    GenericControllerNestedFactory, createGenericControllerNested
 }
+

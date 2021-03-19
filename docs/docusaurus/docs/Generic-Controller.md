@@ -84,7 +84,13 @@ Above code will generate six routes handled by generic controller implementation
 
 
 '''info
-Swagger supported generic controller, since its just a common controller with a generic signature (make sure to enable the swagger functionality by installing `SwaggerFacility`).
+Its possible to create a generic controller using generic controller factory instead of using decorator, below code will result the same. 
+
+```typescript
+const UserController = createGenericController(User)
+// UserController is a valid controller class
+export UserController
+```
 '''
 
 ## Getting and Saving Simple Relation 
@@ -188,19 +194,15 @@ Above code showing that we apply `@genericController()` on the `User.emails` rel
 | DELETE | `/users/:pid/emails/:id`        | Delete user's email by ID                                           |
 | GET    | `/users/:pid/emails`            | Get list of user's emails with paging, filter, order and projection |
 
-:::note
-If you separate your code per entity, you may found that configuring on relation is not so clean, because your controller configuration is not in your entity. You can keep specify decorator on the child entity but use `useNested` configuration like below.
+'''info
+Its also possible to create a nested generic controller using generic controller factory, below code will result the same. 
 
 ```typescript
-@genericController(c => c.useNested(User, "emails"))
-@Entity()
-class Email {
-    
-}
+const UserEmailController = createGenericControllerNested(User, "emails")
+// UserEmailController is a valid controller class
+export UserEmailController
 ```
-
-The result will be the same as above
-:::
+'''
 
 ## Inverse Property Population
 

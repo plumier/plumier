@@ -1734,6 +1734,118 @@ Object {
 }
 `;
 
+exports[`Route Generator Generic Controller Factory Should able to generate one to many entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultOneToMany...eneric.list    -> GET    /user/:pid/animals",
+  ],
+  Array [
+    "2. DefaultOneToMany...eneric.save    -> POST   /user/:pid/animals",
+  ],
+  Array [
+    "3. DefaultOneToMany...eneric.get     -> GET    /user/:pid/animals/:id",
+  ],
+  Array [
+    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animals/:id",
+  ],
+  Array [
+    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animals/:id",
+  ],
+  Array [
+    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Factory Should able to generate provide configuration on one to many entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultOneToMany...eneric.list    -> GET    /users/:pid/animals",
+  ],
+  Array [
+    "2. DefaultOneToMany...eneric.save    -> POST   /users/:pid/animals",
+  ],
+  Array [
+    "3. DefaultOneToMany...eneric.get     -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "4. DefaultOneToMany...eneric.modify  -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "5. DefaultOneToMany...eneric.replace -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "6. DefaultOneToMany...eneric.delete  -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Factory Should able to generate provide configuration on simple entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> GET    /users",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> POST   /users",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> GET    /users/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> PATCH  /users/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> PUT    /users/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> DELETE /users/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Generic Controller Factory Should able to generate simple entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> GET    /user",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> POST   /user",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> GET    /user/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`Route Generator Generic Controller Should able to apply multiple controller on single entities 1`] = `
 Array [
   Array [],
@@ -2490,34 +2602,6 @@ Array [
 ]
 `;
 
-exports[`Route Generator One To Many Controller Should able to define nested controller from child entity 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. DefaultOneToMany...eneric.list    -> GET    /user/:pid/animals",
-  ],
-  Array [
-    "2. DefaultOneToMany...eneric.save    -> POST   /user/:pid/animals",
-  ],
-  Array [
-    "3. DefaultOneToMany...eneric.get     -> GET    /user/:pid/animals/:id",
-  ],
-  Array [
-    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animals/:id",
-  ],
-  Array [
-    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animals/:id",
-  ],
-  Array [
-    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animals/:id",
-  ],
-  Array [],
-]
-`;
-
 exports[`Route Generator One To Many Controller Should able to ignore some method of controller from entity 1`] = `
 Array [
   Array [],
@@ -2820,6 +2904,14 @@ Array [
     "12. DefaultOneToMany...eneric.delete         -> DELETE /user/:pid/animals/:id",
   ],
   Array [],
+]
+`;
+
+exports[`Route Generator One To Many Controller Should throw error when applied on non array relation 1`] = `
+Array [
+  Array [
+    [Error: Nested generic controller can not be created using non array relation on: User.animal],
+  ],
 ]
 `;
 

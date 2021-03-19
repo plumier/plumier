@@ -2,7 +2,7 @@ import { isAbsolute, join } from "path"
 import { ClassReflection, MethodReflection, reflect } from "@plumier/reflect"
 
 import { Class, findFilesRecursive } from "./common"
-import { errorMessage, GenericController, HttpMethod, RouteInfo, RouteMetadata } from "./types"
+import { ControllerFactory, errorMessage, GenericController, HttpMethod, PlumierApplication, RouteInfo, RouteMetadata } from "./types"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -11,11 +11,13 @@ import { errorMessage, GenericController, HttpMethod, RouteInfo, RouteMetadata }
 interface RouteDecorator { name: "plumier-meta:route", method: HttpMethod, url?: string, map: any }
 interface IgnoreDecorator { name: "plumier-meta:ignore" }
 interface RootDecorator { name: "plumier-meta:root", url: string, map: any }
-interface TransformOption {
-   rootDir?: string
-   rootPath?: string,
-   group?: string,
-   directoryAsPath?: boolean,
+interface ControllerTransformOption {
+   rootDir: string
+   rootPath: string,
+   group: string,
+   directoryAsPath: boolean,
+   genericController?: GenericController
+   genericControllerNameConversion: (x: string) => string
 }
 interface ClassWithRoot {
    root: string,
@@ -136,12 +138,14 @@ function transformMethod(root: RouteRoot, controller: ClassReflection, method: M
    }]
 }
 
-function isController(controller:Class) {
+function isController(controller: Class) {
    const meta = reflect(controller)
-   return !!meta.name.match(/controller$/i) || !!meta.decorators.find((x: RootDecorator) => x.name === "plumier-meta:root")
+   return !!meta.name.match(/controller$/i)
+      || !!meta.decorators.find((x: RootDecorator) => x.name === "plumier-meta:root")
+      || controller.prototype instanceof ControllerFactory
 }
 
-function transformController(object: Class, opt: Required<TransformOption>) {
+function transformController(object: Class, opt: ControllerTransformOption) {
    const controller = reflect(object)
    const rootRoutes = getRootRoutes(opt.rootPath, controller)
    const infos: RouteInfo[] = []
@@ -161,7 +165,7 @@ function transformController(object: Class, opt: Required<TransformOption>) {
    return infos
 }
 
-async function extractController(controller: string | string[] | Class[] | Class, option: Required<TransformOption>): Promise<ClassWithRoot[]> {
+async function extractController(controller: string | string[] | Class[] | Class, option: ControllerTransformOption): Promise<ClassWithRoot[]> {
    if (typeof controller === "string") {
       const ctl = isAbsolute(controller) ? controller : join(option.rootDir, controller)
       const types = await findClassRecursive(ctl)
@@ -181,14 +185,20 @@ async function extractController(controller: string | string[] | Class[] | Class
       return controllers.flatten()
    }
    // common controller
-   if (isController(controller)) return [{ root: "", type: controller }]
+   if (isController(controller)) {
+      if (controller.prototype instanceof ControllerFactory) {
+         const i: ControllerFactory = new controller()
+         return [{ root: "", type: i.get(option) }]
+      }
+      return [{ root: "", type: controller }]
+   }
    return []
 }
 
-async function generateRoutes(controller: string | string[] | Class[] | Class, option?: TransformOption): Promise<RouteMetadata[]> {
+async function generateRoutes(controller: string | string[] | Class[] | Class, option?: Partial<ControllerTransformOption>): Promise<RouteMetadata[]> {
    const opt = {
       group: undefined as any, rootPath: "", rootDir: "",
-      directoryAsPath: true,
+      directoryAsPath: true, genericControllerNameConversion: (x: string) => x,
       ...option
    }
    const controllers = await extractController(controller, opt)
@@ -202,5 +212,8 @@ async function generateRoutes(controller: string | string[] | Class[] | Class, o
    return routes
 }
 
-export { generateRoutes, transformController, RouteDecorator, IgnoreDecorator, RootDecorator, appendRoute, findClassRecursive }
+export {
+   generateRoutes, transformController, RouteDecorator, IgnoreDecorator,
+   RootDecorator, appendRoute, findClassRecursive, ControllerTransformOption
+}
 

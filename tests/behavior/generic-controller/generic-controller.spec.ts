@@ -20,7 +20,7 @@ import {
     route,
     RouteMetadata
 } from "@plumier/core"
-import { IdentifierResult, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, RequestHookMiddleware } from "@plumier/generic-controller"
+import { createGenericController, createGenericControllerNested, GenericControllerFactory, IdentifierResult, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, RequestHookMiddleware } from "@plumier/generic-controller"
 import { JwtAuthFacility } from "@plumier/jwt"
 import reflect, { generic, noop, type } from "@plumier/reflect"
 import { SwaggerFacility } from "@plumier/swagger"
@@ -87,7 +87,7 @@ describe("Route Generator", () => {
     })
     it("Should able to flatten nested directories", async () => {
         const mock = console.mock()
-        await createApp({ controller: "./nested", directoryAsPath:false }).initialize()
+        await createApp({ controller: "./nested", directoryAsPath: false }).initialize()
         expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
     })
     it("Should initiate IdentifierResult properly", () => {
@@ -660,7 +660,6 @@ describe("Route Generator", () => {
             const mock = await expectError(app.initialize())
             expect(mock.mock.calls).toMatchSnapshot()
         })
-        
         it("Should throw error when the relation doesn't have type information", async () => {
             @domain()
             class Animal {
@@ -690,32 +689,6 @@ describe("Route Generator", () => {
             }
             expect(fn.mock.calls).toMatchSnapshot()
         })
-        it("Should able to define nested controller from child entity", async () => {
-            @genericController(c => c.useNested(User, "animals"))
-            @domain()
-            class Animal {
-                constructor(
-                    @entity.primaryId()
-                    public id: number,
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    @entity.primaryId()
-                    public id: number,
-                    public name: string,
-                    public email: string,
-                    @reflect.type([Animal])
-                    @entity.relation()
-                    public animals: Animal[]
-                ) { }
-            }
-            const mock = console.mock()
-            await createApp({ controller: Animal }).initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
         it("Should able to apply multiple controller into relation property", async () => {
             @domain()
             class Animal {
@@ -742,6 +715,35 @@ describe("Route Generator", () => {
             const mock = console.mock()
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should throw error when applied on non array relation", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string
+                ) { }
+            }
+            @genericController()
+            @domain()
+            class User {
+                @entity.primaryId()
+                id: number
+                @noop()
+                name: string
+                @noop()
+                email: string
+                @genericController()
+                animal: Animal
+            }
+            const fn = jest.fn()
+            try {
+                await createApp({ controller: User }).initialize()
+            } catch (e) {
+                fn(e)
+            }
+            expect(fn.mock.calls).toMatchSnapshot()
         })
     })
     describe("Grouping", () => {
@@ -795,6 +797,94 @@ describe("Route Generator", () => {
                 .set(new ControllerFacility({ controller: User, group: "v1", rootPath: "api/v1" }))
                 .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
                 .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+    })
+    describe("Generic Controller Factory", () => {
+        it("Should able to generate simple entity", async () => {
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const UserController = createGenericController(User)
+            const mock = console.mock()
+            await createApp({ controller: UserController }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to generate provide configuration on simple entity", async () => {
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string
+                ) { }
+            }
+            const UserController = createGenericController(User, c => c.setPath("users/:id"))
+            const mock = console.mock()
+            await createApp({ controller: UserController }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to generate one to many entity", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string
+                ) { }
+            }
+            @genericController()
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string,
+                    @reflect.type([Animal])
+                    @entity.relation()
+                    @genericController()
+                    public animals: Animal[]
+                ) { }
+            }
+            const AnimalController = createGenericControllerNested(User, "animals")
+            const mock = console.mock()
+            await createApp({ controller: AnimalController }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should able to generate provide configuration on one to many entity", async () => {
+            @domain()
+            class Animal {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string
+                ) { }
+            }
+            @genericController()
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string,
+                    @reflect.type([Animal])
+                    @entity.relation()
+                    @genericController()
+                    public animals: Animal[]
+                ) { }
+            }
+            const AnimalController = createGenericControllerNested(User, "animals", c => c.setPath("users/:pid/animals/:id"))
+            const mock = console.mock()
+            await createApp({ controller: AnimalController }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
     })
@@ -2400,7 +2490,7 @@ describe("Controller Builder", () => {
                 .set(new ControllerFacility(opt))
                 .set(new JwtAuthFacility({ secret: "lorem", authPolicies }))
                 .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
-            }
+        }
         it("Should able to authorize specific routes", async () => {
             @genericController(c => c.mutators().authorize("Admin"))
             @domain()
