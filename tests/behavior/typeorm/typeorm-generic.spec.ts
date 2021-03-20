@@ -897,6 +897,28 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body.length).toBe(20)
         })
+        it("Should able to create generic controller dynamically from entity inherited from other entity", async () => {
+            @Entity()
+            class BaseEntity {
+                @PrimaryGeneratedColumn()
+                id: number
+            }
+            @Entity()
+            class User extends BaseEntity {
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            const UserController = createGenericController(User)
+            const app = await createApp([UserController, User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?offset=0&limit=20")
+                .expect(200)
+            expect(body.length).toBe(20)
+        })
         it("Should able to configure create generic controller", async () => {
             @Entity()
             class User {

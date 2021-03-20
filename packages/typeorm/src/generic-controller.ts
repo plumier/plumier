@@ -20,6 +20,9 @@ import { TypeORMOneToManyRepository, TypeORMRepository } from "./repository"
 
 
 function normalizeEntityNoCache(type: Class) {
+    const parent: Class = Object.getPrototypeOf(type)
+    // loop through parent entities 
+    if (!!parent) normalizeEntity(parent)
     const storage = getMetadataArgsStorage();
     const columns = storage.filterColumns(type)
     for (const col of columns) {
@@ -55,7 +58,7 @@ const normalizeEntity = useCache(normalizeEntityCache, normalizeEntityNoCache, x
 // ---------------------- INVERSE PROPERTY PARSER ---------------------- //
 // --------------------------------------------------------------------- //
 
-function inverseSideParser(expr: string | ((t: any) => any)|undefined) {
+function inverseSideParser(expr: string | ((t: any) => any) | undefined) {
     if (!expr || typeof expr === "string") return expr
     const node = parse(expr.toString(), { ecmaVersion: 2020 })
     return getMemberExpression(node)
