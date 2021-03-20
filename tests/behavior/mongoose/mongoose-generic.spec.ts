@@ -14,6 +14,7 @@ import {
 import { JwtAuthFacility } from "@plumier/jwt"
 import model, {
     collection,
+    createGenericController,
     models,
     MongooseControllerGeneric,
     MongooseFacility,
@@ -29,6 +30,8 @@ import mongoose from "mongoose"
 import Plumier, { WebApiFacility, genericController } from "plumier"
 import supertest from "supertest"
 import { random } from "../helper"
+import { cleanupConsole } from "@plumier/testing"
+
 
 
 jest.setTimeout(20000)
@@ -840,6 +843,57 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
+        it("Should able to create generic controller dynamically", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            const UserController = createGenericController(User)
+            const app = await createApp({ controller: UserController, mode: "production" })
+            const repo = new MongooseRepository(User)
+            await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?offset=0&limit=20")
+                .expect(200)
+            expect(body.length).toBe(20)
+        })
+        it("Should able to configure create generic controller", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            const UserController = createGenericController(User, c => c.mutators().ignore())
+            const mock = console.mock()
+            await createApp({ controller: UserController, mode: "debug" })
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
+        // it("Should able to extends the created generic controller", async () => {
+        //     @collection()
+        //     class User {
+        //         @collection.id()
+        //         id: string
+        //         @reflect.noop()
+        //         email: string
+        //         @reflect.noop()
+        //         name: string
+        //     }
+        //     class UserController extends createGenericController(User, c => c.mutators().ignore()) { }
+        //     const mock = console.mock()
+        //     await createApp({ controller: UserController, mode: "debug" })
+        //     expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        //     console.mockClear()
+        // })
     })
     describe("Nested CRUD One to Many Function", () => {
         async function createUser<T>(type: Class<T>, user?: Partial<T>) {
@@ -2089,6 +2143,60 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
+        it("Should able to create generic controller dynamically", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+            }
+            const UserAnimalController = createGenericController([User, "animals"])
+            const app = await createApp({ controller: UserAnimalController, mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals?offset=0&limit=20`)
+                .expect(200)
+            expect(body.length).toBe(20)
+        })
+        it("Should able to configure create generic controller", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+            }
+            const UserAnimalController = createGenericController([User, "animals"], c => c.mutators().ignore())
+            const mock = console.mock()
+            await createApp({ controller: UserAnimalController, mode: "debug" })
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
     })
     describe("One To One Function", () => {
         it("Should able to add with ID", async () => {
@@ -2797,7 +2905,7 @@ describe("Repository", () => {
                 animalRepo.insert(user.id, { name: "Mimi" }),
                 animalRepo.insert(user.id, { name: "Mommy" }),
             ])
-            const count = await animalRepo.count(user.id, { name:  "Mimi" })
+            const count = await animalRepo.count(user.id, { name: "Mimi" })
             expect(count).toBe(3)
         })
     })

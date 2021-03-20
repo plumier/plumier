@@ -14,7 +14,7 @@ export {
     AuthPolicy, JwtClaims, SelectQuery
 } from "@plumier/core"
 
-export { genericController, createGenericController, createGenericControllerNested, GenericControllerFactory, GenericControllerNestedFactory } from "@plumier/generic-controller"
+export { genericController } from "@plumier/generic-controller"
 export * from "./facility"
 export {
     filterParser, selectParser, orderParser,

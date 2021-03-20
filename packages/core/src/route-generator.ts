@@ -1,8 +1,8 @@
-import { isAbsolute, join } from "path"
 import { ClassReflection, MethodReflection, reflect } from "@plumier/reflect"
+import { isAbsolute, join } from "path"
 
 import { Class, findFilesRecursive } from "./common"
-import { ControllerFactory, errorMessage, GenericController, HttpMethod, PlumierApplication, RouteInfo, RouteMetadata } from "./types"
+import { GenericController, HttpMethod, RouteInfo, RouteMetadata } from "./types"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -142,7 +142,6 @@ function isController(controller: Class) {
    const meta = reflect(controller)
    return !!meta.name.match(/controller$/i)
       || !!meta.decorators.find((x: RootDecorator) => x.name === "plumier-meta:root")
-      || controller.prototype instanceof ControllerFactory
 }
 
 function transformController(object: Class, opt: ControllerTransformOption) {
@@ -186,19 +185,15 @@ async function extractController(controller: string | string[] | Class[] | Class
    }
    // common controller
    if (isController(controller)) {
-      if (controller.prototype instanceof ControllerFactory) {
-         const i: ControllerFactory = new controller()
-         return [{ root: "", type: i.get(option) }]
-      }
       return [{ root: "", type: controller }]
    }
    return []
 }
 
 async function generateRoutes(controller: string | string[] | Class[] | Class, option?: Partial<ControllerTransformOption>): Promise<RouteMetadata[]> {
-   const opt = {
+   const opt = <ControllerTransformOption>{
       group: undefined as any, rootPath: "", rootDir: "",
-      directoryAsPath: true, genericControllerNameConversion: (x: string) => x,
+      directoryAsPath: true,
       ...option
    }
    const controllers = await extractController(controller, opt)

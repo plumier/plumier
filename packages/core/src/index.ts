@@ -38,7 +38,7 @@ export {
     Middleware, MiddlewareFunction, MiddlewareDecorator, MiddlewareUtil, PlumierApplication, PlumierConfiguration, RedirectActionResult,
     ActionContext, RouteInfo, RouteAnalyzerFunction, RouteAnalyzerIssue,
     ValidationError, errorMessage, DefaultDependencyResolver, CustomConverter,
-    CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie, ControllerFactory,
+    CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie, KeyOf,
     Metadata, GlobalMetadata, Omit, Optional, RouteMetadata, VirtualRoute,
     GenericController, ControllerGeneric, OneToManyControllerGeneric, Repository, OneToManyRepository,
     FilterQueryType, RelationPropertyDecorator, MetadataImpl, JwtClaims, SelectQuery

@@ -21,7 +21,7 @@ const copyFileAsync = promisify(copyFile)
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-
+export type KeyOf<T> = Extract<keyof T, string>;
 
 export interface ApplyToOption {
     /**
@@ -420,13 +420,6 @@ export abstract class OneToManyControllerGeneric<P = any, T = any, PID = any, TI
     abstract readonly entityType: Class<T>
     abstract readonly parentEntityType: Class<P>
     abstract readonly relation: string
-}
-
-// in some case, a controller may need to wait preInitialized method to be called
-// for example, generic controller for TypeORM entity needs to await 
-// for entities to be initialized on preInitialize method 
-export abstract class ControllerFactory {
-    abstract get(option:ControllerTransformOption):Class 
 }
 
 // --------------------------------------------------------------------- //

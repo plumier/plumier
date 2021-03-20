@@ -15,6 +15,7 @@ import { JwtAuthFacility } from "@plumier/jwt"
 import { generic, noop } from "@plumier/reflect"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
+    createGenericController,
     TypeORMControllerGeneric,
     TypeORMFacility,
     TypeORMOneToManyControllerGeneric,
@@ -35,10 +36,12 @@ import {
     OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
+    getRepository
 } from "typeorm"
 
 import { random } from "../helper"
 import { cleanup, getConn } from "./helper"
+import { cleanupConsole } from "@plumier/testing"
 
 
 jest.setTimeout(20000)
@@ -875,6 +878,41 @@ describe("CRUD", () => {
             const inserted = await todoRepo.findOne(body.id, { relations: ["user"] })
             expect(inserted).toMatchSnapshot()
         })
+        it("Should able to create generic controller dynamically", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            const UserController = createGenericController(User)
+            const app = await createApp([UserController, User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?offset=0&limit=20")
+                .expect(200)
+            expect(body.length).toBe(20)
+        })
+        it("Should able to configure create generic controller", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            const mock = console.mock()
+            const UserController = createGenericController(User, c => c.mutators().ignore())
+            const app = await createApp([UserController], { mode: "debug" })
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
     })
     describe("Nested CRUD One to Many Function", () => {
         async function createUser<T>(type: Class<T>): Promise<T> {
@@ -1690,6 +1728,64 @@ describe("CRUD", () => {
                 .get(`/users/${user.id}/animals?offset=0&limit=20`)
                 .expect(200)
             expect(body).toMatchSnapshot()
+        })
+        it("Should able to create generic controller dynamically", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                animals: Animal[]
+            }
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const UserAnimalController = createGenericController([User, "animals"])
+            const app = await createApp([UserAnimalController, User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}/animals?offset=0&limit=20`)
+                .expect(200)
+            expect(body.length).toBe(20)
+        })
+        it("Should able to configure create generic controller", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                animals: Animal[]
+            }
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const UserAnimalController = createGenericController([User, "animals"], c => c.mutators().ignore())
+            const mock = console.mock()
+            const app = await createApp([UserAnimalController, User, Animal], { mode: "debug" })
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
         })
     })
     describe("One To One Function", () => {

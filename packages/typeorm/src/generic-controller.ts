@@ -1,11 +1,15 @@
-import { api, authorize, Class, entity, OneToManyRepository, Repository } from "@plumier/core"
+import { api, authorize, Class, entity, KeyOf, OneToManyRepository, Repository } from "@plumier/core"
 import {
+    ControllerBuilder,
+    createGenericControllerType,
+    createOneToManyGenericControllerType,
     genericControllerRegistry,
     RepoBaseControllerGeneric,
     RepoBaseOneToManyControllerGeneric,
 } from "@plumier/generic-controller"
 import reflect, { generic, noop, useCache } from "@plumier/reflect"
 import { parse } from "acorn"
+import pluralize from "pluralize"
 import { getMetadataArgsStorage } from "typeorm"
 
 import { TypeORMOneToManyRepository, TypeORMRepository } from "./repository"
@@ -99,7 +103,22 @@ class TypeORMOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMan
     }
 }
 
-type NestedControllerType<T> = [Class<T>, Class, keyof T]
+type EntityWithRelation<T> = [Class<T>, KeyOf<T>]
 
+function createGenericController<T>(type: Class | EntityWithRelation<T>, config?: ((x: ControllerBuilder) => void)) {
+    const builder = new ControllerBuilder()
+    if (config) config(builder)
+    if (Array.isArray(type)) {
+        const [parentEntity, relation] = type
+        normalizeEntity(parentEntity)
+        const meta = reflect(parentEntity)
+        const prop = meta.properties.find(x => x.name === relation)!
+        const entity = prop.type[0] as Class
+        normalizeEntity(entity)
+        return createOneToManyGenericControllerType(parentEntity, builder, entity, relation, TypeORMOneToManyControllerGeneric, pluralize)
+    }
+    normalizeEntity(type)
+    return createGenericControllerType(type, builder, TypeORMControllerGeneric, pluralize)
+}
 
-export { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric, normalizeEntity }
+export { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric, normalizeEntity, createGenericController }

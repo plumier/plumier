@@ -8,6 +8,22 @@ User {
 }
 `;
 
+exports[`CRUD CRUD Function Should able to configure create generic controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. TypeORMControllerGeneric.list -> GET /users",
+  ],
+  Array [
+    "2. TypeORMControllerGeneric.get  -> GET /users/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`CRUD CRUD Function Should able to order by properties GET /users?offset&limit 1`] = `
 Array [
   Object {
@@ -358,6 +374,22 @@ Object {
   ],
   "status": 422,
 }
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should able to configure create generic controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. TypeORMOneToMany...eneric.list -> GET /users/:pid/animals",
+  ],
+  Array [
+    "2. TypeORMOneToMany...eneric.get  -> GET /users/:pid/animals/:id",
+  ],
+  Array [],
+]
 `;
 
 exports[`CRUD Nested CRUD One to Many Function Should able to order by property GET /users/:parentId/animals?offset&limit 1`] = `
