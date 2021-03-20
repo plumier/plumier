@@ -13,7 +13,7 @@ import { isAbsolute, join } from "path"
 
 import { ControllerBuilder } from "./configuration"
 import { GenericControllerDecorator } from "./decorator"
-import { configureBasicGenericController, configureOneToManyGenericController, genericControllerRegistry } from "./factory"
+import { createGenericControllerType, createOneToManyGenericControllerType, genericControllerRegistry } from "./factory"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //
@@ -33,7 +33,7 @@ function createBasicGenericControllerByDecorators(type: Class, genericController
     const decorators = meta.decorators.filter((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
     for (const decorator of decorators) {
         const config = getControllerBuilderFromConfig(decorator.config)
-        const ctl = configureBasicGenericController(type, config, genericControllers[0], nameConversion)
+        const ctl = createGenericControllerType(type, config, genericControllers[0], nameConversion)
         controllers.push(ctl)
     }
     return controllers
@@ -46,7 +46,7 @@ function createNestedGenericControllerByDecorators(entity: Class, genericControl
     for (const prop of meta.properties) {
         const decorators = prop.decorators.filter((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
         for (const decorator of decorators) {
-            const ctl = configureOneToManyGenericController(entity, getControllerBuilderFromConfig(decorator.config), prop.type[0], prop.name, genericControllers[1], nameConversion)
+            const ctl = createOneToManyGenericControllerType(entity, getControllerBuilderFromConfig(decorator.config), prop.type[0], prop.name, genericControllers[1], nameConversion)
             controllers.push(ctl)
         }
     }

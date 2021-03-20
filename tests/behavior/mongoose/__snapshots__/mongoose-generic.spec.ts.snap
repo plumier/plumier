@@ -10,6 +10,22 @@ Object {
 }
 `;
 
+exports[`CRUD CRUD Function Should able to configure create generic controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MongooseControllerGeneric.get  -> GET /users/:id",
+  ],
+  Array [
+    "2. MongooseControllerGeneric.list -> GET /users",
+  ],
+  Array [],
+]
+`;
+
 exports[`CRUD CRUD Function Should able to filter with exact value GET /users?filter 1`] = `
 Array [
   Object {
@@ -272,6 +288,22 @@ Array [
   ],
   Array [
     "6. MongooseOneToMan...eneric.delete  -> DELETE /users/:pid/tags/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should able to configure create generic controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MongooseOneToMan...eneric.list -> GET /users/:pid/animals",
+  ],
+  Array [
+    "2. MongooseOneToMan...eneric.get  -> GET /users/:pid/animals/:id",
   ],
   Array [],
 ]
