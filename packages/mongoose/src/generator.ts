@@ -91,7 +91,7 @@ export const ParentModel = model(Parent)
 class ModelProxyHandler<T> implements ProxyHandler<mong.Model<T & mong.Document>>{
     constructor(private type: Class, private helper: MongooseHelper) { }
 
-    resolveModel(): mong.Model<T & mong.Document> {
+    resolveModel(): mong.Model<T & mong.Document<any, {}>> {
         return this.helper.model(this.type)
     }
 

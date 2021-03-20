@@ -15,6 +15,7 @@ import { Result, VisitorInvocation } from "@plumier/validator"
 import { promisify } from "util"
 
 import { HttpStatus } from "./http-status"
+import { ControllerTransformOption } from "./route-generator"
 
 const copyFileAsync = promisify(copyFile)
 
@@ -421,6 +422,13 @@ export abstract class OneToManyControllerGeneric<P = any, T = any, PID = any, TI
     abstract readonly relation: string
 }
 
+// in some case, a controller may need to wait preInitialized method to be called
+// for example, generic controller for TypeORM entity needs to await 
+// for entities to be initialized on preInitialize method 
+export abstract class ControllerFactory {
+    abstract get(option:ControllerTransformOption):Class 
+}
+
 // --------------------------------------------------------------------- //
 // --------------------------- AUTHORIZATION --------------------------- //
 // --------------------------------------------------------------------- // 
@@ -707,6 +715,7 @@ export namespace errorMessage {
     export const GenericControllerImplementationNotFound = "Generic controller implementation not installed"
     export const GenericControllerRequired = "@genericController() required generic controller implementation, please install the appropriate facility"
     export const GenericControllerMissingTypeInfo = "{0} marked with @genericController() but doesn't have type information"
+    export const GenericControllerInNonArrayProperty = "Nested generic controller can not be created using non array relation on: {0}.{1}"
     export const CustomRouteEndWithParameter = "Custom route path '{0}' on {1} entity, require path that ends with route parameter, example: animals/:animalId"
     export const CustomRouteRequiredTwoParameters = "Nested custom route path '{0}' on {1} entity, must have two route parameters, example: users/:userId/animals/:animalId"
     export const CustomRouteMustHaveOneParameter = "Custom route path '{0}' on {1} entity, must have one route parameter, example: animals/:animalId"

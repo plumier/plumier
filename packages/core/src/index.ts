@@ -13,7 +13,7 @@ export {
 export { HeaderPart, RequestPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction } from "./binder";
 export { invoke } from "./application-pipeline";
 export { response } from "./response";
-export { generateRoutes, findClassRecursive, appendRoute, IgnoreDecorator, RouteDecorator, transformController } from "./route-generator";
+export { generateRoutes, findClassRecursive, appendRoute, IgnoreDecorator, RouteDecorator, transformController, ControllerTransformOption } from "./route-generator";
 export { analyzeRoutes, printAnalysis } from "./route-analyzer";
 export { router } from "./router";
 export {
@@ -38,7 +38,7 @@ export {
     Middleware, MiddlewareFunction, MiddlewareDecorator, MiddlewareUtil, PlumierApplication, PlumierConfiguration, RedirectActionResult,
     ActionContext, RouteInfo, RouteAnalyzerFunction, RouteAnalyzerIssue,
     ValidationError, errorMessage, DefaultDependencyResolver, CustomConverter,
-    CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie,
+    CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie, ControllerFactory,
     Metadata, GlobalMetadata, Omit, Optional, RouteMetadata, VirtualRoute,
     GenericController, ControllerGeneric, OneToManyControllerGeneric, Repository, OneToManyRepository,
     FilterQueryType, RelationPropertyDecorator, MetadataImpl, JwtClaims, SelectQuery
