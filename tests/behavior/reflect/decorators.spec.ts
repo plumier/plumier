@@ -419,9 +419,9 @@ describe("Decorator", () => {
             const meta = reflect(ChildClass)
             expect(meta).toMatchSnapshot()
         })
-        
+
         it("Should able to apply type override for method", () => {
-            @decorateClass(target => <TypeDecorator>{ kind: "Override", type: String, target, genericParams: [] }, {applyTo: "myFunction"})
+            @decorateClass(target => <TypeDecorator>{ kind: "Override", type: String, target, genericParams: [] }, { applyTo: "myFunction" })
             class DummyClass {
                 myFunction() { }
                 myOtherFunction() { }
@@ -434,11 +434,57 @@ describe("Decorator", () => {
             @parameterProperties()
             class DummyClass {
                 constructor(
-                    @decorateProperty(target => <TypeDecorator>{ kind: "Override", type: String, target, genericParams: [] }, { applyTo: "myFunction"})
-                    public name:string
-                ){}
+                    @decorateProperty(target => <TypeDecorator>{ kind: "Override", type: String, target, genericParams: [] }, { applyTo: "myFunction" })
+                    public name: string
+                ) { }
             }
             const meta = reflect(DummyClass)
+            expect(meta).toMatchSnapshot()
+        })
+
+        it("Should be inherited in child class", () => {
+            @decorateClass({ lorem: "ipsum" }, { applyTo: "myFunction" })
+            class DummyClass {
+                myFunction() { }
+                myOtherFunction() { }
+            }
+            class DummyChild extends DummyClass { }
+            const meta = reflect(DummyChild)
+            expect(meta).toMatchSnapshot()
+        })
+
+        it("Should be inherited in child class with allowMultiple option", () => {
+            @decorateClass({ [DecoratorId]: "lorem", lorem: "ipsum" }, { applyTo: "myFunction" })
+            class DummyClass {
+                myFunction() { }
+                myOtherFunction() { }
+            }
+            @decorateClass({ [DecoratorId]: "lorem", lorem: "dolor" }, { applyTo: "myFunction" })
+            class DummyChild extends DummyClass { }
+            const meta = reflect(DummyChild)
+            expect(meta).toMatchSnapshot()
+        })
+
+        it("Should be inherited in child class with allowMultiple option with non applyTo decorator", () => {
+            class DummyClass {
+                @decorateMethod({ [DecoratorId]: "lorem", lorem: "ipsum" })
+                myFunction() { }
+                myOtherFunction() { }
+            }
+            @decorateClass({ [DecoratorId]: "lorem", lorem: "dolor" }, { applyTo: "myFunction" })
+            class DummyChild extends DummyClass { }
+            const meta = reflect(DummyChild)
+            expect(meta).toMatchSnapshot()
+        })
+
+        it("Should not inherited in child class if configured", () => {
+            @decorateClass({ lorem: "ipsum" }, { applyTo: "myFunction", inherit: false })
+            class DummyClass {
+                myFunction() { }
+                myOtherFunction() { }
+            }
+            class DummyChild extends DummyClass { }
+            const meta = reflect(DummyChild)
             expect(meta).toMatchSnapshot()
         })
     })

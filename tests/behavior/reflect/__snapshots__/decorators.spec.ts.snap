@@ -525,6 +525,243 @@ Object {
 }
 `;
 
+exports[`Decorator ApplyTo Should be inherited in child class 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "lorem": "ipsum",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": "myFunction",
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "myOtherFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyChild",
+  "properties": Array [],
+  "removedDecorators": Array [
+    Object {
+      "lorem": "ipsum",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": "myFunction",
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "super": DummyClass,
+  "type": DummyChild,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator ApplyTo Should be inherited in child class with allowMultiple option 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "lorem": "dolor",
+          Symbol(tinspector:decoratorId): "lorem",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": "myFunction",
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+        Object {
+          "lorem": "ipsum",
+          Symbol(tinspector:decoratorId): "lorem",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": "myFunction",
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "myOtherFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyChild",
+  "properties": Array [],
+  "removedDecorators": Array [
+    Object {
+      "lorem": "dolor",
+      Symbol(tinspector:decoratorId): "lorem",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": "myFunction",
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+    Object {
+      "lorem": "ipsum",
+      Symbol(tinspector:decoratorId): "lorem",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": "myFunction",
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "super": DummyClass,
+  "type": DummyChild,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator ApplyTo Should be inherited in child class with allowMultiple option with non applyTo decorator 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "lorem": "dolor",
+          Symbol(tinspector:decoratorId): "lorem",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": "myFunction",
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+        Object {
+          "lorem": "ipsum",
+          Symbol(tinspector:decoratorId): "lorem",
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "myFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "myOtherFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyChild",
+  "properties": Array [],
+  "removedDecorators": Array [
+    Object {
+      "lorem": "dolor",
+      Symbol(tinspector:decoratorId): "lorem",
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": true,
+        "applyTo": "myFunction",
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "super": DummyClass,
+  "type": DummyChild,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Decorator ApplyTo Should not inherited in child class if configured 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "myFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "myOtherFunction",
+      "parameters": Array [],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "DummyChild",
+  "properties": Array [],
+  "super": DummyClass,
+  "type": DummyChild,
+  "typeClassification": "Class",
+}
+`;
+
 exports[`Decorator ApplyTo Should work when allowMultiple is false 1`] = `
 Object {
   "ctor": Object {
