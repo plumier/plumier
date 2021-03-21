@@ -935,6 +935,22 @@ describe("CRUD", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
         })
+        it("Should able to extends the created generic controller", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            class UserController extends createGenericController(User, c => c.mutators().ignore()) { }
+            const mock = console.mock()
+            const app = await createApp([UserController], { mode: "debug" })
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
     })
     describe("Nested CRUD One to Many Function", () => {
         async function createUser<T>(type: Class<T>): Promise<T> {
