@@ -67,7 +67,11 @@ class GenericMap {
         for (const type of types) {
             const parent: Class = Object.getPrototypeOf(type)
             const templates = this.getTemplates(parent)
-            if (!templates) throw new Error(`Configuration Error: ${parent.name} uses string template type @reflect.type(<string>) but doesn't specify @generic.template()`)
+            const parentTypes = this.getTypes(parent)
+            // if parent have types but not template then the generic is stop, continue
+            if (parentTypes && !templates) continue
+            if (!templates)
+                throw new Error(`Configuration Error: ${parent.name} uses string template type @reflect.type(<string>) but doesn't specify @generic.template()`)
             const types = this.getTypes(type)
             if (!types) throw new Error(`Configuration Error: ${type.name} inherit from generic class but doesn't use @generic.type()`)
             if (templates.length !== types.length) throw new Error(`Configuration Error: Number of parameters mismatch between @generic.template() on ${parent.name} and @generic.type() on ${type.name}`)
