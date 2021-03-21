@@ -30,12 +30,19 @@ export function setMetadata(data: any, targetClass: Class, memberName?: string |
     storage.set(targetClass, meta)
 }
 
-function getMetadataFromStorage(target: Class, memberName?: string, parIndex?: number) {
+interface QueryOption {
+    memberName?: string
+    parIndex?: number
+    isApplyTo?: boolean
+}
+
+function queryMetadata(target: Class, op?: QueryOption) {
+    const option: QueryOption = { isApplyTo: false, ...op }
     return (storage.get(target) ?? [])
-        .filter(x => x.memberName === memberName && x.parIndex === parIndex)
+        .filter(x => x.memberName === option.memberName && x.parIndex === option.parIndex)
         .filter(x => {
             const opt: DecoratorOption = x.data[DecoratorOptionId]
-            return opt.applyTo!.length === 0
+            return option.isApplyTo ? opt.applyTo!.length > 0 : opt.applyTo!.length === 0
         })
         .map(x => x.data)
 }
@@ -55,22 +62,19 @@ export function mergeMetadata(childMeta: any[], parentMeta: any[], useInherit = 
 export function getMetadata(targetClass: Class, memberName?: string, parIndex?: number): any[] {
     const parent: Class = Object.getPrototypeOf(targetClass)
     const parentMeta: any[] = !!parent.prototype ? getMetadata(parent, memberName, parIndex) : []
-    const childMeta = getMetadataFromStorage(targetClass, memberName, parIndex)
+    const childMeta = queryMetadata(targetClass, { memberName, parIndex })
     return mergeMetadata(childMeta, parentMeta)
 }
 
-export function getMetadataForApplyTo(targetClass: Class, memberName?: string, parIndex?:number) {
-    return (storage.get(targetClass) ?? [])
-        .filter(x => x.memberName === memberName && x.parIndex === parIndex)
-        .filter(x => {
-            const opt: DecoratorOption = x.data[DecoratorOptionId]
-            return opt.applyTo!.length > 0
-        })
-        .map(x => x.data)
+export function getMetadataForApplyTo(targetClass: Class, memberName?: string, parIndex?: number): any[] {
+    const parent: Class = Object.getPrototypeOf(targetClass)
+    const parentMeta = !!parent.prototype ? getMetadataForApplyTo(parent, memberName, parIndex) : []
+    const meta = queryMetadata(targetClass, { isApplyTo: true, memberName, parIndex })
+    return mergeMetadata(meta, parentMeta)
 }
 
 export function getOwnMetadata(targetClass: Class, memberName?: string, parIndex?: number) {
-    return getMetadataFromStorage(targetClass, memberName, parIndex)
+    return queryMetadata(targetClass, { memberName, parIndex })
 }
 
 export function getAllMetadata(targetClass: Class) {
