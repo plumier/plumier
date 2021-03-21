@@ -296,6 +296,34 @@ describe("Error Handling", () => {
         class MyClass extends SuperClass<number, Date>{ }
         expect(() => reflect(MyClass)).toThrowErrorMatchingSnapshot()
     })
+    it("Should not show error when generic parameter stop", () => {
+        @generic.template("T")
+        class GrandSuperClass<T>{
+            @type("T")
+            grandSuper: T 
+        }
+        @generic.type(Number)
+        class MyClass extends GrandSuperClass<number>{ }
+        class MyRealClass extends MyClass {}
+        expect(reflect(MyRealClass)).toMatchSnapshot()
+    })
+    it("Should not show error in deep inheritance when generic parameter stop", () => {
+        @generic.template("T", "U")
+        class GrandSuperClass<T, U>{
+            @type("T")
+            grandSuper(@type("U") par: U): T { return {} as any }
+        }
+        @generic.template("A", "B")
+        @generic.type("A", "B")
+        class SuperClass<A, B> extends GrandSuperClass<A, B>{
+            @type("B")
+            super(@type("A") par: A): B { return {} as any }
+        }
+        @generic.type(Number, Date)
+        class MyClass extends SuperClass<number, Date>{ }
+        class MyRealClass extends MyClass {}
+        expect(reflect(MyRealClass)).toMatchSnapshot()
+    })
     it("Should show proper error when number of types provided mismatch", () => {
         @generic.template("A", "B")
         class SuperClass<A, B> {

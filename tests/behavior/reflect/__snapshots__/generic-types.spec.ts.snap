@@ -437,6 +437,89 @@ Object {
 }
 `;
 
+exports[`Error Handling Should not show error in deep inheritance when generic parameter stop 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "super",
+      "parameters": Array [
+        Object {
+          "decorators": Array [],
+          "fields": Object {},
+          "index": 0,
+          "kind": "Parameter",
+          "name": "par",
+          "type": Number,
+          "typeClassification": "Primitive",
+        },
+      ],
+      "returnType": Date,
+      "typeClassification": "Primitive",
+    },
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "grandSuper",
+      "parameters": Array [
+        Object {
+          "decorators": Array [],
+          "fields": Object {},
+          "index": 0,
+          "kind": "Parameter",
+          "name": "par",
+          "type": Date,
+          "typeClassification": "Primitive",
+        },
+      ],
+      "returnType": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "name": "MyRealClass",
+  "properties": Array [],
+  "super": MyClass,
+  "type": MyRealClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Error Handling Should not show error when generic parameter stop 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "MyRealClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [],
+      "get": undefined,
+      "kind": "Property",
+      "name": "grandSuper",
+      "set": undefined,
+      "type": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": MyClass,
+  "type": MyRealClass,
+  "typeClassification": "Class",
+}
+`;
+
 exports[`Error Handling Should show proper error when no @generic.types() provided 1`] = `"Configuration Error: MyClass inherit from generic class but doesn't use @generic.type()"`;
 
 exports[`Error Handling Should show proper error when no @generic.types() provided in deep inheritance 1`] = `"Configuration Error: SuperClass inherit from generic class but doesn't use @generic.type()"`;
