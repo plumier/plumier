@@ -26,6 +26,22 @@ Array [
 ]
 `;
 
+exports[`CRUD CRUD Function Should able to extends the created generic controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UserController.get(id, select, ctx) -> GET /users/:id",
+  ],
+  Array [
+    "2. UserController.list                 -> GET /users",
+  ],
+  Array [],
+]
+`;
+
 exports[`CRUD CRUD Function Should able to filter with exact value GET /users?filter 1`] = `
 Array [
   Object {
