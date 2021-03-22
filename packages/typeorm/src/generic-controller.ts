@@ -92,7 +92,7 @@ function getMemberExpression(node: any): string {
 
 @generic.template("T", "TID")
 @generic.type("T", "TID")
-class TypeORMControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
+class TypeORMControllerGeneric<T = any, TID = any> extends RepoBaseControllerGeneric<T, TID>{
     constructor(fac?: ((x: Class<T>) => Repository<T>)) {
         super(fac ?? (x => new TypeORMRepository(x)))
     }
@@ -100,7 +100,7 @@ class TypeORMControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>
 
 @generic.template("P", "T", "PID", "TID")
 @generic.type("P", "T", "PID", "TID")
-class TypeORMOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
+class TypeORMOneToManyControllerGeneric<P = any, T = any, PID =any, TID = any> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
     constructor(fac?: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
         super(fac ?? ((p, t, rel) => new TypeORMOneToManyRepository(p, t, rel)))
     }
@@ -108,7 +108,9 @@ class TypeORMOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMan
 
 type EntityWithRelation<T> = [Class<T>, KeyOf<T>]
 
-function createGenericController<T>(type: Class | EntityWithRelation<T>, config?: ((x: ControllerBuilder) => void)) {
+function GenericController<T>(type:Class, config?: ((x: ControllerBuilder) => void)): Class<TypeORMControllerGeneric<T>>
+function GenericController<T>(type:EntityWithRelation<T>, config?: ((x: ControllerBuilder) => void)): Class<TypeORMOneToManyControllerGeneric<T>>
+function GenericController<T>(type: Class | EntityWithRelation<T>, config?: ((x: ControllerBuilder) => void)) {
     const builder = new ControllerBuilder()
     if (config) config(builder)
     if (Array.isArray(type)) {
@@ -124,4 +126,4 @@ function createGenericController<T>(type: Class | EntityWithRelation<T>, config?
     return createGenericControllerType(type, builder, TypeORMControllerGeneric, pluralize)
 }
 
-export { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric, normalizeEntity, createGenericController }
+export { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric, normalizeEntity, GenericController }

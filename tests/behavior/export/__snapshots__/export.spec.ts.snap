@@ -340,6 +340,7 @@ Object {
 exports[`Export Should export @plumier/mongoose 1`] = `
 Object {
   "CanNotValidateNonProperty": "MONG1002: @val.unique() only can be applied on property",
+  "GenericController": GenericController,
   "MongooseControllerGeneric": MongooseControllerGeneric,
   "MongooseFacility": MongooseFacility,
   "MongooseHelper": MongooseHelper,
@@ -348,7 +349,6 @@ Object {
   "MongooseRepository": MongooseRepository,
   "ReferenceTypeNotRegistered": "MONG1000: Type {0} required type {1} which is not registered as Mongoose model",
   "collection": collection,
-  "createGenericController": createGenericController,
   "default": bound model,
   "filterConverter": ,
   "getDefinition": getDefinition,
@@ -479,12 +479,12 @@ Object {
 
 exports[`Export Should export @plumier/typeorm 1`] = `
 Object {
+  "GenericController": GenericController,
   "TypeORMControllerGeneric": TypeORMControllerGeneric,
   "TypeORMFacility": TypeORMFacility,
   "TypeORMOneToManyControllerGeneric": TypeORMOneToManyControllerGeneric,
   "TypeORMOneToManyRepository": TypeORMOneToManyRepository,
   "TypeORMRepository": TypeORMRepository,
-  "createGenericController": createGenericController,
   "filterConverter": ,
   "normalizeEntity": ,
   "orderConverter": ,
