@@ -1825,6 +1825,33 @@ describe("CRUD", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
         })
+        it("Should able to extends created generic controller", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                animals: Animal[]
+            }
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            class UserAnimalController extends GenericController([User, "animals"]) { }
+            const mock = console.mock()
+            const app = await createApp([UserAnimalController, User, Animal], { mode: "debug" })
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
     })
     describe("One To One Function", () => {
         it("Should able to add with ID", async () => {
@@ -2352,6 +2379,34 @@ describe("Open API", () => {
             public password: string
         }
         const app = await createApp([User])
+        const { body } = await supertest(app.callback())
+            .post("/swagger/swagger.json")
+            .expect(200)
+        expect(body.components.schemas.User).toMatchSnapshot()
+    })
+    it("Should not error when generated schema that the controller created using generic controller factory", async () => {
+        @Entity()
+        class User {
+            @PrimaryGeneratedColumn()
+            id: number
+            @Column()
+            email: string
+            @Column()
+            name: string
+            @OneToMany(x => Animal, x => x.user)
+            animals: Animal[]
+        }
+        @Entity()
+        class Animal {
+            @PrimaryGeneratedColumn()
+            id: number
+            @Column()
+            name: string
+            @ManyToOne(x => User, x => x.animals)
+            user: User
+        }
+        class UserEntity extends GenericController([User, "animals"]) { }
+        const app = await createApp([User, Animal, UserEntity])
         const { body } = await supertest(app.callback())
             .post("/swagger/swagger.json")
             .expect(200)

@@ -164,10 +164,14 @@ export namespace generic {
      * @param type the class
      * @returns List of generic type parameters
      */
-    export function getGenericTypeParameters(type: Class) {
+    export function getGenericTypeParameters(type: Class): Class[] {
         const genericDecorator = getMetadata(type)
             .find((x: GenericTypeDecorator): x is GenericTypeDecorator => x.kind == "GenericType" && x.target === type)
-        if(!genericDecorator) throw new Error(`${type.name} is not a generic type`)
+        if (!genericDecorator) {
+            const parent: Class = Object.getPrototypeOf(type)
+            if (!parent.prototype) throw new Error(`${type.name} is not a generic type`)
+            return getGenericTypeParameters(parent)
+        }
         return genericDecorator.types.map(x => x as Class)
     }
 }

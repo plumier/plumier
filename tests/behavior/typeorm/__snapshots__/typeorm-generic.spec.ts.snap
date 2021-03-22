@@ -408,6 +408,34 @@ Array [
 ]
 `;
 
+exports[`CRUD Nested CRUD One to Many Function Should able to extends created generic controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UserAnimalController.list    -> GET    /users/:pid/animals",
+  ],
+  Array [
+    "2. UserAnimalController.save    -> POST   /users/:pid/animals",
+  ],
+  Array [
+    "3. UserAnimalController.get     -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "4. UserAnimalController.modify  -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "5. UserAnimalController.replace -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "6. UserAnimalController.delete  -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should able to order by property GET /users/:parentId/animals?offset&limit 1`] = `
 Array [
   Object {
@@ -1307,6 +1335,30 @@ Object {
       "type": "string",
     },
     "userName": Object {
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`Open API Should not error when generated schema that the controller created using generic controller factory 1`] = `
+Object {
+  "properties": Object {
+    "animals": Object {
+      "items": Object {
+        "$ref": "#/components/schemas/Animal",
+      },
+      "type": "array",
+    },
+    "email": Object {
+      "type": "string",
+    },
+    "id": Object {
+      "readOnly": true,
+      "type": "number",
+    },
+    "name": Object {
       "type": "string",
     },
   },
