@@ -64,7 +64,17 @@ class MongooseOneToManyControllerGeneric<P = any, T = any, PID = string, TID = s
 
 type EntityWithRelation<T> = [Class<T>, KeyOf<T>]
 
+/**
+ * Create a generic controller with CRUD functionality based on Entity
+ * @param type entity used as the generic controller parameter
+ * @param config configuration to authorize/enable/disable some actions
+ */
 function GenericController<T>(type:Class, config?: GenericControllerConfiguration): Class<MongooseControllerGeneric<T>>
+/**
+ * Create a nested generic controller with CRUD functionality based on Entity's One-To-Many relation property
+ * @param type Tuple of [Entity, relationName] used as the generic controller parameter
+ * @param config configuration to authorize/enable/disable some actions
+ */
 function GenericController<T>(type:EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<MongooseOneToManyControllerGeneric<T>>
 function GenericController<T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) {
     const builder = new ControllerBuilder()
