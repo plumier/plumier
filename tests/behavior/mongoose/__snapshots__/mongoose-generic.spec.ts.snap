@@ -325,6 +325,34 @@ Array [
 ]
 `;
 
+exports[`CRUD Nested CRUD One to Many Function Should able to extends created generic controller 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UserAnimalController.list    -> GET    /users/:pid/animals",
+  ],
+  Array [
+    "2. UserAnimalController.save    -> POST   /users/:pid/animals",
+  ],
+  Array [
+    "3. UserAnimalController.get     -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "4. UserAnimalController.modify  -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "5. UserAnimalController.replace -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "6. UserAnimalController.delete  -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should able to filter one on one relation GET /users/:parentId/animals?filter  1`] = `
 Array [
   Object {

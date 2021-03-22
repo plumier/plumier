@@ -2197,6 +2197,31 @@ describe("CRUD", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
         })
+        it("Should able to extends created generic controller", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+            }
+            class UserAnimalController extends GenericController([User, "animals"]) { }
+            const mock = console.mock()
+            await createApp({ controller: UserAnimalController, mode: "debug" })
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
     })
     describe("One To One Function", () => {
         it("Should able to add with ID", async () => {
