@@ -8,7 +8,7 @@ import { MongooseOneToManyRepository, MongooseRepository } from "./repository"
 
 @generic.template("T", "TID")
 @generic.type("T", "TID")
-class MongooseControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
+class MongooseControllerGeneric<T = any, TID = string> extends RepoBaseControllerGeneric<T, TID>{
     constructor(fac?: ((x: Class<T>) => Repository<T>)) {
         super(fac ?? (x => new MongooseRepository(x)))
     }
@@ -32,7 +32,7 @@ class MongooseControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID
 
 @generic.template("P", "T", "PID", "TID")
 @generic.type("P", "T", "PID", "TID")
-class MongooseOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
+class MongooseOneToManyControllerGeneric<P = any, T = any, PID = string, TID = string> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
     constructor(fac?: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
         super(fac ?? ((p, t, rel) => new MongooseOneToManyRepository(p, t, rel)))
     }
@@ -64,7 +64,9 @@ class MongooseOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToMa
 
 type EntityWithRelation<T> = [Class<T>, KeyOf<T>]
 
-function createGenericController<T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) {
+function GenericController<T>(type:Class, config?: GenericControllerConfiguration): Class<MongooseControllerGeneric<T>>
+function GenericController<T>(type:EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<MongooseOneToManyControllerGeneric<T>>
+function GenericController<T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) {
     const builder = new ControllerBuilder()
     if (config) config(builder)
     if (Array.isArray(type)) {
@@ -77,4 +79,4 @@ function createGenericController<T>(type: Class | EntityWithRelation<T>, config?
     return createGenericControllerType(type, builder, MongooseControllerGeneric, pluralize)
 }
 
-export { MongooseControllerGeneric, MongooseOneToManyControllerGeneric, createGenericController }
+export { MongooseControllerGeneric, MongooseOneToManyControllerGeneric, GenericController }
