@@ -23,7 +23,7 @@ interface ActionConfig {
 
 type ActionConfigMap = Map<string, ActionConfig>
 
-interface GenericControllerConfig {
+interface GenericControllerOptions {
     path?: string
     map: ActionConfigMap
     actions(): string[]
@@ -127,7 +127,7 @@ class ControllerBuilder {
         return new ActionsBuilder(this.map, ["delete", "list", "get", "modify", "save", "replace"])
     }
 
-    toObject(): GenericControllerConfig {
+    toObject(): GenericControllerOptions {
         return {
             map: this.map,
             path: this.path,
@@ -205,7 +205,9 @@ class GetManyActionBuilder extends TransformableActionBuilder {
     }
 }
 
+type GenericControllerConfiguration = (c:ControllerBuilder) => void
+
 export {
-    ControllerBuilder, GenericControllerConfig
+    ControllerBuilder, GenericControllerOptions, GenericControllerConfiguration
 }
 

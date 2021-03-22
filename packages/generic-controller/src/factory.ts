@@ -5,7 +5,7 @@ import {
 } from "@plumier/core"
 import reflect, { decorateClass, DecoratorOptionId, generic } from "@plumier/reflect"
 import { Key, pathToRegexp } from "path-to-regexp"
-import { ControllerBuilder, GenericControllerConfig } from "./configuration"
+import { ControllerBuilder, GenericControllerOptions } from "./configuration"
 import {
     decorateRoute,
     GetManyCustomQueryDecorator,
@@ -51,14 +51,14 @@ function createRouteDecorators(id: string) {
     ]
 }
 
-function ignoreActions(config: GenericControllerConfig): ((...args: any[]) => void) {
+function ignoreActions(config: GenericControllerOptions): ((...args: any[]) => void) {
     const actions = config.actions()
     const applyTo = actions.filter(x => !!config.map.get(x)?.ignore)
     if (applyTo.length === 0) return (...args: any[]) => { }
     return route.ignore({ applyTo })
 }
 
-function authorizeActions(config: GenericControllerConfig) {
+function authorizeActions(config: GenericControllerOptions) {
     const actions = config.actions()
     const result = []
     for (const action of actions) {
@@ -83,7 +83,7 @@ function validatePath(path: string, entity: Class, oneToMany = false) {
     return keys
 }
 
-function decorateTransformers(config: GenericControllerConfig) {
+function decorateTransformers(config: GenericControllerOptions) {
     const result = []
     for (const key of config.map.keys()) {
         const cnf = config.map.get(key)
@@ -95,7 +95,7 @@ function decorateTransformers(config: GenericControllerConfig) {
     return result
 }
 
-function decorateCustomQuery(config: GenericControllerConfig) {
+function decorateCustomQuery(config: GenericControllerOptions) {
     const result = []
     const get = config.map.get("get")
     if (get && get.getOneCustomQuery) {

@@ -1,6 +1,6 @@
 import { decorate } from "@plumier/reflect"
 
-import { ControllerBuilder } from "./configuration"
+import { ControllerBuilder, GenericControllerConfiguration } from "./configuration"
 import { updateGenericControllerRegistry } from "./factory"
 
 interface GenericControllerDecorator {
@@ -8,7 +8,7 @@ interface GenericControllerDecorator {
     config: ((x: ControllerBuilder) => void) | undefined
 }
 
-function genericController(opt?: string | ((x: ControllerBuilder) => void)) {
+function genericController(opt?: string | GenericControllerConfiguration) {
     const config = typeof opt === "string" ? (x: ControllerBuilder) => x.setPath(opt) : opt
     return decorate((...args: any[]) => {
         updateGenericControllerRegistry(args[0])
