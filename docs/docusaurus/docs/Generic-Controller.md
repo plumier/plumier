@@ -87,19 +87,19 @@ Above code will generate six routes handled by generic controller implementation
 Its possible to create a generic controller using generic controller factory instead of using decorator, below code will result the same. 
 
 ```typescript
-import { createGenericController } from "@plumier/typeorm"
+import { GenericController } from "@plumier/typeorm"
 // or if using mongoose 
-// import { createGenericController } from "@plumier/mongoose"
+// import { GenericController } from "@plumier/mongoose"
 
-const UserController = createGenericController(User)
-// UserController is a valid controller class
-export UserController
+const UserController = GenericController(User)
+// UserController is a valid controller class so, you can do something like this
+export class UserController extends GenericController(User) {}
 ```
 
 The factory receive controller builder factory configuration like below
 
 ```typescript
-const UserController = createGenericController(User, c => {
+export class UserController extends GenericController(User, c => {
     c.mutators().authorize("Admin")
 })
 ```
@@ -210,13 +210,11 @@ Above code showing that we apply `@genericController()` on the `User.emails` rel
 Its also possible to create a nested generic controller using generic controller factory, below code will result the same. 
 
 ```typescript
-import { createGenericController } from "@plumier/typeorm"
+import { GenericController } from "@plumier/typeorm"
 // or if using mongoose 
-// import { createGenericController } from "@plumier/mongoose"
+// import { GenericController } from "@plumier/mongoose"
 
-const UserEmailController = createGenericController([User, "emails"])
-// UserEmailController is a valid controller class
-export UserEmailController
+export class UserEmailController extends GenericController([User, "emails"]) {}
 ```
 '''
 

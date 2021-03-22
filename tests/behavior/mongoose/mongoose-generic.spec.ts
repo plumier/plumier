@@ -14,7 +14,7 @@ import {
 import { JwtAuthFacility } from "@plumier/jwt"
 import model, {
     collection,
-    createGenericController,
+    GenericController,
     models,
     MongooseControllerGeneric,
     MongooseFacility,
@@ -853,7 +853,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
             }
-            const UserController = createGenericController(User)
+            const UserController = GenericController(User)
             const app = await createApp({ controller: UserController, mode: "production" })
             const repo = new MongooseRepository(User)
             await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
@@ -872,7 +872,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
             }
-            const UserController = createGenericController(User, c => c.mutators().ignore())
+            const UserController = GenericController(User, c => c.mutators().ignore())
             const mock = console.mock()
             await createApp({ controller: UserController, mode: "debug" })
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
@@ -888,7 +888,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
             }
-            class UserController extends createGenericController(User, c => c.mutators().ignore()) { }
+            class UserController extends GenericController(User, c => c.mutators().ignore()) { }
             const mock = console.mock()
             await createApp({ controller: UserController, mode: "debug" })
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
@@ -2162,7 +2162,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
             }
-            const UserAnimalController = createGenericController([User, "animals"])
+            const UserAnimalController = GenericController([User, "animals"])
             const app = await createApp({ controller: UserAnimalController, mode: "production" })
             const user = await createUser(User)
             const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
@@ -2191,7 +2191,7 @@ describe("CRUD", () => {
                 @reflect.noop()
                 name: string
             }
-            const UserAnimalController = createGenericController([User, "animals"], c => c.mutators().ignore())
+            const UserAnimalController = GenericController([User, "animals"], c => c.mutators().ignore())
             const mock = console.mock()
             await createApp({ controller: UserAnimalController, mode: "debug" })
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()

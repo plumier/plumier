@@ -15,7 +15,7 @@ import { JwtAuthFacility } from "@plumier/jwt"
 import { generic, noop } from "@plumier/reflect"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
-    createGenericController,
+    GenericController,
     TypeORMControllerGeneric,
     TypeORMFacility,
     TypeORMOneToManyControllerGeneric,
@@ -888,7 +888,7 @@ describe("CRUD", () => {
                 @Column()
                 name: string
             }
-            const UserController = createGenericController(User)
+            const UserController = GenericController(User)
             const app = await createApp([UserController, User], { mode: "production" })
             const repo = getManager().getRepository(User)
             await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
@@ -910,7 +910,7 @@ describe("CRUD", () => {
                 @Column()
                 name: string
             }
-            const UserController = createGenericController(User)
+            const UserController = GenericController(User)
             const app = await createApp([UserController, User], { mode: "production" })
             const repo = getManager().getRepository(User)
             await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
@@ -930,7 +930,7 @@ describe("CRUD", () => {
                 name: string
             }
             const mock = console.mock()
-            const UserController = createGenericController(User, c => c.mutators().ignore())
+            const UserController = GenericController(User, c => c.mutators().ignore())
             const app = await createApp([UserController], { mode: "debug" })
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
@@ -945,7 +945,7 @@ describe("CRUD", () => {
                 @Column()
                 name: string
             }
-            class UserController extends createGenericController(User, c => c.mutators().ignore()) { }
+            class UserController extends GenericController(User, c => c.mutators().ignore()) { }
             const mock = console.mock()
             const app = await createApp([UserController], { mode: "debug" })
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
@@ -1788,7 +1788,7 @@ describe("CRUD", () => {
                 @ManyToOne(x => User, x => x.animals)
                 user: User
             }
-            const UserAnimalController = createGenericController([User, "animals"])
+            const UserAnimalController = GenericController([User, "animals"])
             const app = await createApp([UserAnimalController, User, Animal], { mode: "production" })
             const user = await createUser(User)
             const animalRepo = getManager().getRepository(Animal)
@@ -1819,7 +1819,7 @@ describe("CRUD", () => {
                 @ManyToOne(x => User, x => x.animals)
                 user: User
             }
-            const UserAnimalController = createGenericController([User, "animals"], c => c.mutators().ignore())
+            const UserAnimalController = GenericController([User, "animals"], c => c.mutators().ignore())
             const mock = console.mock()
             const app = await createApp([UserAnimalController, User, Animal], { mode: "debug" })
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
