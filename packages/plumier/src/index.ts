@@ -14,7 +14,12 @@ export {
     AuthPolicy, JwtClaims, SelectQuery
 } from "@plumier/core"
 
-export { genericController, GenericControllerConfiguration, ControllerBuilder } from "@plumier/generic-controller"
+export { 
+    genericController, 
+    GenericControllerConfiguration, 
+    ControllerBuilder, 
+    ResponseTransformer 
+} from "@plumier/generic-controller"
 export * from "./facility"
 export {
     filterParser, selectParser, orderParser,
