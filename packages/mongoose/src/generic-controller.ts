@@ -1,5 +1,5 @@
 import { bind, Class, OneToManyRepository, Repository, val, SelectQuery, KeyOf } from "@plumier/core"
-import { ControllerBuilder, createGenericControllerType, createOneToManyGenericControllerType, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric } from "@plumier/generic-controller"
+import { ControllerBuilder, createGenericControllerType, createOneToManyGenericControllerType, GenericControllerConfiguration, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric } from "@plumier/generic-controller"
 import reflect, { generic } from "@plumier/reflect"
 import { Context } from "koa"
 import pluralize from "pluralize"
@@ -64,9 +64,9 @@ class MongooseOneToManyControllerGeneric<P = any, T = any, PID = string, TID = s
 
 type EntityWithRelation<T> = [Class<T>, KeyOf<T>]
 
-function GenericController<T>(type:Class, config?: ((x: ControllerBuilder) => void)): Class<MongooseControllerGeneric<T>>
-function GenericController<T>(type:EntityWithRelation<T>, config?: ((x: ControllerBuilder) => void)): Class<MongooseOneToManyControllerGeneric<T>>
-function GenericController<T>(type: Class | EntityWithRelation<T>, config?: ((x: ControllerBuilder) => void)) {
+function GenericController<T>(type:Class, config?: GenericControllerConfiguration): Class<MongooseControllerGeneric<T>>
+function GenericController<T>(type:EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<MongooseOneToManyControllerGeneric<T>>
+function GenericController<T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) {
     const builder = new ControllerBuilder()
     if (config) config(builder)
     if (Array.isArray(type)) {

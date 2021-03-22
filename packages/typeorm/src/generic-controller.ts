@@ -6,6 +6,7 @@ import {
     genericControllerRegistry,
     RepoBaseControllerGeneric,
     RepoBaseOneToManyControllerGeneric,
+    GenericControllerConfiguration
 } from "@plumier/generic-controller"
 import reflect, { generic, noop, useCache } from "@plumier/reflect"
 import { parse } from "acorn"
@@ -108,9 +109,9 @@ class TypeORMOneToManyControllerGeneric<P = any, T = any, PID =any, TID = any> e
 
 type EntityWithRelation<T> = [Class<T>, KeyOf<T>]
 
-function GenericController<T>(type:Class, config?: ((x: ControllerBuilder) => void)): Class<TypeORMControllerGeneric<T>>
-function GenericController<T>(type:EntityWithRelation<T>, config?: ((x: ControllerBuilder) => void)): Class<TypeORMOneToManyControllerGeneric<T>>
-function GenericController<T>(type: Class | EntityWithRelation<T>, config?: ((x: ControllerBuilder) => void)) {
+function GenericController<T>(type:Class, config?: GenericControllerConfiguration): Class<TypeORMControllerGeneric<T>>
+function GenericController<T>(type:EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<TypeORMOneToManyControllerGeneric<T>>
+function GenericController<T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) {
     const builder = new ControllerBuilder()
     if (config) config(builder)
     if (Array.isArray(type)) {
