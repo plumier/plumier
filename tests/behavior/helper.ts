@@ -1,6 +1,6 @@
 import Plumier, { Class, Configuration, WebApiFacility } from "plumier"
 import reflect, { generic } from "@plumier/reflect"
-import { Repository, OneToManyRepository, GenericController } from "@plumier/core";
+import { Repository, OneToManyRepository, GenericControllers } from "@plumier/core";
 import { RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric } from "@plumier/generic-controller";
 
 export function fixture(controller: Class | Class[] | string | string[], config?: Partial<Configuration>) {

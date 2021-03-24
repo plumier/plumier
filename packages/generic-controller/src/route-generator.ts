@@ -3,7 +3,7 @@ import {
     ControllerTransformOption,
     errorMessage,
     findClassRecursive,
-    GenericController,
+    GenericControllers,
     RouteInfo,
     RouteMetadata,
     transformController,
@@ -26,7 +26,7 @@ function getControllerBuilderFromConfig(callback?: (builder: ControllerBuilder) 
     return c
 }
 
-function createBasicGenericControllerByDecorators(type: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
+function createBasicGenericControllerByDecorators(type: Class, genericControllers: GenericControllers, nameConversion: (x: string) => string) {
     const meta = reflect(type)
     const controllers = []
     // basic generic controller
@@ -39,7 +39,7 @@ function createBasicGenericControllerByDecorators(type: Class, genericController
     return controllers
 }
 
-function createNestedGenericControllerByDecorators(entity: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
+function createNestedGenericControllerByDecorators(entity: Class, genericControllers: GenericControllers, nameConversion: (x: string) => string) {
     const meta = reflect(entity)
     const controllers = []
     // one to many controller on each relation property
@@ -53,7 +53,7 @@ function createNestedGenericControllerByDecorators(entity: Class, genericControl
     return controllers
 }
 
-function createGenericControllersByDecorators(controller: Class, genericControllers: GenericController, nameConversion: (x: string) => string) {
+function createGenericControllersByDecorators(controller: Class, genericControllers: GenericControllers, nameConversion: (x: string) => string) {
     return [
         ...createBasicGenericControllerByDecorators(controller, genericControllers, nameConversion),
         ...createNestedGenericControllerByDecorators(controller, genericControllers, nameConversion)

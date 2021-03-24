@@ -389,7 +389,7 @@ export type FilterQueryType = "equal" | "partial" | "range" | "gte" | "gt" | "lt
 
 export interface RelationPropertyDecorator { kind: "plumier-meta:relation-prop-name", name: string, inverseProperty?: string }
 
-export type GenericController = [Class<ControllerGeneric>, Class<OneToManyControllerGeneric>]
+export type GenericControllers = [Class<ControllerGeneric>, Class<OneToManyControllerGeneric>]
 
 export interface SelectQuery { columns?: any, relations?: any }
 
@@ -538,7 +538,7 @@ export interface Configuration {
     /**
      * Implementation of generic controllers, first tuple for simple controller, second tuple for one to many controller
      */
-    genericController?: GenericController
+    genericController?: GenericControllers
 
     /**
      * Generic controller name conversion to make plural route

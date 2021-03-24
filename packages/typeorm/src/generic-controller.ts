@@ -1,4 +1,4 @@
-import { api, authorize, Class, entity, KeyOf, OneToManyRepository, Repository } from "@plumier/core"
+import { api, authorize, Class, entity, GenericControllers, KeyOf, OneToManyRepository, Repository } from "@plumier/core"
 import {
     ControllerBuilder,
     createGenericControllerType,
@@ -101,7 +101,7 @@ class TypeORMControllerGeneric<T = any, TID = any> extends RepoBaseControllerGen
 
 @generic.template("P", "T", "PID", "TID")
 @generic.type("P", "T", "PID", "TID")
-class TypeORMOneToManyControllerGeneric<P = any, T = any, PID =any, TID = any> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
+class TypeORMOneToManyControllerGeneric<P = any, T = any, PID = any, TID = any> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
     constructor(fac?: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
         super(fac ?? ((p, t, rel) => new TypeORMOneToManyRepository(p, t, rel)))
     }
@@ -109,19 +109,7 @@ class TypeORMOneToManyControllerGeneric<P = any, T = any, PID =any, TID = any> e
 
 type EntityWithRelation<T> = [Class<T>, KeyOf<T>]
 
-/**
- * Create a generic controller with CRUD functionality based on Entity
- * @param type entity used as the generic controller parameter
- * @param config configuration to authorize/enable/disable some actions
- */
-function GenericController<T>(type:Class, config?: GenericControllerConfiguration): Class<TypeORMControllerGeneric<T>>
-/**
- * Create a nested generic controller with CRUD functionality based on Entity's One-To-Many relation property
- * @param type Tuple of [Entity, relationName] used as the generic controller parameter
- * @param config configuration to authorize/enable/disable some actions
- */
-function GenericController<T>(type:EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<TypeORMOneToManyControllerGeneric<T>>
-function GenericController<T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) {
+function createGenericController<T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration, controllers?: GenericControllers) {
     const builder = new ControllerBuilder()
     if (config) config(builder)
     if (Array.isArray(type)) {
@@ -131,10 +119,30 @@ function GenericController<T>(type: Class | EntityWithRelation<T>, config?: Gene
         const prop = meta.properties.find(x => x.name === relation)!
         const entity = prop.type[0] as Class
         normalizeEntity(entity)
-        return createOneToManyGenericControllerType(parentEntity, builder, entity, relation, TypeORMOneToManyControllerGeneric, pluralize)
+        return createOneToManyGenericControllerType(parentEntity, builder, entity, relation, controllers?.[1] ?? TypeORMOneToManyControllerGeneric, pluralize)
     }
     normalizeEntity(type)
-    return createGenericControllerType(type, builder, TypeORMControllerGeneric, pluralize)
+    return createGenericControllerType(type, builder, controllers?.[0] ?? TypeORMControllerGeneric, pluralize)
 }
 
-export { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric, normalizeEntity, GenericController }
+function genericControllerFactory(controllers?: GenericControllers) {
+    return <T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) => createGenericController(type, config, controllers)
+}
+
+/**
+ * Create a generic controller with CRUD functionality based on Entity
+ * @param type entity used as the generic controller parameter
+ * @param config configuration to authorize/enable/disable some actions
+ */
+function GenericController<T>(type: Class, config?: GenericControllerConfiguration): Class<TypeORMControllerGeneric<T>>
+/**
+ * Create a nested generic controller with CRUD functionality based on Entity's One-To-Many relation property
+ * @param type Tuple of [Entity, relationName] used as the generic controller parameter
+ * @param config configuration to authorize/enable/disable some actions
+ */
+function GenericController<T>(type: EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<TypeORMOneToManyControllerGeneric<T>>
+function GenericController<T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) {
+    return createGenericController(type, config)
+}
+
+export { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric, normalizeEntity, GenericController, genericControllerFactory, EntityWithRelation }
