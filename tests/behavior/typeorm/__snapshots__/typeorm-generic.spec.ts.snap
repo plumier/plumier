@@ -1040,6 +1040,306 @@ Object {
 }
 `;
 
+exports[`CRUD Should able to reflect generic controller factory 1`] = `
+Array [
+  Object {
+    "name": "save",
+    "pars": Array [
+      Object {
+        "name": "data",
+        "type": User,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
+    ],
+    "type": IdentifierResult,
+  },
+  Object {
+    "name": "findByIdOrNotFound",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Object,
+      },
+      Object {
+        "name": "select",
+        "type": Object,
+      },
+    ],
+    "type": Promise,
+  },
+  Object {
+    "name": "list",
+    "pars": Array [
+      Object {
+        "name": "offset",
+        "type": Number,
+      },
+      Object {
+        "name": "limit",
+        "type": Number,
+      },
+      Object {
+        "name": "filter",
+        "type": String,
+      },
+      Object {
+        "name": "select",
+        "type": String,
+      },
+      Object {
+        "name": "order",
+        "type": String,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
+    ],
+    "type": Array [
+      User,
+    ],
+  },
+  Object {
+    "name": "get",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "select",
+        "type": String,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
+    ],
+    "type": User,
+  },
+  Object {
+    "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": User,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "replace",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": User,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
+    ],
+    "type": DynamicType,
+  },
+]
+`;
+
+exports[`CRUD Should able to reflect generic controller factory on nested controller 1`] = `
+Array [
+  Object {
+    "name": "save",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
+    ],
+    "type": IdentifierResult,
+  },
+  Object {
+    "name": "findByIdOrNotFound",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Object,
+      },
+      Object {
+        "name": "select",
+        "type": Object,
+      },
+    ],
+    "type": Promise,
+  },
+  Object {
+    "name": "findParentByIdOrNotFound",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": Object,
+      },
+    ],
+    "type": Promise,
+  },
+  Object {
+    "name": "list",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "offset",
+        "type": Number,
+      },
+      Object {
+        "name": "limit",
+        "type": Number,
+      },
+      Object {
+        "name": "filter",
+        "type": String,
+      },
+      Object {
+        "name": "select",
+        "type": String,
+      },
+      Object {
+        "name": "order",
+        "type": String,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
+    ],
+    "type": Array [
+      Animal,
+    ],
+  },
+  Object {
+    "name": "get",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "select",
+        "type": String,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
+    ],
+    "type": Animal,
+  },
+  Object {
+    "name": "modify",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "replace",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "data",
+        "type": Animal,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
+    ],
+    "type": DynamicType,
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": Number,
+      },
+      Object {
+        "name": "id",
+        "type": Number,
+      },
+      Object {
+        "name": "ctx",
+        "type": Object,
+      },
+    ],
+    "type": DynamicType,
+  },
+]
+`;
+
 exports[`CRUD Should able to update array 1`] = `
 User {
   "email": "john.doe@gmail.com",
