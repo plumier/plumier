@@ -526,8 +526,6 @@ exports[`Error Handling Should show proper error when no @generic.types() provid
 
 exports[`Error Handling Should show proper error when number of types provided mismatch 1`] = `"Configuration Error: Number of parameters mismatch between @generic.template() on SuperClass and @generic.type() on MyClass"`;
 
-exports[`Error Handling Should show proper error when specify template on type but doesn't specify @generic.template() 1`] = `"Configuration Error: SuperClass uses string template type @reflect.type(<string>) but doesn't specify @generic.template()"`;
-
 exports[`Generic Should able to inspect generic on getter 1`] = `
 Object {
   "ctor": Object {
@@ -719,6 +717,21 @@ Object {
   "type": MyClass,
   "typeClassification": "Class",
 }
+`;
+
+exports[`Generic Should able to inspect generic type on inheritance when generic type parameter stop 1`] = `
+Array [
+  Object {
+    "name": "str",
+    "pars": Array [
+      Object {
+        "name": "bool",
+        "type": Date,
+      },
+    ],
+    "type": Number,
+  },
+]
 `;
 
 exports[`Generic Should able to inspect generic type on method 1`] = `

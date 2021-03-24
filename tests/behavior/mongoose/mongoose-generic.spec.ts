@@ -1,5 +1,3 @@
-import "@plumier/testing"
-
 import {
     authorize,
     Class,
@@ -8,8 +6,7 @@ import {
     entityPolicy,
     postSave,
     preSave,
-    route,
-    val,
+    val
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import model, {
@@ -21,16 +18,18 @@ import model, {
     MongooseHelper,
     MongooseOneToManyControllerGeneric,
     MongooseOneToManyRepository,
-    MongooseRepository,
+    MongooseRepository
 } from "@plumier/mongoose"
-import reflect, { generic, noop, type } from "@plumier/reflect"
+import reflect, { generic, noop, reflection, type } from "@plumier/reflect"
+import "@plumier/testing"
+import { cleanupConsole } from "@plumier/testing"
 import { sign } from "jsonwebtoken"
+import { Context } from "koa"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
-import Plumier, { WebApiFacility, genericController } from "plumier"
+import Plumier, { genericController, WebApiFacility } from "plumier"
 import supertest from "supertest"
 import { random } from "../helper"
-import { cleanupConsole } from "@plumier/testing"
 
 
 
@@ -135,6 +134,54 @@ describe("CRUD", () => {
             .expect(200)
         const inserted = await UserModel.findById(body.id).populate("tags")
         expect(inserted).toMatchSnapshot()
+    })
+    it("Should able to reflect generic controller factory", async () => {
+        @collection()
+        class User {
+            @collection.id()
+            id: string
+            @collection.property()
+            name: string
+            @authorize.read("Owner")
+            email: string
+        }
+        class MyController extends GenericController(User) {
+            @noop()
+            save(data:User, ctx:Context){
+                return super.save(data, ctx)
+            }
+        }
+        const meta = reflection.getMethods(reflect(MyController))
+        expect(meta).toMatchSnapshot()
+    })
+    it("Should able to reflect generic controller factory on nested controller", async () => {
+        @collection()
+        class User {
+            @collection.id()
+            id: string
+            @reflect.noop()
+            email: string
+            @reflect.noop()
+            name: string
+            @collection.ref(x => [Animal])
+            @genericController()
+            animals: Animal[]
+        }
+        @collection()
+        class Animal {
+            @collection.id()
+            id: string
+            @reflect.noop()
+            name: string
+        }
+        class MyController extends GenericController([User, "animals"]) {
+            @noop()
+            save(pid:string, data:Animal, ctx:Context){
+                return super.save(pid, data, ctx)
+            }
+        }
+        const meta = reflection.getMethods(reflect(MyController))
+        expect(meta).toMatchSnapshot()
     })
     describe("CRUD Function", () => {
         it("Should serve GET /users?offset&limit", async () => {

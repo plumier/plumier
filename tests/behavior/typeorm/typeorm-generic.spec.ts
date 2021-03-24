@@ -12,7 +12,7 @@ import {
     val,
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import { generic, noop } from "@plumier/reflect"
+import reflect, { generic, noop, reflection } from "@plumier/reflect"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
     GenericController,
@@ -42,6 +42,7 @@ import {
 import { random } from "../helper"
 import { cleanup, getConn } from "./helper"
 import { cleanupConsole } from "@plumier/testing"
+import { Context } from "koa"
 
 
 jest.setTimeout(20000)
@@ -291,6 +292,56 @@ describe("CRUD", () => {
             .expect(200)
         const inserted = await repo.findOne(body.id, { relations: ["tags"] })
         expect(inserted).toMatchSnapshot()
+    })
+    it("Should able to reflect generic controller factory", async () => {
+        @Entity()
+        class User {
+            @PrimaryGeneratedColumn()
+            id: number
+            @Column()
+            email: string
+            @Column()
+            name: string
+        }
+        class MyController extends GenericController(User) {
+            @noop()
+            save(data:User, ctx:Context){
+                return super.save(data, ctx)
+            }
+        }
+        const meta = reflection.getMethods(reflect(MyController))
+        expect(meta).toMatchSnapshot()
+    })
+    it("Should able to reflect generic controller factory on nested controller", async () => {
+        @Entity()
+        class User {
+            @PrimaryGeneratedColumn()
+            id: number
+            @Column()
+            email: string
+            @Column()
+            name: string
+            @OneToMany(x => Animal, x => x.user)
+            @genericController()
+            animals: Animal[]
+        }
+        @Entity()
+        class Animal {
+            @PrimaryGeneratedColumn()
+            id: number
+            @Column()
+            name: string
+            @ManyToOne(x => User, x => x.animals)
+            user: User
+        }
+        class MyController extends GenericController([User, "animals"]) {
+            @noop()
+            save(pid:number, data:Animal, ctx:Context){
+                return super.save(pid, data, ctx)
+            }
+        }
+        const meta = reflection.getMethods(reflect(MyController))
+        expect(meta).toMatchSnapshot()
     })
     describe("CRUD Function", () => {
         it("Should serve GET /users?offset&limit", async () => {

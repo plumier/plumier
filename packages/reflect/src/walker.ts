@@ -66,16 +66,16 @@ class GenericMap {
         const result = []
         for (const type of types) {
             const parent: Class = Object.getPrototypeOf(type)
-            const templates = this.getTemplates(parent)
+            const parentTemplates = this.getTemplates(parent)!
             const parentTypes = this.getTypes(parent)
             // if parent have types but not template then the generic is stop, continue
-            if (parentTypes && !templates) continue
-            if (!templates)
-                throw new Error(`Configuration Error: ${parent.name} uses string template type @reflect.type(<string>) but doesn't specify @generic.template()`)
+            if (parentTypes && !parentTemplates) continue
+            // if (!parentTemplates)
+            //     throw new Error(`Configuration Error: ${parent.name} uses string template type @reflect.type(<string>) but doesn't specify @generic.template()`)
             const types = this.getTypes(type)
             if (!types) throw new Error(`Configuration Error: ${type.name} inherit from generic class but doesn't use @generic.type()`)
-            if (templates.length !== types.length) throw new Error(`Configuration Error: Number of parameters mismatch between @generic.template() on ${parent.name} and @generic.type() on ${type.name}`)
-            result.unshift(new Map(templates.map((x, i) => ([x, types[i]]))))
+            if (parentTemplates.length !== types.length) throw new Error(`Configuration Error: Number of parameters mismatch between @generic.template() on ${parent.name} and @generic.type() on ${type.name}`)
+            result.unshift(new Map(parentTemplates.map((x, i) => ([x, types[i]]))))
         }
         return result
     }
@@ -202,6 +202,12 @@ namespace memberVisitors {
         if (meta.kind === "Constructor" || meta.kind === "Class") return meta
         const overridden = getTypeOverrideFromDecorator(meta.decorators)
         if (!overridden) return meta
+        // if class doesn't have generic template and doesn't have generic type then generic inheritance already stop
+        const targetMeta = getMetadata(ctx.target)
+        const hasTemplate = targetMeta.some((x: GenericTemplateDecorator) => x.kind === "GenericTemplate")
+        const hasType = targetMeta.some((x: GenericTypeDecorator) => x.kind === "GenericType")
+        const type = Array.isArray(overridden.type) ? overridden.type[0] : overridden.type
+        if (typeof type === "string" && !hasTemplate && !hasType) return meta
         if (meta.kind === "Method")
             return { ...meta, returnType: overridden.type }
         return { ...meta, type: overridden.type }
@@ -224,6 +230,11 @@ namespace memberVisitors {
             return createClass({ parent: decorator.type as Class, genericParams: converted })
         }
         if (meta.kind === "Constructor" || meta.kind === "Class") return meta
+        // if class doesn't have generic template and doesn't have generic type then generic inheritance already stop
+        const targetMeta = getMetadata(ctx.target)
+        const hasTemplate = targetMeta.some((x: GenericTemplateDecorator) => x.kind === "GenericTemplate")
+        const hasType = targetMeta.some((x: GenericTypeDecorator) => x.kind === "GenericType")
+        if(!hasTemplate && !hasType) return meta
         const decorator = getTypeOverrideFromDecorator(meta.decorators)
         if (!decorator || !decorator.type || !isGeneric(decorator)) return meta
         const map = new GenericMap(ctx.classPath)
