@@ -1,7 +1,7 @@
 import "reflect-metadata"
 
 import { createClass, reflection } from "./helpers"
-import { getMetadata, setMetadata } from "./metadata"
+import { getMetadata, setMetadata } from "./storage"
 import {
     Class,
     CustomPropertyDecorator,
@@ -18,8 +18,6 @@ import {
     TypeDecorator,
     TypeOverride,
 } from "./types"
-import { GenericMap } from "./walker"
-
 
 export function decorateParameter(callback: ((target: Class, name: string, index: number) => any), option?: DecoratorOption): ParameterDecorator
 export function decorateParameter(data: any, option?: DecoratorOption): ParameterDecorator
@@ -126,6 +124,7 @@ export namespace generic {
     export function type(...types: TypeOverride[]) {
         return decorateClass(target => <GenericTypeDecorator>{ [DecoratorId]: symGenericType, kind: "GenericType", types, target }, { inherit: false, allowMultiple: false })
     }
+
     /**
      * Create generic class dynamically
      * @param parent Super class that the class inherited from
@@ -138,25 +137,60 @@ export namespace generic {
     }
 
     /**
-     * Get generic type parameter by template type name
-     * @param type type
-     * @param template template type 
+     * Get generic type from decorator type("T")
+     * @param decorator type() decorator contains generic type information
+     * @param typeTarget The current type where the type will be calculated
+     * @returns 
      */
-    export function getGenericType(type: Class, template: string | string[]) {
-        const getParents = (typ: Class): Class[] => {
-            const parent: Class = Object.getPrototypeOf(typ)
-            // if no more parent then escape
-            const template = getMetadata(parent)
-                .find((x: GenericTemplateDecorator): x is GenericTemplateDecorator => x.kind === "GenericTemplate")
-            const type = getMetadata(parent)
-                .find((x: GenericTypeDecorator): x is GenericTypeDecorator => x.kind === "GenericType")
-            // if no template or generic parameter then escape
-            if (!template && !type) return []
-            return [parent, ...getParents(parent)]
+    export function getType(decorator: { type: TypeOverride | ((x: any) => TypeOverride), target: Class }, typeTarget: Class): Class | Class[] | undefined {
+        const getParent = (type: Class): Class[] => {
+            const parent: Class = Object.getPrototypeOf(type)
+            if (type === decorator.target) return []
+            return [...getParent(parent), type]
         }
-        const types = [type, ...getParents(type)].slice(0, -1)
-        const map = new GenericMap(types)
-        return map.get(template)
+        const getTemplate = (target: Class) => getMetadata(target)
+            .find((x: GenericTemplateDecorator): x is GenericTemplateDecorator => x.kind === "GenericTemplate")
+
+        if (typeTarget === decorator.target) return
+        if (!(typeTarget.prototype instanceof decorator.target))
+            throw new Error(`Unable to get type information because ${typeTarget.name} is not inherited from ${decorator.target.name}`)
+        let templateDec = getTemplate(decorator.target)
+        if (!templateDec)
+            throw new Error(`${decorator.target.name} doesn't define @generic.template() decorator`)
+        const [type, isArray] = reflection.getTypeFromDecorator(decorator)
+        if (typeof type !== "string")
+            throw new Error("Provided decorator is not a generic type")
+        /*
+         get list of parents, for example 
+         A <-- B <-- C <-- D (A is super super)
+         const result = getParent(D)
+         result = [B, C, D]
+        */
+        const types = getParent(typeTarget)
+        let tmpType = decorator.target
+        let result = type
+        for (const type of types) {
+            // get the index of type in @generic.template() list
+            const index = templateDec.templates.indexOf(result)
+            const typeDec = getMetadata(type)
+                .find((x: GenericTypeDecorator): x is GenericTypeDecorator => x.kind === "GenericType")
+            if (typeDec) {
+                if (typeDec.types.length !== templateDec.templates.length)
+                    throw new Error(`Number of parameters @generic.template() and @generic.type() mismatch between ${tmpType.name} and ${type.name}`)
+                // get the actual type in @generic.type() list 
+                result = typeDec.types[index] as any
+                // check if the result is a "function" (Class) then return immediately
+                const finalResult = isArray ? [result] : result
+                const singleResult = Array.isArray(result) ? result[0] : result
+                if (typeof singleResult === "function") return finalResult as any as (Class | Class[])
+            }
+            // continue searching other template
+            const templates = getTemplate(type)
+            if (templates) {
+                tmpType = type
+                templateDec = templates
+            }
+        }
     }
 
     /**

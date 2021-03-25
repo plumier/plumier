@@ -990,7 +990,7 @@ Array [
         "type": Object,
       },
     ],
-    "type": IdentifierResult,
+    "type": DynamicType,
   },
   Object {
     "name": "get",
@@ -1127,7 +1127,7 @@ Array [
         "type": Object,
       },
     ],
-    "type": IdentifierResult,
+    "type": DynamicType,
   },
   Object {
     "name": "list",

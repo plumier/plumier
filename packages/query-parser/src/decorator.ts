@@ -1,39 +1,42 @@
 import { Class } from "@plumier/core";
 import { decorateParameter, mergeDecorator, type as decType } from "@plumier/reflect";
 
-interface FilterParserDecorator {
+
+interface QueryParserDecorator {
+    type: Class | string | ((x:any) => Class | string)
+    target: Class
+}
+
+interface FilterParserDecorator extends QueryParserDecorator{
     kind: "plumier-meta:filter-parser-decorator"
-    type: (() => Class | string)
 }
 
-interface SelectParserDecorator {
+interface SelectParserDecorator extends QueryParserDecorator{
     kind: "plumier-meta:select-parser-decorator"
-    type: (() => Class | string)
 }
 
-interface OrderParserDecorator {
+interface OrderParserDecorator extends QueryParserDecorator{
     kind: "plumier-meta:order-parser-decorator"
-    type: (() => Class | string)
 }
 
-function filterParser(type: ((x:any) => Class | string) ) {
+function filterParser(type: Class | string | ((x:any) => Class | string) ) {
     return mergeDecorator(
         decType(x => String),
-        decorateParameter(x => <FilterParserDecorator>{ kind: "plumier-meta:filter-parser-decorator", type })
+        decorateParameter(x => <FilterParserDecorator>{ target: x, kind: "plumier-meta:filter-parser-decorator", type })
     )
 }
 
-function selectParser(type: ((x:any) => Class | string) ) {
+function selectParser(type: Class | string | ((x:any) => Class | string) ) {
     return mergeDecorator(
         decType(x => String),
-        decorateParameter(x => <SelectParserDecorator>{ kind: "plumier-meta:select-parser-decorator", type })
+        decorateParameter(x => <SelectParserDecorator>{ target: x, kind: "plumier-meta:select-parser-decorator", type })
     )
 }
 
-function orderParser(type: ((x:any) => Class | string) ) {
+function orderParser(type: Class | string | ((x:any) => Class | string) ) {
     return mergeDecorator(
         decType(x => String),
-        decorateParameter(x => <OrderParserDecorator>{ kind: "plumier-meta:order-parser-decorator", type })
+        decorateParameter(x => <OrderParserDecorator>{ target: x, kind: "plumier-meta:order-parser-decorator", type })
     )
 }
 
@@ -41,4 +44,5 @@ export {
     filterParser, FilterParserDecorator,
     selectParser, SelectParserDecorator,
     orderParser, OrderParserDecorator,
+    QueryParserDecorator
 }

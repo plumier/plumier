@@ -28,7 +28,23 @@ Object {
   "name": "MyClass",
   "properties": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": Array [
+            "T",
+          ],
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "get": get prop,
       "kind": "Property",
       "name": "prop",
@@ -76,7 +92,23 @@ Object {
       "name": "method",
       "parameters": Array [
         Object {
-          "decorators": Array [],
+          "decorators": Array [
+            Object {
+              "genericParams": Array [],
+              "kind": "Override",
+              "target": SuperClass,
+              "type": Array [
+                "T",
+              ],
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
           "fields": Object {},
           "index": 0,
           "kind": "Parameter",
@@ -127,7 +159,23 @@ Object {
   "name": "MyClass",
   "properties": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": Array [
+            "T",
+          ],
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "get": undefined,
       "kind": "Property",
       "name": "prop",
@@ -170,7 +218,23 @@ Object {
   "kind": "Class",
   "methods": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": Array [
+            "T",
+          ],
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "kind": "Method",
       "name": "method",
       "parameters": Array [],
@@ -218,7 +282,21 @@ Object {
   "name": "MyClass",
   "properties": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "get": get prop,
       "kind": "Property",
       "name": "prop",
@@ -268,7 +346,21 @@ Object {
       "name": "method",
       "parameters": Array [
         Object {
-          "decorators": Array [],
+          "decorators": Array [
+            Object {
+              "genericParams": Array [],
+              "kind": "Override",
+              "target": SuperClass,
+              "type": "T",
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
           "fields": Object {},
           "index": 0,
           "kind": "Parameter",
@@ -321,7 +413,21 @@ Object {
   "name": "MyClass",
   "properties": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "get": undefined,
       "kind": "Property",
       "name": "prop",
@@ -366,7 +472,21 @@ Object {
   "kind": "Class",
   "methods": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "kind": "Method",
       "name": "method",
       "parameters": Array [],
@@ -411,12 +531,40 @@ Object {
   "kind": "Class",
   "methods": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "kind": "Method",
       "name": "method",
       "parameters": Array [
         Object {
-          "decorators": Array [],
+          "decorators": Array [
+            Object {
+              "genericParams": Array [],
+              "kind": "Override",
+              "target": SuperClass,
+              "type": "U",
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
           "fields": Object {},
           "index": 0,
           "kind": "Parameter",
@@ -448,12 +596,40 @@ Object {
   "kind": "Class",
   "methods": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": "B",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "kind": "Method",
       "name": "super",
       "parameters": Array [
         Object {
-          "decorators": Array [],
+          "decorators": Array [
+            Object {
+              "genericParams": Array [],
+              "kind": "Override",
+              "target": SuperClass,
+              "type": "A",
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
           "fields": Object {},
           "index": 0,
           "kind": "Parameter",
@@ -466,12 +642,40 @@ Object {
       "typeClassification": "Primitive",
     },
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": GrandSuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "kind": "Method",
       "name": "grandSuper",
       "parameters": Array [
         Object {
-          "decorators": Array [],
+          "decorators": Array [
+            Object {
+              "genericParams": Array [],
+              "kind": "Override",
+              "target": GrandSuperClass,
+              "type": "U",
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
           "fields": Object {},
           "index": 0,
           "kind": "Parameter",
@@ -505,7 +709,21 @@ Object {
   "name": "MyRealClass",
   "properties": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": GrandSuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "get": undefined,
       "kind": "Property",
       "name": "grandSuper",
@@ -520,11 +738,9 @@ Object {
 }
 `;
 
-exports[`Error Handling Should show proper error when no @generic.types() provided 1`] = `"Configuration Error: MyClass inherit from generic class but doesn't use @generic.type()"`;
+exports[`Error Handling Should show proper error when number of types provided mismatch 1`] = `"Number of parameters @generic.template() and @generic.type() mismatch between SuperClass and MyClass"`;
 
-exports[`Error Handling Should show proper error when no @generic.types() provided in deep inheritance 1`] = `"Configuration Error: SuperClass inherit from generic class but doesn't use @generic.type()"`;
-
-exports[`Error Handling Should show proper error when number of types provided mismatch 1`] = `"Configuration Error: Number of parameters mismatch between @generic.template() on SuperClass and @generic.type() on MyClass"`;
+exports[`Error Handling Should show proper error when specify template on type but doesn't specify @generic.template() 1`] = `"SuperClass doesn't define @generic.template() decorator"`;
 
 exports[`Generic Should able to inspect generic on getter 1`] = `
 Object {
@@ -554,7 +770,21 @@ Object {
   "name": "MyClass",
   "properties": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "get": get prop,
       "kind": "Property",
       "name": "prop",
@@ -600,7 +830,21 @@ Object {
       "name": "method",
       "parameters": Array [
         Object {
-          "decorators": Array [],
+          "decorators": Array [
+            Object {
+              "genericParams": Array [],
+              "kind": "Override",
+              "target": SuperClass,
+              "type": "T",
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
           "fields": Object {},
           "index": 0,
           "kind": "Parameter",
@@ -659,7 +903,21 @@ Object {
   "name": "MyClass",
   "properties": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "get": undefined,
       "index": 0,
       "isParameter": true,
@@ -704,7 +962,21 @@ Object {
   "name": "MyClass",
   "properties": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "get": undefined,
       "kind": "Property",
       "name": "prop",
@@ -734,6 +1006,78 @@ Array [
 ]
 `;
 
+exports[`Generic Should able to inspect generic type on inheritance when generic type parameter stop, with generic data type 1`] = `
+Array [
+  Object {
+    "name": "str",
+    "pars": Array [
+      Object {
+        "name": "bool",
+        "type": Date,
+      },
+    ],
+    "type": DynamicType,
+  },
+]
+`;
+
+exports[`Generic Should able to inspect generic type on inheritance when generic type parameter stop, with generic data type 2`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      "kind": "GenericType",
+      "target": DynamicType,
+      "types": Array [
+        Number,
+      ],
+      Symbol(tinspector:decoratorId): Symbol(genericType),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": false,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DynamicType",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": Data,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "data",
+      "set": undefined,
+      "type": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Data,
+  "type": DynamicType,
+  "typeClassification": "Class",
+}
+`;
+
 exports[`Generic Should able to inspect generic type on method 1`] = `
 Object {
   "ctor": Object {
@@ -760,7 +1104,21 @@ Object {
   "kind": "Class",
   "methods": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "kind": "Method",
       "name": "method",
       "parameters": Array [],
@@ -828,12 +1186,40 @@ Object {
   "kind": "Class",
   "methods": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "kind": "Method",
       "name": "num",
       "parameters": Array [
         Object {
-          "decorators": Array [],
+          "decorators": Array [
+            Object {
+              "genericParams": Array [],
+              "kind": "Override",
+              "target": SuperClass,
+              "type": "U",
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
           "fields": Object {},
           "index": 0,
           "kind": "Parameter",
@@ -846,12 +1232,40 @@ Object {
       "typeClassification": "Primitive",
     },
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": GrandSuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "kind": "Method",
       "name": "str",
       "parameters": Array [
         Object {
-          "decorators": Array [],
+          "decorators": Array [
+            Object {
+              "genericParams": Array [],
+              "kind": "Override",
+              "target": GrandSuperClass,
+              "type": "U",
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
           "fields": Object {},
           "index": 0,
           "kind": "Parameter",
@@ -924,12 +1338,40 @@ Object {
   "kind": "Class",
   "methods": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": "B",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "kind": "Method",
       "name": "super",
       "parameters": Array [
         Object {
-          "decorators": Array [],
+          "decorators": Array [
+            Object {
+              "genericParams": Array [],
+              "kind": "Override",
+              "target": SuperClass,
+              "type": "A",
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
           "fields": Object {},
           "index": 0,
           "kind": "Parameter",
@@ -942,12 +1384,40 @@ Object {
       "typeClassification": "Primitive",
     },
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": GrandSuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "kind": "Method",
       "name": "grandSuper",
       "parameters": Array [
         Object {
-          "decorators": Array [],
+          "decorators": Array [
+            Object {
+              "genericParams": Array [],
+              "kind": "Override",
+              "target": GrandSuperClass,
+              "type": "U",
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
           "fields": Object {},
           "index": 0,
           "kind": "Parameter",
@@ -1009,7 +1479,21 @@ Object {
   "name": "MyClass",
   "properties": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": Super,
+          "type": "B",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "get": undefined,
       "kind": "Property",
       "name": "super",
@@ -1018,7 +1502,21 @@ Object {
       "typeClassification": "Primitive",
     },
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": Grand,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "get": undefined,
       "kind": "Property",
       "name": "grand",
@@ -1075,12 +1573,40 @@ Object {
   "kind": "Class",
   "methods": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": GrandSuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "kind": "Method",
       "name": "grandSuper",
       "parameters": Array [
         Object {
-          "decorators": Array [],
+          "decorators": Array [
+            Object {
+              "genericParams": Array [],
+              "kind": "Override",
+              "target": GrandSuperClass,
+              "type": "U",
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
           "fields": Object {},
           "index": 0,
           "kind": "Parameter",
@@ -1108,13 +1634,27 @@ Object {
     "name": "constructor",
     "parameters": Array [
       Object {
-        "decorators": Array [],
+        "decorators": Array [
+          Object {
+            "genericParams": Array [],
+            "kind": "Override",
+            "target": SuperClass,
+            "type": "T",
+            Symbol(tinspector:decoratorId): Symbol(override),
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": false,
+              "applyTo": Array [],
+              "inherit": true,
+              "removeApplied": true,
+            },
+          },
+        ],
         "fields": Object {},
         "index": 0,
         "kind": "Parameter",
         "name": "par",
-        "type": "T",
-        "typeClassification": "Class",
+        "type": undefined,
+        "typeClassification": undefined,
       },
     ],
   },
@@ -1144,7 +1684,13 @@ Object {
 }
 `;
 
-exports[`Generic Type as Template Type Should able to inspect array generic on getter 1`] = `
+exports[`Get Generic Type Should throw error template target doesn't specify @generic.template() 1`] = `"SuperClass doesn't define @generic.template() decorator"`;
+
+exports[`Get Generic Type Should throw error when provided non string type 1`] = `"Provided decorator is not a generic type"`;
+
+exports[`Get Generic Type Should throw error when the target is not in inheritance 1`] = `"Unable to get type information because MyOtherClass is not inherited from SuperClass"`;
+
+exports[`Type With Generic Type Parameter Should able to inspect array of generic type on method 1`] = `
 Object {
   "ctor": Object {
     "kind": "Constructor",
@@ -1172,7 +1718,21 @@ Object {
   "name": "DynamicType",
   "properties": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": CustomGeneric,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "get": undefined,
       "kind": "Property",
       "name": "prop",
@@ -1187,7 +1747,7 @@ Object {
 }
 `;
 
-exports[`Generic Type as Template Type Should able to inspect array generic on method parameter 1`] = `
+exports[`Type With Generic Type Parameter Should able to inspect generic on getter 1`] = `
 Object {
   "ctor": Object {
     "kind": "Constructor",
@@ -1215,7 +1775,21 @@ Object {
   "name": "DynamicType",
   "properties": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": CustomGeneric,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "get": undefined,
       "kind": "Property",
       "name": "prop",
@@ -1230,7 +1804,7 @@ Object {
 }
 `;
 
-exports[`Generic Type as Template Type Should able to inspect array generic on property 1`] = `
+exports[`Type With Generic Type Parameter Should able to inspect generic on method parameter 1`] = `
 Object {
   "ctor": Object {
     "kind": "Constructor",
@@ -1258,7 +1832,21 @@ Object {
   "name": "DynamicType",
   "properties": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": CustomGeneric,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "get": undefined,
       "kind": "Property",
       "name": "prop",
@@ -1273,7 +1861,7 @@ Object {
 }
 `;
 
-exports[`Generic Type as Template Type Should able to inspect array generic type on method 1`] = `
+exports[`Type With Generic Type Parameter Should able to inspect generic on property 1`] = `
 Object {
   "ctor": Object {
     "kind": "Constructor",
@@ -1301,7 +1889,78 @@ Object {
   "name": "DynamicType",
   "properties": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": CustomGeneric,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "prop",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": CustomGeneric,
+  "type": DynamicType,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Type With Generic Type Parameter Should able to inspect generic type on method 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      "kind": "GenericType",
+      "target": DynamicType,
+      "types": Array [
+        String,
+      ],
+      Symbol(tinspector:decoratorId): Symbol(genericType),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": false,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DynamicType",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": CustomGeneric,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "get": undefined,
       "kind": "Property",
       "name": "prop",

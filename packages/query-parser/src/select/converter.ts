@@ -59,7 +59,7 @@ function createCustomSelectConverter(transformer: (nodes: SelectColumnNode[]) =>
         const decorator = i.decorators.find((x: SelectParserDecorator): x is SelectParserDecorator => x.kind === "plumier-meta:select-parser-decorator")
         if (!decorator) return i.proceed()
         const controller = ctx.route.controller.type
-        const type = getDecoratorType(controller, decorator.type())
+        const type = getDecoratorType(controller, decorator)
         // default selection: all column except RelationArray and InverseProperty
         // skip auth check, let response authorizer does its job
         let nodes: SelectColumnNode[]

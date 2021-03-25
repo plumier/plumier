@@ -1,6 +1,6 @@
 import { Node, parse } from "acorn"
 
-import { getAllMetadata } from "./metadata"
+import { getAllMetadata } from "./storage"
 import {
     Class,
     ClassReflection,

@@ -7,4 +7,4 @@ import { reflect } from "./reflect"
 export { reflect }
 export default reflect
 export * as parser from "./parser"
-export * as metadata from "./metadata"
+export * as metadata from "./storage"

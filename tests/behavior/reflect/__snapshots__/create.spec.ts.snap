@@ -27,12 +27,40 @@ Object {
   "kind": "Class",
   "methods": Array [
     Object {
-      "decorators": Array [],
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
       "kind": "Method",
       "name": "method",
       "parameters": Array [
         Object {
-          "decorators": Array [],
+          "decorators": Array [
+            Object {
+              "genericParams": Array [],
+              "kind": "Override",
+              "target": SuperClass,
+              "type": "U",
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
           "fields": Object {},
           "index": 0,
           "kind": "Parameter",

@@ -1054,7 +1054,7 @@ Array [
         "type": Object,
       },
     ],
-    "type": IdentifierResult,
+    "type": DynamicType,
   },
   Object {
     "name": "findByIdOrNotFound",
@@ -1191,7 +1191,7 @@ Array [
         "type": Object,
       },
     ],
-    "type": IdentifierResult,
+    "type": DynamicType,
   },
   Object {
     "name": "findByIdOrNotFound",
