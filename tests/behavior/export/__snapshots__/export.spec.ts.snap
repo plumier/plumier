@@ -397,8 +397,8 @@ Object {
   "default": reflect,
   "generic": Object {
     "create": create,
-    "getGenericType": getGenericType,
     "getGenericTypeParameters": getGenericTypeParameters,
+    "getType": getType,
     "template": template,
     "type": type,
   },
@@ -426,6 +426,7 @@ Object {
   "reflection": Object {
     "getMethods": getMethods,
     "getProperties": getProperties,
+    "getTypeFromDecorator": getTypeFromDecorator,
     "isCallback": isCallback,
     "isConstructor": isConstructor,
     "isCustomClass": isCustomClass,
