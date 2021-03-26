@@ -15,6 +15,7 @@ import { JwtAuthFacility } from "@plumier/jwt"
 import reflect, { generic, noop, reflection } from "@plumier/reflect"
 import { SwaggerFacility } from "@plumier/swagger"
 import {
+    createGenericControllerTypeORM,
     GenericController,
     TypeORMControllerGeneric,
     TypeORMFacility,
@@ -305,7 +306,7 @@ describe("CRUD", () => {
         }
         class MyController extends GenericController(User) {
             @noop()
-            save(data:User, ctx:Context){
+            save(data: User, ctx: Context) {
                 return super.save(data, ctx)
             }
         }
@@ -336,12 +337,47 @@ describe("CRUD", () => {
         }
         class MyController extends GenericController([User, "animals"]) {
             @noop()
-            save(pid:number, data:Animal, ctx:Context){
+            save(pid: number, data: Animal, ctx: Context) {
                 return super.save(pid, data, ctx)
             }
         }
         const meta = reflection.getMethods(reflect(MyController))
         expect(meta).toMatchSnapshot()
+    })
+    it("Should able to create custom generic controller factory", async () => {
+        class MyCustomGeneric<T, TID> extends TypeORMControllerGeneric<T, TID>{
+            constructor() { super(x => new TypeORMRepository(x)) }
+        }
+        class MyCustomOnToManyGeneric<P, T, PID, TID> extends TypeORMOneToManyControllerGeneric<P, T, PID, TID>{
+            constructor() { super((p, t, rel) => new TypeORMOneToManyRepository(p, t, rel)) }
+        }
+        const MyGenericController = createGenericControllerTypeORM([MyCustomGeneric, MyCustomOnToManyGeneric])
+        @Entity()
+        class User {
+            @PrimaryGeneratedColumn()
+            id: number
+            @Column()
+            email: string
+            @Column()
+            name: string
+            @OneToMany(x => Animal, x => x.user)
+            animals: Animal[]
+        }
+        @Entity()
+        class Animal {
+            @PrimaryGeneratedColumn()
+            id: number
+            @Column()
+            name: string
+            @ManyToOne(x => User, x => x.animals)
+            user: User
+        }
+        const UserController = MyGenericController(User)
+        const UserAnimalController = MyGenericController([User, "animals"])
+        const mock = console.mock()
+        await createApp([UserController, UserAnimalController, User, Animal], {mode: "debug" })
+        console.mockClear()
+        expect(mock.mock.calls).toMatchSnapshot()
     })
     describe("CRUD Function", () => {
         it("Should serve GET /users?offset&limit", async () => {

@@ -976,6 +976,52 @@ Object {
 }
 `;
 
+exports[`CRUD Should able to create custom generic controller factory 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    " 1. MyCustomGeneric.get(id, select, ctx)   -> GET    /users/:id",
+  ],
+  Array [
+    " 2. MyCustomGeneric.modify(id, data, ctx)  -> PATCH  /users/:id",
+  ],
+  Array [
+    " 3. MyCustomGeneric.replace(id, data, ctx) -> PUT    /users/:id",
+  ],
+  Array [
+    " 4. MyCustomGeneric.delete(id, ctx)        -> DELETE /users/:id",
+  ],
+  Array [
+    " 5. MyCustomGeneric.list                   -> GET    /users",
+  ],
+  Array [
+    " 6. MyCustomGeneric.save(data, ctx)        -> POST   /users",
+  ],
+  Array [
+    " 7. MyCustomOnToManyGeneric.list           -> GET    /users/:pid/animals",
+  ],
+  Array [
+    " 8. MyCustomOnToManyGeneric.save           -> POST   /users/:pid/animals",
+  ],
+  Array [
+    " 9. MyCustomOnToManyGeneric.get            -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "10. MyCustomOnToManyGeneric.modify         -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "11. MyCustomOnToManyGeneric.replace        -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "12. MyCustomOnToManyGeneric.delete         -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`CRUD Should able to reflect generic controller factory 1`] = `
 Array [
   Object {

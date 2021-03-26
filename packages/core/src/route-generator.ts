@@ -2,7 +2,7 @@ import { ClassReflection, MethodReflection, reflect } from "@plumier/reflect"
 import { isAbsolute, join } from "path"
 
 import { Class, findFilesRecursive } from "./common"
-import { GenericController, HttpMethod, RouteInfo, RouteMetadata } from "./types"
+import { GenericControllers, HttpMethod, RouteInfo, RouteMetadata } from "./types"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -16,7 +16,7 @@ interface ControllerTransformOption {
    rootPath: string,
    group: string,
    directoryAsPath: boolean,
-   genericController?: GenericController
+   genericController?: GenericControllers
    genericControllerNameConversion: (x: string) => string
 }
 interface ClassWithRoot {

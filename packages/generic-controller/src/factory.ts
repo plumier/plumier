@@ -1,11 +1,12 @@
 import "@plumier/core"
 import {
     api, ApiTagDecorator, authorize, AuthorizeDecorator, Class, ControllerGeneric, ControllerTransformOption, entityHelper, entityProvider, errorMessage,
-    IgnoreDecorator, OneToManyControllerGeneric, RelationDecorator, RelationPropertyDecorator, responseType, route
+    GenericControllers,
+    IgnoreDecorator, KeyOf, OneToManyControllerGeneric, RelationDecorator, RelationPropertyDecorator, responseType, route
 } from "@plumier/core"
 import reflect, { decorateClass, DecoratorOptionId, generic } from "@plumier/reflect"
 import { Key, pathToRegexp } from "path-to-regexp"
-import { ControllerBuilder, GenericControllerOptions } from "./configuration"
+import { ControllerBuilder, GenericControllerConfiguration, GenericControllerOptions } from "./configuration"
 import {
     decorateRoute,
     GetManyCustomQueryDecorator,
@@ -199,8 +200,33 @@ function createOneToManyGenericControllerType(parentType: Class, builder: Contro
     return Controller
 }
 
+
+type EntityWithRelation<T = any> = [Class<T>, KeyOf<T>]
+
+interface CreateGenericControllerOption {
+    config?: GenericControllerConfiguration,
+    controllers: GenericControllers
+    normalize?: (entities: Class | EntityWithRelation) => void
+    nameConversion: (x:string) => string
+}
+
+function createGenericController<T>(type: Class | EntityWithRelation<T>, option: CreateGenericControllerOption) {
+    const builder = new ControllerBuilder()
+    if (option.config) option.config(builder)
+    if (option.normalize) option.normalize(type)
+    if (Array.isArray(type)) {
+        const [parentEntity, relation] = type
+        const meta = reflect(parentEntity)
+        const prop = meta.properties.find(x => x.name === relation)!
+        const entity = prop.type[0] as Class
+        return createOneToManyGenericControllerType(parentEntity, builder, entity, relation, option.controllers[1], option.nameConversion)
+    }
+    return createGenericControllerType(type, builder, option.controllers[0], option.nameConversion)
+}
+
 export {
     genericControllerRegistry, updateGenericControllerRegistry,
-    createGenericControllerType, createOneToManyGenericControllerType,
+    createGenericController, CreateGenericControllerOption, EntityWithRelation,
+    createGenericControllerType, createOneToManyGenericControllerType
 }
 

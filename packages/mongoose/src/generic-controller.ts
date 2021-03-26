@@ -1,13 +1,17 @@
-import { bind, Class, OneToManyRepository, Repository, val, SelectQuery, KeyOf } from "@plumier/core"
-import { ControllerBuilder, createGenericControllerType, createOneToManyGenericControllerType, GenericControllerConfiguration, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric } from "@plumier/generic-controller"
+import { bind, Class, GenericControllers, OneToManyRepository, Repository, SelectQuery, val } from "@plumier/core"
+import {
+    createGenericController,
+    EntityWithRelation,
+    GenericControllerConfiguration,
+    RepoBaseControllerGeneric,
+    RepoBaseOneToManyControllerGeneric,
+} from "@plumier/generic-controller"
 import reflect, { generic } from "@plumier/reflect"
 import { Context } from "koa"
 import pluralize from "pluralize"
 
 import { MongooseOneToManyRepository, MongooseRepository } from "./repository"
 
-@generic.template("T", "TID")
-@generic.type("T", "TID")
 class MongooseControllerGeneric<T = any, TID = string> extends RepoBaseControllerGeneric<T, TID>{
     constructor(fac?: ((x: Class<T>) => Repository<T>)) {
         super(fac ?? (x => new MongooseRepository(x)))
@@ -30,14 +34,12 @@ class MongooseControllerGeneric<T = any, TID = string> extends RepoBaseControlle
     }
 }
 
-@generic.template("P", "T", "PID", "TID")
-@generic.type("P", "T", "PID", "TID")
 class MongooseOneToManyControllerGeneric<P = any, T = any, PID = string, TID = string> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
     constructor(fac?: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
         super(fac ?? ((p, t, rel) => new MongooseOneToManyRepository(p, t, rel)))
     }
 
-    list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, filter: any, select: SelectQuery, order: string, ctx: Context) {
+    list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, filter: any, select: SelectQuery, order: any, ctx: Context) {
         return super.list(pid, offset, limit, filter, select, order, ctx)
     }
 
@@ -62,31 +64,35 @@ class MongooseOneToManyControllerGeneric<P = any, T = any, PID = string, TID = s
     }
 }
 
-type EntityWithRelation<T> = [Class<T>, KeyOf<T>]
+/**
+ * Generic controller factory factory, used to create a generic controller factory with custom generic controller implementation
+ * @param controllers Custom generic controller implementation
+ * @returns generic controller
+ */
+ function createGenericControllerMongoose(controllers?: GenericControllers) {
+    return <T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) =>
+        createGenericController(type, {
+            controllers: controllers ?? [MongooseControllerGeneric, MongooseOneToManyControllerGeneric],
+            nameConversion: pluralize,
+            config
+        })
+}
 
 /**
  * Create a generic controller with CRUD functionality based on Entity
  * @param type entity used as the generic controller parameter
  * @param config configuration to authorize/enable/disable some actions
  */
-function GenericController<T>(type:Class, config?: GenericControllerConfiguration): Class<MongooseControllerGeneric<T>>
+function GenericController<T>(type: Class, config?: GenericControllerConfiguration): Class<MongooseControllerGeneric<T>>
 /**
  * Create a nested generic controller with CRUD functionality based on Entity's One-To-Many relation property
  * @param type Tuple of [Entity, relationName] used as the generic controller parameter
  * @param config configuration to authorize/enable/disable some actions
  */
-function GenericController<T>(type:EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<MongooseOneToManyControllerGeneric<T>>
+function GenericController<T>(type: EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<MongooseOneToManyControllerGeneric<T>>
 function GenericController<T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) {
-    const builder = new ControllerBuilder()
-    if (config) config(builder)
-    if (Array.isArray(type)) {
-        const [parentEntity, relation] = type
-        const meta = reflect(parentEntity)
-        const prop = meta.properties.find(x => x.name === relation)!
-        const entity = prop.type[0] as Class
-        return createOneToManyGenericControllerType(parentEntity, builder, entity, relation, MongooseOneToManyControllerGeneric, pluralize)
-    }
-    return createGenericControllerType(type, builder, MongooseControllerGeneric, pluralize)
+    const factory = createGenericControllerMongoose()
+    return factory(type, config)
 }
 
-export { MongooseControllerGeneric, MongooseOneToManyControllerGeneric, GenericController }
+export { MongooseControllerGeneric, MongooseOneToManyControllerGeneric, GenericController, createGenericControllerMongoose }
