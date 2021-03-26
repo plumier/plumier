@@ -53,7 +53,7 @@ function createCustomFilterConverter(transformer: ((node: FilterNode) => any)): 
         const decorator = i.decorators.find((x: FilterParserDecorator): x is FilterParserDecorator => x.kind === "plumier-meta:filter-parser-decorator")
         if (!decorator) return i.proceed()
         try {
-            const type = getDecoratorType(ctx.route.controller.type, decorator.type())
+            const type = getDecoratorType(ctx.route.controller.type, decorator)
             const globalVisitors = ctx.config.typeConverterVisitors.map<VisitorExtension>(x => i => x(i, ctx))
             const valResult = validateFilter(i.value, i.path, type, globalVisitors)
             if (!!valResult.issues) return valResult

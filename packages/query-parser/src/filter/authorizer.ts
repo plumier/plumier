@@ -47,7 +47,7 @@ class FilterQueryAuthorizeMiddleware implements Middleware<ActionContext> {
         if (raw === undefined) return i.proceed()
         const value:FilterNode = raw[ParserAst]
         const dec: FilterParserDecorator = par.decorators.find((d: FilterParserDecorator) => d.kind === "plumier-meta:filter-parser-decorator")!
-        const type = getDecoratorType(i.metadata!.controller.type, dec.type())
+        const type = getDecoratorType(i.metadata!.controller.type, dec)
         await checkAuthorize(type, value, i.ctx)
         return i.proceed()
     }

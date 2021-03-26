@@ -41,7 +41,7 @@ function createCustomOrderConverter(transformer: (nodes: OrderColumnNode[]) => a
         const decorator = i.decorators.find((x: OrderParserDecorator): x is OrderParserDecorator => x.kind === "plumier-meta:order-parser-decorator")
         if (!decorator) return i.proceed()
         const controller = ctx.route.controller.type
-        const type = getDecoratorType(controller, decorator.type())
+        const type = getDecoratorType(controller, decorator)
         const nodes = parseQueryString(type, i.value + "")
         const invalids = nodes.filter(x => x.invalidProperty).map(x => `Invalid property ${x.name}`)
         if (invalids.length > 0) return Result.error(i.value, i.path, invalids)

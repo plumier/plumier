@@ -4,8 +4,9 @@
 /* --------------------------- HELPERS ---------------------------- */
 /* ---------------------------------------------------------------- */
 
-import { Class, ParameterPropertyReflection, ClassReflection, TypeOverride } from "./types"
+import { Class, ParameterPropertyReflection, ClassReflection, TypeOverride, GenericTemplateDecorator, GenericTypeDecorator, TypeDecorator } from "./types"
 import * as decorate from "./decorators"
+import { getMetadata } from "./storage"
 
 const IsDynamicType = Symbol()
 
@@ -65,6 +66,11 @@ namespace reflection {
             type: x.type
         }))
     }
+
+    export function getTypeFromDecorator(decorator: { type: TypeOverride | ((x: any) => TypeOverride) }): [string | Class | CustomTypeDefinition, boolean] {
+        const type = reflection.isCallback(decorator.type) ? decorator.type({}) : decorator.type
+        return [Array.isArray(type) ? type[0] : type, Array.isArray(type)]
+    }
 }
 
 // --------------------------------------------------------------------- //
@@ -90,8 +96,5 @@ function createClass(opt?: Partial<CreateClassOption>): Class {
     Reflect.decorate([decorate.generic.type(...option.genericParams)], type)
     return type
 }
-
-
-
 
 export { useCache, reflection, createClass, CustomTypeDefinition, CreateClassOption, IsDynamicType }

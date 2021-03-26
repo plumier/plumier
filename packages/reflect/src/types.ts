@@ -93,7 +93,7 @@ export interface NoopDecorator {
 export interface TypeDecorator {
     kind: "Override",
     type: TypeOverride | ((x: any) => TypeOverride),
-    genericParams: (string | string[])[]
+    genericParams: (string|string[])[]
     target: Class
 }
 export interface PrivateDecorator {
@@ -109,7 +109,7 @@ export interface GenericTypeDecorator {
 }
 export interface GenericTemplateDecorator {
     kind: "GenericTemplate",
-    templates: string[]
+    templates: (string|string[])[]
     target: Class
 }
 export interface DecoratorOption {

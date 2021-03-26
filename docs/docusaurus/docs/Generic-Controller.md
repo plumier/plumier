@@ -92,8 +92,14 @@ import { GenericController } from "@plumier/typeorm"
 // import { GenericController } from "@plumier/mongoose"
 
 const UserController = GenericController(User)
-// UserController is a valid controller class so, you can do something like this
-export class UserController extends GenericController(User) {}
+
+// Returned controller is a valid controller class, 
+// so you can override its method like below
+export class UserController extends GenericController(User) {
+    get(id:number) {
+        return super.get(id)
+    }
+}
 ```
 
 The factory receive controller builder factory configuration like below
@@ -214,7 +220,7 @@ import { GenericController } from "@plumier/typeorm"
 // or if using mongoose 
 // import { GenericController } from "@plumier/mongoose"
 
-export class UserEmailController extends GenericController([User, "emails"]) {}
+export const UserEmailController = GenericController([User, "emails"])
 ```
 '''
 
@@ -965,22 +971,18 @@ Then create a new generic controller for both based on any of above generic cont
 ```typescript 
 import {TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric} from "@plumier/typeorm"
 
-@generic.template("T", "TID")
-@generic.type("T", "TID")
 export class CustomControllerGeneric<T, TID> extends TypeORMControllerGeneric<T, TID> {
     @type(Response, "T")
-    async list(offset: number, limit: number, filter: FilterEntity<T>, select: string, order: string, ctx: Context) {
+    async list(offset: number, limit: number, filter: any, select: SelectQuery, order: any, ctx: Context) {
         const data = await super.list(offset, limit, filter, select, order, ctx)
         const count = await this.repo.count(filter)
         return { data, count } 
     }
 }
 
-@generic.template("P", "T", "PID", "TID")
-@generic.type("P", "T", "PID", "TID")
 export class CustomOneToManyControllerGeneric<P, T, PID, TID> extends TypeORMOneToManyControllerGeneric<P, T, PID, TID>{
     @type(Response, "T")
-    async list(pid: PID, offset: number, limit: number, filter: FilterEntity<T>, select: string, order: string, ctx: Context) {
+    async list(pid: PID, offset: number, limit: number, filter: any, select: SelectQuery, order: any, ctx: Context) {
         const data = await super.list(pid, offset, limit, filter, select, order, ctx)
         const count = await this.repo.count(pid, filter)
         return { data, count } 
@@ -998,11 +1000,26 @@ Next, we need to register above custom generic controller on the Plumier applica
 new Plumier()
     .set(new WebApiFacility())
     .set(new TypeORMFacility())
+    // Make sure to register the controller under the `TypeORMFacility` or `MongooseFacility`. 
     .set({
         genericController: [CustomControllerGeneric, CustomOneToManyControllerGeneric]
     })
 ```
 
-:::note
-Make sure you register the controller under the `TypeORMFacility` or `MongooseFacility` to take effect. 
-:::
+Keep in mind that the controller created using generic controller factory `GenericController(Entity)` or `GenericController([Entity, "children"])` will keep using the default generic controllers, to solve the issue you can use the generic controller factory factory like below.
+
+```typescript
+import { createGenericControllerTypeORM } from "@plumier/typeorm"
+// for mongoose use below import
+// import { createGenericControllerMongoose } from "@plumier/mongoose"
+
+export const CustomGenericController = createGenericControllerTypeORM([CustomControllerGeneric, CustomOneToManyControllerGeneric])
+```
+
+With above code we created a new generic controller factory which based on our custom generic controllers. Export the factory and use it anywhere on your code like usual generic controller factory.
+
+```typescript
+const UsersController = CustomGenericController(User)
+// or
+class UsersController extends CustomGenericController(User) { }
+```

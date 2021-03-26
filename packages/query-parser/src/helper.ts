@@ -1,12 +1,14 @@
-import { AuthorizeDecorator, AuthorizerContext, authPolicy, AuthPolicy, EntityAuthPolicy, executeAuthorizer } from "@plumier/core"
-import { Class, generic } from "@plumier/reflect"
+import { AuthorizeDecorator, AuthorizerContext, EntityAuthPolicy, executeAuthorizer } from "@plumier/core"
+import { Class, generic, reflection } from "@plumier/reflect"
 
+import { QueryParserDecorator } from "./decorator"
 
 const ParserAst = Symbol()
 
-function getDecoratorType(controller: Class, expType: string | Class) {
+function getDecoratorType(controller: Class, decorator: QueryParserDecorator): Class {
     // extract generic type from controller if string type provided
-    return typeof expType === "string" ? generic.getGenericType(controller, expType) as Class : expType
+    const [expType] = reflection.getTypeFromDecorator(decorator)
+    return typeof expType === "string" ? generic.getType(decorator, controller) as Class : expType as Class
 }
 
 async function isAuthorized(decorators: AuthorizeDecorator[], ctx: AuthorizerContext): Promise<boolean> {

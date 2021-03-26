@@ -104,14 +104,10 @@ export class MockOneToManyRepo<P, T> implements OneToManyRepository<P, T>{
     }
 }
 
-@generic.template("T", "TID")
-@generic.type("T", "TID")
 export class DefaultControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
     constructor() { super(fac => new MockRepo<T>(jest.fn())) }
 }
 
-@generic.template("P", "T", "PID", "TID")
-@generic.type("P", "T", "PID", "TID")
 export class DefaultOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{
     constructor() { super(fac => new MockOneToManyRepo<P, T>(jest.fn())) }
 }
