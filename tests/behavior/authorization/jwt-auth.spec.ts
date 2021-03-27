@@ -5,6 +5,7 @@ import {
     authPolicy,
     bind,
     CustomAuthorizer,
+    CustomAuthPolicy,
     DefaultFacility,
     entity,
     entityPolicy,
@@ -3037,7 +3038,7 @@ describe("JwtAuth", () => {
                 @authorize.route(Public)
                 pub() { }
             }
-            class CustomPolicy implements AuthPolicy {
+            class CustomPolicy extends CustomAuthPolicy {
                 name = "HasUser"
                 conflict(other: AuthPolicy): boolean {
                     return this.name === other.name

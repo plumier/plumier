@@ -1,4 +1,4 @@
-import { authorize, authPolicy, OneToManyControllerGeneric, route } from "@plumier/core"
+import { authorize, authPolicy, entityPolicy, OneToManyControllerGeneric, route } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { SwaggerFacility } from "@plumier/swagger"
 import { TypeORMFacility } from "@plumier/typeorm"
@@ -27,7 +27,7 @@ export class Shop {
 
     @genericController(c => {
         c.mutators().authorize("Admin", "SuperAdmin")
-        c.getOne().authorize("Public")
+        c.accessors().authorize("ShopOwner", "Admin")
     })
     @OneToMany(x => Item, x => x.shop)
     items: Item[]
@@ -95,20 +95,24 @@ export class Primitive {
     boolean: boolean
 }
 
-const admin = authPolicy().define("Admin", ({ user }) => user?.role === "Admin")
-const superAdmin = authPolicy().define("SuperAdmin", ({ user }) => user?.role === "SuperAdmin")
+authPolicy().register("Admin", ({ user }) => user?.role === "Admin")
+authPolicy().register("SuperAdmin", ({ user }) => user?.role === "SuperAdmin")
+entityPolicy(Shop).register("ShopOwner", () => true)
+entityPolicy(Item).register("ShopOwner", () => true)
+
+process.env.DEBUG = "@plumier/core:*"
 
 new Plumier()
     .set(new WebApiFacility())
     .set(new LoggerFacility())
-    .set(new JwtAuthFacility({ secret: "lorem", authPolicies: [admin, superAdmin] }))
+    .set(new JwtAuthFacility({ secret: "lorem" }))
     .set(new TypeORMFacility({
         connection: {
             type: "sqlite",
             database: ":memory:",
             entities: [__filename],
             synchronize: true,
-            logging: true
+            //logging: true
         }
     }))
     .set(new SwaggerFacility())

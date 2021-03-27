@@ -1,4 +1,5 @@
-import { ClassReflection, generic, ParameterReflection, PropertyReflection, reflect, reflection } from "@plumier/reflect"
+import { ClassReflection, ParameterReflection, PropertyReflection, reflect, reflection } from "@plumier/reflect"
+import debug from "debug"
 
 import { Class, isCustomClass } from "./common"
 import { ResponseTypeDecorator } from "./decorator/common"
@@ -12,13 +13,11 @@ import {
     Authorizer,
     AuthPolicy,
     Configuration,
-    ControllerGeneric,
     HttpStatusError,
     Invocation,
     Metadata,
     MetadataImpl,
     Middleware,
-    OneToManyControllerGeneric,
     RouteAnalyzerFunction,
     RouteAnalyzerIssue,
     RouteInfo,
@@ -28,6 +27,11 @@ import {
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
+
+
+const log = {
+    debug: debug("@plumier/core:authorization"),
+}
 
 type AuthorizerFunction = (info: AuthorizationContext) => boolean | Promise<boolean>
 
@@ -117,6 +121,7 @@ class PolicyAuthorizer implements Authorizer {
             for (const policy of this.keys) {
                 if (authPolicy.equals(policy, ctx)) {
                     const authorize = await authPolicy.authorize(ctx)
+                    log.debug("%s by %s", authorize? "AUTHORIZED": "FORBIDDEN", authPolicy.friendlyName())
                     if (authorize) return true
                 }
             }
@@ -145,6 +150,9 @@ class CustomAuthPolicy implements AuthPolicy {
     }
     conflict(other: AuthPolicy): boolean {
         return this.name === other.name
+    }
+    friendlyName() {
+        return `AuthPolicy { name: "${this.name}" }`
     }
 }
 
@@ -228,6 +236,9 @@ class EntityAuthPolicy<T> implements AuthPolicy {
             return this.name === other.name && this.entity === other.entity
         else
             return this.name === other.name
+    }
+    friendlyName() {
+        return `EntityPolicy { name: "${this.name}", entity: ${this.entity.name} }`
     }
 }
 
@@ -624,7 +635,7 @@ function checkMistypedPolicyNameOnType(typeDef: Class | Class[], policies: AuthP
 function checkMistypedOnRoute(route: RouteInfo, policies: AuthPolicy[], globalAuthorize?: string | string[]) {
     const decorators = getRouteAuthorizeDecorators(route, globalAuthorize)
     const entityProvider = route.action.decorators.find((x: EntityPolicyProviderDecorator) => x.kind === "plumier-meta:entity-policy-provider")
-    if(entityProvider)
+    if (entityProvider)
         decorators.push(entityProvider)
     const issue: RouteAnalyzerIssue[] = []
     const ctl = mistypedPolicies(decorators, policies)
