@@ -11,6 +11,7 @@ import {
 import { JwtAuthFacility } from "@plumier/jwt"
 import model, {
     collection,
+    createGenericControllerMongoose,
     GenericController,
     models,
     MongooseControllerGeneric,
@@ -147,7 +148,7 @@ describe("CRUD", () => {
         }
         class MyController extends GenericController(User) {
             @noop()
-            save(data:User, ctx:Context){
+            save(data: User, ctx: Context) {
                 return super.save(data, ctx)
             }
         }
@@ -176,12 +177,45 @@ describe("CRUD", () => {
         }
         class MyController extends GenericController([User, "animals"]) {
             @noop()
-            save(pid:string, data:Animal, ctx:Context){
+            save(pid: string, data: Animal, ctx: Context) {
                 return super.save(pid, data, ctx)
             }
         }
         const meta = reflection.getMethods(reflect(MyController))
         expect(meta).toMatchSnapshot()
+    })
+    it("Should able to create custom generic controller factory", async () => {
+        class MyCustomGeneric<T, TID> extends MongooseControllerGeneric<T, TID>{
+            constructor() { super(x => new MongooseRepository(x)) }
+        }
+        class MyCustomOnToManyGeneric<P, T, PID, TID> extends MongooseOneToManyControllerGeneric<P, T, PID, TID>{
+            constructor() { super((p, t, rel) => new MongooseOneToManyRepository(p, t, rel)) }
+        }
+        const MyGenericController = createGenericControllerMongoose([MyCustomGeneric, MyCustomOnToManyGeneric])
+        @collection()
+        class User {
+            @collection.id()
+            id: string
+            @reflect.noop()
+            email: string
+            @reflect.noop()
+            name: string
+            @collection.ref(x => [Animal])
+            animals: Animal[]
+        }
+        @collection()
+        class Animal {
+            @collection.id()
+            id: string
+            @reflect.noop()
+            name: string
+        }
+        const UserController = MyGenericController(User)
+        const UserAnimalController = MyGenericController([User, "animals"])
+        const mock = console.mock()
+        await createApp({ controller: [UserController, UserAnimalController], mode: "debug" })
+        console.mockClear()
+        expect(mock.mock.calls).toMatchSnapshot()
     })
     describe("CRUD Function", () => {
         it("Should serve GET /users?offset&limit", async () => {

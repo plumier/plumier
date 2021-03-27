@@ -1,12 +1,12 @@
-import { api, authorize, Class, entity, KeyOf, OneToManyRepository, Repository } from "@plumier/core"
+import { api, authorize, Class, entity, GenericControllers, KeyOf, OneToManyRepository, Repository } from "@plumier/core"
 import {
     ControllerBuilder,
-    createGenericControllerType,
-    createOneToManyGenericControllerType,
     genericControllerRegistry,
     RepoBaseControllerGeneric,
     RepoBaseOneToManyControllerGeneric,
-    GenericControllerConfiguration
+    GenericControllerConfiguration,
+    createGenericController,
+    EntityWithRelation
 } from "@plumier/generic-controller"
 import reflect, { generic, noop, useCache } from "@plumier/reflect"
 import { parse } from "acorn"
@@ -23,7 +23,7 @@ import { TypeORMOneToManyRepository, TypeORMRepository } from "./repository"
 function normalizeEntityNoCache(type: Class) {
     const parent: Class = Object.getPrototypeOf(type)
     // loop through parent entities 
-    if (!!parent) normalizeEntity(parent)
+    if (!!parent.prototype) normalizeEntity(parent)
     const storage = getMetadataArgsStorage();
     const columns = storage.filterColumns(type)
     for (const col of columns) {
@@ -101,40 +101,52 @@ class TypeORMControllerGeneric<T = any, TID = any> extends RepoBaseControllerGen
 
 @generic.template("P", "T", "PID", "TID")
 @generic.type("P", "T", "PID", "TID")
-class TypeORMOneToManyControllerGeneric<P = any, T = any, PID =any, TID = any> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
+class TypeORMOneToManyControllerGeneric<P = any, T = any, PID = any, TID = any> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
     constructor(fac?: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
         super(fac ?? ((p, t, rel) => new TypeORMOneToManyRepository(p, t, rel)))
     }
 }
 
-type EntityWithRelation<T> = [Class<T>, KeyOf<T>]
+/**
+ * Generic controller factory factory, used to create a generic controller factory with custom generic controller implementation
+ * @param controllers Custom generic controller implementation
+ * @returns generic controller
+ */
+function createGenericControllerTypeORM(controllers?: GenericControllers) {
+    return <T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) =>
+        createGenericController(type, {
+            controllers: controllers ?? [TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric],
+            nameConversion: pluralize,
+            config, normalize: type => {
+                if (Array.isArray(type)) {
+                    const [parentEntity, relation] = type
+                    normalizeEntity(parentEntity)
+                    const meta = reflect(parentEntity)
+                    const prop = meta.properties.find(x => x.name === relation)!
+                    const entity = prop.type[0] as Class
+                    normalizeEntity(entity)
+                }
+                else 
+                    normalizeEntity(type)
+            }
+        })
+}
 
 /**
  * Create a generic controller with CRUD functionality based on Entity
  * @param type entity used as the generic controller parameter
  * @param config configuration to authorize/enable/disable some actions
  */
-function GenericController<T>(type:Class, config?: GenericControllerConfiguration): Class<TypeORMControllerGeneric<T>>
+function GenericController<T>(type: Class, config?: GenericControllerConfiguration): Class<TypeORMControllerGeneric<T>>
 /**
  * Create a nested generic controller with CRUD functionality based on Entity's One-To-Many relation property
  * @param type Tuple of [Entity, relationName] used as the generic controller parameter
  * @param config configuration to authorize/enable/disable some actions
  */
-function GenericController<T>(type:EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<TypeORMOneToManyControllerGeneric<T>>
+function GenericController<T>(type: EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<TypeORMOneToManyControllerGeneric<T>>
 function GenericController<T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) {
-    const builder = new ControllerBuilder()
-    if (config) config(builder)
-    if (Array.isArray(type)) {
-        const [parentEntity, relation] = type
-        normalizeEntity(parentEntity)
-        const meta = reflect(parentEntity)
-        const prop = meta.properties.find(x => x.name === relation)!
-        const entity = prop.type[0] as Class
-        normalizeEntity(entity)
-        return createOneToManyGenericControllerType(parentEntity, builder, entity, relation, TypeORMOneToManyControllerGeneric, pluralize)
-    }
-    normalizeEntity(type)
-    return createGenericControllerType(type, builder, TypeORMControllerGeneric, pluralize)
+    const factory = createGenericControllerTypeORM()
+    return factory(type, config)
 }
 
-export { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric, normalizeEntity, GenericController }
+export { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric, normalizeEntity, GenericController, createGenericControllerTypeORM, EntityWithRelation }
