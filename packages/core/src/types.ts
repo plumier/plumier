@@ -469,6 +469,7 @@ export interface AuthPolicy {
     equals(id: string, ctx: AuthorizationContext): boolean
     authorize(ctx: AuthorizationContext): Promise<boolean>
     conflict(other: AuthPolicy): boolean
+    friendlyName():string 
 }
 
 // --------------------------------------------------------------------- //
