@@ -130,9 +130,9 @@ export namespace generic {
      * @param parent Super class that the class inherited from
      * @param params List of generic type parameters
      */
-    export function create<T extends Class>(parent: T | { parent: T, name: string }, ...params: TypeOverride[]) {
-        const opt = (typeof parent === "object") ? parent : { parent: parent, name: "DynamicType" }
-        const Type = createClass({ ...opt, genericParams: params })
+    export function create<T extends Class>(parent: T | { extends: T, name: string }, ...params: TypeOverride[]) {
+        const opt = (typeof parent === "object") ? parent : { extends: parent, name: "DynamicType" }
+        const Type = createClass({}, { ...opt, genericParams: params })
         return Type
     }
 

@@ -150,13 +150,13 @@ export function addsTypeByTypeDecorator(meta: TypedReflection, ctx: WalkMemberCo
     }
     if (isDynamic(decorator)) {
         const [rawType, isArray] = reflection.getTypeFromDecorator(decorator)
-        const type = createClass({ definition: rawType as {} })
+        const type = createClass(rawType as {})
         return { ...meta, ...setType(meta, isArray ? [type] : type as any) }
     }
     if (isTypeWithGenericParameter(decorator)) {
         const genericParams: any[] = decorator.genericParams.map(x => generic.getType({ type: x, target: decorator.target }, ctx.target))
         const [parentType, isArray] = reflection.getTypeFromDecorator(decorator)
-        const dynType = createClass({ parent: parentType as any, genericParams })
+        const dynType = createClass({}, { extends: parentType as any, genericParams })
         const type = isArray ? [dynType] : dynType
         return { ...meta, ...setType(meta, type) }
     }

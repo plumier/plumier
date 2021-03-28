@@ -51,11 +51,11 @@ describe("getRef", () => {
 
     it("Should get dynamic class properly", () => {
         const getRef = refFactory(new Map())
-        expect(getRef(reflect.create({ definition: { id: String } }))).toBe("DynamicType")
+        expect(getRef(reflect.create({ id: String }))).toBe("DynamicType")
         // Dynamic Type with the same structure should have the same name
-        expect(getRef(reflect.create({ definition: { id: String } }))).toBe("DynamicType")
+        expect(getRef(reflect.create({ id: String }))).toBe("DynamicType")
         // different structure should have new name with number
-        expect(getRef(reflect.create({ definition: { id: String, name:String } }))).toBe("DynamicType1")
+        expect(getRef(reflect.create({ id: String, name: String }))).toBe("DynamicType1")
     })
 })
 

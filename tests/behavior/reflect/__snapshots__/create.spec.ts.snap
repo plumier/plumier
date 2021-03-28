@@ -102,6 +102,230 @@ Array [
 ]
 `;
 
+exports[`Create Class Should able to create class with nested array object 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DynamicType",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DynamicType,
+          "type": Array [
+            Object {
+              "dob": Date,
+              "name": String,
+            },
+          ],
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "users",
+      "set": undefined,
+      "type": Array [
+        DynamicType,
+      ],
+      "typeClassification": "Array",
+    },
+  ],
+  "super": Base,
+  "type": DynamicType,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Create Class Should able to create class with nested array object 2`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DynamicType",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DynamicType,
+          "type": String,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "name",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DynamicType,
+          "type": Date,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "dob",
+      "set": undefined,
+      "type": Date,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Base,
+  "type": DynamicType,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Create Class Should able to create class with nested object 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DynamicType",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DynamicType,
+          "type": Object {
+            "dob": Date,
+            "name": String,
+          },
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "user",
+      "set": undefined,
+      "type": DynamicType,
+      "typeClassification": "Class",
+    },
+  ],
+  "super": Base,
+  "type": DynamicType,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Create Class Should able to create class with nested object 2`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DynamicType",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DynamicType,
+          "type": String,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "name",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": DynamicType,
+          "type": Date,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "dob",
+      "set": undefined,
+      "type": Date,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Base,
+  "type": DynamicType,
+  "typeClassification": "Class",
+}
+`;
+
 exports[`Create Class Should able to extends from other class 1`] = `
 Object {
   "ctor": Object {
@@ -109,20 +333,7 @@ Object {
     "name": "constructor",
     "parameters": Array [],
   },
-  "decorators": Array [
-    Object {
-      "kind": "GenericType",
-      "target": DynamicType,
-      "types": Array [],
-      Symbol(tinspector:decoratorId): Symbol(genericType),
-      Symbol(tinspector:decoratorOption): Object {
-        "allowMultiple": false,
-        "applyTo": Array [],
-        "inherit": false,
-        "removeApplied": true,
-      },
-    },
-  ],
+  "decorators": Array [],
   "kind": "Class",
   "methods": Array [],
   "name": "DynamicType",

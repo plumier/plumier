@@ -15,7 +15,7 @@ type MockType = {
 };
 
 export function mock<T>(type: Class<T>): MockType {
-    const newType = reflect.create({ parent: type })
+    const newType = reflect.create({}, { extends: type })
     const meta = reflect(newType)
     for (const method of meta.methods) {
         type.prototype[method.name] = jest.fn()

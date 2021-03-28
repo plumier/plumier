@@ -77,23 +77,24 @@ namespace reflection {
 // ---------------------------- CREATE CLASS --------------------------- //
 // --------------------------------------------------------------------- //
 
-type CustomTypeDefinition = { [key: string]: Class | Class[] }
+type CustomTypeDefinition = { [key: string]: Class | Class[] | {} | {}[] }
 interface CreateClassOption {
-    parent: Class,
-    definition: CustomTypeDefinition,
+    extends: Class,
     name: string,
     genericParams: TypeOverride[]
 }
 
 
-function createClass(opt?: Partial<CreateClassOption>): Class {
-    const option: CreateClassOption = { parent: Object, name: "DynamicType", definition: {}, genericParams: [], ...opt }
-    const type = { [option.name]: class extends option.parent { } }[option.name];
+function createClass(definition: CustomTypeDefinition, opt?: Partial<CreateClassOption>): Class {
+    class Base { }
+    const option: CreateClassOption = { extends: Base, name: "DynamicType", genericParams: [], ...opt }
+    const type = { [option.name]: class extends option.extends { } }[option.name];
     (type as any)[IsDynamicType] = true
-    for (const key in option.definition) {
-        Reflect.decorate([decorate.type(option.definition[key])], type.prototype, key)
+    for (const key in definition) {
+        Reflect.decorate([decorate.type(definition[key])], type.prototype, key)
     }
-    Reflect.decorate([decorate.generic.type(...option.genericParams)], type)
+    if (option.genericParams.length > 0)
+        Reflect.decorate([decorate.generic.type(...option.genericParams)], type)
     return type
 }
 
