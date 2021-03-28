@@ -388,7 +388,7 @@ describe("Create Generic", () => {
             @type("T")
             method(): T { return {} as any }
         }
-        const ChildClass = generic.create({ parent: SuperClass, name: "MyDynamicClass" }, Number)
+        const ChildClass = generic.create({ extends: SuperClass, name: "MyDynamicClass" }, Number)
         expect(ChildClass.name).toBe("MyDynamicClass")
     })
     it("Should add reflection properly", () => {

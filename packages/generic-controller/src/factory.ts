@@ -118,7 +118,7 @@ function createGenericControllerType(entity: Class, builder: ControllerBuilder, 
     if (!idType)
         throw new Error(errorMessage.EntityRequireID.format(entity.name))
     // create controller type dynamically 
-    const Controller = generic.create({ parent: controller, name: controller.name }, entity, idType)
+    const Controller = generic.create({ extends: controller, name: controller.name }, entity, idType)
     // add root decorator
     let routePath = nameConversion(entity.name)
     let routeMap: any = {}
@@ -164,7 +164,7 @@ function createOneToManyGenericControllerType(parentType: Class, builder: Contro
     if (!idType)
         throw new Error(errorMessage.EntityRequireID.format(entity.name))
     // create controller 
-    const Controller = generic.create({ parent: controller, name: controller.name }, parentType, entity, parentIdType, idType)
+    const Controller = generic.create({ extends: controller, name: controller.name }, parentType, entity, parentIdType, idType)
     // add root decorator
     let routePath = `${nameConversion(parentType.name)}/:pid/${relationProperty}`
     let routeMap: any = {}
