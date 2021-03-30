@@ -223,82 +223,6 @@ describe("Route Generator", () => {
                 .initialize()
             expect(mock.mock.calls).toMatchSnapshot()
         })
-        it("Should able to ignore some method of controller from entity", async () => {
-            @genericController()
-            @domain()
-            @route.ignore({ applyTo: ["get", "save"] })
-            class User {
-                constructor(
-                    @entity.primaryId()
-                    public id: number,
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = console.mock()
-            await createApp({ controller: User }).initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set authorization from entity", async () => {
-            @genericController()
-            @domain()
-            @authorize.route("admin")
-            class User {
-                constructor(
-                    @entity.primaryId()
-                    public id: number,
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const authPolicies = [
-                authPolicy().define("admin", i => i.user?.role === "admin")
-            ]
-            const mock = console.mock()
-            await createApp({ controller: [User] })
-                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set authorization for specific method from entity", async () => {
-            @genericController()
-            @domain()
-            @authorize.route("admin", { applyTo: ["save", "replace", "delete", "modify"] })
-            class User {
-                constructor(
-                    @entity.primaryId()
-                    public id: number,
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const authPolicies = [
-                authPolicy().define("admin", i => i.user?.role === "admin")
-            ]
-            const mock = console.mock()
-            await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to set public authorizer from entity", async () => {
-            @genericController()
-            @domain()
-            @authorize.route("Public")
-            class User {
-                constructor(
-                    @entity.primaryId()
-                    public id: number,
-                    public name: string,
-                    public email: string
-                ) { }
-            }
-            const mock = console.mock()
-            await createApp({ controller: [User] })
-                .set(new JwtAuthFacility({ secret: "secret" }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
         it("Should throw error when using default generic controller", async () => {
             @genericController()
             @domain()
@@ -549,91 +473,6 @@ describe("Route Generator", () => {
                 .set({ genericController: [DefaultControllerGeneric, MyCustomOneToManyControllerGeneric] })
                 .initialize()
             expect(mock.mock.calls).toMatchSnapshot()
-        })
-        it("Should able to ignore some method of controller from entity", async () => {
-            @domain()
-            class Animal {
-                constructor(
-                    @entity.primaryId()
-                    public id: number,
-                    public name: string
-                ) { }
-            }
-            @domain()
-            class User {
-                constructor(
-                    @entity.primaryId()
-                    public id: number,
-                    public name: string,
-                    public email: string,
-                    @reflect.type([Animal])
-                    @entity.relation()
-                    @genericController()
-                    @route.ignore({ applyTo: ["save", "list"] })
-                    public animals: Animal[]
-                ) { }
-            }
-            const mock = console.mock()
-            await createApp({ controller: User }).initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to authorize relation on relation", async () => {
-            class Animal {
-                @entity.primaryId()
-                id: number
-                @reflect.noop()
-                public name: string
-            }
-            class User {
-                @entity.primaryId()
-                id: number
-                @reflect.noop()
-                public name: string
-                @reflect.noop()
-                public email: string
-                @authorize.route("admin")
-                @reflect.type([Animal])
-                @entity.relation()
-                @genericController()
-                public animals: Animal[]
-            }
-            const authPolicies = [
-                authPolicy().define("admin", i => i.user?.role === "admin")
-            ]
-            const mock = console.mock()
-            await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-        })
-        it("Should able to authorize some method on relation", async () => {
-            class Animal {
-                @entity.primaryId()
-                id: number
-                @reflect.noop()
-                public name: string
-            }
-            class User {
-                @entity.primaryId()
-                id: number
-                @reflect.noop()
-                public name: string
-                @reflect.noop()
-                public email: string
-                @authorize.route("admin", { applyTo: ["save", "replace", "delete", "modify"] })
-                @reflect.type([Animal])
-                @entity.relation()
-                @genericController()
-                public animals: Animal[]
-            }
-            const authPolicies = [
-                authPolicy().define("admin", i => i.user?.role === "admin")
-            ]
-            const mock = console.mock()
-            await createApp({ controller: User })
-                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
         it("Should throw error when no generic controller impl found", async () => {
             class Animal {
@@ -1194,23 +1033,6 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{id}"].put.parameters).toMatchSnapshot()
             expect(body.paths["/animal/{id}"].put.tags).toMatchSnapshot()
         })
-        it("Should able to add @api.tag() from entity", async () => {
-            @genericController()
-            @api.tag("Animals")
-            class Animal {
-                @entity.primaryId()
-                id: number
-                @reflect.noop()
-                name: string
-            }
-            const koa = await createApp({ controller: Animal }, { mode: "production" })
-                .set(new SwaggerFacility())
-                .initialize()
-            const { body } = await supertest(koa.callback())
-                .get("/swagger/swagger.json")
-                .expect(200)
-            expect(body.paths["/animal"].get.tags).toMatchSnapshot()
-        })
         it("Should able to provide correct parameter name when using custom path name", async () => {
             @genericController("animals/:aid")
             class Animal {
@@ -1640,32 +1462,6 @@ describe("Open Api", () => {
                 .expect(200)
             expect(body.paths["/animal/{pid}/tags/{id}"].put.parameters).toMatchSnapshot()
             expect(body.paths["/animal/{pid}/tags/{id}"].put.tags).toMatchSnapshot()
-        })
-        it("Should able to add @api.tags() from property", async () => {
-            class Animal {
-                @entity.primaryId()
-                id: number
-                @reflect.noop()
-                name: string
-                @reflect.type(x => [Tag])
-                @entity.relation()
-                @genericController()
-                @api.tag("Tags")
-                tags: Tag[]
-            }
-            class Tag {
-                @entity.primaryId()
-                id: number
-                @reflect.noop()
-                tag: string
-            }
-            const koa = await createApp({ controller: Animal }, { mode: "production" })
-                .set(new SwaggerFacility())
-                .initialize()
-            const { body } = await supertest(koa.callback())
-                .get("/swagger/swagger.json")
-                .expect(200)
-            expect(body.paths["/animal/{pid}/tags"].get.tags).toMatchSnapshot()
         })
         it("Should able to provide correct parameter name when using custom path name", async () => {
             class Animal {

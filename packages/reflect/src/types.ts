@@ -118,7 +118,7 @@ export interface DecoratorOption {
      */
     inherit?: boolean,
     /**
-     * If `false` throw error when multiple decorator applied on class. Also when set `false` will prevent super class decorator being merged into derived class when already exists. When set `false`, decorator required to have `DecoratorId` property to identify the similar decorator
+     * If `false` throw error when multiple decorator applied on class. Also when set `false` will prevent super class decorator being merged into derived class when already exists. When set `false`, decorator required to have `DecoratorId` property to identify the similar decorator. Default `true`
      */
     allowMultiple?: boolean,
 

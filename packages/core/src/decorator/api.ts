@@ -1,4 +1,4 @@
-import { decorate, decorateMethod, decorateProperty } from "@plumier/reflect"
+import { decorate, decorateMethod, decorateProperty, DecoratorId } from "@plumier/reflect"
 
 import { Class } from "../common"
 
@@ -11,6 +11,7 @@ interface ApiTagDecorator { kind: "ApiTag", tag: string, description?: string, e
 interface ApiReadOnlyDecorator { kind: "ApiReadonly" }
 interface ApiWriteOnlyDecorator { kind: "ApiWriteOnly" }
 interface ApiHideRelationDecorator { kind: "ApiNoRelation" }
+const apiTagId = Symbol()
 namespace api {
 
     /**
@@ -36,7 +37,7 @@ namespace api {
      * @param tag Tag name
      */
     export function tag(tag: string) {
-        return decorate(<ApiTagDecorator>{ kind: "ApiTag", tag }, ["Class", "Property"])
+        return decorate(<ApiTagDecorator>{ [DecoratorId]: apiTagId, kind: "ApiTag", tag }, ["Class", "Property"], { allowMultiple: false })
     }
 
     /**

@@ -1,10 +1,10 @@
 import "@plumier/core"
 import {
-    api, ApiTagDecorator, authorize, AuthorizeDecorator, Class, ControllerGeneric, ControllerTransformOption, entityHelper, entityProvider, errorMessage,
+    api, authorize, Class, ControllerGeneric, entityHelper, entityProvider, errorMessage,
     GenericControllers,
-    IgnoreDecorator, KeyOf, OneToManyControllerGeneric, RelationDecorator, RelationPropertyDecorator, responseType, route
+    KeyOf, OneToManyControllerGeneric, RelationDecorator, RelationPropertyDecorator, responseType, route
 } from "@plumier/core"
-import reflect, { decorateClass, DecoratorOptionId, generic } from "@plumier/reflect"
+import reflect, { decorateClass, generic } from "@plumier/reflect"
 import { Key, pathToRegexp } from "path-to-regexp"
 import { ControllerBuilder, GenericControllerConfiguration, GenericControllerOptions } from "./configuration"
 import {
@@ -18,27 +18,6 @@ const genericControllerRegistry = new Map<Class, boolean>()
 
 function updateGenericControllerRegistry(cls: Class) {
     genericControllerRegistry.set(cls, true)
-}
-
-function copyDecorators(decorators: any[], controller: Class) {
-    const result = []
-    for (const decorator of decorators) {
-        // copy @route.ignore()
-        if ((decorator as IgnoreDecorator).name === "plumier-meta:ignore") {
-            result.push(decorator)
-        }
-        // copy @authorize
-        const authDec = (decorator as AuthorizeDecorator)
-        if (authDec.type === "plumier-meta:authorize") {
-            result.push(decorator)
-        }
-        // copy @api.tag
-        const apiTag = (decorator as ApiTagDecorator)
-        if (apiTag.kind === "ApiTag") {
-            result.push(decorator)
-        }
-    }
-    return result.map(x => decorateClass(x, x[DecoratorOptionId]))
 }
 
 function createRouteDecorators(id: string) {
@@ -81,7 +60,7 @@ function validatePath(path: string, entity: Class, oneToMany = false) {
         throw new Error(errorMessage.CustomRouteMustHaveOneParameter.format(path, entity.name))
     if (oneToMany && (keys.length != 2))
         throw new Error(errorMessage.CustomRouteRequiredTwoParameters.format(path, entity.name))
-    return keys
+    return oneToMany ? { pid: keys[0].name.toString(), id: keys[1].name.toString() } : { pid: "", id: keys[0].name.toString() }
 }
 
 function decorateTransformers(config: GenericControllerOptions) {
@@ -124,26 +103,22 @@ function createGenericControllerType(entity: Class, builder: ControllerBuilder, 
     let routeMap: any = {}
     const routes: ClassDecorator[] = []
     if (config.path) {
-        const keys = validatePath(config.path, entity)
+        const { id } = validatePath(config.path, entity)
         routePath = config.path.replace(lastParam, "")
-        routeMap = { id: keys[0].name }
-        routes.push(...createRouteDecorators(keys[0].name.toString()))
+        routeMap = { id }
+        routes.push(...createRouteDecorators(id))
     }
-    // copy @route.ignore() and @authorize on entity to the controller to control route generation
     const meta = reflect(entity)
-    const decorators = copyDecorators([...meta.decorators, ...meta.removedDecorators ?? []], controller)
     Reflect.decorate([
-        ...decorators,
         ...routes,
         entityProvider(entity, "id", { applyTo: ["get", "modify", "replace", "delete"] }),
         route.root(routePath, { map: routeMap }),
         ignoreActions(config),
         ...authorizeActions(config),
         ...decorateTransformers(config),
-        ...decorateCustomQuery(config)
+        ...decorateCustomQuery(config),
+        api.tag(nameConversion(entity.name))
     ], Controller)
-    if (!meta.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag"))
-        Reflect.decorate([api.tag(nameConversion(entity.name))], Controller)
     return Controller
 }
 
@@ -170,17 +145,14 @@ function createOneToManyGenericControllerType(parentType: Class, builder: Contro
     let routeMap: any = {}
     const routes = []
     if (config.path) {
-        const keys = validatePath(config.path, parentType, true)
+        const { pid, id } = validatePath(config.path, parentType, true)
         routePath = config.path.replace(lastParam, "")
-        routeMap = { pid: keys[0].name, id: keys[1].name }
-        routes.push(...createRouteDecorators(keys[1].name.toString()))
+        routeMap = { pid, id }
+        routes.push(...createRouteDecorators(id))
     }
-    // copy @route.ignore() on entity to the controller to control route generation
     const entityDecorators = relProp.decorators
-    const decorators = copyDecorators(entityDecorators, controller)
     const inverseProperty = entityDecorators.find((x: RelationDecorator): x is RelationDecorator => x.kind === "plumier-meta:relation")?.inverseProperty!
     Reflect.decorate([
-        ...decorators,
         ...routes,
         route.root(routePath, { map: routeMap }),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
@@ -190,13 +162,9 @@ function createOneToManyGenericControllerType(parentType: Class, builder: Contro
         entityProvider(entity, "id", { applyTo: ["get", "modify", "replace", "delete"] }),
         ...authorizeActions(config),
         ...decorateTransformers(config),
-        ...decorateCustomQuery(config)
+        ...decorateCustomQuery(config),
+        api.tag(`${nameConversion(parentType.name)} ${nameConversion(entity.name)}`)
     ], Controller)
-    if (!relProp.decorators.some((x: ApiTagDecorator) => x.kind === "ApiTag")) {
-        const parent = nameConversion(parentType.name)
-        const child = nameConversion(entity.name)
-        Reflect.decorate([api.tag(`${parent} ${child}`)], Controller)
-    }
     return Controller
 }
 
@@ -207,7 +175,7 @@ interface CreateGenericControllerOption {
     config?: GenericControllerConfiguration,
     controllers: GenericControllers
     normalize?: (entities: Class | EntityWithRelation) => void
-    nameConversion: (x:string) => string
+    nameConversion: (x: string) => string
 }
 
 function createGenericController<T>(type: Class | EntityWithRelation<T>, option: CreateGenericControllerOption) {
