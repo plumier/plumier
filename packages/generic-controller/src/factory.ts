@@ -20,8 +20,18 @@ function updateGenericControllerRegistry(cls: Class) {
     genericControllerRegistry.set(cls, true)
 }
 
-function createRouteDecorators(id: string) {
+
+function splitPath(path: string): [string, string] {
+    const idx = path.lastIndexOf("/")
+    const root = path.substring(0, idx)
+    const id = path.substring(idx + 2)
+    return [root, id]
+}
+
+function createRouteDecorators(path: string, map: { pid?: string, id: string }) {
+    const [root, id] = splitPath(path)!
     return [
+        route.root(root, { map }),
         decorateRoute("post", "", { applyTo: "save" }),
         decorateRoute("get", "", { applyTo: "list" }),
         decorateRoute("get", `:${id}`, { applyTo: "get" }),
@@ -49,11 +59,9 @@ function authorizeActions(config: GenericControllerOptions) {
     return result
 }
 
-const lastParam = /\/:\w*$/
-
 function validatePath(path: string, entity: Class, oneToMany = false) {
-    const endWithParam = path.match(lastParam)
-    if (!endWithParam) throw new Error(errorMessage.CustomRouteEndWithParameter.format(path, entity.name))
+    if(!path.match(/\/:\w*$/))
+        throw new Error(errorMessage.CustomRouteEndWithParameter.format(path, entity.name))
     const keys: Key[] = []
     pathToRegexp(path, keys)
     if (!oneToMany && keys.length > 1)
@@ -98,21 +106,11 @@ function createGenericControllerType(entity: Class, builder: ControllerBuilder, 
         throw new Error(errorMessage.EntityRequireID.format(entity.name))
     // create controller type dynamically 
     const Controller = generic.create({ extends: controller, name: controller.name }, entity, idType)
-    // add root decorator
-    let routePath = nameConversion(entity.name)
-    let routeMap: any = {}
-    const routes: ClassDecorator[] = []
-    if (config.path) {
-        const { id } = validatePath(config.path, entity)
-        routePath = config.path.replace(lastParam, "")
-        routeMap = { id }
-        routes.push(...createRouteDecorators(id))
-    }
-    const meta = reflect(entity)
+    let path = config.path ?? `${nameConversion(entity.name)}/:id`
+    const map = validatePath(path, entity)
     Reflect.decorate([
-        ...routes,
+        ...createRouteDecorators(path, map),
         entityProvider(entity, "id", { applyTo: ["get", "modify", "replace", "delete"] }),
-        route.root(routePath, { map: routeMap }),
         ignoreActions(config),
         ...authorizeActions(config),
         ...decorateTransformers(config),
@@ -141,20 +139,12 @@ function createOneToManyGenericControllerType(parentType: Class, builder: Contro
     // create controller 
     const Controller = generic.create({ extends: controller, name: controller.name }, parentType, entity, parentIdType, idType)
     // add root decorator
-    let routePath = `${nameConversion(parentType.name)}/:pid/${relationProperty}`
-    let routeMap: any = {}
-    const routes = []
-    if (config.path) {
-        const { pid, id } = validatePath(config.path, parentType, true)
-        routePath = config.path.replace(lastParam, "")
-        routeMap = { pid, id }
-        routes.push(...createRouteDecorators(id))
-    }
+    let path = config.path ?? `${nameConversion(parentType.name)}/:pid/${relationProperty}/:id`
+    const map = validatePath(path, parentType, true)
     const entityDecorators = relProp.decorators
     const inverseProperty = entityDecorators.find((x: RelationDecorator): x is RelationDecorator => x.kind === "plumier-meta:relation")?.inverseProperty!
     Reflect.decorate([
-        ...routes,
-        route.root(routePath, { map: routeMap }),
+        ...createRouteDecorators(path, map),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
         decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: relationProperty, inverseProperty }),
         ignoreActions(config),
