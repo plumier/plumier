@@ -309,6 +309,176 @@ Array [
 ]
 `;
 
+exports[`CRUD Nested CRUD Many to One Function Should able to use many to one relation with parent relation 1`] = `
+Array [
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+]
+`;
+
+exports[`CRUD Nested CRUD Many to One Function Should able to use many to one relation without parent relation 1`] = `
+Array [
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+  Object {
+    "id": "MONGODB UNIQUE ID",
+    "name": "Mimi",
+  },
+]
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should able to configure create generic controller 1`] = `
 Array [
   Array [],

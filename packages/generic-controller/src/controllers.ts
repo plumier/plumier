@@ -5,8 +5,10 @@ import {
     ControllerGeneric,
     DeleteColumnDecorator,
     domain,
+    entityHelper,
     EntityIdDecorator,
     HttpStatusError,
+    NestedGenericControllerDecorator,
     OneToManyControllerGeneric,
     OneToManyRepository,
     Repository,
@@ -18,8 +20,9 @@ import reflect, { generic } from "@plumier/reflect"
 import { val } from "@plumier/validator"
 import { Context } from "koa"
 
-import { decorateRoute, getManyCustomQuery, getOneCustomQuery, getTransformer, responseTransformer } from "./decorator"
-import { getGenericControllerInverseProperty, getGenericControllerRelation } from "./helper"
+import { decorateRoute, responseTransformer } from "./decorator"
+import { EntityWithRelation } from "./factory"
+import { getManyCustomQuery, getOneCustomQuery, getTransformer, } from "./helper"
 import { postSaveValue } from "./request-hook"
 
 
@@ -52,6 +55,8 @@ class IdentifierResult<TID> {
         public id: TID
     ) { }
 }
+
+type NestedRepositoryFactory<P,T> = (t:EntityWithRelation<P,T> | EntityWithRelation<T|P>) => OneToManyRepository<P,T>
 
 @generic.template("T", "TID")
 class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGeneric<T, TID>{
@@ -130,16 +135,16 @@ class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGene
 class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, TID = String> extends OneToManyControllerGeneric<P, T, PID, TID>{
     readonly entityType: Class<T>
     readonly parentEntityType: Class<P>
-    readonly relation: string
     readonly repo: OneToManyRepository<P, T>
 
-    constructor(fac: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
+    constructor(fac: NestedRepositoryFactory<P,T>) {
         super()
-        const info = getGenericControllerRelation(this.constructor as Class)
-        this.parentEntityType = info.parentEntityType
-        this.entityType = info.entityType
-        this.relation = info.relation
-        this.repo = fac(this.parentEntityType, this.entityType, this.relation)
+        const meta = reflect(this.constructor as Class)
+        const dec = meta.decorators.find((x: NestedGenericControllerDecorator): x is NestedGenericControllerDecorator => x.kind === "plumier-meta:relation-prop-name")!
+        const info = entityHelper.getRelationInfo([dec.type, dec.relation])
+        this.parentEntityType = info.parent
+        this.entityType = info.child
+        this.repo = fac([dec.type, dec.relation as any])
     }
 
     @route.ignore()
@@ -162,7 +167,6 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     async list(@val.required() @reflect.type("PID") pid: PID, offset: number = 0, limit: number = 50, @filterParser(() => "T") filter: any, @selectParser(x => "T") select: SelectQuery, @orderParser(x => "T") order: string, @bind.ctx() ctx: Context): Promise<any> {
         await this.findParentByIdOrNotFound(pid)
         const query = getManyCustomQuery(this.constructor as any)
-        const reverseProperty = getGenericControllerInverseProperty(this.constructor as Class)
         const result = query ? await query({ pid, offset, limit, filter, order, select }, ctx) : await this.repo.find(pid, offset, limit, filter, select, order)
         const transformer = getTransformer(this.constructor as Class, "list")
         if (transformer)
@@ -183,7 +187,6 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @selectParser(x => "T") select: SelectQuery, @bind.ctx() ctx: Context): Promise<T> {
         await this.findParentByIdOrNotFound(pid)
         const query = getOneCustomQuery(this.constructor as any)
-        const reverseProperty = getGenericControllerInverseProperty(this.constructor as Class)
         const result = query ? await query({ id, select }, ctx) : await this.findByIdOrNotFound(id, select)
         const transformer = getTransformer(this.constructor as Class, "get")
         if (transformer)
@@ -219,5 +222,5 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
 }
 
 export {
-    RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, IdentifierResult,
+    RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, IdentifierResult, NestedRepositoryFactory
 }

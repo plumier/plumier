@@ -5,7 +5,7 @@ import {
     Class,
     entity,
     entityPolicy,
-    RelationPropertyDecorator,
+    NestedGenericControllerDecorator,
     route,
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
@@ -118,7 +118,7 @@ describe("Select Parser", () => {
             @type(x => User)
             user: User
         }
-        @decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: "logs", inverseProperty: "user" })
+        @decorateClass(<NestedGenericControllerDecorator>{ kind: "plumier-meta:relation-prop-name", relation: "logs", type: User })
         class UsersController {
             @route.get("")
             get(@selectParser(x => Log) filter: any) {
@@ -197,7 +197,7 @@ describe("Select Parser", () => {
             @type(x => User)
             user: User
         }
-        @decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: "logs", inverseProperty: "user" })
+        @decorateClass(<NestedGenericControllerDecorator>{ kind: "plumier-meta:relation-prop-name", relation: "logs", type: User })
         class UsersController {
             @route.get("")
             get(@selectParser(x => Log) filter: any) {

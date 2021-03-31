@@ -555,34 +555,88 @@ describe("Route Generator", () => {
             await createApp({ controller: User }).initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
-        it("Should throw error when applied on non array relation", async () => {
+    })
+    describe("Many To One", () => {
+        it("Should work with many to one without parent's property", async () => {
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string,
+                ) { }
+            }
             @domain()
             class Animal {
                 constructor(
                     @entity.primaryId()
                     public id: number,
-                    public name: string
+                    public name: string,
+                    @genericController()
+                    @entity.relation()
+                    public user: User
                 ) { }
             }
-            @genericController()
+            const mock = console.mock()
+            await createApp({ controller: Animal }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should work with complete one to many relation", async () => {
             @domain()
             class User {
-                @entity.primaryId()
-                id: number
-                @noop()
-                name: string
-                @noop()
-                email: string
-                @genericController()
-                animal: Animal
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string,
+                    @reflect.type(x => [Animal])
+                    @entity.relation({ inverseProperty: "user" })
+                    public animals: Animal[]
+                ) { }
             }
-            const fn = jest.fn()
-            try {
-                await createApp({ controller: User }).initialize()
-            } catch (e) {
-                fn(e)
+            @domain()
+            class Animal {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    @genericController()
+                    @entity.relation()
+                    public user: User
+                ) { }
             }
-            expect(fn.mock.calls).toMatchSnapshot()
+            const mock = console.mock()
+            await createApp({ controller: Animal }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+        })
+        it("Should not confused when parent specify property but without inverseProperty", async () => {
+            @domain()
+            class User {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    public email: string,
+                    @reflect.type(x => [Animal])
+                    @entity.relation()
+                    public animals: Animal[]
+                ) { }
+            }
+            @domain()
+            class Animal {
+                constructor(
+                    @entity.primaryId()
+                    public id: number,
+                    public name: string,
+                    @genericController()
+                    @entity.relation()
+                    public user: User
+                ) { }
+            }
+            const mock = console.mock()
+            await createApp({ controller: Animal }).initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
     })
     describe("Grouping", () => {
@@ -1668,6 +1722,7 @@ describe("Request Hook", () => {
                 @entity.primaryId()
                 public id: number,
                 @genericController()
+                @entity.relation()
                 @type(x => [User])
                 public users: User[]
             ) { }
@@ -1790,6 +1845,7 @@ describe("Request Hook", () => {
                 @entity.primaryId()
                 public id: number,
                 @genericController()
+                @entity.relation()
                 @type(x => [User])
                 public users: User[]
             ) { }
@@ -1823,6 +1879,7 @@ describe("Request Hook", () => {
                 @entity.primaryId()
                 public id: number,
                 @genericController()
+                @entity.relation()
                 @type(x => [User])
                 public users: User[]
             ) { }
@@ -1856,6 +1913,7 @@ describe("Request Hook", () => {
                 @entity.primaryId()
                 public id: number,
                 @genericController()
+                @entity.relation()
                 @type(x => [User])
                 public users: User[]
             ) { }
@@ -1880,7 +1938,6 @@ describe("Request Hook", () => {
             .post("/parent/123/users")
             .send({ name: "John Doe", email: "john.doe@gmail.com", password: "lorem ipsum" })
             .expect(200)
-        console.log(fn.mock.calls)
         expect(body.id === fn.mock.calls[1][0]).toBe(true)
     })
     it("Should not executed on GET method with model parameter", async () => {

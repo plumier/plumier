@@ -9,7 +9,7 @@ import {
     KeyOf,
     OneToManyControllerGeneric,
     RelationDecorator,
-    RelationPropertyDecorator,
+    NestedGenericControllerDecorator,
 } from "@plumier/core"
 import reflect, { decorateClass, generic } from "@plumier/reflect"
 import { Key, pathToRegexp } from "path-to-regexp"
@@ -29,7 +29,7 @@ import {
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-type EntityWithRelation<T = any> = [Class<T>, KeyOf<T>]
+type EntityWithRelation<T = any, R = any> = [Class<T>, KeyOf<T>, Class<R>?]
 
 interface CreateGenericControllerOption {
     config?: GenericControllerConfiguration,
@@ -43,7 +43,7 @@ interface CreateGenericControllerOption {
 // --------------------------------------------------------------------- //
 
 function validatePath(path: string, entity: Class, oneToMany = false) {
-    if(!path.match(/\/:\w*$/))
+    if (!path.match(/\/:\w*$/))
         throw new Error(errorMessage.CustomRouteEndWithParameter.format(path, entity.name))
     const keys: Key[] = []
     pathToRegexp(path, keys)
@@ -54,12 +54,17 @@ function validatePath(path: string, entity: Class, oneToMany = false) {
     return oneToMany ? { pid: keys[0].name.toString(), id: keys[1].name.toString() } : { pid: "", id: keys[0].name.toString() }
 }
 
-function createGenericControllerType(entity: Class, builder: ControllerBuilder, controller: Class<ControllerGeneric>, nameConversion: (x: string) => string) {
-    const config = builder.toObject()
-    // get type of ID column on entity
+function getIdType(entity: Class) {
     const idType = entityHelper.getIdType(entity)
     if (!idType)
         throw new Error(errorMessage.EntityRequireID.format(entity.name))
+    return idType
+}
+
+function createGenericControllerType(entity: Class, builder: ControllerBuilder, controller: Class<ControllerGeneric>, nameConversion: (x: string) => string) {
+    const config = builder.toObject()
+    // get type of ID column on entity
+    const idType = getIdType(entity)
     // create controller type dynamically 
     const Controller = generic.create({ extends: controller, name: controller.name }, entity, idType)
     let path = config.path ?? `${nameConversion(entity.name)}/:id`
@@ -76,40 +81,27 @@ function createGenericControllerType(entity: Class, builder: ControllerBuilder, 
     return Controller
 }
 
-function createOneToManyGenericControllerType(parentType: Class, builder: ControllerBuilder, entity: Class, relationProperty: string, controller: Class<OneToManyControllerGeneric>, nameConversion: (x: string) => string) {
-    const meta = reflect(parentType)
-    const relProp = meta.properties.find(x => x.name === relationProperty)!
-    if (relProp.type === Array && !relProp.type[0])
-        throw new Error(errorMessage.GenericControllerMissingTypeInfo.format(`${parentType.name}.${relationProperty}`))
-    if (!Array.isArray(relProp.type))
-        throw new Error(errorMessage.GenericControllerInNonArrayProperty.format(parentType.name, relationProperty))
+function createOneToManyGenericControllerType(type: EntityWithRelation, builder: ControllerBuilder, controller: Class<OneToManyControllerGeneric>, nameConversion: (x: string) => string) {
+    const info = entityHelper.getRelationInfo(type)
     const config = builder.toObject()
-    // get type of ID column on parent entity
-    const parentIdType = entityHelper.getIdType(parentType)
-    if (!parentIdType)
-        throw new Error(errorMessage.EntityRequireID.format(parentType.name))
-    // get type of ID column on entity
-    const idType = entityHelper.getIdType(entity)
-    if (!idType)
-        throw new Error(errorMessage.EntityRequireID.format(entity.name))
-    // create controller 
-    const Controller = generic.create({ extends: controller, name: controller.name }, parentType, entity, parentIdType, idType)
+    const parentIdType = getIdType(info.parent)
+    const idType = getIdType(info.child)
+    const Controller = generic.create({ extends: controller, name: controller.name }, info.parent, info.child, parentIdType, idType)
     // add root decorator
-    let path = config.path ?? `${nameConversion(parentType.name)}/:pid/${relationProperty}/:id`
-    const map = validatePath(path, parentType, true)
-    const entityDecorators = relProp.decorators
-    const inverseProperty = entityDecorators.find((x: RelationDecorator): x is RelationDecorator => x.kind === "plumier-meta:relation")?.inverseProperty!
+    const childPath = info.type === "OneToMany" ? info.parentProperty! : nameConversion(info.child.name).toLowerCase()
+    let path = config.path ?? `${nameConversion(info.parent.name)}/:pid/${childPath}/:id`
+    const map = validatePath(path, info.parent, true)
     Reflect.decorate([
         ...createRouteDecorators(path, map),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
-        decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: relationProperty, inverseProperty }),
+        decorateClass(<NestedGenericControllerDecorator>{ kind: "plumier-meta:relation-prop-name", type: type[0], relation: type[1] }),
         ignoreActions(config),
-        entityProvider(parentType, "pid", { applyTo: ["list", "save"] }),
-        entityProvider(entity, "id", { applyTo: ["get", "modify", "replace", "delete"] }),
+        entityProvider(info.parent, "pid", { applyTo: ["list", "save"] }),
+        entityProvider(info.child, "id", { applyTo: ["get", "modify", "replace", "delete"] }),
         ...authorizeActions(config),
         ...decorateTransformers(config),
         ...decorateCustomQuery(config),
-        api.tag(`${nameConversion(parentType.name)} ${nameConversion(entity.name)}`)
+        api.tag(`${nameConversion(info.parent.name)} ${nameConversion(info.child.name)}`)
     ], Controller)
     return Controller
 }
@@ -123,11 +115,7 @@ function createGenericController<T>(type: Class | EntityWithRelation<T>, option:
     if (option.config) option.config(builder)
     if (option.normalize) option.normalize(type)
     if (Array.isArray(type)) {
-        const [parentEntity, relation] = type
-        const meta = reflect(parentEntity)
-        const prop = meta.properties.find(x => x.name === relation)!
-        const entity = prop.type[0] as Class
-        return createOneToManyGenericControllerType(parentEntity, builder, entity, relation, option.controllers[1], option.nameConversion)
+        return createOneToManyGenericControllerType(type, builder, option.controllers[1], option.nameConversion)
     }
     return createGenericControllerType(type, builder, option.controllers[0], option.nameConversion)
 }

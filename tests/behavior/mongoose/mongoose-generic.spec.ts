@@ -30,6 +30,7 @@ import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
 import Plumier, { genericController, WebApiFacility } from "plumier"
 import supertest from "supertest"
+import { User } from "../generic-controller/entities/entities"
 import { random } from "../helper"
 
 
@@ -189,7 +190,7 @@ describe("CRUD", () => {
             constructor() { super(x => new MongooseRepository(x)) }
         }
         class MyCustomOnToManyGeneric<P, T, PID, TID> extends MongooseOneToManyControllerGeneric<P, T, PID, TID>{
-            constructor() { super((p, t, rel) => new MongooseOneToManyRepository(p, t, rel)) }
+            constructor() { super(p => new MongooseOneToManyRepository(p)) }
         }
         const MyGenericController = createGenericControllerMongoose([MyCustomGeneric, MyCustomOnToManyGeneric])
         @collection()
@@ -1009,7 +1010,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
             const { body } = await supertest(app.callback())
                 .get(`/users/${user._id}/animals?offset=0&limit=20`)
@@ -1043,7 +1044,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
             const { body } = await supertest(app.callback())
                 .get(`/users/${user._id}/animals`)
@@ -1105,7 +1106,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             await animalRepo.insert(user._id.toHexString(), { name: `Jojo` })
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
             const { body } = await supertest(app.callback())
@@ -1139,7 +1140,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             await animalRepo.insert(user._id.toHexString(), { name: `Jojo` })
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
             const { body } = await supertest(app.callback())
@@ -1174,7 +1175,7 @@ describe("CRUD", () => {
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
             const otherUser = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             await animalRepo.insert(user._id.toHexString(), { name: `Jojo` })
             await animalRepo.insert(user._id.toHexString(), { name: `Jeju` })
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(otherUser._id.toHexString(), { name: `Mimi ${i}` })))
@@ -1209,7 +1210,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             await animalRepo.insert(user._id.toHexString(), { name: `Jojo` })
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}` })))
             const { body } = await supertest(app.callback())
@@ -1246,7 +1247,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             await animalRepo.insert(user._id.toHexString(), { name: `Jojo`, age: 5 })
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi ${i}`, age: 4 })))
             const { body } = await supertest(app.callback())
@@ -1282,7 +1283,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             await Promise.all(Array(10).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi`, tag: "The tags", age: 21 })))
             const { body } = await supertest(app.callback())
                 .get(`/users/${user._id}/animals?select=name,age`)
@@ -1317,7 +1318,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             await animalRepo.insert(user._id.toHexString(), { name: `Mimi`, age: 22 })
             await animalRepo.insert(user._id.toHexString(), { name: `Abas`, age: 21 })
             await animalRepo.insert(user._id.toHexString(), { name: `Alba`, age: 21 })
@@ -1559,7 +1560,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
             const { body } = await supertest(app.callback())
                 .get(`/users/${user._id}/animals/${inserted.id}`)
@@ -1596,7 +1597,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi`, tag: "The tag", age: 21 })
             const { body } = await supertest(app.callback())
                 .get(`/users/${user._id}/animals/${inserted.id}?select=age,tag`)
@@ -1633,7 +1634,7 @@ describe("CRUD", () => {
             const UserModel = model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi`, tag: "The tag", age: 21 })
             const usr = await UserModel.findById(user.id).populate("animals")
             const { body } = await supertest(app.callback())
@@ -1726,7 +1727,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
             const { body } = await supertest(app.callback())
                 .put(`/users/${user._id}/animals/${inserted.id}`)
@@ -1822,7 +1823,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
             const { body } = await supertest(app.callback())
                 .patch(`/users/${user._id}/animals/${inserted.id}`)
@@ -1890,7 +1891,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi`, age: 4 })
             const { body } = await supertest(app.callback())
                 .patch(`/users/${user._id}/animals/${inserted.id}`)
@@ -1956,7 +1957,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
             const { body } = await supertest(app.callback())
                 .delete(`/users/${user._id}/animals/${inserted.id}`)
@@ -1993,7 +1994,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
             const { body } = await supertest(app.callback())
                 .delete(`/users/${user._id}/animals/${inserted.id}`)
@@ -2087,7 +2088,7 @@ describe("CRUD", () => {
             @generic.template("P", "T", "PID", "TID")
             @generic.type("P", "T", "PID", "TID")
             class MyCustomGeneric<P, T, PID, TID> extends MongooseOneToManyControllerGeneric<P, T, PID, TID>{
-                constructor() { super((p, t, rel) => new MongooseOneToManyRepository(p, t, rel)) }
+                constructor() { super(p => new MongooseOneToManyRepository(p)) }
             }
             const app = await new Plumier()
                 .set(new WebApiFacility())
@@ -2129,7 +2130,7 @@ describe("CRUD", () => {
             model(User)
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi`, tags: ["Lorem", "Ipsum"] })
             const { body } = await supertest(app.callback())
                 .get(`/users/${user._id}/animals/${inserted.id}`)
@@ -2173,7 +2174,7 @@ describe("CRUD", () => {
             }
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             const inserted = await animalRepo.insert(user._id.toHexString(), { name: `Mimi` })
             const { body } = await supertest(app.callback())
                 .get(`/users/${user._id}/animals/${inserted.id}`)
@@ -2217,7 +2218,7 @@ describe("CRUD", () => {
             }
             const app = await createApp({ controller: [User, Animal], mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             await Promise.all(Array(5).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
             const { body } = await supertest(app.callback())
                 .get(`/users/${user._id}/animals?offset=0&limit=5`)
@@ -2246,7 +2247,7 @@ describe("CRUD", () => {
             const UserAnimalController = GenericController([User, "animals"])
             const app = await createApp({ controller: UserAnimalController, mode: "production" })
             const user = await createUser(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
             const { body } = await supertest(app.callback())
                 .get(`/users/${user._id}/animals?offset=0&limit=20`)
@@ -2303,6 +2304,81 @@ describe("CRUD", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
         })
+    })
+    describe("Nested CRUD Many to One Function", () => {
+        async function createUser<T>(type: Class<T>, user?: Partial<T>) {
+            const userRepo = new MongooseRepository(type)
+            const inserted = await userRepo.insert({ email: "john.doe@gmail.com", name: "John Doe", ...user } as any)
+            const saved = await userRepo.findById(inserted.id)
+            return saved!
+        }
+        it("Should able to use many to one relation without parent relation", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+                @genericController()
+                @collection.ref(x => User)
+                user:User
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([Animal, "user"])
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals?offset=0&limit=20`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+            expect(body.length).toBe(20)
+        })
+        it("Should able to use many to one relation with parent relation", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal], "user")
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+                @genericController()
+                @collection.ref(x => User)
+                user:User
+            }
+            model(Animal)
+            model(User)
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([Animal, "user"])
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user._id}/animals?offset=0&limit=20`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+            expect(body.length).toBe(20)
+        })
+        
     })
     describe("One To One Function", () => {
         it("Should able to add with ID", async () => {
@@ -2952,7 +3028,7 @@ describe("Repository", () => {
         }
         const AnimalModel = helper.model(Animal)
         const UserModel = helper.model(User)
-        const repo = new MongooseOneToManyRepository(User, Animal, "animals", helper)
+        const repo = new MongooseOneToManyRepository<User,Animal>([User, "animals"], helper)
         const parent = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe" }).save()
         const inserted = await repo.insert(parent.id!, { name: "Mimi" })
         const saved = await UserModel.findById(parent.id).populate("animals")
@@ -3002,7 +3078,40 @@ describe("Repository", () => {
         }
         it("Should able to count result", async () => {
             const userRepo = new MongooseRepository(User)
-            const animalRepo = new MongooseOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([User, "animals"])
+            const email = `${random()}@gmail.com`
+            const user = await userRepo.insert({ name: "John Doe" })
+            await Promise.all([
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mommy" }),
+            ])
+            const count = await animalRepo.count(user.id, { name: "Mimi" })
+            expect(count).toBe(3)
+        })
+    })
+    describe("Many To One", () => {
+        @collection()
+        class User {
+            @collection.id()
+            id: string
+            @reflect.noop()
+            name: string
+        }
+        @collection()
+        class Animal {
+            @collection.id()
+            id: string
+            @reflect.noop()
+            name: string
+            @collection.ref(x => User)
+            @genericController()
+            user:User
+        }
+        it("Should able to count result", async () => {
+            const userRepo = new MongooseRepository(User)
+            const animalRepo = new MongooseOneToManyRepository<User, Animal>([Animal, "user"])
             const email = `${random()}@gmail.com`
             const user = await userRepo.insert({ name: "John Doe" })
             await Promise.all([
@@ -3115,8 +3224,8 @@ describe("Filter", () => {
         let otherParent: { id: string };
         beforeAll(async () => {
             const parentRepo = new MongooseRepository(Parent)
-            const repo = new MongooseOneToManyRepository(Parent, Child, "children")
-            await repo.Model.deleteMany({})
+            const repo = new MongooseOneToManyRepository<Parent, Child>([Parent, "children"])
+            await repo.ChildModel.deleteMany({})
             parent = await parentRepo.insert({ string: "lorem", number: 1, boolean: true })
             otherParent = await parentRepo.insert({ string: "lorem", number: 1, boolean: true })
             await repo.insert(parent.id, { string: "lorem", number: 1, boolean: true })

@@ -3,6 +3,7 @@ import {
     createGenericController,
     EntityWithRelation,
     GenericControllerConfiguration,
+    NestedRepositoryFactory,
     RepoBaseControllerGeneric,
     RepoBaseOneToManyControllerGeneric,
 } from "@plumier/generic-controller"
@@ -34,9 +35,10 @@ class MongooseControllerGeneric<T = any, TID = string> extends RepoBaseControlle
     }
 }
 
+
 class MongooseOneToManyControllerGeneric<P = any, T = any, PID = string, TID = string> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
-    constructor(fac?: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
-        super(fac ?? ((p, t, rel) => new MongooseOneToManyRepository(p, t, rel)))
+    constructor(fac?: NestedRepositoryFactory<P,T>) {
+        super(fac ?? (t => new MongooseOneToManyRepository(t)))
     }
 
     list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, filter: any, select: SelectQuery, order: any, ctx: Context) {
@@ -69,7 +71,7 @@ class MongooseOneToManyControllerGeneric<P = any, T = any, PID = string, TID = s
  * @param controllers Custom generic controller implementation
  * @returns generic controller
  */
- function createGenericControllerMongoose(controllers?: GenericControllers) {
+function createGenericControllerMongoose(controllers?: GenericControllers) {
     return <T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) =>
         createGenericController(type, {
             controllers: controllers ?? [MongooseControllerGeneric, MongooseOneToManyControllerGeneric],

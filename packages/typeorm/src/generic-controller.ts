@@ -6,7 +6,8 @@ import {
     RepoBaseOneToManyControllerGeneric,
     GenericControllerConfiguration,
     createGenericController,
-    EntityWithRelation
+    EntityWithRelation,
+    NestedRepositoryFactory
 } from "@plumier/generic-controller"
 import reflect, { generic, noop, useCache } from "@plumier/reflect"
 import { parse } from "acorn"
@@ -102,8 +103,8 @@ class TypeORMControllerGeneric<T = any, TID = any> extends RepoBaseControllerGen
 @generic.template("P", "T", "PID", "TID")
 @generic.type("P", "T", "PID", "TID")
 class TypeORMOneToManyControllerGeneric<P = any, T = any, PID = any, TID = any> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
-    constructor(fac?: ((p: Class<P>, t: Class<T>, rel: string) => OneToManyRepository<P, T>)) {
-        super(fac ?? ((p, t, rel) => new TypeORMOneToManyRepository(p, t, rel)))
+    constructor(fac?: NestedRepositoryFactory<P,T>) {
+        super(fac ?? (p => new TypeORMOneToManyRepository(p)))
     }
 }
 

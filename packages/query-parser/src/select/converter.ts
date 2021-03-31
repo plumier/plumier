@@ -1,4 +1,4 @@
-import { AuthorizeDecorator, CustomConverter, RelationDecorator, RelationPropertyDecorator } from "@plumier/core"
+import { AuthorizeDecorator, CustomConverter, RelationDecorator, NestedGenericControllerDecorator, entityHelper } from "@plumier/core"
 import reflect, { Class } from "@plumier/reflect"
 import { Result } from "@plumier/validator"
 
@@ -25,9 +25,10 @@ function getDefaultSelection(controller: Class, type: Class, opt?: Partial<Selec
     const meta = reflect(type)
     const result: SelectColumnNode[] = []
     const ctlMeta = reflect(controller)
-    const ctlRelation = ctlMeta.decorators.find((x: RelationPropertyDecorator): x is RelationPropertyDecorator => x.kind === "plumier-meta:relation-prop-name")
+    const ctlRelation = ctlMeta.decorators.find((x: NestedGenericControllerDecorator): x is NestedGenericControllerDecorator => x.kind === "plumier-meta:relation-prop-name")
+    const relationInfo = ctlRelation && entityHelper.getRelationInfo([ctlRelation.type, ctlRelation.relation])
     for (const prop of meta.properties) {
-        const isInverseProperty = prop.name === ctlRelation?.inverseProperty
+        const isInverseProperty = prop.name === relationInfo?.childProperty
         const relation = prop.decorators.find((x: RelationDecorator): x is RelationDecorator => x.kind === "plumier-meta:relation")
         const kind: SelectColumnKind =
             isInverseProperty ? "InverseProperty" :

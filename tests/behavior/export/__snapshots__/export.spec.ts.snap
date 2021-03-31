@@ -195,6 +195,7 @@ Object {
   "entityHelper": Object {
     "getIdProp": getIdProp,
     "getIdType": getIdType,
+    "getRelationInfo": getRelationInfo,
   },
   "entityPolicy": entityPolicy,
   "entityProvider": entityProvider,
@@ -328,9 +329,6 @@ Object {
   "generateGenericControllerRoutes": generateGenericControllerRoutes,
   "genericController": genericController,
   "genericControllerRegistry": Map {},
-  "getGenericControllerInverseProperty": getGenericControllerInverseProperty,
-  "getGenericControllerOneToOneRelations": getGenericControllerOneToOneRelations,
-  "getGenericControllerRelation": getGenericControllerRelation,
   "getManyCustomQuery": getManyCustomQuery,
   "getOneCustomQuery": getOneCustomQuery,
   "getTransformer": getTransformer,
