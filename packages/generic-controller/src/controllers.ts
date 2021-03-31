@@ -6,92 +6,22 @@ import {
     DeleteColumnDecorator,
     domain,
     EntityIdDecorator,
-    HttpMethod,
     HttpStatusError,
     OneToManyControllerGeneric,
     OneToManyRepository,
     Repository,
-    responseType,
     route,
-    RouteDecorator,
-    SelectQuery
+    SelectQuery,
 } from "@plumier/core"
 import { filterParser, orderParser, selectParser } from "@plumier/query-parser"
-import reflect, { decorate, DecoratorId, generic, mergeDecorator } from "@plumier/reflect"
+import reflect, { generic } from "@plumier/reflect"
 import { val } from "@plumier/validator"
 import { Context } from "koa"
 
+import { decorateRoute, getManyCustomQuery, getOneCustomQuery, getTransformer, responseTransformer } from "./decorator"
 import { getGenericControllerInverseProperty, getGenericControllerRelation } from "./helper"
 import { postSaveValue } from "./request-hook"
 
-
-
-// --------------------------------------------------------------------- //
-// ----------------------------- DECORATORS ---------------------------- //
-// --------------------------------------------------------------------- //
-
-const RouteDecoratorID = Symbol("generic-controller:route")
-
-/**
- * Custom route decorator to make it possible to override @route decorator from class scope decorator. 
- * This is required for custom route path defined with @genericController("custom/:customId")
- */
-function decorateRoute(method: HttpMethod, path?: string, option?: { applyTo: string | string[] }) {
-    return decorate(<RouteDecorator & { [DecoratorId]: any }>{
-        [DecoratorId]: RouteDecoratorID,
-        name: "plumier-meta:route",
-        method,
-        url: path
-    }, ["Class", "Method"], { allowMultiple: false, ...option })
-}
-
-// get one custom query
-interface GetOneParams { pid?: any, id: any, select: SelectQuery }
-type GetOneCustomQueryFunction<T = any> = (params: GetOneParams, ctx: Context) => Promise<T>
-interface GetOneCustomQueryDecorator {
-    kind: "plumier-meta:get-one-query",
-    query: GetOneCustomQueryFunction
-}
-
-// get many custom query
-interface GetManyParams<T> { pid?: any, limit: number, offset: number, select: SelectQuery, filter: any, order: any }
-type GetManyCustomQueryFunction<T = any> = (params: GetManyParams<T>, ctx: Context) => Promise<T[]>
-interface GetManyCustomQueryDecorator {
-    kind: "plumier-meta:get-many-query",
-    query: GetManyCustomQueryFunction
-}
-
-type ResponseTransformer<S = any, D = any> = (s: S) => D
-
-interface ResponseTransformerDecorator {
-    kind: "plumier-meta:response-transformer",
-    transformer: ResponseTransformer
-}
-
-function responseTransformer(target: Class | Class[] | ((x: any) => Class | Class[]), transformer: ResponseTransformer, opt?: { applyTo: string | string[] }) {
-    return mergeDecorator(
-        decorate(<ResponseTransformerDecorator>{ kind: "plumier-meta:response-transformer", transformer }, ["Method", "Class"], opt),
-        responseType(target, opt)
-    )
-}
-
-function getTransformer(type: Class, methodName: string) {
-    const meta = reflect(type)
-    const method = meta.methods.find(x => methodName === x.name)!
-    return method.decorators.find((x: ResponseTransformerDecorator): x is ResponseTransformerDecorator => x.kind === "plumier-meta:response-transformer")?.transformer
-}
-
-function getOneCustomQuery(type: Class): GetOneCustomQueryFunction | undefined {
-    const meta = reflect(type)
-    const decorator = meta.decorators.find((x: GetOneCustomQueryDecorator): x is GetOneCustomQueryDecorator => x.kind === "plumier-meta:get-one-query")
-    return decorator?.query
-}
-
-function getManyCustomQuery(type: Class): GetManyCustomQueryFunction | undefined {
-    const meta = reflect(type)
-    const decorator = meta.decorators.find((x: GetManyCustomQueryDecorator): x is GetManyCustomQueryDecorator => x.kind === "plumier-meta:get-many-query")
-    return decorator?.query
-}
 
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
@@ -288,11 +218,6 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
     }
 }
 
-
-
 export {
-    RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric,
-    decorateRoute, IdentifierResult, getGenericControllerInverseProperty, ResponseTransformer, responseTransformer,
-    GetOneCustomQueryFunction, GetOneCustomQueryDecorator, GetOneParams,
-    GetManyCustomQueryFunction, GetManyCustomQueryDecorator, GetManyParams,
+    RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, IdentifierResult,
 }

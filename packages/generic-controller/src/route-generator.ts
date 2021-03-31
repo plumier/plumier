@@ -13,7 +13,8 @@ import { isAbsolute, join } from "path"
 
 import { ControllerBuilder } from "./configuration"
 import { GenericControllerDecorator } from "./decorator"
-import { createGenericControllerType, createOneToManyGenericControllerType, genericControllerRegistry } from "./factory"
+import { createGenericControllerType, createOneToManyGenericControllerType } from "./factory"
+import { genericControllerRegistry } from "./helper"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //
