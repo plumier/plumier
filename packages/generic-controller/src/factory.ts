@@ -1,63 +1,46 @@
-import "@plumier/core"
 import {
-    api, authorize, Class, ControllerGeneric, entityHelper, entityProvider, errorMessage,
+    api,
+    Class,
+    ControllerGeneric,
+    entityHelper,
+    entityProvider,
+    errorMessage,
     GenericControllers,
-    KeyOf, OneToManyControllerGeneric, RelationDecorator, RelationPropertyDecorator, responseType, route
+    KeyOf,
+    OneToManyControllerGeneric,
+    RelationDecorator,
+    RelationPropertyDecorator,
 } from "@plumier/core"
 import reflect, { decorateClass, generic } from "@plumier/reflect"
 import { Key, pathToRegexp } from "path-to-regexp"
-import { ControllerBuilder, GenericControllerConfiguration, GenericControllerOptions } from "./configuration"
+
 import {
-    decorateRoute,
-    GetManyCustomQueryDecorator,
-    GetOneCustomQueryDecorator,
-    responseTransformer
-} from "./controllers"
+    authorizeActions,
+    ControllerBuilder,
+    createRouteDecorators,
+    decorateCustomQuery,
+    decorateTransformers,
+    GenericControllerConfiguration,
+    ignoreActions,
+} from "./configuration"
 
-const genericControllerRegistry = new Map<Class, boolean>()
 
-function updateGenericControllerRegistry(cls: Class) {
-    genericControllerRegistry.set(cls, true)
+// --------------------------------------------------------------------- //
+// ------------------------------- TYPES ------------------------------- //
+// --------------------------------------------------------------------- //
+
+type EntityWithRelation<T = any> = [Class<T>, KeyOf<T>]
+
+interface CreateGenericControllerOption {
+    config?: GenericControllerConfiguration,
+    controllers: GenericControllers
+    normalize?: (entities: Class | EntityWithRelation) => void
+    nameConversion: (x: string) => string
 }
 
-
-function splitPath(path: string): [string, string] {
-    const idx = path.lastIndexOf("/")
-    const root = path.substring(0, idx)
-    const id = path.substring(idx + 2)
-    return [root, id]
-}
-
-function createRouteDecorators(path: string, map: { pid?: string, id: string }) {
-    const [root, id] = splitPath(path)!
-    return [
-        route.root(root, { map }),
-        decorateRoute("post", "", { applyTo: "save" }),
-        decorateRoute("get", "", { applyTo: "list" }),
-        decorateRoute("get", `:${id}`, { applyTo: "get" }),
-        decorateRoute("put", `:${id}`, { applyTo: "replace" }),
-        decorateRoute("patch", `:${id}`, { applyTo: "modify" }),
-        decorateRoute("delete", `:${id}`, { applyTo: "delete" }),
-    ]
-}
-
-function ignoreActions(config: GenericControllerOptions): ((...args: any[]) => void) {
-    const actions = config.actions()
-    const applyTo = actions.filter(x => !!config.map.get(x)?.ignore)
-    if (applyTo.length === 0) return (...args: any[]) => { }
-    return route.ignore({ applyTo })
-}
-
-function authorizeActions(config: GenericControllerOptions) {
-    const actions = config.actions()
-    const result = []
-    for (const action of actions) {
-        const opt = config.map.get(action)
-        if (!opt || !opt.authorize) continue
-        result.push(authorize.custom(opt.authorize, { access: "route", applyTo: action, tag: opt.authorize.join("|") }))
-    }
-    return result
-}
+// --------------------------------------------------------------------- //
+// ------------------------------- HELPER ------------------------------ //
+// --------------------------------------------------------------------- //
 
 function validatePath(path: string, entity: Class, oneToMany = false) {
     if(!path.match(/\/:\w*$/))
@@ -69,33 +52,6 @@ function validatePath(path: string, entity: Class, oneToMany = false) {
     if (oneToMany && (keys.length != 2))
         throw new Error(errorMessage.CustomRouteRequiredTwoParameters.format(path, entity.name))
     return oneToMany ? { pid: keys[0].name.toString(), id: keys[1].name.toString() } : { pid: "", id: keys[0].name.toString() }
-}
-
-function decorateTransformers(config: GenericControllerOptions) {
-    const result = []
-    for (const key of config.map.keys()) {
-        const cnf = config.map.get(key)
-        if (cnf && cnf.transformer) {
-            const target = key === "get" ? cnf.transformer.target : [cnf.transformer.target]
-            result.push(responseTransformer(target, cnf.transformer.fn, { applyTo: key }))
-        }
-    }
-    return result
-}
-
-function decorateCustomQuery(config: GenericControllerOptions) {
-    const result = []
-    const get = config.map.get("get")
-    if (get && get.getOneCustomQuery) {
-        result.push(decorateClass(<GetOneCustomQueryDecorator>{ kind: "plumier-meta:get-one-query", query: get.getOneCustomQuery.query }))
-        result.push(responseType(get.getOneCustomQuery.type, { applyTo: "get" }))
-    }
-    const list = config.map.get("list")
-    if (list && list.getManyCustomQuery) {
-        result.push(decorateClass(<GetManyCustomQueryDecorator>{ kind: "plumier-meta:get-many-query", query: list.getManyCustomQuery.query }))
-        result.push(responseType(list.getManyCustomQuery.type, { applyTo: "list" }))
-    }
-    return result
 }
 
 function createGenericControllerType(entity: Class, builder: ControllerBuilder, controller: Class<ControllerGeneric>, nameConversion: (x: string) => string) {
@@ -158,15 +114,9 @@ function createOneToManyGenericControllerType(parentType: Class, builder: Contro
     return Controller
 }
 
-
-type EntityWithRelation<T = any> = [Class<T>, KeyOf<T>]
-
-interface CreateGenericControllerOption {
-    config?: GenericControllerConfiguration,
-    controllers: GenericControllers
-    normalize?: (entities: Class | EntityWithRelation) => void
-    nameConversion: (x: string) => string
-}
+// --------------------------------------------------------------------- //
+// -------------------------- FACTORY FACTORY -------------------------- //
+// --------------------------------------------------------------------- //
 
 function createGenericController<T>(type: Class | EntityWithRelation<T>, option: CreateGenericControllerOption) {
     const builder = new ControllerBuilder()
@@ -183,7 +133,6 @@ function createGenericController<T>(type: Class | EntityWithRelation<T>, option:
 }
 
 export {
-    genericControllerRegistry, updateGenericControllerRegistry,
     createGenericController, CreateGenericControllerOption, EntityWithRelation,
     createGenericControllerType, createOneToManyGenericControllerType
 }

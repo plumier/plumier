@@ -6,6 +6,12 @@ import reflect, { Class, generic, GenericTypeDecorator } from "@plumier/reflect"
 // ----------------------- ENTITY RELATION HELPER ---------------------- //
 // --------------------------------------------------------------------- //
 
+const genericControllerRegistry = new Map<Class, boolean>()
+
+function updateGenericControllerRegistry(cls: Class) {
+    genericControllerRegistry.set(cls, true)
+}
+
 function getGenericControllerRelation(controller: Class) {
     const meta = reflect(controller)
     const types = generic.getGenericTypeParameters(controller)
@@ -35,5 +41,5 @@ function getGenericControllerOneToOneRelations(type: Class) {
 
 export {
     getGenericControllerOneToOneRelations, getGenericControllerInverseProperty,
-    getGenericControllerRelation
+    getGenericControllerRelation, updateGenericControllerRegistry, genericControllerRegistry
 }

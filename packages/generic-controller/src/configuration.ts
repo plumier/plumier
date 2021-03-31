@@ -1,10 +1,14 @@
-import "@plumier/core"
-import { Class } from "@plumier/core"
+import { authorize, Class, responseType, route } from "@plumier/core"
+import { decorateClass } from "@plumier/reflect"
 import {
+    decorateRoute,
+    GetManyCustomQueryDecorator,
     GetManyCustomQueryFunction,
+    GetOneCustomQueryDecorator,
     GetOneCustomQueryFunction,
+    responseTransformer,
     ResponseTransformer
-} from "./controllers"
+} from "./decorator"
 
 
 // --------------------------------------------------------------------- //
@@ -60,7 +64,7 @@ class ControllerBuilder {
     /**
      * Configure multiple generic controller actions based on their name
      */
-    actionNames(...names: string[]){
+    actionNames(...names: string[]) {
         return new ActionsBuilder(this.map, names)
     }
 
@@ -205,9 +209,88 @@ class GetManyActionBuilder extends TransformableActionBuilder {
     }
 }
 
-type GenericControllerConfiguration = (c:ControllerBuilder) => void
+type GenericControllerConfiguration = (c: ControllerBuilder) => void
+
+// --------------------------------------------------------------------- //
+// ---------------------- CONFIGURATION DECORATORS --------------------- //
+// --------------------------------------------------------------------- //
+
+
+
+function splitPath(path: string): [string, string] {
+    const idx = path.lastIndexOf("/")
+    const root = path.substring(0, idx)
+    const id = path.substring(idx + 2)
+    return [root, id]
+}
+
+function createRouteDecorators(path: string, map: { pid?: string, id: string }) {
+    const [root, id] = splitPath(path)!
+    return [
+        route.root(root, { map }),
+        decorateRoute("post", "", { applyTo: "save" }),
+        decorateRoute("get", "", { applyTo: "list" }),
+        decorateRoute("get", `:${id}`, { applyTo: "get" }),
+        decorateRoute("put", `:${id}`, { applyTo: "replace" }),
+        decorateRoute("patch", `:${id}`, { applyTo: "modify" }),
+        decorateRoute("delete", `:${id}`, { applyTo: "delete" }),
+    ]
+}
+
+function ignoreActions(config: GenericControllerOptions): ((...args: any[]) => void) {
+    const actions = config.actions()
+    const applyTo = actions.filter(x => !!config.map.get(x)?.ignore)
+    if (applyTo.length === 0) return (...args: any[]) => { }
+    return route.ignore({ applyTo })
+}
+
+function authorizeActions(config: GenericControllerOptions) {
+    const actions = config.actions()
+    const result = []
+    for (const action of actions) {
+        const opt = config.map.get(action)
+        if (!opt || !opt.authorize) continue
+        result.push(authorize.custom(opt.authorize, { access: "route", applyTo: action, tag: opt.authorize.join("|") }))
+    }
+    return result
+}
+
+
+function decorateTransformers(config: GenericControllerOptions) {
+    const result = []
+    for (const key of config.map.keys()) {
+        const cnf = config.map.get(key)
+        if (cnf && cnf.transformer) {
+            const target = key === "get" ? cnf.transformer.target : [cnf.transformer.target]
+            result.push(responseTransformer(target, cnf.transformer.fn, { applyTo: key }))
+        }
+    }
+    return result
+}
+
+function decorateCustomQuery(config: GenericControllerOptions) {
+    const result = []
+    const get = config.map.get("get")
+    if (get && get.getOneCustomQuery) {
+        result.push(decorateClass(<GetOneCustomQueryDecorator>{ kind: "plumier-meta:get-one-query", query: get.getOneCustomQuery.query }))
+        result.push(responseType(get.getOneCustomQuery.type, { applyTo: "get" }))
+    }
+    const list = config.map.get("list")
+    if (list && list.getManyCustomQuery) {
+        result.push(decorateClass(<GetManyCustomQueryDecorator>{ kind: "plumier-meta:get-many-query", query: list.getManyCustomQuery.query }))
+        result.push(responseType(list.getManyCustomQuery.type, { applyTo: "list" }))
+    }
+    return result
+}
+
 
 export {
-    ControllerBuilder, GenericControllerOptions, GenericControllerConfiguration
+    ControllerBuilder, GenericControllerOptions, GenericControllerConfiguration,
+    splitPath,
+    createRouteDecorators,
+    ignoreActions,
+    authorizeActions,
+    decorateTransformers,
+    decorateCustomQuery,
 }
 
