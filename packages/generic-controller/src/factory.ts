@@ -29,7 +29,6 @@ import {
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
 
-
 type EntityWithRelation<T = any> = [Class<T>, KeyOf<T>]
 
 interface CreateGenericControllerOption {
