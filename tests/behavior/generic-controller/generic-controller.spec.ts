@@ -1632,6 +1632,59 @@ describe("Open Api", () => {
             expect(body.paths["/animal/{pid}/tags"].get.responses[200]).toMatchSnapshot()
         })
     })
+
+    describe("Generic Many To One Controller", () => {
+        it("Should hide relation on POST method", async () => {
+            @genericController()
+            class Animal {
+                @entity.primaryId()
+                id: number
+                @reflect.noop()
+                name: string
+            }
+            class Tag {
+                @entity.primaryId()
+                id: number
+                @reflect.noop()
+                tag: string
+                @genericController()
+                @entity.relation()
+                animal:Animal
+            }
+            const koa = await createApp({ controller: Tag }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animal/{pid}/tag"].post.requestBody).toMatchSnapshot()
+        })
+        it("Should hide relation on GET all response", async () => {
+            @genericController()
+            class Animal {
+                @entity.primaryId()
+                id: number
+                @reflect.noop()
+                name: string
+            }
+            class Tag {
+                @entity.primaryId()
+                id: number
+                @reflect.noop()
+                tag: string
+                @genericController()
+                @entity.relation()
+                animal:Animal
+            }
+            const koa = await createApp({ controller: Tag }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animal/{pid}/tag"].get.responses["200"].content["application/json"]).toMatchSnapshot()
+        })
+    })
 })
 
 describe("Request Hook", () => {

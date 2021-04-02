@@ -2378,6 +2378,32 @@ describe("CRUD", () => {
             expect(body).toMatchSnapshot()
             expect(body.length).toBe(20)
         })
+        it("Should able to use generic controller factory", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            @collection()
+            class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+                @genericController()
+                @collection.ref(x => User)
+                user:User
+            }
+            const UserAnimalController = GenericController([Animal, "user"])
+            const mock = console.mock()
+            await createApp({ controller: UserAnimalController, mode: "debug" })
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
         
     })
     describe("One To One Function", () => {
