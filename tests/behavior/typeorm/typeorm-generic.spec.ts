@@ -2008,6 +2008,31 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body.length).toBe(20)
         })
+        it("Should able to use generic controller factory", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User)
+                user: User
+            }
+            const UserAnimalController = GenericController([Animal, "user"])
+            const mock = console.mock()
+            const app = await createApp([UserAnimalController, User, Animal], { mode: "debug" })
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
     })
     describe("One To One Function", () => {
         it("Should able to add with ID", async () => {
