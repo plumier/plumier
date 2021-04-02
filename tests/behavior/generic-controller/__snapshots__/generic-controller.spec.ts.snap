@@ -881,6 +881,106 @@ Object {
 }
 `;
 
+exports[`Open Api Generic Many To One Controller Should hide relation on GET all response 1`] = `
+Object {
+  "schema": Object {
+    "items": Object {
+      "allOf": Array [
+        Object {
+          "$ref": "#/components/schemas/Tag",
+        },
+        Object {
+          "properties": Object {
+            "animal": Object {
+              "allOf": Array [
+                Object {
+                  "$ref": "#/components/schemas/Animal",
+                },
+                Object {
+                  "properties": Object {},
+                  "type": "object",
+                },
+              ],
+            },
+          },
+          "type": "object",
+        },
+        Object {
+          "properties": Object {
+            "animal": Object {
+              "readOnly": true,
+              "writeOnly": true,
+            },
+          },
+          "type": "object",
+        },
+      ],
+    },
+    "type": "array",
+  },
+}
+`;
+
+exports[`Open Api Generic Many To One Controller Should hide relation on POST method 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Tag",
+          },
+          Object {
+            "properties": Object {
+              "animal": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "animal": Object {
+                "readOnly": true,
+                "writeOnly": true,
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/Tag",
+          },
+          Object {
+            "properties": Object {
+              "animal": Object {
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "animal": Object {
+                "readOnly": true,
+                "writeOnly": true,
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
 exports[`Open Api Generic One To Many Controller Should able to provide correct parameter name when using custom path name 1`] = `
 Array [
   Object {

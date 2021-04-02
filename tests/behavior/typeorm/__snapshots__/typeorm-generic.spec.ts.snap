@@ -392,6 +392,34 @@ Object {
 }
 `;
 
+exports[`CRUD Nested CRUD Many To One Should able to use generic controller factory 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. TypeORMNestedCon...eneric.list    -> GET    /users/:pid/animals",
+  ],
+  Array [
+    "2. TypeORMNestedCon...eneric.save    -> POST   /users/:pid/animals",
+  ],
+  Array [
+    "3. TypeORMNestedCon...eneric.get     -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "4. TypeORMNestedCon...eneric.modify  -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "5. TypeORMNestedCon...eneric.replace -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "6. TypeORMNestedCon...eneric.delete  -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should able to configure create generic controller 1`] = `
 Array [
   Array [],

@@ -309,6 +309,34 @@ Array [
 ]
 `;
 
+exports[`CRUD Nested CRUD Many to One Function Should able to use generic controller factory 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. MongooseNestedCo...eneric.list    -> GET    /users/:pid/animals",
+  ],
+  Array [
+    "2. MongooseNestedCo...eneric.save    -> POST   /users/:pid/animals",
+  ],
+  Array [
+    "3. MongooseNestedCo...eneric.get     -> GET    /users/:pid/animals/:id",
+  ],
+  Array [
+    "4. MongooseNestedCo...eneric.modify  -> PATCH  /users/:pid/animals/:id",
+  ],
+  Array [
+    "5. MongooseNestedCo...eneric.replace -> PUT    /users/:pid/animals/:id",
+  ],
+  Array [
+    "6. MongooseNestedCo...eneric.delete  -> DELETE /users/:pid/animals/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`CRUD Nested CRUD Many to One Function Should able to use many to one relation with parent relation 1`] = `
 Array [
   Object {

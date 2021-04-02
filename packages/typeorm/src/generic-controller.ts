@@ -124,7 +124,7 @@ function createGenericControllerTypeORM(controllers?: GenericControllers) {
                     normalizeEntity(parentEntity)
                     const meta = reflect(parentEntity)
                     const prop = meta.properties.find(x => x.name === relation)!
-                    const entity = prop.type[0] as Class
+                    const entity:Class = Array.isArray(prop.type)? prop.type[0] : prop.type
                     normalizeEntity(entity)
                 }
                 else 
