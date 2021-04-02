@@ -1,4 +1,4 @@
-import { authorize, OneToManyControllerGeneric, route } from "@plumier/core"
+import { authorize, NestedControllerGeneric, route } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { SwaggerFacility } from "@plumier/swagger"
 import Plumier, { genericController, LoggerFacility, WebApiFacility } from "plumier"

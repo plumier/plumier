@@ -4,7 +4,7 @@ import {
     EntityRelationInfo,
     ManyToOneRelationInfo,
     OneToManyRelationInfo,
-    OneToManyRepository,
+    NestedRepository,
     Repository,
     SelectQuery,
 } from "@plumier/core"
@@ -51,7 +51,7 @@ class MongooseRepository<T> implements Repository<T>{
     }
 }
 
-class MongooseOneToManyRepository<P=any, T=any> implements OneToManyRepository<P, T>  {
+class MongooseNestedRepository<P=any, T=any> implements NestedRepository<P, T>  {
     readonly ChildModel: Model<T & Document>
     readonly ParentModel: Model<P & Document>
     readonly relation: EntityRelationInfo
@@ -140,4 +140,4 @@ class MongooseOneToManyRepository<P=any, T=any> implements OneToManyRepository<P
     }
 }
 
-export { MongooseRepository, MongooseOneToManyRepository }
+export { MongooseRepository, MongooseNestedRepository }

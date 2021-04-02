@@ -358,16 +358,16 @@ Next you can save the file and see the route analysis report like below.
 
 ```
 ..... other routes ....
-10. TypeORMOneToMany...eneric.list           -> Private             GET    /api/v1/todos/:pid/comments
-11. TypeORMOneToMany...eneric.save           -> Private             POST   /api/v1/todos/:pid/comments
-12. TypeORMOneToMany...eneric.get            -> Private             GET    /api/v1/todos/:pid/comments/:id
-13. TypeORMOneToMany...eneric.modify         -> ResourceOwner|Admin PATCH  /api/v1/todos/:pid/comments/:id
-14. TypeORMOneToMany...eneric.replace        -> ResourceOwner|Admin PUT    /api/v1/todos/:pid/comments/:id
-15. TypeORMOneToMany...eneric.delete         -> ResourceOwner|Admin DELETE /api/v1/todos/:pid/comments/:id
+10. TypeORMNested...eneric.list           -> Private             GET    /api/v1/todos/:pid/comments
+11. TypeORMNested...eneric.save           -> Private             POST   /api/v1/todos/:pid/comments
+12. TypeORMNested...eneric.get            -> Private             GET    /api/v1/todos/:pid/comments/:id
+13. TypeORMNested...eneric.modify         -> ResourceOwner|Admin PATCH  /api/v1/todos/:pid/comments/:id
+14. TypeORMNested...eneric.replace        -> ResourceOwner|Admin PUT    /api/v1/todos/:pid/comments/:id
+15. TypeORMNested...eneric.delete         -> ResourceOwner|Admin DELETE /api/v1/todos/:pid/comments/:id
 ..... other routes ....
 ```
 
-You see that the routes now handled by `TypeORMOneToManyControllerGeneric` and the endpoints is `/api/v1/todos/:pid/comments`. We used the Todo Comment API endpoints by providing the Todo ID like this `/api/v1/todos/1/comments`. 
+You see that the routes now handled by `TypeORMNestedControllerGeneric` and the endpoints is `/api/v1/todos/:pid/comments`. We used the Todo Comment API endpoints by providing the Todo ID like this `/api/v1/todos/1/comments`. 
 
 We can test our new API using swagger like the picture below. 
 

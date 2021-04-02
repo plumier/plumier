@@ -17,7 +17,7 @@ import {
     RouteMetadata
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
-import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "@plumier/mongoose"
+import { MongooseControllerGeneric, MongooseNestedControllerGeneric } from "@plumier/mongoose"
 import { noop, reflect, type } from "@plumier/reflect"
 import "@plumier/testing"
 import { cleanupConsole } from "@plumier/testing"
@@ -3845,7 +3845,7 @@ describe("JwtAuth", () => {
             await new Plumier()
                 .set(new WebApiFacility({ controller: [User, Item] }))
                 .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
-                .set({ genericController: [MongooseControllerGeneric, MongooseOneToManyControllerGeneric] })
+                .set({ genericController: [MongooseControllerGeneric, MongooseNestedControllerGeneric] })
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
@@ -3874,7 +3874,7 @@ describe("JwtAuth", () => {
             await new Plumier()
                 .set(new WebApiFacility({ controller: [User, Item] }))
                 .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
-                .set({ genericController: [MongooseControllerGeneric, MongooseOneToManyControllerGeneric] })
+                .set({ genericController: [MongooseControllerGeneric, MongooseNestedControllerGeneric] })
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()

@@ -1,4 +1,4 @@
-import { authorize, authPolicy, entityPolicy, OneToManyControllerGeneric, route } from "@plumier/core"
+import { authorize, authPolicy, entityPolicy, NestedControllerGeneric, route } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { SwaggerFacility } from "@plumier/swagger"
 import { TypeORMFacility } from "@plumier/typeorm"

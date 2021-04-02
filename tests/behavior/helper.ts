@@ -1,7 +1,7 @@
 import Plumier, { Class, Configuration, WebApiFacility } from "plumier"
 import reflect, { generic } from "@plumier/reflect"
-import { Repository, OneToManyRepository, GenericControllers } from "@plumier/core";
-import { RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric } from "@plumier/generic-controller";
+import { Repository, NestedRepository, GenericControllers } from "@plumier/core";
+import { RepoBaseControllerGeneric, RepoBaseNestedControllerGeneric } from "@plumier/generic-controller";
 
 export function fixture(controller: Class | Class[] | string | string[], config?: Partial<Configuration>) {
     const mergedConfig = <Configuration>{ mode: "production", ...config }
@@ -74,7 +74,7 @@ export class MockRepo<T> implements Repository<T>{
     }
 }
 
-export class MockOneToManyRepo<P, T> implements OneToManyRepository<P, T>{
+export class MockNestedRepo<P, T> implements NestedRepository<P, T>{
     constructor(private fn: jest.Mock) { }
     count(pid: any, query?: any): Promise<number> {
         throw new Error('Method not implemented.')
@@ -108,6 +108,6 @@ export class DefaultControllerGeneric<T, TID> extends RepoBaseControllerGeneric<
     constructor() { super(fac => new MockRepo<T>(jest.fn())) }
 }
 
-export class DefaultOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{
-    constructor() { super(fac => new MockOneToManyRepo<P, T>(jest.fn())) }
+export class DefaultNestedControllerGeneric<P, T, PID, TID> extends RepoBaseNestedControllerGeneric<P, T, PID, TID>{
+    constructor() { super(fac => new MockNestedRepo<P, T>(jest.fn())) }
 }

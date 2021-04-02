@@ -175,22 +175,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultOneToMany...eneric.list    -> Authenticated GET    /user/:pid/animals",
+    "1. DefaultNestedCon...eneric.list    -> Authenticated GET    /user/:pid/animals",
   ],
   Array [
-    "2. DefaultOneToMany...eneric.save    -> Admin         POST   /user/:pid/animals",
+    "2. DefaultNestedCon...eneric.save    -> Admin         POST   /user/:pid/animals",
   ],
   Array [
-    "3. DefaultOneToMany...eneric.get     -> Authenticated GET    /user/:pid/animals/:id",
+    "3. DefaultNestedCon...eneric.get     -> Authenticated GET    /user/:pid/animals/:id",
   ],
   Array [
-    "4. DefaultOneToMany...eneric.modify  -> Admin         PATCH  /user/:pid/animals/:id",
+    "4. DefaultNestedCon...eneric.modify  -> Admin         PATCH  /user/:pid/animals/:id",
   ],
   Array [
-    "5. DefaultOneToMany...eneric.replace -> Admin         PUT    /user/:pid/animals/:id",
+    "5. DefaultNestedCon...eneric.replace -> Admin         PUT    /user/:pid/animals/:id",
   ],
   Array [
-    "6. DefaultOneToMany...eneric.delete  -> Admin         DELETE /user/:pid/animals/:id",
+    "6. DefaultNestedCon...eneric.delete  -> Admin         DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -355,19 +355,19 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultOneToMany...eneric.list    -> GET    /user/:pid/animals",
+    "1. DefaultNestedCon...eneric.list    -> GET    /user/:pid/animals",
   ],
   Array [
-    "2. DefaultOneToMany...eneric.get     -> GET    /user/:pid/animals/:id",
+    "2. DefaultNestedCon...eneric.get     -> GET    /user/:pid/animals/:id",
   ],
   Array [
-    "3. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animals/:id",
+    "3. DefaultNestedCon...eneric.modify  -> PATCH  /user/:pid/animals/:id",
   ],
   Array [
-    "4. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animals/:id",
+    "4. DefaultNestedCon...eneric.replace -> PUT    /user/:pid/animals/:id",
   ],
   Array [
-    "5. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animals/:id",
+    "5. DefaultNestedCon...eneric.delete  -> DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -452,22 +452,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultOneToMany...eneric.list    -> GET    /users/:uid/animals",
+    "1. DefaultNestedCon...eneric.list    -> GET    /users/:uid/animals",
   ],
   Array [
-    "2. DefaultOneToMany...eneric.save    -> POST   /users/:uid/animals",
+    "2. DefaultNestedCon...eneric.save    -> POST   /users/:uid/animals",
   ],
   Array [
-    "3. DefaultOneToMany...eneric.get     -> GET    /users/:uid/animals/:aid",
+    "3. DefaultNestedCon...eneric.get     -> GET    /users/:uid/animals/:aid",
   ],
   Array [
-    "4. DefaultOneToMany...eneric.modify  -> PATCH  /users/:uid/animals/:aid",
+    "4. DefaultNestedCon...eneric.modify  -> PATCH  /users/:uid/animals/:aid",
   ],
   Array [
-    "5. DefaultOneToMany...eneric.replace -> PUT    /users/:uid/animals/:aid",
+    "5. DefaultNestedCon...eneric.replace -> PUT    /users/:uid/animals/:aid",
   ],
   Array [
-    "6. DefaultOneToMany...eneric.delete  -> DELETE /users/:uid/animals/:aid",
+    "6. DefaultNestedCon...eneric.delete  -> DELETE /users/:uid/animals/:aid",
   ],
   Array [],
 ]
@@ -540,22 +540,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultOneToMany...eneric.list    -> GET    /user/:userid/animal",
+    "1. DefaultNestedCon...eneric.list    -> GET    /user/:userid/animal",
   ],
   Array [
-    "2. DefaultOneToMany...eneric.save    -> POST   /user/:userid/animal",
+    "2. DefaultNestedCon...eneric.save    -> POST   /user/:userid/animal",
   ],
   Array [
-    "3. DefaultOneToMany...eneric.get     -> GET    /user/:userid/animal/:animalid",
+    "3. DefaultNestedCon...eneric.get     -> GET    /user/:userid/animal/:animalid",
   ],
   Array [
-    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:userid/animal/:animalid",
+    "4. DefaultNestedCon...eneric.modify  -> PATCH  /user/:userid/animal/:animalid",
   ],
   Array [
-    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:userid/animal/:animalid",
+    "5. DefaultNestedCon...eneric.replace -> PUT    /user/:userid/animal/:animalid",
   ],
   Array [
-    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:userid/animal/:animalid",
+    "6. DefaultNestedCon...eneric.delete  -> DELETE /user/:userid/animal/:animalid",
   ],
   Array [],
 ]
@@ -2237,41 +2237,41 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultOneToMany...eneric.list    -> GET    /api/v2/user/:pid/animals",
+    "1. DefaultNestedCon...eneric.list    -> GET    /api/v2/user/:pid/animals",
   ],
   Array [
-    "2. DefaultOneToMany...eneric.save    -> POST   /api/v2/user/:pid/animals",
+    "2. DefaultNestedCon...eneric.save    -> POST   /api/v2/user/:pid/animals",
   ],
   Array [
-    "3. DefaultOneToMany...eneric.get     -> GET    /api/v2/user/:pid/animals/:id",
+    "3. DefaultNestedCon...eneric.get     -> GET    /api/v2/user/:pid/animals/:id",
   ],
   Array [
-    "4. DefaultOneToMany...eneric.modify  -> PATCH  /api/v2/user/:pid/animals/:id",
+    "4. DefaultNestedCon...eneric.modify  -> PATCH  /api/v2/user/:pid/animals/:id",
   ],
   Array [
-    "5. DefaultOneToMany...eneric.replace -> PUT    /api/v2/user/:pid/animals/:id",
+    "5. DefaultNestedCon...eneric.replace -> PUT    /api/v2/user/:pid/animals/:id",
   ],
   Array [
-    "6. DefaultOneToMany...eneric.delete  -> DELETE /api/v2/user/:pid/animals/:id",
+    "6. DefaultNestedCon...eneric.delete  -> DELETE /api/v2/user/:pid/animals/:id",
   ],
   Array [],
   Array [
-    "1. DefaultOneToMany...eneric.list    -> GET    /api/v1/user/:pid/animals",
+    "1. DefaultNestedCon...eneric.list    -> GET    /api/v1/user/:pid/animals",
   ],
   Array [
-    "2. DefaultOneToMany...eneric.save    -> POST   /api/v1/user/:pid/animals",
+    "2. DefaultNestedCon...eneric.save    -> POST   /api/v1/user/:pid/animals",
   ],
   Array [
-    "3. DefaultOneToMany...eneric.get     -> GET    /api/v1/user/:pid/animals/:id",
+    "3. DefaultNestedCon...eneric.get     -> GET    /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "4. DefaultOneToMany...eneric.modify  -> PATCH  /api/v1/user/:pid/animals/:id",
+    "4. DefaultNestedCon...eneric.modify  -> PATCH  /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "5. DefaultOneToMany...eneric.replace -> PUT    /api/v1/user/:pid/animals/:id",
+    "5. DefaultNestedCon...eneric.replace -> PUT    /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "6. DefaultOneToMany...eneric.delete  -> DELETE /api/v1/user/:pid/animals/:id",
+    "6. DefaultNestedCon...eneric.delete  -> DELETE /api/v1/user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -2331,22 +2331,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultOneToMany...eneric.list    -> GET    /user/:pid/animal",
+    "1. DefaultNestedCon...eneric.list    -> GET    /user/:pid/animal",
   ],
   Array [
-    "2. DefaultOneToMany...eneric.save    -> POST   /user/:pid/animal",
+    "2. DefaultNestedCon...eneric.save    -> POST   /user/:pid/animal",
   ],
   Array [
-    "3. DefaultOneToMany...eneric.get     -> GET    /user/:pid/animal/:id",
+    "3. DefaultNestedCon...eneric.get     -> GET    /user/:pid/animal/:id",
   ],
   Array [
-    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animal/:id",
+    "4. DefaultNestedCon...eneric.modify  -> PATCH  /user/:pid/animal/:id",
   ],
   Array [
-    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animal/:id",
+    "5. DefaultNestedCon...eneric.replace -> PUT    /user/:pid/animal/:id",
   ],
   Array [
-    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animal/:id",
+    "6. DefaultNestedCon...eneric.delete  -> DELETE /user/:pid/animal/:id",
   ],
   Array [],
 ]
@@ -2359,22 +2359,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultOneToMany...eneric.list    -> GET    /user/:pid/animal",
+    "1. DefaultNestedCon...eneric.list    -> GET    /user/:pid/animal",
   ],
   Array [
-    "2. DefaultOneToMany...eneric.save    -> POST   /user/:pid/animal",
+    "2. DefaultNestedCon...eneric.save    -> POST   /user/:pid/animal",
   ],
   Array [
-    "3. DefaultOneToMany...eneric.get     -> GET    /user/:pid/animal/:id",
+    "3. DefaultNestedCon...eneric.get     -> GET    /user/:pid/animal/:id",
   ],
   Array [
-    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animal/:id",
+    "4. DefaultNestedCon...eneric.modify  -> PATCH  /user/:pid/animal/:id",
   ],
   Array [
-    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animal/:id",
+    "5. DefaultNestedCon...eneric.replace -> PUT    /user/:pid/animal/:id",
   ],
   Array [
-    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animal/:id",
+    "6. DefaultNestedCon...eneric.delete  -> DELETE /user/:pid/animal/:id",
   ],
   Array [],
 ]
@@ -2387,22 +2387,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultOneToMany...eneric.list    -> GET    /user/:pid/animal",
+    "1. DefaultNestedCon...eneric.list    -> GET    /user/:pid/animal",
   ],
   Array [
-    "2. DefaultOneToMany...eneric.save    -> POST   /user/:pid/animal",
+    "2. DefaultNestedCon...eneric.save    -> POST   /user/:pid/animal",
   ],
   Array [
-    "3. DefaultOneToMany...eneric.get     -> GET    /user/:pid/animal/:id",
+    "3. DefaultNestedCon...eneric.get     -> GET    /user/:pid/animal/:id",
   ],
   Array [
-    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animal/:id",
+    "4. DefaultNestedCon...eneric.modify  -> PATCH  /user/:pid/animal/:id",
   ],
   Array [
-    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animal/:id",
+    "5. DefaultNestedCon...eneric.replace -> PUT    /user/:pid/animal/:id",
   ],
   Array [
-    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animal/:id",
+    "6. DefaultNestedCon...eneric.delete  -> DELETE /user/:pid/animal/:id",
   ],
   Array [],
 ]
@@ -2415,40 +2415,40 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    " 1. DefaultOneToMany...eneric.list    -> GET    /user-data/:uid/animal-data",
+    " 1. DefaultNestedCon...eneric.list    -> GET    /user-data/:uid/animal-data",
   ],
   Array [
-    " 2. DefaultOneToMany...eneric.save    -> POST   /user-data/:uid/animal-data",
+    " 2. DefaultNestedCon...eneric.save    -> POST   /user-data/:uid/animal-data",
   ],
   Array [
-    " 3. DefaultOneToMany...eneric.get     -> GET    /user-data/:uid/animal-data/:id",
+    " 3. DefaultNestedCon...eneric.get     -> GET    /user-data/:uid/animal-data/:id",
   ],
   Array [
-    " 4. DefaultOneToMany...eneric.modify  -> PATCH  /user-data/:uid/animal-data/:id",
+    " 4. DefaultNestedCon...eneric.modify  -> PATCH  /user-data/:uid/animal-data/:id",
   ],
   Array [
-    " 5. DefaultOneToMany...eneric.replace -> PUT    /user-data/:uid/animal-data/:id",
+    " 5. DefaultNestedCon...eneric.replace -> PUT    /user-data/:uid/animal-data/:id",
   ],
   Array [
-    " 6. DefaultOneToMany...eneric.delete  -> DELETE /user-data/:uid/animal-data/:id",
+    " 6. DefaultNestedCon...eneric.delete  -> DELETE /user-data/:uid/animal-data/:id",
   ],
   Array [
-    " 7. DefaultOneToMany...eneric.list    -> GET    /user/:pid/animals",
+    " 7. DefaultNestedCon...eneric.list    -> GET    /user/:pid/animals",
   ],
   Array [
-    " 8. DefaultOneToMany...eneric.save    -> POST   /user/:pid/animals",
+    " 8. DefaultNestedCon...eneric.save    -> POST   /user/:pid/animals",
   ],
   Array [
-    " 9. DefaultOneToMany...eneric.get     -> GET    /user/:pid/animals/:id",
+    " 9. DefaultNestedCon...eneric.get     -> GET    /user/:pid/animals/:id",
   ],
   Array [
-    "10. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animals/:id",
+    "10. DefaultNestedCon...eneric.modify  -> PATCH  /user/:pid/animals/:id",
   ],
   Array [
-    "11. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animals/:id",
+    "11. DefaultNestedCon...eneric.replace -> PUT    /user/:pid/animals/:id",
   ],
   Array [
-    "12. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animals/:id",
+    "12. DefaultNestedCon...eneric.delete  -> DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -2479,22 +2479,22 @@ Array [
     " 6. DefaultControllerGeneric.delete(id, ctx) -> DELETE /api/v1/user/:id",
   ],
   Array [
-    " 7. DefaultOneToMany...eneric.list           -> GET    /api/v1/user/:pid/animals",
+    " 7. DefaultNestedCon...eneric.list           -> GET    /api/v1/user/:pid/animals",
   ],
   Array [
-    " 8. DefaultOneToMany...eneric.save           -> POST   /api/v1/user/:pid/animals",
+    " 8. DefaultNestedCon...eneric.save           -> POST   /api/v1/user/:pid/animals",
   ],
   Array [
-    " 9. DefaultOneToMany...eneric.get            -> GET    /api/v1/user/:pid/animals/:id",
+    " 9. DefaultNestedCon...eneric.get            -> GET    /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "10. DefaultOneToMany...eneric.modify         -> PATCH  /api/v1/user/:pid/animals/:id",
+    "10. DefaultNestedCon...eneric.modify         -> PATCH  /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "11. DefaultOneToMany...eneric.replace        -> PUT    /api/v1/user/:pid/animals/:id",
+    "11. DefaultNestedCon...eneric.replace        -> PUT    /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "12. DefaultOneToMany...eneric.delete         -> DELETE /api/v1/user/:pid/animals/:id",
+    "12. DefaultNestedCon...eneric.delete         -> DELETE /api/v1/user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -2642,22 +2642,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultOneToMany...eneric.list    -> GET    /user/:pid/animals",
+    "1. DefaultNestedCon...eneric.list    -> GET    /user/:pid/animals",
   ],
   Array [
-    "2. DefaultOneToMany...eneric.save    -> POST   /user/:pid/animals",
+    "2. DefaultNestedCon...eneric.save    -> POST   /user/:pid/animals",
   ],
   Array [
-    "3. DefaultOneToMany...eneric.get     -> GET    /user/:pid/animals/:id",
+    "3. DefaultNestedCon...eneric.get     -> GET    /user/:pid/animals/:id",
   ],
   Array [
-    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animals/:id",
+    "4. DefaultNestedCon...eneric.modify  -> PATCH  /user/:pid/animals/:id",
   ],
   Array [
-    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animals/:id",
+    "5. DefaultNestedCon...eneric.replace -> PUT    /user/:pid/animals/:id",
   ],
   Array [
-    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animals/:id",
+    "6. DefaultNestedCon...eneric.delete  -> DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -2716,22 +2716,22 @@ Array [
     " 6. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
   ],
   Array [
-    " 7. DefaultOneToMany...eneric.list           -> GET    /user/:pid/animals",
+    " 7. DefaultNestedCon...eneric.list           -> GET    /user/:pid/animals",
   ],
   Array [
-    " 8. DefaultOneToMany...eneric.save           -> POST   /user/:pid/animals",
+    " 8. DefaultNestedCon...eneric.save           -> POST   /user/:pid/animals",
   ],
   Array [
-    " 9. DefaultOneToMany...eneric.get            -> GET    /user/:pid/animals/:id",
+    " 9. DefaultNestedCon...eneric.get            -> GET    /user/:pid/animals/:id",
   ],
   Array [
-    "10. DefaultOneToMany...eneric.modify         -> PATCH  /user/:pid/animals/:id",
+    "10. DefaultNestedCon...eneric.modify         -> PATCH  /user/:pid/animals/:id",
   ],
   Array [
-    "11. DefaultOneToMany...eneric.replace        -> PUT    /user/:pid/animals/:id",
+    "11. DefaultNestedCon...eneric.replace        -> PUT    /user/:pid/animals/:id",
   ],
   Array [
-    "12. DefaultOneToMany...eneric.delete         -> DELETE /user/:pid/animals/:id",
+    "12. DefaultNestedCon...eneric.delete         -> DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -2762,22 +2762,22 @@ Array [
     " 6. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
   ],
   Array [
-    " 7. DefaultOneToMany...eneric.list           -> GET    /user/:pid/animals",
+    " 7. DefaultNestedCon...eneric.list           -> GET    /user/:pid/animals",
   ],
   Array [
-    " 8. DefaultOneToMany...eneric.save           -> POST   /user/:pid/animals",
+    " 8. DefaultNestedCon...eneric.save           -> POST   /user/:pid/animals",
   ],
   Array [
-    " 9. DefaultOneToMany...eneric.get            -> GET    /user/:pid/animals/:id",
+    " 9. DefaultNestedCon...eneric.get            -> GET    /user/:pid/animals/:id",
   ],
   Array [
-    "10. DefaultOneToMany...eneric.modify         -> PATCH  /user/:pid/animals/:id",
+    "10. DefaultNestedCon...eneric.modify         -> PATCH  /user/:pid/animals/:id",
   ],
   Array [
-    "11. DefaultOneToMany...eneric.replace        -> PUT    /user/:pid/animals/:id",
+    "11. DefaultNestedCon...eneric.replace        -> PUT    /user/:pid/animals/:id",
   ],
   Array [
-    "12. DefaultOneToMany...eneric.delete         -> DELETE /user/:pid/animals/:id",
+    "12. DefaultNestedCon...eneric.delete         -> DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -2858,22 +2858,22 @@ Array [
     "12. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
   ],
   Array [
-    "13. DefaultOneToMany...eneric.list           -> GET    /user/:pid/animals",
+    "13. DefaultNestedCon...eneric.list           -> GET    /user/:pid/animals",
   ],
   Array [
-    "14. DefaultOneToMany...eneric.save           -> POST   /user/:pid/animals",
+    "14. DefaultNestedCon...eneric.save           -> POST   /user/:pid/animals",
   ],
   Array [
-    "15. DefaultOneToMany...eneric.get            -> GET    /user/:pid/animals/:id",
+    "15. DefaultNestedCon...eneric.get            -> GET    /user/:pid/animals/:id",
   ],
   Array [
-    "16. DefaultOneToMany...eneric.modify         -> PATCH  /user/:pid/animals/:id",
+    "16. DefaultNestedCon...eneric.modify         -> PATCH  /user/:pid/animals/:id",
   ],
   Array [
-    "17. DefaultOneToMany...eneric.replace        -> PUT    /user/:pid/animals/:id",
+    "17. DefaultNestedCon...eneric.replace        -> PUT    /user/:pid/animals/:id",
   ],
   Array [
-    "18. DefaultOneToMany...eneric.delete         -> DELETE /user/:pid/animals/:id",
+    "18. DefaultNestedCon...eneric.delete         -> DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -2922,22 +2922,22 @@ Array [
     "12. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
   ],
   Array [
-    "13. DefaultOneToMany...eneric.list           -> GET    /user/:pid/animals",
+    "13. DefaultNestedCon...eneric.list           -> GET    /user/:pid/animals",
   ],
   Array [
-    "14. DefaultOneToMany...eneric.save           -> POST   /user/:pid/animals",
+    "14. DefaultNestedCon...eneric.save           -> POST   /user/:pid/animals",
   ],
   Array [
-    "15. DefaultOneToMany...eneric.get            -> GET    /user/:pid/animals/:id",
+    "15. DefaultNestedCon...eneric.get            -> GET    /user/:pid/animals/:id",
   ],
   Array [
-    "16. DefaultOneToMany...eneric.modify         -> PATCH  /user/:pid/animals/:id",
+    "16. DefaultNestedCon...eneric.modify         -> PATCH  /user/:pid/animals/:id",
   ],
   Array [
-    "17. DefaultOneToMany...eneric.replace        -> PUT    /user/:pid/animals/:id",
+    "17. DefaultNestedCon...eneric.replace        -> PUT    /user/:pid/animals/:id",
   ],
   Array [
-    "18. DefaultOneToMany...eneric.delete         -> DELETE /user/:pid/animals/:id",
+    "18. DefaultNestedCon...eneric.delete         -> DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -2986,22 +2986,22 @@ Array [
     "12. DefaultControllerGeneric.delete(id, ctx) -> DELETE /user/:id",
   ],
   Array [
-    "13. DefaultOneToMany...eneric.list           -> GET    /user/:pid/animals",
+    "13. DefaultNestedCon...eneric.list           -> GET    /user/:pid/animals",
   ],
   Array [
-    "14. DefaultOneToMany...eneric.save           -> POST   /user/:pid/animals",
+    "14. DefaultNestedCon...eneric.save           -> POST   /user/:pid/animals",
   ],
   Array [
-    "15. DefaultOneToMany...eneric.get            -> GET    /user/:pid/animals/:id",
+    "15. DefaultNestedCon...eneric.get            -> GET    /user/:pid/animals/:id",
   ],
   Array [
-    "16. DefaultOneToMany...eneric.modify         -> PATCH  /user/:pid/animals/:id",
+    "16. DefaultNestedCon...eneric.modify         -> PATCH  /user/:pid/animals/:id",
   ],
   Array [
-    "17. DefaultOneToMany...eneric.replace        -> PUT    /user/:pid/animals/:id",
+    "17. DefaultNestedCon...eneric.replace        -> PUT    /user/:pid/animals/:id",
   ],
   Array [
-    "18. DefaultOneToMany...eneric.delete         -> DELETE /user/:pid/animals/:id",
+    "18. DefaultNestedCon...eneric.delete         -> DELETE /user/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -3050,22 +3050,22 @@ Array [
     "12. DefaultControllerGeneric.delete(id, ctx) -> DELETE /api/v1/user/:id",
   ],
   Array [
-    "13. DefaultOneToMany...eneric.list           -> GET    /api/v1/user/:pid/animals",
+    "13. DefaultNestedCon...eneric.list           -> GET    /api/v1/user/:pid/animals",
   ],
   Array [
-    "14. DefaultOneToMany...eneric.save           -> POST   /api/v1/user/:pid/animals",
+    "14. DefaultNestedCon...eneric.save           -> POST   /api/v1/user/:pid/animals",
   ],
   Array [
-    "15. DefaultOneToMany...eneric.get            -> GET    /api/v1/user/:pid/animals/:id",
+    "15. DefaultNestedCon...eneric.get            -> GET    /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "16. DefaultOneToMany...eneric.modify         -> PATCH  /api/v1/user/:pid/animals/:id",
+    "16. DefaultNestedCon...eneric.modify         -> PATCH  /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "17. DefaultOneToMany...eneric.replace        -> PUT    /api/v1/user/:pid/animals/:id",
+    "17. DefaultNestedCon...eneric.replace        -> PUT    /api/v1/user/:pid/animals/:id",
   ],
   Array [
-    "18. DefaultOneToMany...eneric.delete         -> DELETE /api/v1/user/:pid/animals/:id",
+    "18. DefaultNestedCon...eneric.delete         -> DELETE /api/v1/user/:pid/animals/:id",
   ],
   Array [],
 ]

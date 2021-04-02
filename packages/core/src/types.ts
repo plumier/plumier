@@ -393,7 +393,7 @@ export interface NestedGenericControllerDecorator {
     relation: string
 }
 
-export type GenericControllers = [Class<ControllerGeneric>, Class<OneToManyControllerGeneric>]
+export type GenericControllers = [Class<ControllerGeneric>, Class<NestedControllerGeneric>]
 
 export interface SelectQuery { columns?: any, relations?: any }
 
@@ -406,7 +406,7 @@ export interface Repository<T> {
     count(query?: any): Promise<number>
 }
 
-export interface OneToManyRepository<P, T> {
+export interface NestedRepository<P, T> {
     find(pid: any, offset: number, limit: number, query: any, select: SelectQuery, order: any): Promise<T[]>
     insert(pid: any, data: Partial<T>): Promise<T>
     findParentById(id: any): Promise<P | undefined>
@@ -420,7 +420,7 @@ export abstract class ControllerGeneric<T = any, TID = any> {
     abstract readonly entityType: Class<T>
 }
 
-export abstract class OneToManyControllerGeneric<P = any, T = any, PID = any, TID = any> {
+export abstract class NestedControllerGeneric<P = any, T = any, PID = any, TID = any> {
     abstract readonly entityType: Class<T>
     abstract readonly parentEntityType: Class<P>
 }

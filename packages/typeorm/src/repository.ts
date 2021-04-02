@@ -1,4 +1,4 @@
-import { Class, OneToManyRepository, Repository, SelectQuery, EntityRelationInfo, entityHelper } from "@plumier/core"
+import { Class, NestedRepository, Repository, SelectQuery, EntityRelationInfo, entityHelper } from "@plumier/core"
 import { EntityWithRelation } from "@plumier/generic-controller"
 import { getManager, Repository as NativeRepository } from "typeorm"
 
@@ -45,7 +45,7 @@ class TypeORMRepository<T> implements Repository<T> {
     }
 }
 
-class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
+class TypeORMNestedRepository<P, T> implements NestedRepository<P, T> {
     readonly nativeRepository: NativeRepository<T>
     readonly nativeParentRepository: NativeRepository<P>
     readonly relation: EntityRelationInfo
@@ -106,4 +106,4 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
 }
 
 
-export { TypeORMRepository, TypeORMOneToManyRepository }
+export { TypeORMRepository, TypeORMNestedRepository }

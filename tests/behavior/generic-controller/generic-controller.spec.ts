@@ -11,7 +11,7 @@ import {
     entityPolicy,
     Invocation,
     Middleware,
-    OneToManyRepository,
+    NestedRepository,
     PlumierApplication,
     postSave,
     preSave,
@@ -20,7 +20,7 @@ import {
     route,
     RouteMetadata
 } from "@plumier/core"
-import { IdentifierResult, RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, RequestHookMiddleware } from "@plumier/generic-controller"
+import { IdentifierResult, RepoBaseControllerGeneric, RepoBaseNestedControllerGeneric, RequestHookMiddleware } from "@plumier/generic-controller"
 import { JwtAuthFacility } from "@plumier/jwt"
 import reflect, { generic, noop, type } from "@plumier/reflect"
 import { SwaggerFacility } from "@plumier/swagger"
@@ -31,7 +31,7 @@ import { Context } from "koa"
 import { join } from "path"
 import Plumier, { ControllerFacility, ControllerFacilityOption, domain, genericController, WebApiFacility } from "plumier"
 import supertest from "supertest"
-import { DefaultControllerGeneric, DefaultOneToManyControllerGeneric, expectError, MockOneToManyRepo, MockRepo } from "../helper"
+import { DefaultControllerGeneric, DefaultNestedControllerGeneric, expectError, MockNestedRepo, MockRepo } from "../helper"
 
 
 class RouteHookFacility extends DefaultFacility {
@@ -66,7 +66,7 @@ function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration
     return new Plumier()
         .set({ ...config })
         .set(new WebApiFacility(opt))
-        .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
+        .set({ genericController: [DefaultControllerGeneric, DefaultNestedControllerGeneric] })
 }
 
 describe("Route Generator", () => {
@@ -219,7 +219,7 @@ describe("Route Generator", () => {
             class MyCustomControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{ }
             const mock = console.mock()
             await createApp({ controller: User, rootPath: "/api/v1/" })
-                .set({ genericController: [MyCustomControllerGeneric, DefaultOneToManyControllerGeneric] })
+                .set({ genericController: [MyCustomControllerGeneric, DefaultNestedControllerGeneric] })
                 .initialize()
             expect(mock.mock.calls).toMatchSnapshot()
         })
@@ -467,7 +467,7 @@ describe("Route Generator", () => {
             }
             @generic.template("P", "PID", "T", "TID")
             @generic.type("P", "PID", "T", "TID")
-            class MyCustomOneToManyControllerGeneric<P, PID, T, TID> extends RepoBaseOneToManyControllerGeneric<P, PID, T, TID>{ }
+            class MyCustomOneToManyControllerGeneric<P, PID, T, TID> extends RepoBaseNestedControllerGeneric<P, PID, T, TID>{ }
             const mock = console.mock()
             await createApp({ controller: User, rootPath: "/api/v1/" })
                 .set({ genericController: [DefaultControllerGeneric, MyCustomOneToManyControllerGeneric] })
@@ -656,7 +656,7 @@ describe("Route Generator", () => {
                 .set(new WebApiFacility())
                 .set(new ControllerFacility({ controller: User, group: "v2", rootPath: "api/v2" }))
                 .set(new ControllerFacility({ controller: User, group: "v1", rootPath: "api/v1" }))
-                .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
+                .set({ genericController: [DefaultControllerGeneric, DefaultNestedControllerGeneric] })
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -688,7 +688,7 @@ describe("Route Generator", () => {
                 .set(new WebApiFacility())
                 .set(new ControllerFacility({ controller: User, group: "v2", rootPath: "api/v2" }))
                 .set(new ControllerFacility({ controller: User, group: "v1", rootPath: "api/v1" }))
-                .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
+                .set({ genericController: [DefaultControllerGeneric, DefaultNestedControllerGeneric] })
                 .initialize()
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
         })
@@ -740,7 +740,7 @@ describe("Custom Route Path", () => {
                     fn(x.ctx.query["userid"])
                     return x.proceed()
                 })
-                .set({ genericController: [MyControllerGeneric, DefaultOneToManyControllerGeneric] })
+                .set({ genericController: [MyControllerGeneric, DefaultNestedControllerGeneric] })
                 .initialize()
             await supertest(koa.callback())
                 .get("/user/1234")
@@ -820,7 +820,7 @@ describe("Custom Route Path", () => {
         it("Should contains correct query parameter", async () => {
             @generic.template("P", "T", "PID", "TID")
             @generic.type("P", "T", "PID", "TID")
-            class MyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{
+            class MyControllerGeneric<P, T, PID, TID> extends RepoBaseNestedControllerGeneric<P, T, PID, TID>{
                 constructor(
                     @entity.primaryId()
                     public id: number,
@@ -1703,8 +1703,8 @@ describe("Request Hook", () => {
     }
     @generic.template("P", "T", "PID", "TID")
     @generic.type("P", "T", "PID", "TID")
-    class MyOneToManyControllerGeneric<P, T, PID, TID> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID>{
-        constructor() { super(fac => new MockOneToManyRepo<P, T>(fn)) }
+    class MyNestedControllerGeneric<P, T, PID, TID> extends RepoBaseNestedControllerGeneric<P, T, PID, TID>{
+        constructor() { super(fac => new MockNestedRepo<P, T>(fn)) }
     }
     function createApp(opt: ControllerFacilityOption, config?: Partial<Configuration>) {
         return new Plumier()
@@ -1712,7 +1712,7 @@ describe("Request Hook", () => {
             .set(new WebApiFacility())
             .set(new ControllerFacility(opt))
             .use(new RequestHookMiddleware(), "Action")
-            .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
+            .set({ genericController: [MyControllerGeneric, MyNestedControllerGeneric] })
     }
     beforeEach(() => fn.mockClear())
     it("Should able to hook request in generic controller", async () => {
@@ -2033,7 +2033,7 @@ describe("Request Hook", () => {
                 .set(new WebApiFacility())
                 .set(new ControllerFacility(opt))
                 .use(new RequestHookMiddleware(), "Action")
-                .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
+                .set({ genericController: [MyControllerGeneric, MyNestedControllerGeneric] })
         }
         @genericController()
         @domain()
@@ -2075,7 +2075,7 @@ describe("Request Hook", () => {
                 .set(new WebApiFacility())
                 .set(new ControllerFacility(opt))
                 .use(new RequestHookMiddleware(), "Action")
-                .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
+                .set({ genericController: [MyControllerGeneric, MyNestedControllerGeneric] })
         }
         @genericController()
         @domain()
@@ -2307,7 +2307,7 @@ describe("Controller Builder", () => {
                 .set(new WebApiFacility())
                 .set(new ControllerFacility(opt))
                 .set(new JwtAuthFacility({ secret: "lorem", authPolicies }))
-                .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
+                .set({ genericController: [DefaultControllerGeneric, DefaultNestedControllerGeneric] })
         }
         it("Should able to authorize specific routes", async () => {
             @genericController(c => c.mutators().authorize("Admin"))
@@ -2561,7 +2561,7 @@ describe("Entity Policy", () => {
             return users.find(x => x.id === id)
         }
     }
-    class TodoRepo extends MockOneToManyRepo<User, Todo>{
+    class TodoRepo extends MockNestedRepo<User, Todo>{
         constructor(fn: jest.Mock) { super(fn) }
         async find(pid: number, offset: number, limit: number, query: any): Promise<Todo[]> {
             return todos.filter(x => x.user.id === pid)
@@ -2577,7 +2577,7 @@ describe("Entity Policy", () => {
     }
     @generic.template("P", "T", "PID", "TID")
     @generic.type("P", "T", "PID", "TID")
-    class MyOneToManyControllerGeneric extends RepoBaseOneToManyControllerGeneric<User, Todo, number, number>{
+    class MyNestedControllerGeneric extends RepoBaseNestedControllerGeneric<User, Todo, number, number>{
         constructor() { super(x => new TodoRepo(fn)) }
     }
     const UserPolicy = entityPolicy(User).define("Owner", (ctx, e) => ctx.user?.userId === e)
@@ -2587,7 +2587,7 @@ describe("Entity Policy", () => {
             .set(new WebApiFacility())
             .set(new ControllerFacility({ controller: User }))
             .set(new JwtAuthFacility({ secret: "lorem", authPolicies: [UserPolicy, TodoPolicy] }))
-            .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
+            .set({ genericController: [MyControllerGeneric, MyNestedControllerGeneric] })
             .initialize()
     }
     const JOHN_TOKEN = sign({ userId: 1 }, "lorem")
@@ -2781,7 +2781,7 @@ describe("Response Transformer", () => {
             return users.find(x => x.id === id)
         }
     }
-    class TodoRepo extends MockOneToManyRepo<User, Todo>{
+    class TodoRepo extends MockNestedRepo<User, Todo>{
         constructor(fn: jest.Mock) { super(fn) }
         async find(pid: number, offset: number, limit: number, query: any): Promise<Todo[]> {
             return todos.filter(x => x.user.id === pid)
@@ -2797,7 +2797,7 @@ describe("Response Transformer", () => {
     }
     @generic.template("P", "T", "PID", "TID")
     @generic.type("P", "T", "PID", "TID")
-    class MyOneToManyControllerGeneric extends RepoBaseOneToManyControllerGeneric<User, Todo, number, number>{
+    class MyNestedControllerGeneric extends RepoBaseNestedControllerGeneric<User, Todo, number, number>{
         constructor() { super(x => new TodoRepo(fn)) }
     }
     function createApp() {
@@ -2806,7 +2806,7 @@ describe("Response Transformer", () => {
             .set(new WebApiFacility())
             .set(new ControllerFacility({ controller: [User, Todo] }))
             .set(new SwaggerFacility())
-            .set({ genericController: [MyControllerGeneric, MyOneToManyControllerGeneric] })
+            .set({ genericController: [MyControllerGeneric, MyNestedControllerGeneric] })
             .initialize()
     }
     describe("Generic Controller", () => {

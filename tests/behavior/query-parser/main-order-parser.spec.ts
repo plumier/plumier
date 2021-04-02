@@ -5,7 +5,7 @@ import { createCustomOrderConverter, orderParser, OrderQueryAuthorizeMiddleware 
 import { Class, noop } from "@plumier/reflect"
 import { sign } from "jsonwebtoken"
 import supertest from "supertest"
-import { DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from "../helper"
+import { DefaultControllerGeneric, DefaultNestedControllerGeneric } from "../helper"
 
 describe("Oder Parser", () => {
     function createApp(controller?: Class) {
@@ -160,7 +160,7 @@ describe("Select Order Authorization", () => {
             }))
             .use(new OrderQueryAuthorizeMiddleware(), "Action")
             .set({ typeConverterVisitors: [createCustomOrderConverter(x => x)] })
-            .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
+            .set({ genericController: [DefaultControllerGeneric, DefaultNestedControllerGeneric] })
 
     }
     it("Should authorize column properly", async () => {

@@ -7,7 +7,7 @@ import pluralize from "pluralize"
 import { filterConverter, orderConverter, selectConverter } from "./converters"
 
 import { getModels, model as globalModel, MongooseHelper, proxy as globalProxy } from "./generator"
-import { MongooseControllerGeneric, MongooseOneToManyControllerGeneric } from "./generic-controller"
+import { MongooseControllerGeneric, MongooseNestedControllerGeneric } from "./generic-controller"
 
 
 
@@ -48,7 +48,7 @@ export class MongooseFacility extends DefaultFacility {
 
     setup(app: Readonly<PlumierApplication>) {
         Object.assign(app.config, {
-            genericController: [MongooseControllerGeneric, MongooseOneToManyControllerGeneric],
+            genericController: [MongooseControllerGeneric, MongooseNestedControllerGeneric],
             genericControllerNameConversion: (x: string) => pluralize(x)
         })
         app.use(new RequestHookMiddleware(), "Action")

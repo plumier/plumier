@@ -5,7 +5,7 @@ import Plumier, { genericController, WebApiFacility } from "plumier"
 import { generic, noop } from "@plumier/reflect"
 import { sign } from "jsonwebtoken"
 import supertest from "supertest"
-import { DefaultOneToManyControllerGeneric, DefaultControllerGeneric } from "../helper"
+import { DefaultNestedControllerGeneric, DefaultControllerGeneric } from "../helper"
 
 
 describe("Filter Parser", () => {
@@ -217,7 +217,7 @@ describe("Filter Parser Authorizer", () => {
             .set({ typeConverterVisitors: [createCustomFilterConverter(x => x)] })
             .use(new FilterQueryAuthorizeMiddleware(), "Action")
             .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
-            .set({ genericController:[DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
+            .set({ genericController:[DefaultControllerGeneric, DefaultNestedControllerGeneric] })
             .initialize()
     }
     it("Should check unauthorized column", async () => {

@@ -399,22 +399,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. TypeORMOneToMany...eneric.list    -> GET    /users/:pid/animals",
+    "1. TypeORMNestedCon...eneric.list    -> GET    /users/:pid/animals",
   ],
   Array [
-    "2. TypeORMOneToMany...eneric.save    -> POST   /users/:pid/animals",
+    "2. TypeORMNestedCon...eneric.save    -> POST   /users/:pid/animals",
   ],
   Array [
-    "3. TypeORMOneToMany...eneric.get     -> GET    /users/:pid/animals/:id",
+    "3. TypeORMNestedCon...eneric.get     -> GET    /users/:pid/animals/:id",
   ],
   Array [
-    "4. TypeORMOneToMany...eneric.modify  -> PATCH  /users/:pid/animals/:id",
+    "4. TypeORMNestedCon...eneric.modify  -> PATCH  /users/:pid/animals/:id",
   ],
   Array [
-    "5. TypeORMOneToMany...eneric.replace -> PUT    /users/:pid/animals/:id",
+    "5. TypeORMNestedCon...eneric.replace -> PUT    /users/:pid/animals/:id",
   ],
   Array [
-    "6. TypeORMOneToMany...eneric.delete  -> DELETE /users/:pid/animals/:id",
+    "6. TypeORMNestedCon...eneric.delete  -> DELETE /users/:pid/animals/:id",
   ],
   Array [],
 ]
@@ -427,10 +427,10 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. TypeORMOneToMany...eneric.list -> GET /users/:pid/animals",
+    "1. TypeORMNestedCon...eneric.list -> GET /users/:pid/animals",
   ],
   Array [
-    "2. TypeORMOneToMany...eneric.get  -> GET /users/:pid/animals/:id",
+    "2. TypeORMNestedCon...eneric.get  -> GET /users/:pid/animals/:id",
   ],
   Array [],
 ]

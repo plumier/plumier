@@ -7,7 +7,7 @@ import {
     Invocation,
     MetadataImpl,
     Middleware,
-    OneToManyControllerGeneric,
+    NestedControllerGeneric,
     RequestHookDecorator
 } from "@plumier/core"
 import { reflect } from "@plumier/reflect"
@@ -48,7 +48,7 @@ class RequestHookMiddleware implements Middleware<ActionContext> {
     async execute({ ctx, proceed }: Readonly<Invocation<ActionContext>>): Promise<ActionResult> {
         if (!["POST", "PUT", "PATCH"].some(x => x === ctx.method)) return proceed()
         const isGeneric = ctx.route.controller.type.prototype instanceof ControllerGeneric
-        const isNestedGeneric = ctx.route.controller.type.prototype instanceof OneToManyControllerGeneric
+        const isNestedGeneric = ctx.route.controller.type.prototype instanceof NestedControllerGeneric
         if (!isGeneric && !isNestedGeneric) return proceed()
         const metadata = new MetadataImpl(ctx.parameters, ctx.route, ctx.route.action)
         // find request body data type
