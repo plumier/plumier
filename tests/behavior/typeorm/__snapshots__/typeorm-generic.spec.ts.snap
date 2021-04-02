@@ -399,10 +399,10 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. TypeORMOneToMany...eneric.list -> GET /users/:pid/animals",
+    "1. TypeORMNestedCon...eneric.list -> GET /users/:pid/animals",
   ],
   Array [
-    "2. TypeORMOneToMany...eneric.get  -> GET /users/:pid/animals/:id",
+    "2. TypeORMNestedCon...eneric.get  -> GET /users/:pid/animals/:id",
   ],
   Array [],
 ]

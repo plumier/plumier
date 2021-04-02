@@ -982,12 +982,12 @@ class User {
 
 When the default generic controller doesn't match your need, you can provide your own custom generic controllers. For example the default generic controller for `GET` method doesn't contains count of the match records usually used for table pagination on UI side. You can override this function by provide a new generic controller inherited from your ORM/ODM helper: 
 
-| Generic Controller                                   | Package           | Description                                            |
-| ---------------------------------------------------- | ----------------- | ------------------------------------------------------ |
-| `TypeORMControllerGeneric<T, TID>`                   | @plumier/typeorm  | TypeORM generic controller implementation              |
-| `TypeORMOneToManyControllerGeneric<P, T, PID, TID>`  | @plumier/typeorm  | TypeORM One To Many generic controller implementation  |
-| `MongooseControllerGeneric<T, TID>`                  | @plumier/mongoose | Mongoose generic controller implementation             |
-| `MongooseOneToManyControllerGeneric<P, T, PID, TID>` | @plumier/mongoose | Mongoose One To Many generic controller implementation |
+| Generic Controller                                | Package           | Description                                            |
+| ------------------------------------------------- | ----------------- | ------------------------------------------------------ |
+| `TypeORMControllerGeneric<T, TID>`                | @plumier/typeorm  | TypeORM generic controller implementation              |
+| `TypeORMNestedControllerGeneric<P, T, PID, TID>`  | @plumier/typeorm  | TypeORM One To Many generic controller implementation  |
+| `MongooseControllerGeneric<T, TID>`               | @plumier/mongoose | Mongoose generic controller implementation             |
+| `MongooseNestedControllerGeneric<P, T, PID, TID>` | @plumier/mongoose | Mongoose One To Many generic controller implementation |
 
 First define the model represent the response schema returned by each controller using generic type like below 
 
@@ -1006,7 +1006,7 @@ export class Response<T> {
 Then create a new generic controller for both based on any of above generic controller like below 
 
 ```typescript 
-import {TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric} from "@plumier/typeorm"
+import {TypeORMControllerGeneric, TypeORMNestedControllerGeneric} from "@plumier/typeorm"
 
 export class CustomControllerGeneric<T, TID> extends TypeORMControllerGeneric<T, TID> {
     @type(Response, "T")
@@ -1017,7 +1017,7 @@ export class CustomControllerGeneric<T, TID> extends TypeORMControllerGeneric<T,
     }
 }
 
-export class CustomOneToManyControllerGeneric<P, T, PID, TID> extends TypeORMOneToManyControllerGeneric<P, T, PID, TID>{
+export class CustomNestedControllerGeneric<P, T, PID, TID> extends TypeORMNestedControllerGeneric<P, T, PID, TID>{
     @type(Response, "T")
     async list(pid: PID, offset: number, limit: number, filter: any, select: SelectQuery, order: any, ctx: Context) {
         const data = await super.list(pid, offset, limit, filter, select, order, ctx)
@@ -1039,7 +1039,7 @@ new Plumier()
     .set(new TypeORMFacility())
     // Make sure to register the controller under the `TypeORMFacility` or `MongooseFacility`. 
     .set({
-        genericController: [CustomControllerGeneric, CustomOneToManyControllerGeneric]
+        genericController: [CustomControllerGeneric, CustomNestedControllerGeneric]
     })
 ```
 
@@ -1050,7 +1050,7 @@ import { createGenericControllerTypeORM } from "@plumier/typeorm"
 // for mongoose use below import
 // import { createGenericControllerMongoose } from "@plumier/mongoose"
 
-export const CustomGenericController = createGenericControllerTypeORM([CustomControllerGeneric, CustomOneToManyControllerGeneric])
+export const CustomGenericController = createGenericControllerTypeORM([CustomControllerGeneric, CustomNestedControllerGeneric])
 ```
 
 With above code we created a new generic controller factory which based on our custom generic controllers. Export the factory and use it anywhere on your code like usual generic controller factory.

@@ -1,17 +1,17 @@
-import { bind, Class, GenericControllers, OneToManyRepository, Repository, SelectQuery, val } from "@plumier/core"
+import { bind, Class, GenericControllers, NestedRepository, Repository, SelectQuery, val } from "@plumier/core"
 import {
     createGenericController,
     EntityWithRelation,
     GenericControllerConfiguration,
     NestedRepositoryFactory,
     RepoBaseControllerGeneric,
-    RepoBaseOneToManyControllerGeneric,
+    RepoBaseNestedControllerGeneric,
 } from "@plumier/generic-controller"
 import reflect, { generic } from "@plumier/reflect"
 import { Context } from "koa"
 import pluralize from "pluralize"
 
-import { MongooseOneToManyRepository, MongooseRepository } from "./repository"
+import { MongooseNestedRepository, MongooseRepository } from "./repository"
 
 class MongooseControllerGeneric<T = any, TID = string> extends RepoBaseControllerGeneric<T, TID>{
     constructor(fac?: ((x: Class<T>) => Repository<T>)) {
@@ -36,9 +36,9 @@ class MongooseControllerGeneric<T = any, TID = string> extends RepoBaseControlle
 }
 
 
-class MongooseOneToManyControllerGeneric<P = any, T = any, PID = string, TID = string> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
+class MongooseNestedControllerGeneric<P = any, T = any, PID = string, TID = string> extends RepoBaseNestedControllerGeneric<P, T, PID, TID> {
     constructor(fac?: NestedRepositoryFactory<P,T>) {
-        super(fac ?? (t => new MongooseOneToManyRepository(t)))
+        super(fac ?? (t => new MongooseNestedRepository(t)))
     }
 
     list(@val.mongoId() pid: PID, offset: number = 0, limit: number = 50, filter: any, select: SelectQuery, order: any, ctx: Context) {
@@ -74,7 +74,7 @@ class MongooseOneToManyControllerGeneric<P = any, T = any, PID = string, TID = s
 function createGenericControllerMongoose(controllers?: GenericControllers) {
     return <T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) =>
         createGenericController(type, {
-            controllers: controllers ?? [MongooseControllerGeneric, MongooseOneToManyControllerGeneric],
+            controllers: controllers ?? [MongooseControllerGeneric, MongooseNestedControllerGeneric],
             nameConversion: pluralize,
             config
         })
@@ -91,10 +91,10 @@ function GenericController<T>(type: Class, config?: GenericControllerConfigurati
  * @param type Tuple of [Entity, relationName] used as the generic controller parameter
  * @param config configuration to authorize/enable/disable some actions
  */
-function GenericController<T>(type: EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<MongooseOneToManyControllerGeneric<T>>
+function GenericController<T>(type: EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<MongooseNestedControllerGeneric<T>>
 function GenericController<T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) {
     const factory = createGenericControllerMongoose()
     return factory(type, config)
 }
 
-export { MongooseControllerGeneric, MongooseOneToManyControllerGeneric, GenericController, createGenericControllerMongoose }
+export { MongooseControllerGeneric, MongooseNestedControllerGeneric, GenericController, createGenericControllerMongoose }

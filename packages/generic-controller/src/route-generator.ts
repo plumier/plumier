@@ -13,7 +13,7 @@ import { isAbsolute, join } from "path"
 
 import { ControllerBuilder } from "./configuration"
 import { GenericControllerDecorator } from "./decorator"
-import { createGenericControllerType, createOneToManyGenericControllerType } from "./factory"
+import { createGenericControllerType, createNestedGenericControllerType } from "./factory"
 import { genericControllerRegistry } from "./helper"
 
 // --------------------------------------------------------------------- //
@@ -47,7 +47,7 @@ function createNestedGenericControllerByDecorators(entity: Class, genericControl
     for (const prop of meta.properties) {
         const decorators = prop.decorators.filter((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
         for (const decorator of decorators) {
-            const ctl = createOneToManyGenericControllerType([decorator.target, prop.name], getControllerBuilderFromConfig(decorator.config), genericControllers[1], nameConversion)
+            const ctl = createNestedGenericControllerType([decorator.target, prop.name], getControllerBuilderFromConfig(decorator.config), genericControllers[1], nameConversion)
             controllers.push(ctl)
         }
     }

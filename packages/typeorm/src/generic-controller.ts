@@ -1,9 +1,9 @@
-import { api, authorize, Class, entity, GenericControllers, KeyOf, OneToManyRepository, Repository } from "@plumier/core"
+import { api, authorize, Class, entity, GenericControllers, KeyOf, NestedRepository, Repository } from "@plumier/core"
 import {
     ControllerBuilder,
     genericControllerRegistry,
     RepoBaseControllerGeneric,
-    RepoBaseOneToManyControllerGeneric,
+    RepoBaseNestedControllerGeneric,
     GenericControllerConfiguration,
     createGenericController,
     EntityWithRelation,
@@ -14,7 +14,7 @@ import { parse } from "acorn"
 import pluralize from "pluralize"
 import { getMetadataArgsStorage } from "typeorm"
 
-import { TypeORMOneToManyRepository, TypeORMRepository } from "./repository"
+import { TypeORMNestedRepository, TypeORMRepository } from "./repository"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- HELPER ------------------------------ //
@@ -102,9 +102,9 @@ class TypeORMControllerGeneric<T = any, TID = any> extends RepoBaseControllerGen
 
 @generic.template("P", "T", "PID", "TID")
 @generic.type("P", "T", "PID", "TID")
-class TypeORMOneToManyControllerGeneric<P = any, T = any, PID = any, TID = any> extends RepoBaseOneToManyControllerGeneric<P, T, PID, TID> {
+class TypeORMNestedControllerGeneric<P = any, T = any, PID = any, TID = any> extends RepoBaseNestedControllerGeneric<P, T, PID, TID> {
     constructor(fac?: NestedRepositoryFactory<P,T>) {
-        super(fac ?? (p => new TypeORMOneToManyRepository(p)))
+        super(fac ?? (p => new TypeORMNestedRepository(p)))
     }
 }
 
@@ -116,7 +116,7 @@ class TypeORMOneToManyControllerGeneric<P = any, T = any, PID = any, TID = any> 
 function createGenericControllerTypeORM(controllers?: GenericControllers) {
     return <T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) =>
         createGenericController(type, {
-            controllers: controllers ?? [TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric],
+            controllers: controllers ?? [TypeORMControllerGeneric, TypeORMNestedControllerGeneric],
             nameConversion: pluralize,
             config, normalize: type => {
                 if (Array.isArray(type)) {
@@ -144,10 +144,10 @@ function GenericController<T>(type: Class, config?: GenericControllerConfigurati
  * @param type Tuple of [Entity, relationName] used as the generic controller parameter
  * @param config configuration to authorize/enable/disable some actions
  */
-function GenericController<T>(type: EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<TypeORMOneToManyControllerGeneric<T>>
+function GenericController<T>(type: EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<TypeORMNestedControllerGeneric<T>>
 function GenericController<T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) {
     const factory = createGenericControllerTypeORM()
     return factory(type, config)
 }
 
-export { TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric, normalizeEntity, GenericController, createGenericControllerTypeORM, EntityWithRelation }
+export { TypeORMControllerGeneric, TypeORMNestedControllerGeneric, normalizeEntity, GenericController, createGenericControllerTypeORM, EntityWithRelation }

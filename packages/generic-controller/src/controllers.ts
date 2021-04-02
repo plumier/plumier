@@ -9,8 +9,8 @@ import {
     EntityIdDecorator,
     HttpStatusError,
     NestedGenericControllerDecorator,
-    OneToManyControllerGeneric,
-    OneToManyRepository,
+    NestedControllerGeneric,
+    NestedRepository,
     Repository,
     route,
     SelectQuery,
@@ -56,7 +56,7 @@ class IdentifierResult<TID> {
     ) { }
 }
 
-type NestedRepositoryFactory<P,T> = (t:EntityWithRelation<P,T> | EntityWithRelation<T|P>) => OneToManyRepository<P,T>
+type NestedRepositoryFactory<P,T> = (t:EntityWithRelation<P,T> | EntityWithRelation<T|P>) => NestedRepository<P,T>
 
 @generic.template("T", "TID")
 class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGeneric<T, TID>{
@@ -132,10 +132,10 @@ class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGene
 }
 
 @generic.template("P", "T", "PID", "TID")
-class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, TID = String> extends OneToManyControllerGeneric<P, T, PID, TID>{
+class RepoBaseNestedControllerGeneric<P = Object, T = Object, PID = String, TID = String> extends NestedControllerGeneric<P, T, PID, TID>{
     readonly entityType: Class<T>
     readonly parentEntityType: Class<P>
-    readonly repo: OneToManyRepository<P, T>
+    readonly repo: NestedRepository<P, T>
 
     constructor(fac: NestedRepositoryFactory<P,T>) {
         super()
@@ -222,5 +222,5 @@ class RepoBaseOneToManyControllerGeneric<P = Object, T = Object, PID = String, T
 }
 
 export {
-    RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric, IdentifierResult, NestedRepositoryFactory
+    RepoBaseControllerGeneric, RepoBaseNestedControllerGeneric, IdentifierResult, NestedRepositoryFactory
 }

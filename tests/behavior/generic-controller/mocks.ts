@@ -1,4 +1,4 @@
-import { RepoBaseControllerGeneric, RepoBaseOneToManyControllerGeneric } from "@plumier/core"
+import { RepoBaseControllerGeneric, RepoBaseNestedControllerGeneric } from "@plumier/generic-controller";
 import { generic } from "@plumier/reflect"
 
 @generic.template("T", "TID")
@@ -7,4 +7,4 @@ export class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TI
 
 @generic.template("P", "PID", "T", "TID")
 @generic.type("P", "PID", "T", "TID")
-export class MyOneToManyControllerGeneric<P, PID, T, TID> extends RepoBaseOneToManyControllerGeneric<P, PID, T, TID>{}
+export class MyNestedControllerGeneric<P, PID, T, TID> extends RepoBaseNestedControllerGeneric<P, PID, T, TID>{}

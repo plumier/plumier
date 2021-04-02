@@ -288,22 +288,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. MongooseOneToMan...eneric.list    -> GET    /users/:pid/tags",
+    "1. MongooseNestedCo...eneric.list    -> GET    /users/:pid/tags",
   ],
   Array [
-    "2. MongooseOneToMan...eneric.save    -> POST   /users/:pid/tags",
+    "2. MongooseNestedCo...eneric.save    -> POST   /users/:pid/tags",
   ],
   Array [
-    "3. MongooseOneToMan...eneric.get     -> GET    /users/:pid/tags/:id",
+    "3. MongooseNestedCo...eneric.get     -> GET    /users/:pid/tags/:id",
   ],
   Array [
-    "4. MongooseOneToMan...eneric.modify  -> PATCH  /users/:pid/tags/:id",
+    "4. MongooseNestedCo...eneric.modify  -> PATCH  /users/:pid/tags/:id",
   ],
   Array [
-    "5. MongooseOneToMan...eneric.replace -> PUT    /users/:pid/tags/:id",
+    "5. MongooseNestedCo...eneric.replace -> PUT    /users/:pid/tags/:id",
   ],
   Array [
-    "6. MongooseOneToMan...eneric.delete  -> DELETE /users/:pid/tags/:id",
+    "6. MongooseNestedCo...eneric.delete  -> DELETE /users/:pid/tags/:id",
   ],
   Array [],
 ]
@@ -486,10 +486,10 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. MongooseOneToMan...eneric.list -> GET /users/:pid/animals",
+    "1. MongooseNestedCo...eneric.list -> GET /users/:pid/animals",
   ],
   Array [
-    "2. MongooseOneToMan...eneric.get  -> GET /users/:pid/animals/:id",
+    "2. MongooseNestedCo...eneric.get  -> GET /users/:pid/animals/:id",
   ],
   Array [],
 ]

@@ -15,7 +15,7 @@ import { sign } from "jsonwebtoken"
 import Plumier, { genericController, WebApiFacility } from "plumier"
 import supertest from "supertest"
 
-import { DefaultControllerGeneric, DefaultOneToManyControllerGeneric } from "../helper"
+import { DefaultControllerGeneric, DefaultNestedControllerGeneric } from "../helper"
 
 describe("Select Parser", () => {
     function createApp(controller?: Class) {
@@ -281,7 +281,7 @@ describe("Select Parser Authorization", () => {
             }))
             .use(new SelectQueryAuthorizeMiddleware(), "Action")
             .set({ typeConverterVisitors: [createCustomSelectConverter(x => x)] })
-            .set({ genericController: [DefaultControllerGeneric, DefaultOneToManyControllerGeneric] })
+            .set({ genericController: [DefaultControllerGeneric, DefaultNestedControllerGeneric] })
     }
     it("Should select all columns by default, including secured column, but skip auth check", async () => {
         class User {

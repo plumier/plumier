@@ -20,8 +20,8 @@ import {
     normalizeEntity,
     TypeORMControllerGeneric,
     TypeORMFacility,
-    TypeORMOneToManyControllerGeneric,
-    TypeORMOneToManyRepository,
+    TypeORMNestedControllerGeneric,
+    TypeORMNestedRepository,
     TypeORMRepository,
 } from "@plumier/typeorm"
 import { sign } from "jsonwebtoken"
@@ -98,7 +98,7 @@ describe("Filter", () => {
     beforeAll(async () => {
         app = await createApp()
         const parentRepo = new TypeORMRepository(Parent)
-        const repo = new TypeORMOneToManyRepository<Parent,Child>([Parent, "children"])
+        const repo = new TypeORMNestedRepository<Parent,Child>([Parent, "children"])
         await parentRepo.nativeRepository.delete({})
         await repo.nativeRepository.delete({})
         parent = await parentRepo.insert(<Parent>{ string: "lorem", number: 1, boolean: true })
@@ -349,8 +349,8 @@ describe("CRUD", () => {
         class MyCustomGeneric<T, TID> extends TypeORMControllerGeneric<T, TID>{
             constructor() { super(x => new TypeORMRepository(x)) }
         }
-        class MyCustomOnToManyGeneric<P, T, PID, TID> extends TypeORMOneToManyControllerGeneric<P, T, PID, TID>{
-            constructor() { super((p) => new TypeORMOneToManyRepository(p)) }
+        class MyCustomOnToManyGeneric<P, T, PID, TID> extends TypeORMNestedControllerGeneric<P, T, PID, TID>{
+            constructor() { super((p) => new TypeORMNestedRepository(p)) }
         }
         const MyGenericController = createGenericControllerTypeORM([MyCustomGeneric, MyCustomOnToManyGeneric])
         @Entity()
@@ -828,7 +828,7 @@ describe("CRUD", () => {
             const app = await new Plumier()
                 .set(new WebApiFacility())
                 .set(new TypeORMFacility({ connection: getConn([User]) }))
-                .set({ mode: "production", controller: User, genericController: [MyCustomGeneric, TypeORMOneToManyControllerGeneric] })
+                .set({ mode: "production", controller: User, genericController: [MyCustomGeneric, TypeORMNestedControllerGeneric] })
                 .initialize()
             await supertest(app.callback())
                 .post("/users")
@@ -1753,8 +1753,8 @@ describe("CRUD", () => {
             }
             @generic.template("P", "T", "PID", "TID")
             @generic.type("P", "T", "PID", "TID")
-            class MyCustomGeneric<P, T, PID, TID> extends TypeORMOneToManyControllerGeneric<P, T, PID, TID>{
-                constructor() { super((p) => new TypeORMOneToManyRepository(p)) }
+            class MyCustomGeneric<P, T, PID, TID> extends TypeORMNestedControllerGeneric<P, T, PID, TID>{
+                constructor() { super((p) => new TypeORMNestedRepository(p)) }
             }
             const app = await new Plumier()
                 .set(new WebApiFacility({ controller: User }))
@@ -2640,7 +2640,7 @@ describe("Repository", () => {
             normalizeEntity(User)
             normalizeEntity(Animal)
             const userRepo = new TypeORMRepository(User)
-            const animalRepo = new TypeORMOneToManyRepository<User,Animal>([User, "animals"])
+            const animalRepo = new TypeORMNestedRepository<User,Animal>([User, "animals"])
             const email = `${random()}@gmail.com`
             const user = await userRepo.insert({ name: "John Doe" })
             await Promise.all([

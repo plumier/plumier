@@ -7,7 +7,7 @@ import {
     errorMessage,
     GenericControllers,
     KeyOf,
-    OneToManyControllerGeneric,
+    NestedControllerGeneric,
     RelationDecorator,
     NestedGenericControllerDecorator,
 } from "@plumier/core"
@@ -81,7 +81,7 @@ function createGenericControllerType(entity: Class, builder: ControllerBuilder, 
     return Controller
 }
 
-function createOneToManyGenericControllerType(type: EntityWithRelation, builder: ControllerBuilder, controller: Class<OneToManyControllerGeneric>, nameConversion: (x: string) => string) {
+function createNestedGenericControllerType(type: EntityWithRelation, builder: ControllerBuilder, controller: Class<NestedControllerGeneric>, nameConversion: (x: string) => string) {
     const info = entityHelper.getRelationInfo(type)
     const config = builder.toObject()
     const parentIdType = getIdType(info.parent)
@@ -115,13 +115,13 @@ function createGenericController<T>(type: Class | EntityWithRelation<T>, option:
     if (option.config) option.config(builder)
     if (option.normalize) option.normalize(type)
     if (Array.isArray(type)) {
-        return createOneToManyGenericControllerType(type, builder, option.controllers[1], option.nameConversion)
+        return createNestedGenericControllerType(type, builder, option.controllers[1], option.nameConversion)
     }
     return createGenericControllerType(type, builder, option.controllers[0], option.nameConversion)
 }
 
 export {
     createGenericController, CreateGenericControllerOption, EntityWithRelation,
-    createGenericControllerType, createOneToManyGenericControllerType
+    createGenericControllerType, createNestedGenericControllerType
 }
 

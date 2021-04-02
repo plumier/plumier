@@ -41,6 +41,6 @@ export {
     ValidationError, errorMessage, DefaultDependencyResolver, CustomConverter,
     CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie, KeyOf,
     Metadata, GlobalMetadata, Omit, Optional, RouteMetadata, VirtualRoute,
-    GenericControllers, ControllerGeneric, OneToManyControllerGeneric, Repository, OneToManyRepository,
+    GenericControllers, ControllerGeneric, NestedControllerGeneric, Repository, NestedRepository,
     FilterQueryType, NestedGenericControllerDecorator, MetadataImpl, JwtClaims, SelectQuery
 } from "./types";

@@ -18,7 +18,7 @@ import { promisify } from "util"
 import validator from "validator"
 import { filterConverter, orderConverter, selectConverter } from "./converters"
 
-import { normalizeEntity, TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric } from "./generic-controller"
+import { normalizeEntity, TypeORMControllerGeneric, TypeORMNestedControllerGeneric } from "./generic-controller"
 
 const lstatAsync = promisify(lstat)
 
@@ -119,7 +119,7 @@ class TypeORMFacility extends DefaultFacility {
     }
 
     setup(app: Readonly<PlumierApplication>) {
-        app.set({ genericController: [TypeORMControllerGeneric, TypeORMOneToManyControllerGeneric] })
+        app.set({ genericController: [TypeORMControllerGeneric, TypeORMNestedControllerGeneric] })
         app.set({ genericControllerNameConversion: (x: string) => pluralize(x) })
         app.use(new RequestHookMiddleware(), "Action")
         app.use(new FilterQueryAuthorizeMiddleware(), "Action")
