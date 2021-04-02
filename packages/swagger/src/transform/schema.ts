@@ -4,7 +4,7 @@ import {
     entityHelper,
     FormFile,
     RelationDecorator,
-    RelationPropertyDecorator,
+    NestedGenericControllerDecorator,
 } from "@plumier/core"
 import reflect, { IsDynamicType } from "@plumier/reflect"
 import { ReferenceObject, SchemaObject } from "openapi3-ts"
@@ -18,7 +18,6 @@ import {
     isRequired,
     TransformContext,
 } from "./shared"
-import { getGenericControllerInverseProperty } from "@plumier/generic-controller"
 
 type SchemaOverrideType = "RelationAsId" | "Required" | "Filter" | "RemoveArrayRelation" |
     "RemoveChildRelations" | "RemoveInverseProperty" | "ReadonlyFields" | "WriteonlyFields"
@@ -137,11 +136,11 @@ function removeArrayRelationsOverride(modelType: (Class | Class[]), ctx: Transfo
 function removeInversePropertyOverride(modelType: (Class | Class[]), ctx: TransformContext) {
     const meta = getMetadata(modelType)
     const result: SchemaObject = { type: "object", properties: {} }
-    const reverseDec = ctx.route.controller.decorators.find((x: RelationPropertyDecorator) => x.kind === "plumier-meta:relation-prop-name")
+    const reverseDec = ctx.route.controller.decorators.find((x: NestedGenericControllerDecorator): x is NestedGenericControllerDecorator => x.kind === "plumier-meta:relation-prop-name")
     if (!reverseDec) return
-    const reverse = getGenericControllerInverseProperty(ctx.route.controller.type)
+    const info = entityHelper.getRelationInfo([reverseDec.type, reverseDec.relation])
     for (const property of meta.properties) {
-        if (property.name === reverse) {
+        if (property.name === info.childProperty) {
             result.properties![property.name] = { readOnly: true, writeOnly: true }
         }
     }

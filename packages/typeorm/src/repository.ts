@@ -1,13 +1,11 @@
-import { Class, OneToManyRepository, Repository, SelectQuery } from "@plumier/core"
-import { getGenericControllerOneToOneRelations } from "@plumier/generic-controller"
+import { Class, OneToManyRepository, Repository, SelectQuery, EntityRelationInfo, entityHelper } from "@plumier/core"
+import { EntityWithRelation } from "@plumier/generic-controller"
 import { getManager, Repository as NativeRepository } from "typeorm"
 
 class TypeORMRepository<T> implements Repository<T> {
     readonly nativeRepository: NativeRepository<T>
-    protected readonly oneToOneRelations: string[]
     constructor(protected type: Class<T>) {
         this.nativeRepository = getManager().getRepository(type)
-        this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
     }
 
     count(query?: any): Promise<number> {
@@ -21,8 +19,8 @@ class TypeORMRepository<T> implements Repository<T> {
             skip: offset,
             take: limit,
             where: query,
-            relations: selection.relations, 
-            select:selection.columns,
+            relations: selection.relations,
+            select: selection.columns,
             order
         })
     }
@@ -32,7 +30,7 @@ class TypeORMRepository<T> implements Repository<T> {
     }
 
     findById(id: any, selection: SelectQuery = {}): Promise<T | undefined> {
-        return this.nativeRepository.findOne(id, { relations:selection.relations, select:selection.columns })
+        return this.nativeRepository.findOne(id, { relations: selection.relations, select: selection.columns })
     }
 
     async update(id: any, data: T) {
@@ -50,29 +48,26 @@ class TypeORMRepository<T> implements Repository<T> {
 class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
     readonly nativeRepository: NativeRepository<T>
     readonly nativeParentRepository: NativeRepository<P>
-    protected readonly inversePropertyName: string
-    protected readonly oneToOneRelations: string[]
-    constructor(protected parent: Class<P>, protected type: Class<T>, protected relation: string) {
-        this.nativeRepository = getManager().getRepository(type)
-        this.nativeParentRepository = getManager().getRepository(parent)
-        const join = this.nativeParentRepository.metadata.relations.find(x => x.propertyName === this.relation)
-        this.inversePropertyName = join!.inverseSidePropertyPath;
-        this.oneToOneRelations = getGenericControllerOneToOneRelations(type).map(x => x.name)
+    readonly relation: EntityRelationInfo
+    constructor([type, property]: EntityWithRelation<P, T> | EntityWithRelation<T, P>) {
+        this.relation = entityHelper.getRelationInfo([type, property])
+        this.nativeRepository = getManager().getRepository(this.relation.child)
+        this.nativeParentRepository = getManager().getRepository(this.relation.parent)
     }
     count(pid: any, query?: any): Promise<number> {
         return this.nativeRepository.count({
-            where: { [this.inversePropertyName]: pid, ...query },
+            where: { [this.relation.childProperty!]: pid, ...query },
         })
     }
 
     async find(pid: any, offset: number, limit: number, query: any, selection: SelectQuery, order: any): Promise<T[]> {
         return this.nativeRepository.find({
             where:
-                { [this.inversePropertyName]: pid, ...query },
+                { [this.relation.childProperty!]: pid, ...query },
             skip: offset,
             take: limit,
             relations: selection.relations,
-            select:selection.columns,
+            select: selection.columns,
             order
         })
     }
@@ -84,7 +79,7 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
         const idName = Object.keys(first)[0]
         const id = (first as any)[idName]
         await this.nativeParentRepository.createQueryBuilder()
-            .relation(this.relation)
+            .relation(this.relation.parentProperty!)
             .of(parent)
             .add(id)
         return (await this.nativeRepository.findOne(id))!
@@ -95,7 +90,7 @@ class TypeORMOneToManyRepository<P, T> implements OneToManyRepository<P, T> {
     }
 
     findById(id: any, selection: SelectQuery): Promise<T | undefined> {
-        return this.nativeRepository.findOne(id, { relations: selection.relations, select:selection.columns })
+        return this.nativeRepository.findOne(id, { relations: selection.relations, select: selection.columns })
     }
 
     async update(id: any, data: T) {

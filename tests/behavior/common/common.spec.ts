@@ -1,7 +1,7 @@
 import "@plumier/testing"
 
-import { analyzeModel, domain, ellipsis, printTable } from "@plumier/core"
-import reflect from "@plumier/reflect"
+import { analyzeModel, domain, ellipsis, entity, entityHelper, printTable } from "@plumier/core"
+import reflect, { noop } from "@plumier/reflect"
 
 describe("PrintTable", () => {
     it("Should able to print table", () => {
@@ -142,5 +142,117 @@ describe("Model Analyser", () => {
             ) { }
         }
         expect(analyzeModel(MyModel)).toMatchSnapshot()
+    })
+})
+
+describe("Entity Relation Info", () => {
+    it("Should extract one to many entity relation info properly", () => {
+        @domain()
+        class User {
+            @entity.primaryId()
+            public id: number
+            @noop()
+            public name: string
+            @reflect.type(x => [Animal])
+            @entity.relation({ inverseProperty: "user" })
+            public animals: Animal[]
+        }
+        @domain()
+        class Animal {
+            @entity.primaryId()
+            public id: number
+            @noop()
+            public name: string
+            @entity.relation()
+            public user: User
+        }
+        expect(entityHelper.getRelationInfo([User, "animals"])).toMatchSnapshot()
+    })
+    it("Should extract many to one entity relation info properly", () => {
+        @domain()
+        class User {
+            @entity.primaryId()
+            public id: number
+            @noop()
+            public name: string
+            @reflect.type(x => [Animal])
+            @entity.relation({ inverseProperty: "user" })
+            public animals: Animal[]
+        }
+        @domain()
+        class Animal {
+            @entity.primaryId()
+            public id: number
+            @noop()
+            public name: string
+            @entity.relation()
+            public user: User
+        }
+        expect(entityHelper.getRelationInfo([Animal, "user"])).toMatchSnapshot()
+    })
+    it("Should extract many to one entity relation without parent inverse property", () => {
+        @domain()
+        class User {
+            @entity.primaryId()
+            public id: number
+            @noop()
+            public name: string
+            @reflect.type(x => [Animal])
+            @entity.relation()
+            public animals: Animal[]
+        }
+        @domain()
+        class Animal {
+            @entity.primaryId()
+            public id: number
+            @noop()
+            public name: string
+            @entity.relation()
+            public user: User
+        }
+        expect(entityHelper.getRelationInfo([Animal, "user"])).toMatchSnapshot()
+    })
+    it("Should throw error when provided non relation one to many property", () => {
+        @domain()
+        class User {
+            @entity.primaryId()
+            public id: number
+            @noop()
+            public name: string
+            @reflect.type(x => [Animal])
+            public animals: Animal[]
+        }
+        @domain()
+        class Animal {
+            @entity.primaryId()
+            public id: number
+            @noop()
+            public name: string
+            @entity.relation()
+            public user: User
+        }
+        expect(() => entityHelper.getRelationInfo([User, "animals"])).toThrowErrorMatchingSnapshot()
+    })
+    it("Should throw error when provided invalid property name", () => {
+        @domain()
+        class User {
+            @entity.primaryId()
+            public id: number
+            @noop()
+            public name: string
+            @reflect.type(x => [Animal])
+            @entity.relation()
+            public animals: Animal[]
+        }
+        @domain()
+        class Animal {
+            @entity.primaryId()
+            public id: number
+            @noop()
+            public name: string
+            @entity.relation()
+            public user: User
+        }
+        expect(() => entityHelper.getRelationInfo([Animal, "users"])).toThrowErrorMatchingSnapshot()
     })
 })

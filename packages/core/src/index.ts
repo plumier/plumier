@@ -18,7 +18,8 @@ export { analyzeRoutes, printAnalysis } from "./route-analyzer";
 export { router } from "./router";
 export {
     Class, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass, printTable, toBoolean,
-    ellipsis, analyzeModel, AnalysisMessage, entityHelper, globAsync
+    ellipsis, analyzeModel, AnalysisMessage, entityHelper, globAsync,
+    EntityRelationInfo, OneToManyRelationInfo, ManyToOneRelationInfo
 } from "./common";
 export { AuthDecoratorImpl, authorize } from "./decorator/authorize";
 export {
@@ -41,5 +42,5 @@ export {
     CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie, KeyOf,
     Metadata, GlobalMetadata, Omit, Optional, RouteMetadata, VirtualRoute,
     GenericControllers, ControllerGeneric, OneToManyControllerGeneric, Repository, OneToManyRepository,
-    FilterQueryType, RelationPropertyDecorator, MetadataImpl, JwtClaims, SelectQuery
+    FilterQueryType, NestedGenericControllerDecorator, MetadataImpl, JwtClaims, SelectQuery
 } from "./types";

@@ -4,6 +4,40 @@ exports[`Ellipsis Should not trim string if shorter than expected 1`] = `"Lorem"
 
 exports[`Ellipsis Should trim long string 1`] = `"Lorem ipsum... dolor"`;
 
+exports[`Entity Relation Info Should extract many to one entity relation info properly 1`] = `
+Object {
+  "child": Animal,
+  "childProperty": "user",
+  "parent": User,
+  "parentProperty": "animals",
+  "type": "ManyToOne",
+}
+`;
+
+exports[`Entity Relation Info Should extract many to one entity relation without parent inverse property 1`] = `
+Object {
+  "child": Animal,
+  "childProperty": "user",
+  "parent": User,
+  "parentProperty": undefined,
+  "type": "ManyToOne",
+}
+`;
+
+exports[`Entity Relation Info Should extract one to many entity relation info properly 1`] = `
+Object {
+  "child": Animal,
+  "childProperty": "user",
+  "parent": User,
+  "parentProperty": "animals",
+  "type": "OneToMany",
+}
+`;
+
+exports[`Entity Relation Info Should throw error when provided invalid property name 1`] = `"Animal doesn't have property named users"`;
+
+exports[`Entity Relation Info Should throw error when provided non relation one to many property 1`] = `"User.animals is not a valid relation, make sure its decorated with @entity.relation() decorator"`;
+
 exports[`Model Analyser Should analyze missing array type 1`] = `
 Array [
   Object {

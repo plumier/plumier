@@ -2224,6 +2224,90 @@ Array [
 ]
 `;
 
+exports[`Route Generator Many To One Should not confused when parent specify property but without inverseProperty 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultOneToMany...eneric.list    -> GET    /user/:pid/animal",
+  ],
+  Array [
+    "2. DefaultOneToMany...eneric.save    -> POST   /user/:pid/animal",
+  ],
+  Array [
+    "3. DefaultOneToMany...eneric.get     -> GET    /user/:pid/animal/:id",
+  ],
+  Array [
+    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animal/:id",
+  ],
+  Array [
+    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animal/:id",
+  ],
+  Array [
+    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animal/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Many To One Should work with complete one to many relation 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultOneToMany...eneric.list    -> GET    /user/:pid/animal",
+  ],
+  Array [
+    "2. DefaultOneToMany...eneric.save    -> POST   /user/:pid/animal",
+  ],
+  Array [
+    "3. DefaultOneToMany...eneric.get     -> GET    /user/:pid/animal/:id",
+  ],
+  Array [
+    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animal/:id",
+  ],
+  Array [
+    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animal/:id",
+  ],
+  Array [
+    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animal/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Route Generator Many To One Should work with many to one without parent's property 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultOneToMany...eneric.list    -> GET    /user/:pid/animal",
+  ],
+  Array [
+    "2. DefaultOneToMany...eneric.save    -> POST   /user/:pid/animal",
+  ],
+  Array [
+    "3. DefaultOneToMany...eneric.get     -> GET    /user/:pid/animal/:id",
+  ],
+  Array [
+    "4. DefaultOneToMany...eneric.modify  -> PATCH  /user/:pid/animal/:id",
+  ],
+  Array [
+    "5. DefaultOneToMany...eneric.replace -> PUT    /user/:pid/animal/:id",
+  ],
+  Array [
+    "6. DefaultOneToMany...eneric.delete  -> DELETE /user/:pid/animal/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`Route Generator One To Many Controller Should able to apply multiple controller into relation property 1`] = `
 Array [
   Array [],
@@ -2596,14 +2680,6 @@ Array [
     "12. DefaultOneToMany...eneric.delete         -> DELETE /user/:pid/animals/:id",
   ],
   Array [],
-]
-`;
-
-exports[`Route Generator One To Many Controller Should throw error when applied on non array relation 1`] = `
-Array [
-  Array [
-    [Error: Nested generic controller can not be created using non array relation on: User.animal],
-  ],
 ]
 `;
 

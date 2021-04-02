@@ -3,7 +3,8 @@ import glob from "glob"
 import reflect, { GenericTypeDecorator, useCache } from "@plumier/reflect"
 import { promisify } from "util"
 
-import { EntityIdDecorator } from "./decorator/entity"
+import { EntityIdDecorator, RelationDecorator } from "./decorator/entity"
+import { errorMessage } from "./types"
 
 
 const lstatAsync = promisify(lstat)
@@ -184,6 +185,25 @@ interface AnalysisMessage {
     location: string
 }
 
+
+type EntityRelationInfo = OneToManyRelationInfo | ManyToOneRelationInfo
+
+interface OneToManyRelationInfo {
+    type: "OneToMany"
+    parent: Class
+    child: Class
+    parentProperty: string
+    childProperty?: string
+}
+
+interface ManyToOneRelationInfo {
+    type: "ManyToOne"
+    parent: Class
+    child: Class
+    parentProperty?: string
+    childProperty: string
+}
+
 function analyzeModel<T>(type: Class | Class[], ctx: TraverseContext<T> = { path: [], parentPath: [] }): AnalysisMessage[] {
     const parentType = ctx.parentPath[ctx.parentPath.length - 1]
     const propName = ctx.path[ctx.path.length - 1]
@@ -221,12 +241,52 @@ namespace entityHelper {
     }
     export function getIdType(entity: Class): Class | undefined {
         const prop = getIdProp(entity)
-        return prop?.type 
+        return prop?.type
+    }
+
+    export function getRelationInfo([entity, relation]: [Class, string, Class?]): EntityRelationInfo {
+        const meta = reflect(entity)
+        const prop = meta.properties.find(x => x.name === relation)
+        if (!prop)
+            throw new Error(`${entity.name} doesn't have property named ${relation}`)
+        if (prop.type === Array && !prop.type[0])
+            throw new Error(errorMessage.GenericControllerMissingTypeInfo.format(`${entity.name}.${relation}`))
+        const type = Array.isArray(prop.type) ? "OneToMany" : "ManyToOne"
+        if (type === "OneToMany") {
+            const relDecorator: RelationDecorator = prop.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation")
+            if (!relDecorator)
+                throw new Error(`${entity.name}.${relation} is not a valid relation, make sure its decorated with @entity.relation() decorator`)
+            const child = prop.type[0] as Class
+            return {
+                type, parent: entity, child,
+                parentProperty: relation,
+                childProperty: relDecorator.inverseProperty,
+            }
+        }
+        else {
+            const parent: Class = prop.type
+            const parentMeta = reflect(parent)
+            let parentProperty: string | undefined
+            for (const prop of parentMeta.properties) {
+                const relDecorator: RelationDecorator = prop.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation")
+                if (!relDecorator) continue
+                if (relDecorator.inverseProperty === relation) {
+                    parentProperty = prop.name
+                    break
+                }
+            }
+            return {
+                type, parent, child: entity,
+                childProperty: relation,
+                parentProperty
+            }
+        }
     }
 }
 
 export {
     ellipsis, toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, entityHelper,
-    findFilesRecursive, memoize, printTable, analyzeModel, AnalysisMessage, globAsync
+    findFilesRecursive, memoize, printTable, analyzeModel, AnalysisMessage, globAsync,
+    EntityRelationInfo, OneToManyRelationInfo, ManyToOneRelationInfo
 }
 

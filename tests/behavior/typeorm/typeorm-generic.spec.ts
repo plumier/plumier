@@ -17,6 +17,7 @@ import { SwaggerFacility } from "@plumier/swagger"
 import {
     createGenericControllerTypeORM,
     GenericController,
+    normalizeEntity,
     TypeORMControllerGeneric,
     TypeORMFacility,
     TypeORMOneToManyControllerGeneric,
@@ -97,7 +98,7 @@ describe("Filter", () => {
     beforeAll(async () => {
         app = await createApp()
         const parentRepo = new TypeORMRepository(Parent)
-        const repo = new TypeORMOneToManyRepository(Parent, Child, "children")
+        const repo = new TypeORMOneToManyRepository<Parent,Child>([Parent, "children"])
         await parentRepo.nativeRepository.delete({})
         await repo.nativeRepository.delete({})
         parent = await parentRepo.insert(<Parent>{ string: "lorem", number: 1, boolean: true })
@@ -349,7 +350,7 @@ describe("CRUD", () => {
             constructor() { super(x => new TypeORMRepository(x)) }
         }
         class MyCustomOnToManyGeneric<P, T, PID, TID> extends TypeORMOneToManyControllerGeneric<P, T, PID, TID>{
-            constructor() { super((p, t, rel) => new TypeORMOneToManyRepository(p, t, rel)) }
+            constructor() { super((p) => new TypeORMOneToManyRepository(p)) }
         }
         const MyGenericController = createGenericControllerTypeORM([MyCustomGeneric, MyCustomOnToManyGeneric])
         @Entity()
@@ -1753,7 +1754,7 @@ describe("CRUD", () => {
             @generic.template("P", "T", "PID", "TID")
             @generic.type("P", "T", "PID", "TID")
             class MyCustomGeneric<P, T, PID, TID> extends TypeORMOneToManyControllerGeneric<P, T, PID, TID>{
-                constructor() { super((p, t, rel) => new TypeORMOneToManyRepository(p, t, rel)) }
+                constructor() { super((p) => new TypeORMOneToManyRepository(p)) }
             }
             const app = await new Plumier()
                 .set(new WebApiFacility({ controller: User }))
@@ -1938,6 +1939,74 @@ describe("CRUD", () => {
             const app = await createApp([UserAnimalController, User, Animal], { mode: "debug" })
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
+        })
+    })
+    describe("Nested CRUD Many To One", () => {
+        async function createUser<T>(type: Class<T>): Promise<T> {
+            const userRepo = getManager().getRepository<T>(type)
+            const inserted = await userRepo.insert({ email: "john.doe@gmail.com", name: "John Doe" } as any)
+            const saved = await userRepo.findOne(inserted.raw)
+            return saved!
+        }
+        it("Should able to use many to one relation without parent relation", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @genericController()
+                @ManyToOne(x => User)
+                user: User
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}/animals?offset=0&limit=20`)
+                .expect(200)
+            expect(body.length).toBe(20)
+        })
+        it("Should able to use many to one relation with parent relation", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                animals: Animal[]
+            }
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @genericController()
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}/animals?offset=0&limit=20`)
+                .expect(200)
+            expect(body.length).toBe(20)
         })
     })
     describe("One To One Function", () => {
@@ -2556,7 +2625,6 @@ describe("Repository", () => {
                 @Column()
                 name: string
                 @OneToMany(x => Animal, a => a.user)
-                @genericController()
                 animals: Animal[]
             }
             @Entity()
@@ -2569,8 +2637,10 @@ describe("Repository", () => {
                 user: User
             }
             await createConnection(getConn([User, Animal]))
+            normalizeEntity(User)
+            normalizeEntity(Animal)
             const userRepo = new TypeORMRepository(User)
-            const animalRepo = new TypeORMOneToManyRepository(User, Animal, "animals")
+            const animalRepo = new TypeORMOneToManyRepository<User,Animal>([User, "animals"])
             const email = `${random()}@gmail.com`
             const user = await userRepo.insert({ name: "John Doe" })
             await Promise.all([

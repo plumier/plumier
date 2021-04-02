@@ -14,7 +14,7 @@ import {
     route,
     RouteMetadata,
     val,
-    RelationPropertyDecorator,
+    NestedGenericControllerDecorator,
     authPolicy
 } from "@plumier/core"
 import { JwtAuthFacility, JwtAuthFacilityOption } from "@plumier/jwt"
@@ -205,7 +205,7 @@ describe("Open API 3.0 Generation", () => {
                     createdBy: User
                 }
                 @generic.type(Shop, Item, Number, Number)
-                @decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: "items", inverseProperty: "shop" })
+                @decorateClass(<NestedGenericControllerDecorator>{ kind: "plumier-meta:relation-prop-name", relation: "items", type: Shop })
                 class ItemController {
                     @route.post("")
                     save(@api.hideRelations() data: Item) { }
@@ -459,7 +459,7 @@ describe("Open API 3.0 Generation", () => {
                     @noop()
                     name: string
 
-                    @entity.relation()
+                    @entity.relation({ inverseProperty: "shop" })
                     @type(x => [Item])
                     items: Item[]
                 }
@@ -501,8 +501,7 @@ describe("Open API 3.0 Generation", () => {
                     @entity.relation()
                     createdBy: User
                 }
-                @generic.type(Shop, Item, Number, Number)
-                @decorateClass(<RelationPropertyDecorator>{ kind: "plumier-meta:relation-prop-name", name: "items", inverseProperty: "shop" })
+                @decorateClass(<NestedGenericControllerDecorator>{ kind: "plumier-meta:relation-prop-name", relation: "items", type: Shop })
                 class ItemController {
                     @route.get("")
                     @api.hideRelations()

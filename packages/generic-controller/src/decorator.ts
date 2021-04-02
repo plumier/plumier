@@ -1,6 +1,5 @@
-import { HttpMethod, responseType, RouteDecorator, SelectQuery } from "@plumier/core"
+import { HttpMethod, responseType, RouteDecorator } from "@plumier/core"
 import reflect, { Class, decorate, DecoratorId, mergeDecorator } from "@plumier/reflect"
-import { Context } from "koa"
 
 import { ControllerBuilder, GenericControllerConfiguration } from "./configuration"
 import { updateGenericControllerRegistry } from "./helper"
@@ -8,22 +7,6 @@ import { updateGenericControllerRegistry } from "./helper"
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
 // --------------------------------------------------------------------- //
-
-// get one custom query
-interface GetOneParams { pid?: any, id: any, select: SelectQuery }
-type GetOneCustomQueryFunction<T = any> = (params: GetOneParams, ctx: Context) => Promise<T>
-interface GetOneCustomQueryDecorator {
-    kind: "plumier-meta:get-one-query",
-    query: GetOneCustomQueryFunction
-}
-
-// get many custom query
-interface GetManyParams<T> { pid?: any, limit: number, offset: number, select: SelectQuery, filter: any, order: any }
-type GetManyCustomQueryFunction<T = any> = (params: GetManyParams<T>, ctx: Context) => Promise<T[]>
-interface GetManyCustomQueryDecorator {
-    kind: "plumier-meta:get-many-query",
-    query: GetManyCustomQueryFunction
-}
 
 type ResponseTransformer<S = any, D = any> = (s: S) => D
 
@@ -35,6 +18,7 @@ interface ResponseTransformerDecorator {
 interface GenericControllerDecorator {
     name: "plumier-meta:controller"
     config: ((x: ControllerBuilder) => void) | undefined
+    target:Class
 }
 
 const RouteDecoratorID = Symbol("generic-controller:route")
@@ -47,9 +31,10 @@ function genericController(opt?: string | GenericControllerConfiguration) {
     const config = typeof opt === "string" ? (x: ControllerBuilder) => x.setPath(opt) : opt
     return decorate((...args: any[]) => {
         updateGenericControllerRegistry(args[0])
-        return <GenericControllerDecorator>{ name: "plumier-meta:controller", config }
+        return <GenericControllerDecorator>{ target: args[0], name: "plumier-meta:controller", config }
     })
 }
+
 
 /**
  * Custom route decorator to make it possible to override @route decorator from class scope decorator. 
@@ -71,35 +56,10 @@ function responseTransformer(target: Class | Class[] | ((x: any) => Class | Clas
     )
 }
 
-function getTransformer(type: Class, methodName: string) {
-    const meta = reflect(type)
-    const method = meta.methods.find(x => methodName === x.name)!
-    return method.decorators.find((x: ResponseTransformerDecorator): x is ResponseTransformerDecorator => x.kind === "plumier-meta:response-transformer")?.transformer
-}
-
-function getOneCustomQuery(type: Class): GetOneCustomQueryFunction | undefined {
-    const meta = reflect(type)
-    const decorator = meta.decorators.find((x: GetOneCustomQueryDecorator): x is GetOneCustomQueryDecorator => x.kind === "plumier-meta:get-one-query")
-    return decorator?.query
-}
-
-function getManyCustomQuery(type: Class): GetManyCustomQueryFunction | undefined {
-    const meta = reflect(type)
-    const decorator = meta.decorators.find((x: GetManyCustomQueryDecorator): x is GetManyCustomQueryDecorator => x.kind === "plumier-meta:get-many-query")
-    return decorator?.query
-}
 
 
 export {
     GenericControllerDecorator, genericController, decorateRoute,
-    responseTransformer, getTransformer, getOneCustomQuery, getManyCustomQuery,
+    responseTransformer, ResponseTransformer, ResponseTransformerDecorator,
     RouteDecoratorID,
-    GetOneParams,
-    GetOneCustomQueryFunction,
-    GetOneCustomQueryDecorator,
-    GetManyParams,
-    GetManyCustomQueryFunction,
-    GetManyCustomQueryDecorator,
-    ResponseTransformer,
-    ResponseTransformerDecorator,
 }

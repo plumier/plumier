@@ -387,14 +387,18 @@ export class FormFile {
 
 export type FilterQueryType = "equal" | "partial" | "range" | "gte" | "gt" | "lte" | "lt" | "ne"
 
-export interface RelationPropertyDecorator { kind: "plumier-meta:relation-prop-name", name: string, inverseProperty?: string }
+export interface NestedGenericControllerDecorator {
+    kind: "plumier-meta:relation-prop-name"
+    type: Class,
+    relation: string
+}
 
 export type GenericControllers = [Class<ControllerGeneric>, Class<OneToManyControllerGeneric>]
 
 export interface SelectQuery { columns?: any, relations?: any }
 
 export interface Repository<T> {
-    find(offset: number, limit: number, query: any, select: SelectQuery, order:any): Promise<T[]>
+    find(offset: number, limit: number, query: any, select: SelectQuery, order: any): Promise<T[]>
     insert(data: Partial<T>): Promise<T>
     findById(id: any, select: SelectQuery): Promise<T | undefined>
     update(id: any, data: Partial<T>): Promise<T | undefined>
@@ -403,7 +407,7 @@ export interface Repository<T> {
 }
 
 export interface OneToManyRepository<P, T> {
-    find(pid: any, offset: number, limit: number, query: any, select: SelectQuery, order:any): Promise<T[]>
+    find(pid: any, offset: number, limit: number, query: any, select: SelectQuery, order: any): Promise<T[]>
     insert(pid: any, data: Partial<T>): Promise<T>
     findParentById(id: any): Promise<P | undefined>
     findById(id: any, select: SelectQuery): Promise<T | undefined>
@@ -419,14 +423,13 @@ export abstract class ControllerGeneric<T = any, TID = any> {
 export abstract class OneToManyControllerGeneric<P = any, T = any, PID = any, TID = any> {
     abstract readonly entityType: Class<T>
     abstract readonly parentEntityType: Class<P>
-    abstract readonly relation: string
 }
 
 // --------------------------------------------------------------------- //
 // --------------------------- AUTHORIZATION --------------------------- //
 // --------------------------------------------------------------------- // 
 
-export type AccessModifier = "read" | "write" | "route" 
+export type AccessModifier = "read" | "write" | "route"
 
 export interface AuthorizationContext {
     /**
@@ -469,7 +472,7 @@ export interface AuthPolicy {
     equals(id: string, ctx: AuthorizationContext): boolean
     authorize(ctx: AuthorizationContext): Promise<boolean>
     conflict(other: AuthPolicy): boolean
-    friendlyName():string 
+    friendlyName(): string
 }
 
 // --------------------------------------------------------------------- //

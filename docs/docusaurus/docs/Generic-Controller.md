@@ -83,7 +83,6 @@ Above code will generate six routes handled by generic controller implementation
 | GET    | `/users`            | Get list of users with pagination, order, filter and projection |
 
 
-'''info
 Its possible to create a generic controller using generic controller factory instead of using decorator, below code will result the same. 
 
 ```typescript
@@ -109,7 +108,6 @@ export class UserController extends GenericController(User, c => {
     c.mutators().authorize("Admin")
 })
 ```
-'''
 
 ## Getting and Saving Simple Relation 
 
@@ -212,8 +210,7 @@ Above code showing that we apply `@genericController()` on the `User.emails` rel
 | DELETE | `/users/:pid/emails/:id`        | Delete user's email by ID                                           |
 | GET    | `/users/:pid/emails`            | Get list of user's emails with paging, filter, order and projection |
 
-'''info
-Its also possible to create a nested generic controller using generic controller factory, below code will result the same. 
+Its possible to create a nested generic controller using generic controller factory, below code will result the same. 
 
 ```typescript
 import { GenericController } from "@plumier/typeorm"
@@ -222,7 +219,47 @@ import { GenericController } from "@plumier/typeorm"
 
 export const UserEmailController = GenericController([User, "emails"])
 ```
-'''
+
+Its also possible to use many to one relation to generate nested routes, from previous example we can decorate the `Email.user` property. This feature useful to create nested routes without explicit relation between parent-children, for example to reduce number of relation properties on parent entity. 
+
+```typescript {21}
+@Entity()
+class User {
+    
+    /** other columns **/
+
+    @Column()
+    name:string
+}
+
+@Entity()
+class Email {
+    
+    /** other columns **/
+
+    @Column()
+    email:string
+
+    @Column()
+    description:string
+
+    @genericController()
+    @ManyToOne(x => User)
+    user:User
+}
+```
+
+Instead of using one to many relation, we can decorate the `Email.user` property and ignore `User.animals` property. 
+
+The generic controller factory for above feature also work the same as before, we specify tuple relation `Animal` and `user` as the parameter of the generic controller factory
+
+```typescript
+import { GenericController } from "@plumier/typeorm"
+// or if using mongoose 
+// import { GenericController } from "@plumier/mongoose"
+
+export const UserEmailController = GenericController([Animal, "user"])
+```
 
 ## Inverse Property Population
 
