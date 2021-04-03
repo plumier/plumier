@@ -1,6 +1,6 @@
 {
   "name": "plumier",
-  "version": "1.0.0-rc.9",
+  "version": "1.0.0-rc.10",
   "description": "Delightful Node.js Rest Framework",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -19,8 +19,8 @@
   "license": "MIT",
   "dependencies": {
     "@koa/cors": "^3.1.0",
-    "@plumier/core": "1.0.0-rc.9",
-    "@plumier/generic-controller": "1.0.0-rc.9",
+    "@plumier/core": "1.0.0-rc.10",
+    "@plumier/generic-controller": "1.0.0-rc.10",
     "@types/bytes": "^3.1.0",
     "@types/koa": "^2.13.1",
     "@types/koa__cors": "^3.0.2",
