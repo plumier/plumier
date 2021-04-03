@@ -27,7 +27,7 @@ Object {
       "parameters": Array [
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "par",
           "index": 0,
           "kind": "Parameter",
           "name": "par",
@@ -92,7 +92,7 @@ Object {
       "parameters": Array [
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "par",
           "index": 0,
           "kind": "Parameter",
           "name": "par",
@@ -139,7 +139,7 @@ Object {
       "parameters": Array [
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "par",
           "index": 0,
           "kind": "Parameter",
           "name": "par",
@@ -176,7 +176,7 @@ Object {
       "parameters": Array [
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "par",
           "index": 0,
           "kind": "Parameter",
           "name": "par",
@@ -223,7 +223,7 @@ Object {
       "parameters": Array [
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "par",
           "index": 0,
           "kind": "Parameter",
           "name": "par",
@@ -270,7 +270,7 @@ Object {
       "parameters": Array [
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "par",
           "index": 0,
           "kind": "Parameter",
           "name": "par",
@@ -317,7 +317,7 @@ Object {
       "parameters": Array [
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "par",
           "index": 0,
           "kind": "Parameter",
           "name": "par",

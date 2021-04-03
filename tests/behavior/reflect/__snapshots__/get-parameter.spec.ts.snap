@@ -108,52 +108,72 @@ Array [
 exports[`Parameter Destructuring Should parse parameter destructuring 1`] = `
 Array [
   "par",
-  Array [
-    "date",
-    "num",
-  ],
+  Object {
+    "kind": "Object",
+    "members": Array [
+      "date",
+      "num",
+    ],
+  },
 ]
 `;
 
 exports[`Parameter Destructuring Should parse parameter destructuring on constructor 1`] = `
 Array [
-  Array [
-    "tanggal",
-    "num",
-  ],
+  Object {
+    "kind": "Object",
+    "members": Array [
+      "tanggal",
+      "num",
+    ],
+  },
 ]
 `;
 
 exports[`Parameter Destructuring Should parse parameter destructuring on method 1`] = `
 Array [
-  Array [
-    "tanggal",
-    "num",
-  ],
+  Object {
+    "kind": "Object",
+    "members": Array [
+      "tanggal",
+      "num",
+    ],
+  },
 ]
 `;
 
 exports[`Parameter Destructuring Should parse parameter destructuring with custom name 1`] = `
 Array [
-  Array [
-    "tanggal",
-    "num",
-  ],
+  Object {
+    "kind": "Object",
+    "members": Array [
+      "tanggal",
+      "num",
+    ],
+  },
 ]
 `;
 
 exports[`Parameter Destructuring Should parse parameter destructuring with nested property 1`] = `
 Array [
   "par",
-  Array [
-    "tanggal",
-    "num",
-    Object {
-      "inner": Array [
-        "str",
-        "dateOfBirth",
-      ],
-    },
-  ],
+  Object {
+    "kind": "Object",
+    "members": Array [
+      "tanggal",
+      "num",
+      Object {
+        "key": "inner",
+        "kind": "KeyValue",
+        "value": Object {
+          "kind": "Object",
+          "members": Array [
+            "str",
+            "dateOfBirth",
+          ],
+        },
+      },
+    ],
+  },
 ]
 `;

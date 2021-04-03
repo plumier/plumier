@@ -45,6 +45,52 @@ Object {
 }
 `;
 
+exports[`Class Introspection Should ignore method parameters with this 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "dummyMethod",
+      "parameters": Array [
+        Object {
+          "decorators": Array [],
+          "fields": "data",
+          "index": 0,
+          "kind": "Parameter",
+          "name": "data",
+          "type": Number,
+          "typeClassification": "Primitive",
+        },
+      ],
+      "returnType": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
 exports[`Class Introspection Should inspect array on constructor parameters 1`] = `
 Object {
   "ctor": Object {
@@ -69,7 +115,7 @@ Object {
             },
           },
         ],
-        "fields": Object {},
+        "fields": "empty",
         "index": 0,
         "kind": "Parameter",
         "name": "empty",
@@ -142,7 +188,7 @@ Object {
               },
             },
           ],
-          "fields": Object {},
+          "fields": "empty",
           "index": 0,
           "kind": "Parameter",
           "name": "empty",
@@ -190,7 +236,7 @@ Object {
       "parameters": Array [
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "empty",
           "index": 0,
           "kind": "Parameter",
           "name": "empty",
@@ -254,7 +300,7 @@ Object {
               },
             },
           ],
-          "fields": Object {},
+          "fields": "empty",
           "index": 0,
           "kind": "Parameter",
           "name": "empty",
@@ -302,7 +348,7 @@ Object {
       "parameters": Array [
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "dummy",
           "index": 0,
           "kind": "Parameter",
           "name": "dummy",
@@ -311,7 +357,7 @@ Object {
         },
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "other",
           "index": 1,
           "kind": "Parameter",
           "name": "other",
@@ -366,7 +412,7 @@ Object {
     "parameters": Array [
       Object {
         "decorators": Array [],
-        "fields": Object {},
+        "fields": "id",
         "index": 0,
         "kind": "Parameter",
         "name": "id",
@@ -375,7 +421,7 @@ Object {
       },
       Object {
         "decorators": Array [],
-        "fields": Object {},
+        "fields": "name",
         "index": 1,
         "kind": "Parameter",
         "name": "name",
@@ -412,7 +458,7 @@ Object {
       "parameters": Array [
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "dummy",
           "index": 0,
           "kind": "Parameter",
           "name": "dummy",
@@ -421,7 +467,7 @@ Object {
         },
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "other",
           "index": 1,
           "kind": "Parameter",
           "name": "other",
@@ -449,7 +495,7 @@ Object {
     "parameters": Array [
       Object {
         "decorators": Array [],
-        "fields": Object {},
+        "fields": "id",
         "index": 0,
         "kind": "Parameter",
         "name": "id",
@@ -458,7 +504,7 @@ Object {
       },
       Object {
         "decorators": Array [],
-        "fields": Object {},
+        "fields": "name",
         "index": 1,
         "kind": "Parameter",
         "name": "name",
@@ -489,75 +535,50 @@ Object {
 
 exports[`Class Introspection Should inspect deep nested destructed method parameter type 1`] = `
 Object {
-  "ctor": Object {
-    "kind": "Constructor",
-    "name": "constructor",
-    "parameters": Array [],
-  },
-  "decorators": Array [],
-  "kind": "Class",
-  "methods": Array [
+  "decorators": Array [
     Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "applyTo": Array [],
-            "inherit": true,
-            "removeApplied": true,
-          },
-        },
-      ],
-      "kind": "Method",
-      "name": "dummyMethod",
-      "parameters": Array [
-        Object {
-          "decorators": Array [
-            Object {
-              "genericParams": Array [],
-              "kind": "Override",
-              "target": DummyClass,
-              "type": Domain,
-              Symbol(tinspector:decoratorId): Symbol(override),
-              Symbol(tinspector:decoratorOption): Object {
-                "allowMultiple": false,
-                "applyTo": Array [],
-                "inherit": true,
-                "removeApplied": true,
-              },
-            },
-          ],
-          "fields": Array [
-            "a",
-            "b",
-            Object {
-              "child": Array [
-                "c",
-                "d",
-                Object {
-                  "child": Array [
-                    "e",
-                    "f",
-                  ],
-                },
-              ],
-            },
-          ],
-          "index": 0,
-          "kind": "Parameter",
-          "name": "{ a, b, child: { c, d, child: { e, f } } }",
-          "type": Domain,
-          "typeClassification": "Class",
-        },
-      ],
-      "returnType": undefined,
-      "typeClassification": undefined,
+      "genericParams": Array [],
+      "kind": "Override",
+      "target": DummyClass,
+      "type": Domain,
+      Symbol(tinspector:decoratorId): Symbol(override),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
     },
   ],
-  "name": "DummyClass",
-  "properties": Array [],
-  "super": Object,
-  "type": DummyClass,
+  "fields": Array [
+    "a",
+    "b",
+    Object {
+      "tuple": Array [
+        "name",
+        Array [
+          "a1",
+          "b1",
+        ],
+      ],
+    },
+    Object {
+      "child": Array [
+        "c",
+        "d",
+        Object {
+          "child": Array [
+            "e",
+            "f",
+          ],
+        },
+      ],
+    },
+  ],
+  "index": 0,
+  "kind": "Parameter",
+  "name": "{ a, b, tuple: [name, { a1, b1 }], child: { c, d, child: { e, f } } }",
+  "type": Domain,
   "typeClassification": "Class",
 }
 `;
@@ -627,58 +648,15 @@ Object {
 
 exports[`Class Introspection Should inspect destructed parameters type with method decorator 1`] = `
 Object {
-  "ctor": Object {
-    "kind": "Constructor",
-    "name": "constructor",
-    "parameters": Array [],
-  },
   "decorators": Array [],
-  "kind": "Class",
-  "methods": Array [
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "applyTo": Array [],
-            "inherit": true,
-            "removeApplied": true,
-          },
-        },
-      ],
-      "kind": "Method",
-      "name": "dummyMethod",
-      "parameters": Array [
-        Object {
-          "decorators": Array [],
-          "fields": Object {},
-          "index": 0,
-          "kind": "Parameter",
-          "name": "par",
-          "type": String,
-          "typeClassification": "Primitive",
-        },
-        Object {
-          "decorators": Array [],
-          "fields": Array [
-            "date",
-            "name",
-          ],
-          "index": 1,
-          "kind": "Parameter",
-          "name": "{ date, name }",
-          "type": Domain,
-          "typeClassification": "Class",
-        },
-      ],
-      "returnType": Number,
-      "typeClassification": "Primitive",
-    },
+  "fields": Array [
+    "date",
+    "name",
   ],
-  "name": "DummyClass",
-  "properties": Array [],
-  "super": Object,
-  "type": DummyClass,
+  "index": 0,
+  "kind": "Parameter",
+  "name": "{ date, name }",
+  "type": Domain,
   "typeClassification": "Class",
 }
 `;
@@ -759,7 +737,7 @@ Object {
     "parameters": Array [
       Object {
         "decorators": Array [],
-        "fields": Object {},
+        "fields": "myProp",
         "index": 0,
         "kind": "Parameter",
         "name": "myProp",
@@ -768,7 +746,7 @@ Object {
       },
       Object {
         "decorators": Array [],
-        "fields": Object {},
+        "fields": "myOtherProp",
         "index": 1,
         "kind": "Parameter",
         "name": "myOtherProp",
@@ -848,7 +826,7 @@ Object {
       "parameters": Array [
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "dummy",
           "index": 0,
           "kind": "Parameter",
           "name": "dummy",
@@ -857,7 +835,7 @@ Object {
         },
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "other",
           "index": 1,
           "kind": "Parameter",
           "name": "other",
@@ -963,5 +941,22 @@ Object {
   "super": Object,
   "type": DummyClass,
   "typeClassification": "Class",
+}
+`;
+
+exports[`Class Introspection Should reflect destructed tuple parameters type 1`] = `
+Object {
+  "decorators": Array [],
+  "fields": Array [
+    "name",
+    "age",
+  ],
+  "index": 0,
+  "kind": "Parameter",
+  "name": "[name, age]",
+  "type": Array [
+    Object,
+  ],
+  "typeClassification": "Array",
 }
 `;
