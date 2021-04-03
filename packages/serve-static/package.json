@@ -18,7 +18,7 @@
     "@types/koa-send": "^4.1.2",
     "@types/mime-types": "2.1.0",
     "koa-send": "^5.0.1",
-    "mime-types": "2.1.29"
+    "mime-types": "2.1.30"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"
