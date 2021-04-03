@@ -193,7 +193,7 @@ Object {
               },
             },
           ],
-          "fields": Object {},
+          "fields": "data",
           "index": 0,
           "kind": "Parameter",
           "name": "data",
@@ -221,7 +221,7 @@ Object {
     "parameters": Array [
       Object {
         "decorators": Array [],
-        "fields": Object {},
+        "fields": "id",
         "index": 0,
         "kind": "Parameter",
         "name": "id",
@@ -230,7 +230,7 @@ Object {
       },
       Object {
         "decorators": Array [],
-        "fields": Object {},
+        "fields": "name",
         "index": 1,
         "kind": "Parameter",
         "name": "name",
@@ -239,7 +239,7 @@ Object {
       },
       Object {
         "decorators": Array [],
-        "fields": Object {},
+        "fields": "deceased",
         "index": 2,
         "kind": "Parameter",
         "name": "deceased",
@@ -259,7 +259,7 @@ Object {
             },
           },
         ],
-        "fields": Object {},
+        "fields": "birthday",
         "index": 3,
         "kind": "Parameter",
         "name": "birthday",

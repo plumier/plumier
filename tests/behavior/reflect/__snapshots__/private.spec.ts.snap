@@ -44,7 +44,7 @@ Object {
     "parameters": Array [
       Object {
         "decorators": Array [],
-        "fields": Object {},
+        "fields": "data",
         "index": 0,
         "kind": "Parameter",
         "name": "data",
@@ -64,7 +64,7 @@ Object {
             },
           },
         ],
-        "fields": Object {},
+        "fields": "id",
         "index": 1,
         "kind": "Parameter",
         "name": "id",

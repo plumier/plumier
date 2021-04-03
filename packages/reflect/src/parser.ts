@@ -30,24 +30,30 @@ function getNode(node: Node, criteria: (x: any) => boolean): Node | undefined {
     return getNode((node as any).body, criteria)
 }
 
+type RootNode = string | KeyValueNode | ObjectNode | ArrayNode
+type KeyValueNode = { kind: "KeyValue", key: string, value: RootNode }
+interface ObjectNode { kind: "Object", members: RootNode[] }
+interface ArrayNode { kind: "Array", members: RootNode[] }
+
 function getNamesFromAst(nodes: any[]) {
-    const getName = (node: any): undefined | string | { [key: string]: string[] } => {
+    const getName = (node: any): undefined | RootNode => {
         if (node.type === "Identifier") return node.name
         if (node.type === "AssignmentPattern") return node.left.name
         if (node.type === "RestElement") return node.argument.name
         if (node.type === "Property") {
             if (node.value.type === "Identifier") return node.value.name
             else {
-                const result: { [key: string]: any } = {}
-                result[node.key.name] = getName(node.value)
-                return result
+                return { kind: "KeyValue", key: node.key.name, value: getName(node.value)! }
             }
         }
-        //if (node.type === "ObjectPattern") {
-        return node.properties.map((x: any) => getName(x))
+        if (node.type === "ObjectPattern") {
+            return { kind: "Object", members: node.properties.map((x: any) => getName(x)) }
+        }
+        //if (node.type === "ArrayPattern") {
+            return { kind: "Array", members: node.elements.map((x: any) => getName(x)) }
         //}
     }
-    return nodes.map(x => getName(x)).filter((x): x is string | { [key: string]: string[] } => !!x)
+    return nodes.map(x => getName(x)).filter((x): x is RootNode => !!x)
 }
 
 function getCode(fn: Class | Function) {
@@ -93,7 +99,7 @@ function getClassMembers(fun: Function) {
     const properties = (getAllMetadata(fun as Class) || [])
         .filter(x => !!x.memberName && !x.parIndex)
         .filter(x => {
-            const opt:DecoratorOption = x.data[DecoratorOptionId]
+            const opt: DecoratorOption = x.data[DecoratorOptionId]
             return opt.applyTo!.length === 0
         })
         .map(x => x.memberName as string)
@@ -102,35 +108,27 @@ function getClassMembers(fun: Function) {
     return [...new Set(names)]
 }
 
-function printDestruct(params: any[]) {
-    const result: string[] = []
-    for (const key in params) {
-        const par = params[key];
-        if (typeof par === "string")
-            result.push(par)
-        else {
-            const key = Object.keys(par)[0]
-            result.push(`${key}: ${printDestruct(par[key])}`)
-        }
-    }
-    return `{ ${result.join(", ")} }`
+function getName(param: RootNode): string {
+    const getNames = (p: RootNode[]) => p.map(x => getName(x))
+    if (typeof param === "string") return param
+    if (param.kind === "KeyValue") return `${param.key}: ${getName(param.value)}`
+    if (param.kind === "Object") return `{ ${getNames(param.members).join(", ")} }`
+    return `[${getNames(param.members).join(", ")}]`
 }
 
+function getField(params: RootNode): any {
+    const getFields = (p: RootNode[]) => p.map(x => getField(x))
+    if (typeof params === "string") return params
+    if (params.kind === "KeyValue") return { [params.key]: getField(params.value) }
+    if (params.kind === "Object") return [...getFields(params.members)]
+    return [...getFields(params.members)]
+}
 // --------------------------------------------------------------------- //
 // ------------------------------- PARSER ------------------------------ //
 // --------------------------------------------------------------------- //
 
-function parseParameter(name: string | { [key: string]: string[] }, index: number): ParameterReflection {
-    let parName
-    let fields: { [key: string]: any[] } = {}
-    if (typeof name === "object") {
-        parName = printDestruct(name as any)
-        fields = name
-    }
-    else {
-        parName = name
-    }
-    return { kind: "Parameter", name: parName, decorators: [], fields, index, type: undefined }
+function parseParameter(name: RootNode, index: number): ParameterReflection {
+    return { kind: "Parameter", name: getName(name), decorators: [], fields: getField(name), index, type: undefined }
 }
 
 function parseFunction(fn: Function): FunctionReflection {
