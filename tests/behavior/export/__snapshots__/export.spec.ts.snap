@@ -143,7 +143,6 @@ Object {
     "fromKoa": fromKoa,
   },
   "NestedControllerGeneric": NestedControllerGeneric,
-  "Omit": undefined,
   "ParameterBinderMiddleware": ParameterBinderMiddleware,
   "PolicyAuthorizer": PolicyAuthorizer,
   "Public": "Public",
