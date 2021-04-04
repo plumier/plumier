@@ -431,7 +431,7 @@ Both get by id and get list route has some extra query string to manipulate the 
 | `select`     | `GET /users?select=name,email,dob`                 | All properties | Select properties to include in JSON response   |
 | `limit`      | `GET /users?limit=20`                              | 50             | Limit number of records returned in response    |
 | `offset`     | `GET /users?offset=3`                              | 0              | Offset of the record set returned in response   |
-| `filter`     | `GET /users?filter[name]=john&filter[active]=true` | -              | Find records by property using exact comparison |
+| `filter`     | `GET /users?filter=(name='john' and active=true)` | -              | Find records by property using exact comparison |
 | `order`      | `GET /users?order=-createdAt,name`                 | -              | Order by properties, `-` for descending order   |
 
 Above query string supported by generic controller and nested generic controller. 
@@ -448,8 +448,8 @@ GET /users/:pid/pets/:id?select=name,active,dob
 Get list supported all the query string, it can be combined in single request 
 
 ```
-GET /users?select=name,email,dob&filter[email]=john.doe@gmail.com&order=-createdAt,name&offset=5
-GET /users/:pid/pets/:id?select=name,dob&filter[name]=bingo&order=-createdAt,name&offset=5
+GET /users?select=name,email,dob&filter=(email='john.doe@gmail.com')&order=-createdAt,name&offset=5
+GET /users/:pid/pets/:id?select=name,dob&filter=(name=bingo)&order=-createdAt,name&offset=5
 ```
 
 ## Custom Path Name
