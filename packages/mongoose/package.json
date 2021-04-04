@@ -19,7 +19,7 @@
     "@plumier/generic-controller": "1.0.0-rc.10",
     "@types/pluralize": "^0.0.29",
     "chalk": "^4.1.0",
-    "mongoose": "5.12.0",
+    "mongoose": "^5.12.3",
     "pluralize": "^8.0.0"
   },
   "devDependencies": {

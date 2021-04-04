@@ -11,10 +11,10 @@ import {
 import { EntityWithRelation } from "@plumier/generic-controller"
 import mongoose, { Document, Model } from "mongoose"
 
-import { globalHelper, MongooseHelper } from "./generator"
+import { globalHelper, MongooseHelper, PojoDocument } from "./generator"
 
 class MongooseRepository<T> implements Repository<T>{
-    readonly Model: Model<T & Document>
+    readonly Model: Model<PojoDocument<T>>
     constructor(protected type: Class<T>, helper?: MongooseHelper) {
         const hlp = helper ?? globalHelper
         this.Model = hlp.model(type)
@@ -34,7 +34,7 @@ class MongooseRepository<T> implements Repository<T>{
     }
 
     async insert(doc: Partial<T>) {
-        return new this.Model(doc).save()
+        return new this.Model(doc).save() as any
     }
 
     findById(id: any, select: SelectQuery = {}): Promise<(T & mongoose.Document) | undefined> {
@@ -52,8 +52,8 @@ class MongooseRepository<T> implements Repository<T>{
 }
 
 class MongooseNestedRepository<P=any, T=any> implements NestedRepository<P, T>  {
-    readonly ChildModel: Model<T & Document>
-    readonly ParentModel: Model<P & Document>
+    readonly ChildModel: Model<PojoDocument<T>>
+    readonly ParentModel: Model<PojoDocument<P>>
     readonly relation: EntityRelationInfo
     constructor([type, property]: EntityWithRelation<P,T> | EntityWithRelation<T,P>, helper?: MongooseHelper) {
         const hlp = helper ?? globalHelper
@@ -119,7 +119,7 @@ class MongooseNestedRepository<P=any, T=any> implements NestedRepository<P, T>  
             (parent as any)[this.relation.parentProperty].push(result._id)
             await parent!.save()
         }
-        return result
+        return result as any
     }
 
     findParentById(id: any) {
