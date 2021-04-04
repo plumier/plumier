@@ -23,7 +23,7 @@ Array [
         "parameters": Array [
           Object {
             "decorators": Array [],
-            "fields": Object {},
+            "fields": "id",
             "index": 0,
             "kind": "Parameter",
             "name": "id",
@@ -38,7 +38,7 @@ Array [
         "meta": Array [
           Object {
             "decorators": Array [],
-            "fields": Object {},
+            "fields": "id",
             "index": 0,
             "kind": "Parameter",
             "name": "id",
@@ -80,7 +80,7 @@ Array [
             "parameters": Array [
               Object {
                 "decorators": Array [],
-                "fields": Object {},
+                "fields": "id",
                 "index": 0,
                 "kind": "Parameter",
                 "name": "id",
@@ -128,7 +128,7 @@ Array [
             "parameters": Array [
               Object {
                 "decorators": Array [],
-                "fields": Object {},
+                "fields": "id",
                 "index": 0,
                 "kind": "Parameter",
                 "name": "id",
@@ -217,7 +217,7 @@ Array [
           "parameters": Array [
             Object {
               "decorators": Array [],
-              "fields": Object {},
+              "fields": "id",
               "index": 0,
               "kind": "Parameter",
               "name": "id",
@@ -263,7 +263,7 @@ Array [
       "parameters": Array [
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "id",
           "index": 0,
           "kind": "Parameter",
           "name": "id",

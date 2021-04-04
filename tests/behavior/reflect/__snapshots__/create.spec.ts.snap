@@ -61,7 +61,7 @@ Object {
               },
             },
           ],
-          "fields": Object {},
+          "fields": "par",
           "index": 0,
           "kind": "Parameter",
           "name": "par",

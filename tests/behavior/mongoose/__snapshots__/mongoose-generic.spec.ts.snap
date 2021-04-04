@@ -1821,6 +1821,221 @@ Object {
 }
 `;
 
+exports[`Repository One To Many Repository Should not error when introspected 1`] = `
+Array [
+  Object {
+    "name": "countByManyToOne",
+    "pars": Array [
+      Object {
+        "name": "relation",
+        "type": undefined,
+      },
+      Object {
+        "name": "pid",
+        "type": undefined,
+      },
+      Object {
+        "name": "query",
+        "type": undefined,
+      },
+    ],
+    "type": undefined,
+  },
+  Object {
+    "name": "countByOneToMany",
+    "pars": Array [
+      Object {
+        "name": "relation",
+        "type": undefined,
+      },
+      Object {
+        "name": "pid",
+        "type": undefined,
+      },
+      Object {
+        "name": "query",
+        "type": undefined,
+      },
+    ],
+    "type": undefined,
+  },
+  Object {
+    "name": "count",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": undefined,
+      },
+      Object {
+        "name": "query",
+        "type": undefined,
+      },
+    ],
+    "type": undefined,
+  },
+  Object {
+    "name": "findByOneToMany",
+    "pars": Array [
+      Object {
+        "name": "relation",
+        "type": undefined,
+      },
+      Object {
+        "name": "pid",
+        "type": undefined,
+      },
+      Object {
+        "name": "offset",
+        "type": undefined,
+      },
+      Object {
+        "name": "limit",
+        "type": undefined,
+      },
+      Object {
+        "name": "query",
+        "type": undefined,
+      },
+      Object {
+        "name": "select",
+        "type": undefined,
+      },
+      Object {
+        "name": "order",
+        "type": undefined,
+      },
+    ],
+    "type": undefined,
+  },
+  Object {
+    "name": "findByManyToOne",
+    "pars": Array [
+      Object {
+        "name": "relation",
+        "type": undefined,
+      },
+      Object {
+        "name": "pid",
+        "type": undefined,
+      },
+      Object {
+        "name": "offset",
+        "type": undefined,
+      },
+      Object {
+        "name": "limit",
+        "type": undefined,
+      },
+      Object {
+        "name": "query",
+        "type": undefined,
+      },
+      Object {
+        "name": "select",
+        "type": undefined,
+      },
+      Object {
+        "name": "order",
+        "type": undefined,
+      },
+    ],
+    "type": undefined,
+  },
+  Object {
+    "name": "find",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": undefined,
+      },
+      Object {
+        "name": "offset",
+        "type": undefined,
+      },
+      Object {
+        "name": "limit",
+        "type": undefined,
+      },
+      Object {
+        "name": "query",
+        "type": undefined,
+      },
+      Object {
+        "name": "select",
+        "type": undefined,
+      },
+      Object {
+        "name": "order",
+        "type": undefined,
+      },
+    ],
+    "type": undefined,
+  },
+  Object {
+    "name": "insert",
+    "pars": Array [
+      Object {
+        "name": "pid",
+        "type": undefined,
+      },
+      Object {
+        "name": "doc",
+        "type": undefined,
+      },
+    ],
+    "type": undefined,
+  },
+  Object {
+    "name": "findParentById",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": undefined,
+      },
+    ],
+    "type": undefined,
+  },
+  Object {
+    "name": "findById",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": undefined,
+      },
+      Object {
+        "name": "select",
+        "type": undefined,
+      },
+    ],
+    "type": undefined,
+  },
+  Object {
+    "name": "update",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": undefined,
+      },
+      Object {
+        "name": "data",
+        "type": undefined,
+      },
+    ],
+    "type": undefined,
+  },
+  Object {
+    "name": "delete",
+    "pars": Array [
+      Object {
+        "name": "id",
+        "type": undefined,
+      },
+    ],
+    "type": undefined,
+  },
+]
+`;
+
 exports[`Repository Should able to use One To Many Repository in isolation 1`] = `
 Object {
   "__v": 1,

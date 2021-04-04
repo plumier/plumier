@@ -29,6 +29,8 @@ export interface TypeOverrideOption {
     genericType: TypeOverride[]
 }
 
+export type StringOrKeyValue = string | { [key: string]: string[] | string } | StringOrKeyValue[]
+
 export type Reflection = ParameterReflection | FunctionReflection | PropertyReflection | MethodReflection | ClassReflection | ObjectReflection | ConstructorReflection
 
 export interface ReflectionBase {
@@ -37,7 +39,7 @@ export interface ReflectionBase {
 }
 export interface ParameterReflection extends ReflectionBase {
     kind: "Parameter",
-    fields: string | { [key: string]: string[] },
+    fields: StringOrKeyValue,
     decorators: any[],
     type?: any,
     typeClassification?: "Class" | "Array" | "Primitive"

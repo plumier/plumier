@@ -3083,7 +3083,6 @@ describe("Repository", () => {
             expect(count).toBe(3)
         })
     })
-
     describe("One To Many Repository", () => {
         @collection()
         class User {
@@ -3115,6 +3114,10 @@ describe("Repository", () => {
             ])
             const count = await animalRepo.count(user.id, { name: "Mimi" })
             expect(count).toBe(3)
+        })
+        it("Should not error when introspected", () => {
+            const meta = reflect(MongooseNestedRepository)
+            expect(reflection.getMethods(meta)).toMatchSnapshot()
         })
     })
     describe("Many To One", () => {

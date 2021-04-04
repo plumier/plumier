@@ -83,7 +83,57 @@ describe("Class Introspection", () => {
         }
         class DummyClass {
             @decorateMethod({})
-            dummyMethod(par: string, { date, name }: Domain): number { return 1 }
+            dummyMethod({ date, name }: Domain): number { return 1 }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta.methods[0].parameters[0]).toMatchSnapshot()
+    })
+
+    it("Should reflect destructed tuple parameters type", () => {
+        type Tuple = [string, number]
+        class DummyClass {
+            @decorateMethod({})
+            dummyMethod([name, age]: Tuple) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta.methods[0].parameters[0]).toMatchSnapshot()
+    })
+
+    it("Should inspect deep nested destructed method parameter type", () => {
+        class Domain {
+            constructor(
+                public a: Date,
+                public b: string,
+                public child: ChildDomain,
+                public tuple: Tuple
+            ) { }
+        }
+        class ChildDomain {
+            constructor(
+                public c: Date,
+                public d: string,
+                public child: GrandChildDomain
+            ) { }
+        }
+        class GrandChildDomain {
+            constructor(
+                public e: Date,
+                public f: string
+            ) { }
+        }
+        type Tuple = [string, Domain]
+        class DummyClass {
+            @decorateMethod({})
+            dummyMethod(@reflect.type(Domain) { a, b, tuple: [name, { a: a1, b: b1 }], child: { c, d, child: { e, f } } }: Domain) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta.methods[0].parameters[0]).toMatchSnapshot()
+    })
+
+    it("Should ignore method parameters with this", () => {
+        class DummyClass {
+            @decorateMethod({})
+            dummyMethod(this: string, data: number): number { return 1; }
         }
         const meta = reflect(DummyClass)
         expect(meta).toMatchSnapshot()
@@ -137,35 +187,6 @@ describe("Class Introspection", () => {
         expect(meta).toMatchSnapshot()
     })
 
-    it("Should inspect deep nested destructed method parameter type", () => {
-        class Domain {
-            constructor(
-                public a: Date,
-                public b: string,
-                public child: ChildDomain
-            ) { }
-        }
-        class ChildDomain {
-            constructor(
-                public c: Date,
-                public d: string,
-                public child: GrandChildDomain
-            ) { }
-        }
-        class GrandChildDomain {
-            constructor(
-                public e: Date,
-                public f: string
-            ) { }
-        }
-        class DummyClass {
-            @decorateMethod({})
-            dummyMethod(@reflect.type(Domain) { a, b, child: { c, d, child: { e, f } } }: Domain) { }
-        }
-        const meta = reflect(DummyClass)
-        expect(meta).toMatchSnapshot()
-    })
-
     it("Should inspect property", () => {
         class DummyClass {
             @reflect.noop()
@@ -212,9 +233,9 @@ describe("Class Introspection", () => {
         @reflect.parameterProperties()
         class DummyClass {
             constructor(
-                public myProp:number,
-                public myOtherProp:string,
-            ){}
+                public myProp: number,
+                public myOtherProp: string,
+            ) { }
         }
 
         const meta = reflect(DummyClass)

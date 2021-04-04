@@ -67,7 +67,7 @@ Object {
   "parameters": Array [
     Object {
       "decorators": Array [],
-      "fields": Object {},
+      "fields": "id",
       "index": 0,
       "kind": "Parameter",
       "name": "id",
@@ -76,7 +76,7 @@ Object {
     },
     Object {
       "decorators": Array [],
-      "fields": Object {},
+      "fields": "name",
       "index": 1,
       "kind": "Parameter",
       "name": "name",
@@ -98,7 +98,7 @@ Object {
       "parameters": Array [
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "id",
           "index": 0,
           "kind": "Parameter",
           "name": "id",
@@ -107,7 +107,7 @@ Object {
         },
         Object {
           "decorators": Array [],
-          "fields": Object {},
+          "fields": "name",
           "index": 1,
           "kind": "Parameter",
           "name": "name",
