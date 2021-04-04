@@ -1,7 +1,7 @@
 import "./validator"
 
 import { model } from "./generator"
-export { model, proxy, MongooseHelper, getDefinition, getModels, models } from "./generator"
+export { model, proxy, MongooseHelper, getDefinition, getModels, models, PojoDocument } from "./generator"
 export { collection } from "./decorator"
 export { MongooseFacility } from "./facility"
 export { MongooseControllerGeneric, MongooseNestedControllerGeneric, GenericController, createGenericControllerMongoose } from "./generic-controller"

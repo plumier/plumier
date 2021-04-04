@@ -1,4 +1,5 @@
 import mongoose, { SchemaOptions, SchemaTypeOptions } from "mongoose"
+import { PojoDocument } from "./generator"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -7,7 +8,7 @@ import mongoose, { SchemaOptions, SchemaTypeOptions } from "mongoose"
 type Ref<T> = T & mongoose.Document
 type GeneratorHook = (schema: mongoose.Schema) => void
 type NamedSchemaOption = SchemaOptions & { hook?: GeneratorHook, name?: string }
-type ModelFactory = <T>(type: new (...args: any) => T) => mongoose.Model<T & mongoose.Document>
+type ModelFactory = <T>(type: new (...args: any) => T) => mongoose.Model<PojoDocument<T>>
 interface ClassOptionDecorator { name: "ClassOption", option: NamedSchemaOption }
 interface PropertyOptionDecorator { name: "PropertyOption", option?: SchemaTypeOptions<any> }
 interface RefDecorator { name: "MongooseRef", inverseProperty?:  string}

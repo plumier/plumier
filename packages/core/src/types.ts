@@ -19,7 +19,7 @@ import { ControllerTransformOption } from "./route-generator"
 
 const copyFileAsync = promisify(copyFile)
 
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+// export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export type KeyOf<T> = Extract<keyof T, string>;
 
@@ -726,3 +726,4 @@ export namespace errorMessage {
     export const FileSizeExceeded = "File {0} size exceeded the maximum size"
     export const NumberOfFilesExceeded = "Number of files exceeded the maximum allowed"
 }
+

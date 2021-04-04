@@ -88,19 +88,22 @@ export class Parent {
 export const ParentModel = model(Parent)
 */
 
-class ModelProxyHandler<T> implements ProxyHandler<mong.Model<T & mong.Document>>{
+type ExpandDocument<T> = { [K in keyof T]: T[K] };
+type PojoDocument<T> = ExpandDocument<T & mong.Document>
+
+class ModelProxyHandler<T> implements ProxyHandler<mong.Model<PojoDocument<T>>>{
     constructor(private type: Class, private helper: MongooseHelper) { }
 
-    resolveModel(): mong.Model<T & mong.Document<any, {}>> {
+    resolveModel(): mong.Model<PojoDocument<T>> {
         return this.helper.model(this.type)
     }
 
-    get(target: mong.Model<T & mong.Document>, p: PropertyKey, receiver: any): any {
+    get(target: mong.Model<PojoDocument<T>>, p: PropertyKey, receiver: any): any {
         const Model = this.resolveModel()
         return (Model as any)[p]
     }
 
-    construct?(target: mong.Model<T & mong.Document>, argArray: any, newTarget?: any): object {
+    construct?(target: mong.Model<PojoDocument<T>>, argArray: any, newTarget?: any): object {
         const Model = this.resolveModel()
         return new Model(...argArray)
     }
@@ -132,10 +135,10 @@ class MongooseHelper {
         })
     }
 
-    model<T>(type: new (...args: any) => T): mong.Model<T & mong.Document> {
+    model<T>(type: new (...args: any) => T): mong.Model<PojoDocument<T>> {
         const storedModel = this.models.get(type)
         if (storedModel) {
-            return this.client.model(storedModel.name)
+            return this.client.model(storedModel.name) as any
         }
         else {
             const meta = reflect(type)
@@ -143,9 +146,9 @@ class MongooseHelper {
             // add primary id decorator
             // if there is id property then add the virtuals configuration
             const idProp = meta.properties.find(x => x.decorators.some((d: EntityIdDecorator) => d.kind === "plumier-meta:entity-id"))
-            if(idProp){
-                option.toJSON = {...option.toJSON, virtuals: true}
-                option.toObject = {...option.toObject, virtuals: true}
+            if (idProp) {
+                option.toJSON = { ...option.toJSON, virtuals: true }
+                option.toObject = { ...option.toObject, virtuals: true }
             }
             reflect.flush(type)
             const typeMeta = reflect(type)
@@ -167,11 +170,11 @@ class MongooseHelper {
                 if (this.models.get(dataType)) continue
                 this.model(dataType)
             }
-            return mongooseModel
+            return mongooseModel as any
         }
     }
-    proxy<T>(type: new (...args: any) => T): mong.Model<T & mong.Document> {
-        return new Proxy(mong.Model as mong.Model<T & mong.Document>, new ModelProxyHandler<T>(type, this))
+    proxy<T>(type: new (...args: any) => T): mong.Model<PojoDocument<T>> {
+        return new Proxy(mong.Model as mong.Model<PojoDocument<T>>, new ModelProxyHandler<T>(type, this))
     }
     getModels() {
         return Array.from(this.models.keys())
@@ -187,4 +190,4 @@ class MongooseHelper {
 const globalHelper = new MongooseHelper(mong)
 const { model, getModels, models, proxy } = globalHelper
 
-export { getDefinition, MongooseHelper, model, proxy, getModels, models, globalHelper }
+export { getDefinition, MongooseHelper, model, proxy, getModels, models, globalHelper, PojoDocument }

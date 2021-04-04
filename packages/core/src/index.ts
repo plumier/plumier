@@ -40,7 +40,7 @@ export {
     ActionContext, RouteInfo, RouteAnalyzerFunction, RouteAnalyzerIssue,
     ValidationError, errorMessage, DefaultDependencyResolver, CustomConverter,
     CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie, KeyOf,
-    Metadata, GlobalMetadata, Omit, Optional, RouteMetadata, VirtualRoute,
+    Metadata, GlobalMetadata, Optional, RouteMetadata, VirtualRoute,
     GenericControllers, ControllerGeneric, NestedControllerGeneric, Repository, NestedRepository,
     FilterQueryType, NestedGenericControllerDecorator, MetadataImpl, JwtClaims, SelectQuery
 } from "./types";
