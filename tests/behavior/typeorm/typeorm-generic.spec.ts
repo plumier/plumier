@@ -2678,4 +2678,39 @@ describe("Repository", () => {
             expect(count).toBe(3)
         })
     })
+
+    describe("Many To One Repository", () => {
+        it("Should handle insert properly", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: string
+                @Column()
+                name: string
+            }
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: string
+                @Column()
+                name: string
+                @ManyToOne(x => User)
+                user: User
+            }
+            await createConnection(getConn([User, Animal]))
+            normalizeEntity(User)
+            normalizeEntity(Animal)
+            const userRepo = new TypeORMRepository(User)
+            const animalRepo = new TypeORMNestedRepository<User,Animal>([Animal, "user"])
+            const user = await userRepo.insert({ name: "John Doe" })
+            await Promise.all([
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mimi" }),
+                animalRepo.insert(user.id, { name: "Mommy" }),
+            ])
+            const count = await animalRepo.count(user.id, { name: "Mimi" })
+            expect(count).toBe(3)
+        })
+    })
 })

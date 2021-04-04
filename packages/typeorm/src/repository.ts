@@ -74,15 +74,20 @@ class TypeORMNestedRepository<P, T> implements NestedRepository<P, T> {
 
     async insert(pid: any, data: Partial<T>) {
         const parent = await this.nativeParentRepository.findOne(pid)
-        const result = await this.nativeRepository.insert(data as any);
-        const first = result.identifiers[0]
-        const idName = Object.keys(first)[0]
-        const id = (first as any)[idName]
-        await this.nativeParentRepository.createQueryBuilder()
-            .relation(this.relation.parentProperty!)
-            .of(parent)
-            .add(id)
-        return (await this.nativeRepository.findOne(id))!
+        if (this.relation.parentProperty) {
+            const result = await this.nativeRepository.insert(data as any);
+            const first = result.identifiers[0]
+            const idName = Object.keys(first)[0]
+            const id = (first as any)[idName]
+            await this.nativeParentRepository.createQueryBuilder()
+                .relation(this.relation.parentProperty!)
+                .of(parent)
+                .add(id)
+            return (await this.nativeRepository.findOne(id))!
+        }
+        else {
+            return this.nativeRepository.save({ [this.relation.childProperty!]: pid, ...data })
+        }
     }
 
     findParentById(id: any): Promise<P | undefined> {
