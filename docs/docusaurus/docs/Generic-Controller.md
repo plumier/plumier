@@ -1033,7 +1033,7 @@ Note that we define the return type of the method as `@type(Response, "T")`, thi
 
 Next, we need to register above custom generic controller on the Plumier application like below 
 
-```typescript {5}
+```typescript {6}
 new Plumier()
     .set(new WebApiFacility())
     .set(new TypeORMFacility())
