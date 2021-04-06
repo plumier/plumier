@@ -11,7 +11,7 @@ export {
     AuthorizerContext, CustomMiddleware, CustomMiddlewareFunction, FormFile, HttpCookie,
     api, preSave, postSave, entity, Public, Authenticated,
     authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, entityProvider,
-    AuthPolicy, JwtClaims, SelectQuery
+    AuthPolicy, JwtClaims, SelectQuery, meta
 } from "@plumier/core"
 
 export { 

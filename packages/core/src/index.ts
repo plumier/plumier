@@ -31,6 +31,7 @@ export { domain, middleware, entityProvider, responseType, ResponseTypeDecorator
 export { route, RouteDecoratorImpl } from "./decorator/route";
 export { EntityIdDecorator, RelationDecorator, entity, DeleteColumnDecorator } from "./decorator/entity";
 export { preSave, postSave, RequestHookDecorator } from "./decorator/request-hook";
+export { meta } from "./decorator/meta"
 export { HttpStatus } from "./http-status";
 export { validate, ValidatorMiddleware, CustomValidator, ValidatorDecorator, CustomValidatorFunction, AsyncValidatorResult, ValidatorContext, } from "./validator"
 export {

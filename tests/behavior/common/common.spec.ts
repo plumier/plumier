@@ -1,6 +1,7 @@
 import "@plumier/testing"
 
 import { analyzeModel, domain, ellipsis, entity, entityHelper, printTable } from "@plumier/core"
+import { meta } from "plumier"
 import reflect, { noop } from "@plumier/reflect"
 
 describe("PrintTable", () => {
@@ -254,5 +255,52 @@ describe("Entity Relation Info", () => {
             public user: User
         }
         expect(() => entityHelper.getRelationInfo([Animal, "users"])).toThrowErrorMatchingSnapshot()
+    })
+})
+
+describe("Meta Decorator", () => {
+    it("Should able to decorate method return type", () => {
+        class Dummy {
+            @meta.type(Number)
+            method() { }
+        }
+        expect(reflect(Dummy)).toMatchSnapshot()
+    })
+    it("Should able to decorate property data type", () => {
+        class Dummy {
+            @meta.type(x => [Number])
+            prop: number[]
+        }
+        expect(reflect(Dummy)).toMatchSnapshot()
+    })
+    it("Should able to decorate method parameter", () => {
+        class Dummy {
+            method(@meta.type(Number) par: number) { }
+        }
+        expect(reflect(Dummy)).toMatchSnapshot()
+    })
+    it("Should able to decorate property", () => {
+        class Dummy {
+            @meta.property()
+            prop: number
+        }
+        expect(reflect(Dummy)).toMatchSnapshot()
+    })
+    it("Should able to decorate method", () => {
+        class Dummy {
+            @meta.method()
+            method(): number { return 123 }
+        }
+        expect(reflect(Dummy)).toMatchSnapshot()
+    })
+    it("Should able to decorate parameter properties", () => {
+        @meta.parameterProperties()
+        class Dummy {
+            constructor(
+                public par1: string,
+                public par2: number
+            ) { }
+        }
+        expect(reflect(Dummy)).toMatchSnapshot()
     })
 })

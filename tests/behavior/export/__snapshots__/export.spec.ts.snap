@@ -232,6 +232,12 @@ Object {
   "hasKeyOf": hasKeyOf,
   "invoke": invoke,
   "isCustomClass": isCustomClass,
+  "meta": Object {
+    "method": method,
+    "parameterProperties": parameterProperties,
+    "property": property,
+    "type": type,
+  },
   "middleware": Object {
     "use": use,
   },
@@ -775,6 +781,12 @@ Object {
   "entityProvider": entityProvider,
   "filterParser": filterParser,
   "genericController": genericController,
+  "meta": Object {
+    "method": method,
+    "parameterProperties": parameterProperties,
+    "property": property,
+    "type": type,
+  },
   "middleware": Object {
     "use": use,
   },
