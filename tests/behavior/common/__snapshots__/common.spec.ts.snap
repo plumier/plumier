@@ -38,6 +38,292 @@ exports[`Entity Relation Info Should throw error when provided invalid property 
 
 exports[`Entity Relation Info Should throw error when provided non relation one to many property 1`] = `"User.animals is not a valid relation, make sure its decorated with @entity.relation() decorator"`;
 
+exports[`Meta Decorator Should able to decorate method 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "kind": "Noop",
+          "target": Dummy,
+          Symbol(tinspector:decoratorId): Symbol(noop),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": false,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [],
+      "returnType": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "name": "Dummy",
+  "properties": Array [],
+  "super": Object,
+  "type": Dummy,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Meta Decorator Should able to decorate method parameter 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [
+        Object {
+          "decorators": Array [
+            Object {
+              "genericParams": Array [],
+              "kind": "Override",
+              "target": Dummy,
+              "type": Number,
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "applyTo": Array [],
+                "inherit": true,
+                "removeApplied": true,
+              },
+            },
+          ],
+          "fields": "par",
+          "index": 0,
+          "kind": "Parameter",
+          "name": "par",
+          "type": Number,
+          "typeClassification": "Primitive",
+        },
+      ],
+      "returnType": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "name": "Dummy",
+  "properties": Array [],
+  "super": Object,
+  "type": Dummy,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Meta Decorator Should able to decorate method return type 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": Dummy,
+          "type": Number,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [],
+      "returnType": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "name": "Dummy",
+  "properties": Array [],
+  "super": Object,
+  "type": Dummy,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Meta Decorator Should able to decorate parameter properties 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [
+      Object {
+        "decorators": Array [],
+        "fields": "par1",
+        "index": 0,
+        "kind": "Parameter",
+        "name": "par1",
+        "type": String,
+        "typeClassification": "Primitive",
+      },
+      Object {
+        "decorators": Array [],
+        "fields": "par2",
+        "index": 1,
+        "kind": "Parameter",
+        "name": "par2",
+        "type": Number,
+        "typeClassification": "Primitive",
+      },
+    ],
+  },
+  "decorators": Array [
+    Object {
+      "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "Dummy",
+  "properties": Array [
+    Object {
+      "decorators": Array [],
+      "get": undefined,
+      "index": 0,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "par1",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+    Object {
+      "decorators": Array [],
+      "get": undefined,
+      "index": 1,
+      "isParameter": true,
+      "kind": "Property",
+      "name": "par2",
+      "set": undefined,
+      "type": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": Dummy,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Meta Decorator Should able to decorate property 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "Dummy",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "kind": "Noop",
+          "target": Dummy,
+          Symbol(tinspector:decoratorId): Symbol(noop),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": false,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "prop",
+      "set": undefined,
+      "type": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": Dummy,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Meta Decorator Should able to decorate property data type 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "Dummy",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericParams": Array [],
+          "kind": "Override",
+          "target": Dummy,
+          "type": ,
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "prop",
+      "set": undefined,
+      "type": Array [
+        Number,
+      ],
+      "typeClassification": "Array",
+    },
+  ],
+  "super": Object,
+  "type": Dummy,
+  "typeClassification": "Class",
+}
+`;
+
 exports[`Model Analyser Should analyze missing array type 1`] = `
 Array [
   Object {
