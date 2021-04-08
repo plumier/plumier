@@ -28,6 +28,11 @@ module.exports = {
           position: 'left',
         },
         {
+          href: 'https://github.com/plumier/examples',
+          label: 'Examples',
+          position: 'left',
+        },
+        {
           href: 'https://github.com/plumier/plumier',
           label: 'GitHub',
           position: 'right',
