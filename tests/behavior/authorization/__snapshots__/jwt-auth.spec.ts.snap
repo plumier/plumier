@@ -1,5 +1,103 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`JwtAuth Analyzer Message Should detect missing entity policy on model 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.save(id, data) -> Authenticated PUT /users
+ - error Entity policy ResourceOwner for entity User is not found on model property User.role",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect missing entity policy on model with array type 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.save(id, data) -> Authenticated PUT /users
+ - error Entity policy ResourceOwner for entity User is not found on model property User.role",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect missing entity policy on parameter 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.save(id, data) -> Authenticated PUT /users
+ - error Entity policy ResourceOwner for entity User is not found on parameter data",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect missing entity policy on return type 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.save(id) -> Authenticated PUT /users
+ - error Entity policy ResourceOwner for entity User is not found on return type property User.email",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect missing entity policy on return type of type array 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.save(id) -> Authenticated PUT /users
+ - error Entity policy ResourceOwner for entity User is not found on return type property User.email",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect missing entity policy on route 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.save(id, data) -> ResourceOwner PUT /users
+ - error Entity policy ResourceOwner for entity User is not found",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect missing entity policy on route with multiple policies 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.save(id, data) -> ResourceOwner|ItemAdmin PUT /users
+ - error Entity policy ResourceOwner, ItemAdmin for entity User are not found",
+  ],
+  Array [],
+]
+`;
+
 exports[`JwtAuth Analyzer Message Should detect mistyped auth name on action 1`] = `
 Array [
   Array [],
@@ -22,7 +120,7 @@ Array [
   ],
   Array [
     "1. AnimalController.authenticated(id, name) -> Authenticated GET /animal/authenticated
- - error Parameter id in AnimalController.authenticated uses unknown authorization policy lorem",
+ - error Parameter id uses unknown authorization policy lorem",
   ],
   Array [],
 ]
@@ -36,7 +134,7 @@ Array [
   ],
   Array [
     "1. AnimalController.authenticated(data) -> Authenticated POST /animal/authenticated
- - error Property name of Animal class uses unknown authorization policy lorem",
+ - error Model property Animal.name uses unknown authorization policy lorem",
   ],
   Array [],
 ]
@@ -50,7 +148,7 @@ Array [
   ],
   Array [
     "1. AnimalController.authenticated() -> Authenticated POST /animal/authenticated
- - error Property name of Animal class uses unknown authorization policy lorem",
+ - error Return type property Animal.name uses unknown authorization policy lorem",
   ],
   Array [],
 ]
@@ -64,7 +162,7 @@ Array [
   ],
   Array [
     "1. AnimalController.authenticated() -> Authenticated POST /animal/authenticated
- - error Property name of Animal class uses unknown authorization policy lorem",
+ - error Return type property Animal.name uses unknown authorization policy lorem",
   ],
   Array [],
 ]
@@ -121,6 +219,90 @@ Array [
   Array [
     "1. AnimalController.authenticated() -> lorem GET /animal/authenticated
  - error Route uses unknown authorization policy lorem",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect when applied on non entity policy provider model property 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.save(data) -> Authenticated POST /users
+ - error Entity policy ResourceOwner applied on non entity provider model User.role",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect when applied on non entity policy provider model property of type array 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.save(data) -> Authenticated POST /users
+ - error Entity policy ResourceOwner applied on non entity provider model User.role",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect when applied on non entity policy provider parameter 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.save(data) -> Authenticated POST /users
+ - error Entity policy ResourceOwner applied on non entity provider parameter data",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect when applied on non entity policy provider return type 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.get() -> Authenticated GET /users
+ - error Entity policy ResourceOwner applied on non entity provider return type User.email",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect when applied on non entity policy provider return type of type array 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.get() -> Authenticated GET /users
+ - error Entity policy ResourceOwner applied on non entity provider return type User.email",
+  ],
+  Array [],
+]
+`;
+
+exports[`JwtAuth Analyzer Message Should detect when applied on non entity policy provider route 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.save(data) -> ResourceOwner POST /users
+ - error Entity policy ResourceOwner applied on non entity provider",
   ],
   Array [],
 ]
@@ -285,104 +467,6 @@ Array [
   Array [
     [Error: There are more than one authorization policies named Tomato],
   ],
-]
-`;
-
-exports[`JwtAuth Entity Policy Should detect mistyped policy name on property distinguished by entity type 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    " 1. MongooseControllerGeneric.get     -> Authenticated GET    /user/:id",
-  ],
-  Array [
-    " 2. MongooseControllerGeneric.modify  -> Authenticated PATCH  /user/:id",
-  ],
-  Array [
-    " 3. MongooseControllerGeneric.replace -> Authenticated PUT    /user/:id",
-  ],
-  Array [
-    " 4. MongooseControllerGeneric.delete  -> Authenticated DELETE /user/:id",
-  ],
-  Array [
-    " 5. MongooseControllerGeneric.list    -> Authenticated GET    /user",
-  ],
-  Array [
-    " 6. MongooseControllerGeneric.save    -> Authenticated POST   /user",
-  ],
-  Array [
-    " 7. MongooseControllerGeneric.get     -> Authenticated GET    /item/:id
- - error Property name of Item class uses unknown authorization policy ResourceOwner",
-  ],
-  Array [
-    " 8. MongooseControllerGeneric.modify  -> Authenticated PATCH  /item/:id
- - error Property name of Item class uses unknown authorization policy ResourceOwner",
-  ],
-  Array [
-    " 9. MongooseControllerGeneric.replace -> Authenticated PUT    /item/:id
- - error Property name of Item class uses unknown authorization policy ResourceOwner",
-  ],
-  Array [
-    "10. MongooseControllerGeneric.delete  -> Authenticated DELETE /item/:id",
-  ],
-  Array [
-    "11. MongooseControllerGeneric.list    -> Authenticated GET    /item
- - error Property name of Item class uses unknown authorization policy ResourceOwner",
-  ],
-  Array [
-    "12. MongooseControllerGeneric.save    -> Authenticated POST   /item
- - error Property name of Item class uses unknown authorization policy ResourceOwner",
-  ],
-  Array [],
-]
-`;
-
-exports[`JwtAuth Entity Policy Should detect mistyped policy name on route distinguished by entity type 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    " 1. MongooseControllerGeneric.get     -> ResourceOwner GET    /user/:id",
-  ],
-  Array [
-    " 2. MongooseControllerGeneric.modify  -> Authenticated PATCH  /user/:id",
-  ],
-  Array [
-    " 3. MongooseControllerGeneric.replace -> Authenticated PUT    /user/:id",
-  ],
-  Array [
-    " 4. MongooseControllerGeneric.delete  -> Authenticated DELETE /user/:id",
-  ],
-  Array [
-    " 5. MongooseControllerGeneric.list    -> Authenticated GET    /user",
-  ],
-  Array [
-    " 6. MongooseControllerGeneric.save    -> Authenticated POST   /user",
-  ],
-  Array [
-    " 7. MongooseControllerGeneric.get     -> ResourceOwner GET    /item/:id
- - error Route uses unknown authorization policy ResourceOwner",
-  ],
-  Array [
-    " 8. MongooseControllerGeneric.modify  -> Authenticated PATCH  /item/:id",
-  ],
-  Array [
-    " 9. MongooseControllerGeneric.replace -> Authenticated PUT    /item/:id",
-  ],
-  Array [
-    "10. MongooseControllerGeneric.delete  -> Authenticated DELETE /item/:id",
-  ],
-  Array [
-    "11. MongooseControllerGeneric.list    -> Authenticated GET    /item",
-  ],
-  Array [
-    "12. MongooseControllerGeneric.save    -> Authenticated POST   /item",
-  ],
-  Array [],
 ]
 `;
 

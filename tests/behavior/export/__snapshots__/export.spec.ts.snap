@@ -184,7 +184,7 @@ Object {
   "binder": binder,
   "checkAuthorize": checkAuthorize,
   "createAuthContext": createAuthContext,
-  "createMistypeRouteAnalyzer": createMistypeRouteAnalyzer,
+  "createAuthorizationAnalyzer": createAuthorizationAnalyzer,
   "domain": domain,
   "ellipsis": ellipsis,
   "entity": Object {

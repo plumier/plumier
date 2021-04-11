@@ -121,7 +121,7 @@ class PolicyAuthorizer implements Authorizer {
             for (const policy of this.keys) {
                 if (authPolicy.equals(policy, ctx)) {
                     const authorize = await authPolicy.authorize(ctx)
-                    log.debug("%s by %s", authorize? "AUTHORIZED": "FORBIDDEN", authPolicy.friendlyName())
+                    log.debug("%s by %s", authorize ? "AUTHORIZED" : "FORBIDDEN", authPolicy.friendlyName())
                     if (authorize) return true
                 }
             }
@@ -550,134 +550,13 @@ class AuthorizerMiddleware implements Middleware {
     }
 }
 
-// --------------------------------------------------------------------- //
-// ------------------------------ ANALYZER ----------------------------- //
-// --------------------------------------------------------------------- //
-
-function updateRouteAuthorizationAccess(routes: RouteMetadata[], config: Configuration) {
-    routes.forEach(x => {
-        if (x.kind === "ActionRoute") {
-            const decorators = getRouteAuthorizeDecorators(x, config.globalAuthorizations)
-            x.access = decorators.map(x => x.tag).join("|")
-        }
-    })
-}
-
-function analyzeAuthPolicyNameConflict(policies: Class<AuthPolicy>[]) {
-    for (let i = 0; i < policies.length - 1; i++) {
-        const policy = new policies[i]();
-        const nextI = i + 1;
-        for (let j = nextI; j < policies.length; j++) {
-            const next = new policies[j]();
-            if (policy.conflict(next))
-                throw new Error(`There are more than one authorization policies named ${policy.name}`)
-        }
-    }
-}
-
-interface AuthDecorator { policy: string, entity: Class }
-
-function getPolicyFromDecorators(decorators: any[]): AuthDecorator[] {
-    const ctlAuth = decorators.filter((x: AuthorizeDecorator): x is AuthorizeDecorator => x.type === "plumier-meta:authorize")
-    const result = []
-    for (const item of ctlAuth) {
-        result.push(...item.policies.map(x => ({
-            policy: x,
-            entity: item.appliedClass
-        })))
-    }
-    return result
-}
-
-function mistypedPolicies(decorators: any[], registeredPolicy: AuthPolicy[]) {
-    // get policy names provided in decorators
-    const typedPolicies = getPolicyFromDecorators(decorators)
-    const mistyped = []
-    for (const typed of typedPolicies) {
-        let match = false
-        for (const policy of registeredPolicy) {
-            if (policy instanceof EntityAuthPolicy && policy.name === typed.policy) {
-                // if typed policy is an entity policy 
-                if (policy.entity === typed.entity)
-                    match = true
-                // if action is entity provider 
-                const dec = decorators.find((x: EntityPolicyProviderDecorator): x is EntityPolicyProviderDecorator => x.kind === "plumier-meta:entity-policy-provider")
-                if (dec?.entity === policy.entity)
-                    match = true
-                continue;
-            }
-            if (policy.name === typed.policy)
-                match = true;
-        }
-        if (!match)
-            mistyped.push(typed.policy)
-    }
-    return mistyped
-}
-
-function errorMessage(header: string, mistyped: string[]): RouteAnalyzerIssue {
-    return { type: "error", "message": `${header} uses unknown authorization policy ${mistyped.join(", ")}` }
-}
-
-function checkMistypedPolicyNameOnType(typeDef: Class | Class[], policies: AuthPolicy[]) {
-    const issue: RouteAnalyzerIssue[] = []
-    const type = Array.isArray(typeDef) ? typeDef[0] : typeDef
-    if (!isCustomClass(type)) return issue;
-    const meta = reflect(type)
-    for (const prop of meta.properties) {
-        const mis = mistypedPolicies(prop.decorators, policies)
-        if (mis.length > 0)
-            issue.push(errorMessage(`Property ${prop.name} of ${type.name} class`, mis))
-    }
-    return issue
-}
-
-function checkMistypedOnRoute(route: RouteInfo, policies: AuthPolicy[], globalAuthorize?: string | string[]) {
-    const decorators = getRouteAuthorizeDecorators(route, globalAuthorize)
-    const entityProvider = route.action.decorators.find((x: EntityPolicyProviderDecorator) => x.kind === "plumier-meta:entity-policy-provider")
-    if (entityProvider)
-        decorators.push(entityProvider)
-    const issue: RouteAnalyzerIssue[] = []
-    const ctl = mistypedPolicies(decorators, policies)
-    if (ctl.length > 0)
-        issue.push(errorMessage("Route", ctl))
-    return issue
-}
-
-function checkMistypedOnActionParameters(route: RouteInfo, policies: AuthPolicy[]): RouteAnalyzerIssue[] {
-    const issue: RouteAnalyzerIssue[] = []
-    for (const par of route.action.parameters) {
-        const parMistypes = mistypedPolicies(par.decorators, policies)
-        if (parMistypes.length > 0)
-            issue.push(errorMessage(`Parameter ${par.name} in ${route.controller.name}.${route.action.name}`, parMistypes))
-        // check if its data type is a custom type 
-        const parType = checkMistypedPolicyNameOnType(par.type, policies)
-        issue.push(...parType)
-    }
-    return issue
-}
-
-function checkMistypedOnActionReturnType(route: RouteInfo, policies: AuthPolicy[]): RouteAnalyzerIssue[] {
-    return checkMistypedPolicyNameOnType(route.action.returnType, policies)
-}
-
-function createMistypeRouteAnalyzer(policyClasses: Class<AuthPolicy>[], globalAuthorize?: string | string[]): RouteAnalyzerFunction[] {
-    const analyzers = [
-        checkMistypedOnRoute,
-        checkMistypedOnActionParameters,
-        checkMistypedOnActionReturnType
-    ]
-    const policies = policyClasses.map(x => new x())
-    return analyzers.map(analyser => (info: RouteMetadata) => info.kind === "VirtualRoute" ? [] : analyser(info, policies, globalAuthorize));
-}
-
 export {
     AuthorizerFunction, Authorizer, checkAuthorize, AuthorizeDecorator,
-    getRouteAuthorizeDecorators, AuthorizerMiddleware, updateRouteAuthorizationAccess,
+    getRouteAuthorizeDecorators, AuthorizerMiddleware,
     CustomAuthorizer, CustomAuthorizerFunction, AuthorizationContext, AuthorizerContext,
     AccessModifier, EntityPolicyProviderDecorator, EntityProviderQuery, PublicAuthPolicy, AuthenticatedAuthPolicy,
     authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, Public, Authenticated,
-    AuthPolicy, CustomAuthPolicy, EntityAuthPolicy, globalPolicies, analyzeAuthPolicyNameConflict,
-    createMistypeRouteAnalyzer, AuthorizeReadonly, AuthorizeWriteonly, ReadonlyAuthPolicy, WriteonlyAuthPolicy,
+    AuthPolicy, CustomAuthPolicy, EntityAuthPolicy, globalPolicies,
+    AuthorizeReadonly, AuthorizeWriteonly, ReadonlyAuthPolicy, WriteonlyAuthPolicy,
     createAuthContext, executeAuthorizer, throwAuthError
 }
