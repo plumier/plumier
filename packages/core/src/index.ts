@@ -4,12 +4,13 @@ import "./decorator/val"
 export { val }
 export {
     AuthorizerFunction, checkAuthorize, Authorizer, CustomAuthorizer, CustomAuthorizerFunction,
-    AuthorizationContext, AuthorizerContext, AuthorizeDecorator, updateRouteAuthorizationAccess,
+    AuthorizationContext, AuthorizerContext, AuthorizeDecorator,
     authPolicy, entityPolicy, EntityPolicyAuthorizerFunction, PolicyAuthorizer, Public, Authenticated,
     AuthPolicy, CustomAuthPolicy, EntityAuthPolicy, EntityProviderQuery, EntityPolicyProviderDecorator,
-    globalPolicies, analyzeAuthPolicyNameConflict, PublicAuthPolicy, AuthenticatedAuthPolicy, createMistypeRouteAnalyzer,
-    ReadonlyAuthPolicy, WriteonlyAuthPolicy, executeAuthorizer, createAuthContext, throwAuthError, getRouteAuthorizeDecorators
+    globalPolicies, PublicAuthPolicy, AuthenticatedAuthPolicy, ReadonlyAuthPolicy, WriteonlyAuthPolicy,
+    executeAuthorizer, createAuthContext, throwAuthError, getRouteAuthorizeDecorators
 } from "./authorization";
+export { updateRouteAuthorizationAccess, analyzeAuthPolicyNameConflict, createAuthorizationAnalyzer } from "./authorization-analyzer"
 export { HeaderPart, RequestPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction } from "./binder";
 export { invoke } from "./application-pipeline";
 export { response } from "./response";
