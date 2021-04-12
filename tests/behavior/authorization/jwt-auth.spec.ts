@@ -1017,7 +1017,7 @@ describe("JwtAuth", () => {
             class UsersController {
                 @authorize.route("ResourceOwner")
                 @route.post("")
-                save(data:User){}
+                save(data: User) { }
             }
             const authPolicies = [
                 entityPolicy(User).define("ResourceOwner", (ctx, x) => !!x.id),
@@ -1039,7 +1039,7 @@ describe("JwtAuth", () => {
             }
             class UsersController {
                 @route.post("")
-                save(@authorize.write("ResourceOwner") data:User){}
+                save(@authorize.write("ResourceOwner") data: User) { }
             }
             const authPolicies = [
                 entityPolicy(User).define("ResourceOwner", (ctx, x) => !!x.id),
@@ -1061,11 +1061,11 @@ describe("JwtAuth", () => {
                 @authorize.write("ResourceOwner")
                 role: string
                 @authorize.read("ResourceOwner")
-                email:string
+                email: string
             }
             class UsersController {
                 @route.post("")
-                save( data:User){}
+                save(data: User) { }
             }
             const authPolicies = [
                 entityPolicy(User).define("ResourceOwner", (ctx, x) => !!x.id),
@@ -1087,11 +1087,11 @@ describe("JwtAuth", () => {
                 @authorize.write("ResourceOwner")
                 role: string
                 @authorize.read("ResourceOwner")
-                email:string
+                email: string
             }
             class UsersController {
                 @route.post("")
-                save( @meta.type([User]) data:User){}
+                save(@meta.type([User]) data: User) { }
             }
             const authPolicies = [
                 entityPolicy(User).define("ResourceOwner", (ctx, x) => !!x.id),
@@ -1106,59 +1106,6 @@ describe("JwtAuth", () => {
             console.mockClear()
         })
 
-        it("Should detect when applied on non entity policy provider return type", async () => {
-            class User {
-                @entity.primaryId()
-                id: number
-                @authorize.write("ResourceOwner")
-                role: string
-                @authorize.read("ResourceOwner")
-                email:string
-            }
-            class UsersController {
-                @route.get("")
-                @meta.type(User)
-                get(){}
-            }
-            const authPolicies = [
-                entityPolicy(User).define("ResourceOwner", (ctx, x) => !!x.id),
-            ]
-            const mock = console.mock()
-            await new Plumier()
-                .set(new WebApiFacility({ controller: [UsersController] }))
-                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
-                .set({ genericController: [DefaultControllerGeneric, DefaultNestedControllerGeneric] })
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-            console.mockClear()
-        })
-
-        it("Should detect when applied on non entity policy provider return type of type array", async () => {
-            class User {
-                @entity.primaryId()
-                id: number
-                @authorize.write("ResourceOwner")
-                role: string
-                @authorize.read("ResourceOwner")
-                email:string
-            }
-            class UsersController {
-                @route.get("")
-                @meta.type([User])
-                get(){}
-            }
-            const authPolicies = [
-                entityPolicy(User).define("ResourceOwner", (ctx, x) => !!x.id),
-            ]
-            const mock = console.mock()
-            await new Plumier()
-                .set(new WebApiFacility({ controller: [UsersController] }))
-                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
-                .set({ genericController: [DefaultControllerGeneric, DefaultNestedControllerGeneric] })
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-            console.mockClear()
-        })
         it("Should detect missing entity policy on route", async () => {
             class Item { }
             class User {
@@ -1169,7 +1116,7 @@ describe("JwtAuth", () => {
                 @authorize.route("ResourceOwner")
                 @route.put("")
                 @entityProvider(User, "id")
-                save(id:string, data:User){}
+                save(id: string, data: User) { }
             }
             const authPolicies = [
                 entityPolicy(Item).define("ResourceOwner", (ctx, x) => !!x.id),
@@ -1193,7 +1140,7 @@ describe("JwtAuth", () => {
                 @authorize.route("ResourceOwner", "ItemAdmin")
                 @route.put("")
                 @entityProvider(User, "id")
-                save(id:string, data:User){}
+                save(id: string, data: User) { }
             }
             const authPolicies = [
                 entityPolicy(Item).define("ResourceOwner", (ctx, x) => !!x.id),
@@ -1217,7 +1164,7 @@ describe("JwtAuth", () => {
             class UsersController {
                 @route.put("")
                 @entityProvider(User, "id")
-                save(id:string, @authorize.write("ResourceOwner") data:User){}
+                save(id: string, @authorize.write("ResourceOwner") data: User) { }
             }
             const authPolicies = [
                 entityPolicy(Item).define("ResourceOwner", (ctx, x) => !!x.id),
@@ -1239,12 +1186,12 @@ describe("JwtAuth", () => {
                 @authorize.write("ResourceOwner")
                 role: string
                 @authorize.read("ResourceOwner")
-                email:string
+                email: string
             }
             class UsersController {
                 @route.put("")
                 @entityProvider(User, "id")
-                save(id:string, data:User){}
+                save(id: string, data: User) { }
             }
             const authPolicies = [
                 entityPolicy(Item).define("ResourceOwner", (ctx, x) => !!x.id),
@@ -1266,12 +1213,12 @@ describe("JwtAuth", () => {
                 @authorize.write("ResourceOwner")
                 role: string
                 @authorize.read("ResourceOwner")
-                email:string
+                email: string
             }
             class UsersController {
                 @route.put("")
                 @entityProvider(User, "id")
-                save(id:string, @meta.type([User]) data:User[]){}
+                save(id: string, @meta.type([User]) data: User[]) { }
             }
             const authPolicies = [
                 entityPolicy(Item).define("ResourceOwner", (ctx, x) => !!x.id),
@@ -1285,56 +1232,23 @@ describe("JwtAuth", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
         })
-        it("Should detect missing entity policy on return type", async () => {
-            class Item { }
+        
+        it("Should detect missing entity policy and provider in first class entity", async () => {
+            @genericController()
             class User {
                 @entity.primaryId()
                 id: number
                 @authorize.write("ResourceOwner")
                 role: string
                 @authorize.read("ResourceOwner")
-                email:string
-            }
-            class UsersController {
-                @route.put("")
-                @entityProvider(User, "id")
-                @meta.type(User)
-                save(id:string){}
+                email: string
             }
             const authPolicies = [
-                entityPolicy(Item).define("ResourceOwner", (ctx, x) => !!x.id),
+                entityPolicy(User).define("ResourceOwner", (ctx, x) => !!x.id),
             ]
             const mock = console.mock()
             await new Plumier()
-                .set(new WebApiFacility({ controller: [UsersController] }))
-                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
-                .set({ genericController: [DefaultControllerGeneric, DefaultNestedControllerGeneric] })
-                .initialize()
-            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
-            console.mockClear()
-        })
-        it("Should detect missing entity policy on return type of type array", async () => {
-            class Item { }
-            class User {
-                @entity.primaryId()
-                id: number
-                @authorize.write("ResourceOwner")
-                role: string
-                @authorize.read("ResourceOwner")
-                email:string
-            }
-            class UsersController {
-                @route.put("")
-                @entityProvider(User, "id")
-                @meta.type([User])
-                save(id:string){}
-            }
-            const authPolicies = [
-                entityPolicy(Item).define("ResourceOwner", (ctx, x) => !!x.id),
-            ]
-            const mock = console.mock()
-            await new Plumier()
-                .set(new WebApiFacility({ controller: [UsersController] }))
+                .set(new WebApiFacility({ controller: [User] }))
                 .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
                 .set({ genericController: [DefaultControllerGeneric, DefaultNestedControllerGeneric] })
                 .initialize()
@@ -4156,6 +4070,6 @@ describe("JwtAuth", () => {
                 .initialize())
             expect(mock.mock.calls).toMatchSnapshot()
         })
-        
+
     })
 })
