@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "@plumier/core": "1.0.0-rc.10",
+    "@plumier/query-parser": "1.0.0-rc.10",
     "koa-jwt": "^4.0.1"
   },
   "devDependencies": {

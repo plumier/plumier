@@ -1,4 +1,4 @@
-import { authorize, AuthPolicy, authPolicy, Class, entity, entityPolicy, entityProvider, route, val } from "@plumier/core"
+import { authorize, AuthPolicy, authPolicy, Class, Configuration, entity, entityPolicy, entityProvider, route, val } from "@plumier/core"
 import { createCustomFilterConverter, FilterQueryAuthorizeMiddleware, filterParser } from "@plumier/query-parser"
 import { JwtAuthFacility } from "@plumier/jwt"
 import Plumier, { genericController, WebApiFacility } from "plumier"
@@ -6,6 +6,7 @@ import { generic, noop } from "@plumier/reflect"
 import { sign } from "jsonwebtoken"
 import supertest from "supertest"
 import { DefaultNestedControllerGeneric, DefaultControllerGeneric } from "../helper"
+import { cleanupConsole } from "@plumier/testing"
 
 
 describe("Filter Parser", () => {
@@ -204,7 +205,7 @@ describe("Filter Parser Authorizer", () => {
     const ADMIN_TOKEN = sign({ email: "ketut@gmail.com", role: "admin" }, SECRET)
     const SUPER_ADMIN_TOKEN = sign({ email: "ketut@gmail.com", role: "superadmin" }, SECRET)
 
-    function createApp(controller: Class, policies:Class<AuthPolicy>[] = []) {
+    function createApp(controller: Class, policies: Class<AuthPolicy>[] = [], config: Partial<Configuration> = {}) {
         const authPolicies = [
             ...policies,
             authPolicy().define("user", i => i.user?.role === "user"),
@@ -212,12 +213,12 @@ describe("Filter Parser Authorizer", () => {
             authPolicy().define("superadmin", i => i.user?.role === "superadmin"),
         ]
         return new Plumier()
-            .set({ mode: "production" })
+            .set({ mode: "production", ...config })
             .set(new WebApiFacility({ controller }))
             .set({ typeConverterVisitors: [createCustomFilterConverter(x => x)] })
             .use(new FilterQueryAuthorizeMiddleware(), "Action")
             .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
-            .set({ genericController:[DefaultControllerGeneric, DefaultNestedControllerGeneric] })
+            .set({ genericController: [DefaultControllerGeneric, DefaultNestedControllerGeneric] })
             .initialize()
     }
     it("Should check unauthorized column", async () => {
@@ -534,11 +535,11 @@ describe("Filter Parser Authorizer", () => {
         @genericController(c => c.all().authorize("Public"))
         class MyFilter {
             @entity.primaryId()
-            id:number
+            id: number
             @authorize.read("Owner")
-            property:string
+            property: string
         }
-        const policy = [entityPolicy(MyFilter).define("Owner", ({user}, id) => user?.userId === id)]
+        const policy = [entityPolicy(MyFilter).define("Owner", ({ user }, id) => user?.userId === id)]
         const app = await createApp(MyFilter, policy)
         await supertest(app.callback())
             .get("/myfilter?filter=property='lorem'")
@@ -549,13 +550,13 @@ describe("Filter Parser Authorizer", () => {
         @genericController(c => c.all().authorize("Public"))
         class MyFilter {
             @entity.primaryId()
-            id:number
+            id: number
             @authorize.read("Owner", "OtherOwner")
-            property:string
+            property: string
         }
         const policy = [
-            entityPolicy(MyFilter).define("Owner", ({user}, id) => user?.userId === id),
-            entityPolicy(MyFilter).define("OtherOwner", ({user}, id) => user?.userId === id),
+            entityPolicy(MyFilter).define("Owner", ({ user }, id) => user?.userId === id),
+            entityPolicy(MyFilter).define("OtherOwner", ({ user }, id) => user?.userId === id),
         ]
         const app = await createApp(MyFilter, policy)
         await supertest(app.callback())
@@ -567,15 +568,50 @@ describe("Filter Parser Authorizer", () => {
         @genericController(c => c.all().authorize("Public"))
         class MyFilter {
             @entity.primaryId()
-            id:number
+            id: number
             @authorize.read("Owner", "user")
-            property:string
+            property: string
         }
-        const policy = [entityPolicy(MyFilter).define("Owner", ({user}, id) => user?.userId === id)]
+        const policy = [entityPolicy(MyFilter).define("Owner", ({ user }, id) => user?.userId === id)]
         const app = await createApp(MyFilter, policy)
         await supertest(app.callback())
             .get("/myfilter?filter=property='lorem'")
             .set("Authorization", `Bearer ${USER_TOKEN}`)
             .expect(200)
+    })
+    it("Should show warning when found property contains only entity policies", async () => {
+        @genericController(c => c.all().authorize("Public"))
+        class MyFilter {
+            @entity.primaryId()
+            id: number
+            @authorize.read("Owner", "OtherOwner")
+            property: string
+        }
+        const policy = [
+            entityPolicy(MyFilter).define("Owner", ({ user }, id) => user?.userId === id),
+            entityPolicy(MyFilter).define("OtherOwner", ({ user }, id) => user?.userId === id),
+        ]
+        const moc = console.mock()
+        const app = await createApp(MyFilter, policy, { mode: "debug" })
+        expect(cleanupConsole(moc.mock.calls)).toMatchSnapshot()
+        console.mockClear()
+    })
+    it("Should not showing warning when found property contains mix entity policies and auth policy", async () => {
+        @genericController(c => c.all().authorize("Public"))
+        class MyFilter {
+            @entity.primaryId()
+            id: number
+            @authorize.read("Owner", "OtherOwner")
+            property: string
+        }
+        const policy = [
+            entityPolicy(MyFilter).define("Owner", ({ user }, id) => user?.userId === id),
+            entityPolicy(MyFilter).define("OtherOwner", ({ user }, id) => user?.userId === id),
+            authPolicy().define("OtherOtherOwner", x => true)
+        ]
+        const moc = console.mock()
+        const app = await createApp(MyFilter, policy, { mode: "debug" })
+        expect(cleanupConsole(moc.mock.calls)).toMatchSnapshot()
+        console.mockClear()
     })
 })

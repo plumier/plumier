@@ -266,7 +266,7 @@ function analyzeAuthPolicyNameConflict(policies: Class<AuthPolicy>[]) {
     }
 }
 
-function createAuthorizationAnalyzer(policyClasses: Class<AuthPolicy>[], globalAuthorize?: string | string[]): RouteAnalyzerFunction[] {
+function createAuthorizationAnalyzer(policies: AuthPolicy[], globalAuthorize?: string | string[]): RouteAnalyzerFunction[] {
     const analyzers = [
         // auth policy
         checkMistypedPoliciesOnRoute,
@@ -284,7 +284,6 @@ function createAuthorizationAnalyzer(policyClasses: Class<AuthPolicy>[], globalA
         checkMissingEntityPolicyOnModel,
         checkMissingEntityPolicyOnReturnType
     ]
-    const policies = policyClasses.map(x => new x())
     return analyzers.map(analyser => (info: RouteMetadata) => info.kind === "VirtualRoute" ? [] : analyser(info, policies, globalAuthorize));
 }
 
@@ -292,6 +291,6 @@ function createAuthorizationAnalyzer(policyClasses: Class<AuthPolicy>[], globalA
 export {
     Authorizer, updateRouteAuthorizationAccess, AuthorizationContext,
     AccessModifier, AuthPolicy, analyzeAuthPolicyNameConflict,
-    createAuthorizationAnalyzer,
+    createAuthorizationAnalyzer, getPolicyInfo
 }
 

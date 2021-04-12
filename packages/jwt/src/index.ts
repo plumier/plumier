@@ -18,6 +18,7 @@ import {
 import { Context } from "koa"
 import KoaJwt from "koa-jwt"
 import { isAbsolute, join } from "path"
+import { createQueryParserAnalyzer } from "@plumier/query-parser"
 
 /* ------------------------------------------------------------------------------- */
 /* ------------------------------- TYPES ----------------------------------------- */
@@ -94,8 +95,10 @@ export class JwtAuthFacility extends DefaultFacility {
         analyzeAuthPolicyNameConflict(authPolicies)
         // set auth policies analyzers
         const defaultAnalyzers = app.config.analyzers ?? []
-        const analyzers = createAuthorizationAnalyzer(authPolicies, this.option?.globalAuthorize)
-        app.set({ analyzers: [...defaultAnalyzers, ...analyzers] })
+        const policies = authPolicies.map(x => new x())
+        const authorizeAnalyzer = createAuthorizationAnalyzer(policies, this.option?.globalAuthorize)
+        const queryParserAnalyzer = createQueryParserAnalyzer(policies)
+        app.set({ analyzers: [...defaultAnalyzers, ...authorizeAnalyzer, ...[queryParserAnalyzer]] })
     }
 
     async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]) {
