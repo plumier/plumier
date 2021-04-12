@@ -74,6 +74,7 @@ function transformPath(path: string, route: RouteInfo[], ctx: BaseTransformConte
 
 function transformOperation(route: RouteInfo, ctx: BaseTransformContext): [HttpMethod, OperationObject] {
     const isPublic = route.access === "Public"
+    const desc = route.action.decorators.find(isDescription)
     const tags = route.controller.decorators.filter(isTag).map(x => x.tag)
     if (tags.length === 0) tags.push(route.controller.name.replace(/controller$/i, ""))
     const secured = ctx.config.enableAuthorization && !isPublic
@@ -82,7 +83,7 @@ function transformOperation(route: RouteInfo, ctx: BaseTransformContext): [HttpM
     const requestBody = transformBody(route, { ...ctx, route })
     const operation: OperationObject = {
         responses: transformResponses(route, { ...ctx, route }, isPublic),
-        tags, parameters, requestBody,
+        tags, parameters, requestBody, description: desc?.desc,
         ...getSummary(route, ctx.config.globalAuthorizations)
     }
     if (secured) operation.security = [{ bearer }]

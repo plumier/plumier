@@ -450,7 +450,7 @@ Array [
 ]
 `;
 
-exports[`Open API 3.0 Generation Decorators Should able to add description on action 1`] = `undefined`;
+exports[`Open API 3.0 Generation Decorators Should able to add description on action 1`] = `"Lorem ipsum dolor sit amet"`;
 
 exports[`Open API 3.0 Generation Decorators Should able to add description on parameter 1`] = `
 Array [
