@@ -580,7 +580,7 @@ describe("Filter Parser Authorizer", () => {
             .expect(200)
     })
     it("Should show warning when found property contains only entity policies", async () => {
-        @genericController(c => c.all().authorize("Public"))
+        @genericController()
         class MyFilter {
             @entity.primaryId()
             id: number
@@ -597,11 +597,11 @@ describe("Filter Parser Authorizer", () => {
         console.mockClear()
     })
     it("Should not showing warning when found property contains mix entity policies and auth policy", async () => {
-        @genericController(c => c.all().authorize("Public"))
+        @genericController()
         class MyFilter {
             @entity.primaryId()
             id: number
-            @authorize.read("Owner", "OtherOwner")
+            @authorize.read("Owner", "OtherOwner", "OtherOtherOwner")
             property: string
         }
         const policy = [

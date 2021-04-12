@@ -1,5 +1,38 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`JwtAuth Analyzer Message Should detect missing entity policy and provider in first class entity 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user
+ - warning FilterParser unable to authorize property User.email because its contains only entity policies
+ - warning SelectParser unable to authorize property User.email because its contains only entity policies
+ - warning OrderParser unable to authorize property User.email because its contains only entity policies",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user
+ - error Entity policy ResourceOwner applied on non entity provider model User.role",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id
+ - warning SelectParser unable to authorize property User.email because its contains only entity policies",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /user/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /user/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`JwtAuth Analyzer Message Should detect missing entity policy on model 1`] = `
 Array [
   Array [],
@@ -37,34 +70,6 @@ Array [
   Array [
     "1. UsersController.save(id, data) -> Authenticated PUT /users
  - error Entity policy ResourceOwner for entity User is not found on parameter data",
-  ],
-  Array [],
-]
-`;
-
-exports[`JwtAuth Analyzer Message Should detect missing entity policy on return type 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. UsersController.save(id) -> Authenticated PUT /users
- - error Entity policy ResourceOwner for entity User is not found on return type property User.email",
-  ],
-  Array [],
-]
-`;
-
-exports[`JwtAuth Analyzer Message Should detect missing entity policy on return type of type array 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. UsersController.save(id) -> Authenticated PUT /users
- - error Entity policy ResourceOwner for entity User is not found on return type property User.email",
   ],
   Array [],
 ]
@@ -261,34 +266,6 @@ Array [
   Array [
     "1. UsersController.save(data) -> Authenticated POST /users
  - error Entity policy ResourceOwner applied on non entity provider parameter data",
-  ],
-  Array [],
-]
-`;
-
-exports[`JwtAuth Analyzer Message Should detect when applied on non entity policy provider return type 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. UsersController.get() -> Authenticated GET /users
- - error Entity policy ResourceOwner applied on non entity provider return type User.email",
-  ],
-  Array [],
-]
-`;
-
-exports[`JwtAuth Analyzer Message Should detect when applied on non entity policy provider return type of type array 1`] = `
-Array [
-  Array [],
-  Array [
-    "Route Analysis Report",
-  ],
-  Array [
-    "1. UsersController.get() -> Authenticated GET /users
- - error Entity policy ResourceOwner applied on non entity provider return type User.email",
   ],
   Array [],
 ]

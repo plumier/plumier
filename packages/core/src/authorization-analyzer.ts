@@ -157,22 +157,6 @@ function checkMissingEntityProviderOnModel(route: RouteInfo, policies: AuthPolic
     return result
 }
 
-function checkMissingEntityProviderOnReturnType(route: RouteInfo, policies: AuthPolicy[], globalAuthorize?: string | string[]): RouteAnalyzerIssue[] {
-    const provider = getEntityProvider(route)
-    if (!!provider) return []
-    const result: RouteAnalyzerIssue[] = []
-    const type: Class = Array.isArray(route.action.returnType) ? route.action.returnType[0] : route.action.returnType
-    if (isCustomClass(type)) {
-        const meta = reflect(type)
-        for (const prop of meta.properties) {
-            const decs = prop.decorators.filter((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize")
-            const infos = getPolicyInfo(decs, policies).filter(x => x.type === "EntityPolicy" && x.access === "read")
-            if (infos.length > 0)
-                result.push({ type: "error", message: `Entity policy ${infos.map(x => x.name).join(", ")} applied on non entity provider return type ${type.name}.${prop.name}` })
-        }
-    }
-    return result
-}
 
 // --------------------------------------------------------------------- //
 // ----------------------- MISSING ENTITY POLICY ----------------------- //
@@ -224,23 +208,6 @@ function checkMissingEntityPolicyOnModel(route: RouteInfo, policies: AuthPolicy[
     return result
 }
 
-function checkMissingEntityPolicyOnReturnType(route: RouteInfo, policies: AuthPolicy[], globalAuthorize?: string | string[]): RouteAnalyzerIssue[] {
-    const provider = getEntityProvider(route)
-    if (!provider) return []
-    const result: RouteAnalyzerIssue[] = []
-    const type: Class = Array.isArray(route.action.returnType) ? route.action.returnType[0] : route.action.returnType
-    if (isCustomClass(type)) {
-        const meta = reflect(type)
-        for (const prop of meta.properties) {
-            const decs = prop.decorators.filter((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize")
-            const infos = getPolicyInfo(decs, policies).filter(x => x.type === "EntityPolicy" && x.access === "read")
-            if (infos.length > 0 && infos.every(x => x.entity !== provider))
-                result.push(missingEntityPolicyErrorMessage(infos, provider, `return type property ${type.name}.${prop.name}`))
-        }
-    }
-    return result
-}
-
 // --------------------------------------------------------------------- //
 // ----------------------------- ANALYZERS ----------------------------- //
 // --------------------------------------------------------------------- //
@@ -277,12 +244,10 @@ function createAuthorizationAnalyzer(policies: AuthPolicy[], globalAuthorize?: s
         checkMissingEntityProviderOnRoute,
         checkMissingEntityProviderOnParameters,
         checkMissingEntityProviderOnModel,
-        checkMissingEntityProviderOnReturnType,
         // missing entity policy
         checkMissingEntityPolicyOnRoute,
         checkMissingEntityPolicyOnParameters,
         checkMissingEntityPolicyOnModel,
-        checkMissingEntityPolicyOnReturnType
     ]
     return analyzers.map(analyser => (info: RouteMetadata) => info.kind === "VirtualRoute" ? [] : analyser(info, policies, globalAuthorize));
 }

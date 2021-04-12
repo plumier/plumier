@@ -56,23 +56,22 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list            -> Public GET    /myfilter
- - error Entity policy Owner, OtherOwner applied on non entity provider return type MyFilter.property",
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /myfilter",
   ],
   Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> Public POST   /myfilter",
+    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /myfilter",
   ],
   Array [
-    "3. DefaultControllerGeneric.get             -> Public GET    /myfilter/:id",
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /myfilter/:id",
   ],
   Array [
-    "4. DefaultControllerGeneric.modify          -> Public PATCH  /myfilter/:id",
+    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /myfilter/:id",
   ],
   Array [
-    "5. DefaultControllerGeneric.replace         -> Public PUT    /myfilter/:id",
+    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /myfilter/:id",
   ],
   Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> Public DELETE /myfilter/:id",
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /myfilter/:id",
   ],
   Array [],
 ]
@@ -85,23 +84,26 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list            -> Public GET    /myfilter
- - error Entity policy Owner, OtherOwner applied on non entity provider return type MyFilter.property",
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /myfilter
+ - warning FilterParser unable to authorize property MyFilter.property because its contains only entity policies
+ - warning SelectParser unable to authorize property MyFilter.property because its contains only entity policies
+ - warning OrderParser unable to authorize property MyFilter.property because its contains only entity policies",
   ],
   Array [
-    "2. DefaultControllerGeneric.save(data, ctx) -> Public POST   /myfilter",
+    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /myfilter",
   ],
   Array [
-    "3. DefaultControllerGeneric.get             -> Public GET    /myfilter/:id",
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /myfilter/:id
+ - warning SelectParser unable to authorize property MyFilter.property because its contains only entity policies",
   ],
   Array [
-    "4. DefaultControllerGeneric.modify          -> Public PATCH  /myfilter/:id",
+    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /myfilter/:id",
   ],
   Array [
-    "5. DefaultControllerGeneric.replace         -> Public PUT    /myfilter/:id",
+    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /myfilter/:id",
   ],
   Array [
-    "6. DefaultControllerGeneric.delete(id, ctx) -> Public DELETE /myfilter/:id",
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /myfilter/:id",
   ],
   Array [],
 ]

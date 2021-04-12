@@ -1,8 +1,9 @@
-import { authorize, AuthPolicy, authPolicy, entity, entityPolicy, route } from "@plumier/core"
+import { authorize, AuthPolicy, authPolicy, Configuration, entity, entityPolicy, route } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import Plumier, { genericController, WebApiFacility } from "@plumier/plumier"
 import { createCustomOrderConverter, orderParser, OrderQueryAuthorizeMiddleware } from "@plumier/query-parser"
 import { Class, noop } from "@plumier/reflect"
+import { cleanupConsole } from "@plumier/testing"
 import { sign } from "jsonwebtoken"
 import supertest from "supertest"
 import { DefaultControllerGeneric, DefaultNestedControllerGeneric } from "../helper"
@@ -146,9 +147,9 @@ describe("Select Order Authorization", () => {
     const secret = "lorem ipsum"
     const userToken = sign({ id: 123, role: "User" }, secret)
     const adminToken = sign({ id: 234, role: "Admin" }, secret)
-    function createApp(controller?: Class, policies: Class<AuthPolicy>[] = []) {
+    function createApp(controller?: Class, policies: Class<AuthPolicy>[] = [], config: Partial<Configuration> = {}) {
         return new Plumier()
-            .set({ mode: "production" })
+            .set({ mode: "production", ...config })
             .set(new WebApiFacility({ controller }))
             .set(new JwtAuthFacility({
                 secret, authPolicies: [
