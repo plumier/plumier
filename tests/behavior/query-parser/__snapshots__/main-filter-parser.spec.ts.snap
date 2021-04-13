@@ -49,6 +49,66 @@ Object {
 }
 `;
 
+exports[`Filter Parser Authorizer Should not showing warning when found property contains mix entity policies and auth policy 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /myfilter",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /myfilter",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /myfilter/:id",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /myfilter/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /myfilter/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /myfilter/:id",
+  ],
+  Array [],
+]
+`;
+
+exports[`Filter Parser Authorizer Should show warning when found property contains only entity policies 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /myfilter
+ - warning FilterParser unable to authorize property MyFilter.property because its contains only entity policies
+ - warning SelectParser unable to authorize property MyFilter.property because its contains only entity policies
+ - warning OrderParser unable to authorize property MyFilter.property because its contains only entity policies",
+  ],
+  Array [
+    "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /myfilter",
+  ],
+  Array [
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /myfilter/:id
+ - warning SelectParser unable to authorize property MyFilter.property because its contains only entity policies",
+  ],
+  Array [
+    "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /myfilter/:id",
+  ],
+  Array [
+    "5. DefaultControllerGeneric.replace         -> Authenticated PUT    /myfilter/:id",
+  ],
+  Array [
+    "6. DefaultControllerGeneric.delete(id, ctx) -> Authenticated DELETE /myfilter/:id",
+  ],
+  Array [],
+]
+`;
+
 exports[`Filter Parser Should allow grouped expression 1`] = `
 Object {
   "col": 1,

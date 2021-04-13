@@ -7,14 +7,18 @@ Array [
     "Route Analysis Report",
   ],
   Array [
-    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user",
+    "1. DefaultControllerGeneric.list            -> Authenticated GET    /user
+ - warning FilterParser unable to authorize property User.email because its contains only entity policies
+ - warning SelectParser unable to authorize property User.email because its contains only entity policies
+ - warning OrderParser unable to authorize property User.email because its contains only entity policies",
   ],
   Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user
  - error Entity policy ResourceOwner applied on non entity provider model User.role",
   ],
   Array [
-    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id",
+    "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id
+ - warning SelectParser unable to authorize property User.email because its contains only entity policies",
   ],
   Array [
     "4. DefaultControllerGeneric.modify          -> Authenticated PATCH  /user/:id",

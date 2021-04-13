@@ -157,28 +157,28 @@ class CustomAuthPolicy implements AuthPolicy {
 }
 
 class PublicAuthPolicy extends CustomAuthPolicy {
-    name = Public
+    constructor() { super(Public, {} as any) }
     async authorize(ctx: AuthorizationContext): Promise<boolean> {
         return true
     }
 }
 
 class AuthenticatedAuthPolicy extends CustomAuthPolicy {
-    name = Authenticated
+    constructor() { super(Authenticated, {} as any) }
     async authorize(ctx: AuthorizationContext): Promise<boolean> {
         return !!ctx.user
     }
 }
 
 class ReadonlyAuthPolicy extends CustomAuthPolicy {
-    name = AuthorizeReadonly
+    constructor() { super(AuthorizeReadonly, {} as any) }
     async authorize(ctx: AuthorizationContext): Promise<boolean> {
         return false
     }
 }
 
 class WriteonlyAuthPolicy extends CustomAuthPolicy {
-    name = AuthorizeWriteonly
+    constructor() { super(AuthorizeWriteonly, {} as any) }
     async authorize(ctx: AuthorizationContext): Promise<boolean> {
         return false
     }
