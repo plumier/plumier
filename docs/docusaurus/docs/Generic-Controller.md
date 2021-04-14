@@ -314,23 +314,10 @@ You're defined inverse property `user` on the one to many relation, it help Plum
 ## Apply Multiple Decorators 
 Its possible to apply multiple `@genericController()` decorator on entity or entity relation, but the generated route must be unique or the route generator static check will shows errors. 
 
-For example on previous users -> email entity you may need to show `/users/:uid/emails` but you may also wants to enable API to list all emails `/emails` 
 
 ```typescript
-@Entity()
-class User {
-    
-    /** other columns **/
-
-    @Column()
-    name:string
-
-    @OneToMany(x => Email, x => x.user)
-    emails:Email[]
-}
-
-@genericController(c => c.useNested(User, "emails"))
-@genericController(c => c.methods("Delete", "GetOne", "Patch", "Post", "Put").ignore())
+@genericController(c => c.setPath("user-emails/:id"))
+@genericController()
 @Entity()
 class Email {
     
@@ -347,17 +334,22 @@ class Email {
 }
 ```
 
-Above will generates 7 routes like below 
+Above will generates 12 routes like below 
 
-| Method | Route                           | Description                                                         |
-| ------ | ------------------------------- | ------------------------------------------------------------------- |
-| POST   | `/users/:pid/emails`            | Add new user's email                                                |
-| GET    | `/users/:pid/emails/:id?select` | Get user's email by ID                                              |
-| PUT    | `/users/:pid/emails/:id`        | Replace user's email by ID                                          |
-| PATCH  | `/users/:pid/emails/:id`        | Modify user's email by ID                                           |
-| DELETE | `/users/:pid/emails/:id`        | Delete user's email by ID                                           |
-| GET    | `/users/:pid/emails`            | Get list of user's emails with paging, filter, order and projection |
-| GET    | `/emails`                       | Get list of all emails                                              |
+| Method | Route                     | Description                                                      |
+| ------ | ------------------------- | ---------------------------------------------------------------- |
+| POST   | `/emails`                 | Add new email                                                    |
+| GET    | `/emails/:id?select`      | Get email by ID                                                  |
+| PUT    | `/emails/:id`             | Replace email by ID (required validation used)                   |
+| PATCH  | `/emails/:id`             | Modify email by ID (required validation ignored)                 |
+| DELETE | `/emails/:id`             | Delete email by ID                                               |
+| GET    | `/emails`                 | Get list of emails with pagination, order, filter and projection |
+| POST   | `/user-emails`            | Add new email                                                    |
+| GET    | `/user-emails/:id?select` | Get email by ID                                                  |
+| PUT    | `/user-emails/:id`        | Replace email by ID (required validation used)                   |
+| PATCH  | `/user-emails/:id`        | Modify email by ID (required validation ignored)                 |
+| DELETE | `/user-emails/:id`        | Delete email by ID                                               |
+| GET    | `/user-emails`            | Get list of emails with pagination, order, filter and projection |
 
 ## Filters 
 Generic controller provided filter query string to narrow API response. The query respects the `@authorize.read()` and `@authorize.writeonly()`. Its mean you will not able to query  
@@ -426,13 +418,13 @@ Using above code when you request `DELETE /users/{id}` Plumier will set the `del
 
 Both get by id and get list route has some extra query string to manipulate the response match your need. 
 
-| Query String | Example                                            | Default        | Description                                     |
-| ------------ | -------------------------------------------------- | -------------- | ----------------------------------------------- |
-| `select`     | `GET /users?select=name,email,dob`                 | All properties | Select properties to include in JSON response   |
-| `limit`      | `GET /users?limit=20`                              | 50             | Limit number of records returned in response    |
-| `offset`     | `GET /users?offset=3`                              | 0              | Offset of the record set returned in response   |
+| Query String | Example                                           | Default        | Description                                     |
+| ------------ | ------------------------------------------------- | -------------- | ----------------------------------------------- |
+| `select`     | `GET /users?select=name,email,dob`                | All properties | Select properties to include in JSON response   |
+| `limit`      | `GET /users?limit=20`                             | 50             | Limit number of records returned in response    |
+| `offset`     | `GET /users?offset=3`                             | 0              | Offset of the record set returned in response   |
 | `filter`     | `GET /users?filter=(name='john' and active=true)` | -              | Find records by property using exact comparison |
-| `order`      | `GET /users?order=-createdAt,name`                 | -              | Order by properties, `-` for descending order   |
+| `order`      | `GET /users?order=-createdAt,name`                | -              | Order by properties, `-` for descending order   |
 
 Above query string supported by generic controller and nested generic controller. 
 
