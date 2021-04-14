@@ -204,7 +204,7 @@ Authorization can be applied globally to apply default authorization to all rout
 
 ```typescript
 // apply auth policy globally to all routes
-app.set(new JwtAuthFacility({ global: ["Admin", "SuperAdmin"] }))
+app.set(new JwtAuthFacility({ globalAuthorize: ["Admin", "SuperAdmin"] }))
 ```
 
 With above configuration all routes (except explicitly has auth policy defined) will only be accessible by `Admin` or `SuperAdmin`
@@ -301,7 +301,7 @@ For example if we have authorization configuration like below
 
 ```typescript {2}
 // global authorization
-app.set(new JwtAuthFacility({ global: "Public" }))
+app.set(new JwtAuthFacility({ globalAuthorize: "Public" }))
 
 // controller authorization
 @authorize.route("Admin", "SuperAdmin")

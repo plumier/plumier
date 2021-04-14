@@ -342,15 +342,20 @@ export class Todo extends EntityBase {
 Above showing that we modify our current Todo entity by adding a one to many relation to the comment entity. You can see also we add `@genericController()` decorator above the `comments` property means its will be handled by a nested generic controller.
 
 :::info
-Decorating property with `@genericController()` may make the code less cleaner, since the controller configuration stays in `todo` directory instead of the `todo-comment` directory. Alternatively you can put `@genericController()` above the Comment entity with `useNested` configuration like below.
+Decorating one to many property with `@genericController()` may make the code less cleaner, since the controller configuration stays in `todo` directory instead of the `todo-comment` directory. Alternatively you can put `@genericController()` above the inverse property of the Comment entity which is `user` property.
 
 ```typescript {2}
-@genericController(c => {
-    c.useNested(Todo, "comments")
-    c.methods("Put", "Patch", "Delete").authorize("ResourceOwner", "Admin")
-})
+
 @Entity()
-export class Comment extends EntityBase { }
+export class Comment extends EntityBase { 
+
+    @genericController(c => {
+        c.methods("Put", "Patch", "Delete").authorize("ResourceOwner", "Admin")
+    })
+    @authorize.readonly()
+    @ManyToOne(x => User)
+    user: User
+}
 ```
 :::
 
@@ -358,12 +363,12 @@ Next you can save the file and see the route analysis report like below.
 
 ```
 ..... other routes ....
-10. TypeORMNested...eneric.list           -> Private             GET    /api/v1/todos/:pid/comments
-11. TypeORMNested...eneric.save           -> Private             POST   /api/v1/todos/:pid/comments
-12. TypeORMNested...eneric.get            -> Private             GET    /api/v1/todos/:pid/comments/:id
-13. TypeORMNested...eneric.modify         -> ResourceOwner|Admin PATCH  /api/v1/todos/:pid/comments/:id
-14. TypeORMNested...eneric.replace        -> ResourceOwner|Admin PUT    /api/v1/todos/:pid/comments/:id
-15. TypeORMNested...eneric.delete         -> ResourceOwner|Admin DELETE /api/v1/todos/:pid/comments/:id
+1.  TypeORMNested...eneric.list           -> Private             GET    /api/v1/todos/:pid/comments
+2.  TypeORMNested...eneric.save           -> Private             POST   /api/v1/todos/:pid/comments
+3.  TypeORMNested...eneric.get            -> Private             GET    /api/v1/todos/:pid/comments/:id
+4.  TypeORMNested...eneric.modify         -> ResourceOwner|Admin PATCH  /api/v1/todos/:pid/comments/:id
+5.  TypeORMNested...eneric.replace        -> ResourceOwner|Admin PUT    /api/v1/todos/:pid/comments/:id
+6.  TypeORMNested...eneric.delete         -> ResourceOwner|Admin DELETE /api/v1/todos/:pid/comments/:id
 ..... other routes ....
 ```
 
