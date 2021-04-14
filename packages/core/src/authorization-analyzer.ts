@@ -123,6 +123,12 @@ function checkMistypePoliciesOnReturnValue(route: RouteInfo, policies: AuthPolic
 // ------------------- APPLIED ON NON ENTITY PROVIDER ------------------ //
 // --------------------------------------------------------------------- //
 
+function missingEntityProviderMessage(policies: string[], prefix?: string): RouteAnalyzerIssue {
+    const names = Array.from(new Set(policies)).join(", ")
+    const pref = prefix ? ` ${prefix}` : ""
+    return { type: "error", message: `Entity policy ${names} applied on non entity provider${pref}` }
+}
+
 function checkMissingEntityProviderOnRoute(route: RouteInfo, policies: AuthPolicy[], globalAuthorize?: string | string[]): RouteAnalyzerIssue[] {
     const authDecorators = getRouteAuthorizeDecorators(route, globalAuthorize)
     const provider = getEntityProvider(route)
@@ -130,7 +136,7 @@ function checkMissingEntityProviderOnRoute(route: RouteInfo, policies: AuthPolic
     const infos = getPolicyInfo(authDecorators, policies)
         .filter(x => x.type === "EntityPolicy" && x.access === "route")
         .map(x => x.name)
-    return infos.length > 0 ? [{ type: "error", message: `Entity policy ${infos.join(", ")} applied on non entity provider` }] : []
+    return infos.length > 0 ? [missingEntityProviderMessage(infos)] : []
 }
 
 function checkMissingEntityProviderOnParameters(route: RouteInfo, policies: AuthPolicy[], globalAuthorize?: string | string[]): RouteAnalyzerIssue[] {
@@ -139,9 +145,9 @@ function checkMissingEntityProviderOnParameters(route: RouteInfo, policies: Auth
     const result: RouteAnalyzerIssue[] = []
     for (const par of route.action.parameters) {
         const decs = par.decorators.filter((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize")
-        const infos = getPolicyInfo(decs, policies).filter(x => x.type === "EntityPolicy" && x.access === "write")
+        const infos = getPolicyInfo(decs, policies).filter(x => x.type === "EntityPolicy" && x.access === "write").map(x => x.name)
         if (infos.length > 0)
-            result.push({ type: "error", message: `Entity policy ${infos.map(x => x.name).join(", ")} applied on non entity provider parameter ${par.name}` })
+            result.push(missingEntityProviderMessage(infos, `parameter ${par.name}`))
     }
     return result
 }
@@ -156,9 +162,9 @@ function checkMissingEntityProviderOnModel(route: RouteInfo, policies: AuthPolic
             const meta = reflect(type)
             for (const prop of meta.properties) {
                 const decs = prop.decorators.filter((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize")
-                const infos = getPolicyInfo(decs, policies).filter(x => x.type === "EntityPolicy" && x.access === "write")
+                const infos = getPolicyInfo(decs, policies).filter(x => x.type === "EntityPolicy" && x.access === "write").map(x => x.name)
                 if (infos.length > 0)
-                    result.push({ type: "error", message: `Entity policy ${infos.map(x => x.name).join(", ")} applied on non entity provider model ${type.name}.${prop.name}` })
+                    result.push(missingEntityProviderMessage(infos, `model ${type.name}.${prop.name}`))
             }
         }
     }

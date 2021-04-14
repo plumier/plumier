@@ -298,6 +298,20 @@ Array [
 ]
 `;
 
+exports[`JwtAuth Analyzer Message Should not showing duplicate policy name when multiple entity policy available 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.save(data) -> ResourceOwner POST /users
+ - error Entity policy ResourceOwner applied on non entity provider",
+  ],
+  Array [],
+]
+`;
+
 exports[`JwtAuth Analyzer Message Should not showing readonly and writeonly error message 1`] = `
 Array [
   Array [],
