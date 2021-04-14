@@ -229,6 +229,19 @@ Array [
 ]
 `;
 
+exports[`JwtAuth Analyzer Message Should detect properly in multiple entity policies with the same name 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.save(id, data) -> Authenticated PUT /users",
+  ],
+  Array [],
+]
+`;
+
 exports[`JwtAuth Analyzer Message Should detect when applied on non entity policy provider model property 1`] = `
 Array [
   Array [],

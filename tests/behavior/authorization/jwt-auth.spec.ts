@@ -1255,6 +1255,35 @@ describe("JwtAuth", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
         })
+
+        it("Should detect properly in multiple entity policies with the same name", async () => {
+            class Item { }
+            class User {
+                @entity.primaryId()
+                id: number
+                @authorize.write("ResourceOwner")
+                role: string
+                @authorize.read("ResourceOwner")
+                email: string
+            }
+            class UsersController {
+                @route.put("")
+                @entityProvider(User, "id")
+                save(id: string, @meta.type([User]) data: User[]) { }
+            }
+            const authPolicies = [
+                entityPolicy(Item).define("ResourceOwner", (ctx, x) => !!x.id),
+                entityPolicy(User).define("ResourceOwner", (ctx, x) => !!x.id),
+            ]
+            const mock = console.mock()
+            await new Plumier()
+                .set(new WebApiFacility({ controller: [UsersController] }))
+                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
+                .set({ genericController: [DefaultControllerGeneric, DefaultNestedControllerGeneric] })
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
     })
 
     describe("Default Configuration", () => {

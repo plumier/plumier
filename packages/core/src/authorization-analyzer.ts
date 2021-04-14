@@ -34,20 +34,28 @@ function getEntityProvider(route: RouteInfo) {
 }
 
 function getPolicyInfo(authDecorators: AuthorizeDecorator[], registeredPolicy: AuthPolicy[]) {
-    const getType = (name: string): { type: PolicyInfoType, entity?: Class } => {
-        const pol = registeredPolicy.find(x => x.name === name)
-        if (!pol) return { type: "Mistyped" }
-        if (pol instanceof EntityAuthPolicy) return { type: "EntityPolicy", entity: pol.entity }
-        return { type: "AuthPolicy" }
+    type DecType = { type: PolicyInfoType, entity?: Class }
+    const getType = (name: string): DecType[] => {
+        const policies = registeredPolicy.filter(x => x.name === name)
+        const result: DecType[] = []
+        for (const pol of policies) {
+            if (pol instanceof EntityAuthPolicy)
+                result.push({ type: "EntityPolicy", entity: pol.entity })
+            else
+                result.push({ type: "AuthPolicy" })
+        }
+        return result.length === 0 ? [{ type: "Mistyped" }] : result
     }
     const result: PolicyInfo[] = []
     for (const item of authDecorators) {
-        result.push(...item.policies.map(x => ({
-            ...getType(x),
-            name: x,
-            access: item.access,
-            decoratorTarget: item.appliedClass,
-        })))
+        for (const pol of item.policies) {
+            const types = getType(pol)
+            result.push(...types.map(x => ({
+                ...x, name: pol,
+                access: item.access,
+                decoratorTarget: item.appliedClass
+            })))
+        }
     }
     return result
 }
