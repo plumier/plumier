@@ -170,7 +170,7 @@ Object {
         Object {
           "decorators": Array [
             Object {
-              "genericParams": Array [],
+              "genericArguments": Array [],
               "kind": "Override",
               "target": AnimalController,
               "type": AnimalClass,

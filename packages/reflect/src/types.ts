@@ -79,7 +79,7 @@ export interface ClassReflection extends ReflectionBase {
     methods: MethodReflection[],
     properties: PropertyReflection[],
     decorators: any[],
-    removedDecorators?:any[]
+    removedDecorators?: any[]
     type: Class,
     super: Class,
     typeClassification?: "Class" | "Array" | "Primitive",
@@ -95,7 +95,7 @@ export interface NoopDecorator {
 export interface TypeDecorator {
     kind: "Override",
     type: TypeOverride | ((x: any) => TypeOverride),
-    genericParams: (string|string[])[]
+    genericArguments: (string | string[] | Class | Class[])[]
     target: Class
 }
 export interface PrivateDecorator {
@@ -104,14 +104,14 @@ export interface PrivateDecorator {
 export interface ParameterPropertiesDecorator {
     type: "ParameterProperties"
 }
-export interface GenericTypeDecorator {
+export interface GenericTypeArgumentDecorator {
     kind: "GenericType",
     types: (TypeOverride)[]
     target: Class
 }
-export interface GenericTemplateDecorator {
+export interface GenericTypeParameterDecorator {
     kind: "GenericTemplate",
-    templates: (string|string[])[]
+    templates: (string | string[])[]
     target: Class
 }
 export interface DecoratorOption {
@@ -132,7 +132,7 @@ export interface DecoratorOption {
     /**
      * Remove applied decorator using `applyTo` on the class scope. Default `true`
      */
-    removeApplied?:boolean
+    removeApplied?: boolean
 }
 
 export type CustomPropertyDecorator = (target: Object, propertyKey: string | symbol, ...index: any[]) => void;

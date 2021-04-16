@@ -986,7 +986,7 @@ First define the model represent the response schema returned by each controller
 ```typescript
 import {generic, type, noop} from "@plumier/reflect"
 
-@generic.template("T")
+@generic.parameter("T")
 export class Response<T> {
     @type(["T"])
     data: T[]

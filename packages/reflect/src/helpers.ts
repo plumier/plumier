@@ -4,7 +4,7 @@
 /* --------------------------- HELPERS ---------------------------- */
 /* ---------------------------------------------------------------- */
 
-import { Class, ParameterPropertyReflection, ClassReflection, TypeOverride, GenericTemplateDecorator, GenericTypeDecorator, TypeDecorator } from "./types"
+import { Class, ParameterPropertyReflection, ClassReflection, TypeOverride, GenericTypeParameterDecorator, GenericTypeArgumentDecorator, TypeDecorator } from "./types"
 import * as decorate from "./decorators"
 import { getMetadata } from "./storage"
 

@@ -1,6 +1,6 @@
 import { lstat, exists } from "fs"
 import glob from "glob"
-import reflect, { GenericTypeDecorator, useCache } from "@plumier/reflect"
+import reflect, { GenericTypeArgumentDecorator, useCache } from "@plumier/reflect"
 import { promisify } from "util"
 
 import { EntityIdDecorator, RelationDecorator } from "./decorator/entity"

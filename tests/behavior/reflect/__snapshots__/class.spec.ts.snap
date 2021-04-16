@@ -13,7 +13,7 @@ Object {
     Object {
       "decorators": Array [
         Object {
-          "genericParams": Array [],
+          "genericArguments": Array [],
           "kind": "Override",
           "target": DummyClass,
           "type": Array [
@@ -100,7 +100,7 @@ Object {
       Object {
         "decorators": Array [
           Object {
-            "genericParams": Array [],
+            "genericArguments": Array [],
             "kind": "Override",
             "target": DummyClass,
             "type": Array [
@@ -173,7 +173,7 @@ Object {
         Object {
           "decorators": Array [
             Object {
-              "genericParams": Array [],
+              "genericArguments": Array [],
               "kind": "Override",
               "target": DummyClass,
               "type": Array [
@@ -285,7 +285,7 @@ Object {
         Object {
           "decorators": Array [
             Object {
-              "genericParams": Array [],
+              "genericArguments": Array [],
               "kind": "Override",
               "target": DummyClass,
               "type": Array [
@@ -537,7 +537,7 @@ exports[`Class Introspection Should inspect deep nested destructed method parame
 Object {
   "decorators": Array [
     Object {
-      "genericParams": Array [],
+      "genericArguments": Array [],
       "kind": "Override",
       "target": DummyClass,
       "type": Domain,
@@ -610,7 +610,7 @@ Object {
         Object {
           "decorators": Array [
             Object {
-              "genericParams": Array [],
+              "genericArguments": Array [],
               "kind": "Override",
               "target": DummyClass,
               "type": Domain,

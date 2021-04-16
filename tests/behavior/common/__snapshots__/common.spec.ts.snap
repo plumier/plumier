@@ -95,7 +95,7 @@ Object {
         Object {
           "decorators": Array [
             Object {
-              "genericParams": Array [],
+              "genericArguments": Array [],
               "kind": "Override",
               "target": Dummy,
               "type": Number,
@@ -141,7 +141,7 @@ Object {
     Object {
       "decorators": Array [
         Object {
-          "genericParams": Array [],
+          "genericArguments": Array [],
           "kind": "Override",
           "target": Dummy,
           "type": Number,
@@ -295,7 +295,7 @@ Object {
     Object {
       "decorators": Array [
         Object {
-          "genericParams": Array [],
+          "genericArguments": Array [],
           "kind": "Override",
           "target": Dummy,
           "type": ,

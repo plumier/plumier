@@ -418,7 +418,7 @@ Object {
     "create": create,
     "getGenericTypeParameters": getGenericTypeParameters,
     "getType": getType,
-    "template": template,
+    "parameter": parameter,
   },
   "ignore": ignore,
   "mergeDecorator": mergeDecorator,

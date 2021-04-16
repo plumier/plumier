@@ -131,7 +131,7 @@ function isDynamic(decorator: TypeDecorator) {
 // check if a type with generic parameter @type(Type, "T", "U")
 function isTypeWithGenericParameter(decorator: TypeDecorator) {
     const [singleType] = reflection.getTypeFromDecorator(decorator)
-    return typeof singleType === "function" && decorator.genericParams.length > 0
+    return typeof singleType === "function" && decorator.genericArguments.length > 0
 }
 
 function setType(meta: MethodReflection | PropertyReflection | ParameterReflection | ParameterPropertyReflection, type: Class | Class[]) {
@@ -154,7 +154,11 @@ export function addsTypeByTypeDecorator(meta: TypedReflection, ctx: WalkMemberCo
         return { ...meta, ...setType(meta, isArray ? [type] : type as any) }
     }
     if (isTypeWithGenericParameter(decorator)) {
-        const genericParams: any[] = decorator.genericParams.map(x => generic.getType({ type: x, target: decorator.target }, ctx.target))
+        const genericParams: any[] = decorator.genericArguments.map(x => {
+            const s = Array.isArray(x) ? x[0] : x 
+            // if the generic arguments already a class then return immediately
+            return typeof s === "function" ? x : generic.getType({ type: x, target: decorator.target }, ctx.target)
+        } )
         const [parentType, isArray] = reflection.getTypeFromDecorator(decorator)
         const dynType = createClass({}, { extends: parentType as any, genericParams })
         const type = isArray ? [dynType] : dynType

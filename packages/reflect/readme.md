@@ -189,18 +189,18 @@ We will be able to get generic type information such as `Partial`, `Required` et
 With above trick its possible to get generic type information in a generic class members with some extra configuration below
 
 ```typescript
-@generic.template("T", "U")
+@generic.parameter("T", "U")
 class SuperAwesome<T, U> {
     awesome(@reflect.type("T") par: T, @reflect.type("U") par2: U) {}
 }
 
-@generic.type(Number, String)
+@generic.argument(Number, String)
 class Awesome extends SuperAwesome<Number, String> { }
 
 const metadata = reflect(Awesome)
 ```
 
-Above code showing that we add a specialized decorator `@generic.template()` to define generic template type. We also defined data type of the generic parameters using `@reflect.type()` decorator. Next on the inherited class we specify `@generic.type()` to define types replace the generic template. Note that the order of the parameter on `@generic.template()` and `@generic.type()` is important.
+Above code showing that we add a specialized decorator `@generic.parameter()` to define generic type parameter. We also defined data type of the generic parameters using `@reflect.type()` decorator. Next on the inherited class we specify `@generic.argument()` to define types replace the generic template. Note that the order of the parameter on `@generic.parameter()` and `@generic.argument()` is important.
 
 ## Inspect Parameter Properties
 TypeScript has parameter properties feature, which make it possible to use constructor parameter as property. reflection able to extract parameter properties type information by using `@reflect.parameterProperties()` decorator.
