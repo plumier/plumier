@@ -204,7 +204,7 @@ describe("Open API 3.0 Generation", () => {
                     @entity.relation()
                     createdBy: User
                 }
-                @generic.type(Shop, Item, Number, Number)
+                @generic.argument(Shop, Item, Number, Number)
                 @decorateClass(<NestedGenericControllerDecorator>{ kind: "plumier-meta:relation-prop-name", relation: "items", type: Shop })
                 class ItemController {
                     @route.post("")

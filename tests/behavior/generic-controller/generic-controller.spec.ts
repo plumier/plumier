@@ -215,7 +215,7 @@ describe("Route Generator", () => {
                 ) { }
             }
             @generic.template("T", "TID")
-            @generic.type("T", "TID")
+            @generic.argument("T", "TID")
             class MyCustomControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{ }
             const mock = console.mock()
             await createApp({ controller: User, rootPath: "/api/v1/" })
@@ -466,7 +466,7 @@ describe("Route Generator", () => {
                 ) { }
             }
             @generic.template("P", "PID", "T", "TID")
-            @generic.type("P", "PID", "T", "TID")
+            @generic.argument("P", "PID", "T", "TID")
             class MyCustomOneToManyControllerGeneric<P, PID, T, TID> extends RepoBaseNestedControllerGeneric<P, PID, T, TID>{ }
             const mock = console.mock()
             await createApp({ controller: User, rootPath: "/api/v1/" })
@@ -714,7 +714,7 @@ describe("Custom Route Path", () => {
         })
         it("Should contains correct query parameter", async () => {
             @generic.template("T", "TID")
-            @generic.type("T", "TID")
+            @generic.argument("T", "TID")
             class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
                 constructor(
                 ) {
@@ -819,7 +819,7 @@ describe("Custom Route Path", () => {
         })
         it("Should contains correct query parameter", async () => {
             @generic.template("P", "T", "PID", "TID")
-            @generic.type("P", "T", "PID", "TID")
+            @generic.argument("P", "T", "PID", "TID")
             class MyControllerGeneric<P, T, PID, TID> extends RepoBaseNestedControllerGeneric<P, T, PID, TID>{
                 constructor(
                     @entity.primaryId()
@@ -1690,7 +1690,7 @@ describe("Open Api", () => {
 describe("Request Hook", () => {
     const fn = jest.fn()
     @generic.template("T", "TID")
-    @generic.type("T", "TID")
+    @generic.argument("T", "TID")
     class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
         @route.post()
         async bulk(@type(["T"]) data: T[]) {
@@ -1702,7 +1702,7 @@ describe("Request Hook", () => {
         constructor() { super(fac => new MockRepo<T>(fn)) }
     }
     @generic.template("P", "T", "PID", "TID")
-    @generic.type("P", "T", "PID", "TID")
+    @generic.argument("P", "T", "PID", "TID")
     class MyNestedControllerGeneric<P, T, PID, TID> extends RepoBaseNestedControllerGeneric<P, T, PID, TID>{
         constructor() { super(fac => new MockNestedRepo<P, T>(fn)) }
     }
@@ -2020,7 +2020,7 @@ describe("Request Hook", () => {
     it("Should not error when not provide postSaveValue", async () => {
         const fn = jest.fn()
         @generic.template("T", "TID")
-        @generic.type("T", "TID")
+        @generic.argument("T", "TID")
         class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
             constructor() { super(fac => new MockRepo<T>(fn)) }
             async save(data: T, ctx: Context): Promise<IdentifierResult<TID>> {
@@ -2061,7 +2061,7 @@ describe("Request Hook", () => {
     it("Should not error when using custom controller with no body", async () => {
         const fn = jest.fn()
         @generic.template("T", "TID")
-        @generic.type("T", "TID")
+        @generic.argument("T", "TID")
         class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{
             constructor() { super(fac => new MockRepo<T>(fn)) }
             @route.post()
@@ -2571,12 +2571,12 @@ describe("Entity Policy", () => {
         }
     }
     @generic.template("T", "TID")
-    @generic.type("T", "TID")
+    @generic.argument("T", "TID")
     class MyControllerGeneric extends RepoBaseControllerGeneric<User, number>{
         constructor() { super(x => new UserRepo(fn)) }
     }
     @generic.template("P", "T", "PID", "TID")
-    @generic.type("P", "T", "PID", "TID")
+    @generic.argument("P", "T", "PID", "TID")
     class MyNestedControllerGeneric extends RepoBaseNestedControllerGeneric<User, Todo, number, number>{
         constructor() { super(x => new TodoRepo(fn)) }
     }
@@ -2791,12 +2791,12 @@ describe("Response Transformer", () => {
         }
     }
     @generic.template("T", "TID")
-    @generic.type("T", "TID")
+    @generic.argument("T", "TID")
     class MyControllerGeneric extends RepoBaseControllerGeneric<User, number>{
         constructor() { super(x => new UserRepo(fn)) }
     }
     @generic.template("P", "T", "PID", "TID")
-    @generic.type("P", "T", "PID", "TID")
+    @generic.argument("P", "T", "PID", "TID")
     class MyNestedControllerGeneric extends RepoBaseNestedControllerGeneric<User, Todo, number, number>{
         constructor() { super(x => new TodoRepo(fn)) }
     }

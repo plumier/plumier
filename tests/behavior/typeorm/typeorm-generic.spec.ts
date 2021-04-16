@@ -821,7 +821,7 @@ describe("CRUD", () => {
                 name: string
             }
             @generic.template("T", "TID")
-            @generic.type("T", "TID")
+            @generic.argument("T", "TID")
             class MyCustomGeneric<T, TID> extends TypeORMControllerGeneric<T, TID>{
                 constructor() { super(x => new TypeORMRepository(x)) }
             }
@@ -1752,7 +1752,7 @@ describe("CRUD", () => {
                 user: User
             }
             @generic.template("P", "T", "PID", "TID")
-            @generic.type("P", "T", "PID", "TID")
+            @generic.argument("P", "T", "PID", "TID")
             class MyCustomGeneric<P, T, PID, TID> extends TypeORMNestedControllerGeneric<P, T, PID, TID>{
                 constructor() { super((p) => new TypeORMNestedRepository(p)) }
             }

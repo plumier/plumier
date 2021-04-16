@@ -31,7 +31,7 @@ class RouteDecoratorImpl {
     * Mark method as POST method http handler
     ```
     class AnimalController{
-       @route.post()
+       ＠route.post()
        method(id:number){}
     }
     //result: POST /animal/method?id=<number>
@@ -39,7 +39,7 @@ class RouteDecoratorImpl {
     * Override method name with absolute url
     ```
     class AnimalController{
-       @route.post("/beast/:id")
+       ＠route.post("/beast/:id")
        method(id:number){}
     }
     //result: POST /beast/:id
@@ -47,7 +47,7 @@ class RouteDecoratorImpl {
     * Override method name with relative url
     ```
     class AnimalController{
-       @route.post("get")
+       ＠route.post("get")
        method(id:number){}
     }
     //result: POST /animal/get?id=<number>
@@ -63,7 +63,7 @@ class RouteDecoratorImpl {
     * Mark method as GET method http handler
     ```
     class AnimalController{
-       @route.get()
+       ＠route.get()
        method(id:number){}
     }
     //result: GET /animal/method?id=<number>
@@ -71,7 +71,7 @@ class RouteDecoratorImpl {
     * Override method name with absolute url
     ```
     class AnimalController{
-       @route.get("/beast/:id")
+       ＠route.get("/beast/:id")
        method(id:number){}
     }
     //result: GET /beast/:id
@@ -79,7 +79,7 @@ class RouteDecoratorImpl {
     * Override method name with relative url
     ```
     class AnimalController{
-       @route.get("get")
+       ＠route.get("get")
        method(id:number){}
     }
     //result: GET /animal/get?id=<number>
@@ -95,7 +95,7 @@ class RouteDecoratorImpl {
     * Mark method as PUT method http handler
     ```
     class AnimalController{
-       @route.put()
+       ＠route.put()
        method(id:number){}
     }
     //result: PUT /animal/method?id=<number>
@@ -103,7 +103,7 @@ class RouteDecoratorImpl {
     * Override method name with absolute url
     ```
     class AnimalController{
-       @route.put("/beast/:id")
+       ＠route.put("/beast/:id")
        method(id:number){}
     }
     //result: PUT /beast/:id
@@ -111,7 +111,7 @@ class RouteDecoratorImpl {
     * Override method name with relative url
     ```
     class AnimalController{
-       @route.put("get")
+       ＠route.put("get")
        method(id:number){}
     }
     //result: PUT /animal/get?id=<number>
@@ -127,7 +127,7 @@ class RouteDecoratorImpl {
     * Mark method as DELETE method http handler
     ```
     class AnimalController{
-       @route.delete()
+       ＠route.delete()
        method(id:number){}
     }
     //result: DELETE /animal/method?id=<number>
@@ -135,7 +135,7 @@ class RouteDecoratorImpl {
     * Override method name with absolute url
     ```
     class AnimalController{
-       @route.delete("/beast/:id")
+       ＠route.delete("/beast/:id")
        method(id:number){}
     }
     //result: DELETE /beast/:id
@@ -143,7 +143,7 @@ class RouteDecoratorImpl {
     * Override method name with relative url
     ```
     class AnimalController{
-       @route.delete("get")
+       ＠route.delete("get")
        method(id:number){}
     }
     //result: DELETE /animal/get?id=<number>
@@ -159,7 +159,7 @@ class RouteDecoratorImpl {
     * Mark method as PATCH method http handler
     ```
     class AnimalController{
-       @route.patch()
+       ＠route.patch()
        method(id:number){}
     }
     //result: PATCH /animal/method?id=<number>
@@ -167,7 +167,7 @@ class RouteDecoratorImpl {
     * Override method name with absolute url
     ```
     class AnimalController{
-       @route.patch("/beast/:id")
+       ＠route.patch("/beast/:id")
        method(id:number){}
     }
     //result: PATCH /beast/:id
@@ -175,7 +175,7 @@ class RouteDecoratorImpl {
     * Override method name with relative url
     ```
     class AnimalController{
-       @route.patch("get")
+       ＠route.patch("get")
        method(id:number){}
     }
     //result: PATCH /animal/get?id=<number>
@@ -191,7 +191,7 @@ class RouteDecoratorImpl {
     * Mark method as HEAD method http handler
     ```
     class AnimalController{
-       @route.head()
+       ＠route.head()
        method(id:number){}
     }
     //result: HEAD /animal/method?id=<number>
@@ -199,7 +199,7 @@ class RouteDecoratorImpl {
     * Override method name with absolute url
     ```
     class AnimalController{
-       @route.head("/beast/:id")
+       ＠route.head("/beast/:id")
        method(id:number){}
     }
     //result: HEAD /beast/:id
@@ -207,7 +207,7 @@ class RouteDecoratorImpl {
     * Override method name with relative url
     ```
     class AnimalController{
-       @route.head("get")
+       ＠route.head("get")
        method(id:number){}
     }
     //result: HEAD /animal/get?id=<number>
@@ -223,7 +223,7 @@ class RouteDecoratorImpl {
     * Mark method as TRACE method http handler
     ```
     class AnimalController{
-       @route.trace()
+       ＠route.trace()
        method(id:number){}
     }
     //result: TRACE /animal/method?id=<number>
@@ -231,7 +231,7 @@ class RouteDecoratorImpl {
     * Override method name with absolute url
     ```
     class AnimalController{
-       @route.trace("/beast/:id")
+       ＠route.trace("/beast/:id")
        method(id:number){}
     }
     //result: TRACE /beast/:id
@@ -239,7 +239,7 @@ class RouteDecoratorImpl {
     * Override method name with relative url
     ```
     class AnimalController{
-       @route.trace("get")
+       ＠route.trace("get")
        method(id:number){}
     }
     //result: TRACE /animal/get?id=<number>
@@ -255,7 +255,7 @@ class RouteDecoratorImpl {
     * Mark method as OPTIONS method http handler
     ```
     class AnimalController{
-       @route.options()
+       ＠route.options()
        method(id:number){}
     }
     //result: OPTIONS /animal/method?id=<number>
@@ -263,7 +263,7 @@ class RouteDecoratorImpl {
     * Override method name with absolute url
     ```
     class AnimalController{
-       @route.options("/beast/:id")
+       ＠route.options("/beast/:id")
        method(id:number){}
     }
     //result: OPTIONS /beast/:id
@@ -271,7 +271,7 @@ class RouteDecoratorImpl {
     * Override method name with relative url
     ```
     class AnimalController{
-       @route.options("get")
+       ＠route.options("get")
        method(id:number){}
     }
     //result: OPTIONS /animal/get?id=<number>
@@ -286,18 +286,18 @@ class RouteDecoratorImpl {
    /**
     * Override controller name on route generation
     ```
-    @route.root("/beast")
+    ＠route.root("/beast")
     class AnimalController{
-       @route.get()
+       ＠route.get()
        method(id:number){}
     }
     //result: GET /beast/method?id=<number>
     ```
     * Parameterized root, useful for nested Restful resource
     ```
-    @route.root("/beast/:type/bunny")
+    ＠route.root("/beast/:type/bunny")
     class AnimalController{
-       @route.get(":id")
+       ＠route.get(":id")
        method(type:string, id:number){}
     }
     //result: GET /beast/:type/bunny/:id
@@ -310,9 +310,9 @@ class RouteDecoratorImpl {
     * Ignore method from route generation
     ```
     class AnimalController{
-       @route.get()
+       ＠route.get()
        method(id:number){}
-       @route.ignore()
+       ＠route.ignore()
        otherMethod(type:string, id:number){}
     }
     //result: GET /animal/method?id=<number>

@@ -93,7 +93,7 @@ function getMemberExpression(node: any): string {
 // --------------------------------------------------------------------- //
 
 @generic.template("T", "TID")
-@generic.type("T", "TID")
+@generic.argument("T", "TID")
 class TypeORMControllerGeneric<T = any, TID = any> extends RepoBaseControllerGeneric<T, TID>{
     constructor(fac?: ((x: Class<T>) => Repository<T>)) {
         super(fac ?? (x => new TypeORMRepository(x)))
@@ -101,7 +101,7 @@ class TypeORMControllerGeneric<T = any, TID = any> extends RepoBaseControllerGen
 }
 
 @generic.template("P", "T", "PID", "TID")
-@generic.type("P", "T", "PID", "TID")
+@generic.argument("P", "T", "PID", "TID")
 class TypeORMNestedControllerGeneric<P = any, T = any, PID = any, TID = any> extends RepoBaseNestedControllerGeneric<P, T, PID, TID> {
     constructor(fac?: NestedRepositoryFactory<P,T>) {
         super(fac ?? (p => new TypeORMNestedRepository(p)))

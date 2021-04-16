@@ -94,7 +94,7 @@ function createClass(definition: CustomTypeDefinition, opt?: Partial<CreateClass
         Reflect.decorate([decorate.type(definition[key])], type.prototype, key)
     }
     if (option.genericParams.length > 0)
-        Reflect.decorate([decorate.generic.type(...option.genericParams)], type)
+        Reflect.decorate([decorate.generic.argument(...option.genericParams)], type)
     return type
 }
 

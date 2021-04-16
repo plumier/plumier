@@ -414,11 +414,11 @@ Object {
   "decorateProperty": decorateProperty,
   "default": reflect,
   "generic": Object {
+    "argument": argument,
     "create": create,
     "getGenericTypeParameters": getGenericTypeParameters,
     "getType": getType,
     "template": template,
-    "type": type,
   },
   "ignore": ignore,
   "mergeDecorator": mergeDecorator,

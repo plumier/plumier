@@ -175,7 +175,7 @@ describe("Filter Parser", () => {
                 return filter
             }
         }
-        @generic.type(User)
+        @generic.argument(User)
         class UsersController extends MyGeneric<User>{ }
         function createApp() {
             return new Plumier()
