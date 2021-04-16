@@ -2,9 +2,9 @@ import { RepoBaseControllerGeneric, RepoBaseNestedControllerGeneric } from "@plu
 import { generic } from "@plumier/reflect"
 
 @generic.template("T", "TID")
-@generic.type("T", "TID")
+@generic.argument("T", "TID")
 export class MyControllerGeneric<T, TID> extends RepoBaseControllerGeneric<T, TID>{}
 
 @generic.template("P", "PID", "T", "TID")
-@generic.type("P", "PID", "T", "TID")
+@generic.argument("P", "PID", "T", "TID")
 export class MyNestedControllerGeneric<P, PID, T, TID> extends RepoBaseNestedControllerGeneric<P, PID, T, TID>{}

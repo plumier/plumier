@@ -9,7 +9,7 @@ describe("Generic", () => {
             @type("T")
             method(): T { return {} as any }
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         expect(reflect(MyClass)).toMatchSnapshot()
     })
@@ -18,7 +18,7 @@ describe("Generic", () => {
         class SuperClass<T> {
             method(@type("T") par: T) { return {} as any }
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         expect(reflect(MyClass)).toMatchSnapshot()
     })
@@ -28,7 +28,7 @@ describe("Generic", () => {
             @type("T")
             prop: T = {} as any
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         expect(reflect(MyClass)).toMatchSnapshot()
     })
@@ -38,7 +38,7 @@ describe("Generic", () => {
             @type("T")
             get prop(): T { return {} as any }
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         expect(reflect(MyClass)).toMatchSnapshot()
     })
@@ -48,7 +48,7 @@ describe("Generic", () => {
         class SuperClass<T> {
             constructor(@type("T") public prop: T) { }
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         expect(reflect(MyClass)).toMatchSnapshot()
     })
@@ -66,12 +66,12 @@ describe("Generic", () => {
             grand: T = {} as any
         }
         @generic.template("B")
-        @generic.type(Number)
+        @generic.argument(Number)
         class Super<B> extends Grand<Number> {
             @type("B")
             super: B = {} as any
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends Super<String> { }
         const meta = reflect(MyClass)
         expect(reflection.getProperties(meta)).toMatchSnapshot()
@@ -84,12 +84,12 @@ describe("Generic", () => {
             str(@type("U") bool: U): T { return {} as any }
         }
         @generic.template("T", "U")
-        @generic.type(String, Boolean)
+        @generic.argument(String, Boolean)
         class SuperClass<T, U> extends GrandSuperClass<string, Boolean>{
             @type("T")
             num(@type("U") date: U): T { return {} as any }
         }
-        @generic.type(Number, Date)
+        @generic.argument(Number, Date)
         class MyClass extends SuperClass<number, Date>{ }
         const meta = reflect(MyClass)
         expect(reflection.getMethods(meta)).toMatchSnapshot()
@@ -102,12 +102,12 @@ describe("Generic", () => {
             grandSuper(@type("U") par: U): T { return {} as any }
         }
         @generic.template("A", "B")
-        @generic.type("A", "B")
+        @generic.argument("A", "B")
         class SuperClass<A, B> extends GrandSuperClass<A, B>{
             @type("B")
             super(@type("A") par: A): B { return {} as any }
         }
-        @generic.type(Number, Date)
+        @generic.argument(Number, Date)
         class MyClass extends SuperClass<number, Date>{ }
         const meta = reflect(MyClass)
         expect(reflection.getMethods(meta)).toMatchSnapshot()
@@ -120,11 +120,11 @@ describe("Generic", () => {
             grandSuper(@type("U") par: U): T { return {} as any }
         }
         @generic.template("T", "U")
-        @generic.type("T", "U")
+        @generic.argument("T", "U")
         class SuperClass<A, B> extends GrandSuperClass<A, B>{
             grandSuper(pur: B): A { return {} as any }
         }
-        @generic.type(Number, Date)
+        @generic.argument(Number, Date)
         class MyClass extends SuperClass<number, Date>{ }
         const meta = reflect(MyClass)
         expect(reflection.getMethods(meta)).toMatchSnapshot()
@@ -136,7 +136,7 @@ describe("Generic", () => {
             @type("T")
             str(@type("U") bool: U): T { return {} as any }
         }
-        @generic.type(Number, Date)
+        @generic.argument(Number, Date)
         class MyClass extends GrandSuperClass<number, Date>{ }
         class MyOtherClass extends MyClass {
             @noop()
@@ -156,7 +156,7 @@ describe("Generic", () => {
             @type(Data, "T")
             str(@type("U") bool: U): T { return {} as any }
         }
-        @generic.type(Number, Date)
+        @generic.argument(Number, Date)
         class MyClass extends GrandSuperClass<number, Date>{ }
         class MyOtherClass extends MyClass {
             @noop()
@@ -175,7 +175,7 @@ describe("Array Generic Template", () => {
             @type(["T"])
             method(): T[] { return {} as any }
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         expect(reflect(MyClass)).toMatchSnapshot()
     })
@@ -184,7 +184,7 @@ describe("Array Generic Template", () => {
         class SuperClass<T> {
             method(@type(["T"]) par: T[]) { return {} as any }
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         expect(reflect(MyClass)).toMatchSnapshot()
     })
@@ -194,7 +194,7 @@ describe("Array Generic Template", () => {
             @type(["T"])
             prop: T[] = []
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         expect(reflect(MyClass)).toMatchSnapshot()
     })
@@ -204,7 +204,7 @@ describe("Array Generic Template", () => {
             @type(["T"])
             get prop(): T[] { return {} as any }
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         expect(reflect(MyClass)).toMatchSnapshot()
     })
@@ -217,7 +217,7 @@ describe("Array Type", () => {
             @type("T")
             method(): T { return {} as any }
         }
-        @generic.type([String])
+        @generic.argument([String])
         class MyClass extends SuperClass<string[]>{ }
         expect(reflect(MyClass)).toMatchSnapshot()
     })
@@ -226,7 +226,7 @@ describe("Array Type", () => {
         class SuperClass<T> {
             method(@type("T") par: T) { return {} as any }
         }
-        @generic.type([String])
+        @generic.argument([String])
         class MyClass extends SuperClass<string[]>{ }
         expect(reflect(MyClass)).toMatchSnapshot()
     })
@@ -236,7 +236,7 @@ describe("Array Type", () => {
             @type("T")
             prop: T = {} as any
         }
-        @generic.type([String])
+        @generic.argument([String])
         class MyClass extends SuperClass<string[]>{ }
         expect(reflect(MyClass)).toMatchSnapshot()
     })
@@ -246,7 +246,7 @@ describe("Array Type", () => {
             @type("T")
             get prop(): T { return {} as any }
         }
-        @generic.type([String])
+        @generic.argument([String])
         class MyClass extends SuperClass<string[]>{ }
         expect(reflect(MyClass)).toMatchSnapshot()
     })
@@ -264,7 +264,7 @@ describe("Type With Generic Type Parameter", () => {
             @type(CustomGeneric, "T")
             method(): CustomGeneric<T> { return {} as any }
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         const meta = reflect(MyClass)
         const par = reflect(meta.methods[0].returnType)
@@ -276,7 +276,7 @@ describe("Type With Generic Type Parameter", () => {
             @type([CustomGeneric], "T")
             method(): CustomGeneric<T>[] { return {} as any }
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         const meta = reflect(MyClass)
         const par = reflect(meta.methods[0].returnType[0])
@@ -288,7 +288,7 @@ describe("Type With Generic Type Parameter", () => {
         class SuperClass<T> {
             method(@type(CustomGeneric, "T") par: CustomGeneric<T>) { return {} as any }
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         const meta = reflect(MyClass)
         const par = reflect(meta.methods[0].parameters[0].type)
@@ -300,7 +300,7 @@ describe("Type With Generic Type Parameter", () => {
             @type(CustomGeneric, "T")
             prop: CustomGeneric<T> = {} as any
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         const meta = reflect(MyClass)
         const par = reflect(meta.properties[0].type)
@@ -312,7 +312,7 @@ describe("Type With Generic Type Parameter", () => {
             @type(CustomGeneric, "T")
             get prop(): CustomGeneric<T> { return {} as any }
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         const meta = reflect(MyClass)
         const par = reflect(meta.properties[0].type)
@@ -327,7 +327,7 @@ describe("Error Handling", () => {
             @type("T")
             grandSuper: T
         }
-        @generic.type(Number)
+        @generic.argument(Number)
         class MyClass extends GrandSuperClass<number>{ }
         class MyRealClass extends MyClass { }
         expect(reflect(MyRealClass)).toMatchSnapshot()
@@ -339,12 +339,12 @@ describe("Error Handling", () => {
             grandSuper(@type("U") par: U): T { return {} as any }
         }
         @generic.template("A", "B")
-        @generic.type("A", "B")
+        @generic.argument("A", "B")
         class SuperClass<A, B> extends GrandSuperClass<A, B>{
             @type("B")
             super(@type("A") par: A): B { return {} as any }
         }
-        @generic.type(Number, Date)
+        @generic.argument(Number, Date)
         class MyClass extends SuperClass<number, Date>{ }
         class MyRealClass extends MyClass { }
         expect(reflect(MyRealClass)).toMatchSnapshot()
@@ -355,7 +355,7 @@ describe("Error Handling", () => {
             @type("B")
             super(@type("A") par: A): B { return {} as any }
         }
-        @generic.type(Number)
+        @generic.argument(Number)
         class MyClass extends SuperClass<number, Date>{ }
         expect(() => reflect(MyClass)).toThrowErrorMatchingSnapshot()
     })
@@ -364,7 +364,7 @@ describe("Error Handling", () => {
             @type("B")
             super(@type("A") par: A): B { return {} as any }
         }
-        @generic.type(Number)
+        @generic.argument(Number)
         class MyClass extends SuperClass<number, Date>{ }
         expect(() => reflect(MyClass)).toThrowErrorMatchingSnapshot()
     })
@@ -438,7 +438,7 @@ describe("Get Generic Type", () => {
             @type("A")
             myProp: A
         }
-        @generic.type(Number)
+        @generic.argument(Number)
         class MyClass extends SuperClass<number>{ }
         expect(generic.getType({ type: "A", target: SuperClass }, MyClass)).toBe(Number)
     })
@@ -448,7 +448,7 @@ describe("Get Generic Type", () => {
             @type(x => "A")
             myProp: A
         }
-        @generic.type(Number)
+        @generic.argument(Number)
         class MyClass extends SuperClass<number>{ }
         expect(generic.getType({ type: (x:any) =>  "A", target: SuperClass }, MyClass)).toBe(Number)
     })
@@ -458,7 +458,7 @@ describe("Get Generic Type", () => {
             @type("A")
             myProp: A
         }
-        @generic.type(Number)
+        @generic.argument(Number)
         class MyClass extends SuperClass<number>{ }
         expect(generic.getType({ type: "A", target: SuperClass }, MyClass)).toBe(Number)
     })
@@ -470,7 +470,7 @@ describe("Get Generic Type", () => {
             @type("B")
             myOther: B
         }
-        @generic.type(Number, String)
+        @generic.argument(Number, String)
         class MyClass extends SuperClass<number, string>{ }
         const c = reflect(MyClass)
         expect(generic.getType({ type: "A", target: SuperClass }, MyClass)).toBe(Number)
@@ -483,12 +483,12 @@ describe("Get Generic Type", () => {
             grandSuper(@type("U") par: U): T { return {} as any }
         }
         @generic.template("A", "B")
-        @generic.type("A", "B")
+        @generic.argument("A", "B")
         class SuperClass<A, B> extends GrandSuperClass<A, B>{
             @type("B")
             super(@type("A") par: A): B { return {} as any }
         }
-        @generic.type(Number, Date)
+        @generic.argument(Number, Date)
         class MyClass extends SuperClass<number, Date>{ }
         expect(generic.getType({ type: "T", target: GrandSuperClass }, MyClass)).toBe(Number)
         expect(generic.getType({ type: "U", target: GrandSuperClass }, MyClass)).toBe(Date)
@@ -503,7 +503,7 @@ describe("Get Generic Type", () => {
             @type("B")
             super(@type("A") par: A): B { return {} as any }
         }
-        @generic.type(Number, Date)
+        @generic.argument(Number, Date)
         class MyClass extends SuperClass<number, Date>{ }
         expect(generic.getType({ type: "T", target: GrandSuperClass }, MyClass)).toBe(Number)
         expect(generic.getType({ type: "U", target: GrandSuperClass }, MyClass)).toBe(Date)
@@ -515,12 +515,12 @@ describe("Get Generic Type", () => {
             grand: T = {} as any
         }
         @generic.template("B")
-        @generic.type(Number)
+        @generic.argument(Number)
         class Super<B> extends Grand<Number> {
             @type("B")
             super: B = {} as any
         }
-        @generic.type(String)
+        @generic.argument(String)
         class MyClass extends Super<String> { }
         expect(generic.getType({ type: "B", target: Super }, MyClass)).toBe(String)
     })
@@ -530,7 +530,7 @@ describe("Get Generic Type", () => {
             @type("A")
             myProp: A
         }
-        @generic.type(Number)
+        @generic.argument(Number)
         class MyClass extends SuperClass<number>{ }
         class MyOtherClass extends MyClass { }
         expect(generic.getType({ type: "A", target: SuperClass }, MyOtherClass)).toBe(Number)
@@ -541,7 +541,7 @@ describe("Get Generic Type", () => {
             @type("A")
             myProp: A
         }
-        @generic.type(Number)
+        @generic.argument(Number)
         class MyClass extends SuperClass<number>{ }
         class MyOtherClass { }
         expect(() => generic.getType({ type: "A", target: SuperClass }, MyOtherClass)).toThrowErrorMatchingSnapshot()
@@ -552,7 +552,7 @@ describe("Get Generic Type", () => {
             @type("A")
             myProp: A
         }
-        @generic.type(Number)
+        @generic.argument(Number)
         class MyClass extends SuperClass<number>{ }
         expect(() => generic.getType({ type: Object, target: SuperClass }, MyClass)).toThrowErrorMatchingSnapshot()
     })
@@ -561,7 +561,7 @@ describe("Get Generic Type", () => {
             @type("A")
             myProp: A
         }
-        @generic.type(Number)
+        @generic.argument(Number)
         class MyClass extends SuperClass<number>{ }
         expect(() => generic.getType({ type: "A", target: SuperClass }, MyClass)).toThrowErrorMatchingSnapshot()
     })
@@ -574,7 +574,7 @@ describe("Get Generic Type Parameters", () => {
             @type("A")
             myProp: A
         }
-        @generic.type(Number)
+        @generic.argument(Number)
         class MyClass extends SuperClass<number>{ }
         expect(generic.getGenericTypeParameters(MyClass)).toStrictEqual([Number])
     })
@@ -586,7 +586,7 @@ describe("Get Generic Type Parameters", () => {
             @type("B")
             bProp: B
         }
-        @generic.type(Number, String)
+        @generic.argument(Number, String)
         class MyClass extends SuperClass<number, string>{ }
         expect(generic.getGenericTypeParameters(MyClass)).toStrictEqual([Number, String])
     })
@@ -598,7 +598,7 @@ describe("Get Generic Type Parameters", () => {
             @type("B")
             bProp: B
         }
-        @generic.type(Number, String)
+        @generic.argument(Number, String)
         class MyClass extends SuperClass<number, string>{ }
         class MyOtherClass extends MyClass {}
         expect(generic.getGenericTypeParameters(MyOtherClass)).toStrictEqual([Number, String])
