@@ -421,7 +421,7 @@ describe("Decorator", () => {
         })
 
         it("Should able to apply type override for method", () => {
-            @decorateClass(target => <TypeDecorator>{ kind: "Override", type: String, target, genericParams: [] }, { applyTo: "myFunction" })
+            @decorateClass(target => <TypeDecorator>{ kind: "Override", type: String, target, genericArguments: [] }, { applyTo: "myFunction" })
             class DummyClass {
                 myFunction() { }
                 myOtherFunction() { }
@@ -434,7 +434,7 @@ describe("Decorator", () => {
             @parameterProperties()
             class DummyClass {
                 constructor(
-                    @decorateProperty(target => <TypeDecorator>{ kind: "Override", type: String, target, genericParams: [] }, { applyTo: "myFunction" })
+                    @decorateProperty(target => <TypeDecorator>{ kind: "Override", type: String, target, genericArguments: [] }, { applyTo: "myFunction" })
                     public name: string
                 ) { }
             }

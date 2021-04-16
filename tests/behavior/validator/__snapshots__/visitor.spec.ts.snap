@@ -324,7 +324,7 @@ Object {
                 "parent": Object {
                   "decorators": Array [
                     Object {
-                      "genericParams": Array [],
+                      "genericArguments": Array [],
                       "kind": "Override",
                       "target": Animal,
                       "type": Array [
@@ -377,7 +377,7 @@ Object {
                 "parent": Object {
                   "decorators": Array [
                     Object {
-                      "genericParams": Array [],
+                      "genericArguments": Array [],
                       "kind": "Override",
                       "target": Animal,
                       "type": Array [

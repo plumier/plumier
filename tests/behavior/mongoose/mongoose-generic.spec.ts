@@ -797,7 +797,7 @@ describe("CRUD", () => {
             }
             model(User)
             const repo = new MongooseRepository(User)
-            @generic.template("T", "TID")
+            @generic.parameter("T", "TID")
             @generic.argument("T", "TID")
             class MyCustomGeneric<T, TID> extends MongooseControllerGeneric<T, TID>{
                 constructor() { super(x => new MongooseRepository(x)) }
@@ -2085,7 +2085,7 @@ describe("CRUD", () => {
             model(User)
             const user = await createUser(User)
             const repo = new MongooseRepository(User)
-            @generic.template("P", "T", "PID", "TID")
+            @generic.parameter("P", "T", "PID", "TID")
             @generic.argument("P", "T", "PID", "TID")
             class MyCustomGeneric<P, T, PID, TID> extends MongooseNestedControllerGeneric<P, T, PID, TID>{
                 constructor() { super(p => new MongooseNestedRepository(p)) }

@@ -4,7 +4,7 @@ import reflect, { generic, type, parameterProperties, reflection, DecoratorOptio
 
 describe("Generic", () => {
     it("Should able to inspect generic type on method", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type("T")
             method(): T { return {} as any }
@@ -14,7 +14,7 @@ describe("Generic", () => {
         expect(reflect(MyClass)).toMatchSnapshot()
     })
     it("Should able to inspect generic on method parameter", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             method(@type("T") par: T) { return {} as any }
         }
@@ -23,7 +23,7 @@ describe("Generic", () => {
         expect(reflect(MyClass)).toMatchSnapshot()
     })
     it("Should able to inspect generic on property", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type("T")
             prop: T = {} as any
@@ -33,7 +33,7 @@ describe("Generic", () => {
         expect(reflect(MyClass)).toMatchSnapshot()
     })
     it("Should able to inspect generic on getter", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type("T")
             get prop(): T { return {} as any }
@@ -43,7 +43,7 @@ describe("Generic", () => {
         expect(reflect(MyClass)).toMatchSnapshot()
     })
     it("Should able to inspect generic on parameter properties", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         @parameterProperties()
         class SuperClass<T> {
             constructor(@type("T") public prop: T) { }
@@ -53,19 +53,19 @@ describe("Generic", () => {
         expect(reflect(MyClass)).toMatchSnapshot()
     })
     it("Should not error inspect the generic class", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             constructor(@type("T") par: T) { }
         }
         expect(reflect(SuperClass)).toMatchSnapshot()
     })
     it("Should able to inspect properties on deep inheritance", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class Grand<T> {
             @type("T")
             grand: T = {} as any
         }
-        @generic.template("B")
+        @generic.parameter("B")
         @generic.argument(Number)
         class Super<B> extends Grand<Number> {
             @type("B")
@@ -78,12 +78,12 @@ describe("Generic", () => {
         expect(meta).toMatchSnapshot()
     })
     it("Should able to inspect inherited generic type", () => {
-        @generic.template("T", "U")
+        @generic.parameter("T", "U")
         class GrandSuperClass<T, U>{
             @type("T")
             str(@type("U") bool: U): T { return {} as any }
         }
-        @generic.template("T", "U")
+        @generic.parameter("T", "U")
         @generic.argument(String, Boolean)
         class SuperClass<T, U> extends GrandSuperClass<string, Boolean>{
             @type("T")
@@ -96,12 +96,12 @@ describe("Generic", () => {
         expect(meta).toMatchSnapshot()
     })
     it("Should able to inspect nested generic class with multiple template", () => {
-        @generic.template("T", "U")
+        @generic.parameter("T", "U")
         class GrandSuperClass<T, U>{
             @type("T")
             grandSuper(@type("U") par: U): T { return {} as any }
         }
-        @generic.template("A", "B")
+        @generic.parameter("A", "B")
         @generic.argument("A", "B")
         class SuperClass<A, B> extends GrandSuperClass<A, B>{
             @type("B")
@@ -114,12 +114,12 @@ describe("Generic", () => {
         expect(meta).toMatchSnapshot()
     })
     it("Should inherit generic data type when overridden", () => {
-        @generic.template("T", "U")
+        @generic.parameter("T", "U")
         class GrandSuperClass<T, U>{
             @type("T")
             grandSuper(@type("U") par: U): T { return {} as any }
         }
-        @generic.template("T", "U")
+        @generic.parameter("T", "U")
         @generic.argument("T", "U")
         class SuperClass<A, B> extends GrandSuperClass<A, B>{
             grandSuper(pur: B): A { return {} as any }
@@ -131,7 +131,7 @@ describe("Generic", () => {
         expect(meta).toMatchSnapshot()
     })
     it("Should able to inspect generic type on inheritance when generic type parameter stop", () => {
-        @generic.template("T", "U")
+        @generic.parameter("T", "U")
         class GrandSuperClass<T, U>{
             @type("T")
             str(@type("U") bool: U): T { return {} as any }
@@ -146,12 +146,12 @@ describe("Generic", () => {
         expect(reflection.getMethods(meta)).toMatchSnapshot()
     })
     it("Should able to inspect generic type on inheritance when generic type parameter stop, with generic data type", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class Data<T> {
             @type("T")
             data: T
         }
-        @generic.template("T", "U")
+        @generic.parameter("T", "U")
         class GrandSuperClass<T, U>{
             @type(Data, "T")
             str(@type("U") bool: U): T { return {} as any }
@@ -170,7 +170,7 @@ describe("Generic", () => {
 
 describe("Array Generic Template", () => {
     it("Should able to inspect array generic type on method", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type(["T"])
             method(): T[] { return {} as any }
@@ -180,7 +180,7 @@ describe("Array Generic Template", () => {
         expect(reflect(MyClass)).toMatchSnapshot()
     })
     it("Should able to inspect array generic on method parameter", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             method(@type(["T"]) par: T[]) { return {} as any }
         }
@@ -189,7 +189,7 @@ describe("Array Generic Template", () => {
         expect(reflect(MyClass)).toMatchSnapshot()
     })
     it("Should able to inspect array generic on property", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type(["T"])
             prop: T[] = []
@@ -199,7 +199,7 @@ describe("Array Generic Template", () => {
         expect(reflect(MyClass)).toMatchSnapshot()
     })
     it("Should able to inspect array generic on getter", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type(["T"])
             get prop(): T[] { return {} as any }
@@ -212,7 +212,7 @@ describe("Array Generic Template", () => {
 
 describe("Array Type", () => {
     it("Should able to inspect array generic type on method", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type("T")
             method(): T { return {} as any }
@@ -222,7 +222,7 @@ describe("Array Type", () => {
         expect(reflect(MyClass)).toMatchSnapshot()
     })
     it("Should able to inspect array generic on method parameter", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             method(@type("T") par: T) { return {} as any }
         }
@@ -231,7 +231,7 @@ describe("Array Type", () => {
         expect(reflect(MyClass)).toMatchSnapshot()
     })
     it("Should able to inspect array generic on property", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type("T")
             prop: T = {} as any
@@ -241,7 +241,7 @@ describe("Array Type", () => {
         expect(reflect(MyClass)).toMatchSnapshot()
     })
     it("Should able to inspect array generic on getter", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type("T")
             get prop(): T { return {} as any }
@@ -253,13 +253,13 @@ describe("Array Type", () => {
 })
 
 describe("Type With Generic Type Parameter", () => {
-    @generic.template("T")
+    @generic.parameter("T")
     class CustomGeneric<T> {
         @type("T")
         prop: T = {} as any
     }
     it("Should able to inspect generic type on method", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type(CustomGeneric, "T")
             method(): CustomGeneric<T> { return {} as any }
@@ -271,7 +271,7 @@ describe("Type With Generic Type Parameter", () => {
         expect(par).toMatchSnapshot()
     })
     it("Should able to inspect array of generic type on method", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type([CustomGeneric], "T")
             method(): CustomGeneric<T>[] { return {} as any }
@@ -284,7 +284,7 @@ describe("Type With Generic Type Parameter", () => {
     })
 
     it("Should able to inspect generic on method parameter", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             method(@type(CustomGeneric, "T") par: CustomGeneric<T>) { return {} as any }
         }
@@ -295,7 +295,7 @@ describe("Type With Generic Type Parameter", () => {
         expect(par).toMatchSnapshot()
     })
     it("Should able to inspect generic on property", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type(CustomGeneric, "T")
             prop: CustomGeneric<T> = {} as any
@@ -307,7 +307,7 @@ describe("Type With Generic Type Parameter", () => {
         expect(par).toMatchSnapshot()
     })
     it("Should able to inspect generic on getter", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type(CustomGeneric, "T")
             get prop(): CustomGeneric<T> { return {} as any }
@@ -318,11 +318,29 @@ describe("Type With Generic Type Parameter", () => {
         const par = reflect(meta.properties[0].type)
         expect(par).toMatchSnapshot()
     })
+    it("Should able to define generic type directly using @type()", () => {
+        class SuperClass {
+            @type(CustomGeneric, Number)
+            get prop(): CustomGeneric<Number> { return {} as any }
+        }
+        const meta = reflect(SuperClass)
+        const par = reflect(meta.properties[0].type)
+        expect(par).toMatchSnapshot()
+    })
+    it("Should able to define generic type directly using @type() with type of array", () => {
+        class SuperClass {
+            @type(CustomGeneric, [Number])
+            get prop(): CustomGeneric<Number[]> { return {} as any }
+        }
+        const meta = reflect(SuperClass)
+        const par = reflect(meta.properties[0].type)
+        expect(par).toMatchSnapshot()
+    })
 })
 
 describe("Error Handling", () => {
     it("Should not show error when generic parameter stop", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class GrandSuperClass<T>{
             @type("T")
             grandSuper: T
@@ -333,12 +351,12 @@ describe("Error Handling", () => {
         expect(reflect(MyRealClass)).toMatchSnapshot()
     })
     it("Should not show error in deep inheritance when generic parameter stop", () => {
-        @generic.template("T", "U")
+        @generic.parameter("T", "U")
         class GrandSuperClass<T, U>{
             @type("T")
             grandSuper(@type("U") par: U): T { return {} as any }
         }
-        @generic.template("A", "B")
+        @generic.parameter("A", "B")
         @generic.argument("A", "B")
         class SuperClass<A, B> extends GrandSuperClass<A, B>{
             @type("B")
@@ -350,7 +368,7 @@ describe("Error Handling", () => {
         expect(reflect(MyRealClass)).toMatchSnapshot()
     })
     it("Should show proper error when number of types provided mismatch", () => {
-        @generic.template("A", "B")
+        @generic.parameter("A", "B")
         class SuperClass<A, B> {
             @type("B")
             super(@type("A") par: A): B { return {} as any }
@@ -372,7 +390,7 @@ describe("Error Handling", () => {
 
 describe("Create Generic", () => {
     it("Should able to create generic class implementation", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type("T")
             method(): T { return {} as any }
@@ -383,7 +401,7 @@ describe("Create Generic", () => {
         expect(instance).toBeInstanceOf(ChildClass)
     })
     it("Should able to change class name", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type("T")
             method(): T { return {} as any }
@@ -392,7 +410,7 @@ describe("Create Generic", () => {
         expect(ChildClass.name).toBe("MyDynamicClass")
     })
     it("Should add reflection properly", () => {
-        @generic.template("T", "U")
+        @generic.parameter("T", "U")
         class SuperClass<T, U> {
             @type("T")
             method(@type("U") par: U): T { return {} as any }
@@ -401,7 +419,7 @@ describe("Create Generic", () => {
         expect(reflect(ChildClass)).toMatchSnapshot()
     })
     it("Should able to create multiple time", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             @type("T")
             method(): T { return {} as any }
@@ -417,7 +435,7 @@ describe("Create Generic", () => {
     })
     it("Should execute super class controller", () => {
         const fn = jest.fn()
-        @generic.template("T")
+        @generic.parameter("T")
         class SuperClass<T> {
             constructor() {
                 fn()
@@ -433,7 +451,7 @@ describe("Create Generic", () => {
 
 describe("Get Generic Type", () => {
     it("Should able to get generic type", () => {
-        @generic.template("A")
+        @generic.parameter("A")
         class SuperClass<A> {
             @type("A")
             myProp: A
@@ -443,7 +461,7 @@ describe("Get Generic Type", () => {
         expect(generic.getType({ type: "A", target: SuperClass }, MyClass)).toBe(Number)
     })
     it("Should able to get generic type with callback style", () => {
-        @generic.template("A")
+        @generic.parameter("A")
         class SuperClass<A> {
             @type(x => "A")
             myProp: A
@@ -453,7 +471,7 @@ describe("Get Generic Type", () => {
         expect(generic.getType({ type: (x:any) =>  "A", target: SuperClass }, MyClass)).toBe(Number)
     })
     it("Should able to use array generic type", () => {
-        @generic.template("A")
+        @generic.parameter("A")
         class SuperClass<A> {
             @type("A")
             myProp: A
@@ -463,7 +481,7 @@ describe("Get Generic Type", () => {
         expect(generic.getType({ type: "A", target: SuperClass }, MyClass)).toBe(Number)
     })
     it("Should able to get generic type with multiple templates", () => {
-        @generic.template("A", "B")
+        @generic.parameter("A", "B")
         class SuperClass<A, B> {
             @type("A")
             myProp: A
@@ -477,12 +495,12 @@ describe("Get Generic Type", () => {
         expect(generic.getType({ type: "B", target: SuperClass }, MyClass)).toBe(String)
     })
     it("Should able to work with more complex generic type", () => {
-        @generic.template("T", "U")
+        @generic.parameter("T", "U")
         class GrandSuperClass<T, U>{
             @type("T")
             grandSuper(@type("U") par: U): T { return {} as any }
         }
-        @generic.template("A", "B")
+        @generic.parameter("A", "B")
         @generic.argument("A", "B")
         class SuperClass<A, B> extends GrandSuperClass<A, B>{
             @type("B")
@@ -494,7 +512,7 @@ describe("Get Generic Type", () => {
         expect(generic.getType({ type: "U", target: GrandSuperClass }, MyClass)).toBe(Date)
     })
     it("Should able to skip template & type decorator if the pattern is the same", () => {
-        @generic.template("T", "U")
+        @generic.parameter("T", "U")
         class GrandSuperClass<T, U>{
             @type("T")
             grandSuper(@type("U") par: U): T { return {} as any }
@@ -509,12 +527,12 @@ describe("Get Generic Type", () => {
         expect(generic.getType({ type: "U", target: GrandSuperClass }, MyClass)).toBe(Date)
     })
     it("Should able to get mixed template with stopped template", () => {
-        @generic.template("T")
+        @generic.parameter("T")
         class Grand<T> {
             @type("T")
             grand: T = {} as any
         }
-        @generic.template("B")
+        @generic.parameter("B")
         @generic.argument(Number)
         class Super<B> extends Grand<Number> {
             @type("B")
@@ -525,7 +543,7 @@ describe("Get Generic Type", () => {
         expect(generic.getType({ type: "B", target: Super }, MyClass)).toBe(String)
     })
     it("Should work when generic type stop", () => {
-        @generic.template("A")
+        @generic.parameter("A")
         class SuperClass<A> {
             @type("A")
             myProp: A
@@ -536,7 +554,7 @@ describe("Get Generic Type", () => {
         expect(generic.getType({ type: "A", target: SuperClass }, MyOtherClass)).toBe(Number)
     })
     it("Should throw error when the target is not in inheritance", () => {
-        @generic.template("A")
+        @generic.parameter("A")
         class SuperClass<A> {
             @type("A")
             myProp: A
@@ -547,7 +565,7 @@ describe("Get Generic Type", () => {
         expect(() => generic.getType({ type: "A", target: SuperClass }, MyOtherClass)).toThrowErrorMatchingSnapshot()
     })
     it("Should throw error when provided non string type", () => {
-        @generic.template("A")
+        @generic.parameter("A")
         class SuperClass<A> {
             @type("A")
             myProp: A
@@ -569,7 +587,7 @@ describe("Get Generic Type", () => {
 
 describe("Get Generic Type Parameters", () => {
     it("Should able to get generic type parameter", () => {
-        @generic.template("A")
+        @generic.parameter("A")
         class SuperClass<A> {
             @type("A")
             myProp: A
@@ -579,7 +597,7 @@ describe("Get Generic Type Parameters", () => {
         expect(generic.getGenericTypeParameters(MyClass)).toStrictEqual([Number])
     })
     it("Should able to get generic type parameters", () => {
-        @generic.template("A", "B")
+        @generic.parameter("A", "B")
         class SuperClass<A, B> {
             @type("A")
             myProp: A
@@ -591,7 +609,7 @@ describe("Get Generic Type Parameters", () => {
         expect(generic.getGenericTypeParameters(MyClass)).toStrictEqual([Number, String])
     })
     it("Should able to get generic type when generic type stop", () => {
-        @generic.template("A", "B")
+        @generic.parameter("A", "B")
         class SuperClass<A, B> {
             @type("A")
             myProp: A

@@ -1,5 +1,5 @@
 import { errorMessage, RelationDecorator, NestedGenericControllerDecorator, SelectQuery } from "@plumier/core"
-import reflect, { Class, generic, GenericTypeDecorator } from "@plumier/reflect"
+import reflect, { Class, generic, GenericTypeArgumentDecorator } from "@plumier/reflect"
 import { Context } from "koa"
 import { ResponseTransformerDecorator } from "./decorator"
 

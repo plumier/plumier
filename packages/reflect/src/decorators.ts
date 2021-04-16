@@ -9,8 +9,8 @@ import {
     DecoratorOption,
     DecoratorOptionId,
     DecoratorTargetType,
-    GenericTemplateDecorator,
-    GenericTypeDecorator,
+    GenericTypeParameterDecorator,
+    GenericTypeArgumentDecorator,
     NativeParameterDecorator,
     NoopDecorator,
     ParameterPropertiesDecorator,
@@ -133,10 +133,10 @@ export function ignore() {
 /**
  * Add metadata information about data type information
  * @param type Data type specified, A class or a callback function returned class for defer evaluation
- * @param genericParams List of generic type arguments
+ * @param genericArguments List of generic type arguments
  */
-export function type(type: TypeOverride | ((x: any) => TypeOverride), ...genericParams: (string | string[])[]) {
-    return decorate((target: any) => <TypeDecorator>{ [DecoratorId]: symOverride, kind: "Override", type, genericParams: genericParams, target }, ["Parameter", "Method", "Property"], { inherit: true, allowMultiple: false })
+export function type(type: TypeOverride | ((x: any) => TypeOverride), ...genericArguments: (string | string[] | Class | Class[])[]) {
+    return decorate((target: any) => <TypeDecorator>{ [DecoratorId]: symOverride, kind: "Override", type, genericArguments: genericArguments, target }, ["Parameter", "Method", "Property"], { inherit: true, allowMultiple: false })
 }
 
 /**
@@ -160,10 +160,10 @@ export namespace generic {
 
     /**
      * Add metadata information of generic type parameters
-     * @param templates list of generic type parameters
+     * @param parameters list of generic type parameters
      */
-    export function template(...templates: string[]) {
-        return decorateClass(target => <GenericTemplateDecorator>{ [DecoratorId]: symGenericTemplate, kind: "GenericTemplate", templates, target }, { inherit: false, allowMultiple: false })
+    export function parameter(...parameters: string[]) {
+        return decorateClass(target => <GenericTypeParameterDecorator>{ [DecoratorId]: symGenericTemplate, kind: "GenericTemplate", templates:parameters, target }, { inherit: false, allowMultiple: false })
     }
 
     /**
@@ -171,7 +171,7 @@ export namespace generic {
      * @param types list of generic type arguments
      */
     export function argument(...types: TypeOverride[]) {
-        return decorateClass(target => <GenericTypeDecorator>{ [DecoratorId]: symGenericType, kind: "GenericType", types, target }, { inherit: false, allowMultiple: false })
+        return decorateClass(target => <GenericTypeArgumentDecorator>{ [DecoratorId]: symGenericType, kind: "GenericType", types, target }, { inherit: false, allowMultiple: false })
     }
 
     /**
@@ -198,14 +198,14 @@ export namespace generic {
             return [...getParent(parent), type]
         }
         const getTemplate = (target: Class) => getMetadata(target)
-            .find((x: GenericTemplateDecorator): x is GenericTemplateDecorator => x.kind === "GenericTemplate")
+            .find((x: GenericTypeParameterDecorator): x is GenericTypeParameterDecorator => x.kind === "GenericTemplate")
 
         if (typeTarget === decorator.target) return
         if (!(typeTarget.prototype instanceof decorator.target))
             throw new Error(`Unable to get type information because ${typeTarget.name} is not inherited from ${decorator.target.name}`)
         let templateDec = getTemplate(decorator.target)
         if (!templateDec)
-            throw new Error(`${decorator.target.name} doesn't define @generic.template() decorator`)
+            throw new Error(`${decorator.target.name} doesn't define @generic.parameter() decorator`)
         const [type, isArray] = reflection.getTypeFromDecorator(decorator)
         if (typeof type !== "string")
             throw new Error("Provided decorator is not a generic type")
@@ -219,14 +219,14 @@ export namespace generic {
         let tmpType = decorator.target
         let result = type
         for (const type of types) {
-            // get the index of type in @generic.template() list
+            // get the index of type in @generic.parameter() list
             const index = templateDec.templates.indexOf(result)
             const typeDec = getMetadata(type)
-                .find((x: GenericTypeDecorator): x is GenericTypeDecorator => x.kind === "GenericType")
+                .find((x: GenericTypeArgumentDecorator): x is GenericTypeArgumentDecorator => x.kind === "GenericType")
             if (typeDec) {
                 if (typeDec.types.length !== templateDec.templates.length)
-                    throw new Error(`Number of parameters @generic.template() and @generic.type() mismatch between ${tmpType.name} and ${type.name}`)
-                // get the actual type in @generic.type() list 
+                    throw new Error(`Number of parameters @generic.parameter() and @generic.argument() mismatch between ${tmpType.name} and ${type.name}`)
+                // get the actual type in @generic.argument() list 
                 result = typeDec.types[index] as any
                 // check if the result is a "function" (Class) then return immediately
                 const finalResult = isArray ? [result] : result
@@ -249,7 +249,7 @@ export namespace generic {
      */
     export function getGenericTypeParameters(type: Class): Class[] {
         const genericDecorator = getMetadata(type)
-            .find((x: GenericTypeDecorator): x is GenericTypeDecorator => x.kind == "GenericType" && x.target === type)
+            .find((x: GenericTypeArgumentDecorator): x is GenericTypeArgumentDecorator => x.kind == "GenericType" && x.target === type)
         if (!genericDecorator) {
             const parent: Class = Object.getPrototypeOf(type)
             if (!parent.prototype) throw new Error(`${type.name} is not a generic type`)

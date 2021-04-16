@@ -41,7 +41,7 @@ describe("Create Class", () => {
     })
     describe("Generic", () => {
         it("Should able to create generic class implementation", () => {
-            @generic.template("T")
+            @generic.parameter("T")
             class SuperClass<T> {
                 @type("T")
                 method(): T { return {} as any }
@@ -52,7 +52,7 @@ describe("Create Class", () => {
             expect(instance).toBeInstanceOf(ChildClass)
         })
         it("Should able to change class name", () => {
-            @generic.template("T")
+            @generic.parameter("T")
             class SuperClass<T> {
                 @type("T")
                 method(): T { return {} as any }
@@ -61,7 +61,7 @@ describe("Create Class", () => {
             expect(ChildClass.name).toBe("MyDynamicClass")
         })
         it("Should add reflection properly", () => {
-            @generic.template("T", "U")
+            @generic.parameter("T", "U")
             class SuperClass<T, U> {
                 @type("T")
                 method(@type("U") par: U): T { return {} as any }
@@ -70,7 +70,7 @@ describe("Create Class", () => {
             expect(reflect(ChildClass)).toMatchSnapshot()
         })
         it("Should able to create multiple time", () => {
-            @generic.template("T")
+            @generic.parameter("T")
             class SuperClass<T> {
                 @type("T")
                 method(): T { return {} as any }
@@ -86,7 +86,7 @@ describe("Create Class", () => {
         })
         it("Should execute super class controller", () => {
             const fn = jest.fn()
-            @generic.template("T")
+            @generic.parameter("T")
             class SuperClass<T> {
                 constructor() {
                     fn()

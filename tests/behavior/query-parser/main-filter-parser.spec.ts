@@ -168,7 +168,7 @@ describe("Filter Parser", () => {
             @noop()
             createdAt: Date
         }
-        @generic.template("T")
+        @generic.parameter("T")
         class MyGeneric<T> {
             @route.get("")
             get(@filterParser(x => "T") filter: any, index: number) {

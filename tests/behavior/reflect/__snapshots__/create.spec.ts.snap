@@ -29,7 +29,7 @@ Object {
     Object {
       "decorators": Array [
         Object {
-          "genericParams": Array [],
+          "genericArguments": Array [],
           "kind": "Override",
           "target": SuperClass,
           "type": "T",
@@ -48,7 +48,7 @@ Object {
         Object {
           "decorators": Array [
             Object {
-              "genericParams": Array [],
+              "genericArguments": Array [],
               "kind": "Override",
               "target": SuperClass,
               "type": "U",
@@ -117,7 +117,7 @@ Object {
     Object {
       "decorators": Array [
         Object {
-          "genericParams": Array [],
+          "genericArguments": Array [],
           "kind": "Override",
           "target": DynamicType,
           "type": Array [
@@ -166,7 +166,7 @@ Object {
     Object {
       "decorators": Array [
         Object {
-          "genericParams": Array [],
+          "genericArguments": Array [],
           "kind": "Override",
           "target": DynamicType,
           "type": String,
@@ -189,7 +189,7 @@ Object {
     Object {
       "decorators": Array [
         Object {
-          "genericParams": Array [],
+          "genericArguments": Array [],
           "kind": "Override",
           "target": DynamicType,
           "type": Date,
@@ -231,7 +231,7 @@ Object {
     Object {
       "decorators": Array [
         Object {
-          "genericParams": Array [],
+          "genericArguments": Array [],
           "kind": "Override",
           "target": DynamicType,
           "type": Object {
@@ -276,7 +276,7 @@ Object {
     Object {
       "decorators": Array [
         Object {
-          "genericParams": Array [],
+          "genericArguments": Array [],
           "kind": "Override",
           "target": DynamicType,
           "type": String,
@@ -299,7 +299,7 @@ Object {
     Object {
       "decorators": Array [
         Object {
-          "genericParams": Array [],
+          "genericArguments": Array [],
           "kind": "Override",
           "target": DynamicType,
           "type": Date,
@@ -341,7 +341,7 @@ Object {
     Object {
       "decorators": Array [
         Object {
-          "genericParams": Array [],
+          "genericArguments": Array [],
           "kind": "Override",
           "target": DynamicType,
           "type": Array [
@@ -368,7 +368,7 @@ Object {
     Object {
       "decorators": Array [
         Object {
-          "genericParams": Array [],
+          "genericArguments": Array [],
           "kind": "Override",
           "target": DynamicType,
           "type": Array [
@@ -395,7 +395,7 @@ Object {
     Object {
       "decorators": Array [
         Object {
-          "genericParams": Array [],
+          "genericArguments": Array [],
           "kind": "Override",
           "target": DynamicType,
           "type": Array [
@@ -422,7 +422,7 @@ Object {
     Object {
       "decorators": Array [
         Object {
-          "genericParams": Array [],
+          "genericArguments": Array [],
           "kind": "Override",
           "target": DynamicType,
           "type": Array [

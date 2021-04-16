@@ -48,7 +48,7 @@ async function getIdentifierResult(type: Class, obj: any) {
 // --------------------------------------------------------------------- //
 
 @domain()
-@generic.template("TID")
+@generic.parameter("TID")
 class IdentifierResult<TID> {
     constructor(
         @reflect.type("TID")
@@ -58,7 +58,7 @@ class IdentifierResult<TID> {
 
 type NestedRepositoryFactory<P,T> = (t:EntityWithRelation<P,T> | EntityWithRelation<T|P>) => NestedRepository<P,T>
 
-@generic.template("T", "TID")
+@generic.parameter("T", "TID")
 class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGeneric<T, TID>{
     readonly entityType: Class<T>
     readonly repo: Repository<T>
@@ -131,7 +131,7 @@ class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGene
     }
 }
 
-@generic.template("P", "T", "PID", "TID")
+@generic.parameter("P", "T", "PID", "TID")
 class RepoBaseNestedControllerGeneric<P = Object, T = Object, PID = String, TID = String> extends NestedControllerGeneric<P, T, PID, TID>{
     readonly entityType: Class<T>
     readonly parentEntityType: Class<P>
