@@ -37,7 +37,7 @@
 		"@types/koa-router": "^7.4.2",
 		"@types/rimraf": "^3.0.0",
 		"@types/supertest": "^2.0.11",
-		"autocannon": "^7.0.5",
+		"autocannon": "^7.2.0",
 		"babel-core": "^6.26.3",
 		"benalu": "^2.0.0-beta-1",
 		"body-parser": "^1.19.0",
