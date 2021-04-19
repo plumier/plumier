@@ -8,7 +8,8 @@ class TypeORMRepository<T> implements Repository<T> {
         this.nativeRepository = getManager().getRepository(type)
     }
 
-    count(query?: any): Promise<number> {
+    async count(query?: any): Promise<number> {
+        if (query === undefined) return 0
         return this.nativeRepository.count({
             where: query,
         })

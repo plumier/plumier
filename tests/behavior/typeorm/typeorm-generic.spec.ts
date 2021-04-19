@@ -2622,6 +2622,27 @@ describe("Repository", () => {
             const count = await repo.count({ email })
             expect(count).toBe(3)
         })
+        it("Should count property when provided undefined query", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            await createConnection(getConn([User]))
+            const repo = new TypeORMRepository(User)
+            const email = `${random()}@gmail.com`
+            await Promise.all([
+                repo.insert({ email, name: "John Doe" }),
+                repo.insert({ email, name: "John Doe" }),
+                repo.insert({ email, name: "John Doe" })
+            ])
+            const count = await repo.count(undefined)
+            expect(count).toBe(0)
+        })
         it("Should able to get one", async () => {
             @Entity()
             class User {
