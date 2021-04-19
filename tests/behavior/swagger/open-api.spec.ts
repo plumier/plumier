@@ -15,7 +15,8 @@ import {
     RouteMetadata,
     val,
     NestedGenericControllerDecorator,
-    authPolicy
+    authPolicy,
+    meta
 } from "@plumier/core"
 import { JwtAuthFacility, JwtAuthFacilityOption } from "@plumier/jwt"
 import { refFactory, SwaggerFacility } from "@plumier/swagger"
@@ -56,6 +57,19 @@ describe("getRef", () => {
         expect(getRef(reflect.create({ id: String }))).toBe("DynamicType")
         // different structure should have new name with number
         expect(getRef(reflect.create({ id: String, name: String }))).toBe("DynamicType1")
+    })
+
+    it("Should able to distinguish dynamic type with type array", () => {
+        const getRef = refFactory(new Map())
+        @generic.parameter("T")
+        class Generic<T> {
+            @type(["T"])
+            data: T[]
+            @meta.property()
+            name:string
+        }
+        expect(getRef(generic.create(Generic, Number))).toBe("DynamicType")
+        expect(getRef(generic.create(Generic, String))).toBe("DynamicType1")
     })
 })
 
