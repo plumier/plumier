@@ -31,9 +31,10 @@ class ClassNameStorage {
     constructor(private map: Map<Class, string>) { }
 
     getTypeByStructure(type: Class) {
+        const getTypeName = (type: any) => Array.isArray(type) ? type[0].name : type.name
         const getProperties = (source: Class) => {
             const meta = reflect(source)
-            return meta.properties.map(x => `${x.name}:${x.type.name}`).sort().join("|")
+            return meta.properties.map(x => `${x.name}:${getTypeName(x.type)}`).sort().join("|")
         }
         const similar = Array.from(this.map.keys()).find(x => getProperties(x) === getProperties(type))
         return similar ?? type
