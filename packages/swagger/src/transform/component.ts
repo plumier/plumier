@@ -38,7 +38,6 @@ function getUnregisterDependentTypes(type: Class, ctx: BaseTransformContext): Cl
 function transformComponent(ctx: BaseTransformContext): ComponentsObject {
     const getRef = refFactory(ctx.map)
     const types = Array.from(ctx.map.keys())
-    const bearer: SecuritySchemeObject = { type: "http", scheme: "bearer", bearerFormat: "JWT" }
     const schemas: SchemasObject = types.reduce((a, b) => {
         const result = { ...a }
         // loop through unregistered dependent types
@@ -52,7 +51,7 @@ function transformComponent(ctx: BaseTransformContext): ComponentsObject {
     }, defaultSchemas)
     const result: ComponentsObject = { schemas }
     if (ctx.config.enableAuthorization)
-        result.securitySchemes = { bearer }
+        result.securitySchemes = { ...ctx.config.openApiSecuritySchemes }
     return result
 }
 

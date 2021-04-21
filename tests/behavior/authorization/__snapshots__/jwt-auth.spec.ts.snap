@@ -475,3 +475,13 @@ Array [
 `;
 
 exports[`JwtAuth Entity Policy Should not conflict when the same name with different entity 1`] = `Array []`;
+
+exports[`JwtAuth Open API Should register JWT Bearer security scheme by default 1`] = `
+Object {
+  "bearer": Object {
+    "bearerFormat": "JWT",
+    "scheme": "bearer",
+    "type": "http",
+  },
+}
+`;

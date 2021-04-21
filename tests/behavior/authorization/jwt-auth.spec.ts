@@ -19,6 +19,7 @@ import {
 } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import { noop, reflect, type } from "@plumier/reflect"
+import { SwaggerFacility } from "@plumier/swagger"
 import "@plumier/testing"
 import { cleanupConsole } from "@plumier/testing"
 import { sign } from "jsonwebtoken"
@@ -1033,7 +1034,7 @@ describe("JwtAuth", () => {
         })
 
         it("Should not showing duplicate policy name when multiple entity policy available", async () => {
-            class Item {}
+            class Item { }
             class User {
                 @entity.primaryId()
                 id: number
@@ -1257,7 +1258,7 @@ describe("JwtAuth", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
         })
-        
+
         it("Should detect missing entity policy and provider in first class entity", async () => {
             @genericController()
             class User {
@@ -4125,5 +4126,21 @@ describe("JwtAuth", () => {
             expect(mock.mock.calls).toMatchSnapshot()
         })
 
+    })
+
+    describe("Open API", () => {
+        it("Should register JWT Bearer security scheme by default", async () => {
+            class UsersController {
+                index() { }
+            }
+            const app = await fixture(UsersController)
+                .set(new JwtAuthFacility({ secret: "secret" }))
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await Supertest(app.callback())
+                .post("/swagger/swagger.json")
+                .expect(200)
+            expect(body.components.securitySchemes).toMatchSnapshot()
+        })
     })
 })

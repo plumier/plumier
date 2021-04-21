@@ -66,7 +66,7 @@ describe("getRef", () => {
             @type(["T"])
             data: T[]
             @meta.property()
-            name:string
+            name: string
         }
         expect(getRef(generic.create(Generic, Number))).toBe("DynamicType")
         expect(getRef(generic.create(Generic, String))).toBe("DynamicType1")
@@ -77,6 +77,7 @@ describe("Open API 3.0 Generation", () => {
     function createApp(ctl: Class | Class[]) {
         return fixture(ctl)
             .set(new SwaggerFacility())
+            .set({ openApiSecuritySchemes: { bearer: { type: "http", scheme: "bearer", bearerFormat: "JWT" } } })
             .initialize()
     }
 
