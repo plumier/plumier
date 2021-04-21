@@ -559,6 +559,11 @@ export interface Configuration {
      * Transform property value of response before its being parsed by response authorization 
      */
     responseTransformer?: (prop: PropertyReflection, value: any) => any
+
+    /**
+     * Provide Open API security scheme https://swagger.io/docs/specification/authentication/
+     */
+    openApiSecuritySchemes?: any
 }
 
 export interface PlumierConfiguration extends Configuration {
