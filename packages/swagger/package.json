@@ -6,16 +6,18 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "compile": "tsc -p tsconfig.build.json",
-    "postcompile": "cpy src/index.html lib",
+    "postcompile": "cpy src/index.ejs lib",
     "copy-readme": "cpy ../../readme.md ."
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
+    "@types/ejs": "^3.0.6",
     "@plumier/core": "1.0.0-rc.11",
     "@plumier/generic-controller": "1.0.0-rc.11",
     "@plumier/serve-static": "1.0.0-rc.11",
     "@types/swagger-ui-dist": "^3.30.0",
+    "ejs": "^3.1.6",
     "openapi3-ts": "^2.0.1",
     "swagger-ui-dist": "3.47.1"
   },
