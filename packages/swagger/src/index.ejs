@@ -44,7 +44,6 @@
       const ui = SwaggerUIBundle({
         url: "swagger.json",
         dom_id: '#swagger-ui',
-        deepLinking: true,
         presets: [
           SwaggerUIBundle.presets.apis,
           SwaggerUIStandalonePreset
@@ -52,10 +51,13 @@
         plugins: [
           SwaggerUIBundle.plugins.DownloadUrl
         ],
-        layout: "StandaloneLayout"
+        layout: "StandaloneLayout",
+        <%_ for(let opt in options) {  -%>
+        <%_ let value = options[opt] -%>
+        <%= opt %>: <%- typeof value === "string" ? "\"" + value + "\"" : value _%>,
+        <% } -%>
       })
       // End Swagger UI call region
-
       window.ui = ui
     }
   </script>

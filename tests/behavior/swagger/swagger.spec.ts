@@ -1,6 +1,6 @@
 import { Class, route } from "@plumier/core"
 import supertest from "supertest"
-import { SwaggerFacility } from "@plumier/swagger"
+import { SwaggerDisplayOption, SwaggerFacility } from "@plumier/swagger"
 
 import { fixture } from "../helper"
 import Plumier, { WebApiFacility, ControllerFacility } from 'plumier'
@@ -8,9 +8,9 @@ import Plumier, { WebApiFacility, ControllerFacility } from 'plumier'
 
 
 describe("Swagger", () => {
-    function createApp(ctl: Class | Class[]) {
+    function createApp(ctl: Class | Class[], opt?: Partial<SwaggerDisplayOption>) {
         return fixture(ctl)
-            .set(new SwaggerFacility())
+            .set(new SwaggerFacility({ display: opt }))
             .initialize()
     }
     describe("Swagger UI Hosting", () => {
@@ -42,6 +42,20 @@ describe("Swagger", () => {
             await supertest(app.callback())
                 .get("/swagger/swagger-ui-bundle.js")
                 .expect(200)
+        })
+        it("Should render swagger ui with default option", async () => {
+            const app = await createApp(UsersController)
+            const {text} = await supertest(app.callback())
+                .get("/swagger/index")
+                .expect(200)
+            expect(text).toMatchSnapshot()
+        })
+        it("Should able to render string option", async () => {
+            const app = await createApp(UsersController, {filter: "lorem ipsum"})
+            const {text} = await supertest(app.callback())
+                .get("/swagger/index")
+                .expect(200)
+            expect(text).toMatchSnapshot()
         })
         describe("Custom Endpoint", () => {
             function createApp(ctl: Class | Class[]) {
