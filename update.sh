@@ -7,6 +7,8 @@ if [[ $(git rev-parse --abbrev-ref HEAD) != "master" ]]; then
 fi 
 # update root package
 ncu -u
+# update documentation package
+ncu -u --packageFile docs/docusaurus/package.json
 # update pckages
 for file in packages/*/package.json; do
     ncu -u --packageFile "$file"
