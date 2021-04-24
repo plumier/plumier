@@ -36,4 +36,5 @@ new Plumier()
 | PLUM_GITLAB_CLIENT_CLIENT_SECRET  | GitLabOAuthFacility   | Store GitLab OAuth 2.0 client secret                                |
 | PLUM_TWITTER_CLIENT_ID            | TwitterOAuthFacility  | Store Twitter OAuth 1.0a client id                                  |
 | PLUM_TWITTER_CLIENT_CLIENT_SECRET | TwitterOAuthFacility  | Store Twitter OAuth 1.0a client secret                              |
+| PLUM_ENABLE_SWAGGER               | SwaggerFacility       | Enable/disable swagger feature, value: `ui`, `json` or `false`      |
 

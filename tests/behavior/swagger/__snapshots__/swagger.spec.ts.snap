@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Swagger Swagger UI Hosting Config Should throw error when provided invalid value 1`] = `
+Array [
+  Array [
+    [Error: Not supported value lorem for environment variable PLUM_ENABLE_SWAGGER],
+  ],
+]
+`;
+
 exports[`Swagger Swagger UI Hosting Should able to render string option 1`] = `
 "<!-- HTML for static distribution bundle build -->
 <!DOCTYPE html>

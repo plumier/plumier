@@ -2,7 +2,7 @@ import { Class, route } from "@plumier/core"
 import supertest from "supertest"
 import { SwaggerDisplayOption, SwaggerFacility } from "@plumier/swagger"
 
-import { fixture } from "../helper"
+import { expectError, fixture } from "../helper"
 import Plumier, { WebApiFacility, ControllerFacility } from 'plumier'
 
 
@@ -45,14 +45,14 @@ describe("Swagger", () => {
         })
         it("Should render swagger ui with default option", async () => {
             const app = await createApp(UsersController)
-            const {text} = await supertest(app.callback())
+            const { text } = await supertest(app.callback())
                 .get("/swagger/index")
                 .expect(200)
             expect(text).toMatchSnapshot()
         })
         it("Should able to render string option", async () => {
-            const app = await createApp(UsersController, {filter: "lorem ipsum"})
-            const {text} = await supertest(app.callback())
+            const app = await createApp(UsersController, { filter: "lorem ipsum" })
+            const { text } = await supertest(app.callback())
                 .get("/swagger/index")
                 .expect(200)
             expect(text).toMatchSnapshot()
@@ -138,6 +138,85 @@ describe("Swagger", () => {
                     .expect(200)
                 await supertest(app.callback())
                     .get("/swagger/v2/swagger-ui-bundle.js")
+                    .expect(200)
+            })
+        })
+
+        describe("Config", () => {
+            function createApp(ctl: Class | Class[], opt?: "ui" | "json" | false) {
+                return fixture(ctl)
+                    .set(new SwaggerFacility({ enable: opt }))
+                    .initialize()
+            }
+            it("Should enable swagger by default on non production", async () => {
+                delete process.env.NODE_ENV
+                const app = await createApp(UsersController)
+                await supertest(app.callback())
+                    .get("/swagger/index")
+                    .expect(200)
+                await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+            })
+            it("Should disable swagger UI on PRODUCTION", async () => {
+                process.env.NODE_ENV = "production"
+                const app = await createApp(UsersController)
+                await supertest(app.callback())
+                    .get("/swagger/index")
+                    .expect(404)
+                await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(404)
+            })
+            it("Should able to force enable on PRODUCTION", async () => {
+                process.env.NODE_ENV = "production"
+                process.env.PLUM_ENABLE_SWAGGER = "ui"
+                const app = await createApp(UsersController)
+                await supertest(app.callback())
+                    .get("/swagger/index")
+                    .expect(200)
+                await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+            })
+            it("Should able to force enable only JSON on PRODUCTION", async () => {
+                process.env.NODE_ENV = "production"
+                process.env.PLUM_ENABLE_SWAGGER = "json"
+                const app = await createApp(UsersController)
+                await supertest(app.callback())
+                    .get("/swagger/index")
+                    .expect(404)
+                await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(200)
+            })
+            it("Should able to force disable on PRODUCTION", async () => {
+                process.env.NODE_ENV = "production"
+                process.env.PLUM_ENABLE_SWAGGER = "false"
+                const app = await createApp(UsersController)
+                await supertest(app.callback())
+                    .get("/swagger/index")
+                    .expect(404)
+                await supertest(app.callback())
+                    .get("/swagger/swagger.json")
+                    .expect(404)
+            })
+            it("Should throw error when provided invalid value", async () => {
+                process.env.NODE_ENV = "production"
+                process.env.PLUM_ENABLE_SWAGGER = "lorem"
+                const app = createApp(UsersController)
+                const mock = await expectError(app)
+                expect(mock.mock.calls).toMatchSnapshot()
+            })
+            it("Should able disable from facility", async () => {
+                process.env.NODE_ENV = "production"
+                delete process.env.PLUM_ENABLE_SWAGGER 
+                const app = await createApp(UsersController, "json")
+                await supertest(app.callback())
+                    .get("/swagger/index")
+                    .expect(404)
+                await supertest(app.callback())
+                    .get("/swagger/swagger.json")
                     .expect(200)
             })
         })
