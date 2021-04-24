@@ -24,6 +24,10 @@ Using above code Plumier automatically generate Open API 3.0 Specification using
 * `/swagger.json`  The Open API 3.0 Specification 
 * `/swagger` The swagger UI  (API explorer)
 
+:::note 
+Swagger UI and `swagger.json` will be disabled on production. To force enable SwaggerUI on production, use environment variable `PLUM_ENABLE_SWAGGER` with value `ui`, `json` or `false`.
+:::
+
 ## Swagger Endpoint
 By default the endpoint of the Swagger ui is `/swagger` this endpoint is customisable by providing `endpoint` on the `SwaggerFacility` like below: 
 
@@ -53,7 +57,7 @@ new Plumier()
             } 
         }))
 ```
-<!-- 
+
 ## Decorator Customization (Optional)
 Plumier provided decorators to customize the appearance of the swagger UI 
 ### Description 
@@ -69,4 +73,18 @@ class UsersController {
 }
 ```
 
-### Response  -->
+Description receive string with markdown syntax
+
+### Response 
+
+Open API generator automatically check for action return type to generate the response schema. Keep in mind that when provided `Promise` you need to specify the return type manually like below.
+
+```typescript {5}
+import { api, meta } from "plumier"
+
+class UsersController {
+    @route.get(":id")
+    @meta.type(x => User)
+    get(id:string): Promise<User>{ }
+}
+```

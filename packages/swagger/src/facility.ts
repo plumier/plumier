@@ -37,30 +37,66 @@ export interface SwaggerDisplayOption {
 }
 
 async function swaggerUI(options?: Partial<SwaggerDisplayOption>) {
-    const params: Partial<SwaggerDisplayOption> = { deepLinking:true, defaultModelsExpandDepth: -1, ...options }
+    const params: Partial<SwaggerDisplayOption> = { deepLinking: true, defaultModelsExpandDepth: -1, ...options }
     const tpl = await readFileAsync(join(__dirname, "index.ejs"));
     const result = ejs.render(tpl.toString(), { options: params })
     return new ActionResult(result)
         .setHeader("content-type", "text/html")
 }
 
-export interface SwaggerFacilityConfiguration { endpoint: string, info?: InfoObject, display?: Partial<SwaggerDisplayOption> }
+export interface SwaggerFacilityConfiguration {
+    /**
+     * Provide custom URL for swagger UI and swagger.json
+     */
+    endpoint: string,
+
+    /**
+     * Project information that will be rendered in SwaggerUI
+     */
+    info?: InfoObject,
+
+    /**
+     * Enable/disable feature, 
+     * 
+     * `ui`: Enable SwaggerUI and swagger.json (default)
+     * 
+     * `json`: Disable SwaggerUI and enable swagger.json
+     * 
+     * `false`: Disable feature completely 
+     */
+    enable?: "ui" | "json" | false
+
+    /**
+     * Provide SwaggerUI display configuration https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/#display
+     */
+    display?: Partial<SwaggerDisplayOption>
+}
 
 type ResultGroup = { [group: string]: RouteMetadata[] }
+
+function validateEnableConfig(value?: string) {
+    if (!value || value === "") return
+    const clean = value.trim().toLowerCase()
+    if (clean === "ui") return "ui"
+    if (clean === "json") return "json"
+    if (clean === "false") return false
+    throw new Error(`Not supported value ${value} for environment variable PLUM_ENABLE_SWAGGER`)
+}
 
 class SwaggerMiddleware implements Middleware {
     constructor(private spec: any, private opt: SwaggerFacilityConfiguration) { }
     async execute(invocation: Readonly<Invocation>): Promise<ActionResult> {
         const endpoint = this.opt.endpoint.toLowerCase()
+        const configOnProd = process.env.NODE_ENV?.toLocaleLowerCase() === "production" ? false : undefined
+        const enable = this.opt.enable ?? configOnProd ?? "ui"
         const uiPath = endpoint + "/index"
-        if (invocation.ctx.path.toLowerCase() === endpoint + "/swagger.json")
+        if (invocation.ctx.path.toLowerCase() === endpoint + "/swagger.json" && ["ui", "json"].some(x => enable === x))
             return response.json(this.spec)
         if (invocation.ctx.path.toLowerCase() === this.opt.endpoint.toLowerCase())
             return response.redirect(uiPath)
-        if (invocation.ctx.path.toLowerCase() === uiPath)
+        if (invocation.ctx.path.toLowerCase() === uiPath && enable === "ui")
             return swaggerUI(this.opt.display)
-        else
-            return invocation.proceed()
+        return invocation.proceed()
     }
 }
 
@@ -89,7 +125,8 @@ export class SwaggerFacility extends DefaultFacility {
         for (const key in group) {
             const spec = transform(group[key], { map: new Map(), config: app.config }, this.opt.info)
             const endpoint = key === this.defaultGroup ? this.opt.endpoint : appendRoute(this.opt.endpoint, key)
-            app.use(new SwaggerMiddleware(spec, { ...this.opt, endpoint }))
+            const enable = this.opt.enable ?? validateEnableConfig(process.env.PLUM_ENABLE_SWAGGER)
+            app.use(new SwaggerMiddleware(spec, { ...this.opt, enable, endpoint }))
             app.use(new ServeStaticMiddleware({ root: path, rootPath: endpoint }))
         }
     }
