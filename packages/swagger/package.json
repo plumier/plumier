@@ -1,6 +1,6 @@
 {
   "name": "@plumier/swagger",
-  "version": "1.0.0-rc.11",
+  "version": "1.0.0-rc.12",
   "description": "Swagger and Open API 3 module for Plumier",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -12,10 +12,10 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
+    "@plumier/core": "1.0.0-rc.12",
+    "@plumier/generic-controller": "1.0.0-rc.12",
+    "@plumier/serve-static": "1.0.0-rc.12",
     "@types/ejs": "^3.0.6",
-    "@plumier/core": "1.0.0-rc.11",
-    "@plumier/generic-controller": "1.0.0-rc.11",
-    "@plumier/serve-static": "1.0.0-rc.11",
     "@types/swagger-ui-dist": "^3.30.0",
     "ejs": "^3.1.6",
     "openapi3-ts": "^2.0.1",
