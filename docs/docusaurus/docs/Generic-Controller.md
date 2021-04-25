@@ -9,26 +9,24 @@ Generic controller is a common Plumier controller with generic type signature, i
 
 Generic controller supported TypeORM and Mongoose (with Plumier mongoose helper) entities. Enable the generic controller by installing the `TypeORMFacility` or `MongooseFacility` on the Plumier application. 
 
-```typescript {6,7}
+```typescript {6}
 import Plumier, { WebApiFacility } from "plumier"
 import { TypeORMFacility } from "@plumier/typeorm"
 
 new Plumier()
     .set(new WebApiFacility())
     .set(new TypeORMFacility())
-    .set(new ControllerFacility({ controller: "<entities path or glob>" }))
 ```
 
 Or if you are using mongoose helper like below
 
-```typescript {6,7}
+```typescript {6}
 import Plumier, { WebApiFacility } from "plumier"
 import { MongooseFacility } from "@plumier/mongoose"
 
 new Plumier()
     .set(new WebApiFacility())
     .set(new MongooseFacility())
-    .set(new ControllerFacility({ controller: "<entities path or glob>" }))
 ```
 
 Above facilities is a common facility used if you are using TypeORM or Mongoose with Plumier. In context of generic controller above facilities will normalize entities to make it ready used by generic controller helpers. 

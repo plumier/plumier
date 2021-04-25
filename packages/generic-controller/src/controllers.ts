@@ -59,7 +59,7 @@ class IdentifierResult<TID> {
 type NestedRepositoryFactory<P,T> = (t:EntityWithRelation<P,T> | EntityWithRelation<T|P>) => NestedRepository<P,T>
 
 @generic.parameter("T", "TID")
-class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGeneric<T, TID>{
+class RepoBaseControllerGeneric<T = any, TID = string> extends ControllerGeneric<T, TID>{
     readonly entityType: Class<T>
     readonly repo: Repository<T>
 
@@ -98,7 +98,7 @@ class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGene
     @decorateRoute("get", ":id")
     @api.hideRelations()
     @reflect.type("T")
-    async get(@val.required() @reflect.type("TID") id: TID, @selectParser(x => "T") select: SelectQuery, @bind.ctx() ctx: Context): Promise<T> {
+    async get(@val.required() @reflect.type("TID") id: TID, @selectParser(x => "T") select: SelectQuery, @bind.ctx() ctx: Context): Promise<any> {
         const query = getOneCustomQuery(this.constructor as any)
         const result = query ? await query({ id, select }, ctx) : await this.findByIdOrNotFound(id, select)
         const transformer = getTransformer(this.constructor as Class, "get")
@@ -132,7 +132,7 @@ class RepoBaseControllerGeneric<T = Object, TID = string> extends ControllerGene
 }
 
 @generic.parameter("P", "T", "PID", "TID")
-class RepoBaseNestedControllerGeneric<P = Object, T = Object, PID = String, TID = String> extends NestedControllerGeneric<P, T, PID, TID>{
+class RepoBaseNestedControllerGeneric<P = any, T = any, PID = String, TID = String> extends NestedControllerGeneric<P, T, PID, TID>{
     readonly entityType: Class<T>
     readonly parentEntityType: Class<P>
     readonly repo: NestedRepository<P, T>
@@ -184,7 +184,7 @@ class RepoBaseNestedControllerGeneric<P = Object, T = Object, PID = String, TID 
     @decorateRoute("get", ":id")
     @api.hideRelations()
     @reflect.type("T")
-    async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @selectParser(x => "T") select: SelectQuery, @bind.ctx() ctx: Context): Promise<T> {
+    async get(@val.required() @reflect.type("PID") pid: PID, @val.required() @reflect.type("TID") id: TID, @selectParser(x => "T") select: SelectQuery, @bind.ctx() ctx: Context): Promise<any> {
         await this.findParentByIdOrNotFound(pid)
         const query = getOneCustomQuery(this.constructor as any)
         const result = query ? await query({ id, select }, ctx) : await this.findByIdOrNotFound(id, select)

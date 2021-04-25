@@ -82,16 +82,16 @@ function createGenericControllerMongoose(controllers?: GenericControllers) {
 
 /**
  * Create a generic controller with CRUD functionality based on Entity
- * @param type entity used as the generic controller parameter
+ * @param type entity used as the generic controller argument
  * @param config configuration to authorize/enable/disable some actions
  */
 function GenericController<T>(type: Class, config?: GenericControllerConfiguration): Class<MongooseControllerGeneric<T>>
 /**
- * Create a nested generic controller with CRUD functionality based on Entity's One-To-Many relation property
- * @param type Tuple of [Entity, relationName] used as the generic controller parameter
+ * Create a nested generic controller with CRUD functionality based on Entity's One-To-Many on Many-To-One relation property
+ * @param relation Tuple of [Entity, relationName] used to specify entity relation as a reference of the nested generic controller
  * @param config configuration to authorize/enable/disable some actions
  */
-function GenericController<T>(type: EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<MongooseNestedControllerGeneric<T>>
+function GenericController<T>(relation: EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<MongooseNestedControllerGeneric<T>>
 function GenericController<T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) {
     const factory = createGenericControllerMongoose()
     return factory(type, config)
