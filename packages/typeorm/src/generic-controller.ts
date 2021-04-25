@@ -103,7 +103,7 @@ class TypeORMControllerGeneric<T = any, TID = any> extends RepoBaseControllerGen
 @generic.parameter("P", "T", "PID", "TID")
 @generic.argument("P", "T", "PID", "TID")
 class TypeORMNestedControllerGeneric<P = any, T = any, PID = any, TID = any> extends RepoBaseNestedControllerGeneric<P, T, PID, TID> {
-    constructor(fac?: NestedRepositoryFactory<P,T>) {
+    constructor(fac?: NestedRepositoryFactory<P, T>) {
         super(fac ?? (p => new TypeORMNestedRepository(p)))
     }
 }
@@ -124,10 +124,10 @@ function createGenericControllerTypeORM(controllers?: GenericControllers) {
                     normalizeEntity(parentEntity)
                     const meta = reflect(parentEntity)
                     const prop = meta.properties.find(x => x.name === relation)!
-                    const entity:Class = Array.isArray(prop.type)? prop.type[0] : prop.type
+                    const entity: Class = Array.isArray(prop.type) ? prop.type[0] : prop.type
                     normalizeEntity(entity)
                 }
-                else 
+                else
                     normalizeEntity(type)
             }
         })
@@ -140,11 +140,11 @@ function createGenericControllerTypeORM(controllers?: GenericControllers) {
  */
 function GenericController<T>(type: Class, config?: GenericControllerConfiguration): Class<TypeORMControllerGeneric<T>>
 /**
- * Create a nested generic controller with CRUD functionality based on Entity's One-To-Many relation property
- * @param type Tuple of [Entity, relationName] used as the generic controller parameter
+ * Create a nested generic controller with CRUD functionality based on Entity's One-To-Many on Many-To-One relation property
+ * @param relation Tuple of [Entity, relationName] used to specify entity relation as a reference of the nested generic controller
  * @param config configuration to authorize/enable/disable some actions
  */
-function GenericController<T>(type: EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<TypeORMNestedControllerGeneric<T>>
+function GenericController<T>(relation: EntityWithRelation<T>, config?: GenericControllerConfiguration): Class<TypeORMNestedControllerGeneric<T>>
 function GenericController<T>(type: Class | EntityWithRelation<T>, config?: GenericControllerConfiguration) {
     const factory = createGenericControllerTypeORM()
     return factory(type, config)
