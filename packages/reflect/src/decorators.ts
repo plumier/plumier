@@ -186,7 +186,7 @@ export namespace generic {
     }
 
     /**
-     * Get generic type from decorator type("T")
+     * Get data type of declaration in specific class based on its type specified by type("T")
      * @param decorator type() decorator contains generic type information
      * @param typeTarget The current type where the type will be calculated
      * @returns 
@@ -243,17 +243,17 @@ export namespace generic {
     }
 
     /**
-     * Get generic type parameter list by generic type
+     * Get list of generic arguments used in class
      * @param type the class
      * @returns List of generic type parameters
      */
-    export function getGenericTypeParameters(type: Class): Class[] {
+    export function getArguments(type: Class): Class[] {
         const genericDecorator = getMetadata(type)
             .find((x: GenericTypeArgumentDecorator): x is GenericTypeArgumentDecorator => x.kind == "GenericType" && x.target === type)
         if (!genericDecorator) {
             const parent: Class = Object.getPrototypeOf(type)
             if (!parent.prototype) throw new Error(`${type.name} is not a generic type`)
-            return getGenericTypeParameters(parent)
+            return getArguments(parent)
         }
         return genericDecorator.types.map(x => x as Class)
     }

@@ -585,7 +585,7 @@ describe("Get Generic Type", () => {
     })
 })
 
-describe("Get Generic Type Parameters", () => {
+describe("Get Arguments", () => {
     it("Should able to get generic type parameter", () => {
         @generic.parameter("A")
         class SuperClass<A> {
@@ -594,7 +594,7 @@ describe("Get Generic Type Parameters", () => {
         }
         @generic.argument(Number)
         class MyClass extends SuperClass<number>{ }
-        expect(generic.getGenericTypeParameters(MyClass)).toStrictEqual([Number])
+        expect(generic.getArguments(MyClass)).toStrictEqual([Number])
     })
     it("Should able to get generic type parameters", () => {
         @generic.parameter("A", "B")
@@ -606,7 +606,7 @@ describe("Get Generic Type Parameters", () => {
         }
         @generic.argument(Number, String)
         class MyClass extends SuperClass<number, string>{ }
-        expect(generic.getGenericTypeParameters(MyClass)).toStrictEqual([Number, String])
+        expect(generic.getArguments(MyClass)).toStrictEqual([Number, String])
     })
     it("Should able to get generic type when generic type stop", () => {
         @generic.parameter("A", "B")
@@ -619,10 +619,10 @@ describe("Get Generic Type Parameters", () => {
         @generic.argument(Number, String)
         class MyClass extends SuperClass<number, string>{ }
         class MyOtherClass extends MyClass {}
-        expect(generic.getGenericTypeParameters(MyOtherClass)).toStrictEqual([Number, String])
+        expect(generic.getArguments(MyOtherClass)).toStrictEqual([Number, String])
     })
     it("Should throw error when non generic type provided", () => {
         class MyClass { }
-        expect(() => generic.getGenericTypeParameters(MyClass)).toThrow("MyClass is not a generic type")
+        expect(() => generic.getArguments(MyClass)).toThrow("MyClass is not a generic type")
     })
 })

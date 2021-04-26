@@ -65,7 +65,7 @@ class RepoBaseControllerGeneric<T = any, TID = string> extends ControllerGeneric
 
     constructor(fac: ((x: Class<T>) => Repository<T>)) {
         super()
-        const types = generic.getGenericTypeParameters(this.constructor as Class)
+        const types = generic.getArguments(this.constructor as Class)
         this.entityType = types[0]
         this.repo = fac(this.entityType)
     }
