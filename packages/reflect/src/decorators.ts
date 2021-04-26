@@ -163,7 +163,7 @@ export namespace generic {
      * @param parameters list of generic type parameters
      */
     export function parameter(...parameters: string[]) {
-        return decorateClass(target => <GenericTypeParameterDecorator>{ [DecoratorId]: symGenericTemplate, kind: "GenericTemplate", templates:parameters, target }, { inherit: false, allowMultiple: false })
+        return decorateClass(target => <GenericTypeParameterDecorator>{ [DecoratorId]: symGenericTemplate, kind: "GenericTemplate", templates: parameters, target }, { inherit: false, allowMultiple: false })
     }
 
     /**
@@ -186,7 +186,7 @@ export namespace generic {
     }
 
     /**
-     * Get generic type from decorator type("T")
+     * Get data type of declaration in specific class based on its type specified by type("T")
      * @param decorator type() decorator contains generic type information
      * @param typeTarget The current type where the type will be calculated
      * @returns 
@@ -203,12 +203,12 @@ export namespace generic {
         if (typeTarget === decorator.target) return
         if (!(typeTarget.prototype instanceof decorator.target))
             throw new Error(`Unable to get type information because ${typeTarget.name} is not inherited from ${decorator.target.name}`)
-        let templateDec = getTemplate(decorator.target)
-        if (!templateDec)
-            throw new Error(`${decorator.target.name} doesn't define @generic.parameter() decorator`)
         const [type, isArray] = reflection.getTypeFromDecorator(decorator)
         if (typeof type !== "string")
             throw new Error("Provided decorator is not a generic type")
+        let templateDec = getTemplate(decorator.target)
+        if (!templateDec)
+            throw new Error(`${decorator.target.name} doesn't have @generic.parameter() decorator required by generic parameter ${type}`)
         /*
          get list of parents, for example 
          A <-- B <-- C <-- D (A is super super)
@@ -243,17 +243,17 @@ export namespace generic {
     }
 
     /**
-     * Get generic type parameter list by generic type
+     * Get list of generic arguments used in class
      * @param type the class
      * @returns List of generic type parameters
      */
-    export function getGenericTypeParameters(type: Class): Class[] {
+    export function getArguments(type: Class): Class[] {
         const genericDecorator = getMetadata(type)
             .find((x: GenericTypeArgumentDecorator): x is GenericTypeArgumentDecorator => x.kind == "GenericType" && x.target === type)
         if (!genericDecorator) {
             const parent: Class = Object.getPrototypeOf(type)
             if (!parent.prototype) throw new Error(`${type.name} is not a generic type`)
-            return getGenericTypeParameters(parent)
+            return getArguments(parent)
         }
         return genericDecorator.types.map(x => x as Class)
     }
