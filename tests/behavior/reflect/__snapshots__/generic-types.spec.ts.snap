@@ -1587,6 +1587,86 @@ Object {
 }
 `;
 
+exports[`Generic Should able to omit generic parameter even if used on derived class 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      "kind": "GenericType",
+      "target": MyClass,
+      "types": Array [
+        String,
+      ],
+      Symbol(tinspector:decoratorId): Symbol(genericType),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": false,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericArguments": Array [],
+          "kind": "Override",
+          "target": GrandSuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [],
+      "returnType": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "name": "MyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericArguments": Array [],
+          "kind": "Override",
+          "target": SuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": undefined,
+      "kind": "Property",
+      "name": "property",
+      "set": undefined,
+      "type": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": SuperClass,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
 exports[`Generic Should inherit generic data type when overridden 1`] = `
 Array [
   Object {
