@@ -172,9 +172,21 @@ describe("Generic", () => {
             @type("T")
             method(): T { return {} as any }
         }
-
         class SuperClass<T> extends GrandSuperClass<T> {  }
-
+        @generic.argument(String)
+        class MyClass extends SuperClass<string>{ }
+        expect(reflect(MyClass)).toMatchSnapshot()
+    })
+    it("Should able to omit generic parameter even if used on derived class", () => {
+        @generic.parameter("T")
+        class GrandSuperClass<T> {
+            @type("T")
+            method(): T { return {} as any }
+        }
+        class SuperClass<T> extends GrandSuperClass<T> {  
+            @type("T")
+            property:T
+        }
         @generic.argument(String)
         class MyClass extends SuperClass<string>{ }
         expect(reflect(MyClass)).toMatchSnapshot()

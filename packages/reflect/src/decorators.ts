@@ -197,9 +197,14 @@ export namespace generic {
             if (type === decorator.target) return []
             return [...getParent(parent), type]
         }
-        const getTemplate = (target: Class) => getMetadata(target)
-            .find((x: GenericTypeParameterDecorator): x is GenericTypeParameterDecorator => x.kind === "GenericTemplate")
-
+        const getTemplate = (target: Class): GenericTypeParameterDecorator | undefined => {
+            const meta = getMetadata(target)
+                .find((x: GenericTypeParameterDecorator): x is GenericTypeParameterDecorator => x.kind === "GenericTemplate")
+            if (meta) return meta
+            // if not found walk through the parent to get the parameter decorator
+            const parent: Class = Object.getPrototypeOf(target)
+            return parent.prototype ? getTemplate(parent) : undefined
+        }
         if (typeTarget === decorator.target) return
         if (!(typeTarget.prototype instanceof decorator.target))
             throw new Error(`Unable to get type information because ${typeTarget.name} is not inherited from ${decorator.target.name}`)
@@ -235,10 +240,8 @@ export namespace generic {
             }
             // continue searching other template
             const templates = getTemplate(type)
-            if (templates) {
-                tmpType = type
-                templateDec = templates
-            }
+            tmpType = type
+            templateDec = templates!
         }
     }
 
