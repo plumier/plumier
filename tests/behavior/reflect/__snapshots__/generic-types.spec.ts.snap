@@ -740,7 +740,7 @@ Object {
 
 exports[`Error Handling Should show proper error when number of types provided mismatch 1`] = `"Number of parameters @generic.parameter() and @generic.argument() mismatch between SuperClass and MyClass"`;
 
-exports[`Error Handling Should show proper error when specify template on type but doesn't specify @generic.template() 1`] = `"SuperClass doesn't define @generic.parameter() decorator"`;
+exports[`Error Handling Should show proper error when specify template on type but doesn't specify @generic.template() 1`] = `"SuperClass doesn't have @generic.parameter() decorator required by generic parameter B"`;
 
 exports[`Generic Should able to inspect generic on getter 1`] = `
 Object {
@@ -1531,6 +1531,62 @@ Object {
 }
 `;
 
+exports[`Generic Should able to omit generic parameter and argument on derived class, when uses the order is the same 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      "kind": "GenericType",
+      "target": MyClass,
+      "types": Array [
+        String,
+      ],
+      Symbol(tinspector:decoratorId): Symbol(genericType),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": false,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "genericArguments": Array [],
+          "kind": "Override",
+          "target": GrandSuperClass,
+          "type": "T",
+          Symbol(tinspector:decoratorId): Symbol(override),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": true,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "kind": "Method",
+      "name": "method",
+      "parameters": Array [],
+      "returnType": String,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "name": "MyClass",
+  "properties": Array [],
+  "super": SuperClass,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
 exports[`Generic Should inherit generic data type when overridden 1`] = `
 Array [
   Object {
@@ -1684,13 +1740,7 @@ Object {
 }
 `;
 
-exports[`Get Generic Type Should throw error template target doesn't specify @generic.template() 1`] = `"SuperClass doesn't define @generic.parameter() decorator"`;
-
-exports[`Get Generic Type Should throw error when provided non string type 1`] = `"Provided decorator is not a generic type"`;
-
-exports[`Get Generic Type Should throw error when the target is not in inheritance 1`] = `"Unable to get type information because MyOtherClass is not inherited from SuperClass"`;
-
-exports[`Type With Generic Type Parameter Should able to define generic type directly using @type() 1`] = `
+exports[`Generic Type In Member Type Should able to define generic type directly using @type() 1`] = `
 Object {
   "ctor": Object {
     "kind": "Constructor",
@@ -1747,7 +1797,7 @@ Object {
 }
 `;
 
-exports[`Type With Generic Type Parameter Should able to define generic type directly using @type() with type of array 1`] = `
+exports[`Generic Type In Member Type Should able to define generic type directly using @type() with type of array 1`] = `
 Object {
   "ctor": Object {
     "kind": "Constructor",
@@ -1808,7 +1858,7 @@ Object {
 }
 `;
 
-exports[`Type With Generic Type Parameter Should able to inspect array of generic type on method 1`] = `
+exports[`Generic Type In Member Type Should able to inspect array of generic type on method 1`] = `
 Object {
   "ctor": Object {
     "kind": "Constructor",
@@ -1865,7 +1915,7 @@ Object {
 }
 `;
 
-exports[`Type With Generic Type Parameter Should able to inspect generic on getter 1`] = `
+exports[`Generic Type In Member Type Should able to inspect generic on getter 1`] = `
 Object {
   "ctor": Object {
     "kind": "Constructor",
@@ -1922,7 +1972,7 @@ Object {
 }
 `;
 
-exports[`Type With Generic Type Parameter Should able to inspect generic on method parameter 1`] = `
+exports[`Generic Type In Member Type Should able to inspect generic on method parameter 1`] = `
 Object {
   "ctor": Object {
     "kind": "Constructor",
@@ -1979,7 +2029,7 @@ Object {
 }
 `;
 
-exports[`Type With Generic Type Parameter Should able to inspect generic on property 1`] = `
+exports[`Generic Type In Member Type Should able to inspect generic on property 1`] = `
 Object {
   "ctor": Object {
     "kind": "Constructor",
@@ -2036,7 +2086,7 @@ Object {
 }
 `;
 
-exports[`Type With Generic Type Parameter Should able to inspect generic type on method 1`] = `
+exports[`Generic Type In Member Type Should able to inspect generic type on method 1`] = `
 Object {
   "ctor": Object {
     "kind": "Constructor",
@@ -2092,3 +2142,9 @@ Object {
   "typeClassification": "Class",
 }
 `;
+
+exports[`Get Generic Type Should throw error template target doesn't specify @generic.template() 1`] = `"SuperClass doesn't have @generic.parameter() decorator required by generic parameter A"`;
+
+exports[`Get Generic Type Should throw error when provided non string type 1`] = `"Provided decorator is not a generic type"`;
+
+exports[`Get Generic Type Should throw error when the target is not in inheritance 1`] = `"Unable to get type information because MyOtherClass is not inherited from SuperClass"`;

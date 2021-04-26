@@ -163,7 +163,7 @@ export namespace generic {
      * @param parameters list of generic type parameters
      */
     export function parameter(...parameters: string[]) {
-        return decorateClass(target => <GenericTypeParameterDecorator>{ [DecoratorId]: symGenericTemplate, kind: "GenericTemplate", templates:parameters, target }, { inherit: false, allowMultiple: false })
+        return decorateClass(target => <GenericTypeParameterDecorator>{ [DecoratorId]: symGenericTemplate, kind: "GenericTemplate", templates: parameters, target }, { inherit: false, allowMultiple: false })
     }
 
     /**
@@ -203,12 +203,12 @@ export namespace generic {
         if (typeTarget === decorator.target) return
         if (!(typeTarget.prototype instanceof decorator.target))
             throw new Error(`Unable to get type information because ${typeTarget.name} is not inherited from ${decorator.target.name}`)
-        let templateDec = getTemplate(decorator.target)
-        if (!templateDec)
-            throw new Error(`${decorator.target.name} doesn't define @generic.parameter() decorator`)
         const [type, isArray] = reflection.getTypeFromDecorator(decorator)
         if (typeof type !== "string")
             throw new Error("Provided decorator is not a generic type")
+        let templateDec = getTemplate(decorator.target)
+        if (!templateDec)
+            throw new Error(`${decorator.target.name} doesn't have @generic.parameter() decorator required by generic parameter ${type}`)
         /*
          get list of parents, for example 
          A <-- B <-- C <-- D (A is super super)

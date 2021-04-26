@@ -166,6 +166,19 @@ describe("Generic", () => {
         expect(reflection.getMethods(meta)).toMatchSnapshot()
         expect(reflect(meta.methods[0].returnType)).toMatchSnapshot()
     })
+    it("Should able to omit generic parameter and argument on derived class, when uses the order is the same", () => {
+        @generic.parameter("T")
+        class GrandSuperClass<T> {
+            @type("T")
+            method(): T { return {} as any }
+        }
+
+        class SuperClass<T> extends GrandSuperClass<T> {  }
+
+        @generic.argument(String)
+        class MyClass extends SuperClass<string>{ }
+        expect(reflect(MyClass)).toMatchSnapshot()
+    })
 })
 
 describe("Array Generic Template", () => {
@@ -252,7 +265,7 @@ describe("Array Type", () => {
     })
 })
 
-describe("Type With Generic Type Parameter", () => {
+describe("Generic Type In Member Type", () => {
     @generic.parameter("T")
     class CustomGeneric<T> {
         @type("T")
