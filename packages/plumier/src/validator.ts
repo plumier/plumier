@@ -4,10 +4,29 @@ import bytes from "bytes"
 
 declare module "@plumier/validator" {
     namespace val {
+        /**
+         * Validate multipart form file to limit upload size
+         * @param maxSize Maximum file size allowed, a string "1kb" or "1Mb" or a number in bytes
+         */
         export function file(maxSize: string | number): (...arg: any[]) => void
+        /**
+         * Validate multipart form file with some option
+         * @param opt option
+         */
         export function file(opt: { maxSize?: string | number, mime?: string | RegExp, invalidMimeMessage?: string, invalidSizeMessage?: string }): (...arg: any[]) => void
+        /**
+         * Validate multipart form to make sure if uploaded file is an image (mime type starts with `image/*`)
+         */
         export function image(): (...arg: any[]) => void
+        /**
+         * Validate multipart form image file to limit upload size
+         * @param maxSize Maximum file size allowed, in string 1kb or 1Mb or number in bytes
+         */
         export function image(maxSize?: string | number): (...arg: any[]) => void
+        /**
+         * Validate multipart form image file with some option
+         * @param opt option
+         */
         export function image(opt: { maxSize?: string | number, invalidSizeMessage?: string, invalidImageMessage?: string }): (...arg: any[]) => void
     }
 }
