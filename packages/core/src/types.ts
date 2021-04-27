@@ -359,10 +359,25 @@ export interface PlumierApplication extends Application {
 @reflect.parameterProperties()
 export class FormFile {
     constructor(
+        /**
+         * Size of the file (bytes)
+         */
         public size: number,
+        /**
+         * Temporary path of the uploaded file
+         */
         public path: string,
+        /**
+         * Original file name provided by client
+         */
         public name: string,
+        /**
+         * Mime type of the file
+         */
         public type: string,
+        /**
+         * The file timestamp
+         */
         public mtime?: string,
     ) { }
 
