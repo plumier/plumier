@@ -71,6 +71,22 @@ describe("getRef", () => {
         expect(getRef(generic.create(Generic, Number))).toBe("DynamicType")
         expect(getRef(generic.create(Generic, String))).toBe("DynamicType1")
     })
+
+    it("Should not error when found dynamic type with property that doesn't have data type", () => {
+        const getRef = refFactory(new Map())
+        @generic.parameter("T")
+        class Generic<T> {
+            @type(["T"])
+            data: T[]
+
+            // usually the problem is the type overridden used is not ready
+            // so during evaluation the type is undefined
+            @type(undefined as any)
+            name: string
+        }
+        expect(getRef(generic.create(Generic, Number))).toBe("DynamicType")
+        expect(getRef(generic.create(Generic, String))).toBe("DynamicType1")
+    })
 })
 
 describe("Open API 3.0 Generation", () => {
