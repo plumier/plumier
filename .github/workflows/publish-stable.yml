@@ -1,4 +1,4 @@
-name: stable
+name: "publish stable"
 
 on: [workflow_dispatch]
   # schedule: 
@@ -22,8 +22,6 @@ jobs:
       run: curl -o- -L https://yarnpkg.com/install.sh | bash
     - name: Install dependencies
       run: yarn install
-    - name: Run tests 
-      run: yarn test
     - name: Publish
       run: |
         printf "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
