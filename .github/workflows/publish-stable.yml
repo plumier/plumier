@@ -1,8 +1,8 @@
 name: stable
 
-on:
-  schedule: 
-    - cron:  '* * 1,15 * *'
+on: [workflow_dispatch]
+  # schedule: 
+  #   - cron:  '* * 1,15 * *'
 
 jobs:
   build:
