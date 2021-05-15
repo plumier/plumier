@@ -9,7 +9,7 @@
 		"publish:beta": "yarn compile && lerna publish prerelease --exact --preid beta --force-publish",
 		"publish:rc": "yarn compile && lerna publish prerelease --exact --preid rc --force-publish",
 		"publish:canary": "lerna run compile && lerna publish patch --exact --canary --preid=canary --force-publish --yes",
-		"publish": "yarn compile && lerna publish --yes && yarn clean",
+		"publish": "yarn compile && lerna publish && yarn clean",
 		"benchmark": "ts-node -r tsconfig-paths/register tests/manual/benchmark/run",
 		"doc:start": "yarn workspace plumier-docs start",
 		"doc:build": "yarn workspace plumier-docs build",
