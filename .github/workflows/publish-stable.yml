@@ -8,7 +8,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2.3.1
@@ -24,5 +26,4 @@ jobs:
       run: yarn install
     - name: Publish
       run: |
-        printf "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
         yarn publish:stable
