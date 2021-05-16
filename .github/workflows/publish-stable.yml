@@ -1,27 +1,36 @@
+# resources 
+# https://docs.github.com/en/actions/guides/publishing-nodejs-packages#publishing-packages-to-the-npm-registry
+# https://stackoverflow.com/a/65831009/212706
+
 name: "publish stable"
 
-on: [workflow_dispatch]
-  # schedule: 
-  #   - cron:  '* * 1,15 * *'
+on: 
+  workflow_dispatch:
+    
+  schedule: 
+    - cron:  '* * 1,15 * *'
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
     env:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v2.3.1
+      uses: actions/checkout@v2
       with:
           submodules: recursive
-    - name: Setup Node
-      uses: actions/setup-node@v1
+    - name: Setup .npmrc file for publish
+      uses: actions/setup-node@v2
       with:
-        node-version: '12'
-    - name: Install yarn
-      run: curl -o- -L https://yarnpkg.com/install.sh | bash
+        node-version: '12.x'
+        registry-url: 'https://registry.npmjs.org'
+    - name: Configure Git User
+      run: |
+        git config --global user.email "ci@plumierjs.com"
+        git config --global user.name "ci@$GITHUB_ACTOR"
     - name: Install dependencies
       run: yarn install
     - name: Publish

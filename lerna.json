@@ -1,14 +1,14 @@
 {
-  "lerna": "3.10.6",
+  "lerna": "4.0.0",
   "packages": [
     "packages/*"
   ],
-  "npmClient": "yarn",
   "useWorkspaces": true,
-  "version": "1.0.0",
+  "version": "independent",
   "command": {
     "publish": {
-      "conventionalCommits": true
+      "conventionalCommits": true,
+      "message": "chore: Release packages"
     }
   }
 }
