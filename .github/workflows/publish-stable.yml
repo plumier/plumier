@@ -31,6 +31,7 @@ jobs:
       run: |
         git config --global user.email "ci@plumierjs.com"
         git config --global user.name "ci@$GITHUB_ACTOR"
+        git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/plumier/plumier
     - name: Install dependencies
       run: yarn install
     - name: Publish
