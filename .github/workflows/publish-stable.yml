@@ -6,7 +6,7 @@ name: "publish stable"
 
 on: 
   workflow_dispatch:
-    
+
   schedule: 
     - cron:  '* * 1,15 * *'
 
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.PUBLISH_PAT }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
