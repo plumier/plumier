@@ -1,15 +1,10 @@
-# resources 
-# https://docs.github.com/en/actions/guides/publishing-nodejs-packages#publishing-packages-to-the-npm-registry
-# https://stackoverflow.com/a/65831009/212706
-# https://stackoverflow.com/a/63733988/212706
-
 name: "publish stable"
 
 on: 
   workflow_dispatch:
 
-  schedule: 
-    - cron:  '* * 1,15 * *'
+  # schedule: 
+  #   - cron:  '* * 1,15 * *'
 
 jobs:
   build:
@@ -17,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.PUBLISH_PAT }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
