@@ -2810,7 +2810,7 @@ Array [
 exports[`Route Generator One To Many Controller Should throw error when the relation doesn't have type information 1`] = `
 Array [
   Array [
-    [Error: User.animals marked with @genericController() but doesn't have type information],
+    [Error: Unable to get data type of member User.animals. Make sure to provide type information, or manage if its has cross reference to other class],
   ],
 ]
 `;

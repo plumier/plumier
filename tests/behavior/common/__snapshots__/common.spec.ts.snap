@@ -34,6 +34,10 @@ Object {
 }
 `;
 
+exports[`Entity Relation Info Should throw error when no type information found on many to one relation 1`] = `"Unable to get data type of member Animal.user. Make sure to provide type information, or manage if its has cross reference to other class"`;
+
+exports[`Entity Relation Info Should throw error when no type information found on one to many relation 1`] = `"Unable to get data type of member User.animals. Make sure to provide type information, or manage if its has cross reference to other class"`;
+
 exports[`Entity Relation Info Should throw error when provided invalid property name 1`] = `"Animal doesn't have property named users"`;
 
 exports[`Entity Relation Info Should throw error when provided non relation one to many property 1`] = `"User.animals is not a valid relation, make sure its decorated with @entity.relation() decorator"`;

@@ -219,6 +219,7 @@ Object {
     "PropertyWithoutTypeInformation": "Parameter binding skipped because property doesn't have type information in ({0})",
     "RouteDoesNotHaveBackingParam": "Route parameters ({0}) doesn't have appropriate backing parameter",
     "UnableToConvertValue": "Unable to convert \\"{0}\\" into {1}",
+    "UnableToGetMemberDataType": "Unable to get data type of member {0}.{1}. Make sure to provide type information, or manage if its has cross reference to other class",
     "UnableToInstantiateModel": "Unable to instantiate {0}. Domain model should not throw error inside constructor",
   },
   "executeAuthorizer": executeAuthorizer,
