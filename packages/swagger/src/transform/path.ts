@@ -86,7 +86,6 @@ function transformOperation(route: RouteInfo, ctx: BaseTransformContext): [HttpM
         tags, parameters, requestBody, description: desc?.desc,
         ...getSummary(route, ctx.config.globalAuthorizations)
     }
-    if (secured) operation.security = [{ bearer }]
     return [route.method, operation]
 }
 

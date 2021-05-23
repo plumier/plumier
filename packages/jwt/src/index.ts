@@ -111,7 +111,11 @@ export class JwtAuthFacility extends DefaultFacility {
         // global authorization if not defined then its Authenticated by default
         const globalAuthorizations = !this.option?.globalAuthorize || this.option.globalAuthorize.length === 0 ? [Authenticated] : this.option.globalAuthorize
         app.set({ globalAuthorizations })
-        app.set({ openApiSecuritySchemes: { bearer: { type: "http", scheme: "bearer", bearerFormat: "JWT" } } })
+        const openApiSecuritySchemes = {
+            ...app.config.openApiSecuritySchemes,
+            bearer: { type: "http", scheme: "bearer", bearerFormat: "JWT" }
+        }
+        app.set({ openApiSecuritySchemes })
         const secret = this.option?.secret ?? process.env.PLUM_JWT_SECRET
         if (!secret) throw new Error("JWT Secret not provided. Provide secret on JwtAuthFacility constructor or environment variable PLUM_JWT_SECRET")
         app.koa.use(KoaJwt({ cookie: "Authorization", getToken, ...this.option, secret, passthrough: true }))
