@@ -1833,9 +1833,20 @@ describe("Open API 3.0 Generation", () => {
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/users"].get.security).toMatchSnapshot()
+            expect(body.security).toMatchSnapshot()
         })
-        it("Should apply security on secured operation by role", async () => {
+        it("Should apply security with multiple security schema from configuration", async () => {
+            function createSecureApp(ctl: Class | Class[]) {
+                return fixture(ctl)
+                    .set({
+                        openApiSecuritySchemes: {
+                            apiKey: { type: "apiKey", in: "header", name: "x-api-key" }
+                        }
+                    })
+                    .set(new JwtAuthFacility({ secret: "lorem" }))
+                    .set(new SwaggerFacility())
+                    .initialize()
+            }
             class UsersController {
                 @authorize.route("admin")
                 @route.get("")
@@ -1847,7 +1858,7 @@ describe("Open API 3.0 Generation", () => {
             const { body } = await supertest(app.callback())
                 .post("/swagger/swagger.json")
                 .expect(200)
-            expect(body.paths["/users"].get.security).toMatchSnapshot()
+            expect(body.security).toMatchSnapshot()
         })
         it("Should not apply security on public operation", async () => {
             class UsersController {
@@ -2661,5 +2672,3 @@ describe("Open API 3.0 Generation", () => {
         })
     })
 })
-
-

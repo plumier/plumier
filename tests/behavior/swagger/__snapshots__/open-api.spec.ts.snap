@@ -1241,6 +1241,11 @@ Object {
       },
     },
   },
+  "security": Array [
+    Object {
+      "bearer": Array [],
+    },
+  ],
 }
 `;
 
@@ -1294,6 +1299,11 @@ Object {
       },
     },
   },
+  "security": Array [
+    Object {
+      "bearer": Array [],
+    },
+  ],
 }
 `;
 
@@ -2429,6 +2439,7 @@ Object {
       },
     },
   },
+  "security": Array [],
 }
 `;
 
@@ -2950,14 +2961,6 @@ Array [
 ]
 `;
 
-exports[`Open API 3.0 Generation Security Should apply security on secured operation by role 1`] = `
-Array [
-  Object {
-    "bearer": Array [],
-  },
-]
-`;
-
 exports[`Open API 3.0 Generation Security Should apply security response on secured operation by role 1`] = `
 Object {
   "200": Object {
@@ -2971,6 +2974,17 @@ Object {
     "description": "Response body",
   },
 }
+`;
+
+exports[`Open API 3.0 Generation Security Should apply security with multiple security schema from configuration 1`] = `
+Array [
+  Object {
+    "apiKey": Array [],
+  },
+  Object {
+    "bearer": Array [],
+  },
+]
 `;
 
 exports[`Open API 3.0 Generation Security Should generate security component if authorization is activated 1`] = `
