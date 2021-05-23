@@ -12,7 +12,8 @@ function transform(routes: RouteMetadata[], ctx: BaseTransformContext, info?: In
     return OpenApiBuilder.create({
         openapi: "3.0.0",
         info: { title: "Api Explorer", version: "1.0.0", ...info},
-        paths, components,
+        paths, components, 
+        security: Object.keys(ctx.config.openApiSecuritySchemes ?? {}).map(x => ({[x]: []}))
     }).getSpec()
 }
 
