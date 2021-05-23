@@ -256,6 +256,49 @@ describe("Entity Relation Info", () => {
         }
         expect(() => entityHelper.getRelationInfo([Animal, "users"])).toThrowErrorMatchingSnapshot()
     })
+    it("Should throw error when no type information found on one to many relation", () => {
+        @domain()
+        class User {
+            @entity.primaryId()
+            public id: number
+            @noop()
+            public name: string
+            @entity.relation()
+            public animals: Animal[]
+        }
+        @domain()
+        class Animal {
+            @entity.primaryId()
+            public id: number
+            @noop()
+            public name: string
+            @entity.relation()
+            public user: User
+        }
+        expect(() => entityHelper.getRelationInfo([User, "animals"])).toThrowErrorMatchingSnapshot()
+    })
+    it("Should throw error when no type information found on many to one relation", () => {
+        @domain()
+        class User {
+            @entity.primaryId()
+            public id: number
+            @noop()
+            public name: string
+            @entity.relation()
+            public animals: Animal[]
+        }
+        @domain()
+        class Animal {
+            @entity.primaryId()
+            public id: number
+            @noop()
+            public name: string
+            @entity.relation()
+            @meta.type(undefined as any)
+            public user: User
+        }
+        expect(() => entityHelper.getRelationInfo([Animal, "user"])).toThrowErrorMatchingSnapshot()
+    })
 })
 
 describe("Meta Decorator", () => {

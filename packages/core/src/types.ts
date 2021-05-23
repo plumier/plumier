@@ -737,6 +737,7 @@ export namespace errorMessage {
     export const CustomRouteRequiredTwoParameters = "Nested custom route path '{0}' on {1} entity, must have two route parameters, example: users/:userId/animals/:animalId"
     export const CustomRouteMustHaveOneParameter = "Custom route path '{0}' on {1} entity, must have one route parameter, example: animals/:animalId"
     export const EntityRequireID = "Entity {0} used by generic controller doesn't have an ID property"
+    export const UnableToGetMemberDataType = "Unable to get data type of member {0}.{1}. Make sure to provide type information, or manage if its has cross reference to other class"
 
     //PLUM2XXX internal app error
     export const UnableToInstantiateModel = `Unable to instantiate {0}. Domain model should not throw error inside constructor`

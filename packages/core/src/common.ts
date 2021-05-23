@@ -250,7 +250,7 @@ namespace entityHelper {
         if (!prop)
             throw new Error(`${entity.name} doesn't have property named ${relation}`)
         if (prop.type === Array && !prop.type[0])
-            throw new Error(errorMessage.GenericControllerMissingTypeInfo.format(`${entity.name}.${relation}`))
+            throw new Error(errorMessage.UnableToGetMemberDataType.format(entity.name, prop.name))
         const type = Array.isArray(prop.type) ? "OneToMany" : "ManyToOne"
         if (type === "OneToMany") {
             const relDecorator: RelationDecorator = prop.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation")
@@ -265,6 +265,8 @@ namespace entityHelper {
         }
         else {
             const parent: Class = prop.type
+            if (!parent)
+                throw new Error(errorMessage.UnableToGetMemberDataType.format(entity.name, prop.name))
             const parentMeta = reflect(parent)
             let parentProperty: string | undefined
             for (const prop of parentMeta.properties) {
