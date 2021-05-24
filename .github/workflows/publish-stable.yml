@@ -18,6 +18,7 @@ jobs:
       with:
           submodules: recursive
           token: ${{ secrets.PUBLISH_PAT }}
+          fetch-depth: 0
     - name: Setup .npmrc file for publish
       uses: actions/setup-node@v2
       with:

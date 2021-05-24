@@ -1,1 +1,0 @@
-console.log(new Date().getTime().toString(36).slice(0, -2))
