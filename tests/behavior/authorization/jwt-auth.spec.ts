@@ -2785,6 +2785,32 @@ describe("JwtAuth", () => {
                     .expect(200)
                 expect(Array.isArray(body) && body.length === 0).toBe(true)
             })
+            it("Should throw error proper error message when provided non array", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.read("admin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type([User])
+                    get() {
+                        return 12
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                    .initialize()
+                const fn = jest.fn()
+                app.on("error", e => fn(e))
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(500)
+                expect(fn.mock.calls).toMatchSnapshot()
+            })
         })
 
         describe("Nested Object", () => {
