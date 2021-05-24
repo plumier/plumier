@@ -485,3 +485,11 @@ Object {
   },
 }
 `;
+
+exports[`JwtAuth Response Authorization Array Of Object Should throw error proper error message when provided non array 1`] = `
+Array [
+  Array [
+    [Error: Action UsersController.get expecting return value of type Array but got Number],
+  ],
+]
+`;

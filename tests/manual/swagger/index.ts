@@ -12,11 +12,11 @@ class User {
 
 export class UsersController {
     @api.description("Lorem ipsum *dolor* **sit amet** [lorem](https://localhost:8000)")
-    @authorize.route("Admin", "Authenticated")
+    @authorize.route("Admin", "Authenticated", "Public")
     @route.get("")
     @meta.type([User])
     get(@api.description("Lorem ipsum dolor sit amet") @val.required() id: string) {
-        return [{}] as any
+        return 12
     }
 }
 

@@ -476,6 +476,8 @@ async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): P
     if (raw === undefined || raw === null) return undefined
     if (node.kind === "Array") {
         const result = []
+        if(!Array.isArray(raw))
+            throw new Error(`Action ${ctx.ctx.route.controller.name}.${ctx.ctx.route.action.name} expecting return value of type Array but got ${raw.constructor.name}`)
         for (const item of raw) {
             const val = await filterType(item, node.child, ctx)
             if (val !== undefined)
