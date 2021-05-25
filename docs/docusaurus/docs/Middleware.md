@@ -120,3 +120,42 @@ class ResponseTimeMiddleware implements CustomMiddleware {
     }
 }
 ```
+
+### Middleware Communication 
+In some case you may need to set some values that will be passed to the next middleware or to the controller. Koa provide a mutable property called `state` under the `Context` class. You can access it anywhere under `ctx.state` property on the custom extension. 
+
+Optionally, to provide the intellisense under `ctx.state.<yourProperty>`, we can augment the `DefaultState` type and add property you like.
+
+```typescript
+import { DefaultState } from "koa"
+
+declare module "koa" {
+    interface DefaultState {
+        yourProperty?: MyDataType
+    }
+}
+```
+
+Then from inside your middleware you can set the value like below
+
+```typescript
+class MyCoolMiddleware implements CustomMiddleware {
+    execute(next: Readonly<Invocation>): Promise<ActionResult> {
+        next.ctx.state.yourProperty = { lorem: "Ipsum" }
+        return next.proceed()
+    }
+}
+```
+
+From inside controller the value can be accessed using `@bind.ctx()`.
+
+```typescript
+import { Context } from "koa"
+
+class MyCoolController {
+
+    @route.get()
+    get(@bind.ctx() ctx: Context) {
+        const myProp = ctx.state.yourProperty 
+    }
+}
