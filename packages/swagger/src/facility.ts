@@ -7,6 +7,7 @@ import {
     PlumierApplication,
     response,
     RouteMetadata,
+    VirtualRoute,
 } from "@plumier/core"
 import { ServeStaticMiddleware } from "@plumier/serve-static"
 import { InfoObject } from "openapi3-ts"
@@ -117,6 +118,25 @@ export class SwaggerFacility extends DefaultFacility {
             prev[key] = (prev[key] ?? []).concat(cur)
             return prev
         }, {} as ResultGroup)
+    }
+
+    async generateRoutes(app: Readonly<PlumierApplication>, routes: RouteMetadata[]): Promise<RouteMetadata[]> {
+        const group = this.groupRoutes(routes)
+        return Object.keys(group).map(key => {
+            return <VirtualRoute>{
+                kind: "VirtualRoute",
+                method: "get",
+                provider: SwaggerFacility,
+                url: key === this.defaultGroup ? this.opt.endpoint : appendRoute(this.opt.endpoint, key),
+                access: "Public",
+                openApiOperation: {
+                    description: "Host the SwaggerUI",
+                    tags: ["Swagger"],
+                    parameters: [],
+                    responses: { "200": { content: { "text/html": {} } } }
+                }
+            }
+        })
     }
 
     async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]): Promise<void> {

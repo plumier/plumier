@@ -74,7 +74,7 @@ export class Plumier implements PlumierApplication {
             //generate routes 
             const routes: RouteMetadata[] = []
             for (const facility of this.config.facilities) {
-                const genRoutes = await facility.generateRoutes(this)
+                const genRoutes = await facility.generateRoutes(this, routes)
                 routes.push(...genRoutes)
             }
             //run initialize

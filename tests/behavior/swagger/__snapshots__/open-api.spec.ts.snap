@@ -1202,6 +1202,22 @@ Object {
   },
   "openapi": "3.0.0",
   "paths": Object {
+    "/swagger": Object {
+      "get": Object {
+        "description": "Host the SwaggerUI",
+        "parameters": Array [],
+        "responses": Object {
+          "200": Object {
+            "content": Object {
+              "text/html": Object {},
+            },
+          },
+        },
+        "tags": Array [
+          "Swagger",
+        ],
+      },
+    },
     "/users": Object {
       "get": Object {
         "parameters": Array [],
@@ -1260,6 +1276,22 @@ Object {
   },
   "openapi": "3.0.0",
   "paths": Object {
+    "/swagger": Object {
+      "get": Object {
+        "description": "Host the SwaggerUI",
+        "parameters": Array [],
+        "responses": Object {
+          "200": Object {
+            "content": Object {
+              "text/html": Object {},
+            },
+          },
+        },
+        "tags": Array [
+          "Swagger",
+        ],
+      },
+    },
     "/users": Object {
       "get": Object {
         "parameters": Array [],
@@ -1309,6 +1341,22 @@ Object {
 
 exports[`Open API 3.0 Generation Path Should convert path properly 1`] = `
 Object {
+  "/swagger": Object {
+    "get": Object {
+      "description": "Host the SwaggerUI",
+      "parameters": Array [],
+      "responses": Object {
+        "200": Object {
+          "content": Object {
+            "text/html": Object {},
+          },
+        },
+      },
+      "tags": Array [
+        "Swagger",
+      ],
+    },
+  },
   "/users/{id}/{type}/{index}": Object {
     "get": Object {
       "parameters": Array [

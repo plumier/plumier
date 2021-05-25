@@ -1,9 +1,10 @@
-import { Class, route } from "@plumier/core"
+import { Class, Configuration, route } from "@plumier/core"
 import supertest from "supertest"
 import { SwaggerDisplayOption, SwaggerFacility } from "@plumier/swagger"
 
 import { expectError, fixture } from "../helper"
 import Plumier, { WebApiFacility, ControllerFacility } from 'plumier'
+import { cleanupConsole } from "@plumier/testing"
 
 
 
@@ -93,14 +94,21 @@ describe("Swagger", () => {
         })
 
         describe("Grouping", () => {
-            function createApp(ctl: Class | Class[]) {
+            function createApp(ctl: Class | Class[], opt?: Partial<Configuration>) {
                 return new Plumier()
-                    .set({ mode: "production" })
+                    .set({ mode: "production", ...opt })
                     .set(new WebApiFacility())
-                    .set(new SwaggerFacility())
                     .set(new ControllerFacility({ group: "v1", controller: ctl, rootPath: "api/v1" }))
                     .set(new ControllerFacility({ group: "v2", controller: ctl, rootPath: "api/v2" }))
+                    .set(new SwaggerFacility())
             }
+
+            it("Should host groups properly", async () => {
+                const mock = console.mock()
+                const app = await createApp(UsersController, { mode: "debug" }).initialize()
+                expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+                console.mockClear()
+            })
 
             it("Should redirect to proper swagger UI", async () => {
                 const app = await createApp(UsersController).initialize()
@@ -210,7 +218,7 @@ describe("Swagger", () => {
             })
             it("Should able disable from facility", async () => {
                 process.env.NODE_ENV = "production"
-                delete process.env.PLUM_ENABLE_SWAGGER 
+                delete process.env.PLUM_ENABLE_SWAGGER
                 const app = await createApp(UsersController, "json")
                 await supertest(app.callback())
                     .get("/swagger/index")
