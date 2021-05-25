@@ -139,14 +139,14 @@ export type RouteAnalyzerFunction = (route: RouteMetadata, allRoutes: RouteMetad
 // --------------------------------------------------------------------- //
 
 export interface Facility {
-    generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]>
+    generateRoutes(app: Readonly<PlumierApplication>, routes:RouteMetadata[]): Promise<RouteMetadata[]>
     setup(app: Readonly<PlumierApplication>): void
     preInitialize(app: Readonly<PlumierApplication>): Promise<void>
     initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]): Promise<void>
 }
 
 export class DefaultFacility implements Facility {
-    async generateRoutes(app: Readonly<PlumierApplication>): Promise<RouteMetadata[]> { return [] }
+    async generateRoutes(app: Readonly<PlumierApplication>, routes:RouteMetadata[]): Promise<RouteMetadata[]> { return [] }
     setup(app: Readonly<PlumierApplication>): void { }
     async preInitialize(app: Readonly<PlumierApplication>) { }
     async initialize(app: Readonly<PlumierApplication>, routes: RouteMetadata[]) { }

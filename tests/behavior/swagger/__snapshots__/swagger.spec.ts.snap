@@ -8,6 +8,30 @@ Array [
 ]
 `;
 
+exports[`Swagger Swagger UI Hosting Grouping Should host groups properly 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.get() -> GET /api/v1/users",
+  ],
+  Array [],
+  Array [
+    "1. UsersController.get() -> GET /api/v2/users",
+  ],
+  Array [],
+  Array [
+    "1. SwaggerFacility -> Public GET /swagger/v1",
+  ],
+  Array [
+    "2. SwaggerFacility -> Public GET /swagger/v2",
+  ],
+  Array [],
+]
+`;
+
 exports[`Swagger Swagger UI Hosting Should able to render string option 1`] = `
 "<!-- HTML for static distribution bundle build -->
 <!DOCTYPE html>
