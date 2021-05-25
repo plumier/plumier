@@ -88,3 +88,17 @@ class UsersController {
     get(id:string): Promise<User>{ }
 }
 ```
+
+## Custom Authentication 
+Plumier provided configuration to add custom authentication schema used to show the Swagger authentication dialog. To do that you can provide a custom facility to setup the configuration like below. 
+
+```typescript 
+export class ApiKeyFacility extends DefaultFacility {
+    setup(app: Readonly<PlumierApplication>): void {
+        // add security scheme for Swagger authentication dialogs
+        app.config.openApiSecuritySchemes.apiKey = { type: "apiKey", in: "header", name: "x-api-key" }
+    }
+}
+```
+
+Using above configuration will add another authentication alternative on the Swagger UI. 
