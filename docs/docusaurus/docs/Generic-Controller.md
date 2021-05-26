@@ -731,7 +731,7 @@ export class Comment {
 
 Above code showing that we specify the `transformer` configuration, the first parameter is the target model then the second parameter is the transformation function. 
 
-:::warning
+:::caution
 When using response transform, the `select` query may still applied but the response will be based on what you returned in transform function.
 :::
 
@@ -916,7 +916,7 @@ Above code will hash password before the entity saved into the database. Request
 The ID of the current entity only accessible on `@postSave` using `this.id`, since on `@postSave()` the entity is not saved yet to database.
 :::
 
-:::warning
+:::caution
 Keep in mind that entity used for `@preSave()` and `@postSave()` is different, means if you using state variable to share between `@preSave()` and `@postSave()` its may not working like expected.
 :::
 

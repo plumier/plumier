@@ -253,6 +253,10 @@ Using above configuration, only `Admin` or `SuperAdmin` can set the `role` prope
 
 ### Response Authorization 
 
+:::caution Scalability Check
+Response authorization may cause scalability issue when overused. Since its will check the response properties recursively, its important to review the speed of your API response when you have complex nested response with complex authorization connected to database.
+:::
+
 Authorization can be applied on response body, unlike most authorization process, response authorization doesn't response 401, instead its filter property value based on auth policy. You do this by applying decorator on the response model. 
 
 
