@@ -362,7 +362,19 @@ function createContext(ctx: ParamCheckContext, value: any, meta: ClassReflection
 
 async function checkParameter(meta: PropertyReflection | ParameterReflection, value: any, ctx: ParamCheckContext): Promise<string[]> {
     if (value === undefined || value === null) return []
-    else if (Array.isArray(meta.type)) {
+    // skip check on GET method
+    if (ctx.info.ctx.method === "GET") return []
+    const decorators = meta.decorators.filter(createDecoratorFilter(x => x.access === "write"))
+    if (decorators.length > 0) {
+        const info = createContext(ctx, value, meta)
+        const allowed = await executeAuthorizer(decorators, info)
+        if(!allowed) return [ctx.path.join(".")]
+    }
+    // if the property is a relation property just skip checking, since we allow set relation using ID
+    const isRelation = meta.decorators.some((x: RelationDecorator) => x.kind === "plumier-meta:relation")
+    if (isRelation) return []
+    // loop through property of type array
+    if (Array.isArray(meta.type)) {
         const newMeta = { ...meta, type: meta.type[0] };
         const result: string[] = []
         for (let i = 0; i < value.length; i++) {
@@ -371,30 +383,20 @@ async function checkParameter(meta: PropertyReflection | ParameterReflection, va
         }
         return result
     }
-    else if (isCustomClass(meta.type)) {
+    // loop through custom class properties
+    if (isCustomClass(meta.type)) {
         const classMeta = reflect(<Class>meta.type)
         const values = classMeta.properties.map(x => value[x.name])
         return checkParameters(classMeta.properties, values, { ...ctx, parent: meta.type, parentValue: value })
     }
-    else {
-        // skip check on GET method
-        if (ctx.info.ctx.method === "GET") return []
-        const decorators = meta.decorators.filter(createDecoratorFilter(x => x.access === "write"))
-        // if no decorator then just allow, follow route authorization
-        if (decorators.length === 0) return []
-        const info = createContext(ctx, value, meta)
-        const allowed = await executeAuthorizer(decorators, info)
-        return allowed ? [] : [ctx.path.join(".")]
-    }
+    // everything when fine then just return []
+    return []
 }
 
 async function checkParameters(meta: (PropertyReflection | ParameterReflection)[], value: any[], ctx: ParamCheckContext) {
     const result: string[] = []
     for (let i = 0; i < meta.length; i++) {
         const prop = meta[i];
-        // if the property is a relation property just skip checking, since we allow set relation using ID
-        const isRelation = prop.decorators.some((x: RelationDecorator) => x.kind === "plumier-meta:relation")
-        if (isRelation) continue
         const issues = await checkParameter(prop, value[i], { ...ctx, path: ctx.path.concat(prop.name), })
         result.push(...issues)
     }

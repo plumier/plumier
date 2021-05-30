@@ -1,4 +1,4 @@
-import { Class, route } from "@plumier/core"
+import { authorize, authPolicy, Class, route } from "@plumier/core"
 import { TypeORMFacility } from "@plumier/typeorm"
 import { join } from "path"
 import supertest from "supertest"
@@ -19,6 +19,8 @@ import {
 
 import { expectError, fixture } from "../helper"
 import { cleanup, getConn } from "./helper"
+import { JwtAuthFacility } from "@plumier/jwt"
+import { sign } from "jsonwebtoken"
 
 jest.setTimeout(20000)
 
@@ -185,7 +187,7 @@ describe("TypeOrm", () => {
                 id: number = 123
                 @Column()
                 name: string
-                @OneToMany(x => Child, x =>  (x.entity))
+                @OneToMany(x => Child, x => (x.entity))
                 children: Child[]
             }
             @Entity()
@@ -244,8 +246,8 @@ describe("TypeOrm", () => {
                 get() { }
             }
             const fn = await expectError(fixture(UsersController)
-                    .set(new TypeORMFacility({connection: getConn()}))
-                    .initialize())
+                .set(new TypeORMFacility({ connection: getConn() }))
+                .initialize())
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should throw error when no entity found", async () => {
@@ -253,8 +255,8 @@ describe("TypeOrm", () => {
                 get() { }
             }
             const fn = await expectError(fixture(UsersController)
-                    .set(new TypeORMFacility({connection:getConn(["no-directory"]) }))
-                    .initialize())
+                .set(new TypeORMFacility({ connection: getConn(["no-directory"]) }))
+                .initialize())
             expect(fn.mock.calls).toMatchSnapshot()
         })
         it("Should able load entity using absolute dir location", async () => {
@@ -560,6 +562,63 @@ describe("TypeOrm", () => {
                 .expect(200)
             const result = await parentRepo.findOne(body.id, { relations: ["child"] })
             expect(result).toMatchSnapshot()
+        })
+
+        it("Should work properly with authorization", async () => {
+            const adminToken = sign({ id: 123, role: "Admin" }, "secret")
+            const userToken = sign({ id: 123, role: "User" }, "secret")
+            const authPolicies = [
+                authPolicy().define("Admin", ({ user }) => user?.role === "Admin"),
+                authPolicy().define("User", ({ user }) => user?.role === "User")
+            ]
+            function createApp(entities: (string | Function)[], controller: Class) {
+                return fixture(controller)
+                    .set(new TypeORMFacility({ connection: getConn(entities) }))
+                    .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
+                    .initialize()
+            }
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToMany(x => Child, x => x.parent)
+                child: any
+            }
+            @Entity()
+            class Child {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @authorize.write("Admin")
+                @ManyToOne(x => Parent, x => x.child)
+                @JoinColumn()
+                parent: Parent
+            }
+            class ChildrenController {
+                @route.post("")
+                async save(data: Child) {
+                    const parentRepo = getManager().getRepository(Child)
+                    await parentRepo.save(data)
+                    return { id: data.id }
+                }
+            }
+            const koa = await createApp([Child, Parent], ChildrenController)
+            const parentRepo = getManager().getRepository(Parent)
+            const parent = await parentRepo.insert({ name: "Mimi" })
+            await supertest(koa.callback())
+                .post("/children")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .send({ name: "Bingo", parent: parent.raw })
+                .expect(200)
+            const { body } = await supertest(koa.callback())
+                .post("/children")
+                .set("Authorization", `Bearer ${userToken}`)
+                .send({ name: "Bingo", parent: parent.raw })
+                .expect(401)
+            expect(body).toMatchSnapshot()
         })
     })
 })

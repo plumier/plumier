@@ -2191,6 +2191,39 @@ describe("JwtAuth", () => {
                         .send({ entity: { id: "123" } })
                         .expect(401)
                 })
+
+                it("Should check authorize on the relation property itself", async () => {
+                    @domain()
+                    class Entity {
+                        constructor(
+                            public id: number | undefined) { }
+                    }
+                    @domain()
+                    class Parent {
+                        constructor(
+                            @authorize.write("admin")
+                            public entity: Entity
+                        ) { }
+                    }
+                    class AnimalController {
+                        @route.post()
+                        save(data: Parent) { return "Hello" }
+                    }
+                    const app = await fixture(AnimalController)
+                        .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                        .initialize()
+
+                    await Supertest(app.callback())
+                        .post("/animal/save")
+                        .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                        .send({ entity: { id: "123" } })
+                        .expect(200)
+                    await Supertest(app.callback())
+                        .post("/animal/save")
+                        .set("Authorization", `Bearer ${USER_TOKEN}`)
+                        .send({ entity: { id: "123" } })
+                        .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.entity)" })
+                })
             })
             describe("Array of Object parameter", () => {
                 it("Should authorize with set modifier", async () => {

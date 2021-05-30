@@ -441,3 +441,10 @@ Object {
   "status": 422,
 }
 `;
+
+exports[`TypeOrm Update relation with ID Should work properly with authorization 1`] = `
+Object {
+  "message": "Unauthorized to populate parameter paths (data.parent)",
+  "status": 401,
+}
+`;
