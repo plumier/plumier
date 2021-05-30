@@ -3044,6 +3044,39 @@ describe("JwtAuth", () => {
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .expect(200, { user: { name: "admin" } })
             })
+            it("Should able to filter nested property", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        public password: string
+                    ) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(
+                        public name:string,
+                        @authorize.read("admin")
+                        public user: User) { }
+                }
+                class UsersController {
+                    @reflect.type(Parent)
+                    get() {
+                        return new Parent("Mimi", new User("admin", "secret"))
+                    }
+                }
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { name: "Mimi", user: { name: "admin", password: "secret" } })
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${USER_TOKEN}`)
+                    .expect(200, { name: "Mimi" })
+            })
         })
 
         describe("Custom Response Type", () => {
