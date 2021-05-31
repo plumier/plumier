@@ -5,14 +5,8 @@ if [[ $(git rev-parse --abbrev-ref HEAD) != "master" ]]; then
     echo 'Command must be run in master branch';
     exit 1
 fi 
-# update root package
-ncu -u
-# update documentation package
-ncu -u --packageFile docs/docusaurus/package.json
-# update pckages
-for file in packages/*/package.json; do
-    ncu -u --packageFile "$file"
-done
+# update packages deep
+ncu -u --deep
 # check if update successful
 if git diff-index --quiet HEAD --; then
     # No git changes (no update)
@@ -20,8 +14,7 @@ if git diff-index --quiet HEAD --; then
     exit 1
 fi
 # remove all dependent libraries
-rm -f yarn.lock 
-rm -rf node_modules
+rm -rf node_modules **/node_modules yarn.lock
 # install and test
 yarn install
 # push to upgrade branch
