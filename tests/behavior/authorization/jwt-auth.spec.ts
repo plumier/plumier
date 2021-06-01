@@ -2647,6 +2647,32 @@ describe("JwtAuth", () => {
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .expect(200, { name: "admin" })
             })
+            it("Should not evaluate policies if provided undefined value", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.read("admin")
+                        public password?: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type(User)
+                    get() {
+                        return new User("admin")
+                    }
+                }
+                const fn = jest.fn()
+                const authPolicies = [authPolicy().define("admin", auth => fn("HOLA!"))]
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200, { name: "admin" })
+                expect(fn.mock.calls).toMatchSnapshot()
+            })
         })
 
         describe("Array Of Object", () => {
@@ -2842,6 +2868,32 @@ describe("JwtAuth", () => {
                     .get("/users/get")
                     .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
                     .expect(500)
+                expect(fn.mock.calls).toMatchSnapshot()
+            })
+            it("Should not evaluate policy when provided empty array", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.read("admin")
+                        public password: string
+                    ) { }
+                }
+                class UsersController {
+                    @reflect.type([User])
+                    get() {
+                        return []
+                    }
+                }
+                const fn = jest.fn()
+                const authPolicies = [authPolicy().define("admin", auth => fn("HOLA!"))]
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200)
                 expect(fn.mock.calls).toMatchSnapshot()
             })
         })
@@ -3055,7 +3107,7 @@ describe("JwtAuth", () => {
                 @domain()
                 class Parent {
                     constructor(
-                        public name:string,
+                        public name: string,
                         @authorize.read("admin")
                         public user: User) { }
                 }
@@ -3076,6 +3128,38 @@ describe("JwtAuth", () => {
                     .get("/users/get")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .expect(200, { name: "Mimi" })
+            })
+            it("Should not evaluate policy if value not provided", async () => {
+                @domain()
+                class User {
+                    constructor(
+                        public name: string,
+                        @authorize.read("admin")
+                        public password: string
+                    ) { }
+                }
+                @domain()
+                class Parent {
+                    constructor(
+                        public name: string,
+                        public user?: User) { }
+                }
+                class UsersController {
+                    @reflect.type(Parent)
+                    get() {
+                        return new Parent("Mimi", new User("admin", "secret"))
+                    }
+                }
+                const fn = jest.fn()
+                const authPolicies = [authPolicy().define("admin", auth => fn("HOLA!"))]
+                const app = await fixture(UsersController)
+                    .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                    .initialize()
+                await Supertest(app.callback())
+                    .get("/users/get")
+                    .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
+                    .expect(200)
+                expect(fn.mock.calls).toMatchSnapshot()
             })
         })
 
