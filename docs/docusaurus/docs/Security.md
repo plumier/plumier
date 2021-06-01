@@ -253,11 +253,6 @@ Using above configuration, only `Admin` or `SuperAdmin` can set the `role` prope
 
 ### Response Authorization 
 
-:::caution Scalability Review
-Response authorization may cause scalability issue when overused. Since its will check the response properties recursively, its important to review the speed of your API response when you have complex nested response with complex authorization ie. use complex database query.
-As a best practice, only select the necessary fields on your client side on get all `GET /path?select=name,dob,createdAt` and get by id `GET /path/123?select=name,dob,createdAt` to prevent unnecessary role evaluation being executed.
-:::
-
 Authorization can be applied on response body, unlike most authorization process, response authorization doesn't response 401, instead its filter property value based on auth policy. You do this by applying decorator on the response model. 
 
 
@@ -288,11 +283,16 @@ class UsersController {
 
 Using above configuration `email` and `role` property will be visible only to `Admin` and `SuperAdmin`. The response vary based on user role.
 
+## Scalability Best Practice
+
+Response authorization may cause scalability issue on large response result. Since its will check the response properties recursively, its important to review the speed of your API response when you have complex nested response with complex authorization ie. use complex database query.
+Here are some best practice you can do
+* Use query cache on authorization policy that require database operation. Choose short query cache (1 - 3 seconds) to prevent further caching issue, the idea is to prevent the same query being executed multiple time in single request.
+* Only select the necessary fields on your client side on get all `GET /path?select=name,dob,createdAt` and get by id `GET /path/123?select=name,dob,createdAt` to prevent unnecessary role evaluation being executed.
+
 ## Authorization Evaluation Order
 
 Authorization applied to global, controller or action evaluated with some priority. Authorization system separated into three category, which is Route Authorization, Parameter Authorization, Response Authorization. 
-
-
 
 * Route authorization (global, controller, action) has the most priority evaluation, when a user doesn't have access it means he doesn't have access to the Parameter or Response.
 * Parameter and Response Authorization will be evaluated later after Route authorization. 
