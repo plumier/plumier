@@ -486,6 +486,8 @@ Object {
 }
 `;
 
+exports[`JwtAuth Response Authorization Array Of Object Should not evaluate policy when provided empty array 1`] = `Array []`;
+
 exports[`JwtAuth Response Authorization Array Of Object Should throw error proper error message when provided non array 1`] = `
 Array [
   Array [
@@ -493,3 +495,13 @@ Array [
   ],
 ]
 `;
+
+exports[`JwtAuth Response Authorization Nested Object Should not evaluate policy if value not provided 1`] = `
+Array [
+  Array [
+    "HOLA!",
+  ],
+]
+`;
+
+exports[`JwtAuth Response Authorization Simple Object Should not evaluate policies if provided undefined value 1`] = `Array []`;

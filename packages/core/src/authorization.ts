@@ -121,7 +121,11 @@ class PolicyAuthorizer implements Authorizer {
             for (const policy of this.keys) {
                 if (authPolicy.equals(policy, ctx)) {
                     const authorize = await authPolicy.authorize(ctx)
-                    log.debug("%s by %s", authorize ? "AUTHORIZED" : "FORBIDDEN", authPolicy.friendlyName())
+                    log.debug("%s -> %s.%s by %s",
+                        authorize ? "AUTHORIZED" : "FORBIDDEN",
+                        ctx.metadata.current!.parent?.name ?? "",
+                        ctx.metadata.current!.name,
+                        authPolicy.friendlyName())
                     if (authorize) return true
                 }
             }
@@ -368,7 +372,7 @@ async function checkParameter(meta: PropertyReflection | ParameterReflection, va
     if (decorators.length > 0) {
         const info = createContext(ctx, value, meta)
         const allowed = await executeAuthorizer(decorators, info)
-        if(!allowed) return [ctx.path.join(".")]
+        if (!allowed) return [ctx.path.join(".")]
     }
     // if the property is a relation property just skip checking, since we allow set relation using ID
     const isRelation = meta.decorators.some((x: RelationDecorator) => x.kind === "plumier-meta:relation")
@@ -475,10 +479,9 @@ async function getAuthorize(authorizers: boolean | Authorizer, ctx: AuthorizerCo
 }
 
 async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): Promise<any> {
-    if (raw === undefined || raw === null) return undefined
     if (node.kind === "Array") {
         const result = []
-        if(!Array.isArray(raw))
+        if (!Array.isArray(raw))
             throw new Error(`Action ${ctx.ctx.route.controller.name}.${ctx.ctx.route.action.name} expecting return value of type Array but got ${raw.constructor.name}`)
         for (const item of raw) {
             const val = await filterType(item, node.child, ctx)
@@ -491,6 +494,7 @@ async function filterType(raw: any, node: FilterNode, ctx: AuthorizerContext): P
         const result: any = {}
         for (const prop of node.properties) {
             const value = raw[prop.name]
+            if (value === null || value === undefined) continue
             const authorized = await getAuthorize(prop.authorizer, {
                 ...ctx, value,
                 parentValue: raw,
