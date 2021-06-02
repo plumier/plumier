@@ -1,7 +1,7 @@
 import { ClassReflection, ParameterReflection, PropertyReflection, reflect, reflection } from "@plumier/reflect"
 import debug from "debug"
 
-import { Class, isCustomClass } from "./common"
+import { Class, entityHelper, isCustomClass } from "./common"
 import { ResponseTypeDecorator } from "./decorator/common"
 import { EntityIdDecorator, RelationDecorator } from "./decorator/entity"
 import { HttpStatus } from "./http-status"
@@ -209,8 +209,7 @@ class EntityAuthPolicy<T> implements AuthPolicy {
             // take the provided entity from the parent type from context
             // take the entity ID value using @primaryId() decorator
             const entity = ctx.metadata.current!.parent!
-            const meta = reflect(entity)
-            const prop = meta.properties.find(p => p.decorators.some((x: EntityIdDecorator) => x.kind === "plumier-meta:entity-id"))
+            const prop = entityHelper.getIdProp(entity)
             if (!prop)
                 throw new Error(`Entity ${entity.name} doesn't have primary ID information required for entity policy`)
             const id = ctx.parentValue[prop.name]

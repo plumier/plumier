@@ -47,7 +47,7 @@ function validateFilter(value: {}, path: string, type: Class, globalVisitors: Vi
     return Result.create(cleansedNode)
 }
 
-function createCustomFilterConverter(transformer: ((node: FilterNode) => any)): CustomConverter {
+function createCustomFilterConverter(transformer: ((node: FilterNode, type:Class) => any)): CustomConverter {
     return (i, ctx) => {
         if (i.value === undefined || i.value === null) return i.proceed()
         const decorator = i.decorators.find((x: FilterParserDecorator): x is FilterParserDecorator => x.kind === "plumier-meta:filter-parser-decorator")
@@ -57,7 +57,7 @@ function createCustomFilterConverter(transformer: ((node: FilterNode) => any)): 
             const globalVisitors = ctx.config.typeConverterVisitors.map<VisitorExtension>(x => i => x(i, ctx))
             const valResult = validateFilter(i.value, i.path, type, globalVisitors)
             if (!!valResult.issues) return valResult
-            const transformed: any = transformer(valResult.value)
+            const transformed: any = transformer(valResult.value, type)
             transformed[ParserAst] = valResult.value
             return Result.create(transformed)
         }

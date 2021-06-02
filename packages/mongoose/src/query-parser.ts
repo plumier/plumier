@@ -1,8 +1,6 @@
-import { SelectQuery } from "@plumier/core"
+import { Class, entityHelper, SelectQuery } from "@plumier/core"
 import {
-    SelectColumnNode,
     createCustomFilterConverter,
-    createCustomSelectConverter,
     EquationExpression,
     FilterNode,
     getKeyValue,
@@ -11,24 +9,26 @@ import {
     StringLiteral,
     StringRangeLiteral,
     UnaryExpression,
+    createCustomSelectConverter,
+    SelectColumnNode,
     OrderColumnNode,
     createCustomOrderConverter,
 } from "@plumier/query-parser"
-import { Between, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not } from "typeorm"
 
 
 // --------------------------------------------------------------------- //
 // -------------------------- FILTER CONVERTER ------------------------- //
 // --------------------------------------------------------------------- //
 
+
 function logic(node: LogicalExpression) {
-    const left = transform(node.left)
-    const right = transform(node.right)
+    const left = filterTransformer(node.left)
+    const right = filterTransformer(node.right)
     switch (node.operator) {
         case "and":
-            return { ...left, ...right }
+            return { $and: [left, right] }
         case "or":
-            return [left, right]
+            return { $or: [left, right] }
     }
 }
 
@@ -37,39 +37,48 @@ function comparison(node: EquationExpression): {} {
     switch (node.operator) {
         case "eq":
             if (value.annotation === "Null")
-                return { [key.value]: IsNull() }
+                return { [key.value]: { $exists: true } }
             return { [key.value]: value.value }
         case "gt":
-            return { [key.value]: MoreThan(value.value) }
+            return { [key.value]: { $gt: value.value } }
         case "gte":
-            return { [key.value]: MoreThanOrEqual(value.value) }
+            return { [key.value]: { $gte: value.value } }
         case "lt":
-            return { [key.value]: LessThan(value.value) }
+            return { [key.value]: { $lt: value.value } }
         case "lte":
-            return { [key.value]: LessThanOrEqual(value.value) }
+            return { [key.value]: { $lte: value.value } }
         case "ne":
             if (value.annotation === "Null")
-                return { [key.value]: Not(IsNull()) }
-            return { [key.value]: Not(value.value) }
+                return { [key.value]: { $exists: false } }
+            return { [key.value]: { $ne: value.value } }
         case "like":
             const str = value as StringLiteral
             if (str.preference === "startsWith")
-                return { [key.value]: Like(`${value.value}%`) }
+                return { [key.value]: { $regex: `^${value.value}`, $options: "i" } }
             if (str.preference === "endsWith")
-                return { [key.value]: Like(`%${value.value}`) }
-            return { [key.value]: Like(`%${value.value}%`) }
+                return { [key.value]: { $regex: `${value.value}$`, $options: "i" } }
+            return { [key.value]: { $regex: `${value.value}`, $options: "i" } }
         case "range":
             const range = value as StringRangeLiteral | NumberRangeLiteral
-            return { [key.value]: Between(range.value[0], range.value[1]) }
+            return {
+                $and: [
+                    { [key.value]: { $gte: range.value[0] } },
+                    { [key.value]: { $lte: range.value[1] } },
+                ]
+            }
     }
 }
 
 function unary(node: UnaryExpression) {
-    const arg = transform(node.argument)
-    return Not(arg)
+    if (node.argument.operator === "or" || node.argument.operator === "and")
+        throw new Error(`Global Not operator doesn't supported in MongoDB at col ${node.col}`)
+    const arg = filterTransformer(node.argument)
+    const key = Object.keys(arg)[0]
+    const value = arg[key]
+    return { [key]: { $not: value } }
 }
 
-function transform(node: FilterNode): any {
+function filterTransformer(node: FilterNode): any {
     switch (node.kind) {
         case "ComparisonExpression":
             return comparison(node)
@@ -80,16 +89,19 @@ function transform(node: FilterNode): any {
     }
 }
 
-const filterConverter = createCustomFilterConverter(transform)
-
+const filterConverter = createCustomFilterConverter(filterTransformer)
 
 
 // --------------------------------------------------------------------- //
 // -------------------------- SELECT CONVERTER ------------------------- //
 // --------------------------------------------------------------------- //
 
-function selectTransformer(nodes: SelectColumnNode[]): SelectQuery {
-    const columns: string[] = []
+function selectTransformer(nodes: SelectColumnNode[], type:Class): SelectQuery {
+    const id = entityHelper.getIdProp(type)!
+    const includeId = nodes.some(x => x.name === id.name) ? true : undefined
+    // if the ID was not included than include it manually 
+    // later it will be used as Authorization Response ID
+    const columns: string[] = !includeId ? [id.name] : []
     const relations: string[] = []
     for (const node of nodes) {
         if (node.kind === "Column")
@@ -97,10 +109,11 @@ function selectTransformer(nodes: SelectColumnNode[]): SelectQuery {
         else
             relations.push(node.name)
     }
-    return { columns, relations }
+    return { includeId , columns, relations }
 }
 
 const selectConverter = createCustomSelectConverter(selectTransformer)
+
 
 // --------------------------------------------------------------------- //
 // -------------------------- ORDER CONVERTER -------------------------- //
@@ -109,13 +122,11 @@ const selectConverter = createCustomSelectConverter(selectTransformer)
 function orderTransformer(nodes: OrderColumnNode[]) {
     const result:any = {}
     for (const node of nodes) {
-        result[node.name] = node.order.toUpperCase()
+        result[node.name] = node.order === "Asc" ? 1 : -1
     }
     return result
 }
 
 const orderConverter = createCustomOrderConverter(orderTransformer)
-
-
 
 export { filterConverter, selectConverter, orderConverter }

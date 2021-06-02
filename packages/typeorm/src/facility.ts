@@ -16,7 +16,7 @@ import pluralize from "pluralize"
 import { ConnectionOptions, createConnection, getConnectionOptions, getMetadataArgsStorage } from "typeorm"
 import { promisify } from "util"
 import validator from "validator"
-import { filterConverter, orderConverter, selectConverter } from "./converters"
+import { filterConverter, orderConverter, selectConverter } from "./query-parser"
 
 import { normalizeEntity, TypeORMControllerGeneric, TypeORMNestedControllerGeneric } from "./generic-controller"
 

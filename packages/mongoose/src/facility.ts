@@ -4,7 +4,7 @@ import { RequestHookMiddleware } from "@plumier/generic-controller"
 import { Result, ResultMessages, VisitorInvocation } from "@plumier/validator"
 import Mongoose from "mongoose"
 import pluralize from "pluralize"
-import { filterConverter, orderConverter, selectConverter } from "./converters"
+import { filterConverter, orderConverter, selectConverter } from "./query-parser"
 
 import { getModels, model as globalModel, MongooseHelper, proxy as globalProxy } from "./generator"
 import { MongooseControllerGeneric, MongooseNestedControllerGeneric } from "./generic-controller"

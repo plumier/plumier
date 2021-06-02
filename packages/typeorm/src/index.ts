@@ -1,6 +1,6 @@
 
 import "./validator"
 export * from "./generic-controller"
-export * from "./converters"
+export * from "./query-parser"
 export * from "./facility"
 export * from "./repository"

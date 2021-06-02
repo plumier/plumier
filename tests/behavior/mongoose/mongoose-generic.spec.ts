@@ -1,5 +1,6 @@
 import {
     authorize,
+    authPolicy,
     Class,
     Configuration,
     entity,
@@ -390,6 +391,48 @@ describe("CRUD", () => {
                 .get(`/users?filter=random='${random}'&select=name,age`)
                 .expect(200)
             expect(body).toMatchSnapshot()
+        })
+        it("Should not error when select without ID with entity policy", async () => {
+            function createApp(option?: Partial<Configuration>) {
+                return new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new MongooseFacility())
+                    .set(new JwtAuthFacility({
+                        secret: "secret",
+                        authPolicies: [
+                            authPolicy().define("All", auth => true),
+                            entityPolicy(User).define("Owner", (auth, id) => true)
+                        ]
+                    }))
+                    .set(option || {})
+                    .initialize()
+            }
+            const token = sign({ id: 123 }, "secret")
+            @collection()
+            @genericController()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                @authorize.read("Owner", "All")
+                email: string
+                @reflect.noop()
+                name: string
+                @reflect.noop()
+                age: number
+                @noop()
+                random: string
+            }
+            model(User)
+            const random = new Date().getTime().toString(36)
+            const app = await createApp({ controller: User, mode: "production" })
+            const repo = new MongooseRepository(User)
+            await Promise.all(Array(10).fill(1).map(x => repo.insert({ random, email: "john.doe@gmail.com", name: "John Doe", age: 21 })))
+            const { body } = await supertest(app.callback())
+                .get(`/users?filter=random='${random}'&select=name,age,email`)
+                .set("Authorization", `Bearer ${token}`)
+                .expect(200)
+            expect(body[0]).toMatchSnapshot()
         })
         it("Should able to order by property GET /users?offset&limit&name", async () => {
             @collection()
@@ -2330,7 +2373,7 @@ describe("CRUD", () => {
                 name: string
                 @genericController()
                 @collection.ref(x => User)
-                user:User
+                user: User
             }
             model(Animal)
             model(User)
@@ -2364,7 +2407,7 @@ describe("CRUD", () => {
                 name: string
                 @genericController()
                 @collection.ref(x => User)
-                user:User
+                user: User
             }
             model(Animal)
             model(User)
@@ -2396,7 +2439,7 @@ describe("CRUD", () => {
                 name: string
                 @genericController()
                 @collection.ref(x => User)
-                user:User
+                user: User
             }
             const UserAnimalController = GenericController([Animal, "user"])
             const mock = console.mock()
@@ -2404,7 +2447,7 @@ describe("CRUD", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
         })
-        
+
     })
     describe("One To One Function", () => {
         it("Should able to add with ID", async () => {
@@ -3054,7 +3097,7 @@ describe("Repository", () => {
         }
         const AnimalModel = helper.model(Animal)
         const UserModel = helper.model(User)
-        const repo = new MongooseNestedRepository<User,Animal>([User, "animals"], helper)
+        const repo = new MongooseNestedRepository<User, Animal>([User, "animals"], helper)
         const parent = await new UserModel({ email: "john.doe@gmail.com", name: "John Doe" }).save()
         const inserted = await repo.insert(parent.id!, { name: "Mimi" })
         const saved = await UserModel.findById(parent.id).populate("animals")
@@ -3136,7 +3179,7 @@ describe("Repository", () => {
             name: string
             @collection.ref(x => User)
             @genericController()
-            user:User
+            user: User
         }
         it("Should able to count result", async () => {
             const userRepo = new MongooseRepository(User)

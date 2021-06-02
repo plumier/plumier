@@ -2,6 +2,7 @@ import "@plumier/testing"
 
 import {
     authorize,
+    authPolicy,
     Class,
     Configuration,
     entity,
@@ -499,6 +500,43 @@ describe("CRUD", () => {
             await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
             const { body } = await supertest(app.callback())
                 .get("/users?select=id,email")
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
+        it("Should not error when select without ID with entity policy GET /users?offset&limit", async () => {
+            function createApp(entities: Function[], opt?: Partial<Configuration>) {
+                return new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new TypeORMFacility({ connection: getConn(entities) }))
+                    .set(new JwtAuthFacility({
+                        secret: "secret",
+                        authPolicies: [
+                            authPolicy().define("All", auth => true),
+                            entityPolicy(User).define("Owner", (auth, id) => true)
+                        ]
+                    }))
+                    .set({ ...opt, controller: entities as any })
+                    .initialize()
+            }
+            const token = sign({ id: 123 }, "secret")
+            @Entity()
+            @genericController()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                @authorize.read("Owner", "All")
+                email: string
+                @Column()
+                name: string
+            }
+            const app = await createApp([User], { mode: "production" })
+            const repo = getManager().getRepository(User)
+            await repo.insert({ email: "jane.doe@gmail.com", name: "John Doe" })
+            await Promise.all(Array(50).fill(1).map(x => repo.insert({ email: "john.doe@gmail.com", name: "John Doe" })))
+            const { body } = await supertest(app.callback())
+                .get("/users?select=email,name")
+                .set("Authorization", `Bearer ${token}`)
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
