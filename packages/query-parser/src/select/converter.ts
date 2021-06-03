@@ -55,7 +55,7 @@ function parseQueryString(controller: Class, type: Class, query: string): Select
     return result
 }
 
-function createCustomSelectConverter(transformer: (nodes: SelectColumnNode[]) => any): CustomConverter {
+function createCustomSelectConverter(transformer: (nodes: SelectColumnNode[], type:Class) => any): CustomConverter {
     return (i, ctx) => {
         const decorator = i.decorators.find((x: SelectParserDecorator): x is SelectParserDecorator => x.kind === "plumier-meta:select-parser-decorator")
         if (!decorator) return i.proceed()
@@ -72,7 +72,7 @@ function createCustomSelectConverter(transformer: (nodes: SelectColumnNode[]) =>
             const invalids = nodes.filter(x => x.invalidProperty).map(x => `Invalid property ${x.name}`)
             if (invalids.length > 0) return Result.error(i.value, i.path, invalids)
         }
-        const result: any = transformer(nodes)
+        const result: any = transformer(nodes, type)
         result[ParserAst] = nodes
         return Result.create(result)
     }

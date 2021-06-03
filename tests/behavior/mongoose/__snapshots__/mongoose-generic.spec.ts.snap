@@ -194,6 +194,15 @@ Object {
 }
 `;
 
+exports[`CRUD CRUD Function Should not error when select without ID with entity policy 1`] = `
+Object {
+  "age": 21,
+  "email": "john.doe@gmail.com",
+  "id": "MONGODB UNIQUE ID",
+  "name": "John Doe",
+}
+`;
+
 exports[`CRUD CRUD Function Should return empty array when no filter match GET /users?offset&limit&name 1`] = `Array []`;
 
 exports[`CRUD CRUD Function Should select by property GET /users/:id 1`] = `

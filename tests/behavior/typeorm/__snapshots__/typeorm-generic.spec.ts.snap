@@ -44,22 +44,27 @@ exports[`CRUD CRUD Function Should able to order by properties GET /users?offset
 Array [
   Object {
     "age": 21,
+    "id": 3,
     "name": "Borne",
   },
   Object {
     "age": 21,
+    "id": 2,
     "name": "Anne",
   },
   Object {
     "age": 22,
+    "id": 5,
     "name": "Juliet",
   },
   Object {
     "age": 22,
+    "id": 4,
     "name": "John",
   },
   Object {
     "age": 23,
+    "id": 1,
     "name": "August",
   },
 ]
@@ -80,6 +85,7 @@ Todo {
 exports[`CRUD CRUD Function Should able to select by properties GET /users/:id 1`] = `
 Object {
   "age": 21,
+  "id": 1,
   "name": "John Doe",
 }
 `;
@@ -357,6 +363,261 @@ Array [
 ]
 `;
 
+exports[`CRUD CRUD Function Should not error when select without ID with entity policy GET /users?offset&limit 1`] = `
+Array [
+  Object {
+    "email": "jane.doe@gmail.com",
+    "id": 1,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 2,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 3,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 4,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 5,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 6,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 7,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 8,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 9,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 10,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 11,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 12,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 13,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 14,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 15,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 16,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 17,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 18,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 19,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 20,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 21,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 22,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 23,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 24,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 25,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 26,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 27,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 28,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 29,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 30,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 31,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 32,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 33,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 34,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 35,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 36,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 37,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 38,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 39,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 40,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 41,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 42,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 43,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 44,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 45,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 46,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 47,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 48,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 49,
+    "name": "John Doe",
+  },
+  Object {
+    "email": "john.doe@gmail.com",
+    "id": 50,
+    "name": "John Doe",
+  },
+]
+`;
+
 exports[`CRUD CRUD Function Should serve delete with deleteColumn DELETE /users/:id 1`] = `
 User {
   "deleted": true,
@@ -468,18 +729,22 @@ exports[`CRUD Nested CRUD One to Many Function Should able to order by property 
 Array [
   Object {
     "age": 22,
+    "id": 4,
     "name": "Juliet",
   },
   Object {
     "age": 22,
+    "id": 1,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 2,
     "name": "Abas",
   },
   Object {
     "age": 21,
+    "id": 3,
     "name": "Alba",
   },
 ]
@@ -488,6 +753,7 @@ Array [
 exports[`CRUD Nested CRUD One to Many Function Should able to select by properties /users/:parentId/animals/:id 1`] = `
 Object {
   "age": 21,
+  "id": 1,
   "name": "Mimi",
 }
 `;
@@ -496,202 +762,252 @@ exports[`CRUD Nested CRUD One to Many Function Should able to select by property
 Array [
   Object {
     "age": 21,
+    "id": 1,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 2,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 3,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 4,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 5,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 6,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 7,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 8,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 9,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 10,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 11,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 12,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 13,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 14,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 15,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 16,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 17,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 18,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 19,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 20,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 21,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 22,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 23,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 24,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 25,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 26,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 27,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 28,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 29,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 30,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 31,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 32,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 33,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 34,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 35,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 36,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 37,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 38,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 39,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 40,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 41,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 42,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 43,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 44,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 45,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 46,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 47,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 48,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 49,
     "name": "Mimi",
   },
   Object {
     "age": 21,
+    "id": 50,
     "name": "Mimi",
   },
 ]

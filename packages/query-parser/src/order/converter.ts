@@ -35,7 +35,7 @@ function parseQueryString(type: Class, query: string): OrderColumnNode[] {
     return result
 }
 
-function createCustomOrderConverter(transformer: (nodes: OrderColumnNode[]) => any): CustomConverter {
+function createCustomOrderConverter(transformer: (nodes: OrderColumnNode[], type:Class) => any): CustomConverter {
     return (i, ctx) => {
         if (i.value === undefined || i.value === null) return i.proceed()
         const decorator = i.decorators.find((x: OrderParserDecorator): x is OrderParserDecorator => x.kind === "plumier-meta:order-parser-decorator")
@@ -45,7 +45,7 @@ function createCustomOrderConverter(transformer: (nodes: OrderColumnNode[]) => a
         const nodes = parseQueryString(type, i.value + "")
         const invalids = nodes.filter(x => x.invalidProperty).map(x => `Invalid property ${x.name}`)
         if (invalids.length > 0) return Result.error(i.value, i.path, invalids)
-        const result: any = transformer(nodes)
+        const result: any = transformer(nodes, type)
         result[ParserAst] = nodes
         return Result.create(result)
     }

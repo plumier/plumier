@@ -410,7 +410,7 @@ export interface NestedGenericControllerDecorator {
 
 export type GenericControllers = [Class<ControllerGeneric>, Class<NestedControllerGeneric>]
 
-export interface SelectQuery { columns?: any, relations?: any }
+export interface SelectQuery { includeId?:true, columns?: any, relations?: any }
 
 export interface Repository<T> {
     find(offset: number, limit: number, query: any, select: SelectQuery, order: any): Promise<T[]>

@@ -37,8 +37,7 @@ function getDeletedProperty(type: Class) {
 
 async function getIdentifierResult(type: Class, obj: any) {
     const data = await obj
-    const meta = reflect(type)
-    const id = meta.properties.find(prop => prop.decorators.some((x: EntityIdDecorator) => x.kind === "plumier-meta:entity-id"))
+    const id = entityHelper.getIdProp(type)
     return { [postSaveValue]: data, id: data[id!.name] } as { id: any }
 }
 
