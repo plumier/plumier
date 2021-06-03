@@ -99,7 +99,7 @@ describe("Filter", () => {
     beforeAll(async () => {
         app = await createApp()
         const parentRepo = new TypeORMRepository(Parent)
-        const repo = new TypeORMNestedRepository<Parent,Child>([Parent, "children"])
+        const repo = new TypeORMNestedRepository<Parent, Child>([Parent, "children"])
         await parentRepo.nativeRepository.delete({})
         await repo.nativeRepository.delete({})
         parent = await parentRepo.insert(<Parent>{ string: "lorem", number: 1, boolean: true })
@@ -377,7 +377,7 @@ describe("CRUD", () => {
         const UserController = MyGenericController(User)
         const UserAnimalController = MyGenericController([User, "animals"])
         const mock = console.mock()
-        await createApp([UserController, UserAnimalController, User, Animal], {mode: "debug" })
+        await createApp([UserController, UserAnimalController, User, Animal], { mode: "debug" })
         console.mockClear()
         expect(mock.mock.calls).toMatchSnapshot()
     })
@@ -1978,6 +1978,88 @@ describe("CRUD", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
         })
+        it("Should not able to populate array relation from parent", async () => {
+            function createApp(entities: Function[], opt?: Partial<Configuration>) {
+                return new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new TypeORMFacility({ connection: getConn(entities) }))
+                    .set(new JwtAuthFacility({ secret: "secret", globalAuthorize: "Public" }))
+                    .set({ ...opt, controller: entities as any })
+                    .initialize()
+            }
+            @Entity()
+            @genericController()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @genericController()
+                animals: Animal[]
+            }
+            @Entity()
+            @genericController()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
+            await supertest(app.callback())
+                .patch(`/users/${user.id}`)
+                .send({ animals: [] })
+                .expect(403)
+        })
+        it("Should not able to retrieve array relation from parent", async () => {
+            function createApp(entities: Function[], opt?: Partial<Configuration>) {
+                return new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new TypeORMFacility({ connection: getConn(entities) }))
+                    .set(new JwtAuthFacility({ secret: "secret", globalAuthorize: "Public" }))
+                    .set({ ...opt, controller: entities as any })
+                    .initialize()
+            }
+            @Entity()
+            @genericController()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @genericController()
+                animals: Animal[]
+            }
+            @Entity()
+            @genericController()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = getManager().getRepository(Animal)
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
+            await supertest(app.callback())
+                .patch(`/users/${user.id}?select=animals`)
+                .send({ animals: [] })
+                .expect(403)
+        })
     })
     describe("Nested CRUD Many To One", () => {
         async function createUser<T>(type: Class<T>): Promise<T> {
@@ -2724,7 +2806,7 @@ describe("Repository", () => {
             normalizeEntity(User)
             normalizeEntity(Animal)
             const userRepo = new TypeORMRepository(User)
-            const animalRepo = new TypeORMNestedRepository<User,Animal>([User, "animals"])
+            const animalRepo = new TypeORMNestedRepository<User, Animal>([User, "animals"])
             const email = `${random()}@gmail.com`
             const user = await userRepo.insert({ name: "John Doe" })
             await Promise.all([
@@ -2760,7 +2842,7 @@ describe("Repository", () => {
             normalizeEntity(User)
             normalizeEntity(Animal)
             const userRepo = new TypeORMRepository(User)
-            const animalRepo = new TypeORMNestedRepository<User,Animal>([Animal, "user"])
+            const animalRepo = new TypeORMNestedRepository<User, Animal>([Animal, "user"])
             const user = await userRepo.insert({ name: "John Doe" })
             await Promise.all([
                 animalRepo.insert(user.id, { name: "Mimi" }),

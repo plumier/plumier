@@ -2039,7 +2039,9 @@ Object {
       "items": Object {
         "$ref": "#/components/schemas/Animal",
       },
+      "readOnly": true,
       "type": "array",
+      "writeOnly": true,
     },
     "email": Object {
       "type": "string",
