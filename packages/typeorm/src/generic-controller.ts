@@ -1,13 +1,11 @@
-import { api, authorize, Class, entity, GenericControllers, KeyOf, NestedRepository, Repository } from "@plumier/core"
+import { authorize, Class, entity, GenericControllers, Repository } from "@plumier/core"
 import {
-    ControllerBuilder,
-    genericControllerRegistry,
-    RepoBaseControllerGeneric,
-    RepoBaseNestedControllerGeneric,
-    GenericControllerConfiguration,
     createGenericController,
     EntityWithRelation,
-    NestedRepositoryFactory
+    GenericControllerConfiguration,
+    NestedRepositoryFactory,
+    RepoBaseControllerGeneric,
+    RepoBaseNestedControllerGeneric,
 } from "@plumier/generic-controller"
 import reflect, { generic, noop, useCache } from "@plumier/reflect"
 import { parse } from "acorn"
@@ -35,19 +33,18 @@ function normalizeEntityNoCache(type: Class) {
     const relations = storage.filterRelations(type)
     for (const col of relations) {
         const rawType: Class = (col as any).type()
-        const type = col.relationType === "one-to-many" || col.relationType === "many-to-many" ? [rawType] : rawType
-        Reflect.decorate([reflect.type(x => type)], (col.target as Function).prototype, col.propertyName, void 0)
-        if (col.relationType === "many-to-one") {
-            // TODO
-            Reflect.decorate([entity.relation()], (col.target as Function).prototype, col.propertyName, void 0)
+        if (col.relationType === "many-to-many" || col.relationType === "one-to-many") {
+            const inverseProperty = inverseSideParser(col.inverseSideProperty as any)
+            const decorators = [
+                reflect.type(x => [rawType]),
+                entity.relation({ inverseProperty }),
+                authorize.readonly(),
+                authorize.writeonly()
+            ]
+            Reflect.decorate(decorators, (col.target as Function).prototype, col.propertyName, void 0)
         }
         else {
-            const inverseProperty = inverseSideParser(col.inverseSideProperty)
-            const cache = genericControllerRegistry.get(rawType)
-            // if entity handled with generic controller then hide all one to many relation
-            if (cache)
-                Reflect.decorate([api.readonly(), api.writeonly()], (col.target as Function).prototype, col.propertyName, void 0)
-            Reflect.decorate([entity.relation({ inverseProperty })], (col.target as Function).prototype, col.propertyName, void 0)
+            Reflect.decorate([reflect.type(x => rawType), entity.relation()], (col.target as Function).prototype, col.propertyName, void 0)
         }
     }
 }
@@ -60,8 +57,7 @@ const normalizeEntity = useCache(normalizeEntityCache, normalizeEntityNoCache, x
 // ---------------------- INVERSE PROPERTY PARSER ---------------------- //
 // --------------------------------------------------------------------- //
 
-function inverseSideParser(expr: string | ((t: any) => any) | undefined) {
-    if (!expr || typeof expr === "string") return expr
+function inverseSideParser(expr: ((t: any) => any)) {
     const node = parse(expr.toString(), { ecmaVersion: 2020 })
     return getMemberExpression(node)
 }
