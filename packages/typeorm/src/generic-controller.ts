@@ -1,4 +1,4 @@
-import { authorize, Class, entity, GenericControllers, Repository } from "@plumier/core"
+import { Class, entity, GenericControllers, Repository } from "@plumier/core"
 import {
     createGenericController,
     EntityWithRelation,
@@ -7,82 +7,12 @@ import {
     RepoBaseControllerGeneric,
     RepoBaseNestedControllerGeneric,
 } from "@plumier/generic-controller"
-import reflect, { generic, noop, useCache } from "@plumier/reflect"
-import { parse } from "acorn"
+import reflect, { generic } from "@plumier/reflect"
 import pluralize from "pluralize"
-import { getMetadataArgsStorage } from "typeorm"
 
+import { normalizeEntity } from "./helper"
 import { TypeORMNestedRepository, TypeORMRepository } from "./repository"
 
-// --------------------------------------------------------------------- //
-// ------------------------------- HELPER ------------------------------ //
-// --------------------------------------------------------------------- //
-
-
-function normalizeEntityNoCache(type: Class) {
-    const parent: Class = Object.getPrototypeOf(type)
-    // loop through parent entities 
-    if (!!parent.prototype) normalizeEntity(parent)
-    const storage = getMetadataArgsStorage();
-    const columns = storage.filterColumns(type)
-    for (const col of columns) {
-        Reflect.decorate([noop()], (col.target as Function).prototype, col.propertyName, void 0)
-        if (col.options.primary)
-            Reflect.decorate([entity.primaryId(), authorize.readonly()], (col.target as Function).prototype, col.propertyName, void 0)
-    }
-    const relations = storage.filterRelations(type)
-    for (const col of relations) {
-        const rawType: Class = (col as any).type()
-        if (col.relationType === "many-to-many" || col.relationType === "one-to-many") {
-            const inverseProperty = inverseSideParser(col.inverseSideProperty as any)
-            const decorators = [
-                reflect.type(x => [rawType]),
-                entity.relation({ inverseProperty }),
-                authorize.readonly(),
-                authorize.writeonly()
-            ]
-            Reflect.decorate(decorators, (col.target as Function).prototype, col.propertyName, void 0)
-        }
-        else {
-            Reflect.decorate([reflect.type(x => rawType), entity.relation()], (col.target as Function).prototype, col.propertyName, void 0)
-        }
-    }
-}
-
-const normalizeEntityCache = new Map<Class, any>()
-
-const normalizeEntity = useCache(normalizeEntityCache, normalizeEntityNoCache, x => x)
-
-// --------------------------------------------------------------------- //
-// ---------------------- INVERSE PROPERTY PARSER ---------------------- //
-// --------------------------------------------------------------------- //
-
-function inverseSideParser(expr: ((t: any) => any)) {
-    const node = parse(expr.toString(), { ecmaVersion: 2020 })
-    return getMemberExpression(node)
-}
-
-function getContent(node: any): any {
-    switch (node.type) {
-        case "Program":
-        case "BlockStatement":
-            return node.body[node.body.length - 1]
-        case "ArrowFunctionExpression":
-            return node.body
-        case "ExpressionStatement":
-            return node.expression
-        case "ReturnStatement":
-            return node.argument
-    }
-}
-
-function getMemberExpression(node: any): string {
-    const content = getContent(node)
-    if (content.type === "MemberExpression")
-        return content.property.name
-    else
-        return getMemberExpression(content)
-}
 
 // --------------------------------------------------------------------- //
 // ------------------------ GENERIC CONTROLLERS ------------------------ //
@@ -146,4 +76,4 @@ function GenericController<T>(type: Class | EntityWithRelation<T>, config?: Gene
     return factory(type, config)
 }
 
-export { TypeORMControllerGeneric, TypeORMNestedControllerGeneric, normalizeEntity, GenericController, createGenericControllerTypeORM, EntityWithRelation }
+export { TypeORMControllerGeneric, TypeORMNestedControllerGeneric, GenericController, createGenericControllerTypeORM, EntityWithRelation }
