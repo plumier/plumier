@@ -14,13 +14,14 @@ export { updateRouteAuthorizationAccess, analyzeAuthPolicyNameConflict, createAu
 export { HeaderPart, RequestPart, BindingDecorator, binder, ParameterBinderMiddleware, CustomBinderFunction } from "./binder";
 export { invoke } from "./application-pipeline";
 export { response } from "./response";
-export { generateRoutes, findClassRecursive, appendRoute, IgnoreDecorator, RouteDecorator, transformController, ControllerTransformOption } from "./route-generator";
+export { generateRoutes, IgnoreDecorator, RouteDecorator, transformController, ControllerTransformOption } from "./route-generator";
 export { analyzeRoutes, printAnalysis } from "./route-analyzer";
 export { router } from "./router";
 export {
     Class, findFilesRecursive, getChildValue, hasKeyOf, isCustomClass, printTable, toBoolean,
     ellipsis, analyzeModel, AnalysisMessage, entityHelper, globAsync,
-    EntityRelationInfo, OneToManyRelationInfo, ManyToOneRelationInfo
+    EntityRelationInfo, OneToManyRelationInfo, ManyToOneRelationInfo,
+    findClassRecursive, appendRoute, ClassWithRoot
 } from "./common";
 export { AuthDecoratorImpl, authorize } from "./decorator/authorize";
 export {

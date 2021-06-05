@@ -42,7 +42,7 @@ async function getPoliciesByFile(root: string, opt: Class<AuthPolicy> | Class<Au
     }
     if (typeof opt === "string") {
         const path = isAbsolute(opt) ? opt : join(root, opt)
-        const result = await findClassRecursive(path)
+        const result = await findClassRecursive(path, { rootDir: root, directoryAsPath: false })
         return getPoliciesByFile(root, result.map(x => x.type))
     }
     else {
