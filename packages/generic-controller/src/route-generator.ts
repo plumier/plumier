@@ -71,33 +71,20 @@ interface ClassWithRoot {
 }
 
 async function extractController(controller: string | string[] | Class[] | Class, option: ControllerTransformOption): Promise<ClassWithRoot[]> {
-    if (typeof controller === "string") {
-        const ctl = isAbsolute(controller) ? controller : join(option.rootDir, controller)
-        const types = await findClassRecursive(ctl)
-        const result = []
-        for (const type of types) {
-            const ctl = await extractController(type.type, option)
-            result.push(...ctl.map(x => ({
-                root: option.directoryAsPath ? type.root : "",
-                type: x.type
-            })))
+    const classes = await findClassRecursive(controller, option)
+    const result = []
+    for (const cls of classes) {
+        const meta = reflect(cls.type)
+        // entity marked with generic controller
+        if (!!genericControllerRegistry.get(meta.type)) {
+            if (!option.genericController)
+                throw new Error(errorMessage.GenericControllerRequired)
+            const ctl = createGenericControllersByDecorators(cls.type, option.genericController, option.genericControllerNameConversion)
+                .map(type => ({ root: cls.root, type }))
+            result.push(...ctl)
         }
-        return result
     }
-    else if (Array.isArray(controller)) {
-        const raw = controller as (string | Class)[]
-        const controllers = await Promise.all(raw.map(x => extractController(x, option)))
-        return controllers.flatten()
-    }
-    const meta = reflect(controller)
-    // entity marked with generic controller
-    if (!!genericControllerRegistry.get(meta.type)) {
-        if (!option.genericController)
-            throw new Error(errorMessage.GenericControllerRequired)
-        return createGenericControllersByDecorators(controller, option.genericController, option.genericControllerNameConversion)
-            .map(type => ({ root: "", type }))
-    }
-    return []
+    return result
 }
 
 async function generateGenericControllerRoutes(controller: string | string[] | Class[] | Class, option?: Partial<ControllerTransformOption>): Promise<RouteMetadata[]> {

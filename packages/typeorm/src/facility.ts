@@ -18,7 +18,8 @@ import { promisify } from "util"
 import validator from "validator"
 import { filterConverter, orderConverter, selectConverter } from "./query-parser"
 
-import { normalizeEntity, TypeORMControllerGeneric, TypeORMNestedControllerGeneric } from "./generic-controller"
+import { TypeORMControllerGeneric, TypeORMNestedControllerGeneric } from "./generic-controller"
+import { normalizeEntity } from "./helper"
 
 const lstatAsync = promisify(lstat)
 

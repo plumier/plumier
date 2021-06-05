@@ -59,6 +59,7 @@ function normalizeEntityNoCache(type: Class) {
             Reflect.decorate([reflect.type(x => rawType), entity.relation()], (col.target as Function).prototype, col.propertyName, void 0)
         }
     }
+    return { success: true }
 }
 
 const normalizeEntityCache = new Map<Class, any>()

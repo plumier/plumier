@@ -5,6 +5,7 @@ import { promisify } from "util"
 
 import { EntityIdDecorator, RelationDecorator } from "./decorator/entity"
 import { errorMessage } from "./types"
+import { isAbsolute, join } from "path"
 
 
 const lstatAsync = promisify(lstat)
@@ -15,6 +16,11 @@ const existsAsync = promisify(exists)
 // --------------------------------------------------------------------- //
 
 type Class<T = any> = new (...args: any[]) => T
+
+interface ClassWithRoot {
+    root: string,
+    type: Class
+}
 
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
@@ -117,6 +123,52 @@ async function findFilesRecursive(path: string): Promise<string[]> {
     }
     // else check if glob provided
     return traverseDirectory(path)
+}
+
+
+function appendRoute(...args: string[]): string {
+    return "/" + args
+        .filter(x => !!x)
+        .map(x => x.toLowerCase())
+        .map(x => x.startsWith("/") ? x.slice(1) : x)
+        .map(x => x.endsWith("/") ? x.slice(0, -1) : x)
+        .filter(x => !!x)
+        .join("/")
+}
+
+function getRoot(rootPath: string, path: string) {
+    // directoryAsPath should not working with glob
+    if (rootPath.indexOf("*") >= 0) return
+    const part = path.slice(rootPath.length).split("/").filter(x => !!x)
+        .slice(0, -1)
+    return (part.length === 0) ? undefined : appendRoute(...part)
+}
+
+async function findClassRecursive(path: string | string[] | Class | Class[], option?: { directoryAsPath?: boolean, rootDir?: string }): Promise<ClassWithRoot[]> {
+    const opt = { rootDir: "", directoryAsPath: false, ...option }
+    if (Array.isArray(path)) {
+        const result = []
+        for (const p of path) {
+            result.push(...await findClassRecursive(p, opt))
+        }
+        return result
+    }
+    if (typeof path === "string") {
+        const absPath = isAbsolute(path) ? path : join(opt.rootDir, path)
+        //read all files and get module reflection
+        const files = await findFilesRecursive(absPath)
+        const result = []
+        for (const file of files) {
+            const root = !!opt.directoryAsPath ? (getRoot(absPath, file) ?? "") : ""
+            for (const member of reflect(file).members) {
+                if (member.kind === "Class")
+                    result.push({ root, type: member.type })
+            }
+        }
+        return result
+    }
+    else
+        return [{ root: "", type: path }]
 }
 
 // --------------------------------------------------------------------- //
@@ -289,6 +341,7 @@ namespace entityHelper {
 export {
     ellipsis, toBoolean, getChildValue, Class, hasKeyOf, isCustomClass, entityHelper,
     findFilesRecursive, memoize, printTable, analyzeModel, AnalysisMessage, globAsync,
-    EntityRelationInfo, OneToManyRelationInfo, ManyToOneRelationInfo
+    EntityRelationInfo, OneToManyRelationInfo, ManyToOneRelationInfo, appendRoute,
+    findClassRecursive, ClassWithRoot
 }
 

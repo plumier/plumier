@@ -47,6 +47,147 @@ Object {
 }
 `;
 
+exports[`Facility Entity Normalization Should able to discover entities by default 1`] = `
+Array [
+  Object {
+    "access": "read",
+    "appliedClass": NestedEntity,
+    "evaluation": "Dynamic",
+    "location": "Method",
+    "policies": Array [
+      "plumier::writeonly",
+    ],
+    "tag": "plumier::writeonly",
+    "type": "plumier-meta:authorize",
+    Symbol(tinspector:decoratorOption): Object {
+      "access": "read",
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "evaluation": "Dynamic",
+      "inherit": true,
+      "methods": Array [],
+      "removeApplied": true,
+      "tag": "plumier::writeonly",
+    },
+  },
+  Object {
+    "access": "write",
+    "appliedClass": NestedEntity,
+    "evaluation": "Dynamic",
+    "location": "Method",
+    "policies": Array [
+      "plumier::readonly",
+    ],
+    "tag": "plumier::readonly",
+    "type": "plumier-meta:authorize",
+    Symbol(tinspector:decoratorOption): Object {
+      "access": "write",
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "evaluation": "Dynamic",
+      "inherit": true,
+      "methods": Array [],
+      "removeApplied": true,
+      "tag": "plumier::readonly",
+    },
+  },
+]
+`;
+
+exports[`Facility Entity Normalization Should able to normalize using path 1`] = `
+Array [
+  Object {
+    "access": "read",
+    "appliedClass": Animal,
+    "evaluation": "Dynamic",
+    "location": "Method",
+    "policies": Array [
+      "plumier::writeonly",
+    ],
+    "tag": "plumier::writeonly",
+    "type": "plumier-meta:authorize",
+    Symbol(tinspector:decoratorOption): Object {
+      "access": "read",
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "evaluation": "Dynamic",
+      "inherit": true,
+      "methods": Array [],
+      "removeApplied": true,
+      "tag": "plumier::writeonly",
+    },
+  },
+  Object {
+    "access": "write",
+    "appliedClass": Animal,
+    "evaluation": "Dynamic",
+    "location": "Method",
+    "policies": Array [
+      "plumier::readonly",
+    ],
+    "tag": "plumier::readonly",
+    "type": "plumier-meta:authorize",
+    Symbol(tinspector:decoratorOption): Object {
+      "access": "write",
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "evaluation": "Dynamic",
+      "inherit": true,
+      "methods": Array [],
+      "removeApplied": true,
+      "tag": "plumier::readonly",
+    },
+  },
+]
+`;
+
+exports[`Facility Entity Normalization Should mark array relation as readonly/writeonly 1`] = `
+Array [
+  Object {
+    "access": "read",
+    "appliedClass": User,
+    "evaluation": "Dynamic",
+    "location": "Method",
+    "policies": Array [
+      "plumier::writeonly",
+    ],
+    "tag": "plumier::writeonly",
+    "type": "plumier-meta:authorize",
+    Symbol(tinspector:decoratorOption): Object {
+      "access": "read",
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "evaluation": "Dynamic",
+      "inherit": true,
+      "methods": Array [],
+      "removeApplied": true,
+      "tag": "plumier::writeonly",
+    },
+  },
+  Object {
+    "access": "write",
+    "appliedClass": User,
+    "evaluation": "Dynamic",
+    "location": "Method",
+    "policies": Array [
+      "plumier::readonly",
+    ],
+    "tag": "plumier::readonly",
+    "type": "plumier-meta:authorize",
+    Symbol(tinspector:decoratorOption): Object {
+      "access": "write",
+      "allowMultiple": true,
+      "applyTo": Array [],
+      "evaluation": "Dynamic",
+      "inherit": true,
+      "methods": Array [],
+      "removeApplied": true,
+      "tag": "plumier::readonly",
+    },
+  },
+]
+`;
+
 exports[`Mongoose Proxy Should able to provide toString() 1`] = `"function () { [native code] }"`;
 
 exports[`Mongoose Proxy Should fix circular reference issue 1`] = `

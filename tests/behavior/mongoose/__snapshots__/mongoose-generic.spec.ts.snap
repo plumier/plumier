@@ -746,6 +746,13 @@ Array [
 ]
 `;
 
+exports[`CRUD Nested CRUD One to Many Function Should not allow nested array relation accessed from parent 1`] = `
+Object {
+  "message": "Unauthorized to access filter properties animals",
+  "status": 403,
+}
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should not confused on reverse properties with the same type POST /users/:parentId/animals 1`] = `
 Object {
   "createdBy": Object {

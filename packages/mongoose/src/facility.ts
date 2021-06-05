@@ -8,7 +8,6 @@ import {
 import reflect from "@plumier/reflect"
 import { Result, ResultMessages, VisitorInvocation } from "@plumier/validator"
 import Mongoose from "mongoose"
-import { isAbsolute, join } from "path"
 import pluralize from "pluralize"
 
 import { getModels, model as globalModel, MongooseHelper, proxy as globalProxy } from "./generator"
@@ -46,21 +45,14 @@ function relationConverter(i: VisitorInvocation): Result {
 }
 
 async function loadEntities(entity: Class | Class[] | string | string[], opt: { rootDir: string }): Promise<Class[]> {
-    if (Array.isArray(entity)) {
-        const result: Class[] = []
-        for (const e of entity) {
-            result.push(... await loadEntities(e, opt))
-        }
-        return result;
+    const classes = await findClassRecursive(entity, { rootDir: opt.rootDir })
+    const result = []
+    for (const cls of classes) {
+        const meta = reflect(cls.type)
+        if(!!meta.decorators.find((x: ClassOptionDecorator) => x.name === "ClassOption"))
+            result.push(cls.type)
     }
-    if (typeof entity === "string") {
-        const path = isAbsolute(entity) ? entity : join(opt.rootDir, entity)
-        const types = await findClassRecursive(path)
-        return loadEntities(types.map(x => x.type), opt)
-    }
-    const meta = reflect(entity)
-    const isEntity = !!meta.decorators.find((x: ClassOptionDecorator) => x.name === "ClassOption")
-    return isEntity ? [entity] : []
+    return result
 }
 
 export class MongooseFacility extends DefaultFacility {
@@ -77,8 +69,7 @@ export class MongooseFacility extends DefaultFacility {
     }
 
     async preInitialize(app: Readonly<PlumierApplication>) {
-        if (!this.option.entity) return
-        const entities = await loadEntities(this.option.entity, app.config)
+        const entities = await loadEntities(this.option.entity!, app.config)
         for (const entity of entities) {
             normalizeEntity(entity)
         }

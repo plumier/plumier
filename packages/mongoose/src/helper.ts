@@ -7,8 +7,8 @@ function normalizeEntityNoCache(type: Class) {
     const meta = reflect(type)
     reflect.flush(type)
     for (const prop of meta.properties) {
-        const ref = prop.decorators.find((x:RefDecorator) => x.name === "MongooseRef")
-        if(ref && prop.typeClassification === "Array") {
+        const ref = prop.decorators.find((x: RefDecorator) => x.name === "MongooseRef")
+        if (ref && prop.typeClassification === "Array") {
             const decorators = [
                 authorize.readonly(),
                 authorize.writeonly()
@@ -16,6 +16,7 @@ function normalizeEntityNoCache(type: Class) {
             Reflect.decorate(decorators, type.prototype, prop.name, void 0)
         }
     }
+    return { success: true }
 }
 
 const normalizeEntityCache = new Map<Class, any>()

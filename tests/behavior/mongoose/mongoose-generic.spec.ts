@@ -1094,6 +1094,45 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body.length).toBe(50)
         })
+        it("Should not allow nested array relation accessed from parent", async () => {
+            @collection()
+            @genericController()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @genericController()
+                animals: Animal[]
+            }
+            @collection()
+            @genericController()
+            class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+            }
+            function createApp(option?: Partial<Configuration>) {
+                return new Plumier()
+                    .set(new WebApiFacility())
+                    .set(new MongooseFacility({entity: [User, Animal]}))
+                    .set(new JwtAuthFacility({ secret: "secret", globalAuthorize: "Public" }))
+                    .set(option || {})
+                    .initialize()
+            }
+            const app = await createApp({ controller: [User, Animal], mode: "production" })
+            const user = await createUser(User)
+            const animalRepo = new MongooseNestedRepository<User, Animal>([User, "animals"])
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
+            const {body} = await supertest(app.callback())
+                .get(`/users/${user._id}?select=animals`)
+                .expect(403)
+            expect(body).toMatchSnapshot()
+        })
         it("Should check prover mongodb id on GET /users/:parentId/animals?offset&limit", async () => {
             @collection()
             @genericController()
