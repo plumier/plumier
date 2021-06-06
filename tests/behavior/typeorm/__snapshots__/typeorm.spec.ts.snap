@@ -183,6 +183,55 @@ Array [
 ]
 `;
 
+exports[`TypeOrm Facility Should able to reflect one to many relation with string inverse property 1`] = `
+MyEntity {
+  "children": Array [
+    Child {
+      "id": 1,
+      "name": "Poo",
+    },
+  ],
+  "id": 1,
+  "name": "Mimi",
+}
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to many relation with string inverse property 2`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "name",
+    "type": String,
+  },
+  Object {
+    "name": "children",
+    "type": Array [
+      Child,
+    ],
+  },
+]
+`;
+
+exports[`TypeOrm Facility Should able to reflect one to many relation with string inverse property 3`] = `
+Array [
+  Object {
+    "name": "id",
+    "type": Number,
+  },
+  Object {
+    "name": "name",
+    "type": String,
+  },
+  Object {
+    "name": "entity",
+    "type": MyEntity,
+  },
+]
+`;
+
 exports[`TypeOrm Facility Should able to reflect one to many with braced inverse entity 1`] = `
 MyEntity {
   "children": Array [
@@ -338,6 +387,14 @@ exports[`TypeOrm Facility Should throw error when no entity found 1`] = `
 Array [
   Array [
     [Error: No TypeORM entity found, check your connection configuration],
+  ],
+]
+`;
+
+exports[`TypeOrm Facility Should throw error when provided string type relation 1`] = `
+Array [
+  Array [
+    [Error: Relation property Parent.entity uses unsupported data type],
   ],
 ]
 `;

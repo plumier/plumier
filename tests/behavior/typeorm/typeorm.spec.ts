@@ -150,6 +150,36 @@ describe("TypeOrm", () => {
             expect(extract(MyEntity)).toMatchSnapshot()
             expect(extract(Child)).toMatchSnapshot()
         })
+        it("Should able to reflect one to many relation with string inverse property", async () => {
+            @Entity()
+            class MyEntity {
+                @PrimaryGeneratedColumn()
+                id: number = 123
+                @Column()
+                name: string
+                @OneToMany(x => Child, "entity")
+                children: Child[]
+            }
+            @Entity()
+            class Child {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => MyEntity, "children")
+                entity: MyEntity
+            }
+            await createApp([MyEntity, Child])
+            const parentRepo = getManager().getRepository(MyEntity)
+            const repo = getManager().getRepository(Child)
+            const parent = await parentRepo.insert({ name: "Mimi" })
+            const inserted = await repo.insert({ name: "Poo" })
+            await parentRepo.createQueryBuilder().relation("children").of(parent.raw).add(inserted.raw)
+            const result = await parentRepo.findOne(parent.raw, { relations: ["children"] })
+            expect(result).toMatchSnapshot()
+            expect(extract(MyEntity)).toMatchSnapshot()
+            expect(extract(Child)).toMatchSnapshot()
+        })
         it("Should able to reflect one to many with curly braced inverse entity", async () => {
             @Entity()
             class MyEntity {
@@ -286,6 +316,29 @@ describe("TypeOrm", () => {
             delete process.env.TYPEORM_DATABASE
             delete process.env.TYPEORM_ENTITIES
             delete process.env.TYPEORM_SYNCHRONIZE
+        })
+        it("Should throw error when provided string type relation", async () => {
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne("MyEntity", "parent")
+                entity: any
+            }
+            @Entity()
+            class MyEntity {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne("Parent")
+                @JoinColumn()
+                parent: Parent
+            }
+            const mock = await expectError(createApp([MyEntity, Parent]))
+            expect(mock.mock.calls).toMatchSnapshot()
         })
     })
     describe("Update relation with ID", () => {
@@ -621,4 +674,5 @@ describe("TypeOrm", () => {
             expect(body).toMatchSnapshot()
         })
     })
+
 })

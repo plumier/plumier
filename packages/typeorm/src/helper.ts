@@ -44,19 +44,23 @@ function normalizeEntityNoCache(type: Class) {
     }
     const relations = storage.filterRelations(type)
     for (const col of relations) {
-        const rawType: Class = (col as any).type()
+        const target = col.target as Function
+        if (typeof col.type === "string")
+            throw new Error(`Relation property ${target.name}.${col.propertyName} uses unsupported data type`)
+        const rawType: Class = col.type()
         if (col.relationType === "many-to-many" || col.relationType === "one-to-many") {
-            const inverseProperty = inverseSideParser(col.inverseSideProperty as any)
+            const inverse = col.inverseSideProperty!
+            const inverseProperty = typeof inverse === "string" ? inverse : inverseSideParser(inverse)
             const decorators = [
                 reflect.type(x => [rawType]),
                 entity.relation({ inverseProperty }),
                 authorize.readonly(),
                 authorize.writeonly()
             ]
-            Reflect.decorate(decorators, (col.target as Function).prototype, col.propertyName, void 0)
+            Reflect.decorate(decorators, target.prototype, col.propertyName, void 0)
         }
         else {
-            Reflect.decorate([reflect.type(x => rawType), entity.relation()], (col.target as Function).prototype, col.propertyName, void 0)
+            Reflect.decorate([reflect.type(x => rawType), entity.relation()], target.prototype, col.propertyName, void 0)
         }
     }
     return { success: true }
