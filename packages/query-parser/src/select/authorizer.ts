@@ -22,7 +22,7 @@ class SelectQueryAuthorizeMiddleware implements Middleware<ActionContext> {
             unauthorized.push(val.name)
         }
         if (unauthorized.length > 0)
-            throwAuthError(auth, `Unauthorized to access filter properties ${unauthorized.join(", ")}`)
+            throwAuthError(auth, `Unauthorized to access select properties ${unauthorized.join(", ")}`)
         return i.proceed()
     }
 }
