@@ -748,7 +748,7 @@ Array [
 
 exports[`CRUD Nested CRUD One to Many Function Should not allow nested array relation accessed from parent 1`] = `
 Object {
-  "message": "Unauthorized to access filter properties animals",
+  "message": "Unauthorized to access select properties animals",
   "status": 403,
 }
 `;
