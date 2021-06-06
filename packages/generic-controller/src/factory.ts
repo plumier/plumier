@@ -34,7 +34,7 @@ type EntityWithRelation<T = any, R = any> = [Class<T>, KeyOf<T>, Class<R>?]
 interface CreateGenericControllerOption {
     config?: GenericControllerConfiguration,
     controllers: GenericControllers
-    normalize?: (entities: Class | EntityWithRelation) => void
+    normalize: (entities: Class | EntityWithRelation) => void
     nameConversion: (x: string) => string
 }
 
@@ -112,8 +112,8 @@ function createNestedGenericControllerType(type: EntityWithRelation, builder: Co
 
 function createGenericController<T>(type: Class | EntityWithRelation<T>, option: CreateGenericControllerOption) {
     const builder = new ControllerBuilder()
+    option.normalize(type)
     if (option.config) option.config(builder)
-    if (option.normalize) option.normalize(type)
     if (Array.isArray(type)) {
         return createNestedGenericControllerType(type, builder, option.controllers[1], option.nameConversion)
     }

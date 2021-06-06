@@ -1,18 +1,23 @@
-import { DefaultFacility, PlumierApplication, RelationDecorator } from "@plumier/core"
-import { createQueryParserAnalyzer, FilterQueryAuthorizeMiddleware, OrderQueryAuthorizeMiddleware, SelectQueryAuthorizeMiddleware } from "@plumier/query-parser"
+import { Class, DefaultFacility, findClassRecursive, PlumierApplication, RelationDecorator } from "@plumier/core"
 import { RequestHookMiddleware } from "@plumier/generic-controller"
+import {
+    FilterQueryAuthorizeMiddleware,
+    OrderQueryAuthorizeMiddleware,
+    SelectQueryAuthorizeMiddleware,
+} from "@plumier/query-parser"
+import reflect from "@plumier/reflect"
 import { Result, ResultMessages, VisitorInvocation } from "@plumier/validator"
 import Mongoose from "mongoose"
 import pluralize from "pluralize"
-import { filterConverter, orderConverter, selectConverter } from "./query-parser"
 
 import { getModels, model as globalModel, MongooseHelper, proxy as globalProxy } from "./generator"
 import { MongooseControllerGeneric, MongooseNestedControllerGeneric } from "./generic-controller"
+import { normalizeEntity } from "./helper"
+import { filterConverter, orderConverter, selectConverter } from "./query-parser"
+import { ClassOptionDecorator } from "./types"
 
 
-
-
-interface MongooseFacilityOption { uri?: string, helper?: MongooseHelper }
+interface MongooseFacilityOption { uri?: string, helper?: MongooseHelper, entity?: Class | Class[] | string | string[] }
 
 function convertValue(value: any, path: string): Result {
     if (Array.isArray(value)) {
@@ -39,11 +44,35 @@ function relationConverter(i: VisitorInvocation): Result {
         return i.proceed()
 }
 
+async function loadEntities(entity: Class | Class[] | string | string[], opt: { rootDir: string }): Promise<Class[]> {
+    const classes = await findClassRecursive(entity, { rootDir: opt.rootDir })
+    const result = []
+    for (const cls of classes) {
+        const meta = reflect(cls.type)
+        if(!!meta.decorators.find((x: ClassOptionDecorator) => x.name === "ClassOption"))
+            result.push(cls.type)
+    }
+    return result
+}
+
 export class MongooseFacility extends DefaultFacility {
     option: MongooseFacilityOption
     constructor(opts?: MongooseFacilityOption) {
         super()
-        this.option = { ...opts }
+        this.option = {
+            entity: [
+                require.main!.filename,
+                "./**/*controller.+(ts|js)",
+                "./**/*entity.+(ts|js)"
+            ], ...opts
+        }
+    }
+
+    async preInitialize(app: Readonly<PlumierApplication>) {
+        const entities = await loadEntities(this.option.entity!, app.config)
+        for (const entity of entities) {
+            normalizeEntity(entity)
+        }
     }
 
     setup(app: Readonly<PlumierApplication>) {

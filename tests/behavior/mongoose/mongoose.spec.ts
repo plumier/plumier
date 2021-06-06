@@ -1,16 +1,16 @@
-import { authorize, Class, route } from "@plumier/core"
+import { authorize, AuthorizeDecorator, Class, route } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import model, { collection, getModels, model as globalModel, MongooseFacility, MongooseHelper, Ref } from "@plumier/mongoose"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
 import mongoose from "mongoose"
-import Plumier, { WebApiFacility } from "plumier"
+import Plumier, { genericController, WebApiFacility } from "plumier"
 import supertest from "supertest"
 import reflect, { noop, type } from "@plumier/reflect"
 
 import { fixture } from "../helper"
 import { ChildModel, } from "./cross-dependent/child"
 import { ParentModel, } from "./cross-dependent/parent"
-import {Parent as ParentError} from "./cross-error/parent"
+import { Parent as ParentError } from "./cross-error/parent"
 
 mongoose.set("useNewUrlParser", true)
 mongoose.set("useUnifiedTopology", true)
@@ -457,7 +457,7 @@ describe("Mongoose", () => {
                 numberProp: 123,
                 booleanProp: true,
                 dateProp: new Date(Date.UTC(2020, 2, 2))
-            } as any) 
+            } as any)
             const saved = await DummyModel.findById(added._id)
             expect(saved).toMatchSnapshot()
         })
@@ -1058,6 +1058,64 @@ describe("Facility", () => {
             expect(mongoose.connection.db.databaseName).toBe(await mongod.getDbName())
         })
 
+    })
+
+    describe("Entity Normalization", () => {
+        beforeEach(() => mongoose.connection.models = {})
+        afterEach(async () => await mongoose.disconnect())
+
+        it("Should mark array relation as readonly/writeonly", async () => {
+            @collection()
+            @genericController()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                @genericController()
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+            }
+            await fixture([User, Animal])
+                .set(new MongooseFacility({ entity: [User, Animal] }))
+                .initialize()
+            const meta = reflect(User)
+            const decs = meta.properties.find(x => x.name === "animals")
+                ?.decorators.filter((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize")
+            expect(decs).toMatchSnapshot()
+        })
+        it("Should able to normalize using path", async () => {
+            class UserController { }
+            await fixture(UserController)
+                .set(new MongooseFacility({ entity: "./v1" }))
+                .initialize()
+            const { Animal } = await import("./v1/models")
+            const meta = reflect(Animal)
+            const decs = meta.properties.find(x => x.name === "tags")
+                ?.decorators.filter((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize")
+            expect(decs).toMatchSnapshot()
+        })
+        it("Should able to discover entities by default", async () => {
+            class UserController { }
+            await fixture(UserController)
+                .set({ rootDir: __dirname })
+                .set(new MongooseFacility())
+                .initialize()
+            const { NestedEntity } = await import("./entity-discovery/example-entity")
+            const meta = reflect(NestedEntity)
+            const decs = meta.properties.find(x => x.name === "tags")
+                ?.decorators.filter((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize")
+            expect(decs).toMatchSnapshot()
+        })
     })
 })
 

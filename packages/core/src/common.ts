@@ -144,7 +144,8 @@ function getRoot(rootPath: string, path: string) {
     return (part.length === 0) ? undefined : appendRoute(...part)
 }
 
-async function findClassRecursive(path: string | string[] | Class | Class[], opt: { directoryAsPath: boolean, rootDir: string }): Promise<ClassWithRoot[]> {
+async function findClassRecursive(path: string | string[] | Class | Class[], option?: { directoryAsPath?: boolean, rootDir?: string }): Promise<ClassWithRoot[]> {
+    const opt = { rootDir: "", directoryAsPath: false, ...option }
     if (Array.isArray(path)) {
         const result = []
         for (const p of path) {
@@ -153,7 +154,7 @@ async function findClassRecursive(path: string | string[] | Class | Class[], opt
         return result
     }
     if (typeof path === "string") {
-        const absPath = isAbsolute(path) ? path : join(opt.rootDir, path) 
+        const absPath = isAbsolute(path) ? path : join(opt.rootDir, path)
         //read all files and get module reflection
         const files = await findFilesRecursive(absPath)
         const result = []
