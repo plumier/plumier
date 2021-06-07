@@ -125,8 +125,8 @@ function checkMistypePoliciesOnReturnValue(route: RouteInfo, policies: AuthPolic
 
 function missingEntityProviderMessage(policies: string[], prefix?: string): RouteAnalyzerIssue {
     const names = Array.from(new Set(policies)).join(", ")
-    const pref = prefix ? ` ${prefix}` : ""
-    return { type: "error", message: `Entity policy ${names} applied on non entity provider${pref}` }
+    const pref = prefix ? ` on ${prefix}` : ""
+    return { type: "error", message: `Entity policy ${names}${pref} used on non entity provider route` }
 }
 
 function checkMissingEntityProviderOnRoute(route: RouteInfo, policies: AuthPolicy[], globalAuthorize?: string | string[]): RouteAnalyzerIssue[] {

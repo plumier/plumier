@@ -14,6 +14,7 @@ import {
     middleware,
     PlumierApplication,
     Public,
+    RelationDecorator,
     responseType,
     RouteMetadata
 } from "@plumier/core"
@@ -22,6 +23,7 @@ import { noop, reflect, type } from "@plumier/reflect"
 import { SwaggerFacility } from "@plumier/swagger"
 import "@plumier/testing"
 import { cleanupConsole } from "@plumier/testing"
+import { Result, VisitorInvocation } from "@plumier/validator"
 import { sign } from "jsonwebtoken"
 import Koa from "koa"
 import Plumier, { authorize, domain, route, val, WebApiFacility, genericController } from "plumier"
@@ -3980,9 +3982,6 @@ describe("JwtAuth", () => {
                 @authorize.write("ShopAdmin")
                 basePrice: number
             }
-            const products: Product[] = [
-                { id: 1, name: "Vanilla", price: 200, basePrice: 100, shop: 1 },
-            ]
             const ProductPolicy = entityPolicy(Product)
                 .define("ShopAdmin", (i, e) => {
                     const shop = shops.find(x => e === x.id)!
@@ -4009,6 +4008,56 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .put("/products/1")
                 .send({ basePrice: 123 })
+                .set("Authorization", `Bearer ${USER_TWO}`)
+                .expect(401)
+        })
+        it("Should able to write protect relation property", async () => {
+            function relationConverter(i: VisitorInvocation): Result {
+                if (i.value && i.decorators.find((x: RelationDecorator) => x.kind === "plumier-meta:relation"))
+                    return Result.create(i.value)
+                else
+                    return i.proceed()
+            }
+            class Shop {
+                @entity.primaryId()
+                id: number
+                @meta.property()
+                name: string
+                @entity.relation()
+                @meta.type(x => [Product])
+                products: Product[]
+            }
+            class Product {
+                @entity.primaryId()
+                id: number
+                @meta.property()
+                name: string
+                @authorize.write("ShopAdmin")
+                @entity.relation()
+                shop: Shop
+            }
+            const authPolicies = [entityPolicy(Product)
+                .define("ShopAdmin", (i, e) => {
+                    const shop = shops.find(x => e === x.id)!
+                    return shop.users.some(x => x.uid === i.user!.userId && x.role === "Admin")
+                })]
+            class ProductsController {
+                @entityProvider(Product, "id")
+                @route.put(":id")
+                modify(id: number, data: Product) { }
+            }
+            const app = await fixture(ProductsController)
+                .set({ typeConverterVisitors: [relationConverter] })
+                .set(new JwtAuthFacility({ secret: SECRET, authPolicies }))
+                .initialize()
+            await Supertest(app.callback())
+                .put("/products/1")
+                .send({ shop: 1 })
+                .set("Authorization", `Bearer ${USER_ONE}`)
+                .expect(200)
+            await Supertest(app.callback())
+                .put("/products/1")
+                .send({ shop: 1 })
                 .set("Authorization", `Bearer ${USER_TWO}`)
                 .expect(401)
         })
@@ -4301,7 +4350,6 @@ describe("JwtAuth", () => {
                 .initialize())
             expect(mock.mock.calls).toMatchSnapshot()
         })
-
     })
 
     describe("Open API", () => {
