@@ -14,7 +14,7 @@ Array [
   ],
   Array [
     "2. DefaultControllerGeneric.save(data, ctx) -> Authenticated POST   /user
- - error Entity policy ResourceOwner applied on non entity provider model User.role",
+ - error Entity policy ResourceOwner on model User.role used on non entity provider route",
   ],
   Array [
     "3. DefaultControllerGeneric.get             -> Authenticated GET    /user/:id
@@ -250,7 +250,7 @@ Array [
   ],
   Array [
     "1. UsersController.save(data) -> Authenticated POST /users
- - error Entity policy ResourceOwner applied on non entity provider model User.role",
+ - error Entity policy ResourceOwner on model User.role used on non entity provider route",
   ],
   Array [],
 ]
@@ -264,7 +264,7 @@ Array [
   ],
   Array [
     "1. UsersController.save(data) -> Authenticated POST /users
- - error Entity policy ResourceOwner applied on non entity provider model User.role",
+ - error Entity policy ResourceOwner on model User.role used on non entity provider route",
   ],
   Array [],
 ]
@@ -278,7 +278,7 @@ Array [
   ],
   Array [
     "1. UsersController.save(data) -> Authenticated POST /users
- - error Entity policy ResourceOwner applied on non entity provider parameter data",
+ - error Entity policy ResourceOwner on parameter data used on non entity provider route",
   ],
   Array [],
 ]
@@ -292,7 +292,7 @@ Array [
   ],
   Array [
     "1. UsersController.save(data) -> ResourceOwner POST /users
- - error Entity policy ResourceOwner applied on non entity provider",
+ - error Entity policy ResourceOwner used on non entity provider route",
   ],
   Array [],
 ]
@@ -306,7 +306,7 @@ Array [
   ],
   Array [
     "1. UsersController.save(data) -> ResourceOwner POST /users
- - error Entity policy ResourceOwner applied on non entity provider",
+ - error Entity policy ResourceOwner used on non entity provider route",
   ],
   Array [],
 ]
