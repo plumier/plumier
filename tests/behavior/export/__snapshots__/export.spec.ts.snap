@@ -373,7 +373,6 @@ Object {
   "getModels": bound getModels,
   "model": bound model,
   "models": Map {},
-  "normalizeEntity": ,
   "orderConverter": ,
   "proxy": bound proxy,
   "selectConverter": ,

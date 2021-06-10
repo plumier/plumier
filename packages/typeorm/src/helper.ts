@@ -53,9 +53,7 @@ function normalizeEntityNoCache(type: Class) {
             const inverseProperty = typeof inverse === "string" ? inverse : inverseSideParser(inverse)
             const decorators = [
                 reflect.type(x => [rawType]),
-                entity.relation({ inverseProperty }),
-                authorize.readonly(),
-                authorize.writeonly()
+                entity.relation({ inverseProperty })
             ]
             Reflect.decorate(decorators, target.prototype, col.propertyName, void 0)
         }

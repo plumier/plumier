@@ -1094,7 +1094,7 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body.length).toBe(50)
         })
-        it("Should not allow nested array relation accessed from parent", async () => {
+        it("Should allow nested array relation accessed from parent", async () => {
             @collection()
             @genericController()
             class User {
@@ -1119,7 +1119,7 @@ describe("CRUD", () => {
             function createApp(option?: Partial<Configuration>) {
                 return new Plumier()
                     .set(new WebApiFacility())
-                    .set(new MongooseFacility({entity: [User, Animal]}))
+                    .set(new MongooseFacility())
                     .set(new JwtAuthFacility({ secret: "secret", globalAuthorize: "Public" }))
                     .set(option || {})
                     .initialize()
@@ -1130,7 +1130,7 @@ describe("CRUD", () => {
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
             const {body} = await supertest(app.callback())
                 .get(`/users/${user._id}?select=animals`)
-                .expect(403)
+                .expect(200)
             expect(body).toMatchSnapshot()
         })
         it("Should check prover mongodb id on GET /users/:parentId/animals?offset&limit", async () => {

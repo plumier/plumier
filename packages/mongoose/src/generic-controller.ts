@@ -10,7 +10,6 @@ import {
 import reflect, { generic } from "@plumier/reflect"
 import { Context } from "koa"
 import pluralize from "pluralize"
-import { normalizeEntity } from "./helper"
 
 import { MongooseNestedRepository, MongooseRepository } from "./repository"
 
@@ -77,18 +76,7 @@ function createGenericControllerMongoose(controllers?: GenericControllers) {
         createGenericController(type, {
             controllers: controllers ?? [MongooseControllerGeneric, MongooseNestedControllerGeneric],
             nameConversion: pluralize,
-            config, normalize: type => {
-                if (Array.isArray(type)) {
-                    const [parentEntity, relation] = type
-                    normalizeEntity(parentEntity)
-                    const meta = reflect(parentEntity)
-                    const prop = meta.properties.find(x => x.name === relation)!
-                    const entity: Class = Array.isArray(prop.type) ? prop.type[0] : prop.type
-                    normalizeEntity(entity)
-                }
-                else
-                    normalizeEntity(type)
-            }
+            config, normalize: type => {}
         })
 }
 

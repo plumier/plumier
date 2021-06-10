@@ -1060,63 +1060,6 @@ describe("Facility", () => {
 
     })
 
-    describe("Entity Normalization", () => {
-        beforeEach(() => mongoose.connection.models = {})
-        afterEach(async () => await mongoose.disconnect())
-
-        it("Should mark array relation as readonly/writeonly", async () => {
-            @collection()
-            @genericController()
-            class User {
-                @collection.id()
-                id: string
-                @reflect.noop()
-                email: string
-                @reflect.noop()
-                name: string
-                @collection.ref(x => [Animal])
-                @genericController()
-                animals: Animal[]
-            }
-            @collection()
-            class Animal {
-                @collection.id()
-                id: string
-                @reflect.noop()
-                name: string
-            }
-            await fixture([User, Animal])
-                .set(new MongooseFacility({ entity: [User, Animal] }))
-                .initialize()
-            const meta = reflect(User)
-            const decs = meta.properties.find(x => x.name === "animals")
-                ?.decorators.filter((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize")
-            expect(decs).toMatchSnapshot()
-        })
-        it("Should able to normalize using path", async () => {
-            class UserController { }
-            await fixture(UserController)
-                .set(new MongooseFacility({ entity: "./v1" }))
-                .initialize()
-            const { Animal } = await import("./v1/models")
-            const meta = reflect(Animal)
-            const decs = meta.properties.find(x => x.name === "tags")
-                ?.decorators.filter((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize")
-            expect(decs).toMatchSnapshot()
-        })
-        it("Should able to discover entities by default", async () => {
-            class UserController { }
-            await fixture(UserController)
-                .set({ rootDir: __dirname })
-                .set(new MongooseFacility())
-                .initialize()
-            const { NestedEntity } = await import("./entity-discovery/example-entity")
-            const meta = reflect(NestedEntity)
-            const decs = meta.properties.find(x => x.name === "tags")
-                ?.decorators.filter((x: AuthorizeDecorator) => x.type === "plumier-meta:authorize")
-            expect(decs).toMatchSnapshot()
-        })
-    })
 })
 
 describe("Response Projection Transformer", () => {
