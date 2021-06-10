@@ -719,6 +719,214 @@ Object {
 }
 `;
 
+exports[`CRUD Nested CRUD One to Many Function Should allow nested array relation accessed from parent 1`] = `
+Object {
+  "animals": Array [
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+    Object {
+      "id": "MONGODB UNIQUE ID",
+      "name": "Mimi",
+    },
+  ],
+  "id": "MONGODB UNIQUE ID",
+}
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should filter with exact value GET /users/:parentId/animals?filter  1`] = `
 Array [
   Object {
@@ -744,13 +952,6 @@ Array [
     "name": "Jojo",
   },
 ]
-`;
-
-exports[`CRUD Nested CRUD One to Many Function Should not allow nested array relation accessed from parent 1`] = `
-Object {
-  "message": "Unauthorized to access select properties animals",
-  "status": 403,
-}
 `;
 
 exports[`CRUD Nested CRUD One to Many Function Should not confused on reverse properties with the same type POST /users/:parentId/animals 1`] = `

@@ -8,5 +8,4 @@ export { MongooseControllerGeneric, MongooseNestedControllerGeneric, GenericCont
 export {  MongooseRepository, MongooseNestedRepository } from "./repository"
 export * from "./types"
 export * from "./query-parser"
-export * from "./helper"
 export default model;

@@ -1978,7 +1978,7 @@ describe("CRUD", () => {
             expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
             console.mockClear()
         })
-        it("Should not able to populate array relation from parent", async () => {
+        it("Should able to retrieve array relation from parent", async () => {
             function createApp(entities: Function[], opt?: Partial<Configuration>) {
                 return new Plumier()
                     .set(new WebApiFacility())
@@ -2013,52 +2013,11 @@ describe("CRUD", () => {
             const app = await createApp([User, Animal], { mode: "production" })
             const user = await createUser(User)
             const animalRepo = getManager().getRepository(Animal)
-            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
-            await supertest(app.callback())
-                .patch(`/users/${user.id}`)
-                .send({ animals: [] })
-                .expect(403)
-        })
-        it("Should not able to retrieve array relation from parent", async () => {
-            function createApp(entities: Function[], opt?: Partial<Configuration>) {
-                return new Plumier()
-                    .set(new WebApiFacility())
-                    .set(new TypeORMFacility({ connection: getConn(entities) }))
-                    .set(new JwtAuthFacility({ secret: "secret", globalAuthorize: "Public" }))
-                    .set({ ...opt, controller: entities as any })
-                    .initialize()
-            }
-            @Entity()
-            @genericController()
-            class User {
-                @PrimaryGeneratedColumn()
-                id: number
-                @Column()
-                email: string
-                @Column()
-                name: string
-                @OneToMany(x => Animal, x => x.user)
-                @genericController()
-                animals: Animal[]
-            }
-            @Entity()
-            @genericController()
-            class Animal {
-                @PrimaryGeneratedColumn()
-                id: number
-                @Column()
-                name: string
-                @ManyToOne(x => User, x => x.animals)
-                user: User
-            }
-            const app = await createApp([User, Animal], { mode: "production" })
-            const user = await createUser(User)
-            const animalRepo = getManager().getRepository(Animal)
-            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi ${i}`, user })))
-            await supertest(app.callback())
-                .patch(`/users/${user.id}?select=animals`)
-                .send({ animals: [] })
-                .expect(403)
+            await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert({ name: `Mimi`, user })))
+            const { body } = await supertest(app.callback())
+                .get(`/users/${user.id}?select=animals`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
         })
     })
     describe("Nested CRUD Many To One", () => {

@@ -750,6 +750,214 @@ Array [
 ]
 `;
 
+exports[`CRUD Nested CRUD One to Many Function Should able to retrieve array relation from parent 1`] = `
+Object {
+  "animals": Array [
+    Object {
+      "id": 1,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 2,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 3,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 4,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 5,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 6,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 7,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 8,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 9,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 10,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 11,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 12,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 13,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 14,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 15,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 16,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 17,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 18,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 19,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 20,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 21,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 22,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 23,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 24,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 25,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 26,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 27,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 28,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 29,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 30,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 31,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 32,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 33,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 34,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 35,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 36,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 37,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 38,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 39,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 40,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 41,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 42,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 43,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 44,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 45,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 46,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 47,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 48,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 49,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 50,
+      "name": "Mimi",
+    },
+  ],
+  "id": 1,
+}
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should able to select by properties /users/:parentId/animals/:id 1`] = `
 Object {
   "age": 21,
@@ -2039,9 +2247,7 @@ Object {
       "items": Object {
         "$ref": "#/components/schemas/Animal",
       },
-      "readOnly": true,
       "type": "array",
-      "writeOnly": true,
     },
     "email": Object {
       "type": "string",
