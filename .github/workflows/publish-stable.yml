@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
   # schedule: 
-  #   - cron:  '* * 1,15 * *'
+  #   - cron:  '0 0 1,15 * *'
 
 jobs:
   build:
@@ -17,8 +17,24 @@ jobs:
       uses: actions/checkout@v2
       with:
           submodules: recursive
+          # required on protected branch
           token: ${{ secrets.PUBLISH_PAT }}
           fetch-depth: 0
+    -
+      name: Import GPG key
+      id: import_gpg
+      uses: crazy-max/ghaction-import-gpg@v3
+      with:
+        gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+        passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        git-user-signingkey: true
+        git-commit-gpgsign: true
+        git-tag-gpgsign: true
+    -
+      name: GPG user IDs
+      run: |
+        echo "keyid:       ${{ steps.import_gpg.outputs.keyid }}"
+        echo "name:        ${{ steps.import_gpg.outputs.name }}"
     - name: Setup .npmrc file for publish
       uses: actions/setup-node@v2
       with:
@@ -27,7 +43,7 @@ jobs:
     - name: Configure Git User
       run: |
         git config --global user.email "ci@plumierjs.com"
-        git config --global user.name "ci@$GITHUB_ACTOR"
+        git config --global user.name "plumier-bot"
     - name: Install dependencies
       run: yarn install
     - name: Publish
