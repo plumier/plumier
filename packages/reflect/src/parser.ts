@@ -1,4 +1,5 @@
 import { Node, parse } from "acorn"
+import { useCache } from "./helpers"
 
 import { getAllMetadata } from "./storage"
 import {
@@ -176,7 +177,7 @@ function parseConstructor(fn: Class): ConstructorReflection {
     }
 }
 
-function parseClass(fn: Class): ClassReflection {
+function parseClassNoCache(fn: Class): ClassReflection {
     const proto = Object.getPrototypeOf(fn)
     return {
         kind: "Class", name: fn.name, type: fn, decorators: [],
@@ -186,5 +187,8 @@ function parseClass(fn: Class): ClassReflection {
         super: proto.prototype ? proto : Object,
     }
 }
+
+const cacheStore = new Map<Class, ClassReflection>()
+const parseClass = useCache(cacheStore, parseClassNoCache, x => x)
 
 export { parseClass, parseFunction, getMethodParameters, getConstructorParameters, getFunctionParameters, getClassMembers }

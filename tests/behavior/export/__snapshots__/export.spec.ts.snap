@@ -438,7 +438,7 @@ Object {
     "getConstructorParameters": getConstructorParameters,
     "getFunctionParameters": getFunctionParameters,
     "getMethodParameters": getMethodParameters,
-    "parseClass": parseClass,
+    "parseClass": ,
     "parseFunction": parseFunction,
   },
   "reflect": reflect,
