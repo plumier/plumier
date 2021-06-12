@@ -8,7 +8,7 @@
   "command": {
     "publish": {
       "conventionalCommits": true,
-      "message": "chore: Release packages"
+      "message": "chore: Release %s"
     }
   }
 }
