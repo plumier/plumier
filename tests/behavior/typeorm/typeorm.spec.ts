@@ -271,6 +271,33 @@ describe("TypeOrm", () => {
             expect(extract(MyEntity)).toMatchSnapshot()
             expect(extract(Child)).toMatchSnapshot()
         })
+        it("Should not error when many to many relation doesn't specify inverse relation", async () => {
+            @Entity()
+            class MyEntity {
+                @PrimaryGeneratedColumn()
+                id: number 
+                @Column()
+                name: string
+                @ManyToMany(x => Child)
+                @JoinTable()
+                children: Child[]
+            }
+            @Entity()
+            class Child {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+            }
+            await createApp([MyEntity, Child])
+            const parentRepo = getManager().getRepository(MyEntity)
+            const repo = getManager().getRepository(Child)
+            const parent = await parentRepo.insert({ name: "Mimi" })
+            const inserted = await repo.insert({ name: "Poo" })
+            await parentRepo.createQueryBuilder().relation("children").of(parent.raw).add(inserted.raw)
+            const result = await parentRepo.findOne(parent.raw, { relations: ["children"] })
+            expect(result).toMatchSnapshot()
+        })
         it("Should throw error when no entities specified", async () => {
             class UsersController {
                 get() { }

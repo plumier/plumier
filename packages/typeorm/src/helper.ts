@@ -49,12 +49,12 @@ function normalizeEntityNoCache(type: Class) {
             throw new Error(`Relation property ${target.name}.${col.propertyName} uses unsupported data type`)
         const rawType: Class = col.type()
         if (col.relationType === "many-to-many" || col.relationType === "one-to-many") {
-            const inverse = col.inverseSideProperty!
-            const inverseProperty = typeof inverse === "string" ? inverse : inverseSideParser(inverse)
-            const decorators = [
-                reflect.type(x => [rawType]),
-                entity.relation({ inverseProperty })
-            ]
+            const decorators = [reflect.type(x => [rawType])]
+            const inverse = col.inverseSideProperty
+            if(inverse){
+                const inverseProperty = typeof inverse === "string" ? inverse : inverseSideParser(inverse)
+                decorators.push(entity.relation({ inverseProperty }))
+            }
             Reflect.decorate(decorators, target.prototype, col.propertyName, void 0)
         }
         else {
