@@ -51,7 +51,7 @@ class AuthDecoratorImpl {
      * @param modifier modifier access (for property and parameter authorizer)
      * @param tag authorizer name visible on route generator
      */
-    custom( policies: string[], opt: CustomAuthorizeOption) {
+    custom(policies: string[], opt: CustomAuthorizeOption) {
         const option = { tag: "Custom", evaluation: "Dynamic", ...opt }
         return decorate((...args: any[]) => {
             const location = args.length === 1 ? "Class" : args.length === 2 ? "Method" : "Parameter"
@@ -152,6 +152,16 @@ class AuthDecoratorImpl {
      */
     writeonly(): CustomPropertyDecorator {
         return mergeDecorator(this.read(AuthorizeWriteonly), api.writeonly())
+    }
+
+    /**
+     * Authorize parameter or property (read/write) to NONE, no one has read/write access to it
+     */
+    none(): CustomPropertyDecorator {
+        return mergeDecorator(
+            this.write(AuthorizeReadonly), api.readonly(),
+            this.read(AuthorizeWriteonly), api.writeonly()
+        )
     }
 }
 
