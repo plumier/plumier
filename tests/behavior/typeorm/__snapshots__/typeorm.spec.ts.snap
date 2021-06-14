@@ -375,6 +375,19 @@ Array [
 ]
 `;
 
+exports[`TypeOrm Facility Should not error when many to many relation doesn't specify inverse relation 1`] = `
+MyEntity {
+  "children": Array [
+    Child {
+      "id": 1,
+      "name": "Poo",
+    },
+  ],
+  "id": 1,
+  "name": "Mimi",
+}
+`;
+
 exports[`TypeOrm Facility Should throw error when no entities specified 1`] = `
 Array [
   Array [
