@@ -2019,6 +2019,45 @@ describe("CRUD", () => {
                 .expect(200)
             expect(body).toMatchSnapshot()
         })
+        it("Should able to set array of IDs for array relation properties", async () => {
+            @Entity()
+            @genericController()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @genericController()
+                animals: Animal[]
+            }
+            @Entity()
+            @genericController()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const animalRepo = getManager().getRepository(Animal)
+            const animals = await Promise.all([
+                animalRepo.insert({ name: `Mimi` }),
+                animalRepo.insert({ name: `Bingo` })
+            ])
+            await supertest(app.callback())
+                .post(`/users`)
+                .send({ email: "john.doe@gmail.com", name: "John Doe", animals: animals.map(x => x.raw) })
+                .expect(200)
+            const { body } = await supertest(app.callback())
+                .get(`/users/1?select=name,email,animals`)
+                .expect(200)
+            expect(body).toMatchSnapshot()
+        })
     })
     describe("Nested CRUD Many To One", () => {
         async function createUser<T>(type: Class<T>): Promise<T> {

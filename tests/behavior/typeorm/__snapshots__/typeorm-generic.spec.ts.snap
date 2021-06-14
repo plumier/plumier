@@ -1221,6 +1221,24 @@ Array [
 ]
 `;
 
+exports[`CRUD Nested CRUD One to Many Function Should able to set array of IDs for array relation properties 1`] = `
+Object {
+  "animals": Array [
+    Object {
+      "id": 1,
+      "name": "Mimi",
+    },
+    Object {
+      "id": 2,
+      "name": "Bingo",
+    },
+  ],
+  "email": "john.doe@gmail.com",
+  "id": 1,
+  "name": "John Doe",
+}
+`;
+
 exports[`CRUD Nested CRUD One to Many Function Should able to use custom get many query 1`] = `
 Array [
   Object {
