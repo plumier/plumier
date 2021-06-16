@@ -525,6 +525,34 @@ describe("Custom Validation", () => {
             .expect(200)
         expect(fn).toBeCalledTimes(3)
     })
+
+    it("Should able to validate relation property", async () => {
+        @domain()
+        class TagModel {
+            constructor(
+                public name: string,
+            ) { }
+        }
+        @domain()
+        class ClientModel {
+            constructor(
+                public name: string,
+                @val.custom(async (val, info) => "Lorem Ipsum")
+                public tag: TagModel
+            ) { }
+        }
+        class UserController {
+            @route.post()
+            save(data: ClientModel) { }
+        }
+
+        const koa = await fixture(UserController).initialize()
+        const result = await Supertest(koa.callback())
+            .post("/user/save")
+            .send({ name: "abcde", tag: { name: "abcde" } })
+            .expect(422)
+        expect(result.body).toMatchSnapshot()
+    })
 })
 
 describe("Class Scope Validation", () => {

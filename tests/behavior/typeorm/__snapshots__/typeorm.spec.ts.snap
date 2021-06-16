@@ -495,6 +495,23 @@ Object {
 }
 `;
 
+exports[`TypeOrm Update relation with ID Should not break custom validation 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Lorem ipsum",
+      ],
+      "path": Array [
+        "data",
+        "child",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
 exports[`TypeOrm Update relation with ID Should validate number type id 1`] = `
 Object {
   "message": Array [
