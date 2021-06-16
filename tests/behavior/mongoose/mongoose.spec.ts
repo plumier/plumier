@@ -1,4 +1,4 @@
-import { authorize, AuthorizeDecorator, Class, route } from "@plumier/core"
+import { authorize, AuthorizeDecorator, Class, route, val } from "@plumier/core"
 import { JwtAuthFacility } from "@plumier/jwt"
 import model, { collection, getModels, model as globalModel, MongooseFacility, MongooseHelper, Ref } from "@plumier/mongoose"
 import { MongoMemoryServer } from "mongodb-memory-server-global"
@@ -1026,6 +1026,74 @@ describe("Facility", () => {
                 .get("/animal/" + mongoose.Types.ObjectId())
                 .expect(200)
             expect(fn.mock.calls[0][0]).toBe("string")
+        })
+
+        it("Should not break validation", async () => {
+            @collection()
+            class Image {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @collection()
+            class Animal {
+                constructor(
+                    public name: string,
+                    @val.required()
+                    @collection.ref(Image)
+                    public image: Image
+                ) { }
+            }
+            const AnimalModel = globalModel(Animal)
+            class AnimalController {
+                @route.post()
+                @authorize.route("Public")
+                async save(data: Animal) {
+                    const newly = await new AnimalModel(data).save()
+                    return newly._id
+                }
+            }
+            const koa = await createApp(AnimalController, [Image, Animal])
+            const { body } = await supertest(koa.callback())
+                .post("/animal/save")
+                .send({ name: "Mimi" })
+                .expect(422)
+            expect(body).toMatchSnapshot()
+        })
+
+        it("Should not break custom validation", async () => {
+            @collection()
+            class Image {
+                constructor(
+                    public name: string
+                ) { }
+            }
+            @collection()
+            class Animal {
+                constructor(
+                    public name: string,
+                    @val.custom(() => "Lorem ipsum dolor")
+                    @collection.ref(Image)
+                    public image: Image
+                ) { }
+            }
+            const ImageModel = globalModel(Image)
+            const AnimalModel = globalModel(Animal)
+            class AnimalController {
+                @route.post()
+                @authorize.route("Public")
+                async save(data: Animal) {
+                    const newly = await new AnimalModel(data).save()
+                    return newly._id
+                }
+            }
+            const koa = await createApp(AnimalController, [Image, Animal])
+            const image = await new ImageModel({ name: "Image1.jpg" }).save()
+            const { body } = await supertest(koa.callback())
+                .post("/animal/save")
+                .send({ name: "Mimi", image: image.id })
+                .expect(422)
+            expect(body).toMatchSnapshot()
         })
     })
 

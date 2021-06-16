@@ -1,5 +1,39 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Facility Automatically replace mongodb id into ObjectId on populate data Should not break custom validation 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Lorem ipsum dolor",
+      ],
+      "path": Array [
+        "data",
+        "image",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
+exports[`Facility Automatically replace mongodb id into ObjectId on populate data Should not break validation 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": Array [
+        "data",
+        "image",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
 exports[`Facility Automatically replace mongodb id into ObjectId on populate data Should validate properly on Array 1`] = `
 Object {
   "message": Array [

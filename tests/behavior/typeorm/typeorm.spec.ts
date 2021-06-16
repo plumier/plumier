@@ -1,4 +1,4 @@
-import { authorize, authPolicy, Class, route } from "@plumier/core"
+import { authorize, authPolicy, Class, route, val } from "@plumier/core"
 import { TypeORMFacility } from "@plumier/typeorm"
 import { join } from "path"
 import supertest from "supertest"
@@ -698,6 +698,46 @@ describe("TypeOrm", () => {
                 .set("Authorization", `Bearer ${userToken}`)
                 .send({ name: "Bingo", parent: parent.raw })
                 .expect(401)
+            expect(body).toMatchSnapshot()
+        })
+
+        it("Should not break custom validation", async () => {
+            @Entity()
+            class Parent {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @val.custom(() => "Lorem ipsum")
+                @OneToOne(x => Child, x => x.parent)
+                child: any
+            }
+            @Entity()
+            class Child {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @OneToOne(x => Parent)
+                @JoinColumn()
+                parent: Parent
+            }
+            class ParentController {
+                @route.post("")
+                async save(data: Parent) {
+                    const parentRepo = getManager().getRepository(Parent)
+                    await parentRepo.save(data)
+                    return { id: data.id }
+                }
+            }
+            const koa = await createApp([Child, Parent], ParentController)
+            const parentRepo = getManager().getRepository(Parent)
+            const repo = getManager().getRepository(Child)
+            const child = await repo.insert({ name: "Poo" })
+            const { body } = await supertest(koa.callback())
+                .post("/parent")
+                .send({ name: "Mimi", child: child.raw })
+                .expect(422)
             expect(body).toMatchSnapshot()
         })
     })

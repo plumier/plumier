@@ -152,6 +152,23 @@ Object {
 }
 `;
 
+exports[`Custom Validation Should able to validate relation property 1`] = `
+Object {
+  "message": Array [
+    Object {
+      "messages": Array [
+        "Lorem Ipsum",
+      ],
+      "path": Array [
+        "data",
+        "tag",
+      ],
+    },
+  ],
+  "status": 422,
+}
+`;
+
 exports[`Custom Validation Should prioritize required validator 1`] = `
 Array [
   Object {

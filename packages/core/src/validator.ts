@@ -161,7 +161,7 @@ function mergeMessage(messages: tc.ResultMessages[]) {
 async function validate(ctx: ActionContext) {
     if (ctx.route.action.parameters.length === 0) return []
     const nodes: CustomValidatorNode[] = []
-    const visitors = [customValidatorNodeVisitor(nodes), ...ctx.config.typeConverterVisitors]
+    const visitors = [...ctx.config.typeConverterVisitors, customValidatorNodeVisitor(nodes)]
     const syncResult = validateSync(ctx, visitors)
     const asyncResult = await validateAsync(ctx, nodes)
     const issues = syncResult.issues.concat(asyncResult.issues)
