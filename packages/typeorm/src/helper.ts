@@ -51,10 +51,12 @@ function normalizeEntityNoCache(type: Class) {
         if (col.relationType === "many-to-many" || col.relationType === "one-to-many") {
             const decorators = [reflect.type(x => [rawType])]
             const inverse = col.inverseSideProperty
-            if(inverse){
+            if (inverse) {
                 const inverseProperty = typeof inverse === "string" ? inverse : inverseSideParser(inverse)
                 decorators.push(entity.relation({ inverseProperty }))
             }
+            else
+                decorators.push(entity.relation())
             Reflect.decorate(decorators, target.prototype, col.propertyName, void 0)
         }
         else {
