@@ -2827,6 +2827,34 @@ describe("Open API", () => {
             .expect(200)
         expect(body.components.schemas.User).toMatchSnapshot()
     })
+    it("Should reflect relation on many to many column", async () => {
+        @genericController()
+        @Entity()
+        class User {
+            @PrimaryGeneratedColumn()
+            id: number
+            @Column()
+            email: string
+            @Column()
+            name: string
+            @ManyToMany(x => Animal)
+            @JoinTable()
+            animals: Animal[]
+        }
+
+        @Entity()
+        class Animal {
+            @PrimaryGeneratedColumn()
+            id: number
+            @Column()
+            name: string
+        }
+        const app = await createApp([User, Animal])
+        const { body } = await supertest(app.callback())
+            .post("/swagger/swagger.json")
+            .expect(200)
+        expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+    })
 })
 
 describe("Repository", () => {

@@ -2330,6 +2330,70 @@ Object {
 }
 `;
 
+exports[`Open API Should reflect relation on many to many column 1`] = `
+Object {
+  "content": Object {
+    "application/json": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "animals": Object {
+                "items": Object {
+                  "type": "number",
+                },
+                "type": "array",
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "id": Object {
+                "readOnly": true,
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+    "application/x-www-form-urlencoded": Object {
+      "schema": Object {
+        "allOf": Array [
+          Object {
+            "$ref": "#/components/schemas/User",
+          },
+          Object {
+            "properties": Object {
+              "animals": Object {
+                "items": Object {
+                  "type": "number",
+                },
+                "type": "array",
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "properties": Object {
+              "id": Object {
+                "readOnly": true,
+              },
+            },
+            "type": "object",
+          },
+        ],
+      },
+    },
+  },
+  "required": true,
+}
+`;
+
 exports[`Repository Repository Should able to get one 1`] = `
 User {
   "email": "john.doe@gmail.com",

@@ -44,11 +44,6 @@ function transformModel(model: ParameterNode, ctx: TransformContext) {
     // if not partial validator then add required override
     if (!model.meta.decorators.find(isPartialValidator))
         overrides.push("Required")
-    // if contains @api.noRelation() then adds remove all relations
-    if (!!model.meta.decorators.find((x: ApiHideRelationDecorator) => x.kind === "ApiNoRelation")) {
-        overrides.push("RemoveInverseProperty")
-        overrides.push("RemoveArrayRelation")
-    }
     overrides.push("ReadonlyFields")
     return transformTypeAdvance(model.type, ctx, { decorators: model.meta.decorators, overrides })
 }
