@@ -185,68 +185,6 @@ describe("Open API 3.0 Generation", () => {
                     .expect(200)
                 expect(body.paths["/item"].post.requestBody).toMatchSnapshot()
             })
-            it("Should hide reverse relation", async () => {
-                class Shop {
-                    @entity.primaryId()
-                    id: number
-
-                    @noop()
-                    name: string
-
-                    @entity.relation({ inverseProperty: "shop" })
-                    @type(x => [Item])
-                    items: Item[]
-                }
-                class User {
-                    @entity.primaryId()
-                    id: number
-
-                    @noop()
-                    name: string
-
-                    @entity.relation()
-                    @type(x => [Shop])
-                    shops: Shop[]
-                }
-                class Category {
-                    @entity.primaryId()
-                    id: number
-
-                    @noop()
-                    name: string
-                }
-                class Item {
-                    @entity.primaryId()
-                    id: number
-
-                    @noop()
-                    name: string
-
-                    @noop()
-                    price: number
-
-                    @entity.relation()
-                    shop: Shop
-
-                    @entity.relation()
-                    @type(x => [Category])
-                    categories: Category[]
-
-                    @entity.relation()
-                    createdBy: User
-                }
-                @generic.argument(Shop, Item, Number, Number)
-                @decorateClass(<NestedGenericControllerDecorator>{ kind: "plumier-meta:relation-prop-name", relation: "items", type: Shop })
-                class ItemController {
-                    @route.post("")
-                    save(@api.hideRelations() data: Item) { }
-                }
-                const app = await createApp(ItemController)
-                const { body } = await supertest(app.callback())
-                    .get("/swagger/swagger.json")
-                    .expect(200)
-                expect(body.paths["/item"].post.requestBody).toMatchSnapshot()
-            })
             it("Should respect readonly property", async () => {
                 class Shop {
                     @entity.primaryId()
