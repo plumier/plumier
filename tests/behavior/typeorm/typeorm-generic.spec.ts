@@ -35,9 +35,11 @@ import {
     Entity,
     getManager,
     JoinColumn,
+    JoinTable,
     ManyToOne,
     OneToMany,
     OneToOne,
+    ManyToMany,
     PrimaryGeneratedColumn,
     getRepository
 } from "typeorm"
@@ -1369,6 +1371,44 @@ describe("CRUD", () => {
             expect(animal).toMatchSnapshot()
 
         })
+        it("Should able to post from children Ids from parent", async () => {
+            @Entity()
+            @genericController()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                animals: Animal[]
+            }
+            @Entity()
+            @genericController()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const animalRepo = getManager().getRepository(Animal)
+            const animals = await Promise.all([
+                animalRepo.save({ name: "Mimi" }),
+                animalRepo.save({ name: "Bingo" }),
+            ])
+            const { body } = await supertest(app.callback())
+                .post(`/users`)
+                .send({ email: "john.doe@gmail.com", name: "John Doe", animals: animals.map(x => x.id) })
+                .expect(200)
+            const { body: result } = await supertest(app.callback())
+                .get(`/users/${body.id}?select=name,animals`)
+                .expect(200)
+            expect(result).toMatchSnapshot()
+        })
         it("Should throw 404 if parent not found POST /users/:parentId/animals", async () => {
             @Entity()
             @genericController()
@@ -2633,6 +2673,82 @@ describe("CRUD", () => {
                 .get(`/parents/${parent.id}/children`)
                 .expect(200)
             expect(body).toMatchSnapshot()
+        })
+    })
+    describe("Many To Many", () => {
+        async function createUser<T>(type: Class<T>): Promise<T> {
+            const userRepo = getManager().getRepository<T>(type)
+            const inserted = await userRepo.insert({ email: "john.doe@gmail.com", name: "John Doe" } as any)
+            const saved = await userRepo.findOne(inserted.raw)
+            return saved!
+        }
+        it("Should serve many to many properly", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @genericController()
+                @ManyToMany(x => Animal)
+                @JoinTable()
+                animals: Animal[]
+            }
+
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const user = await createUser(User)
+            await supertest(app.callback())
+                .post(`/users/${user.id}/animals`)
+                .send({ name: "Mimi" })
+                .expect(200)
+            const result = await getRepository(User).findOne(user.id, { relations: ["animals"] })
+            expect(result).toMatchSnapshot()
+        })
+        it("Should able to post from children Ids from parent", async () => {
+            @genericController()
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @ManyToMany(x => Animal)
+                @JoinTable()
+                animals: Animal[]
+            }
+
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const animalRepo = getManager().getRepository(Animal)
+            const animals = await Promise.all([
+                animalRepo.save({ name: "Mimi" }),
+                animalRepo.save({ name: "Bingo" }),
+            ])
+            const { body } = await supertest(app.callback())
+                .post(`/users`)
+                .send({ email: "john.doe@gmail.com", name: "John Doe", animals: animals.map(x => x.id) })
+                .expect(200)
+            const { body: result } = await supertest(app.callback())
+                .get(`/users/${body.id}?select=name,animals`)
+                .expect(200)
+            expect(result).toMatchSnapshot()
         })
     })
 })

@@ -1,6 +1,6 @@
 import { Class, NestedRepository, Repository, SelectQuery, EntityRelationInfo, entityHelper } from "@plumier/core"
 import { EntityWithRelation } from "@plumier/generic-controller"
-import { getManager, Repository as NativeRepository } from "typeorm"
+import { getManager, getRepository, Repository as NativeRepository } from "typeorm"
 
 class TypeORMRepository<T> implements Repository<T> {
     readonly nativeRepository: NativeRepository<T>
@@ -62,6 +62,11 @@ class TypeORMNestedRepository<P, T> implements NestedRepository<P, T> {
     }
 
     async find(pid: any, offset: number, limit: number, query: any, selection: SelectQuery, order: any): Promise<T[]> {
+        // const parent = await this.nativeParentRepository
+        //     .createQueryBuilder("parent")
+        //     .leftJoinAndSelect(`parent.${this.relation.parentProperty}`, "child")
+        //     .whereInIds(pid)
+        //     .getOne()
         return this.nativeRepository.find({
             where:
                 { [this.relation.childProperty!]: pid, ...query },

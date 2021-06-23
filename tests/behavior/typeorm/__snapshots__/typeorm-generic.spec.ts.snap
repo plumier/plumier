@@ -653,6 +653,37 @@ Object {
 }
 `;
 
+exports[`CRUD Many To Many Should able to post from children Ids from parent 1`] = `
+Object {
+  "animals": Array [
+    Object {
+      "id": 1,
+      "name": "Bingo",
+    },
+    Object {
+      "id": 2,
+      "name": "Mimi",
+    },
+  ],
+  "id": 1,
+  "name": "John Doe",
+}
+`;
+
+exports[`CRUD Many To Many Should serve many to many properly 1`] = `
+User {
+  "animals": Array [
+    Animal {
+      "id": 1,
+      "name": "Mimi",
+    },
+  ],
+  "email": "john.doe@gmail.com",
+  "id": 1,
+  "name": "John Doe",
+}
+`;
+
 exports[`CRUD Nested CRUD Many To One Should able to use generic controller factory 1`] = `
 Array [
   Array [],
@@ -748,6 +779,23 @@ Array [
     "name": "Alba",
   },
 ]
+`;
+
+exports[`CRUD Nested CRUD One to Many Function Should able to post from children Ids from parent 1`] = `
+Object {
+  "animals": Array [
+    Object {
+      "id": 1,
+      "name": "Bingo",
+    },
+    Object {
+      "id": 2,
+      "name": "Mimi",
+    },
+  ],
+  "id": 1,
+  "name": "John Doe",
+}
 `;
 
 exports[`CRUD Nested CRUD One to Many Function Should able to retrieve array relation from parent 1`] = `
