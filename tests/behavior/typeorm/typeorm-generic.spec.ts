@@ -348,6 +348,43 @@ describe("CRUD", () => {
         const meta = reflection.getMethods(reflect(MyController))
         expect(meta).toMatchSnapshot()
     })
+    it("Should throw proper error message when generic controller factory found missing relation property type", async () => {
+        @Entity()
+        class User {
+            @PrimaryGeneratedColumn()
+            id: number
+            @Column()
+            email: string
+            @Column()
+            name: string
+            // this type is undefined usually in cross dependent entity
+            @OneToMany(x => undefined as any, "user")
+            @genericController()
+            animals: Animal[]
+        }
+        @Entity()
+        class Animal {
+            @PrimaryGeneratedColumn()
+            id: number
+            @Column()
+            name: string
+            @ManyToOne(x => User, x => x.animals)
+            user: User
+        }
+        const fn = jest.fn()
+        try{
+            class MyController extends GenericController([User, "animals"]) {
+                @noop()
+                save(pid: number, data: Animal, ctx: Context) {
+                    return super.save(pid, data, ctx)
+                }
+            }
+        }
+        catch(e){
+            fn(e)
+        }
+        expect(fn.mock.calls).toMatchSnapshot()
+    })
     it("Should able to create custom generic controller factory", async () => {
         class MyCustomGeneric<T, TID> extends TypeORMControllerGeneric<T, TID>{
             constructor() { super(x => new TypeORMRepository(x)) }

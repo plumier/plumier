@@ -2040,6 +2040,14 @@ Array [
 ]
 `;
 
+exports[`CRUD Should throw proper error message when generic controller factory found missing relation property type 1`] = `
+Array [
+  Array [
+    [Error: Unable to get data type of member User.animals. Make sure to provide type information, or manage if its has cross reference to other class],
+  ],
+]
+`;
+
 exports[`Filter Generic Controller Should able to filter with and 1`] = `
 Array [
   Object {

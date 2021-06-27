@@ -1,4 +1,4 @@
-import { authorize, Class, entity } from "@plumier/core"
+import { authorize, Class, entity, errorMessage } from "@plumier/core"
 import reflect, { noop, useCache } from "@plumier/reflect"
 import { getMetadataArgsStorage } from "typeorm"
 import { parse } from "acorn"
@@ -48,6 +48,8 @@ function normalizeEntityNoCache(type: Class) {
         if (typeof col.type === "string")
             throw new Error(`Relation property ${target.name}.${col.propertyName} uses unsupported data type`)
         const rawType: Class = col.type()
+        if(!rawType) 
+            throw new Error(errorMessage.UnableToGetMemberDataType.format((col.target as Function).name, col.propertyName))
         if (col.relationType === "many-to-many" || col.relationType === "one-to-many") {
             const decorators = [reflect.type(x => [rawType])]
             const inverse = col.inverseSideProperty
