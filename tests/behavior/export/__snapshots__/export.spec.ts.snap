@@ -333,6 +333,8 @@ Object {
   "createRouteDecorators": createRouteDecorators,
   "decorateCustomQuery": decorateCustomQuery,
   "decorateRoute": decorateRoute,
+  "decorateTagByClass": decorateTagByClass,
+  "decorateTagByRelation": decorateTagByRelation,
   "decorateTransformers": decorateTransformers,
   "generateGenericControllerRoutes": generateGenericControllerRoutes,
   "genericController": genericController,

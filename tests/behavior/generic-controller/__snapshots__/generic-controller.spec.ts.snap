@@ -645,6 +645,12 @@ Array [
 ]
 `;
 
+exports[`Open Api Generic Controller Should able to override tag 1`] = `
+Array [
+  "Animal Management",
+]
+`;
+
 exports[`Open Api Generic Controller Should able to provide correct parameter name when using custom path name 1`] = `
 Array [
   Object {
@@ -919,6 +925,12 @@ Object {
     "type": "array",
   },
 }
+`;
+
+exports[`Open Api Generic One To Many Controller Should able to override tag 1`] = `
+Array [
+  "Tags Management",
+]
 `;
 
 exports[`Open Api Generic One To Many Controller Should able to provide correct parameter name when using custom path name 1`] = `

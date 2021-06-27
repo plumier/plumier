@@ -1,5 +1,5 @@
-import { authorize, Class, responseType, route } from "@plumier/core"
-import { decorateClass } from "@plumier/reflect"
+import { api, ApiTagDecorator, authorize, Class, EntityRelationInfo, responseType, route } from "@plumier/core"
+import reflect, { decorateClass } from "@plumier/reflect"
 
 import { decorateRoute, ResponseTransformer, responseTransformer } from "./decorator"
 import {
@@ -283,6 +283,27 @@ function decorateCustomQuery(config: GenericControllerOptions) {
 }
 
 
+function decorateTagByClass(entity: Class, nameConversion: (x: string) => string) {
+    const meta = reflect(entity)
+    const tag = meta.decorators.find((x: ApiTagDecorator) => x.kind === "ApiTag")
+    if (!tag)
+        return api.tag(nameConversion(entity.name))
+    return decorateClass(tag)
+}
+
+function decorateTagByRelation(info: EntityRelationInfo, nameConversion: (x: string) => string) {
+    const meta = reflect(info.parent)
+    const relProp = meta.properties.find(x => x.name === info.parentProperty || x.name === info.childProperty)
+    if (relProp) {
+        const tag = relProp.decorators.find((x: ApiTagDecorator) => x.kind === "ApiTag")
+        if (tag) return decorateClass(tag)
+    }
+    const parent = nameConversion(info.parent.name)
+    const child = nameConversion(info.child.name)
+    return api.tag(`${parent} ${child}`)
+}
+
+
 export {
     ControllerBuilder, GenericControllerOptions, GenericControllerConfiguration,
     splitPath,
@@ -290,6 +311,6 @@ export {
     ignoreActions,
     authorizeActions,
     decorateTransformers,
-    decorateCustomQuery,
+    decorateCustomQuery, decorateTagByRelation, decorateTagByClass
 }
 
