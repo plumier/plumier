@@ -1,7 +1,7 @@
 import { ClassReflection, ParameterReflection, PropertyReflection, reflect, reflection } from "@plumier/reflect"
 import debug from "debug"
 
-import { Class, entityHelper, isCustomClass } from "./common"
+import { Class, entityHelper, isCustomClass, memoize } from "./common"
 import { ResponseTypeDecorator } from "./decorator/common"
 import { EntityIdDecorator, RelationDecorator } from "./decorator/entity"
 import { HttpStatus } from "./http-status"
@@ -438,38 +438,36 @@ interface ClassNode {
     }[]
 }
 
-async function createPropertyNode(prop: PropertyReflection, info: AuthorizerContext) {
+async function createPropertyNode(prop: PropertyReflection, authPolicies: Class<AuthPolicy>[]) {
     const decorators = prop.decorators.filter(createDecoratorFilter(x => x.access === "read"))
     let policies = []
     for (const dec of decorators) {
         policies.push(...dec.policies)
     }
     // if no authorize decorator then always allow to access
-    const authorizer = policies.length === 0 ? true : new PolicyAuthorizer(info.ctx.config.authPolicies, policies)
+    const authorizer = policies.length === 0 ? true : new PolicyAuthorizer(authPolicies, policies)
     return { name: prop.name, authorizer }
 }
 
-async function compileType(type: Class | Class[], ctx: AuthorizerContext, parentTypes: Class[]): Promise<FilterNode> {
-    if (Array.isArray(type)) {
-        return { kind: "Array", child: await compileType(type[0], ctx, parentTypes) }
-    }
-    else if (isCustomClass(type)) {
+async function compileType(type: Class | Class[], authPolicies: Class<AuthPolicy>[], parentTypes: Class[]): Promise<FilterNode> {
+    if (Array.isArray(type))
+        return { kind: "Array", child: await compileType(type[0], authPolicies, parentTypes) }
+    if (isCustomClass(type)) {
         // CIRCULAR: just return basic node if circular dependency happened
         if (parentTypes.some(x => x === type)) return { kind: "Class", properties: [] }
         const meta = reflect(type)
         const properties = []
         for (const prop of meta.properties) {
             const meta = { ...prop, parent: type }
-            const propCtx = { ...ctx, metadata: new MetadataImpl(ctx.ctx.parameters, ctx.ctx.route, meta) }
-            const propNode = await createPropertyNode(prop, propCtx)
+            const propNode = await createPropertyNode(prop, authPolicies)
             properties.push({
                 ...propNode, meta,
-                type: await compileType(prop.type, propCtx, parentTypes.concat(type))
+                type: await compileType(prop.type, authPolicies, parentTypes.concat(type))
             })
         }
         return { kind: "Class", properties }
     }
-    else return { kind: "Value" }
+    return { kind: "Value" }
 }
 
 async function getAuthorize(authorizers: boolean | Authorizer, ctx: AuthorizerContext) {
@@ -520,7 +518,7 @@ async function responseAuthorize(raw: ActionResult, ctx: ActionContext): Promise
     const type = getType(responseType) ?? ctx.route.action.returnType
     if (type !== Promise && type && raw.status === 200 && raw.body) {
         const info = createAuthContext(ctx, "read")
-        const node = await compileType(type, info, [])
+        const node = await compileType(type, ctx.config.authPolicies, [])
         raw.body = Array.isArray(raw.body) && raw.body.length === 0 ? [] : await filterType(raw.body, node, info)
         return raw
     }
