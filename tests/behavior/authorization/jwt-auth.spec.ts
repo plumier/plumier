@@ -1060,6 +1060,33 @@ describe("JwtAuth", () => {
             console.mockClear()
         })
 
+        it("Should not showing duplicate policy name when the exact entity policy are not found", async () => {
+            class Other {}
+            class Item { }
+            class User {
+                @entity.primaryId()
+                id: number
+            }
+            class UsersController {
+                @authorize.route("ResourceOwner")
+                @route.put(":id")
+                @entityProvider(Other, "id")
+                save(id:number, data: User) { }
+            }
+            const authPolicies = [
+                entityPolicy(User).define("ResourceOwner", (ctx, x) => !!x.id),
+                entityPolicy(Item).define("ResourceOwner", (ctx, x) => !!x.id),
+            ]
+            const mock = console.mock()
+            await new Plumier()
+                .set(new WebApiFacility({ controller: [UsersController] }))
+                .set(new JwtAuthFacility({ secret: "secret", authPolicies }))
+                .set({ genericController: [DefaultControllerGeneric, DefaultNestedControllerGeneric] })
+                .initialize()
+            expect(cleanupConsole(mock.mock.calls)).toMatchSnapshot()
+            console.mockClear()
+        })
+
         it("Should detect when applied on non entity policy provider parameter", async () => {
             class User {
                 @entity.primaryId()

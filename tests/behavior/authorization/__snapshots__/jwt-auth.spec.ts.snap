@@ -312,6 +312,20 @@ Array [
 ]
 `;
 
+exports[`JwtAuth Analyzer Message Should not showing duplicate policy name when the exact entity policy are not found 1`] = `
+Array [
+  Array [],
+  Array [
+    "Route Analysis Report",
+  ],
+  Array [
+    "1. UsersController.save(id, data) -> ResourceOwner PUT /users/:id
+ - error Entity policy ResourceOwner for entity Other is not found",
+  ],
+  Array [],
+]
+`;
+
 exports[`JwtAuth Analyzer Message Should not showing readonly and writeonly error message 1`] = `
 Array [
   Array [],
