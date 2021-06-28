@@ -87,8 +87,8 @@ function isCustomClass(type: Function | Function[]) {
     }
 }
 
-function memoize<R, P extends any[]>(fn: (...args: P) => R, getKey: (...args: P) => string): (...args: P) => R {
-    const cache: Map<string, R> = new Map()
+function memoize<R, P extends any[]>(fn: (...args: P) => R, getKey: (...args: P) => string|Class): (...args: P) => R {
+    const cache: Map<string|Class, R> = new Map()
     return useCache(cache, fn, getKey)
 }
 
