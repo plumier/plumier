@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.3](https://github.com/plumier/plumier/compare/v1.0.2...v1.0.3) (2021-06-28)
+
+
+### Bug Fixes
+
+* Cache class parser to speed up class introspection ([#970](https://github.com/plumier/plumier/issues/970)) ([aca5751](https://github.com/plumier/plumier/commit/aca5751382bb81bf264df5fbc7dc27df15943874))
+* Custom validator not being executed on relation property due to conflict with converters ([#977](https://github.com/plumier/plumier/issues/977)) ([af94bc7](https://github.com/plumier/plumier/commit/af94bc7d38c999dfd3c1509b34185e3384eed858))
+* Fix duplicate entity policy name on route analysis ([#990](https://github.com/plumier/plumier/issues/990)) ([6a18218](https://github.com/plumier/plumier/commit/6a182186de06555adcb4d7864d177ee8a4df9413))
+* Fix entity policy analysis messages on missing entity provider ([#964](https://github.com/plumier/plumier/issues/964)) ([5ac4867](https://github.com/plumier/plumier/commit/5ac48676d2c1e0834c86b2c96642b2dd0ad11cac))
+* Fix issue when override Open API Tags on first class entity and first class entity relation ([#988](https://github.com/plumier/plumier/issues/988)) ([3aa2337](https://github.com/plumier/plumier/commit/3aa23377209e8678f7d52e53b3b2196f8d719c2d))
+* Fix TypeORM helper error on OneToMany relation without inverse property configuration ([#974](https://github.com/plumier/plumier/issues/974)) ([c06c017](https://github.com/plumier/plumier/commit/c06c01756a7c3d54919bf2ceb913d739b1a1841c))
+* Open API spec, array relation and inverse relation should be manually set readonly/writeonly ([#983](https://github.com/plumier/plumier/issues/983)) ([7684287](https://github.com/plumier/plumier/commit/7684287798adf24924fb327b82b009f1f7e7713a))
+* Proper error message on TypeORM generic controller factory with corss reference entity issue ([#984](https://github.com/plumier/plumier/issues/984)) ([e1d725a](https://github.com/plumier/plumier/commit/e1d725a20031673de8774b6555ef61a5178c44be))
+* TypeORM many to many relation property without inverse property doesn't reflected as relation ([#982](https://github.com/plumier/plumier/issues/982)) ([d2de509](https://github.com/plumier/plumier/commit/d2de509dcfccbf52ac2ee35b47a04da099d2a86a))
+* Unable to cleanly disable authorization (writeonly and readonly) on property ([#976](https://github.com/plumier/plumier/issues/976)) ([bcd544b](https://github.com/plumier/plumier/commit/bcd544b68e2c6a6a9f5c9e33a54f8098b4b06d65))
+
+
+### Reverts
+
+* Revert relation property readonly/writeonly on first class entity ([#966](https://github.com/plumier/plumier/issues/966)) ([bac445e](https://github.com/plumier/plumier/commit/bac445e8acee4c72e2c4096f74b6341549d80373))
+
+
+
+
+
 ## [1.0.2](https://github.com/plumier/plumier/compare/v1.0.0...v1.0.2) (2021-06-06)
 
 

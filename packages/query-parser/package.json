@@ -1,6 +1,6 @@
 {
   "name": "@plumier/query-parser",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Plumier testing modules",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -21,7 +21,7 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumier/core": "^1.0.2",
+    "@plumier/core": "^1.0.3",
     "@types/nearley": "^2.11.1",
     "nearley": "^2.20.1"
   },

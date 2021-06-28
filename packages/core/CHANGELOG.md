@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.3](https://github.com/plumier/plumier/compare/v1.0.2...v1.0.3) (2021-06-28)
+
+
+### Bug Fixes
+
+* Custom validator not being executed on relation property due to conflict with converters ([#977](https://github.com/plumier/plumier/issues/977)) ([af94bc7](https://github.com/plumier/plumier/commit/af94bc7d38c999dfd3c1509b34185e3384eed858))
+* Fix duplicate entity policy name on route analysis ([#990](https://github.com/plumier/plumier/issues/990)) ([6a18218](https://github.com/plumier/plumier/commit/6a182186de06555adcb4d7864d177ee8a4df9413))
+* Fix entity policy analysis messages on missing entity provider ([#964](https://github.com/plumier/plumier/issues/964)) ([5ac4867](https://github.com/plumier/plumier/commit/5ac48676d2c1e0834c86b2c96642b2dd0ad11cac))
+* Fix issue when override Open API Tags on first class entity and first class entity relation ([#988](https://github.com/plumier/plumier/issues/988)) ([3aa2337](https://github.com/plumier/plumier/commit/3aa23377209e8678f7d52e53b3b2196f8d719c2d))
+* Unable to cleanly disable authorization (writeonly and readonly) on property ([#976](https://github.com/plumier/plumier/issues/976)) ([bcd544b](https://github.com/plumier/plumier/commit/bcd544b68e2c6a6a9f5c9e33a54f8098b4b06d65))
+
+
+
+
+
 ## [1.0.2](https://github.com/plumier/plumier/compare/v1.0.0...v1.0.2) (2021-06-06)
 
 

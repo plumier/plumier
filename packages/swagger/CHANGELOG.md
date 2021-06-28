@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.3](https://github.com/plumier/plumier/compare/v1.0.2...v1.0.3) (2021-06-28)
+
+
+### Bug Fixes
+
+* Open API spec, array relation and inverse relation should be manually set readonly/writeonly ([#983](https://github.com/plumier/plumier/issues/983)) ([7684287](https://github.com/plumier/plumier/commit/7684287798adf24924fb327b82b009f1f7e7713a))
+
+
+
+
+
 ## [1.0.2](https://github.com/plumier/plumier/compare/v1.0.0...v1.0.2) (2021-06-06)
 
 
