@@ -10,6 +10,8 @@ import {
     NestedControllerGeneric,
     RelationDecorator,
     NestedGenericControllerDecorator,
+    ApiTagDecorator,
+    EntityRelationInfo,
 } from "@plumier/core"
 import reflect, { decorateClass, generic } from "@plumier/reflect"
 import { Key, pathToRegexp } from "path-to-regexp"
@@ -19,6 +21,8 @@ import {
     ControllerBuilder,
     createRouteDecorators,
     decorateCustomQuery,
+    decorateTagByClass,
+    decorateTagByRelation,
     decorateTransformers,
     GenericControllerConfiguration,
     ignoreActions,
@@ -70,13 +74,13 @@ function createGenericControllerType(entity: Class, builder: ControllerBuilder, 
     let path = config.path ?? `${nameConversion(entity.name)}/:id`
     const map = validatePath(path, entity)
     Reflect.decorate([
-        ...createRouteDecorators(path, map),
         entityProvider(entity, "id", { applyTo: ["get", "modify", "replace", "delete"] }),
         ignoreActions(config),
+        decorateTagByClass(entity, nameConversion),
+        ...createRouteDecorators(path, map),
         ...authorizeActions(config),
         ...decorateTransformers(config),
         ...decorateCustomQuery(config),
-        api.tag(nameConversion(entity.name))
     ], Controller)
     return Controller
 }
@@ -92,16 +96,16 @@ function createNestedGenericControllerType(type: EntityWithRelation, builder: Co
     let path = config.path ?? `${nameConversion(info.parent.name)}/:pid/${childPath}/:id`
     const map = validatePath(path, info.parent, true)
     Reflect.decorate([
-        ...createRouteDecorators(path, map),
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
         decorateClass(<NestedGenericControllerDecorator>{ kind: "plumier-meta:relation-prop-name", type: type[0], relation: type[1] }),
         ignoreActions(config),
         entityProvider(info.parent, "pid", { applyTo: ["list", "save"] }),
         entityProvider(info.child, "id", { applyTo: ["get", "modify", "replace", "delete"] }),
+        decorateTagByRelation(info, nameConversion),
+        ...createRouteDecorators(path, map),
         ...authorizeActions(config),
         ...decorateTransformers(config),
         ...decorateCustomQuery(config),
-        api.tag(`${nameConversion(info.parent.name)} ${nameConversion(info.child.name)}`)
     ], Controller)
     return Controller
 }

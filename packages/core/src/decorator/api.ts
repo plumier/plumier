@@ -37,7 +37,7 @@ namespace api {
      * @param tag Tag name
      */
     export function tag(tag: string) {
-        return decorate(<ApiTagDecorator>{ [DecoratorId]: apiTagId, kind: "ApiTag", tag }, ["Class", "Property"], { allowMultiple: false })
+        return decorate(<ApiTagDecorator>{ [DecoratorId]: apiTagId, kind: "ApiTag", tag }, ["Class", "Property"])
     }
 
     /**
