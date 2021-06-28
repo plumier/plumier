@@ -109,7 +109,8 @@ authPolicy()
     description: (<>
       <p>
         Turn One-To-Many relation of ORM entity into nested Restful API.
-        Nested first class entity handled by specialized nested generic controller.
+        Nested first class entity best used for Parent - Children specific operation. 
+        For example narrowing result based on Parent ID, or restrict access to data based on Parent ID. 
         </p>
       <ul>
         <li><code>POST /posts/&#123;pid&#125;/comments</code></li>
