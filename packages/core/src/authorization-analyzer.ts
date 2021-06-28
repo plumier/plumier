@@ -178,7 +178,8 @@ function checkMissingEntityProviderOnModel(route: RouteInfo, policies: AuthPolic
 
 function missingEntityPolicyErrorMessage(policies: PolicyInfo[], provider: Class, location?: string): RouteAnalyzerIssue {
     const loc = location ? ` on ${location}` : ""
-    return { type: "error", message: `Entity policy ${policies.map(x => x.name).join(", ")} for entity ${provider.name} ${policies.length === 1 ? "is" : "are"} not found${loc}` }
+    const names = Array.from(new Set(policies.map(x => x.name)))
+    return { type: "error", message: `Entity policy ${names.join(", ")} for entity ${provider.name} ${names.length === 1 ? "is" : "are"} not found${loc}` }
 }
 
 function checkMissingEntityPolicyOnRoute(route: RouteInfo, policies: AuthPolicy[], globalAuthorize?: string | string[]): RouteAnalyzerIssue[] {
