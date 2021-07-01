@@ -65,35 +65,46 @@ function getIdType(entity: Class) {
     return idType
 }
 
-function createGenericControllerType(entity: Class, builder: ControllerBuilder, controller: Class<ControllerGeneric>, nameConversion: (x: string) => string) {
-    const config = builder.toObject()
+interface ControllerFactoryOption {
+    builder: ControllerBuilder
+    controller: Class<ControllerGeneric>
+    nameConversion: (x: string) => string
+    skipTag: boolean
+}
+
+function createGenericControllerType(entity: Class, opt: ControllerFactoryOption) {
+    const config = opt.builder.toObject()
     // get type of ID column on entity
     const idType = getIdType(entity)
     // create controller type dynamically 
-    const Controller = generic.create({ extends: controller, name: controller.name }, entity, idType)
-    let path = config.path ?? `${nameConversion(entity.name)}/:id`
+    const Controller = generic.create({ extends: opt.controller, name: opt.controller.name }, entity, idType)
+    let path = config.path ?? `${opt.nameConversion(entity.name)}/:id`
     const map = validatePath(path, entity)
     Reflect.decorate([
         entityProvider(entity, "id", { applyTo: ["get", "modify", "replace", "delete"] }),
         ignoreActions(config),
-        decorateTagByClass(entity, nameConversion),
         ...createRouteDecorators(path, map),
         ...authorizeActions(config),
         ...decorateTransformers(config),
         ...decorateCustomQuery(config),
     ], Controller)
+    if (!opt.skipTag) {
+        Reflect.decorate([
+            decorateTagByClass(entity, opt.nameConversion),
+        ], Controller)
+    }
     return Controller
 }
 
-function createNestedGenericControllerType(type: EntityWithRelation, builder: ControllerBuilder, controller: Class<NestedControllerGeneric>, nameConversion: (x: string) => string) {
+function createNestedGenericControllerType(type: EntityWithRelation, opt: ControllerFactoryOption) {
     const info = entityHelper.getRelationInfo(type)
-    const config = builder.toObject()
+    const config = opt.builder.toObject()
     const parentIdType = getIdType(info.parent)
     const idType = getIdType(info.child)
-    const Controller = generic.create({ extends: controller, name: controller.name }, info.parent, info.child, parentIdType, idType)
+    const Controller = generic.create({ extends: opt.controller, name: opt.controller.name }, info.parent, info.child, parentIdType, idType)
     // add root decorator
-    const childPath = info.type === "OneToMany" ? info.parentProperty! : nameConversion(info.child.name).toLowerCase()
-    let path = config.path ?? `${nameConversion(info.parent.name)}/:pid/${childPath}/:id`
+    const childPath = info.type === "OneToMany" ? info.parentProperty! : opt.nameConversion(info.child.name).toLowerCase()
+    let path = config.path ?? `${opt.nameConversion(info.parent.name)}/:pid/${childPath}/:id`
     const map = validatePath(path, info.parent, true)
     Reflect.decorate([
         // re-assign oneToMany decorator which will be used on OneToManyController constructor
@@ -101,12 +112,16 @@ function createNestedGenericControllerType(type: EntityWithRelation, builder: Co
         ignoreActions(config),
         entityProvider(info.parent, "pid", { applyTo: ["list", "save"] }),
         entityProvider(info.child, "id", { applyTo: ["get", "modify", "replace", "delete"] }),
-        decorateTagByRelation(info, nameConversion),
         ...createRouteDecorators(path, map),
         ...authorizeActions(config),
         ...decorateTransformers(config),
         ...decorateCustomQuery(config),
     ], Controller)
+    if (!opt.skipTag) {
+        Reflect.decorate([
+            decorateTagByRelation(info, opt.nameConversion)
+        ], Controller)
+    }
     return Controller
 }
 
@@ -118,10 +133,11 @@ function createGenericController<T>(type: Class | EntityWithRelation<T>, option:
     const builder = new ControllerBuilder()
     option.normalize(type)
     if (option.config) option.config(builder)
+    const opt = { builder, nameConversion: option.nameConversion }
     if (Array.isArray(type)) {
-        return createNestedGenericControllerType(type, builder, option.controllers[1], option.nameConversion)
+        return createNestedGenericControllerType(type, { ...opt, controller: option.controllers[1], skipTag: true })
     }
-    return createGenericControllerType(type, builder, option.controllers[0], option.nameConversion)
+    return createGenericControllerType(type, { ...opt, controller: option.controllers[0], skipTag: true })
 }
 
 export {

@@ -33,8 +33,13 @@ function createBasicGenericControllerByDecorators(type: Class, genericController
     // basic generic controller
     const decorators = meta.decorators.filter((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
     for (const decorator of decorators) {
-        const config = getControllerBuilderFromConfig(decorator.config)
-        const ctl = createGenericControllerType(type, config, genericControllers[0], nameConversion)
+        const builder = getControllerBuilderFromConfig(decorator.config)
+        const ctl = createGenericControllerType(type, {
+            builder,
+            controller: genericControllers[0],
+            nameConversion,
+            skipTag: false
+        })
         controllers.push(ctl)
     }
     return controllers
@@ -47,7 +52,13 @@ function createNestedGenericControllerByDecorators(entity: Class, genericControl
     for (const prop of meta.properties) {
         const decorators = prop.decorators.filter((x: GenericControllerDecorator): x is GenericControllerDecorator => x.name === "plumier-meta:controller")
         for (const decorator of decorators) {
-            const ctl = createNestedGenericControllerType([decorator.target, prop.name], getControllerBuilderFromConfig(decorator.config), genericControllers[1], nameConversion)
+            const builder = getControllerBuilderFromConfig(decorator.config)
+            const ctl = createNestedGenericControllerType([decorator.target, prop.name], {
+                builder,
+                controller: genericControllers[1],
+                nameConversion,
+                skipTag: false
+            })
             controllers.push(ctl)
         }
     }

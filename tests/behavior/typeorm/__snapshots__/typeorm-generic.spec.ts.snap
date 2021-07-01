@@ -2278,6 +2278,30 @@ Array [
 ]
 `;
 
+exports[`Open API Generic Controller Should able to override tag 1`] = `
+Array [
+  "User Management",
+]
+`;
+
+exports[`Open API Generic Controller Should generate tags properly 1`] = `
+Array [
+  "Users",
+]
+`;
+
+exports[`Open API Nested Generic Controller Should able to override tag 1`] = `
+Array [
+  "Animal Management",
+]
+`;
+
+exports[`Open API Nested Generic Controller Should generate tags properly 1`] = `
+Array [
+  "Animals",
+]
+`;
+
 exports[`Open API Should mark guid column as readonly 1`] = `
 Object {
   "properties": Object {
