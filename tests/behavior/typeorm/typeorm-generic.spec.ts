@@ -1,6 +1,7 @@
 import "@plumier/testing"
 
 import {
+    api,
     authorize,
     authPolicy,
     Class,
@@ -372,7 +373,7 @@ describe("CRUD", () => {
             user: User
         }
         const fn = jest.fn()
-        try{
+        try {
             class MyController extends GenericController([User, "animals"]) {
                 @noop()
                 save(pid: number, data: Animal, ctx: Context) {
@@ -380,7 +381,7 @@ describe("CRUD", () => {
                 }
             }
         }
-        catch(e){
+        catch (e) {
             fn(e)
         }
         expect(fn.mock.calls).toMatchSnapshot()
@@ -2791,7 +2792,7 @@ describe("CRUD", () => {
 })
 
 describe("Open API", () => {
-    function createApp(entities: Function[], option?: Partial<Configuration>) {
+    function createApp(entities: Function[], ctl?: Class) {
         return new Plumier()
             .set(new WebApiFacility())
             .set(new TypeORMFacility({ connection: getConn(entities) }))
@@ -2891,6 +2892,125 @@ describe("Open API", () => {
             .post("/swagger/swagger.json")
             .expect(200)
         expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
+    })
+    describe("Generic Controller", () => {
+        function createApp(controller: Class, entity:Class) {
+            return new Plumier()
+                .set({ mode: "production" })
+                .set(new WebApiFacility({ controller }))
+                .set(new TypeORMFacility({ connection: getConn([entity]) }))
+                .set(new SwaggerFacility())
+                .initialize()
+        }
+        it("Should generate tags properly", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            class UsersController extends GenericController(User) { }
+            const koa = await createApp(UsersController, User)
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.tags).toMatchSnapshot()
+        })
+        it("Should able to override tag", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+            }
+            @api.tag("User Management")
+            class UsersController extends GenericController(User) { }
+            const koa = await createApp(UsersController, User)
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.tags).toMatchSnapshot()
+        })
+
+    })
+    describe("Nested Generic Controller", () => {
+        function createApp(controller: Class, entity:Class[]) {
+            return new Plumier()
+                .set({ mode: "production" })
+                .set(new WebApiFacility({ controller }))
+                .set(new TypeORMFacility({ connection: getConn(entity) }))
+                .set(new SwaggerFacility())
+                .initialize()
+        }
+        it("Should generate tags properly", async () => {
+            @Entity()
+            @genericController()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @genericController()
+                animals: Animal[]
+            }
+            @Entity()
+            @genericController()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            class AnimalsController extends GenericController([User, "animals"]) { }
+            const koa = await createApp(AnimalsController, [Animal, User])
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users/{pid}/animals"].post.tags).toMatchSnapshot()
+        })
+        it("Should able to override tag", async () => {
+            @Entity()
+            @genericController()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @OneToMany(x => Animal, x => x.user)
+                @genericController()
+                animals: Animal[]
+            }
+            @Entity()
+            @genericController()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user: User
+            }
+            @api.tag("Animal Management")
+            class AnimalsController extends GenericController([User, "animals"]) { }
+            const koa = await createApp(AnimalsController, [Animal, User])
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users/{pid}/animals"].post.tags).toMatchSnapshot()
+        })
     })
 })
 

@@ -1,4 +1,5 @@
 import {
+    api,
     authorize,
     authPolicy,
     Class,
@@ -23,6 +24,7 @@ import model, {
     MongooseRepository
 } from "@plumier/mongoose"
 import reflect, { generic, noop, reflection, type } from "@plumier/reflect"
+import { SwaggerFacility } from "@plumier/swagger"
 import "@plumier/testing"
 import { cleanupConsole } from "@plumier/testing"
 import { sign } from "jsonwebtoken"
@@ -1128,7 +1130,7 @@ describe("CRUD", () => {
             const user = await createUser(User)
             const animalRepo = new MongooseNestedRepository<User, Animal>([User, "animals"])
             await Promise.all(Array(50).fill(1).map((x, i) => animalRepo.insert(user._id.toHexString(), { name: `Mimi` })))
-            const {body} = await supertest(app.callback())
+            const { body } = await supertest(app.callback())
                 .get(`/users/${user._id}?select=animals`)
                 .expect(200)
             expect(body).toMatchSnapshot()
@@ -3438,6 +3440,108 @@ describe("Filter", () => {
                 .get(`/parents/${parent.id}/children?filter=number<2`)
                 .expect(200)
             expect(body).toMatchSnapshot()
+        })
+    })
+})
+
+describe("Open API", () => {
+    function createApp(controller: Class) {
+        return new Plumier()
+            .set({ mode: "production" })
+            .set(new WebApiFacility({ controller }))
+            .set(new MongooseFacility())
+            .set(new SwaggerFacility())
+            .initialize()
+    }
+    describe("Generic Controller", () => {
+        it("Should generate tags properly", async () => {
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            class UsersController extends GenericController(User) { }
+            const koa = await createApp(UsersController)
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.tags).toMatchSnapshot()
+        })
+        it("Should able to override tag", async () => {
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+            }
+            @api.tag("User Management")
+            class UsersController extends GenericController(User) { }
+            const koa = await createApp(UsersController)
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users"].post.tags).toMatchSnapshot()
+        })
+
+    })
+    describe("Nested Generic Controller", () => {
+        it("Should generate tags properly", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+            }
+            class AnimalsController extends GenericController([User, "animals"]) { }
+            const koa = await createApp(AnimalsController)
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users/{pid}/animals"].post.tags).toMatchSnapshot()
+        })
+        it("Should able to override tag", async () => {
+            @collection()
+            class User {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                email: string
+                @reflect.noop()
+                name: string
+                @collection.ref(x => [Animal])
+                animals: Animal[]
+            }
+            @collection()
+            class Animal {
+                @collection.id()
+                id: string
+                @reflect.noop()
+                name: string
+            }
+            @api.tag("Animal Management")
+            class AnimalsController extends GenericController([User, "animals"]) { }
+            const koa = await createApp(AnimalsController)
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/users/{pid}/animals"].post.tags).toMatchSnapshot()
         })
     })
 })

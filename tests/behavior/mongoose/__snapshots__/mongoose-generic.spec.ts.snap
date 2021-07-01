@@ -2038,6 +2038,30 @@ Object {
 }
 `;
 
+exports[`Open API Generic Controller Should able to override tag 1`] = `
+Array [
+  "User Management",
+]
+`;
+
+exports[`Open API Generic Controller Should generate tags properly 1`] = `
+Array [
+  "Users",
+]
+`;
+
+exports[`Open API Nested Generic Controller Should able to override tag 1`] = `
+Array [
+  "Animal Management",
+]
+`;
+
+exports[`Open API Nested Generic Controller Should generate tags properly 1`] = `
+Array [
+  "Animals",
+]
+`;
+
 exports[`Repository One To Many Repository Should not error when introspected 1`] = `
 Array [
   Object {
