@@ -1180,6 +1180,24 @@ describe("Open Api", () => {
                 .expect(200)
             expect(body.paths["/animal"].post.tags).toMatchSnapshot()
         })
+        it("Should allow multiple tag decorators", async () => {
+            @genericController()
+            @api.tag("Animal Management")
+            @api.tag("Animals")
+            class Animal {
+                @entity.primaryId()
+                id: number
+                @reflect.noop()
+                name: string
+            }
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animal"].post.tags).toMatchSnapshot()
+        })
     })
 
     describe("Generic One To Many Controller", () => {
@@ -1659,6 +1677,34 @@ describe("Open Api", () => {
                 @entity.relation()
                 @genericController()
                 @api.tag("Tags Management")
+                tags: Tag[]
+            }
+            class Tag {
+                @entity.primaryId()
+                id: number
+                @reflect.noop()
+                tag: string
+            }
+            const koa = await createApp({ controller: Animal }, { mode: "production" })
+                .set(new SwaggerFacility())
+                .initialize()
+            const { body } = await supertest(koa.callback())
+                .get("/swagger/swagger.json")
+                .expect(200)
+            expect(body.paths["/animal/{pid}/tags"].post.tags).toMatchSnapshot()
+        })
+        it("Should allow multiple tag decorators", async () => {
+            @genericController()
+            class Animal {
+                @entity.primaryId()
+                id: number
+                @reflect.noop()
+                name: string
+                @reflect.type(x => [Tag])
+                @entity.relation()
+                @genericController()
+                @api.tag("Tags Management")
+                @api.tag("Tags")
                 tags: Tag[]
             }
             class Tag {

@@ -3487,7 +3487,6 @@ describe("Open API", () => {
                 .expect(200)
             expect(body.paths["/users"].post.tags).toMatchSnapshot()
         })
-
     })
     describe("Nested Generic Controller", () => {
         it("Should generate tags properly", async () => {
