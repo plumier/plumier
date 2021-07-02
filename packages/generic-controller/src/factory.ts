@@ -90,7 +90,7 @@ function createGenericControllerType(entity: Class, opt: ControllerFactoryOption
     ], Controller)
     if (!opt.skipTag) {
         Reflect.decorate([
-            decorateTagByClass(entity, opt.nameConversion),
+            ...decorateTagByClass(entity, opt.nameConversion),
         ], Controller)
     }
     return Controller
@@ -119,7 +119,7 @@ function createNestedGenericControllerType(type: EntityWithRelation, opt: Contro
     ], Controller)
     if (!opt.skipTag) {
         Reflect.decorate([
-            decorateTagByRelation(info, opt.nameConversion)
+            ...decorateTagByRelation(info, opt.nameConversion)
         ], Controller)
     }
     return Controller

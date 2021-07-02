@@ -720,6 +720,13 @@ Object {
 }
 `;
 
+exports[`Open Api Generic Controller Should allow multiple tag decorators 1`] = `
+Array [
+  "Animal Management",
+  "Animals",
+]
+`;
+
 exports[`Open Api Generic Controller Should generate DELETE /animal/:id properly 1`] = `
 Array [
   Object {
@@ -1016,6 +1023,13 @@ Object {
   },
   "description": "Response body",
 }
+`;
+
+exports[`Open Api Generic One To Many Controller Should allow multiple tag decorators 1`] = `
+Array [
+  "Tags Management",
+  "Tags",
+]
 `;
 
 exports[`Open Api Generic One To Many Controller Should generate DELETE /animals/:id properly 1`] = `

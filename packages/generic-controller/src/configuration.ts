@@ -285,22 +285,22 @@ function decorateCustomQuery(config: GenericControllerOptions) {
 
 function decorateTagByClass(entity: Class, nameConversion: (x: string) => string) {
     const meta = reflect(entity)
-    const tag = meta.decorators.find((x: ApiTagDecorator) => x.kind === "ApiTag")
-    if (!tag)
-        return api.tag(nameConversion(entity.name))
-    return decorateClass(tag)
+    const tags = meta.decorators.filter((x: ApiTagDecorator) => x.kind === "ApiTag")
+    if (tags.length === 0)
+        return [api.tag(nameConversion(entity.name))]
+    return tags.map(x => decorateClass(x))
 }
 
 function decorateTagByRelation(info: EntityRelationInfo, nameConversion: (x: string) => string) {
     const meta = reflect(info.parent)
     const relProp = meta.properties.find(x => x.name === info.parentProperty || x.name === info.childProperty)
     if (relProp) {
-        const tag = relProp.decorators.find((x: ApiTagDecorator) => x.kind === "ApiTag")
-        if (tag) return decorateClass(tag)
+        const tags = relProp.decorators.filter((x: ApiTagDecorator) => x.kind === "ApiTag")
+        if (tags.length > 0) return tags.map(x => decorateClass(x))
     }
     const parent = nameConversion(info.parent.name)
     const child = nameConversion(info.child.name)
-    return api.tag(`${parent} ${child}`)
+    return [api.tag(`${parent} ${child}`)]
 }
 
 
