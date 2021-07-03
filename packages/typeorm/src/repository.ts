@@ -62,11 +62,6 @@ class TypeORMNestedRepository<P, T> implements NestedRepository<P, T> {
     }
 
     async find(pid: any, offset: number, limit: number, query: any, selection: SelectQuery, order: any): Promise<T[]> {
-        // const parent = await this.nativeParentRepository
-        //     .createQueryBuilder("parent")
-        //     .leftJoinAndSelect(`parent.${this.relation.parentProperty}`, "child")
-        //     .whereInIds(pid)
-        //     .getOne()
         return this.nativeRepository.find({
             where:
                 { [this.relation.childProperty!]: pid, ...query },
@@ -81,15 +76,12 @@ class TypeORMNestedRepository<P, T> implements NestedRepository<P, T> {
     async insert(pid: any, data: Partial<T>) {
         const parent = await this.nativeParentRepository.findOne(pid)
         if (this.relation.parentProperty) {
-            const result = await this.nativeRepository.insert(data as any);
-            const first = result.identifiers[0]
-            const idName = Object.keys(first)[0]
-            const id = (first as any)[idName]
+            const result = await this.nativeRepository.save(data as any);
             await this.nativeParentRepository.createQueryBuilder()
                 .relation(this.relation.parentProperty!)
                 .of(parent)
-                .add(id)
-            return (await this.nativeRepository.findOne(id))!
+                .add(result)
+            return result
         }
         else {
             return this.nativeRepository.save({ [this.relation.childProperty!]: pid, ...data })

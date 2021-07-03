@@ -2788,6 +2788,56 @@ describe("CRUD", () => {
                 .expect(200)
             expect(result).toMatchSnapshot()
         })
+        it("Should able to post from children Ids from nested parent", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @genericController()
+                @OneToMany(x => Animal, x => x.user)
+                @JoinTable()
+                animals: Animal[]
+            }
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+                @ManyToOne(x => User, x => x.animals)
+                user:User
+                @ManyToMany(x => Image)
+                @JoinTable()
+                images: Image[]
+            }
+            @Entity()
+            class Image {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                url: string
+            }
+            const app = await createApp([User, Animal, Image], { mode: "production" })
+            const userRepo = getManager().getRepository(User)
+            const imageRepo = getManager().getRepository(Image)
+            const user = await userRepo.save({ email: "john.doe@gmail.com", name: "John Doe" })
+            const images = await Promise.all([
+                imageRepo.save({ url: "https://images.com/img.jpg" }),
+                imageRepo.save({ url: "https://images.com/img.jpg" }),
+            ])
+            await supertest(app.callback())
+                .post(`/users/${user.id}/animals`)
+                .send({ name: "Mimi", images: images.map(x => x.id) })
+                .expect(200)
+            const { body: result } = await supertest(app.callback())
+                .get(`/users/${user.id}/animals?select=name,images`)
+                .expect(200)
+            expect(result).toMatchSnapshot()
+        })
     })
 })
 
@@ -2894,7 +2944,7 @@ describe("Open API", () => {
         expect(body.paths["/users"].post.requestBody).toMatchSnapshot()
     })
     describe("Generic Controller", () => {
-        function createApp(controller: Class, entity:Class) {
+        function createApp(controller: Class, entity: Class) {
             return new Plumier()
                 .set({ mode: "production" })
                 .set(new WebApiFacility({ controller }))
@@ -2940,7 +2990,7 @@ describe("Open API", () => {
 
     })
     describe("Nested Generic Controller", () => {
-        function createApp(controller: Class, entity:Class[]) {
+        function createApp(controller: Class, entity: Class[]) {
             return new Plumier()
                 .set({ mode: "production" })
                 .set(new WebApiFacility({ controller }))

@@ -653,6 +653,25 @@ Object {
 }
 `;
 
+exports[`CRUD Many To Many Should able to post from children Ids from nested parent 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "images": Array [
+      Object {
+        "id": 1,
+        "url": "https://images.com/img.jpg",
+      },
+      Object {
+        "id": 2,
+        "url": "https://images.com/img.jpg",
+      },
+    ],
+    "name": "Mimi",
+  },
+]
+`;
+
 exports[`CRUD Many To Many Should able to post from children Ids from parent 1`] = `
 Object {
   "animals": Array [
