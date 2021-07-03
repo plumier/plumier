@@ -689,6 +689,14 @@ Object {
 }
 `;
 
+exports[`CRUD Many To Many Should give proper error on get many method 1`] = `
+Array [
+  Array [
+    [Error: Relation without inverse property is not supported by Nested Generic Controller],
+  ],
+]
+`;
+
 exports[`CRUD Many To Many Should serve many to many properly 1`] = `
 User {
   "animals": Array [

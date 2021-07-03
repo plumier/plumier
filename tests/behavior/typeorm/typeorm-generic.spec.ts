@@ -2751,6 +2751,37 @@ describe("CRUD", () => {
             const result = await getRepository(User).findOne(user.id, { relations: ["animals"] })
             expect(result).toMatchSnapshot()
         })
+        it("Should give proper error on get many method", async () => {
+            @Entity()
+            class User {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                email: string
+                @Column()
+                name: string
+                @genericController()
+                @ManyToMany(x => Animal)
+                @JoinTable()
+                animals: Animal[]
+            }
+
+            @Entity()
+            class Animal {
+                @PrimaryGeneratedColumn()
+                id: number
+                @Column()
+                name: string
+            }
+            const app = await createApp([User, Animal], { mode: "production" })
+            const fn = jest.fn()
+            app.on("error", e => fn(e))
+            const user = await createUser(User)
+            await supertest(app.callback())
+                .get(`/users/${user.id}/animals`)
+                .expect(500)
+            expect(fn.mock.calls).toMatchSnapshot()
+        })
         it("Should able to post from children Ids from parent", async () => {
             @genericController()
             @Entity()

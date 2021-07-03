@@ -62,9 +62,11 @@ class TypeORMNestedRepository<P, T> implements NestedRepository<P, T> {
     }
 
     async find(pid: any, offset: number, limit: number, query: any, selection: SelectQuery, order: any): Promise<T[]> {
+        if(!this.relation.childProperty)
+            throw new Error(`Relation without inverse property is not supported by Nested Generic Controller`)
         return this.nativeRepository.find({
             where:
-                { [this.relation.childProperty!]: pid, ...query },
+                { [this.relation.childProperty]: pid, ...query },
             skip: offset,
             take: limit,
             relations: selection.relations,
