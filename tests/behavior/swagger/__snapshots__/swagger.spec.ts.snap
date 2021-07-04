@@ -64,6 +64,7 @@ exports[`Swagger Swagger UI Hosting Should able to render string option 1`] = `
       }
       .swagger-ui .opblock .opblock-summary-description {
         text-align: right;
+        padding-right: 8px;
       }
     </style>
   </head>
@@ -132,6 +133,7 @@ exports[`Swagger Swagger UI Hosting Should render swagger ui with default option
       }
       .swagger-ui .opblock .opblock-summary-description {
         text-align: right;
+        padding-right: 8px;
       }
     </style>
   </head>
