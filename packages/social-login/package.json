@@ -12,7 +12,7 @@
   "dependencies": {
     "@plumier/core": "^1.0.3",
     "@types/csrf": "^3.1.0",
-    "@types/debug": "^4.1.5",
+    "@types/debug": "^4.1.6",
     "axios": "0.21.1",
     "csrf": "^3.1.0",
     "debug": "^4.3.2",
