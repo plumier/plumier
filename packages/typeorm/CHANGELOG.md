@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.4](https://github.com/plumier/plumier/compare/v1.0.3...v1.0.4) (2021-07-05)
+
+
+### Bug Fixes
+
+* **typeorm:** Fix array relation insert issue on nested generic controller ([#999](https://github.com/plumier/plumier/issues/999)) ([9b9354f](https://github.com/plumier/plumier/commit/9b9354fb135dbbfa95604cceca284f73feca16b5))
+* **typeorm:** Give proper error message when nested generic controller used on array relation without inverse property ([#1000](https://github.com/plumier/plumier/issues/1000)) ([e4ee57f](https://github.com/plumier/plumier/commit/e4ee57f1cbef9ce61be18a8f54b8c2e9ef26e3b7))
+
+
+
+
+
 ## [1.0.3](https://github.com/plumier/plumier/compare/v1.0.2...v1.0.3) (2021-06-28)
 
 

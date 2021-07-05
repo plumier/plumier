@@ -1,6 +1,6 @@
 {
   "name": "@plumier/swagger",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Swagger and Open API 3 module for Plumier",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@plumier/core": "^1.0.3",
-    "@plumier/generic-controller": "^1.0.3",
+    "@plumier/generic-controller": "^1.0.4",
     "@plumier/serve-static": "^1.0.3",
     "@types/ejs": "^3.0.6",
     "@types/swagger-ui-dist": "^3.30.0",

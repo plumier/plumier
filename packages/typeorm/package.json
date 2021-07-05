@@ -1,6 +1,6 @@
 {
   "name": "@plumier/typeorm",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "TypeOrm helper for Plumier",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -16,7 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@plumier/core": "^1.0.3",
-    "@plumier/generic-controller": "^1.0.3",
+    "@plumier/generic-controller": "^1.0.4",
     "@types/pluralize": "^0.0.29",
     "pluralize": "^8.0.0",
     "typeorm": "^0.2.32"

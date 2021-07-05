@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.4](https://github.com/plumier/plumier/compare/v1.0.3...v1.0.4) (2021-07-05)
+
+
+### Bug Fixes
+
+* **swagger:** Add spacing between policy names and expand/collapse icon on Swagger UI ([#1002](https://github.com/plumier/plumier/issues/1002)) ([90e2ab7](https://github.com/plumier/plumier/commit/90e2ab789a4f513efc04cceb6ca86bc0779ae843))
+
+
+
+
+
 ## [1.0.3](https://github.com/plumier/plumier/compare/v1.0.2...v1.0.3) (2021-06-28)
 
 

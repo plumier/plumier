@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.4](https://github.com/plumier/plumier/compare/v1.0.3...v1.0.4) (2021-07-05)
+
+
+### Bug Fixes
+
+* Fixed issue Open API tag applied on custom generic controller creating multiple tags ([#992](https://github.com/plumier/plumier/issues/992)) ([dc54af9](https://github.com/plumier/plumier/commit/dc54af982b53f0a1a6119b3ca34928a73b773eac))
+* **swagger:** Fixed multiple Open API tags not being applied correctly on First Class Entity and Nested First Class Entity ([#996](https://github.com/plumier/plumier/issues/996)) ([65d1cfd](https://github.com/plumier/plumier/commit/65d1cfdbb3b46d42c312b7b48ede7a822ca53437))
+
+
+
+
+
 ## [1.0.3](https://github.com/plumier/plumier/compare/v1.0.2...v1.0.3) (2021-06-28)
 
 

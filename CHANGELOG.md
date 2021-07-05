@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.4](https://github.com/plumier/plumier/compare/v1.0.3...v1.0.4) (2021-07-05)
+
+
+### Bug Fixes
+
+* Fixed issue Open API tag applied on custom generic controller creating multiple tags ([#992](https://github.com/plumier/plumier/issues/992)) ([dc54af9](https://github.com/plumier/plumier/commit/dc54af982b53f0a1a6119b3ca34928a73b773eac))
+* **swagger:** Add spacing between policy names and expand/collapse icon on Swagger UI ([#1002](https://github.com/plumier/plumier/issues/1002)) ([90e2ab7](https://github.com/plumier/plumier/commit/90e2ab789a4f513efc04cceb6ca86bc0779ae843))
+* **swagger:** Fixed multiple Open API tags not being applied correctly on First Class Entity and Nested First Class Entity ([#996](https://github.com/plumier/plumier/issues/996)) ([65d1cfd](https://github.com/plumier/plumier/commit/65d1cfdbb3b46d42c312b7b48ede7a822ca53437))
+* **typeorm:** Fix array relation insert issue on nested generic controller ([#999](https://github.com/plumier/plumier/issues/999)) ([9b9354f](https://github.com/plumier/plumier/commit/9b9354fb135dbbfa95604cceca284f73feca16b5))
+* **typeorm:** Give proper error message when nested generic controller used on array relation without inverse property ([#1000](https://github.com/plumier/plumier/issues/1000)) ([e4ee57f](https://github.com/plumier/plumier/commit/e4ee57f1cbef9ce61be18a8f54b8c2e9ef26e3b7))
+
+
+
+
+
 ## [1.0.3](https://github.com/plumier/plumier/compare/v1.0.2...v1.0.3) (2021-06-28)
 
 
