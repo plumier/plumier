@@ -5,6 +5,7 @@ import {
     FormFile,
     RelationDecorator,
     NestedGenericControllerDecorator,
+    isCustomClass,
 } from "@plumier/core"
 import reflect, { IsDynamicType } from "@plumier/reflect"
 import { ReferenceObject, SchemaObject } from "openapi3-ts"
@@ -141,7 +142,7 @@ function removeChildRelationsOverride(modelType: (Class | Class[]), ctx: Transfo
     const result: SchemaObject = { type: "object", properties: {} }
     for (const property of meta.properties) {
         const relation = property.decorators.find(isRelation)
-        if (relation && property.typeClassification === "Class") {
+        if (relation && isCustomClass(property.type)) {
             const childMeta = getMetadata(property.type as Class)
             const childSchema: SchemaObject = { type: "object", properties: {} }
             for (const prop of childMeta.properties) {

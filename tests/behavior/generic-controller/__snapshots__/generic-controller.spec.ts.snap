@@ -1668,7 +1668,35 @@ Object {
       "application/json": Object {
         "schema": Object {
           "items": Object {
-            "$ref": "#/components/schemas/UserTrans",
+            "allOf": Array [
+              Object {
+                "$ref": "#/components/schemas/UserTrans",
+              },
+              Object {
+                "properties": Object {
+                  "todos": Object {
+                    "items": Object {
+                      "allOf": Array [
+                        Object {
+                          "$ref": "#/components/schemas/Todo",
+                        },
+                        Object {
+                          "properties": Object {
+                            "user": Object {
+                              "readOnly": true,
+                              "writeOnly": true,
+                            },
+                          },
+                          "type": "object",
+                        },
+                      ],
+                    },
+                    "type": "array",
+                  },
+                },
+                "type": "object",
+              },
+            ],
           },
           "type": "array",
         },
@@ -1685,7 +1713,35 @@ Object {
     "content": Object {
       "application/json": Object {
         "schema": Object {
-          "$ref": "#/components/schemas/UserTrans",
+          "allOf": Array [
+            Object {
+              "$ref": "#/components/schemas/UserTrans",
+            },
+            Object {
+              "properties": Object {
+                "todos": Object {
+                  "items": Object {
+                    "allOf": Array [
+                      Object {
+                        "$ref": "#/components/schemas/Todo",
+                      },
+                      Object {
+                        "properties": Object {
+                          "user": Object {
+                            "readOnly": true,
+                            "writeOnly": true,
+                          },
+                        },
+                        "type": "object",
+                      },
+                    ],
+                  },
+                  "type": "array",
+                },
+              },
+              "type": "object",
+            },
+          ],
         },
       },
     },
