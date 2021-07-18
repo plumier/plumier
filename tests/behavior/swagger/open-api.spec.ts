@@ -290,8 +290,7 @@ describe("Open API 3.0 Generation", () => {
             })
         })
         describe("Response Body", () => {
-            
-            it("Should hide all child relations", async () => {
+            it("Should hide all grand child relations", async () => {
                 class Shop {
                     @entity.primaryId()
                     id: number
@@ -320,6 +319,9 @@ describe("Open API 3.0 Generation", () => {
 
                     @noop()
                     name: string
+
+                    @noop()
+                    createdBy:User
                 }
                 class Item {
                     @entity.primaryId()

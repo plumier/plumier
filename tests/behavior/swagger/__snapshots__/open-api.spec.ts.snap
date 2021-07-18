@@ -2697,7 +2697,7 @@ Object {
 }
 `;
 
-exports[`Open API 3.0 Generation Schema Override Response Body Should hide all child relations 1`] = `
+exports[`Open API 3.0 Generation Schema Override Response Body Should hide all grand child relations 1`] = `
 Object {
   "200": Object {
     "content": Object {
@@ -2709,6 +2709,20 @@ Object {
             },
             Object {
               "properties": Object {
+                "categories": Object {
+                  "items": Object {
+                    "allOf": Array [
+                      Object {
+                        "$ref": "#/components/schemas/Category",
+                      },
+                      Object {
+                        "properties": Object {},
+                        "type": "object",
+                      },
+                    ],
+                  },
+                  "type": "array",
+                },
                 "createdBy": Object {
                   "allOf": Array [
                     Object {
@@ -2765,6 +2779,20 @@ Object {
             },
             Object {
               "properties": Object {
+                "categories": Object {
+                  "items": Object {
+                    "allOf": Array [
+                      Object {
+                        "$ref": "#/components/schemas/Category",
+                      },
+                      Object {
+                        "properties": Object {},
+                        "type": "object",
+                      },
+                    ],
+                  },
+                  "type": "array",
+                },
                 "createdBy": Object {
                   "allOf": Array [
                     Object {
