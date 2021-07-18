@@ -290,74 +290,7 @@ describe("Open API 3.0 Generation", () => {
             })
         })
         describe("Response Body", () => {
-            it("Should hide array child relation", async () => {
-                class Category {
-                    @entity.primaryId()
-                    id: number
-
-                    @noop()
-                    name: string
-                }
-                class Item {
-                    @entity.primaryId()
-                    id: number
-
-                    @noop()
-                    name: string
-
-                    @noop()
-                    price: number
-
-                    @entity.relation()
-                    @type(x => [Category])
-                    categories: Category[]
-                }
-                class ItemController {
-                    @route.get("")
-                    @api.hideRelations()
-                    @type(Item)
-                    get() { }
-                }
-                const app = await createApp(ItemController)
-                const { body } = await supertest(app.callback())
-                    .get("/swagger/swagger.json")
-                    .expect(200)
-                expect(body.paths["/item"].get.responses).toMatchSnapshot()
-            })
-            it("Should hide array child relation on array response", async () => {
-                class Category {
-                    @entity.primaryId()
-                    id: number
-
-                    @noop()
-                    name: string
-                }
-                class Item {
-                    @entity.primaryId()
-                    id: number
-
-                    @noop()
-                    name: string
-
-                    @noop()
-                    price: number
-
-                    @entity.relation()
-                    @type(x => [Category])
-                    categories: Category[]
-                }
-                class ItemController {
-                    @route.get("")
-                    @api.hideRelations()
-                    @type([Item])
-                    get() { }
-                }
-                const app = await createApp(ItemController)
-                const { body } = await supertest(app.callback())
-                    .get("/swagger/swagger.json")
-                    .expect(200)
-                expect(body.paths["/item"].get.responses).toMatchSnapshot()
-            })
+            
             it("Should hide all child relations", async () => {
                 class Shop {
                     @entity.primaryId()
