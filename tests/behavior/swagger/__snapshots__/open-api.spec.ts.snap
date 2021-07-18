@@ -2744,75 +2744,7 @@ Object {
               },
               "type": "object",
             },
-            Object {
-              "properties": Object {
-                "categories": Object {
-                  "readOnly": true,
-                  "writeOnly": true,
-                },
-              },
-              "type": "object",
-            },
           ],
-        },
-      },
-    },
-    "description": "Response body",
-  },
-}
-`;
-
-exports[`Open API 3.0 Generation Schema Override Response Body Should hide array child relation 1`] = `
-Object {
-  "200": Object {
-    "content": Object {
-      "application/json": Object {
-        "schema": Object {
-          "allOf": Array [
-            Object {
-              "$ref": "#/components/schemas/Item",
-            },
-            Object {
-              "properties": Object {
-                "categories": Object {
-                  "readOnly": true,
-                  "writeOnly": true,
-                },
-              },
-              "type": "object",
-            },
-          ],
-        },
-      },
-    },
-    "description": "Response body",
-  },
-}
-`;
-
-exports[`Open API 3.0 Generation Schema Override Response Body Should hide array child relation on array response 1`] = `
-Object {
-  "200": Object {
-    "content": Object {
-      "application/json": Object {
-        "schema": Object {
-          "items": Object {
-            "allOf": Array [
-              Object {
-                "$ref": "#/components/schemas/Item",
-              },
-              Object {
-                "properties": Object {
-                  "categories": Object {
-                    "readOnly": true,
-                    "writeOnly": true,
-                  },
-                },
-                "type": "object",
-              },
-            ],
-          },
-          "type": "array",
         },
       },
     },
@@ -2871,15 +2803,6 @@ Object {
             Object {
               "properties": Object {
                 "shop": Object {
-                  "readOnly": true,
-                  "writeOnly": true,
-                },
-              },
-              "type": "object",
-            },
-            Object {
-              "properties": Object {
-                "categories": Object {
                   "readOnly": true,
                   "writeOnly": true,
                 },

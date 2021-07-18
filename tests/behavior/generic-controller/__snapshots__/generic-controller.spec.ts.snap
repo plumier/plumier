@@ -1668,20 +1668,7 @@ Object {
       "application/json": Object {
         "schema": Object {
           "items": Object {
-            "allOf": Array [
-              Object {
-                "$ref": "#/components/schemas/UserTrans",
-              },
-              Object {
-                "properties": Object {
-                  "todos": Object {
-                    "readOnly": true,
-                    "writeOnly": true,
-                  },
-                },
-                "type": "object",
-              },
-            ],
+            "$ref": "#/components/schemas/UserTrans",
           },
           "type": "array",
         },
@@ -1698,20 +1685,7 @@ Object {
     "content": Object {
       "application/json": Object {
         "schema": Object {
-          "allOf": Array [
-            Object {
-              "$ref": "#/components/schemas/UserTrans",
-            },
-            Object {
-              "properties": Object {
-                "todos": Object {
-                  "readOnly": true,
-                  "writeOnly": true,
-                },
-              },
-              "type": "object",
-            },
-          ],
+          "$ref": "#/components/schemas/UserTrans",
         },
       },
     },

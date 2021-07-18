@@ -17,7 +17,6 @@ function successResponse(route: RouteInfo, ctx: TransformContext): SchemaObject 
         if (!!route.action.decorators.find((x: ApiHideRelationDecorator) => x.kind === "ApiNoRelation")) {
             overrides.push("RemoveChildRelations")
             overrides.push("RemoveInverseProperty")
-            overrides.push("RemoveArrayRelation")
         }
         overrides.push("WriteonlyFields")
         return { schema: transformTypeAdvance(type, ctx, { decorators: route.action.decorators, overrides }) }

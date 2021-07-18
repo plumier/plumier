@@ -122,18 +122,6 @@ function addRequiredOverride(modelType: (Class | Class[]), ctx: TransformContext
     return result.required!.length === 0 ? undefined : result
 }
 
-function removeArrayRelationsOverride(modelType: (Class | Class[]), ctx: TransformContext) {
-    const meta = getMetadata(modelType)
-    const result: SchemaObject = { type: "object", properties: {} }
-    for (const property of meta.properties) {
-        const relation = property.decorators.find(isRelation)
-        if (relation && Array.isArray(property.type)) {
-            result.properties![property.name] = { readOnly: true, writeOnly: true }
-        }
-    }
-    return Object.keys(result.properties!).length === 0 ? undefined : result
-}
-
 function removeInversePropertyOverride(modelType: (Class | Class[]), ctx: TransformContext) {
     const meta = getMetadata(modelType)
     const result: SchemaObject = { type: "object", properties: {} }
@@ -231,8 +219,6 @@ function transformTypeAdvance(type: Class | Class[] | undefined, ctx: TransformC
         ["RelationAsId", addRelationAsIdOverride],
         // add required annotation
         ["Required", addRequiredOverride],
-        // remove array relations
-        ["RemoveArrayRelation", removeArrayRelationsOverride],
         // remove deep nested child relation
         ["RemoveChildRelations", removeChildRelationsOverride],
         // remove inverse property
