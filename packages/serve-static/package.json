@@ -1,6 +1,6 @@
 {
   "name": "@plumier/serve-static",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "Serve static file for Plumier",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,7 +14,7 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumier/core": "^1.0.3",
+    "@plumier/core": "^1.0.5",
     "@types/koa-send": "^4.1.2",
     "@types/mime-types": "2.1.0",
     "koa-send": "^5.0.1",

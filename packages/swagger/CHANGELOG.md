@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.5](https://github.com/plumier/plumier/compare/v1.0.4...v1.0.5) (2021-07-25)
+
+
+### Bug Fixes
+
+* **swagger:** Fix array relation property not being visible on swagger response example ([#1011](https://github.com/plumier/plumier/issues/1011)) ([13992cf](https://github.com/plumier/plumier/commit/13992cfe097c925be80caaadb06d770fdcdfccdf))
+* **swagger:** Hide grand children relation properties on Swagger response example ([#1012](https://github.com/plumier/plumier/issues/1012)) ([f153bed](https://github.com/plumier/plumier/commit/f153bedd6bb1c960316c2e233f055d8e4eae0502))
+
+
+
+
+
 ## [1.0.4](https://github.com/plumier/plumier/compare/v1.0.3...v1.0.4) (2021-07-05)
 
 
