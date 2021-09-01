@@ -697,7 +697,7 @@ describe("TypeOrm", () => {
                 .post("/children")
                 .set("Authorization", `Bearer ${userToken}`)
                 .send({ name: "Bingo", parent: parent.raw })
-                .expect(401)
+                .expect(403)
             expect(body).toMatchSnapshot()
         })
 

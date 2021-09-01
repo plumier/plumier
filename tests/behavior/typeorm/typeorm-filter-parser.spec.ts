@@ -234,7 +234,7 @@ describe("TypeORM Filter Parser", () => {
             const { body } = await supertest(app.callback())
                 .get("/users?filter=email='lorem@ipsum.com'")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             expect(body).toMatchSnapshot()
         })
     })

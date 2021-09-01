@@ -3,7 +3,7 @@
 exports[`Select Parser Authorization Should able to authorize column when selected 1`] = `
 Object {
   "message": "Unauthorized to access select properties email",
-  "status": 401,
+  "status": 403,
 }
 `;
 

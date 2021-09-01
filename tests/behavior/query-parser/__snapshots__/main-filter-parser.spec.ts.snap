@@ -3,49 +3,49 @@
 exports[`Filter Parser Authorizer Should able to secure filter by policy 1`] = `
 Object {
   "message": "Unauthorized to access filter properties email",
-  "status": 401,
+  "status": 403,
 }
 `;
 
 exports[`Filter Parser Authorizer Should able to specify multiple policy by multiple decorators 1`] = `
 Object {
   "message": "Unauthorized to access filter properties email",
-  "status": 401,
+  "status": 403,
 }
 `;
 
 exports[`Filter Parser Authorizer Should able to specify multiple policy by single decorator 1`] = `
 Object {
   "message": "Unauthorized to access filter properties email",
-  "status": 401,
+  "status": 403,
 }
 `;
 
 exports[`Filter Parser Authorizer Should check unauthorized column 1`] = `
 Object {
   "message": "Unauthorized to access filter properties name, deleted, createdAt",
-  "status": 401,
+  "status": 403,
 }
 `;
 
 exports[`Filter Parser Authorizer Should check unauthorized column if compared as column vs column 1`] = `
 Object {
   "message": "Unauthorized to access filter properties name",
-  "status": 401,
+  "status": 403,
 }
 `;
 
 exports[`Filter Parser Authorizer Should check unauthorized column on public route 1`] = `
 Object {
   "message": "Unauthorized to access filter properties name, deleted, createdAt",
-  "status": 403,
+  "status": 401,
 }
 `;
 
 exports[`Filter Parser Authorizer Should not filter writeonly property 1`] = `
 Object {
   "message": "Unauthorized to access filter properties email",
-  "status": 401,
+  "status": 403,
 }
 `;
 

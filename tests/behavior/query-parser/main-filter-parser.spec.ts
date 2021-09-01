@@ -242,7 +242,7 @@ describe("Filter Parser Authorizer", () => {
         const { body } = await supertest(app.callback())
             .get("/users?filter=email='lorem@ipsum.com' and name='john' and deleted=false and createdAt='2020-1-1'")
             .set("Authorization", `Bearer ${USER_TOKEN}`)
-            .expect(401)
+            .expect(403)
         expect(body).toMatchSnapshot()
     })
     it("Should check unauthorized column if compared as column vs column", async () => {
@@ -266,7 +266,7 @@ describe("Filter Parser Authorizer", () => {
         const { body } = await supertest(app.callback())
             .get("/users?filter=email=name")
             .set("Authorization", `Bearer ${USER_TOKEN}`)
-            .expect(401)
+            .expect(403)
         expect(body).toMatchSnapshot()
     })
     it("Should check unauthorized column on public route", async () => {
@@ -290,7 +290,7 @@ describe("Filter Parser Authorizer", () => {
         const app = await createApp(UsersController)
         const { body } = await supertest(app.callback())
             .get("/users?filter=email='lorem@ipsum.com' and name='john' and deleted=false and createdAt='2020-1-1'")
-            .expect(403)
+            .expect(401)
         expect(body).toMatchSnapshot()
     })
     it("Should respect route authorization", async () => {
@@ -369,7 +369,7 @@ describe("Filter Parser Authorizer", () => {
         const { body } = await supertest(app.callback())
             .get("/users?filter=email='lorem@ipsum.com'")
             .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-            .expect(401)
+            .expect(403)
         expect(body).toMatchSnapshot()
     })
     it("Should not filter writeonly property", async () => {
@@ -394,7 +394,7 @@ describe("Filter Parser Authorizer", () => {
         const { body } = await supertest(app.callback())
             .get("/users?filter=email='lorem@ipsum.com'")
             .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-            .expect(401)
+            .expect(403)
         expect(body).toMatchSnapshot()
     })
     it("Should able to specify multiple decorators", async () => {
@@ -456,7 +456,7 @@ describe("Filter Parser Authorizer", () => {
         const { body } = await supertest(app.callback())
             .get("/users?filter=email='lorem@ipsum.com'")
             .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
-            .expect(401)
+            .expect(403)
         expect(body).toMatchSnapshot()
     })
     it("Should able to specify multiple policy by multiple decorators", async () => {
@@ -490,7 +490,7 @@ describe("Filter Parser Authorizer", () => {
         const { body } = await supertest(app.callback())
             .get("/users?filter=email='lorem@ipsum.com'")
             .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
-            .expect(401)
+            .expect(403)
         expect(body).toMatchSnapshot()
     })
     it("Should not affected non filterParser parameter", async () => {
@@ -544,7 +544,7 @@ describe("Filter Parser Authorizer", () => {
         await supertest(app.callback())
             .get("/myfilter?filter=property='lorem'")
             .set("Authorization", `Bearer ${USER_TOKEN}`)
-            .expect(401)
+            .expect(403)
     })
     it("Should unauthorize property marked with all entity policies", async () => {
         @genericController(c => c.all().authorize("Public"))
@@ -562,7 +562,7 @@ describe("Filter Parser Authorizer", () => {
         await supertest(app.callback())
             .get("/myfilter?filter=property='lorem'")
             .set("Authorization", `Bearer ${USER_TOKEN}`)
-            .expect(401)
+            .expect(403)
     })
     it("Should authorize property marked with entity policy combined with static auth policy", async () => {
         @genericController(c => c.all().authorize("Public"))

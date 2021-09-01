@@ -41,7 +41,7 @@ export const SecretPolicy = authPolicy().define("Secret", ({ user }) => !!user)
 
 describe("JwtAuth", () => {
     describe("Basic Authorization", () => {
-        it("Should secure all routes by return 403 for non login user", async () => {
+        it("Should secure all routes by return 401 for non login user", async () => {
             class AnimalController {
                 get() { return "Hello" }
 
@@ -54,10 +54,10 @@ describe("JwtAuth", () => {
 
             await Supertest(app.callback())
                 .get("/animal/get")
-                .expect(403, { status: 403, message: "Forbidden" })
+                .expect(401, { status: 401, message: "Unauthorized" })
             await Supertest(app.callback())
                 .post("/animal/save")
-                .expect(403, { status: 403, message: "Forbidden" })
+                .expect(401, { status: 401, message: "Unauthorized" })
         })
 
         it("Should able to access route decorated with @authorize.route(Public)", async () => {
@@ -126,11 +126,11 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
@@ -149,7 +149,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
@@ -173,11 +173,11 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/hello")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
@@ -206,11 +206,11 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/hello")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/hello")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
@@ -249,7 +249,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
@@ -300,10 +300,10 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("cookie", `Authorization=${USER_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
-                .expect(403)
+                .expect(401)
         })
 
         it("Should prioritize header vs cookie if specified both", async () => {
@@ -339,10 +339,10 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("cookie", `__JWT=${USER_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
-                .expect(403)
+                .expect(401)
         })
 
         it("Should throw error when no auth scheme defined", async () => {
@@ -390,7 +390,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
@@ -420,7 +420,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
@@ -438,7 +438,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/save")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/save")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
@@ -465,7 +465,7 @@ describe("JwtAuth", () => {
             // list
             await Supertest(app.callback())
                 .get("/animal/list")
-                .expect(403)
+                .expect(401)
             await Supertest(app.callback())
                 .get("/animal/list")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
@@ -493,7 +493,7 @@ describe("JwtAuth", () => {
             // list
             await Supertest(app.callback())
                 .get("/animal/list")
-                .expect(403)
+                .expect(401)
             await Supertest(app.callback())
                 .get("/animal/list")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
@@ -525,7 +525,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
@@ -595,7 +595,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .post("/animal/save")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
@@ -619,7 +619,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .post("/animal/save")
                 .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
@@ -643,7 +643,7 @@ describe("JwtAuth", () => {
                 .expect(200)
             await Supertest(app.callback())
                 .post("/animal/save")
-                .expect(403)
+                .expect(401)
         })
 
         it("Should able override global auth on action", async () => {
@@ -1353,7 +1353,7 @@ describe("JwtAuth", () => {
                 .initialize()
             await Supertest(app.callback())
                 .get("/animal/get")
-                .expect(403)
+                .expect(401)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
@@ -1398,10 +1398,10 @@ describe("JwtAuth", () => {
                     .post("/animal/save")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .send({ id: "123", name: "Mimi", deceased: "Yes" })
-                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (id, deceased)" })
+                    .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (id, deceased)" })
             })
 
-            it("Should throw 403 when accessed by public without auth info", async () => {
+            it("Should throw 401 when accessed by public without auth info", async () => {
                 class AnimalController {
                     @route.post()
                     @authorize.route("Public")
@@ -1419,7 +1419,7 @@ describe("JwtAuth", () => {
                 await Supertest(app.callback())
                     .post("/animal/save")
                     .send({ id: "123", name: "Mimi", deceased: "Yes" })
-                    .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (id, deceased)" })
+                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (id, deceased)" })
             })
 
             it("Should be able to pass authorization by provided undefined", async () => {
@@ -1475,7 +1475,7 @@ describe("JwtAuth", () => {
                     .post("/animal/save")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .send({ id: "123", name: "Mimi", deceased: "Yes" })
-                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id, data.deceased)" })
+                    .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.id, data.deceased)" })
             })
 
             it("Should be able to pass authorization by provided undefined", async () => {
@@ -1552,7 +1552,7 @@ describe("JwtAuth", () => {
                     .post("/animal/save")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .send({ id: "123", name: "Mimi", deceased: "Yes" })
-                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id, data.deceased)" })
+                    .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.id, data.deceased)" })
 
                 await Supertest(app.callback())
                     .post("/animal/save")
@@ -1597,7 +1597,7 @@ describe("JwtAuth", () => {
                     .post("/animal/save")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .send([{ id: "123", name: "Mimi", deceased: "Yes" }])
-                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)" })
+                    .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)" })
             })
 
             it("Should be able to pass authorization by provided undefined", async () => {
@@ -1639,7 +1639,7 @@ describe("JwtAuth", () => {
                     .post("/animal/save")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .send([{ id: "123", name: "Mimi", deceased: "Yes" }])
-                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)" })
+                    .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)" })
             })
 
             it("Should check for parameter authorization even if the controller access is public", async () => {
@@ -1657,7 +1657,7 @@ describe("JwtAuth", () => {
                     .post("/animal/save")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .send([{ id: "123", name: "Mimi", deceased: "Yes" }])
-                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)" })
+                    .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)" })
             })
 
             it("Should check for parameter authorization even if the controller access is public", async () => {
@@ -1674,7 +1674,7 @@ describe("JwtAuth", () => {
                     .post("/animal/save")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .send([{ id: "123", name: "Mimi", deceased: "Yes" }])
-                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)" })
+                    .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.0.id, data.0.deceased)" })
             })
         })
 
@@ -1727,7 +1727,7 @@ describe("JwtAuth", () => {
                     .post("/animal/save")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .send({ id: 20, createdAt: "2018-1-1", deleted: "YES", name: "Mimi", deceased: "Yes" })
-                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id, data.createdAt, data.deleted)" })
+                    .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.id, data.createdAt, data.deleted)" })
             })
 
         })
@@ -1773,7 +1773,7 @@ describe("JwtAuth", () => {
                     .post("/user/save")
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
                     .send({ id: 20, createdAt: "2018-1-1", deleted: "YES", name: "John", password: "secret" })
-                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id, data.createdAt, data.deleted)" })
+                    .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.id, data.createdAt, data.deleted)" })
             })
 
             it("Should not able to get secured property", async () => {
@@ -1809,7 +1809,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
                         .send({ id: "123" })
-                        .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (id)" })
+                        .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (id)" })
                 })
 
                 it("Should authorize with all modifier", async () => {
@@ -1831,7 +1831,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
                         .send({ id: "123" })
-                        .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (id)" })
+                        .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (id)" })
                 })
 
                 it("Should authorize if not specified", async () => {
@@ -1853,7 +1853,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
                         .send({ id: "123" })
-                        .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (id)" })
+                        .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (id)" })
                 })
 
                 it("Should ignore with get modifier", async () => {
@@ -1904,7 +1904,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
                         .send({ id: "123" })
-                        .expect(401)
+                        .expect(403)
                 })
             })
             describe("Object parameter", () => {
@@ -1932,7 +1932,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
                         .send({ id: "123" })
-                        .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id)" })
+                        .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.id)" })
                 })
 
                 it("Should authorize with all modifier", async () => {
@@ -1959,7 +1959,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
                         .send({ id: "123" })
-                        .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id)" })
+                        .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.id)" })
                 })
 
                 it("Should authorize if not specified", async () => {
@@ -1986,7 +1986,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
                         .send({ id: "123" })
-                        .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.id)" })
+                        .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.id)" })
                 })
 
                 it("Should ignore with get modifier", async () => {
@@ -2046,7 +2046,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
                         .send({ id: "123" })
-                        .expect(401)
+                        .expect(403)
                 })
             })
             describe("Nested Object parameter", () => {
@@ -2080,7 +2080,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
                         .send({ entity: { id: "123" } })
-                        .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.entity.id)" })
+                        .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.entity.id)" })
                 })
 
                 it("Should authorize with all modifier", async () => {
@@ -2113,7 +2113,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
                         .send({ entity: { id: "123" } })
-                        .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.entity.id)" })
+                        .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.entity.id)" })
                 })
 
                 it("Should authorize if not specified", async () => {
@@ -2146,7 +2146,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
                         .send({ entity: { id: "123" } })
-                        .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.entity.id)" })
+                        .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.entity.id)" })
                 })
 
                 it("Should ignore with get modifier", async () => {
@@ -2218,7 +2218,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
                         .send({ entity: { id: "123" } })
-                        .expect(401)
+                        .expect(403)
                 })
 
                 it("Should check authorize on the relation property itself", async () => {
@@ -2251,7 +2251,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
                         .send({ entity: { id: "123" } })
-                        .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.entity)" })
+                        .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.entity)" })
                 })
             })
             describe("Array of Object parameter", () => {
@@ -2279,7 +2279,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
                         .send([{ id: "123" }])
-                        .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.0.id)" })
+                        .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.0.id)" })
                 })
 
                 it("Should authorize with all modifier", async () => {
@@ -2306,7 +2306,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
                         .send([{ id: "123" }])
-                        .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.0.id)" })
+                        .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.0.id)" })
                 })
 
                 it("Should authorize if not specified", async () => {
@@ -2333,7 +2333,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${USER_TOKEN}`)
                         .send([{ id: "123" }])
-                        .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (data.0.id)" })
+                        .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (data.0.id)" })
                 })
 
                 it("Should ignore with get modifier", async () => {
@@ -2393,7 +2393,7 @@ describe("JwtAuth", () => {
                         .post("/animal/save")
                         .set("Authorization", `Bearer ${SUPER_ADMIN_TOKEN}`)
                         .send([{ id: "123" }])
-                        .expect(401)
+                        .expect(403)
                 })
             })
         })
@@ -2429,7 +2429,7 @@ describe("JwtAuth", () => {
                     .post("/users/save")
                     .send({ name: "John Doe", role: "admin" })
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
-                    .expect(401)
+                    .expect(403)
             })
 
             it("Should able to authorize response by role", async () => {
@@ -2472,12 +2472,12 @@ describe("JwtAuth", () => {
                     .post("/users/save")
                     .send({ name: "John Doe", role: "admin" })
                     .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                    .expect(401)
+                    .expect(403)
                 await Supertest(app.callback())
                     .post("/users/save")
                     .send({ name: "John Doe", role: "admin" })
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
-                    .expect(401)
+                    .expect(403)
             })
 
             it("Should able to authorize response by role", async () => {
@@ -2552,7 +2552,7 @@ describe("JwtAuth", () => {
                     .post("/users")
                     .send({ name: "admin", role: "admin" })
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
-                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (user.role)" })
+                    .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (user.role)" })
             })
             it("Should able to filter by role with property field", async () => {
                 class User {
@@ -2604,7 +2604,7 @@ describe("JwtAuth", () => {
                     .post("/users")
                     .send({ name: "admin", role: "admin" })
                     .set("Authorization", `Bearer ${USER_TOKEN}`)
-                    .expect(401, { status: 401, message: "Unauthorized to populate parameter paths (user.role)" })
+                    .expect(403, { status: 403, message: "Unauthorized to populate parameter paths (user.role)" })
             })
             it("Should able to filter by multiple roles", async () => {
                 @domain()
@@ -3414,7 +3414,7 @@ describe("JwtAuth", () => {
                 .initialize()
             await Supertest(app.callback())
                 .get("/animal/get")
-                .expect(403)
+                .expect(401)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
@@ -3430,7 +3430,7 @@ describe("JwtAuth", () => {
                 .initialize()
             await Supertest(app.callback())
                 .get("/animal/get")
-                .expect(403)
+                .expect(401)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
@@ -3450,7 +3450,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
@@ -3494,7 +3494,7 @@ describe("JwtAuth", () => {
                 .post("/animal/save")
                 .send({ name: "lorem" })
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(401, { status: 401, message: 'Unauthorized to populate parameter paths (name)' })
+                .expect(403, { status: 403, message: 'Unauthorized to populate parameter paths (name)' })
             await Supertest(app.callback())
                 .post("/animal/save")
                 .send({ name: "lorem" })
@@ -3579,7 +3579,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
@@ -3628,7 +3628,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
@@ -3648,7 +3648,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
@@ -3668,11 +3668,11 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(401)
+                .expect(403)
         })
         it("Should provide error info when applied on method", async () => {
             const fn = jest.fn()
@@ -3772,7 +3772,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             await Supertest(app.callback())
                 .get("/animal/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
@@ -3855,7 +3855,7 @@ describe("JwtAuth", () => {
             await Supertest(app.callback())
                 .get("/user/get")
                 .set("Authorization", `Bearer ${USER_TOKEN}`)
-                .expect(401)
+                .expect(403)
         })
     })
 
@@ -3902,8 +3902,8 @@ describe("JwtAuth", () => {
                     .set("Authorization", `Bearer ${user}`)
             }
             await request(app, "/shops/1", USER_ONE).expect(200)
-            await request(app, "/shops/1", USER_TWO).expect(401)
-            await request(app, "/shops/2", USER_ONE).expect(401)
+            await request(app, "/shops/1", USER_TWO).expect(403)
+            await request(app, "/shops/2", USER_ONE).expect(403)
             await request(app, "/shops/2", USER_TWO).expect(200)
         })
         it("Should throw proper error when method not an entity provider", async () => {
@@ -4083,7 +4083,7 @@ describe("JwtAuth", () => {
                 .put("/products/1")
                 .send({ basePrice: 123 })
                 .set("Authorization", `Bearer ${USER_TWO}`)
-                .expect(401)
+                .expect(403)
         })
         it("Should able to write protect relation property", async () => {
             function relationConverter(i: VisitorInvocation): Result {
@@ -4133,7 +4133,7 @@ describe("JwtAuth", () => {
                 .put("/products/1")
                 .send({ shop: 1 })
                 .set("Authorization", `Bearer ${USER_TWO}`)
-                .expect(401)
+                .expect(403)
         })
         it("Should throw proper error on when applied as write access", async () => {
             const fn = jest.fn()
@@ -4338,8 +4338,8 @@ describe("JwtAuth", () => {
                     .set("Authorization", `Bearer ${user}`)
             }
             await request(app, "/shops/1", USER_ONE).expect(200)
-            await request(app, "/shops/1", USER_TWO).expect(401)
-            await request(app, "/shops/2", USER_ONE).expect(401)
+            await request(app, "/shops/1", USER_TWO).expect(403)
+            await request(app, "/shops/2", USER_ONE).expect(403)
             await request(app, "/shops/2", USER_TWO).expect(200)
         })
         it("Should detect entity policy name conflict", async () => {
