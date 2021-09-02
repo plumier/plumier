@@ -34,7 +34,7 @@ class MongooseRepository<T> implements Repository<T>{
     }
 
     async insert(doc: Partial<T>) {
-        return new this.Model(doc).save() as any
+        return new this.Model(doc as any).save() as any
     }
 
     findById(id: any, select: SelectQuery = {}): Promise<(T & mongoose.Document) | undefined> {
@@ -113,7 +113,7 @@ class MongooseNestedRepository<P=any, T=any> implements NestedRepository<P, T>  
             // add parent navigation
             (doc as any)[this.relation.childProperty] = parent!.id
         }
-        const result = await new this.ChildModel(doc).save();
+        const result = await new this.ChildModel(doc as any).save();
         // add children navigation
         if (this.relation.parentProperty) {
             (parent as any)[this.relation.parentProperty].push(result._id)
