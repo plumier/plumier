@@ -90,7 +90,7 @@ function createAuthContext(ctx: ActionContext, access: AccessModifier): Authoriz
 }
 
 function throwAuthError(ctx: AuthorizerContext, msg?: string) {
-    if (!ctx.user) throw new HttpStatusError(HttpStatus.Forbidden, msg ?? "Forbidden")
+    if (ctx.user) throw new HttpStatusError(HttpStatus.Forbidden, msg ?? "Forbidden")
     else throw new HttpStatusError(HttpStatus.Unauthorized, msg ?? "Unauthorized")
 }
 

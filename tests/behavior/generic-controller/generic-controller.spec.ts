@@ -2675,7 +2675,7 @@ describe("Entity Policy", () => {
             await supertest(app.callback())
                 .get("/user/1")
                 .set("Authorization", `Bearer ${JANE_TOKEN}`)
-                .expect(401)
+                .expect(403)
         })
         it("Should protect put by ID", async () => {
             const app = await createApp()
@@ -2688,7 +2688,7 @@ describe("Entity Policy", () => {
                 .put("/user/1")
                 .send({ name: "Lorem" })
                 .set("Authorization", `Bearer ${JANE_TOKEN}`)
-                .expect(401)
+                .expect(403)
         })
         it("Should protect patch by ID", async () => {
             const app = await createApp()
@@ -2701,7 +2701,7 @@ describe("Entity Policy", () => {
                 .patch("/user/1")
                 .send({ name: "Lorem" })
                 .set("Authorization", `Bearer ${JANE_TOKEN}`)
-                .expect(401)
+                .expect(403)
         })
         it("Should protect delete by ID", async () => {
             const app = await createApp()
@@ -2712,7 +2712,7 @@ describe("Entity Policy", () => {
             await supertest(app.callback())
                 .delete("/user/1")
                 .set("Authorization", `Bearer ${JANE_TOKEN}`)
-                .expect(401)
+                .expect(403)
         })
     })
     describe("One To Many Controller", () => {
@@ -2725,7 +2725,7 @@ describe("Entity Policy", () => {
             await supertest(app.callback())
                 .get("/user/2/todos")
                 .set("Authorization", `Bearer ${JOHN_TOKEN}`)
-                .expect(401)
+                .expect(403)
             expect(body).toMatchSnapshot()
         })
         it("Should protect post", async () => {
@@ -2739,7 +2739,7 @@ describe("Entity Policy", () => {
                 .post("/user/2/todos")
                 .send({ title: "Lorem" })
                 .set("Authorization", `Bearer ${JOHN_TOKEN}`)
-                .expect(401)
+                .expect(403)
         })
         it("Should protect get by id", async () => {
             const app = await createApp()
@@ -2750,7 +2750,7 @@ describe("Entity Policy", () => {
             await supertest(app.callback())
                 .patch("/user/2/todos/3")
                 .set("Authorization", `Bearer ${JOHN_TOKEN}`)
-                .expect(401)
+                .expect(403)
         })
         it("Should protect put", async () => {
             const app = await createApp()
@@ -2763,7 +2763,7 @@ describe("Entity Policy", () => {
                 .put("/user/2/todos/3")
                 .send({ title: "Lorem" })
                 .set("Authorization", `Bearer ${JOHN_TOKEN}`)
-                .expect(401)
+                .expect(403)
         })
         it("Should protect patch", async () => {
             const app = await createApp()
@@ -2776,7 +2776,7 @@ describe("Entity Policy", () => {
                 .patch("/user/2/todos/3")
                 .send({ title: "Lorem" })
                 .set("Authorization", `Bearer ${JOHN_TOKEN}`)
-                .expect(401)
+                .expect(403)
         })
         it("Should protect delete", async () => {
             const app = await createApp()
@@ -2787,7 +2787,7 @@ describe("Entity Policy", () => {
             await supertest(app.callback())
                 .patch("/user/2/todos/3")
                 .set("Authorization", `Bearer ${JOHN_TOKEN}`)
-                .expect(401)
+                .expect(403)
         })
     })
 })

@@ -1004,7 +1004,7 @@ describe("Parameter Binding", () => {
 
             await Supertest(app.callback())
                 .get("/animal/get")
-                .expect(403)
+                .expect(401)
         })
 
         it("Should has appropriate name", async () => {

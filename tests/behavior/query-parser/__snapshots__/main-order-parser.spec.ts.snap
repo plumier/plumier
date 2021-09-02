@@ -125,13 +125,13 @@ Array [
 exports[`Select Order Authorization Should authorize column properly 1`] = `
 Object {
   "message": "Unauthorized to order properties email",
-  "status": 401,
+  "status": 403,
 }
 `;
 
 exports[`Select Order Authorization Should authorize column with public route 1`] = `
 Object {
   "message": "Unauthorized to order properties email",
-  "status": 403,
+  "status": 401,
 }
 `;

@@ -188,7 +188,7 @@ describe("Select Order Authorization", () => {
         const { body } = await supertest(app.callback())
             .get("/users?order=email,name")
             .set("Authorization", `Bearer ${userToken}`)
-            .expect(401)
+            .expect(403)
         expect(body).toMatchSnapshot()
     })
     it("Should authorize column with public route", async () => {
@@ -215,7 +215,7 @@ describe("Select Order Authorization", () => {
         const app = await createApp(UsersController).initialize()
         const { body } = await supertest(app.callback())
             .get("/users?order=email,name")
-            .expect(403)
+            .expect(401)
         expect(body).toMatchSnapshot()
     })
     it("Should allow access if match policy", async () => {
@@ -258,7 +258,7 @@ describe("Select Order Authorization", () => {
         await supertest(app.callback())
             .get("/myfilter?order=property")
             .set("Authorization", `Bearer ${userToken}`)
-            .expect(401)
+            .expect(403)
     })
     it("Should unauthorize property marked with all entity policies", async () => {
         @genericController(c => c.all().authorize("Public"))
@@ -276,7 +276,7 @@ describe("Select Order Authorization", () => {
         await supertest(app.callback())
             .get("/myfilter?order=property")
             .set("Authorization", `Bearer ${userToken}`)
-            .expect(401)
+            .expect(403)
     })
     it("Should authorize property marked with entity policy combined with static auth policy", async () => {
         @genericController(c => c.all().authorize("Public"))
