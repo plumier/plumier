@@ -19,7 +19,7 @@
     "@plumier/generic-controller": "^1.0.5",
     "@types/pluralize": "^0.0.29",
     "pluralize": "^8.0.0",
-    "typeorm": "^0.2.32"
+    "typeorm": "^0.2.37"
   },
   "devDependencies": {
     "cpy-cli": "^3.1.1"
