@@ -1211,6 +1211,7 @@ Object {
             "content": Object {
               "text/html": Object {},
             },
+            "description": "Response body",
           },
         },
         "tags": Array [
@@ -1285,6 +1286,7 @@ Object {
             "content": Object {
               "text/html": Object {},
             },
+            "description": "Response body",
           },
         },
         "tags": Array [
@@ -1350,6 +1352,7 @@ Object {
           "content": Object {
             "text/html": Object {},
           },
+          "description": "Response body",
         },
       },
       "tags": Array [

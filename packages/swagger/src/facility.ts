@@ -133,7 +133,7 @@ export class SwaggerFacility extends DefaultFacility {
                     description: "Host the SwaggerUI",
                     tags: ["Swagger"],
                     parameters: [],
-                    responses: { "200": { content: { "text/html": {} } } }
+                    responses: { "200": { content: { "text/html": {} }, description: 'Response body' } }
                 }
             }
         })
