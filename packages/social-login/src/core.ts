@@ -132,7 +132,7 @@ export function oAuth1ARequest(apiKey: string, apiKeySecret: string): OAuth1Requ
         }
     });
     return async ({ url, method, data }: { url: string, method: "GET" | "POST", data: any }, token?: OAuth.Token) => {
-        const headers = oauth.toHeader(oauth.authorize({ url, method, data }, token))
+        const headers:any = oauth.toHeader(oauth.authorize({ url, method, data }, token))
         const resp = await Axios({ url, method, headers, data: method === "GET" ? undefined : data })
         return resp.data
     }
@@ -261,9 +261,9 @@ async function oAuth20ProfileParser(ctx: Context, option: OAuthOptions, redirect
     }
     const { clientId: client_id, clientSecret: client_secret } = option
     // request access token
-    const { data: token } = await Axios.post<{ access_token: string }>(option.token.endpoint,
+    const { data: token } = await Axios.post(option.token.endpoint,
         { client_id, redirect_uri, client_secret, code: req.query.code, ...option.token.params },
-        { headers: { Accept: 'application/json' } })
+        { headers: { Accept: 'application/json' } }) as any
     // request profile
     const { data: profile } = await Axios.get(option.profile.endpoint, {
         params: option.profile.params,

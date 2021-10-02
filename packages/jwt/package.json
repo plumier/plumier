@@ -13,7 +13,7 @@
   "dependencies": {
     "@plumier/core": "^1.0.5",
     "@plumier/query-parser": "^1.0.5",
-    "koa-jwt": "^4.0.1"
+    "koa-jwt": "^4.0.3"
   },
   "devDependencies": {
     "cpy-cli": "^3.1.1"
