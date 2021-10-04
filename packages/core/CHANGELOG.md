@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.6](https://github.com/plumier/plumier/compare/v1.0.5...v1.0.6) (2021-10-04)
+
+
+### Bug Fixes
+
+* **core:** Fix http status error response for 403 Forbidden and 401 Unauthorized ([#1014](https://github.com/plumier/plumier/issues/1014)) ([b235819](https://github.com/plumier/plumier/commit/b2358195477eaafb0654e92c8605bc1ecf7a8350))
+
+
+
+
+
 ## [1.0.5](https://github.com/plumier/plumier/compare/v1.0.4...v1.0.5) (2021-07-25)
 
 **Note:** Version bump only for package @plumier/core
