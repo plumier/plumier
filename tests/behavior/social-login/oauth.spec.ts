@@ -44,7 +44,7 @@ async function appStub(controller: Class, mazeOpt?: OAuthProviderOption, googolO
 async function login(url: string): Promise<{ status: number, profile: any, authUrl: string, cookie: string[] }> {
     const loginResp = await Axios.get(url)
     const loginUrl = getLoginUrl(loginResp.data)
-    const cookie: string = loginResp.headers["set-cookie"].join("; ")
+    const cookie: string = (loginResp.headers["set-cookie"] as unknown as string[]).join("; ")
     var profileResp: any
     try {
         profileResp = await Axios.post(loginUrl, undefined, { headers: { cookie } })
@@ -55,7 +55,7 @@ async function login(url: string): Promise<{ status: number, profile: any, authU
         status: profileResp.status,
         profile: profileResp.data,
         authUrl: loginUrl,
-        cookie: loginResp.headers["set-cookie"]
+        cookie: loginResp.headers["set-cookie"] as any
     }
 }
 
@@ -207,7 +207,7 @@ describe("OAuth 2.0", () => {
         const pars = params(loginUrl)
         delete pars.state
         const newLoginUrl = loginUrl.split("?")![0] + "?" + qs.stringify(pars)
-        const cookie: string = loginResp.headers["set-cookie"].join("; ")
+        const cookie: string = (loginResp.headers["set-cookie"] as unknown as string[]).join("; ")
         const fn = jest.fn()
         try {
             await Axios.post(newLoginUrl, undefined, { headers: { cookie } })
@@ -234,7 +234,7 @@ describe("OAuth 1.0a", () => {
         const pars = params(loginUrl)
         delete pars.oauth_token
         const newLoginUrl = loginUrl.split("?")![0] + "?" + qs.stringify(pars)
-        const cookie: string = loginResp.headers["set-cookie"].join("; ")
+        const cookie: string = (loginResp.headers["set-cookie"] as unknown as string[]).join("; ")
         const fn = jest.fn()
         try {
             await Axios.post(newLoginUrl, undefined, { headers: { cookie } })
