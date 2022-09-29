@@ -41,7 +41,8 @@ export function decorateMethod(callback: ((target: Class, name: string) => any),
 export function decorateMethod(data: any, option?: DecoratorOption): MethodDecorator
 export function decorateMethod(data: any, option?: DecoratorOption) {
     return (target: any, name: string | symbol) => {
-        const targetClass = target.constructor
+        const isStatic = typeof target === 'function'
+        const targetClass = isStatic ? target: target.constructor
         const meta = typeof data === "function" ? data(targetClass, name) : data
         setMetadata({ ...meta, [DecoratorOptionId]: { ...meta[DecoratorOptionId], ...option } }, targetClass, name)
     }
@@ -103,13 +104,13 @@ export function decorate(data: any | ((...args: any[]) => any), targetTypes: Dec
 }
 
 /**
- * Compose multiple metadata decorators into single decorator. 
- * 
+ * Compose multiple metadata decorators into single decorator.
+ *
  * ```
  * function merged() {
  *      return mergeDecorator(decoratorOne(), decoratorTwo(), decoratorThree())
  * }
- * 
+ *
  * ＠merged()
  * class TargetClass {
  * }
@@ -189,7 +190,7 @@ export namespace generic {
      * Get data type of declaration in specific class based on its type specified by type("T")
      * @param decorator type() decorator contains generic type information
      * @param typeTarget The current type where the type will be calculated
-     * @returns 
+     * @returns
      */
     export function getType(decorator: { type: TypeOverride | ((x: any) => TypeOverride), target: Class }, typeTarget: Class): Class | Class[] | undefined {
         const getParent = (type: Class): Class[] => {
@@ -215,7 +216,7 @@ export namespace generic {
         if (!templateDec)
             throw new Error(`${decorator.target.name} doesn't have @generic.parameter() decorator required by generic parameter ${type}`)
         /*
-         get list of parents, for example 
+         get list of parents, for example
          A <-- B <-- C <-- D (A is super super)
          const result = getParent(D)
          result = [B, C, D]
@@ -231,7 +232,7 @@ export namespace generic {
             if (typeDec) {
                 if (typeDec.types.length !== templateDec.templates.length)
                     throw new Error(`Number of parameters @generic.parameter() and @generic.argument() mismatch between ${tmpType.name} and ${type.name}`)
-                // get the actual type in @generic.argument() list 
+                // get the actual type in @generic.argument() list
                 result = typeDec.types[index] as any
                 // check if the result is a "function" (Class) then return immediately
                 const finalResult = isArray ? [result] : result

@@ -141,21 +141,29 @@ function parseMethods(owner: Class): MethodReflection[] {
     const result: MethodReflection[] = []
     const members = getClassMembers(owner)
     for (const name of members) {
-        const des = Reflect.getOwnPropertyDescriptor(owner.prototype, name)
+        const protoDescr = Reflect.getOwnPropertyDescriptor(owner.prototype, name)
+        const classDescr = Reflect.getOwnPropertyDescriptor(owner, name)
+        const isStatic = !protoDescr && !!classDescr
+        const des = protoDescr || classDescr
         if (des && typeof des.value === "function" && !des.get && !des.set) {
             const parameters = getMethodParameters(owner, name).map((x, i) => parseParameter(x, i))
-            result.push({ kind: "Method", name, parameters, decorators: [], returnType: undefined })
+            result.push({ kind: "Method", name, parameters, decorators: [], returnType: undefined, ...(isStatic ? { isStatic }: {}) })
         }
     }
     return result
 }
 
+const EXCLUDED_STATIC_PROP_NAMES = ['name']
+
 function parseProperties(owner: Class): PropertyReflection[] {
     const result: PropertyReflection[] = []
     const members = getClassMembers(owner)
     for (const name of members) {
-        const des = Reflect.getOwnPropertyDescriptor(owner.prototype, name)
-        if (!des || des.get || des.set) {
+        const protoDescr = Reflect.getOwnPropertyDescriptor(owner.prototype, name)
+        const classDescr = Reflect.getOwnPropertyDescriptor(owner, name)
+        const isStaticMethod = !protoDescr && !!classDescr && !EXCLUDED_STATIC_PROP_NAMES.includes(name)
+        const des = protoDescr || classDescr
+        if ((!protoDescr || protoDescr.get || protoDescr.set) && !isStaticMethod) {
             result.push({ kind: "Property", name, decorators: [], get: des?.get, set: des?.set })
         }
     }
