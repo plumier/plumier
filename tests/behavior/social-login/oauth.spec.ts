@@ -28,6 +28,7 @@ async function appStub(controller: Class, mazeOpt?: OAuthProviderOption, googolO
         .set(new FakeOAuth2Facility("Googol", googolServer.origin, googolOpt))
         .set(new FakeOAuth10aFacility("Teeter", teeterServer.origin, teeterOpt))
         .set({ mode: debug })
+
         .initialize()
     const consumer = await runServer(koa)
     return {
@@ -42,12 +43,13 @@ async function appStub(controller: Class, mazeOpt?: OAuthProviderOption, googolO
 }
 
 async function login(url: string): Promise<{ status: number, profile: any, authUrl: string, cookie: string[] }> {
-    const loginResp = await Axios.get(url)
+    const axios = Axios.create({ withCredentials: true })
+    const loginResp = await axios.get(url)
     const loginUrl = getLoginUrl(loginResp.data)
     const cookie: string = (loginResp.headers["set-cookie"] as unknown as string[]).join("; ")
     var profileResp: any
     try {
-        profileResp = await Axios.post(loginUrl, undefined, { headers: { cookie } })
+        profileResp = await axios.post(loginUrl, undefined, { headers: { Cookie: cookie } })
     } catch (e) {
         profileResp = e.response
     }

@@ -47,7 +47,7 @@ mongoose.set("useFindAndModify", false)
 
 let mong: MongoMemoryServer | undefined;
 beforeAll(async () => {
-    mong = new MongoMemoryServer()
+    mong = await MongoMemoryServer.create();
     await mongoose.connect(await mong.getUri())
 })
 afterAll(async () => {

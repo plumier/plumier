@@ -20,8 +20,8 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@types/jest": "^27.0.2",
-    "jest": "^27.2.4"
+    "@types/jest": "^27.5.2",
+    "jest": "^27.5.1"
   },
   "devDependencies": {
     "cpy-cli": "^3.1.1"

@@ -352,9 +352,9 @@ class OAuthRedirectUriMiddleware implements CustomMiddleware {
             if (e.response) {
                 const error = (e as AxiosError)
                 const response = error.response!;
-                log.error("Request URL: %s %s", error.config.method, error.config.url)
-                log.error("Request Data: %o", error.config.data)
-                log.error("Request Headers: %o", error.config.headers)
+                log.error("Request URL: %s %s", error.config?.method, error.config?.url)
+                log.error("Request Data: %o", error.config?.data)
+                log.error("Request Headers: %o", error.config?.headers)
                 log.error("Error: %o", { status: response.status, message: response.statusText, data: response.data })
                 throw new HttpStatusError(response.status, response.statusText)
             }

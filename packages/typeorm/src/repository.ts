@@ -1,8 +1,8 @@
 import { Class, NestedRepository, Repository, SelectQuery, EntityRelationInfo, entityHelper } from "@plumier/core"
 import { EntityWithRelation } from "@plumier/generic-controller"
-import { getManager, getRepository, Repository as NativeRepository } from "typeorm"
+import { getManager, getRepository, ObjectLiteral, Repository as NativeRepository } from "typeorm"
 
-class TypeORMRepository<T> implements Repository<T> {
+class TypeORMRepository<T extends ObjectLiteral> implements Repository<T>  {
     readonly nativeRepository: NativeRepository<T>
     constructor(protected type: Class<T>) {
         this.nativeRepository = getManager().getRepository(type)
@@ -46,7 +46,7 @@ class TypeORMRepository<T> implements Repository<T> {
     }
 }
 
-class TypeORMNestedRepository<P, T> implements NestedRepository<P, T> {
+class TypeORMNestedRepository<P extends ObjectLiteral, T extends ObjectLiteral> implements NestedRepository<P, T> {
     readonly nativeRepository: NativeRepository<T>
     readonly nativeParentRepository: NativeRepository<P>
     readonly relation: EntityRelationInfo
@@ -56,13 +56,12 @@ class TypeORMNestedRepository<P, T> implements NestedRepository<P, T> {
         this.nativeParentRepository = getManager().getRepository(this.relation.parent)
     }
     count(pid: any, query?: any): Promise<number> {
-        return this.nativeRepository.count({
-            where: { [this.relation.childProperty!]: pid, ...query },
-        })
+        const where = { [this.relation.childProperty!]: pid, ...query }
+        return this.nativeRepository.count({ where })
     }
 
     async find(pid: any, offset: number, limit: number, query: any, selection: SelectQuery, order: any): Promise<T[]> {
-        if(!this.relation.childProperty)
+        if (!this.relation.childProperty)
             throw new Error(`Relation without inverse property is not supported by Nested Generic Controller`)
         return this.nativeRepository.find({
             where:
@@ -86,7 +85,8 @@ class TypeORMNestedRepository<P, T> implements NestedRepository<P, T> {
             return result
         }
         else {
-            return this.nativeRepository.save({ [this.relation.childProperty!]: pid, ...data })
+            const entity = { [this.relation.childProperty!]: pid, ...data }
+            return this.nativeRepository.save(entity)
         }
     }
 

@@ -72,7 +72,7 @@ describe("Logger", () => {
             .get("/users/error")
             .expect(500)
         expect(cleanupConsole([mock.mock.calls[6]])).toMatchSnapshot()
-        expect(mock.mock.calls[7][0]).toContain("at UsersController.error")
+        expect(mock.mock.calls[7][0]).toContain("Error: Lorem ipsum dolor")
         console.mockClear()
     })
     it("Should log action without status", async () => {

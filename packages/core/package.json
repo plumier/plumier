@@ -23,12 +23,12 @@
     "@plumier/reflect": "^1.0.6",
     "@plumier/validator": "^1.0.6",
     "@types/debug": "^4.1.7",
-    "@types/glob": "^7.1.4",
+    "@types/glob": "^7.2.0",
     "chalk": "^4.1.2",
-    "debug": "^4.3.2",
-    "glob": "^7.2.0",
-    "path-to-regexp": "^6.2.0",
-    "tslib": "^2.3.1"
+    "debug": "^4.3.4",
+    "glob": "^7.2.3",
+    "path-to-regexp": "^6.2.1",
+    "tslib": "^2.4.1"
   },
   "peerDependencies": {
     "@types/koa": "*"

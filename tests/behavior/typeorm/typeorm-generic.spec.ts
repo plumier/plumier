@@ -42,7 +42,8 @@ import {
     OneToOne,
     ManyToMany,
     PrimaryGeneratedColumn,
-    getRepository
+    getRepository,
+    ObjectLiteral
 } from "typeorm"
 
 import { random } from "../helper"
@@ -387,7 +388,7 @@ describe("CRUD", () => {
         expect(fn.mock.calls).toMatchSnapshot()
     })
     it("Should able to create custom generic controller factory", async () => {
-        class MyCustomGeneric<T, TID> extends TypeORMControllerGeneric<T, TID>{
+        class MyCustomGeneric<T extends ObjectLiteral, TID> extends TypeORMControllerGeneric<T, TID>{
             constructor() { super(x => new TypeORMRepository(x)) }
         }
         class MyCustomOnToManyGeneric<P, T, PID, TID> extends TypeORMNestedControllerGeneric<P, T, PID, TID>{
@@ -900,7 +901,7 @@ describe("CRUD", () => {
             }
             @generic.parameter("T", "TID")
             @generic.argument("T", "TID")
-            class MyCustomGeneric<T, TID> extends TypeORMControllerGeneric<T, TID>{
+            class MyCustomGeneric<T extends ObjectLiteral, TID> extends TypeORMControllerGeneric<T, TID>{
                 constructor() { super(x => new TypeORMRepository(x)) }
             }
             const app = await new Plumier()
@@ -1434,10 +1435,10 @@ describe("CRUD", () => {
             }
             const app = await createApp([User, Animal], { mode: "production" })
             const animalRepo = getManager().getRepository(Animal)
-            const animals = await Promise.all([
-                animalRepo.save({ name: "Mimi" }),
-                animalRepo.save({ name: "Bingo" }),
-            ])
+            const animals = [
+                await animalRepo.save({ name: "Bingo" }),
+                await animalRepo.save({ name: "Mimi" }),
+            ]
             const { body } = await supertest(app.callback())
                 .post(`/users`)
                 .send({ email: "john.doe@gmail.com", name: "John Doe", animals: animals.map(x => x.id) })
@@ -2806,10 +2807,10 @@ describe("CRUD", () => {
             }
             const app = await createApp([User, Animal], { mode: "production" })
             const animalRepo = getManager().getRepository(Animal)
-            const animals = await Promise.all([
-                animalRepo.save({ name: "Mimi" }),
-                animalRepo.save({ name: "Bingo" }),
-            ])
+            const animals = [
+                await animalRepo.save({ name: "Bingo" }),
+                await animalRepo.save({ name: "Mimi" }),
+            ]
             const { body } = await supertest(app.callback())
                 .post(`/users`)
                 .send({ email: "john.doe@gmail.com", name: "John Doe", animals: animals.map(x => x.id) })
@@ -2840,7 +2841,7 @@ describe("CRUD", () => {
                 @Column()
                 name: string
                 @ManyToOne(x => User, x => x.animals)
-                user:User
+                user: User
                 @ManyToMany(x => Image)
                 @JoinTable()
                 images: Image[]
@@ -2856,10 +2857,10 @@ describe("CRUD", () => {
             const userRepo = getManager().getRepository(User)
             const imageRepo = getManager().getRepository(Image)
             const user = await userRepo.save({ email: "john.doe@gmail.com", name: "John Doe" })
-            const images = await Promise.all([
-                imageRepo.save({ url: "https://images.com/img.jpg" }),
-                imageRepo.save({ url: "https://images.com/img.jpg" }),
-            ])
+            const images = [
+                await imageRepo.save({ url: "https://images.com/img.jpg" }),
+                await imageRepo.save({ url: "https://images.com/img.jpg" }),
+            ]
             await supertest(app.callback())
                 .post(`/users/${user.id}/animals`)
                 .send({ name: "Mimi", images: images.map(x => x.id) })
@@ -3114,11 +3115,9 @@ describe("Repository", () => {
             await createConnection(getConn([User]))
             const repo = new TypeORMRepository(User)
             const email = `${random()}@gmail.com`
-            await Promise.all([
-                repo.insert({ email, name: "John Doe" }),
-                repo.insert({ email, name: "John Doe" }),
-                repo.insert({ email, name: "John Doe" })
-            ])
+            await repo.insert({ email, name: "John Doe" })
+            await repo.insert({ email, name: "John Doe" })
+            await repo.insert({ email, name: "John Doe" })
             const count = await repo.count({ email })
             expect(count).toBe(3)
         })
@@ -3135,11 +3134,9 @@ describe("Repository", () => {
             await createConnection(getConn([User]))
             const repo = new TypeORMRepository(User)
             const email = `${random()}@gmail.com`
-            await Promise.all([
-                repo.insert({ email, name: "John Doe" }),
-                repo.insert({ email, name: "John Doe" }),
-                repo.insert({ email, name: "John Doe" })
-            ])
+            await repo.insert({ email, name: "John Doe" })
+            await repo.insert({ email, name: "John Doe" })
+            await repo.insert({ email, name: "John Doe" })
             const count = await repo.count(undefined)
             expect(count).toBe(0)
         })
