@@ -17,8 +17,8 @@ describe("unique validator", () => {
     beforeEach(() => (Mongoose as any).models = {})
     afterAll(async () => await Mongoose.disconnect())
     beforeAll(async () => {
-        const mongod = new MongoMemoryServer()
-        await Mongoose.connect(await mongod.getUri())
+        const mongod = await MongoMemoryServer.create()
+        await Mongoose.connect(await mongod.getUri(), { connectTimeoutMS: 30000 })
     })
 
     async function setup<T extends object>({ controller, domain, initUser, testUser, method }: { controller: Class; domain: Class; initUser?: T; testUser: T; method?: HttpMethod }) {
@@ -229,7 +229,7 @@ describe("unique validator", () => {
     })
 
     it("Should able to use isolated helper", async () => {
-        const mongod = new MongoMemoryServer()
+        const mongod = await MongoMemoryServer.create()
         const helper = new MongooseHelper()
         @collection()
         class Animal {

@@ -9,6 +9,7 @@ import {
 } from "@plumier/generic-controller"
 import reflect, { generic } from "@plumier/reflect"
 import pluralize from "pluralize"
+import { ObjectLiteral } from "typeorm"
 
 import { normalizeEntity } from "./helper"
 import { TypeORMNestedRepository, TypeORMRepository } from "./repository"
@@ -20,7 +21,7 @@ import { TypeORMNestedRepository, TypeORMRepository } from "./repository"
 
 @generic.parameter("T", "TID")
 @generic.argument("T", "TID")
-class TypeORMControllerGeneric<T = any, TID = any> extends RepoBaseControllerGeneric<T, TID>{
+class TypeORMControllerGeneric<T extends ObjectLiteral = any, TID = any> extends RepoBaseControllerGeneric<T, TID>{
     constructor(fac?: ((x: Class<T>) => Repository<T>)) {
         super(fac ?? (x => new TypeORMRepository(x)))
     }
@@ -64,7 +65,7 @@ function createGenericControllerTypeORM(controllers?: GenericControllers) {
  * @param type entity used as the generic controller parameter
  * @param config configuration to authorize/enable/disable some actions
  */
-function GenericController<T>(type: Class, config?: GenericControllerConfiguration): Class<TypeORMControllerGeneric<T>>
+function GenericController<T extends ObjectLiteral>(type: Class, config?: GenericControllerConfiguration): Class<TypeORMControllerGeneric<T>>
 /**
  * Create a nested generic controller with CRUD functionality based on Entity's One-To-Many on Many-To-One relation property
  * @param relation Tuple of [Entity, relationName] used to specify entity relation as a reference of the nested generic controller

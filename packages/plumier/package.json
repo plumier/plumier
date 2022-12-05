@@ -18,17 +18,17 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@koa/cors": "^3.1.0",
+    "@koa/cors": "^3.4.3",
     "@plumier/core": "^1.0.6",
     "@plumier/generic-controller": "^1.0.6",
     "@types/bytes": "^3.1.1",
-    "@types/koa": "^2.13.4",
-    "@types/koa__cors": "^3.0.3",
+    "@types/koa": "^2.13.5",
+    "@types/koa__cors": "^3.3.0",
     "@types/qs": "^6.9.7",
-    "bytes": "^3.1.0",
-    "koa": "^2.13.3",
+    "bytes": "^3.1.2",
+    "koa": "^2.13.4",
     "koa-body": "^4.2.0",
-    "qs": "^6.10.1"
+    "qs": "^6.11.0"
   },
   "devDependencies": {
     "cpy-cli": "^3.1.1"
