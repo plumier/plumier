@@ -15,11 +15,11 @@
     "@plumier/core": "^1.0.6",
     "@plumier/generic-controller": "^1.0.6",
     "@plumier/serve-static": "^1.0.6",
-    "@types/ejs": "^3.1.0",
+    "@types/ejs": "^3.1.1",
     "@types/swagger-ui-dist": "^3.30.1",
-    "ejs": "^3.1.6",
-    "openapi3-ts": "^2.0.1",
-    "swagger-ui-dist": "3.52.3"
+    "ejs": "^3.1.8",
+    "openapi3-ts": "^2.0.2",
+    "swagger-ui-dist": "3.52.5"
   },
   "devDependencies": {
     "cpy-cli": "^3.1.1"

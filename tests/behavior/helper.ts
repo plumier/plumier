@@ -6,7 +6,7 @@ import { RepoBaseControllerGeneric, RepoBaseNestedControllerGeneric } from "@plu
 export function fixture(controller: Class | Class[] | string | string[], config?: Partial<Configuration>) {
     const mergedConfig = <Configuration>{ mode: "production", ...config }
     return new Plumier()
-        .set(new WebApiFacility({ controller }))
+        .set(new WebApiFacility({ controller, cors: true }))
         .set(mergedConfig)
 }
 
@@ -23,7 +23,7 @@ export function mock<T>(type: Class<T>): MockType {
     return newType as any
 }
 
-mock.mockClear = (type:MockType) => {
+mock.mockClear = (type: MockType) => {
     const meta = reflect(type as any as Class)
     for (const method of meta.methods) {
         (type as any).prototype[method.name].mockClear();
@@ -34,13 +34,13 @@ export function random() {
     return new Date().getTime().toString(32)
 }
 
-export async function expectError(operation:Promise<any>) {
+export async function expectError(operation: Promise<any>) {
     const fn = jest.fn()
-    try{
+    try {
         await operation
         return fn
     }
-    catch(e){
+    catch (e) {
         fn(e)
         return fn
     }

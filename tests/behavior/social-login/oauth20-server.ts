@@ -4,9 +4,6 @@ import qs from "querystring"
 
 import { fixture } from "../helper"
 
-
-
-
 export class OAuthController {
 
     @route.post()

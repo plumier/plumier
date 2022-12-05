@@ -18,7 +18,8 @@ module.exports = {
   rootDir: ".",
   moduleNameMapper: {
     "@plumier/(.*)": "<rootDir>packages/$1/src",
-    "^plumier$": "<rootDir>packages/plumier/src/index.ts"
+    "^plumier$": "<rootDir>packages/plumier/src/index.ts",
+    'axios': 'axios/dist/node/axios.cjs'
   },
   snapshotSerializers: [
     "<rootDir>script/function-snapshot-serializer.js",
@@ -26,8 +27,9 @@ module.exports = {
     "<rootDir>script/date-snapshot-serializer.js"
   ],
   globals: {
-      'ts-jest': {
-        tsconfig: '<rootDir>tests/tsconfig.json'
-      }
-  }
+    'ts-jest': {
+      tsconfig: '<rootDir>tests/tsconfig.json'
+    }
+  },
+  testTimeout: 30000
 };

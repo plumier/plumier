@@ -28,6 +28,7 @@ async function appStub(controller: Class, mazeOpt?: OAuthProviderOption, googolO
         .set(new FakeOAuth2Facility("Googol", googolServer.origin, googolOpt))
         .set(new FakeOAuth10aFacility("Teeter", teeterServer.origin, teeterOpt))
         .set({ mode: debug })
+
         .initialize()
     const consumer = await runServer(koa)
     return {
@@ -42,15 +43,21 @@ async function appStub(controller: Class, mazeOpt?: OAuthProviderOption, googolO
 }
 
 async function login(url: string): Promise<{ status: number, profile: any, authUrl: string, cookie: string[] }> {
-    const loginResp = await Axios.get(url)
+    const axios = Axios.create({ withCredentials: true })
+    const loginResp = await axios.get(url)
     const loginUrl = getLoginUrl(loginResp.data)
     const cookie: string = (loginResp.headers["set-cookie"] as unknown as string[]).join("; ")
     var profileResp: any
     try {
-        profileResp = await Axios.post(loginUrl, undefined, { headers: { cookie } })
-    } catch (e) {
+        profileResp = await axios.post(loginUrl, undefined, { maxRedirects: 0 })
+            .catch(resp => {
+                return axios.get(resp.response.headers.location!, { headers: { cookie } })
+            })
+    }
+    catch(e){
         profileResp = e.response
     }
+     
     return {
         status: profileResp.status,
         profile: profileResp.data,
@@ -210,7 +217,10 @@ describe("OAuth 2.0", () => {
         const cookie: string = (loginResp.headers["set-cookie"] as unknown as string[]).join("; ")
         const fn = jest.fn()
         try {
-            await Axios.post(newLoginUrl, undefined, { headers: { cookie } })
+            await Axios.post(newLoginUrl, undefined, { maxRedirects: 0 })
+                .catch(resp => {
+                    return Axios.get(resp.response.headers.location!, { headers: { cookie } })
+                })
         } catch (e) {
             fn(e.response)
         }
@@ -237,7 +247,10 @@ describe("OAuth 1.0a", () => {
         const cookie: string = (loginResp.headers["set-cookie"] as unknown as string[]).join("; ")
         const fn = jest.fn()
         try {
-            await Axios.post(newLoginUrl, undefined, { headers: { cookie } })
+            await Axios.post(newLoginUrl, undefined, { maxRedirects: 0 })
+                .catch(resp => {
+                    return Axios.get(resp.response.headers.location!, { headers: { cookie } })
+                })
         } catch (e) {
             fn(e.response)
         }
