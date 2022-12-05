@@ -18,7 +18,7 @@ describe("unique validator", () => {
     afterAll(async () => await Mongoose.disconnect())
     beforeAll(async () => {
         const mongod = await MongoMemoryServer.create()
-        await Mongoose.connect(await mongod.getUri())
+        await Mongoose.connect(await mongod.getUri(), { connectTimeoutMS: 30000 })
     })
 
     async function setup<T extends object>({ controller, domain, initUser, testUser, method }: { controller: Class; domain: Class; initUser?: T; testUser: T; method?: HttpMethod }) {

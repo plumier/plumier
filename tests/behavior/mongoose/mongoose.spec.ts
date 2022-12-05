@@ -22,7 +22,7 @@ describe("Mongoose", () => {
     let server: MongoMemoryServer | undefined
     beforeAll(async () => {
         server = await MongoMemoryServer.create()
-        await mongoose.connect(await server.getUri())
+        await mongoose.connect(await server.getUri(), { connectTimeoutMS: 30000 })
     })
     afterAll(async () => {
         await mongoose.disconnect()
@@ -1134,7 +1134,7 @@ describe("Response Projection Transformer", () => {
     let server: MongoMemoryServer | undefined
     beforeAll(async () => {
         server = await MongoMemoryServer.create()
-        await mongoose.connect(await server.getUri())
+        await mongoose.connect(await server.getUri(), { connectTimeoutMS: 30000 })
     })
     afterAll(async () => {
         await mongoose.disconnect()
