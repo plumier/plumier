@@ -16,7 +16,7 @@ export class UsersController {
     @route.get("")
     @meta.type([User])
     get(@api.description("Lorem ipsum dolor sit amet") @val.required() id: string) {
-        return 12
+        return [{ email: "abc@test.com", name: "Abc" }]
     }
 }
 
