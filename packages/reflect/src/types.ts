@@ -58,7 +58,7 @@ export interface ParameterPropertyReflection extends PropertyReflection {
     isParameter: boolean
 }
 export interface MethodReflection extends ReflectionBase {
-    kind: "Method",
+    kind: "Method" | "StaticMethod",
     parameters: ParameterReflection[],
     returnType: any,
     decorators: any[],

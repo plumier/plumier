@@ -1,13 +1,13 @@
 {
-    "extends": "./tsconfig.json",
+    "extends": "../../tsconfig.base.json",
     "compilerOptions": {
-        "target": "es6",
-        "outDir": "lib",
-        "declaration": true,
-        "inlineSourceMap": false
+      "declaration": true,
+      "rootDir": "src",
+      "outDir": "lib",
+      "sourceMap": false
     },
     "exclude": [
-        "test",
-        "lib"
+      "test",
+      "lib"
     ]
-}
+  }
