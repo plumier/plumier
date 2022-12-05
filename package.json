@@ -56,7 +56,7 @@
 		"koa-better-body": "^3.3.9",
 		"koa-router": "^10.1.1",
 		"lerna": "4.0.0",
-		"mongodb-memory-server-global": "8.10.1",
+		"mongodb-memory-server-global": "7.6.3",
 		"pre-push": "^0.1.4",
 		"reflect-metadata": "^0.1.13",
 		"rimraf": "^3.0.2",
