@@ -2,7 +2,7 @@ import { ignore, noop, parameterProperties, type } from "./decorators"
 import { createClass, reflection, useCache } from "./helpers"
 import * as v from "./analyzer"
 import { parseFunction } from "./parser"
-import { Class, ClassReflection, ObjectReflection, Reflection } from "./types"
+import { Class, ClassReflection, FunctionReflection, ObjectReflection, Reflection } from "./types"
 import { walkReflectionMembers, walkTypeMembersRecursive } from "./walker"
 
 interface TraverseContext {
@@ -68,7 +68,7 @@ function reflectModuleOrClass(opt: string | Class | Function) {
         return reflectObject(require(opt), "module", { path: [] })
     }
     if (typeof opt === "function" && reflection.isConstructor(opt))
-        return reflectClass(opt)
+        return reflectClass(opt as Class)
     if (typeof opt === "function")
         return parseFunction(opt)
 }
@@ -98,9 +98,15 @@ function reflect(path: string, opt?: Partial<ReflectOption>): ObjectReflection
  * Reflect class
  * @param classType Class 
  */
-function reflect(classType: Class | Function, opt?: Partial<ReflectOption>): ClassReflection
+function reflect(classType: Class, opt?: Partial<ReflectOption>): ClassReflection
 
-function reflect(pathOrClass: string | Class | Function, opt?: Partial<ReflectOption>): ClassReflection | ObjectReflection {
+/**
+ * Reflect class
+ * @param classType Class 
+ */
+ function reflect(fn: Function, opt?: Partial<ReflectOption>): FunctionReflection
+
+function reflect(pathOrClass: string | Class | Function, opt?: Partial<ReflectOption>) {
     if (opt?.flushCache)
         cacheStore.delete(pathOrClass)
     return reflectCached(pathOrClass)
