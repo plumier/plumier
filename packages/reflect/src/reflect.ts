@@ -63,13 +63,14 @@ function reflectObject(object: any, name: string, ctx: TraverseContext): ObjectR
     }
 }
 
-function reflectModuleOrClass(opt: string | Class) {
+function reflectModuleOrClass(opt: string | Class | Function) {
     if (typeof opt === "string") {
         return reflectObject(require(opt), "module", { path: [] })
     }
-    else {
+    if (typeof opt === "function" && reflection.isConstructor(opt))
         return reflectClass(opt)
-    }
+    if (typeof opt === "function")
+        return parseFunction(opt)
 }
 
 
@@ -84,7 +85,7 @@ interface ReflectOption {
     flushCache?: true
 }
 
-const cacheStore = new Map<string | Class, ClassReflection | ObjectReflection>()
+const cacheStore = new Map<string | Class | Function, ClassReflection | ObjectReflection>()
 const reflectCached = useCache(cacheStore, reflectModuleOrClass, x => x)
 
 /**
@@ -97,9 +98,9 @@ function reflect(path: string, opt?: Partial<ReflectOption>): ObjectReflection
  * Reflect class
  * @param classType Class 
  */
-function reflect(classType: Class, opt?: Partial<ReflectOption>): ClassReflection
+function reflect(classType: Class | Function, opt?: Partial<ReflectOption>): ClassReflection
 
-function reflect(pathOrClass: string | Class, opt?: Partial<ReflectOption>): ClassReflection | ObjectReflection {
+function reflect(pathOrClass: string | Class | Function, opt?: Partial<ReflectOption>): ClassReflection | ObjectReflection {
     if (opt?.flushCache)
         cacheStore.delete(pathOrClass)
     return reflectCached(pathOrClass)
