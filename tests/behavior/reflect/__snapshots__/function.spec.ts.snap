@@ -91,7 +91,20 @@ exports[`Reflect lambda function Should able to reflect destructured parameter 1
 Object {
   "kind": "Function",
   "name": "myFunction",
-  "parameters": Array [],
+  "parameters": Array [
+    Object {
+      "decorators": Array [],
+      "fields": Array [
+        "prop1",
+        "prop2",
+      ],
+      "index": 0,
+      "kind": "Parameter",
+      "name": "{ prop1, prop2 }",
+      "type": undefined,
+      "typeClassification": undefined,
+    },
+  ],
   "returnType": undefined,
 }
 `;
@@ -100,7 +113,26 @@ exports[`Reflect lambda function Should able to reflect function parameter names
 Object {
   "kind": "Function",
   "name": "myFunction",
-  "parameters": Array [],
+  "parameters": Array [
+    Object {
+      "decorators": Array [],
+      "fields": "par1",
+      "index": 0,
+      "kind": "Parameter",
+      "name": "par1",
+      "type": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "fields": "par2",
+      "index": 1,
+      "kind": "Parameter",
+      "name": "par2",
+      "type": undefined,
+      "typeClassification": undefined,
+    },
+  ],
   "returnType": undefined,
 }
 `;
@@ -109,7 +141,26 @@ exports[`Reflect lambda function Should able to reflect rest parameter 1`] = `
 Object {
   "kind": "Function",
   "name": "myFunction",
-  "parameters": Array [],
+  "parameters": Array [
+    Object {
+      "decorators": Array [],
+      "fields": "par1",
+      "index": 0,
+      "kind": "Parameter",
+      "name": "par1",
+      "type": undefined,
+      "typeClassification": undefined,
+    },
+    Object {
+      "decorators": Array [],
+      "fields": "par2",
+      "index": 1,
+      "kind": "Parameter",
+      "name": "par2",
+      "type": undefined,
+      "typeClassification": undefined,
+    },
+  ],
   "returnType": undefined,
 }
 `;
