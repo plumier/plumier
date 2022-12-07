@@ -75,7 +75,7 @@ function customValidatorNodeVisitor(items: CustomValidatorNode[]) {
         const decorators: ValidatorDecorator[] = i.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
         if (isCustomClass(i.type)) {
             const meta = reflect(i.type)
-            const classDecorators = meta.decorators.filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
+            const classDecorators = (meta.decorators ?? []).filter((x: ValidatorDecorator) => x.type === "ValidatorDecorator")
             decorators.push(...classDecorators)
         }
         if (decorators.length > 0)

@@ -1,5 +1,5 @@
 import { ignore, noop, parameterProperties, type } from "./decorators"
-import { createClass, reflection, useCache } from "./helpers"
+import { createClass, reflection, useCache, } from "./helpers"
 import * as v from "./analyzer"
 import { parseFunction } from "./parser"
 import { Class, ClassReflection, FunctionReflection, ObjectReflection, Reflection } from "./types"
@@ -67,7 +67,7 @@ function reflectModuleOrClass(opt: string | Class | Function) {
     if (typeof opt === "string") {
         return reflectObject(require(opt), "module", { path: [] })
     }
-    if (typeof opt === "function" && reflection.isConstructor(opt))
+    if (reflection.isConstructor(opt))
         return reflectClass(opt as Class)
     if (typeof opt === "function")
         return parseFunction(opt)
@@ -104,7 +104,7 @@ function reflect(classType: Class, opt?: Partial<ReflectOption>): ClassReflectio
  * Reflect class
  * @param classType Class 
  */
- function reflect(fn: Function, opt?: Partial<ReflectOption>): FunctionReflection
+function reflect(fn: Function, opt?: Partial<ReflectOption>): FunctionReflection
 
 function reflect(pathOrClass: string | Class | Function, opt?: Partial<ReflectOption>) {
     if (opt?.flushCache)

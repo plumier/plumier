@@ -13,6 +13,7 @@ import {
     RelationDecorator,
     RouteInfo,
 } from "@plumier/core"
+import reflect, { ClassReflection } from "@plumier/reflect"
 import { PartialValidator, ValidatorDecorator } from "@plumier/validator"
 
 const isRequired = (dec: ApiRequiredDecorator): dec is ApiRequiredDecorator => dec.kind === "ApiRequired"
@@ -33,11 +34,17 @@ interface BaseTransformContext {
 }
 
 interface TransformContext extends BaseTransformContext {
-    route:RouteInfo
+    route: RouteInfo
 }
 
+function getMetadata(modelType: (Class | Class[])): ClassReflection {
+    const type = Array.isArray(modelType) ? modelType[0] : modelType
+    const defaultMetadata = { properties: [], methods: [], decorators: [] }
+    return { ...defaultMetadata, ...reflect(type) }
+}
 
 export {
     isRequired, isBind, isName, isDescription, isResponse, isEnums, isTag, isRelation,
-    isPartialValidator, TransformContext, BaseTransformContext, isApiReadOnly, isApiWriteOnly
+    isPartialValidator, TransformContext, BaseTransformContext, isApiReadOnly, isApiWriteOnly,
+    getMetadata
 }
