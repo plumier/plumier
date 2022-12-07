@@ -242,4 +242,24 @@ describe("Class Introspection", () => {
         expect(meta).toMatchSnapshot()
     })
 
+    it("Should inspect static method", () => {
+        @reflect.parameterProperties()
+        class DummyClass {
+            @reflect.noop()
+            static myStaticMethod() {}
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect static method's parameters ", () => {
+        @reflect.parameterProperties()
+        class DummyClass {
+            @reflect.noop()
+            static myStaticMethod(par1:number, par2:string) {}
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+    
 })

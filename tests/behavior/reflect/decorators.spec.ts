@@ -22,8 +22,6 @@ describe("Decorator", () => {
             myFunction(
                 @decorate({}) par: string
             ) { }
-            @decorate({})
-            static myStaticFunction() {}
         }
         const meta = reflect(DummyClass)
         expect(meta).toMatchSnapshot()

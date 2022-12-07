@@ -51,7 +51,7 @@ function getNamesFromAst(nodes: any[]) {
             return { kind: "Object", members: node.properties.map((x: any) => getName(x)) }
         }
         //if (node.type === "ArrayPattern") {
-            return { kind: "Array", members: node.elements.map((x: any) => getName(x)) }
+        return { kind: "Array", members: node.elements.map((x: any) => getName(x)) }
         //}
     }
     return nodes.map(x => getName(x)).filter((x): x is RootNode => !!x)
@@ -147,7 +147,7 @@ function parseMethods(owner: Class): MethodReflection[] {
         const des = protoDescr || classDescr
         if (des && typeof des.value === "function" && !des.get && !des.set) {
             const parameters = getMethodParameters(owner, name).map((x, i) => parseParameter(x, i))
-            result.push({ kind: "Method", name, parameters, decorators: [], returnType: undefined, ...(isStatic ? { isStatic }: {}) })
+            result.push({ kind: isStatic ? "StaticMethod" : "Method", name, parameters, decorators: [], returnType: undefined })
         }
     }
     return result

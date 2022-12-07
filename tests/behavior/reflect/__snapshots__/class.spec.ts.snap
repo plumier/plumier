@@ -944,6 +944,99 @@ Object {
 }
 `;
 
+exports[`Class Introspection Should inspect static method 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [],
+      "kind": "StaticMethod",
+      "name": "myStaticMethod",
+      "parameters": Array [],
+      "returnType": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Class Introspection Should inspect static method's parameters  1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [
+    Object {
+      "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "applyTo": Array [],
+        "inherit": true,
+        "removeApplied": true,
+      },
+    },
+  ],
+  "kind": "Class",
+  "methods": Array [
+    Object {
+      "decorators": Array [],
+      "kind": "StaticMethod",
+      "name": "myStaticMethod",
+      "parameters": Array [
+        Object {
+          "decorators": Array [],
+          "fields": "par1",
+          "index": 0,
+          "kind": "Parameter",
+          "name": "par1",
+          "type": undefined,
+          "typeClassification": undefined,
+        },
+        Object {
+          "decorators": Array [],
+          "fields": "par2",
+          "index": 1,
+          "kind": "Parameter",
+          "name": "par2",
+          "type": undefined,
+          "typeClassification": undefined,
+        },
+      ],
+      "returnType": undefined,
+    },
+  ],
+  "name": "DummyClass",
+  "properties": Array [],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
 exports[`Class Introspection Should reflect destructed tuple parameters type 1`] = `
 Object {
   "decorators": Array [],
