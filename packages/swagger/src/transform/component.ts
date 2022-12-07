@@ -4,13 +4,14 @@ import reflect from "@plumier/reflect"
 
 import { refFactory, transformType } from "./schema"
 import { BaseTransformContext, TransformContext } from "./shared"
+import { getMetadata } from "./shared"
 
 type SchemasObject = { [key: string]: SchemaObject }
 
 const defaultSchemas: { [key: string]: SchemaObject } = {}
 
 function createSchema(obj: Class, ctx: BaseTransformContext): SchemaObject {
-    const meta = reflect(obj)
+    const meta = getMetadata(obj)
     const properties: SchemasObject = {}
     for (const prop of meta.properties) {
         properties[prop.name] = transformType(prop.type, ctx, { decorators: prop.decorators })
@@ -19,7 +20,7 @@ function createSchema(obj: Class, ctx: BaseTransformContext): SchemaObject {
 }
 
 function getUnregisterDependentTypes(type: Class, ctx: BaseTransformContext): Class[] {
-    const meta = reflect(type)
+    const meta = getMetadata(type)
     const registered = Array.from(ctx.map.keys())
     const types = []
     for (const prop of meta.properties) {
