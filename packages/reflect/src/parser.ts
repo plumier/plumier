@@ -83,8 +83,12 @@ function getConstructorParameters(fn: Class) {
 function getFunctionParameters(fn: Function) {
     try {
         const body = getCode(fn)
-        const ast = parse(body, { ecmaVersion: 2020 })
-        return getNamesFromAst((ast as any).body[0].params)
+        const ast:any = parse(body, { ecmaVersion: 2020 })
+        const expBody = ast.body[0]
+        if(expBody.type === "FunctionDeclaration")
+            return getNamesFromAst((ast as any).body[0].params)
+        else 
+            return getNamesFromAst((ast as any).body[0].expression.params)
     }
     catch {
         return []
