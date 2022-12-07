@@ -12,6 +12,7 @@ import { ReferenceObject, SchemaObject } from "openapi3-ts"
 
 import {
     BaseTransformContext,
+    getMetadata,
     isApiReadOnly,
     isApiWriteOnly,
     isEnums,
@@ -90,11 +91,6 @@ function addSchema(target: SchemaObject | ReferenceObject, schema: SchemaObject)
 // -------------------------- SCHEMA OVERRIDES ------------------------- //
 // --------------------------------------------------------------------- //
 
-
-function getMetadata(modelType: (Class | Class[])) {
-    const type = Array.isArray(modelType) ? modelType[0] : modelType
-    return reflect(type)
-}
 
 // add schema override to inform user that the relation can be filled with ID
 function addRelationAsIdOverride(modelType: (Class | Class[]), ctx: TransformContext) {
