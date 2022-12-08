@@ -26,7 +26,7 @@ function reflectClass(target: Class): ClassReflection {
             // add parameter properties
             v.addsParameterProperties,
             // remove @ignore decorator
-            v.removeIgnored,
+            v.removeIgnored
         ]),
         classPath: []
     })
@@ -38,6 +38,8 @@ function reflectClass(target: Class): ClassReflection {
             v.addsTypeByTypeDecorator,
             // add typeClassification information
             v.addsTypeClassification,
+            // remove isStatic decorator option
+            v.removeIsStaticDecoratorOption
         ])
     })
 }

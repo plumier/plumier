@@ -701,7 +701,7 @@ describe("Decorator", () => {
                 expect(reflect(OtherClass)).toMatchSnapshot()
             })
 
-            it("Should able to define inline type definition on @type()", () => {
+            it.only("Should able to define inline type definition on @type()", () => {
                 class User {
                     @type({ id: String, name: String })
                     data() { }

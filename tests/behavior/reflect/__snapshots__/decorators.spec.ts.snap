@@ -1498,24 +1498,6 @@ Object {
       "returnType": undefined,
       "typeClassification": undefined,
     },
-    Object {
-      "decorators": Array [
-        Object {
-          Symbol(tinspector:decoratorOption): Object {
-            "allowMultiple": true,
-            "applyTo": Array [],
-            "inherit": true,
-            "removeApplied": true,
-          },
-        },
-      ],
-      "isStatic": true,
-      "kind": "Method",
-      "name": "myStaticFunction",
-      "parameters": Array [],
-      "returnType": undefined,
-      "typeClassification": undefined,
-    },
   ],
   "name": "DummyClass",
   "properties": Array [

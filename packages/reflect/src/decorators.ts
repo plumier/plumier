@@ -44,7 +44,7 @@ export function decorateMethod(data: any, option?: DecoratorOption) {
         const isStatic = typeof target === 'function'
         const targetClass = isStatic ? target: target.constructor
         const meta = typeof data === "function" ? data(targetClass, name) : data
-        setMetadata({ ...meta, [DecoratorOptionId]: { ...meta[DecoratorOptionId], ...option } }, targetClass, name)
+        setMetadata({ ...meta, [DecoratorOptionId]: { ...meta[DecoratorOptionId], isStatic, ...option } }, targetClass, name)
     }
 }
 
