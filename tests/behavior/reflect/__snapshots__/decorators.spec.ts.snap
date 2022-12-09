@@ -2486,7 +2486,7 @@ Object {
       "typeClassification": "Primitive",
     },
   ],
-  "super": Base,
+  "super": Object,
   "type": DynamicType,
   "typeClassification": "Class",
 }
@@ -2595,7 +2595,7 @@ Object {
       "typeClassification": "Primitive",
     },
   ],
-  "super": Base,
+  "super": Object,
   "type": DynamicType,
   "typeClassification": "Class",
 }

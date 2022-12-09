@@ -311,4 +311,23 @@ describe("Class Introspection", () => {
         const meta = reflect(DummyClass)
         expect(meta).toMatchSnapshot()
     })
+
+    it("Should inspect static getter and setter", () => {
+        class DummyClass {
+            static get myProp():number { return 1 }
+            static set myProp(value:number) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect static getter and setter type", () => {
+        class DummyClass {
+            @noop()
+            static get myProp():number { return 1 }
+            static set myProp(value:number) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
 })

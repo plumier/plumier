@@ -979,6 +979,74 @@ Object {
 }
 `;
 
+exports[`Class Introspection Should inspect static getter and setter 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [],
+      "get": get myProp,
+      "kind": "StaticProperty",
+      "name": "myProp",
+      "set": set myProp,
+      "type": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
+exports[`Class Introspection Should inspect static getter and setter type 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "DummyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [
+        Object {
+          "kind": "Noop",
+          "target": DummyClass,
+          Symbol(tinspector:decoratorId): Symbol(noop),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": false,
+            "applyTo": Array [],
+            "inherit": false,
+            "removeApplied": true,
+          },
+        },
+      ],
+      "get": get myProp,
+      "kind": "StaticProperty",
+      "name": "myProp",
+      "set": set myProp,
+      "type": Number,
+      "typeClassification": "Primitive",
+    },
+  ],
+  "super": Object,
+  "type": DummyClass,
+  "typeClassification": "Class",
+}
+`;
+
 exports[`Class Introspection Should inspect static method 1`] = `
 Object {
   "ctor": Object {

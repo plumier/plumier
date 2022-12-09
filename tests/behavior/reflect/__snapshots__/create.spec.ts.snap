@@ -145,7 +145,7 @@ Object {
       "typeClassification": "Array",
     },
   ],
-  "super": Base,
+  "super": Object,
   "type": DynamicType,
   "typeClassification": "Class",
 }
@@ -210,7 +210,7 @@ Object {
       "typeClassification": "Primitive",
     },
   ],
-  "super": Base,
+  "super": Object,
   "type": DynamicType,
   "typeClassification": "Class",
 }
@@ -255,7 +255,7 @@ Object {
       "typeClassification": "Class",
     },
   ],
-  "super": Base,
+  "super": Object,
   "type": DynamicType,
   "typeClassification": "Class",
 }
@@ -320,7 +320,7 @@ Object {
       "typeClassification": "Primitive",
     },
   ],
-  "super": Base,
+  "super": Object,
   "type": DynamicType,
   "typeClassification": "Class",
 }

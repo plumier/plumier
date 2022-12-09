@@ -35,6 +35,7 @@ type RootNode = string | KeyValueNode | ObjectNode | ArrayNode
 type KeyValueNode = { kind: "KeyValue", key: string, value: RootNode }
 interface ObjectNode { kind: "Object", members: RootNode[] }
 interface ArrayNode { kind: "Array", members: RootNode[] }
+const StaticMemberExclude = ["name", "prototype", "length"]
 
 function getNamesFromAst(nodes: any[]) {
     const getName = (node: any): undefined | RootNode => {
@@ -58,9 +59,14 @@ function getNamesFromAst(nodes: any[]) {
 }
 
 function getCode(fn: Class | Function) {
+    const syntaxReplacement = [
+        { pattern: /^class(\s*)extends\s*BaseClass\s*{\s*}/gm, replacement: "class DynamicClass extends Parent {}" },
+        { pattern: /^class(\s*){\s*}/gm, replacement: "class DynamicClass {}" },
+    ]
     const code = fn.toString()
-    if (code.search(/^class(\s*)extends\s*BaseClass\s*{\s*}/gm) > -1) {
-        return "class DynamicClass extends Parent {}"
+    const exclude = syntaxReplacement.find(x => code.search(x.pattern) > -1)
+    if (exclude) {
+        return exclude.replacement
     }
     else
         return code.replace("[native code]", "")
@@ -118,9 +124,9 @@ function getMembersByDecorator(obj: Class) {
 
 function getClassMembers(fun: Function) {
     const member = getMembers(fun.prototype, ["constructor"])
-    const staticMembers = getMembers(fun, ["name", "prototype", "length"])
+    const staticMembers = getMembers(fun, StaticMemberExclude)
     const decoratorMembers = getMembersByDecorator(fun as Class).filter(name => name !== "constructor")
-    return [...new Set([...decoratorMembers, ...member, ...staticMembers])]
+    return [...new Set([...member, ...decoratorMembers, ...staticMembers])]
 }
 
 function getName(param: RootNode): string {
@@ -189,14 +195,14 @@ function parseProperties(owner: Class): PropertyReflection[] {
         if(typeof (owner as any)[name] === "function" || typeof owner.prototype[name] === "function") continue;
         // static property
         const classDes = getMemberTypeDescriptor(owner, name)
-        if (classDes) {
-            result.push({ kind: "StaticProperty", name, decorators: [], get: classDes?.get, set: classDes?.set })
+        if (classDes && !StaticMemberExclude.includes(name)) {
+            result.push({ kind: "StaticProperty", name, decorators: [], get: classDes.get, set: classDes.set })
             continue;
         }
         // instance property
         const protoDes = getMemberTypeDescriptor(owner.prototype, name)
         if (protoDes) {
-            result.push({ kind: "Property", name, decorators: [], get: protoDes?.get, set: protoDes?.set })
+            result.push({ kind: "Property", name, decorators: [], get: protoDes.get, set: protoDes.set })
             continue;
         }
         // typescript field can't be described using getOwnPropertyDescriptor
