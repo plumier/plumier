@@ -58,9 +58,14 @@ function getNamesFromAst(nodes: any[]) {
 }
 
 function getCode(fn: Class | Function) {
+    const syntaxReplacement = [
+        { pattern: /^class(\s*)extends\s*BaseClass\s*{\s*}/gm, replacement: "class DynamicClass extends Parent {}" },
+        { pattern: /^class(\s*){\s*}/gm, replacement: "class DynamicClass {}" },
+    ]
     const code = fn.toString()
-    if (code.search(/^class(\s*)extends\s*BaseClass\s*{\s*}/gm) > -1) {
-        return "class DynamicClass extends Parent {}"
+    const exclude = syntaxReplacement.find(x => code.search(x.pattern) > -1)
+    if (exclude) {
+        return exclude.replacement
     }
     else
         return code.replace("[native code]", "")
