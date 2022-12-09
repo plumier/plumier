@@ -87,8 +87,9 @@ interface CreateClassOption {
 
 function createClass(definition: CustomTypeDefinition, opt?: Partial<CreateClassOption>): Class {
     class Base { }
-    const {extends:BaseClass, ...option} = { extends: Base, name: "DynamicType", genericParams: [], ...opt }
-    const type = { [option.name]: class extends BaseClass { } }[option.name];
+    const {extends:BaseClass, ...option} = { name: "DynamicType", genericParams: [], ...opt }
+    const obj = !!BaseClass ? { [option.name]: class extends BaseClass { } } : { [option.name]: class { } }
+    const type = obj[option.name];
     (type as any)[IsDynamicType] = true
     for (const key in definition) {
         Reflect.decorate([decorate.type(definition[key])], type.prototype, key)
