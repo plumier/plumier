@@ -11,7 +11,7 @@ const storage = new Map<Class, MetadataRecord[]>()
 
 export function setMetadata(data: any, targetClass: Class, memberName?: string | symbol, parIndex?: number) {
     const getMetadataOption = (opt?: DecoratorOption): Required<DecoratorOption> => ({
-        inherit: true, allowMultiple: true, applyTo: [], removeApplied: true, ...opt
+        inherit: true, allowMultiple: true, applyTo: [], removeApplied: true, isStatic:false, ...opt
     })
     const opt = data[DecoratorOptionId] = getMetadataOption(data[DecoratorOptionId])
     if (!opt.allowMultiple && !data[DecoratorId]) {

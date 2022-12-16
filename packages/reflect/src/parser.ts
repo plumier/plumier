@@ -1,7 +1,7 @@
 import { Node, parse } from "acorn"
 import { useCache } from "./helpers"
 
-import { getAllMetadata } from "./storage"
+import { getAllMetadata, getMetadata } from "./storage"
 import {
     Class,
     ClassReflection,
@@ -35,6 +35,7 @@ type RootNode = string | KeyValueNode | ObjectNode | ArrayNode
 type KeyValueNode = { kind: "KeyValue", key: string, value: RootNode }
 interface ObjectNode { kind: "Object", members: RootNode[] }
 interface ArrayNode { kind: "Array", members: RootNode[] }
+const StaticMemberExclude = ["name", "prototype", "length"]
 
 function getNamesFromAst(nodes: any[]) {
     const getName = (node: any): undefined | RootNode => {
@@ -51,7 +52,7 @@ function getNamesFromAst(nodes: any[]) {
             return { kind: "Object", members: node.properties.map((x: any) => getName(x)) }
         }
         //if (node.type === "ArrayPattern") {
-            return { kind: "Array", members: node.elements.map((x: any) => getName(x)) }
+        return { kind: "Array", members: node.elements.map((x: any) => getName(x)) }
         //}
     }
     return nodes.map(x => getName(x)).filter((x): x is RootNode => !!x)
@@ -88,11 +89,11 @@ function getConstructorParameters(fn: Class) {
 function getFunctionParameters(fn: Function) {
     try {
         const body = getCode(fn)
-        const ast:any = parse(body, { ecmaVersion: 2020 })
+        const ast: any = parse(body, { ecmaVersion: 2020 })
         const expBody = ast.body[0]
-        if(expBody.type === "FunctionDeclaration")
+        if (expBody.type === "FunctionDeclaration")
             return getNamesFromAst((ast as any).body[0].params)
-        else 
+        else
             return getNamesFromAst((ast as any).body[0].expression.params)
     }
     catch {
@@ -100,22 +101,32 @@ function getFunctionParameters(fn: Function) {
     }
 }
 
-function getClassMembers(fun: Function) {
-    const isGetter = (name: string) => Object.getOwnPropertyDescriptor(fun.prototype, name)!.get
-    const isSetter = (name: string) => Object.getOwnPropertyDescriptor(fun.prototype, name)!.set
-    const isFunction = (name: string) => typeof fun.prototype[name] === "function";
-    const members = Object.getOwnPropertyNames(fun.prototype)
+function getMembers(obj: any, excludes: string[]) {
+    const isGetter = (name: string) => Object.getOwnPropertyDescriptor(obj, name)!.get
+    const isSetter = (name: string) => Object.getOwnPropertyDescriptor(obj, name)!.set
+    const isFunction = (name: string) => typeof obj[name] === "function";
+    const members = Object.getOwnPropertyNames(obj)
         .filter(name => isGetter(name) || isSetter(name) || isFunction(name))
-    const properties = (getAllMetadata(fun as Class) || [])
+    return members.filter(name => !excludes.includes(name))
+        .filter(name => !~name.indexOf("__"))
+}
+
+function getMembersByDecorator(obj: Class) {
+    const properties = (getAllMetadata(obj as Class) || [])
         .filter(x => !!x.memberName && !x.parIndex)
         .filter(x => {
             const opt: DecoratorOption = x.data[DecoratorOptionId]
             return opt.applyTo!.length === 0
         })
         .map(x => x.memberName as string)
-    const names = members.concat(properties)
-        .filter(name => name !== "constructor" && !~name.indexOf("__"))
-    return [...new Set(names)]
+    return properties
+}
+
+function getClassMembers(fun: Function) {
+    const member = getMembers(fun.prototype, ["constructor"])
+    const staticMembers = getMembers(fun, StaticMemberExclude)
+    const decoratorMembers = getMembersByDecorator(fun as Class).filter(name => name !== "constructor")
+    return [...new Set([...member, ...decoratorMembers, ...staticMembers])]
 }
 
 function getName(param: RootNode): string {
@@ -133,6 +144,17 @@ function getField(params: RootNode): any {
     if (params.kind === "Object") return [...getFields(params.members)]
     return [...getFields(params.members)]
 }
+
+function getMemberTypeDescriptor(owner: any, name: string) {
+    const descriptor = Reflect.getOwnPropertyDescriptor(owner, name)
+    if (!descriptor) return false
+    const type: "Getter" | "Setter" | "Method" | "Field" = !!descriptor.get ? "Getter" :
+        !!descriptor.set ? "Setter" :
+            typeof descriptor.value === "function" ? "Method" :
+                "Field"
+    return { type, ...descriptor }
+}
+
 // --------------------------------------------------------------------- //
 // ------------------------------- PARSER ------------------------------ //
 // --------------------------------------------------------------------- //
@@ -150,8 +172,15 @@ function parseMethods(owner: Class): MethodReflection[] {
     const result: MethodReflection[] = []
     const members = getClassMembers(owner)
     for (const name of members) {
-        const des = Reflect.getOwnPropertyDescriptor(owner.prototype, name)
-        if (des && typeof des.value === "function" && !des.get && !des.set) {
+        // static methods
+        const classDes = getMemberTypeDescriptor(owner, name)
+        if (classDes && classDes.type === "Method") {
+            const parameters = getMethodParameters(owner, name).map((x, i) => parseParameter(x, i))
+            result.push({ kind: "StaticMethod", name, parameters, decorators: [], returnType: undefined })
+        }
+        // instance method
+        const protoDes = getMemberTypeDescriptor(owner.prototype, name)
+        if (protoDes && protoDes.type === "Method") {
             const parameters = getMethodParameters(owner, name).map((x, i) => parseParameter(x, i))
             result.push({ kind: "Method", name, parameters, decorators: [], returnType: undefined })
         }
@@ -163,12 +192,30 @@ function parseProperties(owner: Class): PropertyReflection[] {
     const result: PropertyReflection[] = []
     const members = getClassMembers(owner)
     for (const name of members) {
-        const des = Reflect.getOwnPropertyDescriptor(owner.prototype, name)
-        if (!des || des.get || des.set) {
-            result.push({ kind: "Property", name, decorators: [], get: des?.get, set: des?.set })
+        if(typeof (owner as any)[name] === "function" || typeof owner.prototype[name] === "function") continue;
+        // static property
+        const classDes = getMemberTypeDescriptor(owner, name)
+        if (classDes && !StaticMemberExclude.includes(name)) {
+            result.push({ kind: "StaticProperty", name, decorators: [], get: classDes.get, set: classDes.set })
+            continue;
         }
+        // instance property
+        const protoDes = getMemberTypeDescriptor(owner.prototype, name)
+        if (protoDes) {
+            result.push({ kind: "Property", name, decorators: [], get: protoDes.get, set: protoDes.set })
+            continue;
+        }
+        // typescript field can't be described using getOwnPropertyDescriptor
+        // instead we need to apply decorator on it. 
+        const metadata = getMetadata(owner, name)
+        const isStatic = metadata.some(meta => {
+            const opt:DecoratorOption = meta[DecoratorOptionId]
+            return !!opt.isStatic
+        })
+        result.push({ kind: isStatic ? "StaticProperty" : "Property", name, decorators: [], get: undefined, set: undefined })
+
     }
-    // include constructor parameter
+    // include constructor parameter (for constructor property parameter)
     const params = getConstructorParameters(owner)
     for (const [i, name] of params.entries()) {
         const { fields, ...par } = parseParameter(name, i)

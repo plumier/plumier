@@ -46,7 +46,7 @@ export interface ParameterReflection extends ReflectionBase {
     index: number
 }
 export interface PropertyReflection extends ReflectionBase {
-    kind: "Property",
+    kind: "Property" | "StaticProperty",
     decorators: any[],
     type?: any,
     get?: any,
@@ -133,6 +133,11 @@ export interface DecoratorOption {
      * Remove applied decorator using `applyTo` on the class scope. Default `true`
      */
     removeApplied?: boolean
+
+    /**
+     * Applied for method/property, describe if its a static method/property
+     */
+    isStatic?:boolean
 }
 
 export type CustomPropertyDecorator = (target: Object, propertyKey: string | symbol, ...index: any[]) => void;

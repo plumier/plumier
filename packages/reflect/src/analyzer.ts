@@ -28,6 +28,10 @@ export function addsDesignTypes(meta: TypedReflection, ctx: WalkMemberContext): 
         const returnType: any = Reflect.getOwnMetadata(DESIGN_RETURN_TYPE, ctx.target.prototype, meta.name)
         return { ...meta, returnType }
     }
+    else if (meta.kind === "StaticMethod") {
+        const returnType: any = Reflect.getOwnMetadata(DESIGN_RETURN_TYPE, ctx.target, meta.name)
+        return { ...meta, returnType }
+    }
     else if (reflection.isParameterProperties(meta)) {
         const parTypes: any[] = Reflect.getOwnMetadata(DESIGN_PARAMETER_TYPE, ctx.target) || []
         return { ...meta, type: getType(parTypes, meta.index) }
@@ -36,12 +40,20 @@ export function addsDesignTypes(meta: TypedReflection, ctx: WalkMemberContext): 
         const type: any = Reflect.getOwnMetadata(DESIGN_TYPE, ctx.target.prototype, meta.name)
         return { ...meta, type }
     }
+    else if (meta.kind === "StaticProperty") {
+        const type: any = Reflect.getOwnMetadata(DESIGN_TYPE, ctx.target, meta.name)
+        return { ...meta, type }
+    }
     else if (meta.kind === "Parameter" && ctx.parent.kind === "Constructor") {
         const parTypes: any[] = Reflect.getOwnMetadata(DESIGN_PARAMETER_TYPE, ctx.target) || []
         return { ...meta, type: getType(parTypes, meta.index) }
     }
     else if (meta.kind === "Parameter" && ctx.parent.kind === "Method") {
         const parTypes: any[] = Reflect.getOwnMetadata(DESIGN_PARAMETER_TYPE, ctx.target.prototype, ctx.parent.name) || []
+        return { ...meta, type: getType(parTypes, meta.index) }
+    }
+    else if (meta.kind === "Parameter" && ctx.parent.kind === "StaticMethod") {
+        const parTypes: any[] = Reflect.getOwnMetadata(DESIGN_PARAMETER_TYPE, ctx.target, ctx.parent.name) || []
         return { ...meta, type: getType(parTypes, meta.index) }
     }
     else
@@ -67,7 +79,7 @@ export function addsDecorators(meta: TypedReflection, ctx: WalkMemberContext): T
             .concat(...getMetadata(ctx.target, meta.name))
         return { ...meta, decorators: meta.decorators.concat(decorators) }
     }
-    if (meta.kind === "Method" || meta.kind === "Property") {
+    if (meta.kind === "Method" || meta.kind === "Property" || meta.kind === "StaticMethod" || meta.kind === "StaticProperty") {
         const decorators = getMetadata(ctx.target, meta.name)
         return { ...meta, decorators: meta.decorators.concat(decorators) }
     }
@@ -135,7 +147,7 @@ function isTypeWithGenericParameter(decorator: TypeDecorator) {
 }
 
 function setType(meta: MethodReflection | PropertyReflection | ParameterReflection | ParameterPropertyReflection, type: Class | Class[]) {
-    if (meta.kind === "Method")
+    if (meta.kind === "Method" || meta.kind === "StaticMethod")
         return { returnType: type }
     return { type }
 }
@@ -155,10 +167,10 @@ export function addsTypeByTypeDecorator(meta: TypedReflection, ctx: WalkMemberCo
     }
     if (isTypeWithGenericParameter(decorator)) {
         const genericParams: any[] = decorator.genericArguments.map(x => {
-            const s = Array.isArray(x) ? x[0] : x 
+            const s = Array.isArray(x) ? x[0] : x
             // if the generic arguments already a class then return immediately
             return typeof s === "function" ? x : generic.getType({ type: x, target: decorator.target }, ctx.target)
-        } )
+        })
         const [parentType, isArray] = reflection.getTypeFromDecorator(decorator)
         const dynType = createClass({}, { extends: parentType as any, genericParams })
         const type = isArray ? [dynType] : dynType
@@ -179,9 +191,9 @@ export function addsTypeClassification(meta: TypedReflection, ctx: WalkMemberCon
         else if (reflection.isCustomClass(type)) return "Class"
         else return "Primitive"
     }
-    if (meta.kind === "Method")
+    if (meta.kind === "Method" || meta.kind === "StaticMethod")
         return { ...meta, typeClassification: get(meta.returnType) }
-    else if (meta.kind === "Property" || meta.kind === "Parameter")
+    else if (meta.kind === "Property" || meta.kind === "Parameter" || meta.kind === "StaticProperty")
         return { ...meta, typeClassification: get(meta.type) }
     else if (meta.kind === "Class")
         return { ...meta, typeClassification: "Class" }
@@ -205,9 +217,23 @@ export function addsParameterProperties(meta: TypedReflection, ctx: WalkMemberCo
 // --------------------------------------------------------------------- //
 
 export function removeIgnored(meta: TypedReflection, ctx: WalkMemberContext): TypedReflection | undefined {
-    if (meta.kind === "Property" || meta.kind === "Method") {
+    if (meta.kind === "Property" || meta.kind === "Method" || meta.kind === "StaticMethod" || meta.kind === "StaticProperty") {
         const decorator = meta.decorators.find((x: PrivateDecorator): x is PrivateDecorator => x.kind === "Ignore")
         return !decorator ? meta : undefined
+    }
+    return meta
+}
+
+
+// --------------------------------------------------------------------- //
+// ---------------------- REMOVE IS_STATIC OPTION ---------------------- //
+// --------------------------------------------------------------------- //
+
+export function removeIsStaticDecoratorOption(meta: TypedReflection, ctx: WalkMemberContext): TypedReflection | undefined {
+    if (meta.kind === "Constructor") return meta
+    for (const decorator of meta.decorators) {
+        const opt: DecoratorOption = decorator[DecoratorOptionId]
+        delete opt.isStatic
     }
     return meta
 }

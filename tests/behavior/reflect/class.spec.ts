@@ -1,4 +1,4 @@
-import { decorateClass, decorateMethod, reflect } from "@plumier/reflect"
+import { decorateClass, decorateMethod, noop, reflect, type } from "@plumier/reflect"
 
 describe("Class Introspection", () => {
     it("Should inspect class properly", () => {
@@ -242,4 +242,92 @@ describe("Class Introspection", () => {
         expect(meta).toMatchSnapshot()
     })
 
+    it("Should inspect static method", () => {
+        class DummyClass {
+            static myStaticMethod() {}
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect static method's parameters ", () => {
+        class DummyClass {
+            static myStaticMethod(par1:number, par2:string) {}
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect static method return type with decorator", () => {
+        class DummyClass {
+            @noop()
+            static myStaticMethod(par1:number, par2:string):Number { return 1 }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect static method return type with decorator override", () => {
+        class DummyClass {
+            @type([Number])
+            static myStaticMethod(par1:number, par2:string):Number[] { return [1] }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect static method's parameter type with decorator", () => {
+        class DummyClass {
+            @noop()
+            static myStaticMethod(par1:number, par2:string) {}
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should able to distinguish between static method and instance method with the same name", () => {
+        class DummyClass {
+            static method() {}
+            method() {}
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect static property", () => {
+        class DummyClass {
+            @noop()
+            static myProp:string
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+    
+    it("Should inspect static property type with decorator override", () => {
+        class DummyClass {
+            @type([Number])
+            static myProp:number[]
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect static getter and setter", () => {
+        class DummyClass {
+            static get myProp():number { return 1 }
+            static set myProp(value:number) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should inspect static getter and setter type", () => {
+        class DummyClass {
+            @noop()
+            static get myProp():number { return 1 }
+            static set myProp(value:number) { }
+        }
+        const meta = reflect(DummyClass)
+        expect(meta).toMatchSnapshot()
+    })
 })
