@@ -63,20 +63,23 @@ function refineCode(fn: Class | Function, functionOnly = false) {
     const code = fn.toString()
 
     // for class created dynamically using reflect.create()
-    if(code.search(/^class(\s*)extends\s*BaseClass\s*{\s*}/gm) > -1) 
+    if (code.search(/^class(\s*)extends\s*BaseClass\s*{\s*}/gm) > -1)
         return "class DynamicClass extends Parent {}"
 
     // for class created using reflect.class() but without base class 
-    if(code.search(/^class(\s*){\s*}/gm) > -1)
+    if (code.search(/^class(\s*){\s*}/gm) > -1)
         return "class DynamicClass {}"
 
     // in case function inside object, it will cause error 
     // example
     // const obj = { fn(par1) {} }
     // reflect(obj.fn)
-    if(functionOnly && code.search(/^([A-z0-9]+)\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/gm) > -1)
+    if (functionOnly && code.search(/^([A-z0-9]+)\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/gm) > -1)
         return `function ${code}`;
-    
+
+    if (functionOnly && code.search(/^async\s*([A-z0-9]+)\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/gm) > -1)
+        return code.replace("async", "async function")
+
     // for the rest code, sometime its contain [native code], just remove it
     return code.replace("[native code]", "")
 }
@@ -201,7 +204,7 @@ function parseProperties(owner: Class): PropertyReflection[] {
     const result: PropertyReflection[] = []
     const members = getClassMembers(owner)
     for (const name of members) {
-        if(typeof (owner as any)[name] === "function" || typeof owner.prototype[name] === "function") continue;
+        if (typeof (owner as any)[name] === "function" || typeof owner.prototype[name] === "function") continue;
         // static property
         const classDes = getMemberTypeDescriptor(owner, name)
         if (classDes && !StaticMemberExclude.includes(name)) {
@@ -218,7 +221,7 @@ function parseProperties(owner: Class): PropertyReflection[] {
         // instead we need to apply decorator on it. 
         const metadata = getMetadata(owner, name)
         const isStatic = metadata.some(meta => {
-            const opt:DecoratorOption = meta[DecoratorOptionId]
+            const opt: DecoratorOption = meta[DecoratorOptionId]
             return !!opt.isStatic
         })
         result.push({ kind: isStatic ? "StaticProperty" : "Property", name, decorators: [], get: undefined, set: undefined })

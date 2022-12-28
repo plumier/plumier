@@ -34,6 +34,14 @@ describe("Reflect function", () => {
         const meta = reflect(obj.fn)
         expect(meta).toMatchSnapshot()
     })
+
+    it("Should able to reflect async function inside object", () => {
+        const obj = {
+            async fn(par1:string) {}
+        }
+        const meta = reflect(obj.fn)
+        expect(meta).toMatchSnapshot()
+    })
 })
 
 describe("Reflect lambda function", () => {

@@ -1,5 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Reflect function Should able to reflect async function inside object 1`] = `
+Object {
+  "kind": "Function",
+  "name": "fn",
+  "parameters": Array [
+    Object {
+      "decorators": Array [],
+      "fields": "par1",
+      "index": 0,
+      "kind": "Parameter",
+      "name": "par1",
+      "type": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "returnType": undefined,
+}
+`;
+
 exports[`Reflect function Should able to reflect destructured parameter 1`] = `
 Object {
   "kind": "Function",
