@@ -58,29 +58,38 @@ function getNamesFromAst(nodes: any[]) {
     return nodes.map(x => getName(x)).filter((x): x is RootNode => !!x)
 }
 
-function getCode(fn: Class | Function) {
-    const syntaxReplacement = [
-        { pattern: /^class(\s*)extends\s*BaseClass\s*{\s*}/gm, replacement: "class DynamicClass extends Parent {}" },
-        { pattern: /^class(\s*){\s*}/gm, replacement: "class DynamicClass {}" },
-    ]
+function refineCode(fn: Class | Function, functionOnly = false) {
+    // some code may detected as invalid code, so its need to be fixed before parsed by acorn
     const code = fn.toString()
-    const exclude = syntaxReplacement.find(x => code.search(x.pattern) > -1)
-    if (exclude) {
-        return exclude.replacement
-    }
-    else
-        return code.replace("[native code]", "")
+
+    // for class created dynamically using reflect.create()
+    if(code.search(/^class(\s*)extends\s*BaseClass\s*{\s*}/gm) > -1) 
+        return "class DynamicClass extends Parent {}"
+
+    // for class created using reflect.class() but without base class 
+    if(code.search(/^class(\s*){\s*}/gm) > -1)
+        return "class DynamicClass {}"
+
+    // in case function inside object, it will cause error 
+    // example
+    // const obj = { fn(par1) {} }
+    // reflect(obj.fn)
+    if(functionOnly && code.search(/^([A-z0-9]+)\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/gm) > -1)
+        return `function ${code}`;
+    
+    // for the rest code, sometime its contain [native code], just remove it
+    return code.replace("[native code]", "")
 }
 
 function getMethodParameters(fn: Class, method: string) {
-    const body = getCode(fn)
+    const body = refineCode(fn)
     const ast = parse(body, { ecmaVersion: 2020 })
     const ctor = getNode(ast, x => x.type === "MethodDefinition" && x.kind === "method" && x.key.name === method)
     return getNamesFromAst(ctor ? (ctor as any).value.params : [])
 }
 
 function getConstructorParameters(fn: Class) {
-    const body = getCode(fn)
+    const body = refineCode(fn)
     const ast = parse(body, { ecmaVersion: 2020 })
     const ctor = getNode(ast, x => x.type === "MethodDefinition" && x.kind === "constructor")
     return getNamesFromAst(ctor ? (ctor as any).value.params : [])
@@ -88,7 +97,7 @@ function getConstructorParameters(fn: Class) {
 
 function getFunctionParameters(fn: Function) {
     try {
-        const body = getCode(fn)
+        const body = refineCode(fn, true)
         const ast: any = parse(body, { ecmaVersion: 2020 })
         const expBody = ast.body[0]
         if (expBody.type === "FunctionDeclaration")

@@ -26,6 +26,14 @@ describe("Reflect function", () => {
         const meta = reflect(myFunction)
         expect(meta).toMatchSnapshot()
     })
+
+    it("Should able to reflect function inside object", () => {
+        const obj = {
+            fn(par1:string) {}
+        }
+        const meta = reflect(obj.fn)
+        expect(meta).toMatchSnapshot()
+    })
 })
 
 describe("Reflect lambda function", () => {
@@ -53,4 +61,5 @@ describe("Reflect lambda function", () => {
         const meta = reflect(myFunction)
         expect(meta).toMatchSnapshot()
     })
+
 })
