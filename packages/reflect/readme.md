@@ -1,6 +1,12 @@
-# @plumier/reflect
+# Reflect: A TypeScript Reflection Library
 
-A Plumier introspection (reflection) library, extract JavaScript/TypeScript type into object graph contains decorator metadata
+An introspection (reflection) library, extracts JavaScript/TypeScript type into an object graph containing object preferences and metadata
+
+## Companies Using Reflect
+
+
+[<img src="https://user-images.githubusercontent.com/1106884/210295963-95ed9685-af85-475f-954f-fa24af9aab61.png" width="200" />](https://www.hp.com/)
+
 
 ## Example
 
