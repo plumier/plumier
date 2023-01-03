@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/plumier/plumier/compare/v1.1.0...v1.1.1) (2023-01-03)
+
+
+### Bug Fixes
+
+* **reflect:** Fix issue when reflect async function inside object ([#1033](https://github.com/plumier/plumier/issues/1033)) ([e2be8ca](https://github.com/plumier/plumier/commit/e2be8ca167e9fc3f959d5f6b26d0aa6d8cec49fb))
+* **reflect:** Fix issue when reflect function inside object ([#1032](https://github.com/plumier/plumier/issues/1032)) ([719d23a](https://github.com/plumier/plumier/commit/719d23ab41785c02f0e851a2074c86ee0afe6dd1))
+
+
+
+
+
 # [1.1.0](https://github.com/plumier/plumier/compare/v1.0.6...v1.1.0) (2022-12-19)
 
 

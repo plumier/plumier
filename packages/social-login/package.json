@@ -1,6 +1,6 @@
 {
   "name": "@plumier/social-login",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "OAuth module for Plumier",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -10,7 +10,7 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@plumier/core": "^1.1.0",
+    "@plumier/core": "^1.1.1",
     "@types/csrf": "^3.1.0",
     "@types/debug": "^4.1.7",
     "axios": "1.2.0",
