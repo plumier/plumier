@@ -45,9 +45,25 @@ namespace reflection {
             case Number:
             case Object:
             case Date:
+            case Promise:
                 return false
             default:
                 return true
+        }
+    }
+
+    export function isPrimitive(type:Function) {
+        switch (type) {
+            case Boolean:
+            case String:
+            case Array:
+            case Number:
+            case Object:
+            case Date:
+            case Promise:
+                return true
+            default:
+                return false
         }
     }
 

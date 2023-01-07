@@ -52,7 +52,7 @@ function traverseObject(fn: any, name: string, ctx: TraverseContext): Reflection
         if (ctx.path.some(x => x === fn)) return
         return reflectObject(fn, name, { path: ctx.path.concat(fn) })
     }
-    if (typeof fn === "function" && reflection.isConstructor(fn))
+    if ((typeof fn === "function" && reflection.isConstructor(fn)))
         return reflectClass(fn)
     if (typeof fn === "function")
         return parseFunction(fn)
@@ -69,7 +69,7 @@ function reflectModuleOrClass(opt: string | Class | Function) {
     if (typeof opt === "string") {
         return reflectObject(require(opt), "module", { path: [] })
     }
-    if (reflection.isConstructor(opt))
+    if (reflection.isConstructor(opt) ||  reflection.isPrimitive(opt))
         return reflectClass(opt as Class)
     if (typeof opt === "function")
         return parseFunction(opt)
