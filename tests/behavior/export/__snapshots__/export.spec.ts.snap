@@ -452,6 +452,7 @@ Object {
     "isConstructor": isConstructor,
     "isCustomClass": isCustomClass,
     "isParameterProperties": isParameterProperties,
+    "isPrimitive": isPrimitive,
   },
   "type": type,
   "useCache": useCache,

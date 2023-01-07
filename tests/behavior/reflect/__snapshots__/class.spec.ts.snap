@@ -401,7 +401,7 @@ Object {
         },
       ],
       "returnType": Promise,
-      "typeClassification": "Class",
+      "typeClassification": "Primitive",
     },
   ],
   "name": "DummyClass",
