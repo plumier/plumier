@@ -59,6 +59,7 @@ function getNamesFromAst(nodes: any[]) {
 }
 
 function refineCode(fn: Class | Function, functionOnly = false) {
+
     // some code may detected as invalid code, so its need to be fixed before parsed by acorn
     const code = fn.toString()
 
@@ -70,13 +71,21 @@ function refineCode(fn: Class | Function, functionOnly = false) {
     if (code.search(/^class(\s*){\s*}/gm) > -1)
         return "class DynamicClass {}"
 
-    // in case function inside object, it will cause error 
+    // in case function property used in an object 
     // example
-    // const obj = { fn(par1) {} }
+    // const obj = { fn: function(par1) {} }
     // reflect(obj.fn)
-    if (functionOnly && code.search(/^([A-z0-9]+)\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/gm) > -1)
-        return `function ${code}`;
+    // regex search for 
+    if (functionOnly && code.search(/^(async\b\s*)?function\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*{/gm) > -1) 
+        return code.replace("function", "function _")
 
+    // in case inline function
+    // const obj = { fn(par1) {} }
+    if (functionOnly && code.search(/^([A-z0-9]+)\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*(?!=>){/gm) > -1)
+        return `function ${code}`;
+        
+    // in case inline async function 
+    // const obj = { async fn(par1) {} }
     if (functionOnly && code.search(/^async\s*([A-z0-9]+)\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/gm) > -1)
         return code.replace("async", "async function")
 
