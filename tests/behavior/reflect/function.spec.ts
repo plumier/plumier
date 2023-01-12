@@ -29,7 +29,7 @@ describe("Reflect function", () => {
 
     it("Should able to reflect function inside object", () => {
         const obj = {
-            fn(par1:string) {}
+            fn(par1: string) { }
         }
         const meta = reflect(obj.fn)
         expect(meta).toMatchSnapshot()
@@ -37,10 +37,47 @@ describe("Reflect function", () => {
 
     it("Should able to reflect async function inside object", () => {
         const obj = {
-            async fn(par1:string) {}
+            async fn(par1: string) { }
         }
         const meta = reflect(obj.fn)
         expect(meta).toMatchSnapshot()
+    })
+
+
+    it("Should able to reflect function property inside object", () => {
+        const obj = {
+            fn: function (par1: string) { }
+        }
+        const meta = reflect(obj.fn)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should able to reflect async function property inside object", () => {
+        const obj = {
+            fn: async function (par1: string) { }
+        }
+        const meta = reflect(obj.fn)
+        expect(meta).toMatchSnapshot()
+    })
+
+    it("Should able to reflect lambda function inside object", () => {
+        const obj = {
+            fn: (par1: number) => {
+                return par1
+            },
+        };
+        const metadata = reflect(obj.fn);
+        expect(metadata).toMatchSnapshot()
+    })
+
+    it("Should able to reflect lambda function inside object", () => {
+        const obj = {
+            fn: async (par1: number) => {
+                return par1
+            },
+        };
+        const metadata = reflect(obj.fn);
+        expect(metadata).toMatchSnapshot()
     })
 })
 
