@@ -209,11 +209,20 @@ function parseMethods(owner: Class): MethodReflection[] {
     return result
 }
 
+function isFunction(owner:Class, member:string) {
+    const descriptor = Object.getOwnPropertyDescriptor(owner, member)
+    return typeof descriptor?.value === "function"
+}
+
 function parseProperties(owner: Class): PropertyReflection[] {
     const result: PropertyReflection[] = []
     const members = getClassMembers(owner)
     for (const name of members) {
-        if (typeof (owner as any)[name] === "function" || typeof owner.prototype[name] === "function") continue;
+        // not static property
+        if (isFunction(owner, name)) continue;
+        // not instance property
+        if (isFunction(owner.prototype, name)) continue;
+
         // static property
         const classDes = getMemberTypeDescriptor(owner, name)
         if (classDes && !StaticMemberExclude.includes(name)) {
