@@ -5,7 +5,7 @@ An introspection (reflection) library, extracts JavaScript/TypeScript type into 
 ## Companies Using Reflect
 
 
-[<img src="https://user-images.githubusercontent.com/1106884/210295963-95ed9685-af85-475f-954f-fa24af9aab61.png" width="200" />](https://www.hp.com/)
+[<img src="https://user-images.githubusercontent.com/1106884/210295963-95ed9685-af85-475f-954f-fa24af9aab61.png" width="200" />](https://github.com/HPInc)
 
 
 ## Example
