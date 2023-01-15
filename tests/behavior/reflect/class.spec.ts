@@ -244,7 +244,7 @@ describe("Class Introspection", () => {
 
     it("Should inspect static method", () => {
         class DummyClass {
-            static myStaticMethod() {}
+            static myStaticMethod() { }
         }
         const meta = reflect(DummyClass)
         expect(meta).toMatchSnapshot()
@@ -252,7 +252,7 @@ describe("Class Introspection", () => {
 
     it("Should inspect static method's parameters ", () => {
         class DummyClass {
-            static myStaticMethod(par1:number, par2:string) {}
+            static myStaticMethod(par1: number, par2: string) { }
         }
         const meta = reflect(DummyClass)
         expect(meta).toMatchSnapshot()
@@ -261,7 +261,7 @@ describe("Class Introspection", () => {
     it("Should inspect static method return type with decorator", () => {
         class DummyClass {
             @noop()
-            static myStaticMethod(par1:number, par2:string):Number { return 1 }
+            static myStaticMethod(par1: number, par2: string): Number { return 1 }
         }
         const meta = reflect(DummyClass)
         expect(meta).toMatchSnapshot()
@@ -270,7 +270,7 @@ describe("Class Introspection", () => {
     it("Should inspect static method return type with decorator override", () => {
         class DummyClass {
             @type([Number])
-            static myStaticMethod(par1:number, par2:string):Number[] { return [1] }
+            static myStaticMethod(par1: number, par2: string): Number[] { return [1] }
         }
         const meta = reflect(DummyClass)
         expect(meta).toMatchSnapshot()
@@ -279,7 +279,7 @@ describe("Class Introspection", () => {
     it("Should inspect static method's parameter type with decorator", () => {
         class DummyClass {
             @noop()
-            static myStaticMethod(par1:number, par2:string) {}
+            static myStaticMethod(par1: number, par2: string) { }
         }
         const meta = reflect(DummyClass)
         expect(meta).toMatchSnapshot()
@@ -287,8 +287,8 @@ describe("Class Introspection", () => {
 
     it("Should able to distinguish between static method and instance method with the same name", () => {
         class DummyClass {
-            static method() {}
-            method() {}
+            static method() { }
+            method() { }
         }
         const meta = reflect(DummyClass)
         expect(meta).toMatchSnapshot()
@@ -297,16 +297,16 @@ describe("Class Introspection", () => {
     it("Should inspect static property", () => {
         class DummyClass {
             @noop()
-            static myProp:string
+            static myProp: string
         }
         const meta = reflect(DummyClass)
         expect(meta).toMatchSnapshot()
     })
-    
+
     it("Should inspect static property type with decorator override", () => {
         class DummyClass {
             @type([Number])
-            static myProp:number[]
+            static myProp: number[]
         }
         const meta = reflect(DummyClass)
         expect(meta).toMatchSnapshot()
@@ -314,8 +314,8 @@ describe("Class Introspection", () => {
 
     it("Should inspect static getter and setter", () => {
         class DummyClass {
-            static get myProp():number { return 1 }
-            static set myProp(value:number) { }
+            static get myProp(): number { return 1 }
+            static set myProp(value: number) { }
         }
         const meta = reflect(DummyClass)
         expect(meta).toMatchSnapshot()
@@ -324,10 +324,23 @@ describe("Class Introspection", () => {
     it("Should inspect static getter and setter type", () => {
         class DummyClass {
             @noop()
-            static get myProp():number { return 1 }
-            static set myProp(value:number) { }
+            static get myProp(): number { return 1 }
+            static set myProp(value: number) { }
         }
         const meta = reflect(DummyClass)
         expect(meta).toMatchSnapshot()
     })
+
+    it("Should not throw error when inspecting getter/setter which accessing private field", () => {
+        class MyClass {
+            #opt = 1
+
+            get options() {
+                return this.#opt;
+            }
+        }
+
+        const metadata = reflect(MyClass);
+        expect(metadata).toMatchSnapshot();
+    });
 })

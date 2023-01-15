@@ -1386,6 +1386,34 @@ Object {
 }
 `;
 
+exports[`Class Introspection Should not throw error when inspecting getter/setter which accessing private field 1`] = `
+Object {
+  "ctor": Object {
+    "kind": "Constructor",
+    "name": "constructor",
+    "parameters": Array [],
+  },
+  "decorators": Array [],
+  "kind": "Class",
+  "methods": Array [],
+  "name": "MyClass",
+  "properties": Array [
+    Object {
+      "decorators": Array [],
+      "get": get options,
+      "kind": "Property",
+      "name": "options",
+      "set": undefined,
+      "type": undefined,
+      "typeClassification": undefined,
+    },
+  ],
+  "super": Object,
+  "type": MyClass,
+  "typeClassification": "Class",
+}
+`;
+
 exports[`Class Introspection Should reflect destructed tuple parameters type 1`] = `
 Object {
   "decorators": Array [],
