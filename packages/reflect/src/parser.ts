@@ -76,18 +76,15 @@ function refineCode(fn: Class | Function, functionOnly = false) {
     // const obj = { fn: function(par1) {} }
     // reflect(obj.fn)
     // regex search for 
-    if (functionOnly && code.search(/^(async\b\s*)?function\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*{/gm) > -1) 
+    // /^(async\s+)?(function)\s*([a-zA-Z0-9_$]*)\s*\(([^)]*)\)\s*\{([^}]*)\}/
+
+    if (functionOnly && code.search(/^(async\s+)?(function)\s*\(([^)]*)\)\s*\{([^}]*)\}/gm) > -1) 
         return code.replace("function", "function _")
 
     // in case inline function
     // const obj = { fn(par1) {} }
-    if (functionOnly && code.search(/^([A-z0-9]+)\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*(?!=>){/gm) > -1)
-        return `function ${code}`;
-        
-    // in case inline async function 
-    // const obj = { async fn(par1) {} }
-    if (functionOnly && code.search(/^async\s*([A-z0-9]+)\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/gm) > -1)
-        return code.replace("async", "async function")
+    if (functionOnly && code.search(/^(async\s+)?([a-zA-Z0-9_$]*)\s*\(([^)]*)\)\s*(?!=>)\s*\{([^}]*)\}/gm) > -1)
+        return code.startsWith("async") ? code.replace("async", "async function") : `function ${code}`;
 
     // for the rest code, sometime its contain [native code], just remove it
     return code.replace("[native code]", "")
