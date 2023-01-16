@@ -1,14 +1,13 @@
-# Reflect: A TypeScript Reflection Library
+# Reflect: A JavScript/TypeScript Reflection Library
 
-An introspection (reflection) library, extracts JavaScript/TypeScript type into an object graph containing object preferences and metadata
+A reflection library, extracts JavaScript/TypeScript object into an object graph containing object preferences and applied metadata information
+
 
 ## Companies Using Reflect
 
+[![HP Inc](https://avatars.githubusercontent.com/u/9728779?s=200)](https://github.com/HPInc)
 
-[<img src="https://user-images.githubusercontent.com/1106884/210295963-95ed9685-af85-475f-954f-fa24af9aab61.png" width="200" />](https://github.com/HPInc)
-
-
-## Example
+## Example Usage
 
 ```typescript
 import reflect from "@plumier/reflect"
@@ -24,10 +23,10 @@ class MyAwesomeClass extends Awesome {
     }
 }
 
-const metadata = reflect(MyAwesomeClass)
+const obj = reflect(MyAwesomeClass)
 ```
 
-Result of `metadata` variable above is like below
+Result of `obj` variable above is like below
     
 ```javascript
 {
@@ -87,12 +86,11 @@ Result of `metadata` variable above is like below
 - [x] Supported inspect destructured parameter
 - [x] Supported inspect rest parameter
 - [x] Supported inspect parameter with complex default value
-- [x] (TypeScript only) Inspect decorators
+- [x] (TypeScript only) Inspect metadata using decorators
 - [x] (TypeScript only) Inspect parameter properties
 - [x] (TypeScript only) Inspect type information 
 - [x] (TypeScript only) Configurable decorator (inheritable / allow multiple)
 - [x] (TypeScript only) Generic class inheritance
-
 
 ## TypeScript Requirement
 To be able to inspect type information its required to enable configuration below in `tsconfig.json`
@@ -126,7 +124,7 @@ class Awesome {
     awesome(multiply:number): number { return 1 }
 }
 
-const metadata = reflect(Awesome)
+const obj = reflect(Awesome)
 ```
 
 reflection will be able to get type information of the method's return type and parameters of the `awesome` method above. Note that we applied `@reflect.noop()` decorator on the `awesome` method. `@reflect.noop()` does nothing except to force TypeScript to emit metadata information.
@@ -139,7 +137,7 @@ class Awesome {
     aweProperty:number
 }
 
-const metadata = reflect(Awesome)
+const obj = reflect(Awesome)
 ```
 
 Above code showing that we able to get type information of a property. 
@@ -152,7 +150,7 @@ class Awesome {
     constructor(multiply:number){}
 }
 
-const metadata = reflect(Awesome)
+const obj = reflect(Awesome)
 ```
 Above code showing that we able to get type information of parameters of the constructor, by applying decorator on the class level. 
 
@@ -167,7 +165,7 @@ class Awesome {
     awesome(multiply:number): Array<number> {}
 }
 
-const metadata = reflect(Awesome)
+const obj = reflect(Awesome)
 ```
 
 Above code showing that we able to get method's return type information by providing `@reflect.type([Number])`. Note that the `[Number]` is an array of `Number`. 
@@ -184,7 +182,7 @@ class Awesome {
     awesome(multiply:number): Partial<Option> {}
 }
 
-const metadata = reflect(Awesome)
+const obj = reflect(Awesome)
 ```
 
 We will be able to get generic type information such as `Partial`, `Required` etc by applying `@reflect.type()` like above. 
@@ -203,7 +201,7 @@ class SuperAwesome<T, U> {
 @generic.argument(Number, String)
 class Awesome extends SuperAwesome<Number, String> { }
 
-const metadata = reflect(Awesome)
+const obj = reflect(Awesome)
 ```
 
 Above code showing that we add a specialized decorator `@generic.parameter()` to define generic type parameter. We also defined data type of the generic parameters using `@reflect.type()` decorator. Next on the inherited class we specify `@generic.argument()` to define types replace the generic template. Note that the order of the parameter on `@generic.parameter()` and `@generic.argument()` is important.
@@ -219,7 +217,7 @@ class Awesome {
     constructor(public multiply:number){}
 }
 
-const metadata = reflect(Awesome)
+const obj = reflect(Awesome)
 ```
 
 ## Metadata Decorator 
