@@ -206,12 +206,8 @@ function parseMethods(owner: Class): MethodReflection[] {
     return result
 }
 
-function isFunction(owner:Class, member:string) {
-    const descriptor = Object.getOwnPropertyDescriptor(owner, member)
-    return typeof descriptor?.value === "function"
-}
-
 function parseProperties(owner: Class): PropertyReflection[] {
+    const isFunction = (owner:Class, member:string) => typeof Object.getOwnPropertyDescriptor(owner, member)?.value === "function"
     const result: PropertyReflection[] = []
     const members = getClassMembers(owner)
     for (const name of members) {
