@@ -1,6 +1,6 @@
-# Reflect: A JavScript/TypeScript Reflection Library
+# Reflect: A JavaScript/TypeScript Reflection Library
 
-A reflection library, extracts JavaScript/TypeScript object into an object graph containing object preferences and applied metadata information
+A reflection library that extracts JavaScript/TypeScript object into an object graph containing object preferences and metadata information
 
 
 ## Companies Using Reflect
