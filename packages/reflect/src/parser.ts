@@ -60,7 +60,7 @@ function getNamesFromAst(nodes: any[]) {
 
 function refineCode(fn: Class | Function, functionOnly = false) {
 
-    // some code may detected as invalid code, so its need to be fixed before parsed by acorn
+    // some code may detected as invalid code, so it needs to be fixed before it parsed by acorn
     const code = fn.toString()
 
     // for class created dynamically using reflect.create()
@@ -75,9 +75,6 @@ function refineCode(fn: Class | Function, functionOnly = false) {
     // example
     // const obj = { fn: function(par1) {} }
     // reflect(obj.fn)
-    // regex search for 
-    // /^(async\s+)?(function)\s*([a-zA-Z0-9_$]*)\s*\(([^)]*)\)\s*\{([^}]*)\}/
-
     if (functionOnly && code.search(/^(async\s+)?(function)\s*\(([^)]*)\)\s*\{([^}]*)\}/gm) > -1) 
         return code.replace("function", "function _")
 
