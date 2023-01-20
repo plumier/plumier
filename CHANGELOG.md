@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/plumier/plumier/compare/v1.1.1...v1.1.2) (2023-01-20)
+
+
+### Bug Fixes
+
+* **reflect:** Fix inefficient regular expression issue ([#1044](https://github.com/plumier/plumier/issues/1044)) ([ce733c1](https://github.com/plumier/plumier/commit/ce733c15a079fd3e9261a162f51be5a2920ae0fb))
+* **reflect:** Fix introspect property which accessed private field ([#1038](https://github.com/plumier/plumier/issues/1038)) ([db6a615](https://github.com/plumier/plumier/commit/db6a6158c334d6883a46f5c0369f3a3dc1a523ae))
+* **reflect:** Fix issue where primitive data type inspected as Function instead of Class ([#1035](https://github.com/plumier/plumier/issues/1035)) ([c9bc774](https://github.com/plumier/plumier/commit/c9bc7742f7f3f4e910fb3f097a1f5d5780ae2442))
+* **reflect:** Fix unable to reflect function property inside object ([#1037](https://github.com/plumier/plumier/issues/1037)) ([1e6f54e](https://github.com/plumier/plumier/commit/1e6f54e893c16778115750d2f3683464958b7977))
+
+
+
+
+
 ## [1.1.1](https://github.com/plumier/plumier/compare/v1.1.0...v1.1.1) (2023-01-03)
 
 
