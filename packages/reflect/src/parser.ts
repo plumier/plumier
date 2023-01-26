@@ -89,14 +89,14 @@ function refineCode(fn: Class | Function, functionOnly = false) {
 
 function getMethodParameters(fn: Class, method: string) {
     const body = refineCode(fn)
-    const ast = parse(body, { ecmaVersion: 2020 })
+    const ast = parse(body, { ecmaVersion: "latest" })
     const ctor = getNode(ast, x => x.type === "MethodDefinition" && x.kind === "method" && x.key.name === method)
     return getNamesFromAst(ctor ? (ctor as any).value.params : [])
 }
 
 function getConstructorParameters(fn: Class) {
     const body = refineCode(fn)
-    const ast = parse(body, { ecmaVersion: 2020 })
+    const ast = parse(body, { ecmaVersion: "latest" })
     const ctor = getNode(ast, x => x.type === "MethodDefinition" && x.kind === "constructor")
     return getNamesFromAst(ctor ? (ctor as any).value.params : [])
 }
@@ -104,7 +104,7 @@ function getConstructorParameters(fn: Class) {
 function getFunctionParameters(fn: Function) {
     try {
         const body = refineCode(fn, true)
-        const ast: any = parse(body, { ecmaVersion: 2020 })
+        const ast: any = parse(body, { ecmaVersion: "latest" })
         const expBody = ast.body[0]
         if (expBody.type === "FunctionDeclaration")
             return getNamesFromAst((ast as any).body[0].params)
