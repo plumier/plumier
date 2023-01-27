@@ -4,7 +4,8 @@
       "declaration": true,
       "rootDir": "src",
       "outDir": "lib",
-      "sourceMap": false
+      "sourceMap": false,
+      "importHelpers": false
     },
     "exclude": [
       "test",
