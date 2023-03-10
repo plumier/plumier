@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3](https://github.com/plumier/plumier/compare/v1.1.2...v1.1.3) (2023-03-10)
+
+
+### Bug Fixes
+
+* **reflect:** Fix issue on pure JavaScript class with private field ([#1050](https://github.com/plumier/plumier/issues/1050)) ([2f07d85](https://github.com/plumier/plumier/commit/2f07d859d310ae36c017e8719555f56a28035c63)), closes [#1049](https://github.com/plumier/plumier/issues/1049)
+* **reflect:** Missing tslib package error ([#1052](https://github.com/plumier/plumier/issues/1052)) ([0fac589](https://github.com/plumier/plumier/commit/0fac58948eae4cd5c03138b1d2ca414deade229b))
+
+
+
+
+
 ## [1.1.2](https://github.com/plumier/plumier/compare/v1.1.1...v1.1.2) (2023-01-20)
 
 
