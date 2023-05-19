@@ -8,7 +8,7 @@ Delightful Node.js Rest Framework
 [![npm](https://img.shields.io/npm/v/plumier/latest)](https://www.npmjs.com/package/plumier?activeTab=versions)
 
 ## Documentation 
-Read the project documentation on https://plumierjs.com
+Read the project documentation on [https://plumierjs.com](https://plumier.js.org/)
 
 ## Contributing
 To run Plumier project on local machine, some setup/app required
