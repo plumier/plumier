@@ -13,7 +13,7 @@
     "@plumier/core": "^1.1.3",
     "@types/csrf": "^3.1.0",
     "@types/debug": "^4.1.7",
-    "axios": "1.2.0",
+    "axios": "1.6.0",
     "csrf": "^3.1.0",
     "debug": "^4.3.4",
     "oauth-1.0a": "^2.2.6"
